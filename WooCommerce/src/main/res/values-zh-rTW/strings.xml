@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-19 13:54:25+0000
+Translation-Revision-Date: 2023-10-25 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="previous_order">上一筆訂單</string>
+    <string name="next_order">下一筆訂單</string>
+    <string name="blaze_campaign_details_title">行銷活動詳細資訊</string>
+    <string name="blaze_campaign_list_title">Blaze 行銷活動</string>
+    <string name="blaze_campaign_status_canceled">已取消</string>
+    <string name="blaze_campaign_status_scheduled">已排程</string>
+    <string name="product_creation_package_photo_keywords_info">微調你的文字：取消選取你不需要的掃瞄項目，或點一下即可編輯</string>
+    <string name="product_creation_package_photo_keywords_section">關鍵字</string>
+    <string name="ai_product_creation_photo_button">使用包裹照片 (可留空)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">在「訂單詳細資訊」的「收款」選項或「選單」&gt;「付款」中，\n選擇「Tap to Pay」(輕觸付款)。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">嘗試使用簽帳金融卡或信用卡支付 %s 款項。\n完成後就會退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">簡單、安全且私密。</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">接受所有類型的親自收款，\n全都能在手機上完成。 無須使用額外硬體。</string>
     <string name="blaze_campaign_status_budget">預算</string>
     <string name="blaze_campaign_status_clicks">點擊數</string>
     <string name="blaze_campaign_status_impressions">曝光數</string>
@@ -647,9 +660,6 @@ Language: zh_TW
     <string name="jetpack_benefits_fetching_status">擷取 Jetpack 狀態</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">發生錯誤。 請稍後再試一次。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">嘗試付款</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> 若使用 Android 系統，可以在\n「選單」&gt;「付款」找到「點選支付」或「收款」\n，然後選擇「點選支付」。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">使用信用卡嘗試付款\n，完成後就會退款。</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">你的手機已可使用「點選支付」功能。\n你的顧客可以在手機上點選信用卡\n來付款。</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
     <string name="card_reader_hub_actions_category_header">動作</string>

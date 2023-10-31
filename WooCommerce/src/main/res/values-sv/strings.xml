@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 12:54:05+0000
+Translation-Revision-Date: 2023-10-24 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="previous_order">Föregående beställning</string>
+    <string name="next_order">Nästa beställning</string>
+    <string name="blaze_campaign_details_title">Kampanjinformation</string>
+    <string name="blaze_campaign_list_title">Blaze-kampanjer</string>
+    <string name="blaze_campaign_status_canceled">Avbruten</string>
+    <string name="blaze_campaign_status_scheduled">Tidsinställd</string>
+    <string name="product_creation_package_photo_keywords_info">Justera din text: Avmarkera de skanningar som du inte behöver eller tryck för att redigera</string>
+    <string name="product_creation_package_photo_keywords_section">Nyckelord</string>
+    <string name="ai_product_creation_photo_button">Använd förpackningsfoto (valfritt)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Välj Tryck för att betala från alternativen för Ta emot betalning i\nBeställningsinformation eller Meny &gt; Betalningar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova att genomföra en %s-betalning med ditt betal- eller kreditkort.\nBetalningen kommer att återbetalas när du är klar.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Det är enkelt, säkert och privat.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Ta emot alla typer av personliga betalningar, direkt\ni din telefon. Ingen extra hårdvara behövs.</string>
     <string name="blaze_campaign_status_budget">Budget</string>
     <string name="blaze_campaign_status_clicks">Klick</string>
     <string name="blaze_campaign_status_impressions">Visningar</string>
@@ -647,9 +660,6 @@ Language: sv_SE
     <string name="jetpack_benefits_fetching_status">Hämtar Jetpack-status</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Något blev fel. Försök igen senare.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Du hittar Tryck för att betala på Android via\nMeny &gt; Betalningar, eller genom att gå till Ta emot betalning och\nvälja Tryck för att betala.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova en betalning med ditt kort och\ndet kommer att återbetalas när du är klar.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
     <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>

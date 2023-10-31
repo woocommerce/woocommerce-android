@@ -498,6 +498,16 @@
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+
+    <!--
+         Custom Amounts
+    -->
+    <string name="custom_amounts_dialog_title">Custom Amount</string>
+    <string name="custom_amounts_enter_amount">Amount</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
+
     <!--
          Taxes
     -->
@@ -515,6 +525,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_price_after_discount">Price after discount</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
@@ -535,6 +546,8 @@
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
+    <string name="order_creation_increase_item_amount_content_description">Increase product quantity</string>
+    <string name="order_creation_decrease_item_amount_content_description">Decrease product quantity</string>
     <string name="coupon_selector_empty_list_button">Go to Coupons</string>
     <string name="coupon_selector_empty_list_message">You haven\'t created any coupons yet. Create a coupon to apply it to this order.</string>
     <string name="coupon_selector_empty_list_title">Everyone loves a deal</string>
@@ -603,6 +616,7 @@
     <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
 
     <!--
          Barcode Scanning
@@ -669,6 +683,8 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_editing_barcode_content_description">Scan barcode</string>
+    <string name="order_editing_add_content_description">Add product</string>
     <string name="order_sync_failed">Unable to save changes</string>
     <string name="order_sync_coupon_removed">Coupon could not be applied and was removed from the order</string>
     <!--

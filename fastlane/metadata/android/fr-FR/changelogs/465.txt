@@ -1,2 +1,0 @@
-15.8 :
-Cette mise à jour corrige d’importants bugs et vous assure ainsi une expérience plus fluide. Elle introduit également la possibilité de mettre à jour les taux de taxe lors de la modification de commandes, ce qui vous donne un meilleur contrôle sur la situation. Restez à l’affût pour découvrir d’autres fonctionnalités intéressantes dans les prochaines versions. Merci d’avoir choisi WooCommerce.

@@ -55,6 +55,7 @@ import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -83,6 +84,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
         private const val CARD_READER_USAGE_THIRTY_DAYS = 30
+        private const val RESET_DELAY = 1000L
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -138,6 +140,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
+
+                            delay(RESET_DELAY) // delay the site reset and allow for the requests to fail gracefully
                             selectedSite.reset()
                             restartMainActivity()
                         }
