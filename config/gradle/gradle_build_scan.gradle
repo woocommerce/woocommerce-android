@@ -1,11 +1,20 @@
+Boolean userEnabledTracking = (findProperty('tracksEnabled') ?: false).toBoolean()
+Boolean isBuildOnCI = (System.getenv('CI') ?: false).toBoolean()
 
-// Only run build scan on CI builds.
-if (System.getenv('CI')) {
+if (isBuildOnCI || userEnabledTracking) {
     buildScan {
         termsOfServiceUrl = 'https://gradle.com/terms-of-service'
         termsOfServiceAgree = 'yes'
-        tag 'CI'
         publishAlways()
-        uploadInBackground = false
+        if (isBuildOnCI) {
+            tag 'CI'
+            uploadInBackground = false
+        } else {
+            obfuscation {
+                username { username -> username.digest('SHA-1') }
+                hostname { _ -> "" }
+                ipAddresses { addresses -> addresses.collect { address -> "0.0.0.0" } }
+            }
+        }
     }
 }

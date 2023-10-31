@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-14 17:01:42+0000
+Translation-Revision-Date: 2023-10-24 16:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="previous_order">الطلب السابق</string>
+    <string name="next_order">الطلب التالي</string>
+    <string name="blaze_campaign_details_title">تفاصيل الحملة</string>
+    <string name="blaze_campaign_list_title">حملات Blaze</string>
+    <string name="blaze_campaign_status_canceled">تم الإلغاء</string>
+    <string name="blaze_campaign_status_scheduled">مجدول</string>
+    <string name="product_creation_package_photo_keywords_info">تعديل النص الخاص بك: إلغاء تحديد الفحوصات التي لا تحتاج إليها أو النقر للتحرير</string>
+    <string name="product_creation_package_photo_keywords_section">كلمات مفتاحية</string>
+    <string name="ai_product_creation_photo_button">استخدام صورة الحزمة (اختياري)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">اختيار Tap to Pay من خيارات Collect Payment في \nتفاصيل الطلب أو القائمة &gt; المدفوعات.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">جرّب مدفوعات %s من خلال بطاقة الخصم أو الائتمان لديك.\nستُستَرد المدفوعات عندما تنتهي.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">إنها سهلة وآمنة وخاصة.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">اقبل كل أنواع المدفوعات الشخصية، مباشرة\nعلى هاتفك. لا يلزم أجهزة إضافة.</string>
+    <string name="blaze_campaign_status_budget">الميزانية</string>
+    <string name="blaze_campaign_status_clicks">النقرات</string>
+    <string name="blaze_campaign_status_impressions">الانطباعات</string>
+    <string name="blaze_campaign_status_rejected">مرفوض</string>
+    <string name="blaze_campaign_status_completed">مكتمل</string>
+    <string name="blaze_campaign_status_active">نشط</string>
+    <string name="blaze_campaign_status_in_moderation">قيد الإشراف</string>
+    <string name="blaze_campaign_show_all_button">عرض الكل</string>
+    <string name="blaze_campaign_create_campaign_button">إنشاء حملة</string>
+    <string name="blaze_campaign_subtitle">يمكنك زيادة إمكانية الرؤية وبيع منتجاتك بسرعة.</string>
+    <string name="blaze_campaign_title">حملة Blaze</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol هو علامة تجارية تمتلكها EMVCo, LLC وتُستخدم بصلاحية منها.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. بعد رؤية علامة الاختيار \"تم\"، سيُعالج متجرك الدفع وستكتمل المعاملة.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. يحمل عميلك بطاقته بشكل أفقي في الجزء العلوي من هاتفك، فوق الرمز غير التلامسي.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. اعرض هاتفك أمام العميل.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. اضغط على \"تحصيل المدفوعات\"، واختر ميزة \"Tap to Pay\".</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">تحصيل المدفوعات</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">إنشاء طلب</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. ⁦%1$s⁩ أو ⁦%2$s⁩</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">كيفية عمله</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">معرفة المزيد حول قراء البطاقات</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">لقبول مدفوعات أعلى من هذا الحد، فكِّر في شراء قارئ بطاقات يقبل إدخال PIN.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">لا ندعم إدخال PIN من خلال ميزة Tap to Pay على Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">في ⁦%1$s⁩، تتطلب بعض البطاقات وجود PIN للمعاملات غير التلامسية الأعلى من ⁦%2$s⁩.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">معلومات مهمة</string>
+    <string name="card_reader_tap_to_pay_about_description">تتيح لك ميزة Tap to Pay قبول كل أنواع المدفوعات غير التلامسية - بدءًا من بطاقات الخصم والائتمان الفعلية وحتى المحافظ الرقمية - من دون الحاجة إلى شراء قارئ بطاقات فعلي.</string>
+    <string name="card_reader_tap_to_pay_about_header">ما المقصود بميزة Tap to Pay؟</string>
+    <string name="card_reader_tap_to_pay_about_title">نبذة عن ميزة Tap to Pay</string>
+    <string name="ai_feedback_form_negative_button">ملاحظات سلبية</string>
+    <string name="ai_feedback_form_positive_button">ملاحظات إيجابية</string>
+    <string name="ai_feedback_form_message">هل النتيجة مفيدة؟</string>
+    <string name="product_creation_ai_preview_short_description_section">وصف قصير للمنتج</string>
+    <string name="card_reader_payment_update_available">يتوافر تحديث لقارئ البطاقات</string>
+    <string name="card_reader_about_tap_to_pay">نبذة عن ميزة Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_header">ميزة TAP TO PAY</string>
+    <string name="card_reader_settings_header">الإعدادات</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">إضافة التفاصيل يدويًا باستخدام البريد الإلكتروني</string>
+    <string name="login_app_login_malformed_link">تتعذر علينا معالجة طلب تسجيل الدخول إلى تطبيقك</string>
     <string name="ai_product_name_copy_error">خطأ في أثناء نسخ اسم المنتج إلى الحافظة.</string>
     <string name="ai_product_name_copy_success">تم نسخ اسم المنتج إلى الحافظة.</string>
     <string name="ai_product_name_copy_label">تم إنشاء اسم المنتج بواسطة الذكاء الاصطناعي</string>
@@ -20,6 +71,7 @@ Language: ar
     <string name="ai_product_name_sheet_generate_button">كتابة ذلك من أجلي</string>
     <string name="ai_product_name_sheet_input_description">أخبرنا بمضمون منتجك وما الذي يجعله فريدًا!</string>
     <string name="ai_product_name_sheet_subtitle">السماح للذكاء الاصطناعي بإنشاء عناوين جذابة من أجلك</string>
+    <string name="ai_product_name_sheet_title">اسم المنتج</string>
     <string name="empty_review_filtered_list_message">حاول تعطيل عامل التصفية غير المقروء لرؤية كل مراجعات منتجك</string>
     <string name="empty_review_filtered_list_title">لا توجد مراجعات غير مقروءة للمنتج</string>
     <string name="product_creation_ai_tone_selected_content_desc">تم تحديد النغمة</string>
@@ -32,6 +84,7 @@ Language: ar
     <string name="product_creation_ai_preview_details_section">تفاصيل</string>
     <string name="product_creation_ai_preview_description_section">وصف المنتج</string>
     <string name="product_creation_ai_preview_name_section">اسم المنتج</string>
+    <string name="product_creation_ai_preview_subtitle">يمكنك دومًا تغيير التفاصيل أدناه لاحقًا.</string>
     <string name="product_creation_ai_preview_title">معاينة</string>
     <string name="product_creation_ai_about_product_continue_button">إنشاء تفاصيل المنتجات</string>
     <string name="product_creation_ai_about_product_set_tone">تعيين النغمة والصوت</string>
@@ -475,6 +528,7 @@ Language: ar
     <string name="product_selector_popular_products_heading">شائع</string>
     <string name="jetpack_install_role_eligibility_learn_more">معرفة المزيد حول القواعد والصلاحية</string>
     <string name="jetpack_install_role_eligibility_error_message">يبدو أن الدور الخاص بك لا يسمح لك بتثبيت Jetpack. \nيرجى الاتصال بالمسؤول لديك للحصول على مساعدة. </string>
+    <string name="card_reader_test_tap_to_pay">تجربة ميزة Tap to Pay</string>
     <string name="subscription_free_trial">تجربة مجانية</string>
     <string name="subscription_sign_up_fee">رسوم التسجيل</string>
     <string name="subscription_expire">تنتهي الصلاحية بعد</string>
@@ -606,9 +660,6 @@ Language: ar
     <string name="jetpack_benefits_fetching_status">إحضار حالة Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">حدث خطأ. ترجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> يمكنك العثور على ميزة Pay on Android ضمن\nالقائمة &gt; المدفوعات، أو تحصيل المدفوعات و\nاختر Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">محاولة سداد دفعة باستخدام بطاقتك و\nستُستَرد عند الانتهاء. </string>
-    <string name="card_reader_tap_to_pay_explanation_ready">أصبح هاتفك جاهزًا لميزة Tap to Pay.\nيمكن لعميلك النقر على البطاقة\nعلى هاتفك للدفع.</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
     <string name="card_reader_hub_actions_category_header">الإجراءات</string>

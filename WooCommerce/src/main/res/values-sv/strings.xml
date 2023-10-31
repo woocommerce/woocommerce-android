@@ -1,17 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-13 22:04:11+0000
+Translation-Revision-Date: 2023-10-24 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="previous_order">Föregående beställning</string>
+    <string name="next_order">Nästa beställning</string>
+    <string name="blaze_campaign_details_title">Kampanjinformation</string>
+    <string name="blaze_campaign_list_title">Blaze-kampanjer</string>
+    <string name="blaze_campaign_status_canceled">Avbruten</string>
+    <string name="blaze_campaign_status_scheduled">Tidsinställd</string>
+    <string name="product_creation_package_photo_keywords_info">Justera din text: Avmarkera de skanningar som du inte behöver eller tryck för att redigera</string>
+    <string name="product_creation_package_photo_keywords_section">Nyckelord</string>
+    <string name="ai_product_creation_photo_button">Använd förpackningsfoto (valfritt)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Välj Tryck för att betala från alternativen för Ta emot betalning i\nBeställningsinformation eller Meny &gt; Betalningar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova att genomföra en %s-betalning med ditt betal- eller kreditkort.\nBetalningen kommer att återbetalas när du är klar.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Det är enkelt, säkert och privat.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Ta emot alla typer av personliga betalningar, direkt\ni din telefon. Ingen extra hårdvara behövs.</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_campaign_status_clicks">Klick</string>
+    <string name="blaze_campaign_status_impressions">Visningar</string>
+    <string name="blaze_campaign_status_rejected">Avvisad</string>
+    <string name="blaze_campaign_status_completed">Har slutförts</string>
+    <string name="blaze_campaign_status_active">Aktiv</string>
+    <string name="blaze_campaign_status_in_moderation">Under granskning</string>
+    <string name="blaze_campaign_show_all_button">Visa alla</string>
+    <string name="blaze_campaign_create_campaign_button">Skapa kampanj</string>
+    <string name="blaze_campaign_subtitle">Öka synligheten och få dina produkter sålda snabbt.</string>
+    <string name="blaze_campaign_title">Blaze-kampanj</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol är ett varumärke som ägs av och används med tillåtelse av EMVCo, LLC.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. När du ser \"Klar\"-markeringen kommer din butik att behandla betalningen och transaktionen är slutförd.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Din kund håller sitt kort horisontellt högst upp på din telefon, över symbolen för kontaktlös betalning.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Håll fram din telefon mot kunden.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tryck på \"Ta emot betalning\" och välj \"Tryck för att betala\".</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ta emot en betalning</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Skapa en beställning</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s eller %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Hur det fungerar</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Lär dig mer om kortläsare</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">För att ta emot betalningar över denna gräns, överväg att köpa en kortläsare som accepterar PIN-inmatning.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Vi stöder inte PIN-inmatning med Tryck för att betala på Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">I %1$s kräver vissa kort en PIN för kontaktlösa transaktioner över %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Viktig information</string>
+    <string name="card_reader_tap_to_pay_about_description">Med Tryck för att betala kan du ta emot alla typer av kontaktlösa betalningar, från fysiska betal- och kreditkort till digitala plånböcker, utan att behöva köpa en fysisk kortläsare.</string>
+    <string name="card_reader_tap_to_pay_about_header">Vad är Tryck för att betala?</string>
+    <string name="card_reader_tap_to_pay_about_title">Om Tryck för att betala</string>
     <string name="ai_feedback_form_negative_button">Negativ feedback</string>
     <string name="ai_feedback_form_positive_button">Positiv feedback</string>
     <string name="ai_feedback_form_message">Är resultatet användbart?</string>
     <string name="product_creation_ai_preview_short_description_section">Kort beskrivning av produkt</string>
     <string name="card_reader_payment_update_available">En uppdatering för kortläsaren är tillgänglig</string>
+    <string name="card_reader_about_tap_to_pay">Om Tryck för att betala</string>
+    <string name="card_reader_tap_to_pay_header">TRYCK FÖR ATT BETALA</string>
     <string name="card_reader_settings_header">INSTÄLLNINGAR</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Lägg till uppgifter manuellt via e-post</string>
+    <string name="login_app_login_malformed_link">Vi kunde inte behandla din begäran om inloggning i appen</string>
     <string name="ai_product_name_copy_error">Det gick inte att kopiera produktnamnet till urklipp.</string>
     <string name="ai_product_name_copy_success">Produktnamn kopierat till urklipp.</string>
     <string name="ai_product_name_copy_label">Produktnamn genererat av AI</string>
@@ -483,6 +528,7 @@ Language: sv_SE
     <string name="product_selector_popular_products_heading">Populär</string>
     <string name="jetpack_install_role_eligibility_learn_more">Lär dig mer om roller och behörighet</string>
     <string name="jetpack_install_role_eligibility_error_message">Det verkar som att din roll inte tillåter dig att installera Jetpack.\nKontakta din administratör för hjälp.</string>
+    <string name="card_reader_test_tap_to_pay">Prova Tryck för att betala</string>
     <string name="subscription_free_trial">Gratis provperiod</string>
     <string name="subscription_sign_up_fee">Registreringsavgift</string>
     <string name="subscription_expire">Löper ut efter</string>
@@ -519,6 +565,7 @@ Language: sv_SE
     <string name="product_subscription_title">Prenumeration</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kortläsaren accepterar blipp, chipp och magnetremsa vid betalning med betal- och kreditkort.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
+    <string name="card_reader_tap_to_pay_description">Använd din telefon för att ta emot kort\nbetalningar Prova nu.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Dela feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
     <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
@@ -613,9 +660,6 @@ Language: sv_SE
     <string name="jetpack_benefits_fetching_status">Hämtar Jetpack-status</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Något blev fel. Försök igen senare.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Du hittar Tryck för att betala på Android via\nMeny &gt; Betalningar, eller genom att gå till Ta emot betalning och\nvälja Tryck för att betala.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova en betalning med ditt kort och\ndet kommer att återbetalas när du är klar.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
     <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>

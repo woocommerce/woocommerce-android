@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 09:54:04+0000
+Translation-Revision-Date: 2023-10-24 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="previous_order">Pesanan sebelumnya</string>
+    <string name="next_order">Pesanan berikutnya</string>
+    <string name="blaze_campaign_details_title">Detail kampanye</string>
+    <string name="blaze_campaign_list_title">Kampanye Blaze</string>
+    <string name="blaze_campaign_status_canceled">Dibatalkan</string>
+    <string name="blaze_campaign_status_scheduled">Terjadwal</string>
+    <string name="product_creation_package_photo_keywords_info">Edit tulisannya: Batalkan pilihan pindaian yang tidak perlu atau ketuk untuk mengedit</string>
+    <string name="product_creation_package_photo_keywords_section">Kata kunci</string>
+    <string name="ai_product_creation_photo_button">Gunakan foto kemasan (Opsional)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Pilih Ketuk untuk Bayar dari opsi Terima Pembayaran di\nDetail Pesanan atau Menu &gt; Pembayaran.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Coba lakukan pembayaran %s dengan kartu debit atau kredit Anda.\nDana akan dikembalikan saat selesai.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Mudah, aman, privasi terjaga.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Terima semua jenis pembayaran fisik, langsung\ndari ponsel. Tidak perlu alat tambahan.</string>
+    <string name="blaze_campaign_status_budget">Anggaran</string>
+    <string name="blaze_campaign_status_clicks">Klik</string>
+    <string name="blaze_campaign_status_impressions">Tayangan</string>
+    <string name="blaze_campaign_status_rejected">Ditolak</string>
+    <string name="blaze_campaign_status_completed">Selesai</string>
+    <string name="blaze_campaign_status_active">Aktif</string>
+    <string name="blaze_campaign_status_in_moderation">Dalam moderasi</string>
+    <string name="blaze_campaign_show_all_button">Tampilkan semua</string>
+    <string name="blaze_campaign_create_campaign_button">Buat kampanye</string>
+    <string name="blaze_campaign_subtitle">Tingkatkan visibilitas dan jual produk Anda segera.</string>
+    <string name="blaze_campaign_title">Kampanye Blaze</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol adalah merek dagang yang dimiliki oleh dan digunakan dengan izin EMVCo, LLC.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. Setelah tanda centang “Selesai” terlihat, toko Anda akan memproses pembayaran dan transaksi akan selesai.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Pelanggan Anda memegang kartunya secara horizontal di atas iPhone Anda, di atas simbol nirsentuh.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Tunjukkan iPhone Anda kepada pelanggan.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Ketuk “Terima Pembayaran” dan pilih “Ketuk untuk Bayar”.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">terima pembayaran</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Buat pesanan</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s atau %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Ini cara kerjanya</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Baca selengkapnya tentang pembaca kartu</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Untuk menerima pembayaran di atas batas ini, pertimbangkan pembelian pembaca kartu yang menerima entri PIN.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Kami tidak mendukung entri PIN dengan fitur Ketuk untuk Bayar di Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">Di %1$s, beberapa kartu mensyaratkan PIN untuk transaksi nirsentuh di atas %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Informasi penting</string>
+    <string name="card_reader_tap_to_pay_about_description">Dengan Ketuk untuk Bayar, Anda dapat menerima semua jenis pembayaran nirsentuh – dari kartu debit dan kredit fisik hingga dompet digital lainnya – tanpa perlu membeli pembaca kartu fisik.</string>
+    <string name="card_reader_tap_to_pay_about_header">Apa Itu Ketuk untuk Bayar?</string>
+    <string name="card_reader_tap_to_pay_about_title">Tentang Ketuk untuk Bayar</string>
+    <string name="ai_feedback_form_negative_button">Feedback negatif</string>
+    <string name="ai_feedback_form_positive_button">Feedback positif</string>
+    <string name="ai_feedback_form_message">Apakah hasil ini bermanfaat?</string>
+    <string name="product_creation_ai_preview_short_description_section">Deskripsi singkat produk</string>
+    <string name="card_reader_payment_update_available">Pembaruan untuk pembaca kartu tersedia</string>
+    <string name="card_reader_about_tap_to_pay">Tentang Ketuk untuk Bayar</string>
+    <string name="card_reader_tap_to_pay_header">KETUK UNTUK BAYAR</string>
+    <string name="card_reader_settings_header">PENGATURAN</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Tambahkan detail secara manual dengan email</string>
+    <string name="login_app_login_malformed_link">Kami tidak dapat memproses permintaan login aplikasi Anda</string>
     <string name="ai_product_name_copy_error">Error saat menyalin nama produk ke clipboard.</string>
     <string name="ai_product_name_copy_success">Nama produk disalin ke clipboard.</string>
     <string name="ai_product_name_copy_label">Nama produk dibuat oleh AI</string>
@@ -20,6 +71,7 @@ Language: id
     <string name="ai_product_name_sheet_generate_button">Minta tuliskan</string>
     <string name="ai_product_name_sheet_input_description">Ceritakan tentang produk dan keunikannya.</string>
     <string name="ai_product_name_sheet_subtitle">AI akan membuatkan Anda judul yang menarik</string>
+    <string name="ai_product_name_sheet_title">Nama produk</string>
     <string name="empty_review_filtered_list_message">Coba nonaktifkan penyaring belum dibaca untuk melihat semua ulasan produk</string>
     <string name="empty_review_filtered_list_title">Tidak ada ulasan produk belum dibaca</string>
     <string name="product_creation_ai_tone_selected_content_desc">Nada dipilih</string>
@@ -32,6 +84,7 @@ Language: id
     <string name="product_creation_ai_preview_details_section">Rincian</string>
     <string name="product_creation_ai_preview_description_section">Deskripsi produk</string>
     <string name="product_creation_ai_preview_name_section">Nama produk</string>
+    <string name="product_creation_ai_preview_subtitle">Anda bisa mengubah detail berikut kapan saja.</string>
     <string name="product_creation_ai_preview_title">Pratinjau</string>
     <string name="product_creation_ai_about_product_continue_button">Buat Info Produk</string>
     <string name="product_creation_ai_about_product_set_tone">Tentukan nada dan suara</string>
@@ -475,6 +528,7 @@ Language: id
     <string name="product_selector_popular_products_heading">Populer</string>
     <string name="jetpack_install_role_eligibility_learn_more">Pelajari lebih lanjut tentang peran dan izin</string>
     <string name="jetpack_install_role_eligibility_error_message">Sepertinya peran pengguna Anda tidak mengizinkan Anda menginstal Jetpack. \nHubungi administrator Anda untuk mendapatkan bantuan.</string>
+    <string name="card_reader_test_tap_to_pay">Coba Ketuk untuk Bayar</string>
     <string name="subscription_free_trial">Percobaan gratis</string>
     <string name="subscription_sign_up_fee">Biaya pendaftaran</string>
     <string name="subscription_expire">Kedaluwarsa setelah</string>
@@ -511,6 +565,8 @@ Language: id
     <string name="product_subscription_title">Langganan</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Pembaca kartu menerima pembayaran dengan chip serta secara mengetuk dan menggesek menggunakan kartu debit atau kartu kredit.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Terima pembayaran nirsentuh dengan aman langsung dari ponsel Anda. </string>
+    <string name="card_reader_tap_to_pay_description">Gunakan ponsel Anda untuk menerima pembayaran\nkartu. Coba sekarang.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Bagikan Feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Tidak dapat login karena pembuatan kata sandi aplikasi tidak disetujui.</string>
     <string name="login_site_credentials_fetching_site">Mengambil situs…</string>
     <string name="login_site_credentials_fetching_site_failed">Terjadi error saat mengambil situs web Anda.</string>
@@ -604,9 +660,6 @@ Language: id
     <string name="jetpack_benefits_fetching_status">Memuat Status Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Ada yang salah! Silakan coba lagi nanti.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Uji coba pembayaran</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Fitur Ketuk untuk Membayar di Android dapat ditemukan di\nMenu &gt; Pembayaran, atau Anda bisa memilih Terima Pembayaran dan\nmemilih Ketuk untuk Membayar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Gunakan kartu Anda sendiri untuk uji coba pembayaran lalu\nDana akan dikembalikan saat selesai.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Ketuk untuk Membayar sudah tersedia di ponsel Anda.\nPelanggan dapat menempelkan kartunya\nke ponsel Anda untuk membayar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
     <string name="card_reader_hub_actions_category_header">TINDAKAN</string>

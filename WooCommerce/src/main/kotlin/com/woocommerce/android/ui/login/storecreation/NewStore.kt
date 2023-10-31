@@ -34,6 +34,7 @@ class NewStore @Inject constructor() {
         data = NewStoreData()
     }
 
+    @Parcelize
     data class NewStoreData(
         val name: String? = null,
         val domain: String? = null,
@@ -42,12 +43,13 @@ class NewStore @Inject constructor() {
         val siteId: Long? = null,
         val planProductId: Int? = null,
         val planPathSlug: String? = null
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class Country(
         val name: String,
         val code: String,
-    )
+    ) : Parcelable
 
     @Parcelize
     data class ProfilerData(
