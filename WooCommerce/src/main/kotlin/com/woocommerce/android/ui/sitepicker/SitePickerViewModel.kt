@@ -336,7 +336,6 @@ class SitePickerViewModel @Inject constructor(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
                             siteUrl = url,
-                            allowBackNavigation = true
                         )
                     )
                 }
@@ -733,7 +732,6 @@ class SitePickerViewModel @Inject constructor(
         data class NavigateToAccountMismatchScreen(
             val primaryButton: AccountMismatchPrimaryButton,
             val siteUrl: String,
-            val allowBackNavigation: Boolean
         ) : SitePickerEvent()
     }
 
