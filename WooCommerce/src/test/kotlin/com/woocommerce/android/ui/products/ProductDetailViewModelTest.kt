@@ -11,6 +11,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
@@ -263,7 +264,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),
-                isBlazeEnabled = isBlazeEnabled
+                isBlazeEnabled = isBlazeEnabled,
+                blazeUrlsHelper = BlazeUrlsHelper(selectedSite),
             )
         )
 

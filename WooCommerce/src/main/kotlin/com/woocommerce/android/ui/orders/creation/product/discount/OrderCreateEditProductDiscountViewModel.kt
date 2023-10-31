@@ -41,7 +41,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     private val args =
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
-    val orderItem: MutableStateFlow<OrderCreationProduct> =
+    val productItem: MutableStateFlow<OrderCreationProduct> =
         savedStateHandle.getStateFlow(
             scope = this,
             initialValue = args.item.copyProduct(item = args.item.item.copy(total = args.item.item.pricePreDiscount)),
@@ -79,7 +79,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 priceAfterDiscount = getPriceAfterDiscount(),
                 calculatedPriceAfterDiscount = getCalculatedPriceAfterDiscount(),
                 productDetailsState = ProductDetailsState(
-                    imageUrl = orderItem.value.productInfo.imageUrl
+                    imageUrl = productItem.value.productInfo.imageUrl
                 )
             )
         }.toStateFlow(ViewState(currency, null))
@@ -98,7 +98,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
         val discountAmount: BigDecimal = when (type) {
             DiscountType.Percentage -> {
-                (orderItem.value.item.pricePreDiscount * discount).divide(
+                (productItem.value.item.pricePreDiscount * discount).divide(
                     PERCENTAGE_BASE,
                     PERCENTAGE_DIVISION_QUOTIENT_SCALE,
                     RoundingMode.HALF_UP
@@ -109,7 +109,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 discount
             }
         }
-        if (discountAmount > (orderItem.value.item.pricePreDiscount * orderItem.value.item.quantity.toBigDecimal())) {
+        if (
+            discountAmount > (productItem.value.item.pricePreDiscount * productItem.value.item.quantity.toBigDecimal())
+        ) {
             return DiscountAmountValidationState.Invalid(
                 resourceProvider.getString(R.string.order_creation_discount_too_big_error)
             )
@@ -122,11 +124,11 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
-        orderItem.updateAndGet {
+        productItem.updateAndGet {
             val subtotal = it.item.subtotal
 
             val total = subtotal - getDiscountAmount()
-            it.copyProduct(item = it.item.copy(total = total))
+            it.copyProduct(it.item.copy(total = total))
         }.also {
             triggerEvent(ExitWithResult(data = it))
             tracker.track(
@@ -145,8 +147,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountAmount = discount.value ?: BigDecimal.ZERO
         return when (discountType.value) {
             DiscountType.Percentage -> {
-                orderItem.value.item.subtotal * discountAmount / PERCENTAGE_BASE
+                productItem.value.item.subtotal * discountAmount / PERCENTAGE_BASE
             }
+
             is DiscountType.Amount -> {
                 discountAmount
             }
@@ -168,7 +171,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.item.pricePreDiscount * orderItem.value.item.quantity.toBigDecimal()
+        val pricePreDiscount = productItem.value.item.pricePreDiscount * productItem.value.item.quantity.toBigDecimal()
         val discountPercentage = if (pricePreDiscount > BigDecimal.ZERO) {
             PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
                 pricePreDiscount,
@@ -182,19 +185,19 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountAmount(discountPercentage: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.item.pricePreDiscount
+        val pricePreDiscount = productItem.value.item.pricePreDiscount
         val discountAmount = pricePreDiscount
             .times(discountPercentage)
             .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
 
-        return (discountAmount * orderItem.value.item.quantity.toBigDecimal())
+        return (discountAmount * productItem.value.item.quantity.toBigDecimal())
             .setScale(2, RoundingMode.HALF_UP)
             .stripTrailingZeros()
     }
 
     fun onDiscountRemoveClicked() {
-        orderItem.updateAndGet {
-            it.copyProduct(item = it.item.copy(total = it.item.subtotal))
+        productItem.updateAndGet {
+            it.copyProduct(it.item.copy(total = it.item.subtotal))
         }.also {
             triggerEvent(ExitWithResult(data = it))
             tracker.track(ORDER_PRODUCT_DISCOUNT_REMOVE)
@@ -202,7 +205,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun getPriceAfterDiscount(): BigDecimal {
-        return if (discount.value == null) BigDecimal.ZERO else orderItem.value.item.subtotal - getDiscountAmount()
+        return if (discount.value == null) BigDecimal.ZERO else productItem.value.item.subtotal - getDiscountAmount()
             .setScale(2, RoundingMode.HALF_UP)
     }
 

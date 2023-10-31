@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 15:54:04+0000
+Translation-Revision-Date: 2023-10-26 09:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="previous_order">Vorige bestelling</string>
+    <string name="next_order">Volgende bestelling</string>
+    <string name="blaze_campaign_details_title">Campagnedetails</string>
+    <string name="blaze_campaign_list_title">Blaze-campagnes</string>
+    <string name="blaze_campaign_status_canceled">Geannuleerd</string>
+    <string name="blaze_campaign_status_scheduled">Gepland</string>
+    <string name="product_creation_package_photo_keywords_info">Pas je tekst aan: deselecteer scans die je niet nodig hebt of klik erop om ze te bewerken</string>
+    <string name="product_creation_package_photo_keywords_section">Trefwoorden</string>
+    <string name="ai_product_creation_photo_button">Pakketfoto gebruiken (optioneel)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Kies Tap to Pay uit de opties voor Betalingen ontvangen in\nBestelgegevens of Menu &gt; Betalingen.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probeer een %s-betaling met je betaal- of creditcard.\nJe zal het terugbetaald krijgen zodra je klaar bent.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Het is eenvoudig, veilig en privé.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accepteer alle typen fysieke betalingen, direct\nop je telefoon. Geen extra hardware nodig.</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_campaign_status_clicks">Klikken</string>
+    <string name="blaze_campaign_status_impressions">Impressies</string>
+    <string name="blaze_campaign_status_rejected">Afgewezen</string>
+    <string name="blaze_campaign_status_completed">Voltooid</string>
+    <string name="blaze_campaign_status_active">Actief</string>
+    <string name="blaze_campaign_status_in_moderation">Wordt beheerd</string>
+    <string name="blaze_campaign_show_all_button">Alles tonen</string>
+    <string name="blaze_campaign_create_campaign_button">Campagne aanmaken</string>
+    <string name="blaze_campaign_subtitle">Verhoog de zichtbaarheid en verkoop snel je producten.</string>
+    <string name="blaze_campaign_title">Blaze-campagne</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Het pictogram voor contactloos betalen is een handelsmerk dat gebruikt wordt met toestemming van en dat eigendom is van EMVCo, LLC.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. Nadat je het vinkje ‘Gereed’ ziet, verwerkt de winkel de betaling en is de transactie voltooid.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Je klant houdt hun kaart horizontaal tegen de bovenkant van je telefoon, over het pictogram voor contactloos betalen.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Bied je telefoon aan de klant aan.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tik op ‘Betalingen ontvangen’ en kies ‘Tap to Pay’.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">een betaling innen</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Maak een bestelling aan</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s of %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Zo werkt het</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Meer informatie over kaartlezers</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Overweeg een kaartlezer te kopen waar een pincode op kan worden ingevoerd om betalingen boven deze limiet te kunnen accepteren.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">We ondersteunen geen pincode-invoer met Tap to Pay op Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">In %1$s is voor bepaalde kaarten een pincode vereist voor contactloze transacties boven %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Belangrijke informatie</string>
+    <string name="card_reader_tap_to_pay_about_description">Met Tap to Pay kan je verschillende soorten contactloze betalingen accepteren, van fysieke betaal- en creditkaarten tot digitale wallets, zonder een fysieke kaartlezer aan te hoeven schaffen.</string>
+    <string name="card_reader_tap_to_pay_about_header">Wat is Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_title">Over Tap to Pay</string>
+    <string name="ai_feedback_form_negative_button">Negatieve feedback</string>
+    <string name="ai_feedback_form_positive_button">Positieve feedback</string>
+    <string name="ai_feedback_form_message">Is het resultaat nuttig?</string>
+    <string name="product_creation_ai_preview_short_description_section">Korte productomschrijving</string>
+    <string name="card_reader_payment_update_available">Er is een update beschikbaar voor de kaartlezer</string>
+    <string name="card_reader_about_tap_to_pay">Over Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">INSTELLINGEN</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Details handmatig toevoegen met behulp van e-mail</string>
+    <string name="login_app_login_malformed_link">We konden de loginaanvraag van je app niet verwerken</string>
     <string name="ai_product_name_copy_error">Fout bij kopiëren naar klembord.</string>
     <string name="ai_product_name_copy_success">Productnaam gekopieerd naar klembord.</string>
     <string name="ai_product_name_copy_label">Productnaam gegenereerd door AI</string>
@@ -20,6 +71,7 @@ Language: nl
     <string name="ai_product_name_sheet_generate_button">Schrijf het voor mij</string>
     <string name="ai_product_name_sheet_input_description">Vertel ons wat jouw product is en wat dit uniek maakt!</string>
     <string name="ai_product_name_sheet_subtitle">Laat AI pakkende titels voor je genereren</string>
+    <string name="ai_product_name_sheet_title">Productnaam</string>
     <string name="empty_review_filtered_list_message">Probeer om het ‘ongelezen’ filter uit te schakelen om al je productbeoordelingen te bekijken</string>
     <string name="empty_review_filtered_list_title">Geen ongelezen productbeoordelingen</string>
     <string name="product_creation_ai_tone_selected_content_desc">Toon geselecteerd</string>
@@ -32,6 +84,7 @@ Language: nl
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_description_section">Productbeschrijving</string>
     <string name="product_creation_ai_preview_name_section">Productnaam</string>
+    <string name="product_creation_ai_preview_subtitle">Je kan de onderstaande gegevens later altijd wijzigen.</string>
     <string name="product_creation_ai_preview_title">Voorbeeld</string>
     <string name="product_creation_ai_about_product_continue_button">Productgegevens aanmaken</string>
     <string name="product_creation_ai_about_product_set_tone">Toon instellen</string>
@@ -475,6 +528,7 @@ Language: nl
     <string name="product_selector_popular_products_heading">Populair</string>
     <string name="jetpack_install_role_eligibility_learn_more">Meer informatie over rollen en machtigingen</string>
     <string name="jetpack_install_role_eligibility_error_message">Het lijkt erop dat je gebruikersrol niet gemachtigd is om Jetpack te installeren. \nNeem contact op met je beheerder voor ondersteuning.</string>
+    <string name="card_reader_test_tap_to_pay">Tap to Pay uitproberen</string>
     <string name="subscription_free_trial">Gratis proefabonnement</string>
     <string name="subscription_sign_up_fee">Aanmeldkosten</string>
     <string name="subscription_expire">Verlopen na</string>
@@ -511,6 +565,8 @@ Language: nl
     <string name="product_subscription_title">Abonnement</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">De kaartlezer accepteert tik-, chip- en veegbetalingen met debit-en creditcards.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accepteert contactloze betalingen veilig en rechtstreeks vanaf je telefoon.</string>
+    <string name="card_reader_tap_to_pay_description">Gebruik je telefoon om kaartbetalingen\nte accepteren Probeer het nu.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Deel feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Inloggen mislukt omdat het maken van een applicatiewachtwoord niet goedgekeurd is.</string>
     <string name="login_site_credentials_fetching_site">Website ophalen…</string>
     <string name="login_site_credentials_fetching_site_failed">Er heeft zich een fout voorgedaan tijdens het ophalen van je website</string>
@@ -604,9 +660,6 @@ Language: nl
     <string name="jetpack_benefits_fetching_status">Jetpack-status ophalen</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Er is iets fout gegaan. Probeer later opnieuw.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Probeer een betaling</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Op Android kun je Tap to Pay vinden bij\nMenu &gt; Betalingen, of Betalingen innen en\nKies Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Probeer een betaling door je betaalpas te kiezen en\nje zult het terugbetaald krijgen zodra je klaar bent.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Je telefoon is gereed voor Tap to Pay.\nDe klant kan met hun pas\njouw telefoon aantikken om te betalen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
     <string name="card_reader_hub_actions_category_header">ACTIES</string>

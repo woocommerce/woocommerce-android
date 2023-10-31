@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 11:54:04+0000
+Translation-Revision-Date: 2023-10-25 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="previous_order">Pedido anterior</string>
+    <string name="next_order">Siguiente pedido</string>
+    <string name="blaze_campaign_details_title">Detalles de la campaña</string>
+    <string name="blaze_campaign_list_title">Campañas de Blaze</string>
+    <string name="blaze_campaign_status_canceled">Cancelada</string>
+    <string name="blaze_campaign_status_scheduled">Programada</string>
+    <string name="product_creation_package_photo_keywords_info">Ajusta el texto: desmarca las exploraciones que no necesites o toca para editarlas</string>
+    <string name="product_creation_package_photo_keywords_section">Palabras clave</string>
+    <string name="ai_product_creation_photo_button">Usar foto del paquete (opcional)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Elige la opción Tap to Pay en las opciones de Recibir pagos en\nDetalles del pedido o Menú &gt; Pagos.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Haz un pago de %s con tu tarjeta de débito o crédito.\nEl pago se te reembolsará cuando hayas terminado.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Es fácil, seguro y privado.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Acepta todo tipo de pagos en persona, directamente\nen tu teléfono. No se necesita ningún hardware adicional.</string>
+    <string name="blaze_campaign_status_budget">Presupuesto</string>
+    <string name="blaze_campaign_status_clicks">Clics</string>
+    <string name="blaze_campaign_status_impressions">Impresiones</string>
+    <string name="blaze_campaign_status_rejected">Rechazada</string>
+    <string name="blaze_campaign_status_completed">Completada</string>
+    <string name="blaze_campaign_status_active">Activa</string>
+    <string name="blaze_campaign_status_in_moderation">En moderación</string>
+    <string name="blaze_campaign_show_all_button">Mostrar todos</string>
+    <string name="blaze_campaign_create_campaign_button">Crear campaña</string>
+    <string name="blaze_campaign_subtitle">Aumenta la visibilidad y vende tus productos rápidamente.</string>
+    <string name="blaze_campaign_title">Campaña de Blaze</string>
+    <string name="card_reader_tap_to_pay_about_copyright">El símbolo del pago sin contacto es una marca registrada propiedad de EMVCo, LLC y se utiliza con su autorización.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. Cuando aparezca la marca «Hecho», la tienda procesará el pago y la transacción se habrá completado.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Tu cliente sostiene su tarjeta horizontalmente en la parte superior de tu teléfono, sobre el símbolo sin contacto.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Presenta tu teléfono al cliente.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Toca en «Cobrar pago» y elige «Tap to Pay».</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">recibir un pago</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Crear un pedido</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s o %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Cómo funciona</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Más información sobre lectores de tarjetas</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Para aceptar pagos por encima de este límite, considera la posibilidad de adquirir un lector de tarjetas que acepte entrada de PIN.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">No aceptamos entrada de PIN con Tap to Pay para Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">En %1$s, es necesario el PIN para pagar con algunas tarjetas en transacciones sin contacto superiores a %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Información importante</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay te permite aceptar todo tipo de pagos sin contacto (desde tarjetas físicas de débito y crédito, hasta carteras digitales) sin necesidad de adquirir un lector físico de tarjetas.</string>
+    <string name="card_reader_tap_to_pay_about_header">¿Qué es Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_title">Acerca de Tap To Pay</string>
+    <string name="ai_feedback_form_negative_button">Comentarios negativos</string>
+    <string name="ai_feedback_form_positive_button">Comentarios positivos</string>
+    <string name="ai_feedback_form_message">¿Te ha resultado útil?</string>
+    <string name="product_creation_ai_preview_short_description_section">Descripción corta del producto</string>
+    <string name="card_reader_payment_update_available">Hay disponible una actualización para el lector de tarjetas</string>
+    <string name="card_reader_about_tap_to_pay">Acerca de Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">AJUSTES</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Añadir detalles de forma manual mediante el correo electrónico</string>
+    <string name="login_app_login_malformed_link">No hemos podido procesar tu solicitud de acceso a la aplicación</string>
     <string name="ai_product_name_copy_error">Se ha producido un error al copiar el nombre del producto en el portapapeles.</string>
     <string name="ai_product_name_copy_success">Nombre del producto copiado en el portapapeles.</string>
     <string name="ai_product_name_copy_label">Nombre del producto generado por la IA</string>
@@ -20,6 +71,7 @@ Language: es
     <string name="ai_product_name_sheet_generate_button">Escríbelo por mí</string>
     <string name="ai_product_name_sheet_input_description">Cuéntanos en qué consiste tu producto y qué lo hace único.</string>
     <string name="ai_product_name_sheet_subtitle">Deja que la IA genere títulos cautivadores por ti</string>
+    <string name="ai_product_name_sheet_title">Nombre del producto</string>
     <string name="empty_review_filtered_list_message">Prueba a desactivar el filtro de no leídos para ver todas las reseñas de tus productos</string>
     <string name="empty_review_filtered_list_title">No hay reseñas de productos no leídas</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tono seleccionado</string>
@@ -32,6 +84,7 @@ Language: es
     <string name="product_creation_ai_preview_details_section">Detalles</string>
     <string name="product_creation_ai_preview_description_section">Descripción del producto</string>
     <string name="product_creation_ai_preview_name_section">Nombre del producto</string>
+    <string name="product_creation_ai_preview_subtitle">Siempre puedes cambiar los detalles de abajo más adelante.</string>
     <string name="product_creation_ai_preview_title">Vista previa</string>
     <string name="product_creation_ai_about_product_continue_button">Crear detalles del producto</string>
     <string name="product_creation_ai_about_product_set_tone">Establecer tono y voz</string>
@@ -475,6 +528,7 @@ Language: es
     <string name="product_selector_popular_products_heading">Populares</string>
     <string name="jetpack_install_role_eligibility_learn_more">Más información sobre los perfiles y los permisos</string>
     <string name="jetpack_install_role_eligibility_error_message">Parece que tu perfil no permite instalar Jetpack. \nPonte en contacto con el administrador para obtener ayuda.</string>
+    <string name="card_reader_test_tap_to_pay">Prueba Tap to Pay</string>
     <string name="subscription_free_trial">Prueba gratuita</string>
     <string name="subscription_sign_up_fee">Cuota de registro</string>
     <string name="subscription_expire">Caduca después de</string>
@@ -511,6 +565,8 @@ Language: es
     <string name="product_subscription_title">Suscripción</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">El lector de tarjetas acepta pagos con tarjetas de débito y crédito con toque, chip y banda magnética.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Acepta pagos sin contacto de forma segura directamente desde tu teléfono.</string>
+    <string name="card_reader_tap_to_pay_description">Utiliza tu teléfono para aceptar pagos con\ntarjeta. Pruébalo ahora.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Compartir comentarios</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">No se puede acceder porque la creación de la contraseña de la aplicación no está aprobada.</string>
     <string name="login_site_credentials_fetching_site">Cargando sitio…</string>
     <string name="login_site_credentials_fetching_site_failed">Se ha producido un error al cargar tu sitio web</string>
@@ -604,9 +660,6 @@ Language: es
     <string name="jetpack_benefits_fetching_status">Obtención del estado de Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Se ha producido un error. Inténtalo de nuevo más tarde.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Intentar un pago</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Puedes encontrar Tocar para pagar en Android en\nMenú &gt; Pagos, o Recopilar pago y\nelegir Tocar para pagar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Intenta realizar un pago con la tarjeta y\nse te reembolsará cuando hayas terminado.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Tu teléfono está listo para Tocar para pagar.\nTu cliente puede tocar su tarjeta\nen su teléfono para pagar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Recibe pagos con tarjeta\ncon tu teléfono</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tocar para pagar</string>
     <string name="card_reader_hub_actions_category_header">ACCIONES</string>

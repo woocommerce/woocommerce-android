@@ -23,6 +23,7 @@ interface MainNavigationRouter {
 
     fun showOrderDetailWithSharedTransition(
         orderId: Long,
+        allOrderIds: List<Long>,
         remoteNoteId: Long = 0,
         sharedView: View
     )

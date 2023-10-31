@@ -38,7 +38,7 @@ class SignUpViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val appPrefs: AppPrefsWrapper,
     private val signUpCredentialsValidator: SignUpCredentialsValidator,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     lateinit var nextStep: NextStep
 
@@ -138,6 +138,7 @@ class SignUpViewModel @Inject constructor(
                     }
 
                     AccountCreationSuccess -> {
+                        appPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
                         analyticsTrackerWrapper.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
                         _viewState.value = _viewState.value?.copy(isLoading = false)
                         if (nextStep == NextStep.STORE_CREATION) {

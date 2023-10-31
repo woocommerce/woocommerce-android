@@ -72,8 +72,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var savedState: SavedStateHandle
     protected lateinit var orderCreationProductMapper: OrderCreationProductMapper
     protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
-    protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
-    protected lateinit var autoSyncOrder: AutoSyncOrder
+    private lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
+    private lateinit var autoSyncOrder: AutoSyncOrder
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
@@ -142,7 +142,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         @Suppress("UNCHECKED_CAST")
         orderCreationProductMapper = mock {
-            onBlocking { toOrderProducts(any()) } doAnswer { invocationOnMock ->
+            onBlocking { toOrderProducts(any(), eq(null)) } doAnswer { invocationOnMock ->
                 val args = invocationOnMock.arguments
                 (args.first() as? List<Order.Item>)?.let { list ->
                     if (list.isEmpty()) {
@@ -164,6 +164,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on {
                 getString(R.string.order_creation_barcode_scanning_scanning_failed)
             } doReturn "Scanning failed. Please try again later"
+            on { getString(R.string.order_creation_set_tax_rate) } doReturn "Set New Tax Rate"
         }
         productRestrictions = mock()
         selectedSite = mock()
@@ -2225,7 +2226,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             stockQuantity = 0.0,
             stockStatus = ProductStockStatus.InStock,
             productType = ProductType.SIMPLE,
-            isConfigurable = false
+            isConfigurable = false,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$30",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            hasDiscount = true
         )
         return OrderCreationProduct.ProductItem(
             item = orderItem,

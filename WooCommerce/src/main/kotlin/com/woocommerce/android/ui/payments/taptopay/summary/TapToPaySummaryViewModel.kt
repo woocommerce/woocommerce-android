@@ -10,9 +10,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -21,7 +24,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
-import java.math.BigDecimal
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,11 +34,20 @@ class TapToPaySummaryViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
+    private val currencyFormatter: CurrencyFormatter,
+    wooStore: WooCommerceStore,
+    cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: TapToPaySummaryFragmentArgs by savedState.navArgs()
 
-    private val _viewState = MutableLiveData(UiState())
+    private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
+        wooStore.getStoreCountryCode(selectedSite.get())
+    ) as CardReaderConfigForSupportedCountry
+
+    private val _viewState = MutableLiveData(
+        UiState(messageWithAmount = countryConfig.buildPaymentMessage())
+    )
     val viewState: LiveData<UiState> = _viewState
 
     init {
@@ -53,10 +65,10 @@ class TapToPaySummaryViewModel @Inject constructor(
 
             is TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment -> {
                 launch {
-                    _viewState.value = UiState(isProgressVisible = true)
+                    _viewState.value = _viewState.value!!.copy(isProgressVisible = true)
                     triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_refunding_payment))
                     autoRefundTestPayment(flow.order)
-                    _viewState.value = UiState(isProgressVisible = false)
+                    _viewState.value = _viewState.value!!.copy(isProgressVisible = false)
                 }
                 Unit
             }
@@ -65,9 +77,9 @@ class TapToPaySummaryViewModel @Inject constructor(
     fun onTryPaymentClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED)
         launch {
-            _viewState.value = UiState(isProgressVisible = true)
+            _viewState.value = _viewState.value!!.copy(isProgressVisible = true)
             val result = orderCreateEditRepository.createSimplePaymentOrder(
-                TEST_ORDER_AMOUNT,
+                countryConfig.minimumAllowedChargeAmount,
                 customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note)
             )
             result.fold(
@@ -85,12 +97,16 @@ class TapToPaySummaryViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error))
                 }
             )
-            _viewState.value = UiState(isProgressVisible = false)
+            _viewState.value = _viewState.value!!.copy(isProgressVisible = false)
         }
     }
 
     fun onBackClicked() {
         triggerEvent(Event.Exit)
+    }
+
+    fun onLearnMoreClicked() {
+        triggerEvent(NavigateToUrlInGenericWebView(AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY))
     }
 
     private suspend fun autoRefundTestPayment(order: Order) {
@@ -134,12 +150,20 @@ class TapToPaySummaryViewModel @Inject constructor(
         )
     }
 
-    fun onLearnMoreClicked() {
-        triggerEvent(NavigateToUrlInGenericWebView(AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY))
+    private fun CardReaderConfigForSupportedCountry.buildPaymentMessage(): String {
+        val amount = currencyFormatter.formatCurrency(
+            rawValue = minimumAllowedChargeAmount.toPlainString(),
+            currencyCode = currency,
+        )
+        return resourceProvider.getString(
+            R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount,
+            amount,
+        )
     }
 
     data class UiState(
-        val isProgressVisible: Boolean = false
+        val isProgressVisible: Boolean = false,
+        val messageWithAmount: String
     )
 
     data class StartTryPaymentFlow(val order: Order) : Event()
@@ -153,8 +177,4 @@ class TapToPaySummaryViewModel @Inject constructor(
     ) : Event()
 
     data class NavigateToUrlInGenericWebView(val url: String) : Event()
-
-    companion object {
-        private val TEST_ORDER_AMOUNT = BigDecimal.valueOf(0.5)
-    }
 }
