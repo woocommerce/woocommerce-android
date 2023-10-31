@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.payments.customamounts
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.orders.creation.CustomAmountUIModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -59,5 +61,21 @@ class CustomAmountsDialogViewModeltest : BaseUnitTest() {
         )
 
         verify(tracker).track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
+    }
+
+    @Test
+    fun `when custom amount dialog is opened for editing, then proper event is tracked`() {
+        CustomAmountsDialogViewModel(
+            CustomAmountsDialogArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = ""
+                )
+            ).toSavedStateHandle(),
+            tracker
+        )
+
+        verify(tracker).track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
     }
 }
