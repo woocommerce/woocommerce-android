@@ -51,7 +51,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         OrderCreateEditNavigationTarget()
 
     data class EditDiscount(
-        val item: Order.Item,
+        val item: OrderCreationProduct,
         val currency: String,
     ) : OrderCreateEditNavigationTarget()
 }

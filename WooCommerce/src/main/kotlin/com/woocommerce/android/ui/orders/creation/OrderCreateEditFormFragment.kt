@@ -127,7 +127,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleProductDetailsEditResult() {
-        handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
+        handleResult<OrderCreationProduct>(KEY_PRODUCT_DISCOUNT_RESULT) {
             viewModel.onProductDiscountEditResult(it)
         }
     }
@@ -500,7 +500,7 @@ class OrderCreateEditFormFragment :
 
     private fun bindProductsSection(
         productsSection: OrderCreateEditSectionView,
-        products: List<OrderCreationProduct>?
+        products: LiveData<List<OrderCreationProduct>>
     ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.value.isNullOrEmpty() && isCustomAmountsFeatureFlagEnabled()) {
@@ -544,7 +544,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<ProductUIModel>>) {
+    private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<OrderCreationProduct>>) {
         setContent {
             val state = items.observeAsState(emptyList())
             WooTheme {
@@ -554,7 +554,7 @@ class OrderCreateEditFormFragment :
                             viewModel.viewStateData.liveData.observeAsState(),
                             item,
                             onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
-                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item.item) },
+                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
                             onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item.item.itemId) },
                             onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item.item.itemId) },
                         )

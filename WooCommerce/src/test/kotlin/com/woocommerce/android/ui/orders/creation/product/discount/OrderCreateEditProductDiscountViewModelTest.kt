@@ -27,7 +27,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -410,7 +409,13 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             stockQuantity = 0.0,
             stockStatus = ProductStockStatus.InStock,
             productType = ProductType.SIMPLE,
-            isConfigurable = false
+            isConfigurable = false,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$30",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            hasDiscount = true
         )
         return OrderCreationProduct.ProductItem(
             item = orderItem,

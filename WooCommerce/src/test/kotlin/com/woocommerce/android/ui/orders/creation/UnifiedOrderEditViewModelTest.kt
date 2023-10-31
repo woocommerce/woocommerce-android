@@ -47,7 +47,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -143,7 +142,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         @Suppress("UNCHECKED_CAST")
         orderCreationProductMapper = mock {
-            onBlocking { toOrderProducts(any()) } doAnswer { invocationOnMock ->
+            onBlocking { toOrderProducts(any(), eq(null)) } doAnswer { invocationOnMock ->
                 val args = invocationOnMock.arguments
                 (args.first() as? List<Order.Item>)?.let { list ->
                     if (list.isEmpty()) {
@@ -2227,7 +2226,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             stockQuantity = 0.0,
             stockStatus = ProductStockStatus.InStock,
             productType = ProductType.SIMPLE,
-            isConfigurable = false
+            isConfigurable = false,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$30",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            hasDiscount = true
         )
         return OrderCreationProduct.ProductItem(
             item = orderItem,
