@@ -3760,4 +3760,15 @@
     <string name="default_product_title">Product %s</string>
     <string name="product_configuration_title">Configuration</string>
     <string name="save_configuration">Save configuration</string>
+    <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
+    <string name="configuration_issues">Configuration issues</string>
+    <string name="configuration_quantity_item">%d item</string>
+    <string name="configuration_quantity_item_plural">%d items</string>
+    <string name="configuration_quantity_between"> between %1$s and %2$s items </string>
+    <string name="configuration_quantity_less_than"> less than %1$s items </string>
+    <string name="configuration_quantity_more_than"> more than %1$s item </string>
+    <string name="configuration_quantity_more_than_plural"> more than %1$s items </string>
+    <string name="configuration_quantity_rule_issue"> Please select %1$s </string>
+    <string name="configuration_quantity_items_selected"> %1$s item selected </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s items selected </string>
 </resources>

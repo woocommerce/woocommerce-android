@@ -38,7 +38,7 @@ class GetBundledProducts @Inject constructor(
                             quantityMin = entity.quantityMin,
                             quantityMax = entity.quantityMax,
                             isOptional = entity.isOptional,
-                            quantityDefault = entity.quantityDefault ?: 0
+                            quantityDefault = entity.quantityDefault ?: 0f
                         )
                     )
                 }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.configuration
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -67,31 +69,44 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     BackHandler(onBack = viewModel::onCancel)
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.product_configuration_title)) },
-            navigationIcon = {
-                IconButton(viewModel::onCancel) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            elevation = 0.dp,
-        )
+        Column {
+            val issues = (viewState as? ProductConfigurationViewModel.ViewState.DisplayConfiguration)
+                ?.configurationIssues ?: emptyList()
+
+            AnimatedVisibility(visible = issues.isEmpty().not()) {
+                ConfigurationIssues(
+                    issues = issues,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.product_configuration_title)) },
+                navigationIcon = {
+                    IconButton(viewModel::onCancel) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(id = R.string.close)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                elevation = 0.dp,
+            )
+        }
     }) { padding ->
         when (val state = viewState) {
             is ProductConfigurationViewModel.ViewState.Error -> Text(text = state.message)
             is ProductConfigurationViewModel.ViewState.Loading -> Text(text = "Loading")
             is ProductConfigurationViewModel.ViewState.DisplayConfiguration -> {
                 ProductConfigurationScreen(
-                    productRules = state.productRules,
+                    productRules = state.productConfiguration.rules,
                     productConfiguration = state.productConfiguration,
                     productsInfo = state.productsInfo,
                     onUpdateChildrenConfiguration = viewModel::onUpdateChildrenConfiguration,
                     onSaveConfigurationClick = viewModel::onSaveConfiguration,
-                    modifier = Modifier.padding(padding)
+                    modifier = Modifier.padding(padding),
+                    configurationIssues = state.configurationIssues
                 )
             }
         }
@@ -105,12 +120,12 @@ fun ProductConfigurationScreen(
     productsInfo: Map<Long, ProductInfo>,
     onUpdateChildrenConfiguration: (Long, String, String) -> Unit,
     onSaveConfigurationClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    configurationIssues: List<String> = emptyList()
 ) {
     Surface {
         Column(modifier = modifier) {
             LazyColumn(Modifier.weight(1f)) {
-                productRules.productType
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
                 items(configurationItems) { childMapEntry ->
                     val item = productsInfo.getOrDefault(
@@ -127,29 +142,40 @@ fun ProductConfigurationScreen(
                     val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
 
                     if (hasQuantityAndOptionalRules) {
+                        val quantityRule = productRules.childrenRules
+                            ?.get(childMapEntry.key)
+                            ?.get(QuantityRule.KEY) as? QuantityRule
+
                         OptionalQuantityProductItem(
                             title = item.title,
                             imageUrl = item.imageUrl,
                             info = null,
-                            quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
+                            quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                             onQuantityChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                             },
                             isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                             onSwitchChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                            }
+                            },
+                            minValue = quantityRule?.quantityMin,
+                            maxValue = quantityRule?.quantityMax
                         )
                     } else {
                         if (hasQuantityRule) {
+                            val quantityRule = productRules.childrenRules
+                                ?.get(childMapEntry.key)
+                                ?.get(QuantityRule.KEY) as? QuantityRule
                             QuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                                }
+                                },
+                                minValue = quantityRule?.quantityMin,
+                                maxValue = quantityRule?.quantityMax
                             )
                         }
                         if (hasOptionalRule) {
@@ -173,6 +199,7 @@ fun ProductConfigurationScreen(
             WCColoredButton(
                 onClick = onSaveConfigurationClick,
                 text = stringResource(id = R.string.save_configuration),
+                enabled = configurationIssues.isEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_100))
@@ -186,11 +213,13 @@ fun OptionalQuantityProductItem(
     title: String,
     imageUrl: String?,
     info: String?,
-    quantity: Int,
-    onQuantityChanged: (Int) -> Unit,
+    quantity: Float,
+    onQuantityChanged: (Float) -> Unit,
     isIncluded: Boolean,
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    maxValue: Float? = null,
+    minValue: Float? = null
 ) {
     ConfigurableListItem(
         title = title,
@@ -209,8 +238,8 @@ fun OptionalQuantityProductItem(
                 value = quantity,
                 onStepUp = { value -> onQuantityChanged(value) },
                 onStepDown = { value -> onQuantityChanged(value) },
-                isStepDownEnabled = isIncluded,
-                isStepUpEnabled = isIncluded
+                isStepDownEnabled = isIncluded && quantity > (minValue ?: Float.MIN_VALUE),
+                isStepUpEnabled = isIncluded && quantity < (maxValue ?: Float.MAX_VALUE)
             )
         }
     )
@@ -221,9 +250,11 @@ fun QuantityProductItem(
     title: String,
     imageUrl: String?,
     info: String?,
-    quantity: Int,
-    onQuantityChanged: (Int) -> Unit,
+    quantity: Float,
+    onQuantityChanged: (Float) -> Unit,
     modifier: Modifier = Modifier,
+    maxValue: Float? = null,
+    minValue: Float? = null
 ) {
     ConfigurableListItem(
         title = title,
@@ -234,7 +265,9 @@ fun QuantityProductItem(
         Stepper(
             value = quantity,
             onStepUp = { value -> onQuantityChanged(value) },
-            onStepDown = { value -> onQuantityChanged(value) }
+            onStepDown = { value -> onQuantityChanged(value) },
+            isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
+            isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE)
         )
     }
 }
@@ -247,7 +280,7 @@ fun QuantityProductItemPreview() {
             title = "This is an optional item with a very very very long title that should wrap into two columns",
             imageUrl = null,
             info = null,
-            quantity = 1,
+            quantity = 1f,
             onQuantityChanged = {}
         )
     }
@@ -449,9 +482,9 @@ fun OrderProductItemWithoutInfoPreview() {
 
 @Composable
 fun Stepper(
-    value: Int,
-    onStepUp: (Int) -> Unit,
-    onStepDown: (Int) -> Unit,
+    value: Float,
+    onStepUp: (Float) -> Unit,
+    onStepDown: (Float) -> Unit,
     modifier: Modifier = Modifier,
     isStepDownEnabled: Boolean = true,
     isStepUpEnabled: Boolean = true,
@@ -484,14 +517,15 @@ fun Stepper(
             Icon(
                 painter = painterResource(id = R.drawable.ic_gridicons_minus),
                 contentDescription = stringResource(
-                    id = R.string.order_creation_change_product_quantity,
+                    id = R.string.order_configuration_change_product_quantity,
                     value,
-                    value - 1
+                    value - 1f
                 )
             )
         }
+
         BasicTextField(
-            value = value.toString(),
+            value = value.formatToString(),
             readOnly = true,
             onValueChange = {},
             singleLine = true,
@@ -519,9 +553,9 @@ fun Stepper(
             Icon(
                 painter = painterResource(id = R.drawable.ic_add),
                 contentDescription = stringResource(
-                    id = R.string.order_creation_change_product_quantity,
+                    id = R.string.order_configuration_change_product_quantity,
                     value,
-                    value + 1
+                    value + 1f
                 )
             )
         }
@@ -531,7 +565,7 @@ fun Stepper(
 @Preview
 @Composable
 fun StepperPreview() {
-    var value: Int by rememberSaveable { mutableStateOf(100) }
+    var value: Float by rememberSaveable { mutableStateOf(100f) }
     WooThemeWithBackground {
         Stepper(
             value = value,
@@ -539,5 +573,34 @@ fun StepperPreview() {
             onStepUp = { newValue -> value = newValue },
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+@Composable
+fun ConfigurationIssues(
+    issues: List<String>,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .background(colorResource(id = R.color.woo_blue_5))
+            .padding(start = 18.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_info_outline_20dp),
+            contentDescription = stringResource(id = R.string.configuration_issues),
+            tint = colorResource(id = R.color.blaze_blue_60)
+        )
+        LazyColumn(modifier = Modifier.padding(start = 8.dp)) {
+            items(issues) { issue -> Text(text = " • $issue", color = MaterialTheme.colors.onSurface) }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ConfigurationIssuesPreview() {
+    WooThemeWithBackground {
+        ConfigurationIssues(listOf("Need to select 2 items", "Caipi -> please choose product options"))
     }
 }

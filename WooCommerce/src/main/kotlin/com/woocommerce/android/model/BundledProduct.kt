@@ -18,8 +18,8 @@ data class BundledProduct(
 
 @Parcelize
 data class BundleProductRules(
-    val quantityMin: Long? = null,
-    val quantityMax: Long? = null,
+    val quantityMin: Float? = null,
+    val quantityMax: Float? = null,
     val isOptional: Boolean = false,
-    val quantityDefault: Long = 0
+    val quantityDefault: Float = 0f
 ) : Parcelable
