@@ -9,11 +9,16 @@ UI.user_error!('Please run fastlane via `bundle exec`') unless FastlaneCore::Hel
 # Constants
 ########################################################################
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
+BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'build.gradle')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 ORIGINALS_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
+RELEASE_NOTES_SOURCE_PATH = File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt')
 RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
-MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+# The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
+# add `PROJECT_ROOT_FOLDER` to the beginning of this path
+RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
+MAIN_STRINGS_PATH = File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH, 'values', 'strings.xml')
 VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
 # The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
 PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
@@ -61,10 +66,7 @@ VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(v
 # Environment
 ########################################################################
 Dotenv.load('~/.wcandroid-env.default')
-ENV.fetch(GHHELPER_REPO = 'woocommerce/woocommerce-android', nil)
-ENV['PROJECT_NAME'] = 'WooCommerce'
-ENV['PROJECT_ROOT_FOLDER'] = './'
-ENV['FL_RELEASE_TOOLKIT_DEFAULT_BRANCH'] = 'trunk'
+GHHELPER_REPO = 'woocommerce/woocommerce-android'
 DEFAULT_BRANCH = 'trunk'
 REPOSITORY_NAME = 'woocommerce-android'
 GH_ORG_NAME = 'woocommerce'
@@ -150,14 +152,17 @@ platform :android do
 
     extract_release_notes_for_version(
       version: new_version,
-      release_notes_file_path: File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt'),
+      release_notes_file_path: RELEASE_NOTES_SOURCE_PATH,
       extracted_notes_file_path: RELEASE_NOTES_PATH
     )
-    android_update_release_notes(new_version:)
+    android_update_release_notes(
+      new_version:,
+      release_notes_file_path: RELEASE_NOTES_SOURCE_PATH
+    )
 
     push_to_git_remote_with_confirmation
 
-    setbranchprotection(
+    set_branch_protection(
       repository: GHHELPER_REPO,
       branch: "release/#{new_version}"
     )
@@ -393,7 +398,7 @@ platform :android do
   desc 'Download the latest app translations from GlotPress and update the strings.xml files accordingly'
   lane :download_translations do |_options|
     android_download_translations(
-      res_dir: File.join(ENV.fetch('PROJECT_NAME', nil), 'src', 'main', 'res'),
+      res_dir: RES_DIR_PATH,
       glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
       locales: SUPPORTED_LOCALES,
       lint_task: 'lintVanillaRelease'
@@ -414,11 +419,11 @@ platform :android do
   #####################################################################################
   desc 'Updates store metadata and runs the release checks'
   lane :finalize_release do |options|
-    UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix
-
-    unless git_branch.start_with?('release/')
-      UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.")
+    if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
+      UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes')
     end
+
+    UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
 
     ensure_git_status_clean
 
@@ -453,7 +458,7 @@ platform :android do
     )
 
     # Wrap up
-    removebranchprotection(
+    remove_branch_protection(
       repository: GHHELPER_REPO,
       branch: "release/#{version}"
     )
@@ -669,7 +674,8 @@ platform :android do
         library_name: lib[:name],
         import_key: lib[:import_key],
         repository: lib[:repository],
-        file_path: lib[:strings_file_path]
+        file_path: lib[:strings_file_path],
+        build_gradle_path: BUILD_GRADLE_PATH
       )
 
       if download_path.nil?

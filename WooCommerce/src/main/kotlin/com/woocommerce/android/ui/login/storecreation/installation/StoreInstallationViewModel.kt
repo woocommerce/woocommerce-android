@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreInstallationViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
@@ -47,15 +47,17 @@ class StoreInstallationViewModel @Inject constructor(
     private val observeSiteInstallation: ObserveSiteInstallation
 ) : ScopedViewModel(savedStateHandle) {
 
-    companion object {
-        const val TRIAL_LENGTH_IN_DAYS = 14L
-    }
-
     private val newStoreUrl
         get() = selectedSite.get().url
 
     private val newStoreWpAdminUrl
         get() = newStoreUrl.slashJoin("wp-admin/")
+
+    private var storeData
+        get() = savedStateHandle.get<NewStore.NewStoreData>(STORE_DATA_KEY)!!
+        set(value) {
+            savedStateHandle[STORE_DATA_KEY] = value
+        }
 
     private val _viewState = savedState.getStateFlow<ViewState>(
         this,
@@ -79,6 +81,10 @@ class StoreInstallationViewModel @Inject constructor(
     private var hasReportedDesync = false
 
     init {
+        if (!savedStateHandle.contains(STORE_DATA_KEY)) {
+            storeData = newStore.data
+        }
+
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
             mapOf(
@@ -91,11 +97,11 @@ class StoreInstallationViewModel @Inject constructor(
     private suspend fun processStoreInstallationState(result: InstallationState) {
         when (result) {
             is InstallationState.Success -> {
-                repository.selectSite(newStore.data.siteId!!)
+                repository.selectSite(storeData.siteId!!)
 
                 val properties = mapOf(
                     AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
-                    AnalyticsTracker.KEY_URL to newStore.data.domain!!,
+                    AnalyticsTracker.KEY_URL to storeData.domain!!,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                     AnalyticsTracker.KEY_IS_FREE_TRIAL to true
                 )
@@ -137,8 +143,8 @@ class StoreInstallationViewModel @Inject constructor(
         launch {
             combine(
                 observeSiteInstallation.invoke(
-                    newStore.data.siteId!!,
-                    newStore.data.name.orEmpty()
+                    storeData.siteId!!,
+                    storeData.name.orEmpty()
                 ),
                 storeInstallationLoadingTimer.observe()
             ) { installationState, timerState ->
@@ -204,4 +210,9 @@ class StoreInstallationViewModel @Inject constructor(
 
     data class OpenStore(val url: String) : Event()
     object NavigateToNewStore : Event()
+
+    companion object {
+        const val TRIAL_LENGTH_IN_DAYS = 14L
+        private const val STORE_DATA_KEY = "store_data_key"
+    }
 }

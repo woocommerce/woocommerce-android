@@ -1,0 +1,2 @@
+15,9:
+Estamos encantados de presentar la nueva función Tap to Pay, ya disponible para los vendedores del Reino Unido y Canadá. Esto significa que las empresas con sede en el Reino Unido y Canadá pueden ahora ofrecer a sus clientes una experiencia de pago más rápida y cómoda, todo ello desde la palma de tu mano. Mejora tu plan ahora y empieza a aumentar tus ventas con Tap to Pay en WooCommerce.

@@ -113,12 +113,12 @@ object AppPrefs {
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
         WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
-        BLAZE_BANNER_HIDDEN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_CELEBRATION_SCREEN_SHOWN,
     }
 
     /**
@@ -277,16 +277,6 @@ object AppPrefs {
                 remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
             }
         }
-
-    fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
-        setBoolean(getBlazeBannerKey(currentSiteId), hidden)
-    }
-
-    fun isBlazeBannerHidden(currentSiteId: Int) =
-        getBoolean(getBlazeBannerKey(currentSiteId), default = false)
-
-    private fun getBlazeBannerKey(currentSiteId: Int) =
-        PrefKeyString("${DeletablePrefKey.BLAZE_BANNER_HIDDEN}:$currentSiteId")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -1055,6 +1045,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+            value = value
+        )
+
+    var isBlazeCelebrationScreenShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
             value = value
         )
 

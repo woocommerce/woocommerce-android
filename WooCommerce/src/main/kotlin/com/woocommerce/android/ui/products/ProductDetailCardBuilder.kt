@@ -6,11 +6,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
@@ -18,6 +20,8 @@ import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -60,6 +64,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -77,8 +82,11 @@ class ProductDetailCardBuilder(
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
     private val variationRepository: VariationRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val isBlazeEnabled: IsBlazeEnabled,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
+    private var blazeCtaShownTracked = false
     private lateinit var originalSku: String
 
     companion object {
@@ -93,6 +101,8 @@ class ProductDetailCardBuilder(
 
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
+
+        cards.addIfNotEmpty(getBlazeCard(product))
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
@@ -123,6 +133,37 @@ class ProductDetailCardBuilder(
                         onLearnMoreClicked = viewModel::onLearnMoreClicked
                     )
                 ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
+        val isProductPublic = product.status == ProductStatus.PUBLISH &&
+            viewModel.getProductVisibility() == ProductVisibility.PUBLIC
+
+        if (!isBlazeEnabled() ||
+            !isProductPublic ||
+            viewModel.isProductUnderCreation
+        ) return null
+
+        if (!blazeCtaShownTracked) {
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON.trackingName
+                )
+            )
+            blazeCtaShownTracked = true
+        }
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                ProductProperty.Link(
+                    title = R.string.product_details_blaze_card,
+                    icon = R.drawable.ic_blaze,
+                    isDividerVisible = false,
+                    onClick = viewModel::onBlazeClicked
+                )
+            )
         )
     }
 
@@ -691,7 +732,7 @@ class ProductDetailCardBuilder(
             icon = drawable.ic_gridicons_types,
             showTitle = false,
             onClick = {
-                AnalyticsTracker.track(
+                analyticsTrackerWrapper.track(
                     AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )

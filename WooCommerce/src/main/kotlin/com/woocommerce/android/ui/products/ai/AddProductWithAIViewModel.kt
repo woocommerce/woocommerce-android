@@ -43,6 +43,7 @@ class AddProductWithAIViewModel @Inject constructor(
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
+        tracker = tracker,
         onDone = { name ->
             aboutSubViewModel.updateProductName(name)
             previewSubViewModel.updateName(name)
@@ -58,7 +59,8 @@ class AddProductWithAIViewModel @Inject constructor(
             }
             goToNextStep()
         },
-        appsPrefsWrapper = appsPrefsWrapper
+        appsPrefsWrapper = appsPrefsWrapper,
+        tracker = tracker
     )
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
@@ -191,6 +193,17 @@ class AddProductWithAIViewModel @Inject constructor(
                     triggerEvent(it)
                 }.launchIn(viewModelScope)
         }
+    }
+
+    fun onProductPackageScanned(title: String, description: String, keywords: List<String>) {
+        val features = keywords.joinToString()
+        nameSubViewModel.onProductNameChanged(title)
+        aboutSubViewModel.updateProductName(title)
+        aboutSubViewModel.onProductFeaturesUpdated(features)
+        previewSubViewModel.updateName(title)
+        previewSubViewModel.updateProductDescription(description)
+        previewSubViewModel.updateKeywords(features)
+        step.value = Step.Preview
     }
 
     fun onProductNameGenerated(productName: String) {

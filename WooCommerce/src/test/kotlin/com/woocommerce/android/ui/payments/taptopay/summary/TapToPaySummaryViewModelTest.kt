@@ -4,10 +4,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -28,6 +31,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,9 +48,44 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.tap_to_pay_refund_reason) }.thenReturn("Test Tap To Pay payment auto refund")
         on { getString(R.string.card_reader_tap_to_pay_test_payment_note) }.thenReturn("Test payment")
+        on { getString(R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount, "$0.50") }.thenReturn(
+            "Try a $0.50 payment with your debit or credit card."
+        )
     }
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(site)
+    }
+    private val wooStore: WooCommerceStore = mock {
+        on { getStoreCountryCode(site) }.thenReturn("US")
+    }
+    private val cardReaderConfig = mock<CardReaderConfigForSupportedCountry> {
+        on { minimumAllowedChargeAmount }.thenReturn(BigDecimal("0.5"))
+        on { currency }.thenReturn("USD")
+    }
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock {
+        on { provideCountryConfigFor("US") }.thenReturn(cardReaderConfig)
+    }
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on { formatCurrency("0.5", "USD") }.thenReturn("$0.50")
+    }
+
+    @Test
+    fun `given us cardconfig, when viewmodel init, then message with usd minim amount constructed`() {
+        // GIVEN
+        whenever(cardReaderConfig.currency).thenReturn("USD")
+        whenever(cardReaderConfig.minimumAllowedChargeAmount).thenReturn(BigDecimal("0.5"))
+        whenever(currencyFormatter.formatCurrency("0.5", "USD")).thenReturn("$0.50")
+        whenever(
+            resourceProvider.getString(
+                R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount, "$0.50"
+            )
+        ).thenReturn("Try a $0.50 payment with your debit or credit card.")
+        val viewModel = initViewModel()
+
+        // THEN
+        assertThat(viewModel.viewState.value!!.messageWithAmount).isEqualTo(
+            "Try a $0.50 payment with your debit or credit card."
+        )
     }
 
     @Test
@@ -164,6 +203,30 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given 30 cents min allowed charged config, when onTryPaymentClicked, then order created with 30 cents value`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderConfig.minimumAllowedChargeAmount).thenReturn(BigDecimal.valueOf(0.3))
+            whenever(cardReaderConfig.currency).thenReturn("GDP")
+            whenever(currencyFormatter.formatCurrency("0.3", "GDP")).thenReturn("£0.30")
+            whenever(
+                resourceProvider.getString(
+                    R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount, "£0.30"
+                )
+            ).thenReturn("Try a £0.30 payment with your debit or credit card.")
+            val viewModel = initViewModel()
+
+            // WHEN
+            viewModel.onTryPaymentClicked()
+
+            // THEN
+            verify(orderCreateEditRepository).createSimplePaymentOrder(
+                BigDecimal.valueOf(0.3),
+                customerNote = "Test payment"
+            )
+        }
 
     @Test
     fun `when onBackClicked, then exit emitted`() {
@@ -454,6 +517,9 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             refundStore,
             resourceProvider,
             selectedSite,
+            currencyFormatter,
+            wooStore,
+            cardReaderCountryConfigProvider,
             TapToPaySummaryFragmentArgs(flow).initSavedStateHandle()
         )
 }

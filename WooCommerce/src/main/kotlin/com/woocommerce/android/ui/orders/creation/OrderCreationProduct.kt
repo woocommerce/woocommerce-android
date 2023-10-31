@@ -9,8 +9,10 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @Parcelize
@@ -83,16 +85,23 @@ data class ProductInfo(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus,
     val productType: ProductType,
-    val isConfigurable: Boolean
+    val isConfigurable: Boolean,
+    val pricePreDiscount: String,
+    val priceTotal: String,
+    val priceSubtotal: String,
+    val discountAmount: String,
+    val priceAfterDiscount: String,
+    val hasDiscount: Boolean,
 ) : Parcelable
 
 class OrderCreationProductMapper @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val variationDetailRepository: VariationDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
-    private val getProductRules: GetProductRules
+    private val getProductRules: GetProductRules,
+    private val currencyFormatter: CurrencyFormatter,
 ) {
-    suspend fun toOrderProducts(items: List<Order.Item>): List<OrderCreationProduct> {
+    suspend fun toOrderProducts(items: List<Order.Item>, currencySymbol: String? = null): List<OrderCreationProduct> {
         if (items.isEmpty()) return emptyList()
 
         return withContext(dispatchers.io) {
@@ -108,14 +117,14 @@ class OrderCreationProductMapper @Inject constructor(
                     item
                 } else {
                     val children = childrenMap.getOrPut(item.parent) { mutableListOf() }
-                    val productInfo = getProductInformation(item)
+                    val productInfo = getProductInformation(item, currencySymbol)
                     children.add(OrderCreationProduct.ProductItem(item, productInfo))
                     null
                 }
             }.filter { item ->
                 (item.itemId in childrenMap.keys).not()
             }.map { item ->
-                val productInfo = getProductInformation(item)
+                val productInfo = getProductInformation(item, currencySymbol)
                 createOrderCreationProduct(item, productInfo, rulesMap[item.productId])
             }
                 .toMutableList()
@@ -123,7 +132,7 @@ class OrderCreationProductMapper @Inject constructor(
             for (parentId in childrenMap.keys) {
                 val parent = itemsMap[parentId] ?: continue
                 val children = childrenMap[parentId] ?: emptyList()
-                val productInfo = getProductInformation(parent)
+                val productInfo = getProductInformation(parent, currencySymbol)
                 val rules = rulesMap[parent.productId]
                 val groupedProduct = createOrderCreationProduct(parent, productInfo, rules, children)
                 result.add(groupedProduct)
@@ -152,29 +161,51 @@ class OrderCreationProductMapper @Inject constructor(
         }
     }
 
-    private suspend fun getProductInformation(item: Order.Item): ProductInfo {
+    private suspend fun getProductInformation(item: Order.Item, currencySymbol: String?): ProductInfo {
         return withContext(dispatchers.io) {
+            val decimalFormatter = getDecimalFormatter(currencyFormatter, currencySymbol)
             if (item.isVariation) {
                 val variation = variationDetailRepository.getVariation(item.productId, item.variationId)
                 ProductInfo(
-                    variation?.image?.source.orEmpty(),
-                    variation?.isStockManaged ?: false,
-                    variation?.stockQuantity ?: 0.0,
-                    variation?.stockStatus ?: ProductStockStatus.InStock,
-                    ProductType.VARIATION,
-                    false
+                    imageUrl = variation?.image?.source.orEmpty(),
+                    isStockManaged = variation?.isStockManaged ?: false,
+                    stockQuantity = variation?.stockQuantity ?: 0.0,
+                    stockStatus = variation?.stockStatus ?: ProductStockStatus.InStock,
+                    productType = ProductType.VARIATION,
+                    isConfigurable = false,
+                    pricePreDiscount = decimalFormatter(item.pricePreDiscount),
+                    priceTotal = decimalFormatter(item.total),
+                    priceSubtotal = decimalFormatter(item.subtotal),
+                    discountAmount = decimalFormatter(item.discount),
+                    priceAfterDiscount = decimalFormatter(item.subtotal - item.discount),
+                    hasDiscount = item.discount > BigDecimal.ZERO
                 )
             } else {
                 val product = productDetailRepository.getProduct(item.productId)
                 ProductInfo(
-                    product?.firstImageUrl.orEmpty(),
-                    product?.isStockManaged ?: false,
-                    product?.stockQuantity ?: 0.0,
-                    product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock,
-                    product?.productType ?: ProductType.OTHER,
-                    product?.isConfigurable ?: false
+                    imageUrl = product?.firstImageUrl.orEmpty(),
+                    isStockManaged = product?.isStockManaged ?: false,
+                    stockQuantity = product?.stockQuantity ?: 0.0,
+                    stockStatus = product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock,
+                    productType = product?.productType ?: ProductType.OTHER,
+                    isConfigurable = product?.isConfigurable ?: false,
+                    pricePreDiscount = decimalFormatter(item.pricePreDiscount),
+                    priceTotal = decimalFormatter(item.total),
+                    priceSubtotal = decimalFormatter(item.subtotal),
+                    discountAmount = decimalFormatter(item.discount),
+                    priceAfterDiscount = decimalFormatter(item.subtotal - item.discount),
+                    hasDiscount = item.discount > BigDecimal.ZERO
                 )
             }
         }
+    }
+
+    private fun getDecimalFormatter(
+        currencyFormatter: CurrencyFormatter,
+        currencyCode: String? = null
+    ): (BigDecimal) -> String {
+        return currencyCode?.let {
+            currencyFormatter.buildBigDecimalFormatter(it)
+        } ?: currencyFormatter.buildBigDecimalFormatter()
     }
 }

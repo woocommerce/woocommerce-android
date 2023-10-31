@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -32,7 +33,6 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
@@ -44,11 +44,10 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.blaze.BlazeBanner
-import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -82,6 +81,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
@@ -105,7 +105,6 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val blazeBannerViewModel: BlazeBannerViewModel by viewModels()
     private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
@@ -226,51 +225,20 @@ class MyStoreFragment :
 
         setupStateObservers()
         setupOnboardingView()
-        setUpBlazeBanner()
         setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
     }
 
-    private fun setUpBlazeBanner() {
-        blazeBannerViewModel.setBlazeBannerSource(MY_STORE_BANNER)
-        blazeBannerViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
-            if (!isVisible) binding.blazeBannerView.hide()
-            else {
-                binding.blazeBannerView.apply {
-                    show()
-                    setContent {
-                        WooThemeWithBackground {
-                            BlazeBanner(
-                                onClose = blazeBannerViewModel::onBlazeBannerDismissed,
-                                onTryBlazeClicked = blazeBannerViewModel::onTryBlazeBannerClicked
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        blazeBannerViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
-                is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
-                is ShowDialog -> event.showDialog()
-            }
-        }
-    }
-
     private fun setUpBlazeCampaignView() {
         myStoreBlazeViewModel.blazeCampaignState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (!blazeCampaignState.isVisible) binding.blazeCampaignView.hide()
+            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) binding.blazeCampaignView.hide()
             else {
                 binding.blazeCampaignView.apply {
                     setContent {
                         WooThemeWithBackground {
                             MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onCreateCampaignClicked = { },
-                                onShowAllClicked = { },
+                                state = blazeCampaignState
                             )
                         }
                     }
@@ -278,13 +246,37 @@ class MyStoreFragment :
                 }
             }
         }
+        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(
+                    url = event.url,
+                    source = event.source
+                )
+
+                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
+                    )
+                }
+
+                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
+                            title = getString(R.string.blaze_campaign_details_title)
+                        )
+                    )
+                }
+            }
+        }
     }
 
-    private fun openBlazeWebView(event: BlazeBannerViewModel.OpenBlazeEvent) {
+    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
-                urlToLoad = event.url,
-                source = event.source
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
+                urlToLoad = url,
+                source = source
             )
         )
     }
@@ -511,16 +503,20 @@ class MyStoreFragment :
         }
         val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launch {
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
-            // we are using `launchWhenCreated` here, since if this view doesn't reach the created state,
+            // we are using `withCreated` here, since if this view doesn't reach the created state,
             // the scope will not get cancelled.
             // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
-            appBarLayout.verticalOffsetChanges()
-                .collect { verticalOffset ->
-                    binding.jetpackBenefitsBanner.root.translationY =
-                        (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
-                }
+            // (no update as of Oct 2023)
+            withCreated {
+                appBarLayout.verticalOffsetChanges()
+                    .onEach { verticalOffset ->
+                        binding.jetpackBenefitsBanner.root.translationY =
+                            (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+                    }
+                    .launchIn(this)
+            }
         }
     }
 
@@ -533,7 +529,6 @@ class MyStoreFragment :
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-        blazeBannerViewModel.updateBlazeBannerStatus()
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
             usageTracksEventEmitter.interacted()
