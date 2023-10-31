@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.login.jetpack.connection
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -15,6 +17,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class JetpackActivationWebViewFragment : BaseFragment() {
+    companion object {
+        const val JETPACK_CONNECTION_RESULT = "jetpack-connection-result"
+    }
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -22,6 +27,7 @@ class JetpackActivationWebViewFragment : BaseFragment() {
 
     @Inject
     lateinit var wpComAuthenticator: WPComWebViewAuthenticator
+
     @Inject
     lateinit var userAgent: UserAgent
 
@@ -39,4 +45,15 @@ class JetpackActivationWebViewFragment : BaseFragment() {
                 )
             }
         }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+               is JetpackActivationWebViewViewModel.ConnectionResult -> navigateBackWithResult(
+                   key = JETPACK_CONNECTION_RESULT,
+                   result = event
+               )
+            }
+        }
+    }
 }

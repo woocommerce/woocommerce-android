@@ -25,6 +25,10 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginIns
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Cancel
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Failure
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -70,8 +74,6 @@ class JetpackActivationMainViewModel @Inject constructor(
         private const val JETPACK_NAME = "jetpack/jetpack"
         @VisibleForTesting
         const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
-        @VisibleForTesting
-        const val JETPACK_PLANS_URL = "https://wordpress.com/jetpack/connect/plans"
         @VisibleForTesting
         const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
@@ -203,8 +205,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     }
 
-    fun onJetpackConnected() {
-        connectionStep.value = ConnectionStep.Validation
+    fun onJetpackConnectionResult(result: JetpackActivationWebViewViewModel.ConnectionResult) {
+        when (result) {
+            Success -> connectionStep.value = ConnectionStep.Validation
+            Cancel -> triggerEvent(ShowWebViewDismissedError)
+            is Failure -> TODO()
+        }
     }
 
     fun onRetryClick() {
@@ -617,4 +623,5 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()
     data class ShowWooNotInstalledScreen(val siteUrl: String) : MultiLiveEvent.Event()
+    object ShowWebViewDismissedError : MultiLiveEvent.Event()
 }

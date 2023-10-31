@@ -12,18 +12,20 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.jetpack.GoToStore
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewFragment
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToPasswordScreen
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowWebViewDismissedError
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowWooNotInstalledScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -69,17 +71,17 @@ class JetpackActivationMainFragment : BaseFragment() {
                 is ShowWooNotInstalledScreen -> showWooNotInstalledScreen(event.siteUrl)
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is GoToPasswordScreen -> openPasswordScreen(event.email)
+                is ShowWebViewDismissedError -> navigateBackWithNotice(CONNECTION_DISMISSED_RESULT)
                 is Exit -> findNavController().navigateUp()
             }
         }
     }
 
     private fun setupResultHandlers() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
-            viewModel.onJetpackConnected()
-        }
-        handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
-            navigateBackWithNotice(CONNECTION_DISMISSED_RESULT)
+        handleResult<JetpackActivationWebViewViewModel.ConnectionResult>(
+            key = JetpackActivationWebViewFragment.JETPACK_CONNECTION_RESULT
+        ) {
+            viewModel.onJetpackConnectionResult(it)
         }
     }
 
