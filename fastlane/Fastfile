@@ -1092,6 +1092,14 @@ platform :android do
     end
   end
 
+  lane :has_alpha_version_test do
+    UI.message('Without the `has_alpha_version` parameter:')
+    android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
+
+    UI.message('With the `has_alpha_version` parameter:')
+    android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH, has_alpha_version: true)
+  end
+
   #####################################################################################
   # Private lanes
   #####################################################################################
