@@ -46,7 +46,6 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
             title = R.string.login_create_an_account,
             onClick = {
                 appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN_EMAIL_ERROR)
-                appPrefsWrapper.removeLoginSiteAddress()
                 unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
 
                 listener.onCreateAccountClicked()
