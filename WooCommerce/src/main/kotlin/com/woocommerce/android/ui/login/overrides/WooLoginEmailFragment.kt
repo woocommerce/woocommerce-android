@@ -51,6 +51,7 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         if (prefilledEmail.isNotNullOrEmpty()) {
             mEmailInput?.editText?.setText(prefilledEmail)
             next(prefilledEmail)
+            requireArguments().clear()
         }
     }
 
