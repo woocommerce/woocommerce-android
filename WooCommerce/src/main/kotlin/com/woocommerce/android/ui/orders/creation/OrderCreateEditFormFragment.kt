@@ -505,6 +505,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
+        viewModel.trackCustomAmountRowClicked()
         findNavController().navigateSafely(
             actionOrderCreationFragmentToCustomAmountsDialog(customAmountUIModel)
         )
