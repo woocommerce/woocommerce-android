@@ -80,9 +80,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -805,12 +803,6 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    fun onProductClicked(item: Order.Item) {
-        // Don't show details if the product is not synced yet
-        if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
-    }
-
     fun onRetryPaymentsClicked() {
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
@@ -1113,14 +1105,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCouponRemoved() {
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
-    }
-
-    fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
-        when (result) {
-            is ProductDetailsEditResult.ProductRemoved -> {
-                onRemoveProduct(result.item)
-            }
-        }
     }
 
     fun onProductDiscountEditResult(modifiedItem: Order.Item) {

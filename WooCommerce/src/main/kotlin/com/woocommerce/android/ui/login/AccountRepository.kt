@@ -12,6 +12,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -34,6 +35,9 @@ class AccountRepository @Inject constructor(
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
+    companion object {
+        private const val RESET_DELAY = 1000L
+    }
 
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -108,7 +112,7 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private fun cleanup() {
+    private suspend fun cleanup() {
         // Reset analytics
         AnalyticsTracker.flush()
         AnalyticsTracker.clearAllData()
@@ -116,6 +120,8 @@ class AccountRepository @Inject constructor(
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
+
+        delay(RESET_DELAY) // delay the site reset and allow for the requests to fail gracefully
         selectedSite.reset()
 
         // Delete sites
