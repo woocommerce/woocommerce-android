@@ -41,13 +41,13 @@ class FetchJetpackStatus @Inject constructor(
 
     @Suppress("ReturnCount", "NestedBlockDepth")
     suspend operator fun invoke(): Result<JetpackStatusFetchResponse> {
-        return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { result ->
+        return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { userResult ->
             when {
-                result.error?.errorCode == FORBIDDEN_CODE -> {
+                userResult.error?.errorCode == FORBIDDEN_CODE -> {
                     Result.success(JetpackStatusFetchResponse.ConnectionForbidden)
                 }
 
-                result.error?.errorCode == NOT_FOUND_CODE -> {
+                userResult.error?.errorCode == NOT_FOUND_CODE -> {
                     Result.success(
                         JetpackStatusFetchResponse.Success(
                             JetpackStatus(
@@ -59,18 +59,18 @@ class FetchJetpackStatus @Inject constructor(
                     )
                 }
 
-                result.isError -> {
-                    Result.failure(OnChangedException(result.error))
+                userResult.isError -> {
+                    Result.failure(OnChangedException(userResult.error))
                 }
 
                 else -> {
-                    val isJetpackInstalled = wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { result ->
+                    val isJetpackInstalled = wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { pluginResult ->
                         when {
-                            result.isError -> {
-                                return Result.failure(OnChangedException(result.error))
+                            pluginResult.isError -> {
+                                return Result.failure(OnChangedException(pluginResult.error))
                             }
                             else -> {
-                                result.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
+                                pluginResult.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
                             }
                         }
                     }
@@ -79,8 +79,8 @@ class FetchJetpackStatus @Inject constructor(
                         JetpackStatusFetchResponse.Success(
                             JetpackStatus(
                                 isJetpackInstalled = isJetpackInstalled,
-                                isJetpackConnected = result.user!!.isConnected,
-                                wpComEmail = result.user!!.wpcomEmail.orNullIfEmpty()
+                                isJetpackConnected = userResult.user!!.isConnected,
+                                wpComEmail = userResult.user!!.wpcomEmail.orNullIfEmpty()
                             )
                         )
                     )
