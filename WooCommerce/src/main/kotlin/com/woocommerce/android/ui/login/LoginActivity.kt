@@ -65,10 +65,8 @@ import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICK
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.webauthn.CredentialManagerData
+import com.woocommerce.android.ui.login.webauthn.RequestPasskeyUseCase
 import com.woocommerce.android.ui.login.webauthn.WebauthnChallengeInfo
-import com.woocommerce.android.ui.login.webauthn.FetchPasskeyUseCase
-import com.woocommerce.android.ui.login.webauthn.OnCredentialsAvailable
-import com.woocommerce.android.ui.login.webauthn.PasskeyResultReceiver
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -84,7 +82,9 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
@@ -105,9 +105,6 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
-import kotlinx.coroutines.flow.MutableStateFlow
-import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
-import org.wordpress.android.fluxc.store.AccountStore
 
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
@@ -124,8 +121,7 @@ class LoginActivity :
     WooLoginEmailFragment.Listener,
     LoginNoWPcomAccountFoundDialogFragment.Listener,
     SignUpFragment.Listener,
-    QrCodeLoginListener,
-    PasskeyResultReceiver {
+    QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -153,14 +149,14 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var fetchPasskey: FetchPasskeyUseCase
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
 
     private var connectSiteInfo: ConnectSiteInfo? = null
-    private var onCredentialsAvailable: OnCredentialsAvailable? = null
+    private val fetchPasskey = RequestPasskeyUseCase()
+    private var onCredentialsAvailable: ((PublicKeyCredential) -> Unit)? = null
     private lateinit var resultLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
@@ -530,27 +526,29 @@ class LoginActivity :
     }
 
     override fun signSecurityKey(challengeRequestJson: String, userId: String, username: String) {
-        challengeRequestJson
+        val credentials = challengeRequestJson
             .takeIf { it.isNotNullOrEmpty() }
             ?.let { Gson().fromJson(it, WebauthnChallengeInfo::class.java) }
             ?.let {
                 CredentialManagerData(it)
-            }
-            ?.let {
-                fetchPasskey(this, this, it, userId)
-            }
-    }
+            } ?: return // TODO: throw error
 
-    override fun requestPasskeyWith(intentSender: IntentSenderRequest, userId: String, webauthnNonce: String) {
         onCredentialsAvailable = { keyCredential ->
             val payload = AccountStore.FinishSecurityKeyChallengePayload().apply {
                 this.mUserId = userId
-                this.mTwoStepNonce = webauthnNonce
+                this.mTwoStepNonce = credentials.twoStepNonce
                 this.mClientData = keyCredential.toJson()
             }.let { AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(it) }
             dispatcher.dispatch(payload)
+            onCredentialsAvailable = null
         }
-        resultLauncher.launch(intentSender)
+
+        fetchPasskey(
+            context = this,
+            credentialManagerData = credentials
+        ) {
+            resultLauncher.launch(it)
+        }
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
