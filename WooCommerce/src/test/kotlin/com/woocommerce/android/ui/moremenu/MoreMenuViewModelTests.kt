@@ -1,16 +1,17 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +28,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignsModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
@@ -68,10 +71,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { moreMenuPaymentsFeatureWasClicked }.thenReturn(flowOf(true))
     }
 
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
+        onBlocking { invoke() } doReturn true
     }
+
+    private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
@@ -87,9 +91,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
             planRepository = planRepository,
             resourceProvider = resourceProvider,
+            blazeCampaignsStore = blazeCampaignsStore,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
-            appPrefsWrapper = appPrefsWrapper,
-            isBlazeEnabled = isBlazeEnabled
+            isBlazeEnabled = isBlazeEnabled,
+            blazeUrlsHelper = BlazeUrlsHelper(selectedSite)
         )
     }
 
@@ -368,5 +373,37 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         assertThat(states.last().sitePlan).isEqualTo("")
+    }
+
+    @Test
+    fun `given no blaze campaigns, when user clicks on blaze, then start campaign creation`() = testBlocking {
+        setup {
+            whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
+                .thenReturn(BlazeCampaignsModel(emptyList(), 0, 0, 0))
+        }
+
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.generalMenuItems.first { it.title == R.string.more_menu_button_blaze }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        assertThat(event).isInstanceOf(MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignCreationEvent::class.java)
+    }
+
+    @Test
+    fun `given existing blaze campaigns, when user clicks on blaze, then show campaigns list`() = testBlocking {
+        setup {
+            whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
+                .thenReturn(BlazeCampaignsModel(listOf(mock()), 0, 1, 1))
+        }
+
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.generalMenuItems.first { it.title == R.string.more_menu_button_blaze }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        assertThat(event).isEqualTo(MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignListEvent)
     }
 }

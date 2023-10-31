@@ -80,9 +80,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -864,12 +862,6 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    fun onProductClicked(product: OrderCreationProduct) {
-        // Don't show details if the product is not synced yet
-        if (!product.item.isSynced()) return
-        triggerEvent(ShowProductDetails(product, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
-    }
-
     fun onRetryPaymentsClicked() {
         retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
@@ -1179,14 +1171,6 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
     }
 
-    fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
-        when (result) {
-            is ProductDetailsEditResult.ProductRemoved -> {
-                onRemoveProduct(result.item)
-            }
-        }
-    }
-
     fun onProductDiscountEditResult(modifiedProduct: OrderCreationProduct) {
         _orderDraft.value = _orderDraft.value.updateItem(modifiedProduct.item)
     }
@@ -1252,6 +1236,16 @@ class OrderCreateEditViewModel @Inject constructor(
         updateTaxRateSelectorButtonState()
         clearCustomerAddresses()
         tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED)
+    }
+
+    fun onDiscountButtonClicked(product: OrderCreationProduct) {
+        triggerEvent(OrderCreateEditNavigationTarget.EditDiscount(product, _orderDraft.value.currency))
+        val analyticsEvent = if (product.item.discount > BigDecimal.ZERO) {
+            AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED
+        }
+        tracker.track(analyticsEvent)
     }
 
     @Parcelize

@@ -71,7 +71,9 @@ sealed class ProductProperty(val type: Type) {
 
     data class Link(
         @StringRes val title: Int,
-        val onClick: (() -> Unit)?
+        @DrawableRes val icon: Int? = null,
+        val onClick: (() -> Unit)?,
+        val isDividerVisible: Boolean = true,
     ) : ProductProperty(LINK)
 
     data class Editable(
