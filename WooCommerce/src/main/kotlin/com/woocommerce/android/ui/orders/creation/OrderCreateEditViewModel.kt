@@ -12,6 +12,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
@@ -1124,6 +1125,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 updateCustomAmount(draft, customAmountUIModel)
             } else {
                 // If no FeeLine with the given ID exists, we add a new one.
+                tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
                 addCustomAmount(draft, customAmountUIModel)
             }
             draft.copy(feesLines = feesList)
