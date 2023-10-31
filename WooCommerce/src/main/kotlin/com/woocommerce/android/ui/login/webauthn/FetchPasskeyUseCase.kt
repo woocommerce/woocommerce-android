@@ -19,10 +19,9 @@ class FetchPasskeyUseCase @Inject constructor(
     private val dispatcher: Dispatcher
 ) {
     operator fun invoke(
-        userId: String,
-        webauthnNonce: String,
         activity: ComponentActivity,
-        credentialManagerData: CredentialManagerData
+        credentialManagerData: CredentialManagerData,
+        userId: String
     ) {
         val options = PublicKeyCredentialRequestOptions.Builder()
             .setRpId(credentialManagerData.rpId)
@@ -40,7 +39,7 @@ class FetchPasskeyUseCase @Inject constructor(
                 .let {
                     activity.generateResultLauncher(
                         userId = userId,
-                        webauthnNonce = webauthnNonce
+                        webauthnNonce = credentialManagerData.twoStepNonce
                     ).launch(it)
                 }
         }

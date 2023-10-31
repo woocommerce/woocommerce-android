@@ -514,7 +514,7 @@ class LoginActivity :
                 CredentialManagerData(it)
             }
             ?.let {
-                fetchPasskey(userId, it.twoStepNonce, this, it)
+                fetchPasskey(this, it, userId)
             }
     }
 
