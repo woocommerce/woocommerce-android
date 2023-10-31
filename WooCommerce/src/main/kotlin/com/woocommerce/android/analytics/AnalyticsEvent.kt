@@ -287,6 +287,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Custom Amounts
     ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED,
+    ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED,
     ADD_CUSTOM_AMOUNT_DONE_TAPPED,
 
     // -- Barcode Scanner
