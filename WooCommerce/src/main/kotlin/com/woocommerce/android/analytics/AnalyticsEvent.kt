@@ -285,6 +285,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED,
     TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED,
 
+    // -- Custom Amounts
+    ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED,
+
     // -- Barcode Scanner
     BARCODE_SCANNING_SUCCESS,
     BARCODE_SCANNING_FAILURE,
