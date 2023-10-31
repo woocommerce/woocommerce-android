@@ -61,7 +61,7 @@ import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CRE
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.webauthn.CredentialManagerData
 import com.woocommerce.android.ui.login.webauthn.WebauthnChallengeInfo
-import com.woocommerce.android.ui.login.webauthn.WebauthnHandler
+import com.woocommerce.android.ui.login.webauthn.FetchPasskeyUseCase
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -142,6 +142,7 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var fetchPasskey: FetchPasskeyUseCase
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     private var loginMode: LoginMode? = null
@@ -513,8 +514,7 @@ class LoginActivity :
                 CredentialManagerData(it)
             }
             ?.let {
-                WebauthnHandler(userId, it.twoStepNonce, dispatcher)
-                    .signKeyWithFido(this, it)
+                fetchPasskey(userId, it.twoStepNonce, this, it)
             }
     }
 

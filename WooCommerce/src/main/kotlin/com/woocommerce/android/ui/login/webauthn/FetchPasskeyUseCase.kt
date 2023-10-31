@@ -10,16 +10,17 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
+import javax.inject.Inject
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
 
-class WebauthnHandler(
-    private val userId: String,
-    private val webauthnNonce: String,
+class FetchPasskeyUseCase @Inject constructor(
     private val dispatcher: Dispatcher
 ) {
-    fun signKeyWithFido(
+    operator fun invoke(
+        userId: String,
+        webauthnNonce: String,
         activity: ComponentActivity,
         credentialManagerData: CredentialManagerData
     ) {
@@ -36,11 +37,19 @@ class WebauthnHandler(
         fidoIntent.addOnSuccessListener { pendingIntent ->
             IntentSenderRequest.Builder(pendingIntent.intentSender)
                 .build()
-                .let { activity.generateResultLauncher().launch(it) }
+                .let {
+                    activity.generateResultLauncher(
+                        userId = userId,
+                        webauthnNonce = webauthnNonce
+                    ).launch(it)
+                }
         }
     }
 
-    private fun ComponentActivity.generateResultLauncher() = this.registerForActivityResult(
+    private fun ComponentActivity.generateResultLauncher(
+        userId: String,
+        webauthnNonce: String
+    ) = this.registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         val resultCode = result.resultCode
