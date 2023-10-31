@@ -39,19 +39,8 @@ class FetchJetpackStatus @Inject constructor(
         object ConnectionForbidden : JetpackStatusFetchResponse
     }
 
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "NestedBlockDepth")
     suspend operator fun invoke(): Result<JetpackStatusFetchResponse> {
-        val isJetpackInstalled = wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { result ->
-            when {
-                result.isError -> {
-                    return Result.failure(OnChangedException(result.error))
-                }
-                else -> {
-                    result.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
-                }
-            }
-        }
-
         return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { result ->
             when {
                 result.error?.errorCode == FORBIDDEN_CODE -> {
@@ -75,6 +64,17 @@ class FetchJetpackStatus @Inject constructor(
                 }
 
                 else -> {
+                    val isJetpackInstalled = wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { result ->
+                        when {
+                            result.isError -> {
+                                return Result.failure(OnChangedException(result.error))
+                            }
+                            else -> {
+                                result.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
+                            }
+                        }
+                    }
+
                     Result.success(
                         JetpackStatusFetchResponse.Success(
                             JetpackStatus(
