@@ -1136,7 +1136,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackIfNameAdded(customAmountUIModel: CustomAmountUIModel) {
-        if (customAmountUIModel.name != CUSTOM_AMOUNT) {
+        if (customAmountUIModel.name.isNotEmpty() && customAmountUIModel.name != CUSTOM_AMOUNT) {
             tracker.track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
         }
     }
