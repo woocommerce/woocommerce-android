@@ -1762,5 +1762,18 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         verify(tracker).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
     }
+
+    @Test
+    fun `when custom amount name is not added, then event is not tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Custom Amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker, never()).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
     //endregion
 }
