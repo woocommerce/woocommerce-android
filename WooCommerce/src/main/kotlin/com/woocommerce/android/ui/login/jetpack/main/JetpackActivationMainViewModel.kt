@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginAct
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
@@ -436,41 +435,23 @@ class JetpackActivationMainViewModel @Inject constructor(
                     //  &mobile_redirect=woocommerce://jetpack-connected&from=mobile
                     // See: pe5sF9-1le-p2#comment-1942
 
-                    val chosenUrl =
-                        if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
-                            connectionUrl
-                        } else {
-                            "https://wordpress.com/jetpack/connect?url=" + navArgs.siteUrl +
-                                "&mobile_redirect=" + MOBILE_REDIRECT +
-                                "&from=mobile"
-                        }
-
-                    // We use STARTS_WITH for the special URL case, to make sure MOBILE_REDIRECT is only used
-                    // as validation if it's at the start of the URL, not as a parameter in the special URL.
-                    val comparisonMode =
-                        if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
-                            UrlComparisonMode.PARTIAL
-                        } else {
-                            UrlComparisonMode.STARTS_WITH
-                        }
-
-                    // Occasionally, while connecting Jetpack, the webview may redirect to the Jetpack plans page
-                    // instead of MOBILE_REDIRECT. We are uncertain about the cause. However, since this redirect
-                    // occurs after the site connects, let's use the plans page as a validation URL too.
+                    val chosenUrl = if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
+                        connectionUrl
+                    } else {
+                        "https://wordpress.com/jetpack/connect?url=" + navArgs.siteUrl +
+                            "&mobile_redirect=" + MOBILE_REDIRECT +
+                            "&from=mobile"
+                    }
 
                     triggerEvent(
                         ShowJetpackConnectionWebView(
-                            url = chosenUrl,
-                            connectionValidationUrls = listOf(MOBILE_REDIRECT, JETPACK_PLANS_URL),
-                            urlComparisonMode = comparisonMode,
-                            clearCache = true
+                            url = chosenUrl
                         )
                     )
                 } else {
                     triggerEvent(
                         ShowJetpackConnectionWebView(
-                            url = connectionUrl,
-                            connectionValidationUrls = listOf(JETPACK_PLANS_URL, navArgs.siteUrl)
+                            url = connectionUrl
                         )
                     )
                 }
@@ -631,10 +612,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     data class ShowJetpackConnectionWebView(
-        val url: String,
-        val connectionValidationUrls: List<String>,
-        val urlComparisonMode: UrlComparisonMode = UrlComparisonMode.PARTIAL,
-        val clearCache: Boolean = false
+        val url: String
     ) : MultiLiveEvent.Event()
 
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()

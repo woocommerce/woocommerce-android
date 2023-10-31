@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithNotice
@@ -20,7 +19,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.jetpack.GoToStore
@@ -122,14 +120,10 @@ class JetpackActivationMainFragment : BaseFragment() {
 
     private fun showConnectionWebView(event: ShowJetpackConnectionWebView) {
         findNavController().navigateSafely(
-            directions = NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = event.url,
-                urlsToTriggerExit = event.connectionValidationUrls.toTypedArray(),
-                title = getString(R.string.login_jetpack_installation_approve_connection),
-                displayMode = DisplayMode.MODAL,
-                urlComparisonMode = event.urlComparisonMode,
-                clearCache = event.clearCache
-            ),
+            directions = JetpackActivationMainFragmentDirections
+                .actionJetpackActivationMainFragmentToJetpackActivationWebViewFragment(
+                    urlToLoad = event.url
+                ),
             navOptions = NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_up)
                 .setExitAnim(R.anim.no_anime)
