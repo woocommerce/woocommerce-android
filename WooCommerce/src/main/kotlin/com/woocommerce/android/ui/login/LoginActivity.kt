@@ -8,18 +8,10 @@ import android.os.Parcelable
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.fido.Fido
-import com.google.android.gms.fido.common.Transport
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
 import com.google.gson.Gson
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
@@ -67,6 +59,9 @@ import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
+import com.woocommerce.android.ui.login.webauthn.CredentialManagerData
+import com.woocommerce.android.ui.login.webauthn.WebauthnChallengeInfo
+import com.woocommerce.android.ui.login.webauthn.WebauthnHandler
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -103,8 +98,6 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
-import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
-import org.wordpress.android.fluxc.store.AccountStore.FinishSecurityKeyChallengePayload
 
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
@@ -512,58 +505,17 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    // should be called when 2FA is needed and Security Key is available
     override fun signSecurityKey(challengeRequestJson: String, userId: String, username: String) {
         challengeRequestJson
             .takeIf { it.isNotNullOrEmpty() }
             ?.let { Gson().fromJson(it, WebauthnChallengeInfo::class.java) }
-            ?.let { CredentialManagerData(it) }
-            ?.let { signKeyWithFido(it) }
-    }
-
-    private val resultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        val resultCode = result.resultCode
-        val data = result.data
-        if (resultCode == RESULT_OK && data != null) {
-            if (data.hasExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)) {
-                data.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)?.let {
-                    PublicKeyCredential.deserializeFromBytes(it)
-                }?.let { response ->
-                    response.toJson()
-                        .let { Gson().fromJson(it, WebauthnSignedCredential::class.java) }
-                        .asPayload()
-                        .let { AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(it) }
-                        .let { dispatcher.dispatch(it) }
-                }
+            ?.let {
+                CredentialManagerData(it)
             }
-        }
-    }
-
-    fun signKeyWithFido(credentialManagerData: CredentialManagerData) {
-        val options = PublicKeyCredentialRequestOptions.Builder()
-            .setRpId(credentialManagerData.rpId)
-            .setAllowList(
-                credentialManagerData.allowCredentials.map {
-                    PublicKeyCredentialDescriptor(
-                        PublicKeyCredentialType.PUBLIC_KEY.toString(),
-                        it.id,
-                        listOf(Transport.USB, Transport.NFC, Transport.BLUETOOTH_LOW_ENERGY, Transport.HYBRID, Transport.INTERNAL)
-                    )
-                }
-            )
-            .setChallenge(credentialManagerData.challenge)
-            .setTimeoutSeconds(credentialManagerData.timeout.toDouble())
-            .build()
-
-        val fido2ApiClient = Fido.getFido2ApiClient(this)
-        val fidoIntent = fido2ApiClient.getSignPendingIntent(options)
-
-        fidoIntent.addOnSuccessListener { pendingIntent ->
-            IntentSenderRequest.Builder(pendingIntent.intentSender)
-                .build().let { resultLauncher.launch(it) }
-        }
+            ?.let {
+                WebauthnHandler(userId, it.twoStepNonce, dispatcher)
+                    .signKeyWithFido(this, it)
+            }
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
