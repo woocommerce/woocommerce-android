@@ -1,0 +1,2 @@
+15.9:
+Artık Birleşik Krallık ve Kanada'daki satıcıların kullanabileceği yeni Tap to Pay özelliğini tanıtmaktan heyecan duyuyoruz. Bu, Birleşik Krallık ve Kanada merkezli işletmelerin artık avucunun içinden müşterilerine daha hızlı ve rahat bir ödeme deneyimi sağlayabileceği anlamına gelir. Hemen güncelleyin ve WooCommerce'de Tap to Pay ile satışlarınızı artırmaya başlayın!

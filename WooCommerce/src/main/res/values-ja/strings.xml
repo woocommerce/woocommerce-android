@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-19 11:54:04+0000
+Translation-Revision-Date: 2023-10-24 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="previous_order">前の注文</string>
+    <string name="next_order">次の注文</string>
+    <string name="blaze_campaign_details_title">キャンペーン詳細</string>
+    <string name="blaze_campaign_list_title">Blaze キャンペーン</string>
+    <string name="blaze_campaign_status_canceled">キャンセル済み</string>
+    <string name="blaze_campaign_status_scheduled">予約済み</string>
+    <string name="product_creation_package_photo_keywords_info">テキストを微調整: 不要なスキャンの選択を解除するか編集をタップ</string>
+    <string name="product_creation_package_photo_keywords_section">キーワード</string>
+    <string name="ai_product_creation_photo_button">パッケージ写真を使用 (オプション)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">「支払いを受け取る」オプションから「Tap to Pay」を選択するには、\n「注文の詳細」または「メニュー」&gt;「支払い」の順に移動します。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の支払いを試します。\n完了したら返金されます。</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">簡単、安全でプライバシーは保護されます。</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">あらゆる種類のオフラインでの支払いを\nスマートフォンで受け取れます。 追加のハードウェアは不要です。</string>
     <string name="blaze_campaign_status_budget">予算</string>
     <string name="blaze_campaign_status_clicks">クリック数</string>
     <string name="blaze_campaign_status_impressions">インプレッション</string>
@@ -647,9 +660,6 @@ Language: ja_JP
     <string name="jetpack_benefits_fetching_status">Jetpack ステータスを取得しています</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">エラーが発生しました。 後でもう一度お試しください。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">支払いを試す</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Android では Tap to Pay は\n「メニュー」&gt;「支払い」または「支払いを受け取る」の順に移動し\n「Tap to Pay」を選択します。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">お持ちのカードを使って支払いを試し、\n完了したら返金されます。</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">お使いのスマートフォンでは今すぐ Tap to Pay を使用できます。\nお客様はスマートフォンで\nカードをタップして支払うことができます。</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">アクション</string>

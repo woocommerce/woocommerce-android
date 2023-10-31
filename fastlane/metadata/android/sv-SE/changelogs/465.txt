@@ -1,2 +1,0 @@
-15.8:
-Den här uppdateringen inkluderar viktiga buggkorrigeringar, som säkerställer en smidigare upplevelse. Den introducerar också möjligheten att uppdatera momssatser när du redigerar beställningar, vilket ger dig större kontroll. Håll utkik efter fler spännande funktioner i kommande versioner. Tack för att du väljer WooCommerce.

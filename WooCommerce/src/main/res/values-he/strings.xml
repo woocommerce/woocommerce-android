@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-19 16:54:04+0000
+Translation-Revision-Date: 2023-10-25 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="previous_order">הסדר הקודם</string>
+    <string name="next_order">הסדר הבא</string>
+    <string name="blaze_campaign_details_title">פרטי הקמפיין</string>
+    <string name="blaze_campaign_list_title">קמפיינים של Blaze</string>
+    <string name="blaze_campaign_status_canceled">בוטל</string>
+    <string name="blaze_campaign_status_scheduled">מתוזמן לפרסום</string>
+    <string name="product_creation_package_photo_keywords_info">להתאים את הטקסט: לבטל את הבחירה בסריקות שאין לך בהן צורך או להקיש כדי לערוך</string>
+    <string name="product_creation_package_photo_keywords_section">מילות מפתח</string>
+    <string name="ai_product_creation_photo_button">להשתמש בתמונת האריזה (אופציונלי)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">לבחור את Tap To Pay מהאפשרויות של \'לגבות תשלום\' בתוך \nפרטי הזמנה או תפריט &gt; תשלומים.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">לנסות תשלום של %s באמצעות כרטיס החיוב או כרטיס האשראי.\nהתשלום יוחזר בסיום.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">התהליך קל, מאובטח ופרטי.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">לקבל את כל הסוגים של תשלומים באופן אישי, ישר\nבטלפון. ללא צורך בחומרה נוספת.</string>
     <string name="blaze_campaign_status_budget">תקציב</string>
     <string name="blaze_campaign_status_clicks">קליקים</string>
     <string name="blaze_campaign_status_impressions">צפיות</string>
@@ -647,9 +660,6 @@ Language: he_IL
     <string name="jetpack_benefits_fetching_status">מביא את הסטטוסים של Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">משהו השתבש. יש לנסות שוב מאוחר יותר.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">לנסות גביית תשלום</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> אפשר למצוא את האפשרות Tap to Pay ב-Android במקטע\nMenu (תפריט) &gt; ‏Payments (תשלומים) &gt; Collect Payment (לגבות תשלום) ואז\nלבחור Tap to Pay (להקיש לתשלום).</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">ניתן לנסות גביית תשלום באמצעות הכרטיס שלך ואז\nלקבל החזר כספי לאחר שסיימת.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">הטלפון שלך מוכן לשימוש באפשרות Tap to Pay.\nהלקוחות שלך יוכלו להצמיד את הכרטיס שלהם\nלטלפון שלך כדי לשלם.</string>
     <string name="card_reader_tap_to_pay_explanation_title">לקבל תשלומים באמצעות כרטיס אשראי\nדרך הטלפון שלך</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">פעולות</string>

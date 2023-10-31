@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -21,6 +22,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 class ProductNameSubViewModel(
     savedStateHandle: SavedStateHandle,
+    private val tracker: AnalyticsTrackerWrapper,
     override val onDone: (String) -> Unit
 ) : AddProductWithAISubViewModel<String> {
     companion object {
@@ -48,12 +50,12 @@ class ProductNameSubViewModel(
     }
 
     fun onDoneClick() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_PRODUCT_NAME_CONTINUE_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_PRODUCT_NAME_CONTINUE_BUTTON_TAPPED)
         onDone(uiState.value.name)
     }
 
     fun onSuggestNameClicked() {
-        AnalyticsTracker.track(
+        tracker.track(
             AnalyticsEvent.PRODUCT_NAME_AI_ENTRY_POINT_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_HAS_INPUT_NAME to (uiState.value.name.isNotEmpty()).toString(),
@@ -77,6 +79,12 @@ class ProductNameSubViewModel(
     }
 
     fun onPackageImageClicked() {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_NAME_AI_PACKAGE_IMAGE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_AI
+            )
+        )
         setMediaPickerDialogVisibility(true)
     }
 
