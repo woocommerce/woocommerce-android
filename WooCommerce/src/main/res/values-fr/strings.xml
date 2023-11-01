@@ -815,7 +815,7 @@ Language: fr
     <string name="login_jetpack_installation_retry_activating">Réessayer d’activer</string>
     <string name="login_jetpack_installation_retry_installing">Réessayer d’installer</string>
     <string name="login_jetpack_installation_get_support">Obtenir de l’aide</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
     <string name="login_jetpack_installation_error_generic_message">Une erreur est survenue lors de la communication avec votre site.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Vous n’êtes pas autorisé à gérer les extensions sur cette boutique.</string>
     <string name="login_jetpack_installation_error_authorizing">Erreur lors de l’autorisation de la connexion à Jetpack</string>

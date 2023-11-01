@@ -815,7 +815,7 @@ Language: tr
     <string name="login_jetpack_installation_retry_activating">Tekrar etkinleştirmeyi deneyin</string>
     <string name="login_jetpack_installation_retry_installing">Tekrar kurmayı deneyin</string>
     <string name="login_jetpack_installation_get_support">Destek alın</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
     <string name="login_jetpack_installation_error_generic_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Bu mağazada eklentileri yönetme izniniz yok.</string>
     <string name="login_jetpack_installation_error_authorizing">Jetpack\'e bağlantı yetkisi verilirken hata oluştu</string>

@@ -815,7 +815,7 @@ Language: de
     <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>
     <string name="login_jetpack_installation_retry_installing">Installation erneut versuchen</string>
     <string name="login_jetpack_installation_get_support">Unterstützung erhalten</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
     <string name="login_jetpack_installation_error_generic_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Du bist nicht berechtigt, Plugins in diesem Shop zu verwalten</string>
     <string name="login_jetpack_installation_error_authorizing">Fehler beim Autorisieren der Verbindung mit Jetpack</string>
