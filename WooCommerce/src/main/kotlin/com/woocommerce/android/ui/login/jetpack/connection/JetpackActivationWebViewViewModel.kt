@@ -20,7 +20,6 @@ class JetpackActivationWebViewViewModel @Inject constructor(
 
         @VisibleForTesting
         const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
-        private const val NOT_FOUND = 404
     }
 
     private val navArgs: JetpackActivationWebViewFragmentArgs by savedStateHandle.navArgs()

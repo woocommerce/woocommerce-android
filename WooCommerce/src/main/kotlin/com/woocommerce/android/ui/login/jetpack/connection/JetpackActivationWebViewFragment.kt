@@ -50,10 +50,10 @@ class JetpackActivationWebViewFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-               is JetpackActivationWebViewViewModel.ConnectionResult -> navigateBackWithResult(
-                   key = JETPACK_CONNECTION_RESULT,
-                   result = event
-               )
+                is JetpackActivationWebViewViewModel.ConnectionResult -> navigateBackWithResult(
+                    key = JETPACK_CONNECTION_RESULT,
+                    result = event
+                )
             }
         }
     }
