@@ -5,13 +5,14 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ConnectionStep
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.StepState
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.StepType
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ViewState
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ViewState.ProgressViewState
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -87,12 +88,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowJetpackConnectionWebView(
                     url = "https://wordpress.com/jetpack/connect?url=example.com" +
-                        "&mobile_redirect=${JetpackActivationMainViewModel.MOBILE_REDIRECT}&from=mobile",
-                    connectionValidationUrls = listOf(
-                        JetpackActivationMainViewModel.MOBILE_REDIRECT, JetpackActivationMainViewModel.JETPACK_PLANS_URL
-                    ),
-                    urlComparisonMode = UrlComparisonMode.STARTS_WITH,
-                    clearCache = true
+                        "&mobile_redirect=${JetpackActivationMainViewModel.MOBILE_REDIRECT}&from=mobile"
                 )
             )
         }
@@ -115,12 +111,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
 
             assertThat(event).isEqualTo(
                 ShowJetpackConnectionWebView(
-                    url = connectionUrl,
-                    connectionValidationUrls = listOf(
-                        JetpackActivationMainViewModel.MOBILE_REDIRECT, JetpackActivationMainViewModel.JETPACK_PLANS_URL
-                    ),
-                    urlComparisonMode = UrlComparisonMode.PARTIAL,
-                    clearCache = true
+                    url = connectionUrl
                 )
             )
         }
@@ -143,9 +134,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
 
             assertThat(event).isEqualTo(
                 ShowJetpackConnectionWebView(
-                    url = connectionUrl,
-                    connectionValidationUrls = listOf(JetpackActivationMainViewModel.JETPACK_PLANS_URL, siteUrl),
-                    urlComparisonMode = UrlComparisonMode.PARTIAL
+                    url = connectionUrl
                 )
             )
         }
@@ -167,7 +156,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         }
 
         val state = viewModel.viewState.runAndCaptureValues {
-            viewModel.onJetpackConnected()
+            viewModel.onJetpackConnectionResult(JetpackActivationWebViewViewModel.ConnectionResult.Success)
         }.last()
 
         assertThat((state as ProgressViewState).connectionStep).isEqualTo(ConnectionStep.Validation)
@@ -186,7 +175,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         }
 
         val state = viewModel.viewState.runAndCaptureValues {
-            viewModel.onJetpackConnected()
+            viewModel.onJetpackConnectionResult(JetpackActivationWebViewViewModel.ConnectionResult.Success)
             advanceUntilIdle()
             runCurrent()
         }.last()
@@ -209,11 +198,44 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
             }
 
             val state = viewModel.viewState.runAndCaptureValues {
-                viewModel.onJetpackConnected()
+                viewModel.onJetpackConnectionResult(JetpackActivationWebViewViewModel.ConnectionResult.Success)
                 viewModel.onRetryClick()
             }.last()
 
             assertThat((state as ProgressViewState).steps.single { it.state == StepState.Ongoing }.type)
                 .isEqualTo(StepType.Connection)
         }
+
+    @Test
+    fun `when connection is dismissed, then trigger correct event`() = testBlocking {
+        setup(isJetpackInstalled = true) {
+            whenever(
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+            ).thenReturn(Result.success("https://example.com/connect"))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onJetpackConnectionResult(JetpackActivationWebViewViewModel.ConnectionResult.Cancel)
+        }.last()
+
+        assertThat(event).isEqualTo(JetpackActivationMainViewModel.ShowWebViewDismissedError)
+    }
+
+    @Test
+    fun `when connection fails due to an error, then show correct state`() = testBlocking {
+        setup(isJetpackInstalled = true) {
+            whenever(
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+            ).thenReturn(Result.success("https://example.com/connect"))
+        }
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onJetpackConnectionResult(
+                JetpackActivationWebViewViewModel.ConnectionResult.Failure(404)
+            )
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state).isEqualTo(ViewState.ErrorViewState(StepType.Connection, 404))
+    }
 }

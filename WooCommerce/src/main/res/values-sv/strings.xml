@@ -815,7 +815,7 @@ Language: sv_SE
     <string name="login_jetpack_installation_retry_activating">Försök att aktivera igen</string>
     <string name="login_jetpack_installation_retry_installing">Försök installera igen</string>
     <string name="login_jetpack_installation_get_support">Skaffa support</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Försök igen och kontakta supporten om detta fel fortsätter.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Försök igen och kontakta supporten om detta fel fortsätter.</string>
     <string name="login_jetpack_installation_error_generic_message">Ett fel uppstod vid kommunikationen med din webbplats.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Du har inte behörighet att hantera tillägg på denna butik</string>
     <string name="login_jetpack_installation_error_authorizing">Det gick inte att auktorisera anslutningen till Jetpack</string>

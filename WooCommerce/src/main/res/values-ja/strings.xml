@@ -815,7 +815,7 @@ Language: ja_JP
     <string name="login_jetpack_installation_retry_activating">有効化を再試行</string>
     <string name="login_jetpack_installation_retry_installing">インストールを再試行</string>
     <string name="login_jetpack_installation_get_support">サポートを受ける</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">もう一度やり直してみてください。エラーが続く場合は、サポートにお問い合わせください。</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">もう一度やり直してみてください。エラーが続く場合は、サポートにお問い合わせください。</string>
     <string name="login_jetpack_installation_error_generic_message">サイトとの通信でエラーが発生しました。</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">このストアのプラグインを管理する権限がありません</string>
     <string name="login_jetpack_installation_error_authorizing">Jetpack との連携を認証する際にエラーが発生しました</string>

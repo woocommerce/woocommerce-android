@@ -225,12 +225,18 @@ private fun AnimatedVisibilityScope.ErrorState(
             )
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
         val subtitle = when {
             viewState.errorCode == FORBIDDEN_ERROR_CODE &&
                 viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
                 R.string.login_jetpack_installation_error_connection_permission_message
+
             viewState.errorCode == FORBIDDEN_ERROR_CODE ->
                 R.string.login_jetpack_installation_error_plugin_permission_message
+
+            viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
+                R.string.login_jetpack_installation_error_connection_message
+
             else -> R.string.login_jetpack_installation_error_generic_message
         }
         Text(
@@ -238,10 +244,15 @@ private fun AnimatedVisibilityScope.ErrorState(
             style = MaterialTheme.typography.body1
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-        val suggestion = if (viewState.errorCode == FORBIDDEN_ERROR_CODE) {
-            R.string.login_jetpack_installation_error_forbidden_suggestion
-        } else {
-            R.string.login_jetpack_installation_retry_or_contact_support
+
+        val suggestion = when {
+            viewState.errorCode == FORBIDDEN_ERROR_CODE ->
+                R.string.login_jetpack_installation_error_forbidden_suggestion
+
+            viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
+                R.string.login_jetpack_installation_error_connection_suggestion
+
+            else -> R.string.login_jetpack_installation_error_generic_suggestion
         }
         Text(
             text = stringResource(id = suggestion),

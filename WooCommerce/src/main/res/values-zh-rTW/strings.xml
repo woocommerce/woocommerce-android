@@ -815,7 +815,7 @@ Language: zh_TW
     <string name="login_jetpack_installation_retry_activating">嘗試重新啟用</string>
     <string name="login_jetpack_installation_retry_installing">嘗試重新安裝</string>
     <string name="login_jetpack_installation_get_support">取得支援</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
     <string name="login_jetpack_installation_error_generic_message">與你的網站通訊時發生錯誤。</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">你無權管理此商店的外掛程式</string>
     <string name="login_jetpack_installation_error_authorizing">授權連結到 Jetpack 時發生錯誤</string>

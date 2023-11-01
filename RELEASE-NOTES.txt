@@ -1,6 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 16.1
 - [*] [Internal] Fixed a crash during store creation flow [https://github.com/woocommerce/woocommerce-android/pull/10039]
+- [*] [Internal] Improve error handling during Jetpack Connection when using a custom admin URL [https://github.com/woocommerce/woocommerce-android/pull/10077]
 
 16.0
 -----
