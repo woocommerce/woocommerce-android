@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewMo
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.StepState
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.StepType
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ViewState
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ViewState.ProgressViewState
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -204,4 +205,37 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
             assertThat((state as ProgressViewState).steps.single { it.state == StepState.Ongoing }.type)
                 .isEqualTo(StepType.Connection)
         }
+
+    @Test
+    fun `when connection is dismissed, then trigger correct event`() = testBlocking {
+        setup(isJetpackInstalled = true) {
+            whenever(
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+            ).thenReturn(Result.success("https://example.com/connect"))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onJetpackConnectionResult(JetpackActivationWebViewViewModel.ConnectionResult.Cancel)
+        }.last()
+
+        assertThat(event).isEqualTo(JetpackActivationMainViewModel.ShowWebViewDismissedError)
+    }
+
+    @Test
+    fun `when connection fails due to an error, then show correct state`() = testBlocking {
+        setup(isJetpackInstalled = true) {
+            whenever(
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+            ).thenReturn(Result.success("https://example.com/connect"))
+        }
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onJetpackConnectionResult(
+                JetpackActivationWebViewViewModel.ConnectionResult.Failure(404)
+            )
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state).isEqualTo(ViewState.ErrorViewState(StepType.Connection, 404))
+    }
 }
