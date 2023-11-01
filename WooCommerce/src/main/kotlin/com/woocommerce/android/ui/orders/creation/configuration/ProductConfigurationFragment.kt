@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -51,6 +52,9 @@ class ProductConfigurationFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateBackWithResult(PRODUCT_CONFIGURATION_RESULT, event.data)
+                }
+                is ConfigurationNavigationTarget.NavigateToVariationSelector -> {
+                    Toast.makeText(requireContext(), "Navigate to variation selection", Toast.LENGTH_SHORT).show()
                 }
             }
         }

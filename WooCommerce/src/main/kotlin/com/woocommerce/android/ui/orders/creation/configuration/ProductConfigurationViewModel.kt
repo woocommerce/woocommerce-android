@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.GetProductRules
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -34,15 +36,15 @@ class ProductConfigurationViewModel @Inject constructor(
 
     private val configuration = MutableStateFlow<ProductConfiguration?>(null)
 
-    private val productsInformation = getChildrenProductInfo(productId)
+    private val productsInformation = getChildrenProductInfo(productId).toStateFlow(null)
 
     val viewState = combine(
         flow = rules.drop(1),
         flow2 = configuration.drop(1),
-        flow3 = productsInformation
+        flow3 = productsInformation.drop(1)
     ) { rules, configuration, productsInfo ->
-        if (rules == null || configuration == null) {
-            ViewState.Error("rules not found")
+        if (rules == null || configuration == null || productsInfo == null) {
+            ViewState.Error("Information not found")
         } else {
             val issues = getConfigurationIssues(productsInfo, configuration)
             ViewState.DisplayConfiguration(configuration, productsInfo, issues)
@@ -118,6 +120,7 @@ class ProductConfigurationViewModel @Inject constructor(
 
 data class ProductInfo(
     val id: Long,
+    val productId: Long,
     val title: String,
     val imageUrl: String?
 )
@@ -127,3 +130,11 @@ data class ProductConfigurationResult(
     val productId: Long,
     val productConfiguration: ProductConfiguration
 ) : Parcelable
+
+sealed class ConfigurationNavigationTarget : MultiLiveEvent.Event() {
+    data class NavigateToVariationSelector(
+        val itemId: Long,
+        val productId: Long,
+        val variationRule: VariableProductRule
+    ) : ConfigurationNavigationTarget()
+}
