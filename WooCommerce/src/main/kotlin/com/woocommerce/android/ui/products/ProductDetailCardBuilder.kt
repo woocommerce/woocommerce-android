@@ -142,6 +142,7 @@ class ProductDetailCardBuilder(
         val isProductPublic = product.status == ProductStatus.PUBLISH &&
             viewModel.getProductVisibility() == ProductVisibility.PUBLIC
 
+        @Suppress("ComplexCondition")
         if (!isBlazeEnabled() ||
             !isProductPublic ||
             viewModel.isProductUnderCreation ||
