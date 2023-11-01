@@ -106,7 +106,8 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
                     onUpdateChildrenConfiguration = viewModel::onUpdateChildrenConfiguration,
                     onSaveConfigurationClick = viewModel::onSaveConfiguration,
                     modifier = Modifier.padding(padding),
-                    configurationIssues = state.configurationIssues
+                    configurationIssues = state.configurationIssues,
+                    onSelectChildrenAttributes = viewModel::onSelectChildrenAttributes
                 )
             }
         }
@@ -120,6 +121,7 @@ fun ProductConfigurationScreen(
     productsInfo: Map<Long, ProductInfo>,
     onUpdateChildrenConfiguration: (Long, String, String) -> Unit,
     onSaveConfigurationClick: () -> Unit,
+    onSelectChildrenAttributes: (itemId: Long) -> Unit,
     modifier: Modifier = Modifier,
     configurationIssues: List<String> = emptyList()
 ) {
@@ -132,6 +134,7 @@ fun ProductConfigurationScreen(
                         childMapEntry.key,
                         ProductInfo(
                             childMapEntry.key,
+                            -1L,
                             stringResource(id = R.string.default_product_title, childMapEntry.key),
                             null
                         )
@@ -139,30 +142,58 @@ fun ProductConfigurationScreen(
 
                     val hasQuantityRule = childMapEntry.value.containsKey(QuantityRule.KEY)
                     val hasOptionalRule = childMapEntry.value.containsKey(OptionalRule.KEY)
+                    val hasVariableRule = childMapEntry.value.containsKey(VariableProductRule.KEY)
+
+                    val hasVariableRuleAndQuantityRule = hasVariableRule && hasQuantityRule
+
                     val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
 
-                    if (hasQuantityAndOptionalRules) {
-                        val quantityRule = productRules.childrenRules
-                            ?.get(childMapEntry.key)
-                            ?.get(QuantityRule.KEY) as? QuantityRule
+                    when {
+                        hasVariableRuleAndQuantityRule -> {
+                            val quantityRule = productRules.childrenRules
+                                ?.get(childMapEntry.key)
+                                ?.get(QuantityRule.KEY) as? QuantityRule
 
-                        OptionalQuantityProductItem(
-                            title = item.title,
-                            imageUrl = item.imageUrl,
-                            info = null,
-                            quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
-                            onQuantityChanged = { value ->
-                                onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                            },
-                            isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
-                            onSwitchChanged = { value ->
-                                onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                            },
-                            minValue = quantityRule?.quantityMin,
-                            maxValue = quantityRule?.quantityMax
-                        )
-                    } else {
-                        if (hasQuantityRule) {
+                            val info = childMapEntry.value[VariableProductRule.KEY]
+                                .getAttributeOptionsFromJsonStringOrNull()
+
+                            VariableQuantityProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = info,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                onQuantityChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
+                                },
+                                minValue = quantityRule?.quantityMin,
+                                maxValue = quantityRule?.quantityMax,
+                                onSelectAttributes = { onSelectChildrenAttributes(item.id) }
+                            )
+                        }
+
+                        hasQuantityAndOptionalRules -> {
+                            val quantityRule = productRules.childrenRules
+                                ?.get(childMapEntry.key)
+                                ?.get(QuantityRule.KEY) as? QuantityRule
+
+                            OptionalQuantityProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = null,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                onQuantityChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
+                                },
+                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                onSwitchChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
+                                },
+                                minValue = quantityRule?.quantityMin,
+                                maxValue = quantityRule?.quantityMax
+                            )
+                        }
+
+                        hasQuantityRule -> {
                             val quantityRule = productRules.childrenRules
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
@@ -178,7 +209,8 @@ fun ProductConfigurationScreen(
                                 maxValue = quantityRule?.quantityMax
                             )
                         }
-                        if (hasOptionalRule) {
+
+                        hasOptionalRule -> {
                             OptionalProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
@@ -189,6 +221,8 @@ fun ProductConfigurationScreen(
                                 }
                             )
                         }
+
+                        else -> {}
                     }
                 }
             }
@@ -449,7 +483,9 @@ fun OrderProductItem(
             if (!info.isNullOrEmpty()) {
                 Text(
                     text = info,
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body2.copy(
+                        color = MaterialTheme.colors.onSurface.copy(alpha = .8f)
+                    )
                 )
             }
         }
@@ -602,5 +638,71 @@ fun ConfigurationIssues(
 fun ConfigurationIssuesPreview() {
     WooThemeWithBackground {
         ConfigurationIssues(listOf("Need to select 2 items", "Caipi -> please choose product options"))
+    }
+}
+
+@Composable
+fun VariableQuantityProductItem(
+    title: String,
+    imageUrl: String?,
+    info: String?,
+    quantity: Float,
+    onQuantityChanged: (Float) -> Unit,
+    onSelectAttributes: () -> Unit,
+    modifier: Modifier = Modifier,
+    maxValue: Float? = null,
+    minValue: Float? = null
+) {
+    ConfigurableListItem(
+        title = title,
+        imageUrl = imageUrl,
+        info = info,
+        modifier = modifier
+            .clickable { onSelectAttributes() }
+            .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
+    ) {
+        Row {
+            Stepper(
+                value = quantity,
+                onStepUp = { value -> onQuantityChanged(value) },
+                onStepDown = { value -> onQuantityChanged(value) },
+                isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
+                isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.ic_arrow_right),
+                contentDescription = stringResource(id = R.string.product_selector_arrow_content_description),
+                modifier = Modifier
+                    .size(dimensionResource(id = R.dimen.major_200))
+                    .align(Alignment.CenterVertically),
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun VariableQuantityProductItemPreview() {
+    WooThemeWithBackground {
+        VariableQuantityProductItem(
+            title = "This is an item with title",
+            imageUrl = null,
+            info = "Attribute 1 • Attribute 2",
+            quantity = 1f,
+            onQuantityChanged = {},
+            onSelectAttributes = {}
+        )
+    }
+}
+
+fun String?.getAttributeOptionsFromJsonStringOrNull(): String? {
+    return this?.let { attributes ->
+        val regexPattern = "\"option\"\\s*:\\s*\"([^\"]+)\""
+        val regex = Regex(regexPattern)
+        val matches = regex.findAll(attributes)
+        val optionsList = matches.map { it.groupValues[1] }
+        optionsList.joinToString(" • ")
     }
 }
