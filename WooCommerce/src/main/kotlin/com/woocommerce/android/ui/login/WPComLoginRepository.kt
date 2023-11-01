@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login
 
-import androidx.core.util.PatternsCompat
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
@@ -10,8 +9,6 @@ import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
-import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsError
-import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
@@ -27,17 +24,6 @@ class WPComLoginRepository @Inject constructor(
     private val wpComAccessToken: AccessToken
 ) {
     suspend fun fetchAuthOptions(emailOrUsername: String): Result<AuthOptions> {
-        if (PatternsCompat.EMAIL_ADDRESS.matcher(emailOrUsername).matches()) {
-            return Result.failure(
-                OnChangedException(
-                    AuthOptionsError(
-                        AuthOptionsErrorType.EMAIL_LOGIN_NOT_ALLOWED,
-                        ""
-                    )
-                )
-            )
-        }
-
         val action = AccountActionBuilder.newFetchAuthOptionsAction(
             FetchAuthOptionsPayload(emailOrUsername)
         )
