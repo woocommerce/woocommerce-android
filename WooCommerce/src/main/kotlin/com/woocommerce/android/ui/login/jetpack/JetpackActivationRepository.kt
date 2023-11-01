@@ -75,7 +75,7 @@ class JetpackActivationRepository @Inject constructor(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_CANNOT_FIND_WPCOM_USER
                 )
                 WooLog.w(WooLog.T.LOGIN, "Cannot find Jetpack Email in response")
-                Result.failure(Exception("Email missing from response"))
+                Result.failure(JetpackMissingConnectionEmailException)
             }
 
             else -> {
@@ -168,4 +168,6 @@ class JetpackActivationRepository @Inject constructor(
         }
         return Result.failure(lastError!!)
     }
+
+    object JetpackMissingConnectionEmailException : RuntimeException("Email missing from response")
 }

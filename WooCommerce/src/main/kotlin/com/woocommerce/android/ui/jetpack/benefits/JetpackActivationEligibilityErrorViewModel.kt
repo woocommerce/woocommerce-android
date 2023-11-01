@@ -62,7 +62,7 @@ class JetpackActivationEligibilityErrorViewModel @Inject constructor(
     }
 
     private fun handleJetpackStatusResult(
-        result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
+        result: Result<JetpackStatusFetchResponse>
     ) {
         fun handleSuccess(jetpackStatus: JetpackStatus) {
             triggerEvent(
@@ -89,11 +89,15 @@ class JetpackActivationEligibilityErrorViewModel @Inject constructor(
         }
 
         result.fold(
-            onSuccess = { (jetpackStatus, fetchResponse) ->
-                when (fetchResponse) {
-                    JetpackStatusFetchResponse.SUCCESS -> handleSuccess(jetpackStatus)
-                    JetpackStatusFetchResponse.NOT_FOUND -> checkUserEligibility(jetpackStatus)
-                    else -> { /* Still not eligible, keep showing error screen */ }
+            onSuccess = { fetchResponse ->
+                if (fetchResponse is JetpackStatusFetchResponse.Success) {
+                    if (fetchResponse.status.isJetpackInstalled) {
+                        handleSuccess(fetchResponse.status)
+                    } else {
+                        checkUserEligibility(fetchResponse.status)
+                    }
+                } else {
+                    /* Still not eligible, keep showing error screen */
                 }
             },
             onFailure = { /* Still not eligible, keep showing error screen */ }

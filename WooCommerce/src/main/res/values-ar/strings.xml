@@ -815,7 +815,7 @@ Language: ar
     <string name="login_jetpack_installation_retry_activating">محاولة التفعيل مجددًا</string>
     <string name="login_jetpack_installation_retry_installing">محاولة التثبيت مجددًا</string>
     <string name="login_jetpack_installation_get_support">الحصول على الدعم</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">ترجى المحاولة مجددًا والاتصال بالدعم إذا استمر هذا الخطأ.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">ترجى المحاولة مجددًا والاتصال بالدعم إذا استمر هذا الخطأ.</string>
     <string name="login_jetpack_installation_error_generic_message">حدث خطأ في أثناء الاتصال بموقعك.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">ليس لديك الإذن اللازم لإدارة الإضافات على هذا المتجر</string>
     <string name="login_jetpack_installation_error_authorizing">حدث خطأ في أثناء تخويل الاتصال بـ Jetpack</string>
