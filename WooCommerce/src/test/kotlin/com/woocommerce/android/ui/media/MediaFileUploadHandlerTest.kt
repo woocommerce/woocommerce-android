@@ -80,7 +80,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun `when media is fetched, then start uploading it`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
-        val fetchedMedia = MediaModel()
+        val fetchedMedia = MediaModel(0, 0)
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.FetchSucceeded(
                 REMOTE_PRODUCT_ID,
@@ -130,7 +130,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             assertThat(successfulUpload.uploadState).isEqualTo(UPLOADED.toString())
         }
 
-        val mediaModel = MediaModel().apply {
+        val mediaModel = MediaModel(0, 0).apply {
             postId = REMOTE_PRODUCT_ID
             setUploadState(UPLOADED)
         }
@@ -147,7 +147,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun `given there is no external observer, when uploads finish, then start product update`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
-        val mediaModel = MediaModel().apply {
+        val mediaModel = MediaModel(0, 0).apply {
             postId = REMOTE_PRODUCT_ID
             fileName = "test"
             url = "url"
@@ -171,7 +171,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             val testUri2 = "file:///test2"
             mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI, testUri2))
 
-            val mediaModel = MediaModel().apply {
+            val mediaModel = MediaModel(0, 0).apply {
                 postId = REMOTE_PRODUCT_ID
                 fileName = "test"
                 url = "url"
@@ -204,7 +204,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 
         val job = launch { mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).collect() }
 
-        val mediaModel = MediaModel().apply {
+        val mediaModel = MediaModel(0, 0).apply {
             postId = REMOTE_PRODUCT_ID
             setUploadState(FAILED)
         }
@@ -230,7 +230,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun `given there is no external observer, when an upload fails, then show notification`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
-        val mediaModel = MediaModel().apply {
+        val mediaModel = MediaModel(0, 0).apply {
             postId = REMOTE_PRODUCT_ID
             setUploadState(FAILED)
         }
@@ -262,7 +262,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     @Test
     fun `when assigning uploads to created product, then update the id for the successful ones`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID, listOf(TEST_URI))
-        val mediaModel = MediaModel().apply {
+        val mediaModel = MediaModel(0, 0).apply {
             fileName = "test"
             url = "url"
             uploadDate = DateTimeUtils.iso8601FromDate(Date())
