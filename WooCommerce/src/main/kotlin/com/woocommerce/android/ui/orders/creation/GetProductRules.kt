@@ -44,6 +44,13 @@ class GetProductRules @Inject constructor(
                 if (bundledProduct.rules.isOptional) {
                     builder.setChildOptional(bundledProduct.id)
                 }
+                if (bundledProduct.isVariable) {
+                    builder.setChildVariableRules(
+                        bundledProduct.id,
+                        bundledProduct.rules.attributesDefault,
+                        bundledProduct.rules.variationIds
+                    )
+                }
             }
             builder.build()
         } else {
