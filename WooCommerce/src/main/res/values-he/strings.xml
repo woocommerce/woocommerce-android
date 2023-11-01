@@ -815,7 +815,7 @@ Language: he_IL
     <string name="login_jetpack_installation_retry_activating">יש לנסות להפעיל שוב</string>
     <string name="login_jetpack_installation_retry_installing">יש לנסות להתקין שוב</string>
     <string name="login_jetpack_installation_get_support">לקבלת תמיכה</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">יש לנסות שוב ולפנות לתמיכה אם השגיאה ממשיכה להופיע.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">יש לנסות שוב ולפנות לתמיכה אם השגיאה ממשיכה להופיע.</string>
     <string name="login_jetpack_installation_error_generic_message">אירעה שגיאה בתקשורת עם האתר שלך.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">אין לך הרשאה לניהול התוספים בחנות הזאת</string>
     <string name="login_jetpack_installation_error_authorizing">אירעה שגיאה באישור החיבור אל Jetpack</string>

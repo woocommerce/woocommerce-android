@@ -76,11 +76,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
 
         Scaffold(topBar = {
             ToolbarWithHelpButton(
-                navigationIcon = if (viewState.showNavigationIcon) {
-                    Icons.Filled.ArrowBack
-                } else {
-                    null
-                },
+                navigationIcon = Icons.Filled.ArrowBack,
                 onNavigationButtonClick = {
                     if (webViewNavigator.canGoBack) {
                         webViewNavigator.navigateBack()
@@ -406,7 +402,6 @@ private fun AccountMismatchPreview() {
                 inlineButtonText = R.string.continue_button,
                 inlineButtonAction = {},
                 showJetpackTermsConsent = true,
-                showNavigationIcon = true,
                 onBackPressed = {}
             )
         )

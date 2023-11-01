@@ -815,7 +815,7 @@ Language: it
     <string name="login_jetpack_installation_retry_activating">Prova di nuovo l\'attivazione</string>
     <string name="login_jetpack_installation_retry_installing">Prova di nuovo l\'installazione</string>
     <string name="login_jetpack_installation_get_support">Ottieni assistenza</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Riprova e contatta il supporto se l\'errore persiste.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Riprova e contatta il supporto se l\'errore persiste.</string>
     <string name="login_jetpack_installation_error_generic_message">Si è verificato un errore durante la comunicazione con il sito.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Non disponi dell\'autorizzazione per gestire i plugin in questo negozio</string>
     <string name="login_jetpack_installation_error_authorizing">Errore di autorizzazione della connessione a Jetpack</string>
