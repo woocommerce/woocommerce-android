@@ -189,7 +189,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 getComponentProducts = mock(),
                 productListRepository = mock(),
                 isBlazeEnabled = isBlazeEnabled,
-                blazeUrlsHelper = BlazeUrlsHelper(selectedSite)
+                blazeUrlsHelper = BlazeUrlsHelper(selectedSite),
+                isProductCurrentlyPromoted = mock(),
             )
         )
 
