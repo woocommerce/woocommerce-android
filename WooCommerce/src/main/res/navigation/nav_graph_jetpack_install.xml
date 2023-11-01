@@ -5,17 +5,17 @@
     android:id="@+id/nav_graph_jetpack_install"
     app:startDestination="@id/jetpackBenefitsDialog">
     <dialog
-        android:id="@+id/jetpackInstallStartDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallStartDialog"
-        android:label="JetpackInstallStartDialog"
+        android:id="@+id/jetpackCPInstallStartDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackCPInstallStartDialog"
+        android:label="JetpackCPInstallStartDialog"
         tools:layout="@layout/dialog_jetpack_install_start">
         <action
-            android:id="@+id/action_jetpackInstallStartDialog_to_jetpackInstallProgressDialog"
-            app:destination="@id/jetpackInstallProgressDialog" />
+            android:id="@+id/action_jetpackCPInstallStartDialog_to_jetpackCPInstallProgressDialog"
+            app:destination="@id/jetpackCPInstallProgressDialog" />
     </dialog>
     <dialog
-        android:id="@+id/jetpackInstallProgressDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog"
+        android:id="@+id/jetpackCPInstallProgressDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackCPInstallProgressDialog"
         android:label="JetpackInstallProgressDialog"
         tools:layout="@layout/dialog_jetpack_install_progress">
     </dialog>
@@ -24,8 +24,8 @@
         android:name="com.woocommerce.android.ui.jetpack.benefits.JetpackBenefitsDialog"
         android:label="JetpackBenefitsDialog">
         <action
-            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
-            app:destination="@id/jetpackInstallStartDialog" />
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackCPInstallStartDialog"
+            app:destination="@id/jetpackCPInstallStartDialog" />
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpack_activation"
             app:destination="@id/nav_graph_jetpack_activation" >

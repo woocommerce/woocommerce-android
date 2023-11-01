@@ -14,19 +14,29 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.ACTIVATION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.CONNECTION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.INSTALLATION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Activating
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Connecting
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Failed
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Finished
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Installing
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_install_progress) {
+class JetpackCPInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_install_progress) {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
@@ -37,7 +47,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
     @Inject lateinit var selectedSite: SelectedSite
 
-    private val viewModel: JetpackInstallViewModel by viewModels()
+    private val viewModel: JetpackCPInstallViewModel by viewModels()
 
     private var isReturningFromWpAdmin = false
 
@@ -169,7 +179,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
 
     @Suppress("LongMethod")
     private fun handleFailedState(
-        errorType: JetpackInstallViewModel.FailureType,
+        errorType: JetpackCPInstallViewModel.FailureType,
         binding: DialogJetpackInstallProgressBinding
     ) {
         val ctx = binding.root.context
@@ -238,7 +248,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         binding.jetpackProgressActionButton.hide()
     }
 
-    private fun handleWpAdminButton(errorType: JetpackInstallViewModel.FailureType, button: MaterialButton) {
+    private fun handleWpAdminButton(errorType: JetpackCPInstallViewModel.FailureType, button: MaterialButton) {
         when (errorType) {
             INSTALLATION -> {
                 button.setOnClickListener {
