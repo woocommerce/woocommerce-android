@@ -22,7 +22,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -85,7 +84,6 @@ class ProductDetailCardBuilder(
     private val variationRepository: VariationRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     private var blazeCtaShownTracked = false
@@ -144,8 +142,7 @@ class ProductDetailCardBuilder(
 
         if (!isBlazeEnabled() ||
             !isProductPublic ||
-            viewModel.isProductUnderCreation ||
-            isProductCurrentlyPromoted(product.remoteId.toString())
+            viewModel.isProductUnderCreation
         ) return null
 
         if (!blazeCtaShownTracked) {
