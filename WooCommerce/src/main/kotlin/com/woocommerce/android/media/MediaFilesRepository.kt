@@ -83,8 +83,9 @@ class MediaFilesRepository @Inject constructor(
         }.onEach {
             if (it is UploadSuccess) {
                 // Remove local file if it's in cache directory
-                if (localMediaModel.filePath.contains(context.cacheDir.absolutePath)) {
-                    File(localMediaModel.filePath).delete()
+                val filePath = localMediaModel.filePath
+                if (filePath != null && filePath.contains(context.cacheDir.absolutePath)) {
+                    File(filePath).delete()
                 }
             }
         }
