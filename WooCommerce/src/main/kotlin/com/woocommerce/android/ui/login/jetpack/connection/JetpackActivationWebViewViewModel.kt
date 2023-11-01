@@ -23,19 +23,22 @@ class JetpackActivationWebViewViewModel @Inject constructor(
     }
 
     private val navArgs: JetpackActivationWebViewFragmentArgs by savedStateHandle.navArgs()
+    private var isExiting = false
 
     val urlToLoad = navArgs.urlToLoad
 
     fun onUrlLoaded(url: String) {
-        if (url.startsWith(JETPACK_PLANS_URL) || url.startsWith(MOBILE_REDIRECT)) {
+        if (!isExiting && url.startsWith(JETPACK_PLANS_URL) || url.startsWith(MOBILE_REDIRECT)) {
             triggerEvent(ConnectionResult.Success)
+            isExiting = true
         }
     }
 
     fun onUrlFailed(url: String, errorCode: Int?) {
-        if (url.contains("wp-admin") && errorCode != null) {
+        if (!isExiting && url.contains("wp-admin") && errorCode != null) {
             // This will happen when the site uses a custom admin URL, in addition to other eventual errors
             triggerEvent(ConnectionResult.Failure(errorCode))
+            isExiting = true
         }
     }
 
