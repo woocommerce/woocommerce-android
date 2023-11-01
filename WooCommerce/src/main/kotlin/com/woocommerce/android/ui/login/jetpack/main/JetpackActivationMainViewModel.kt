@@ -72,15 +72,15 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
+        private const val DELAY_AFTER_CONNECTION_MS = 500L
+        private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
+        private const val CONNECTED_EMAIL_KEY = "connected-email"
 
         @VisibleForTesting
         const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
 
         @VisibleForTesting
         const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
-        private const val DELAY_AFTER_CONNECTION_MS = 500L
-        private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
-        private const val CONNECTED_EMAIL_KEY = "connected-email"
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
