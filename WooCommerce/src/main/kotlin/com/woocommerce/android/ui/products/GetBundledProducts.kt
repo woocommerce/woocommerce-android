@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.BundleProductRules
 import com.woocommerce.android.model.BundledProduct
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
@@ -38,8 +40,11 @@ class GetBundledProducts @Inject constructor(
                             quantityMin = entity.quantityMin,
                             quantityMax = entity.quantityMax,
                             isOptional = entity.isOptional,
-                            quantityDefault = entity.quantityDefault ?: 0f
-                        )
+                            quantityDefault = entity.quantityDefault ?: 0f,
+                            attributesDefault = entity.attributesDefault?.map { VariantOption(it) },
+                            variationIds = entity.variationIds
+                        ),
+                        isVariable = product?.type == CoreProductType.VARIABLE.value
                     )
                 }
             }
