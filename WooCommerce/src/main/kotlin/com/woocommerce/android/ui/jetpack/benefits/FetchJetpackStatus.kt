@@ -9,13 +9,10 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 /**
- * First, a list of plugins is fetched from the site. If Jetpack is not installed, then the
- * [JetpackStatus] is returned with `isJetpackInstalled` set to `false`. We cannot use the 404 NOT FOUND response
- * because a site may have Jetpack Connection Package installed, but not Jetpack itself.
- *
- * Meaning for Jetpack's `/connection/data` endpoint responses, as outlined from the Jetpack codebase:
+ * Jetpack's `/connection/data` endpoint responses, as outlined from the Jetpack codebase:
  * `projects/packages/connection/tests/php/test-rest-endpoints.php`
  *
+ * - 404: Jetpack is not activated.
  * - 403: Jetpack is activated but current user has no permission to get connection data.
  * - 200: Jetpack is activated, connection data is given.
  *
