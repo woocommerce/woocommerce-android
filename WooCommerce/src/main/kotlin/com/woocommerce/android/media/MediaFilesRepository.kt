@@ -144,21 +144,22 @@ class MediaFilesRepository @Inject constructor(
                 }
 
                 event.completed -> {
-                    val channelResult = if (event.media?.url != null) {
-                        WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
+                    val media = event.media
+                    val channelResult = if (media != null && media.url.isNotBlank()) {
+                        WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${media.id}")
                         producerScope.trySendBlocking(
-                            UploadSuccess(event.media)
+                            UploadSuccess(media)
                         )
                     } else {
                         WooLog.w(
                             T.MEDIA,
-                            "MediaFilesRepository > error uploading media ${event.media?.id}, null url"
+                            "MediaFilesRepository > error uploading media [null media or blank url ${media?.id}]"
                         )
 
                         producerScope.trySendBlocking(
                             UploadFailure(
                                 error = MediaUploadException(
-                                    event.media,
+                                    media,
                                     MediaStore.MediaErrorType.GENERIC_ERROR,
                                     resourceProvider.getString(R.string.product_image_service_error_uploading)
                                 )
