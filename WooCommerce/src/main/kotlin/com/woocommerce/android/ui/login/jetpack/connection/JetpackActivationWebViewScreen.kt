@@ -19,7 +19,8 @@ fun JetpackActivationWebViewScreen(
     wpComAuthenticator: WPComWebViewAuthenticator,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
-    onDismiss: () -> Unit
+    onUrlFailed: (String, Int?) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -35,6 +36,7 @@ fun JetpackActivationWebViewScreen(
             userAgent = userAgent,
             wpComAuthenticator = wpComAuthenticator,
             onUrlLoaded = onUrlLoaded,
+            onUrlFailed = onUrlFailed,
             clearCache = true,
             modifier = Modifier.padding(paddingValues)
         )

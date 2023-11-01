@@ -20,6 +20,7 @@ class JetpackActivationWebViewViewModel @Inject constructor(
 
         @VisibleForTesting
         const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
+        private const val NOT_FOUND = 404
     }
 
     private val navArgs: JetpackActivationWebViewFragmentArgs by savedStateHandle.navArgs()
@@ -29,6 +30,13 @@ class JetpackActivationWebViewViewModel @Inject constructor(
     fun onUrlLoaded(url: String) {
         if (url.startsWith(JETPACK_PLANS_URL) || url.startsWith(MOBILE_REDIRECT)) {
             triggerEvent(ConnectionResult.Success)
+        }
+    }
+
+    fun onUrlFailed(url: String, errorCode: Int?) {
+        if (url.contains("wp-admin") && errorCode != null) {
+            // This will happen when the site uses a custom admin URL, in addition to other eventual errors
+            triggerEvent(ConnectionResult.Failure(errorCode))
         }
     }
 

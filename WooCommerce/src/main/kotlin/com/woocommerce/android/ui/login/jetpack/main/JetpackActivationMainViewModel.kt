@@ -72,8 +72,10 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
+
         @VisibleForTesting
         const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
+
         @VisibleForTesting
         const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
@@ -209,7 +211,11 @@ class JetpackActivationMainViewModel @Inject constructor(
         when (result) {
             Success -> connectionStep.value = ConnectionStep.Validation
             Cancel -> triggerEvent(ShowWebViewDismissedError)
-            is Failure -> TODO()
+            is Failure -> currentStep.update {
+                it.copy(
+                    state = StepState.Error(result.errorCode)
+                )
+            }
         }
     }
 

@@ -41,6 +41,7 @@ class JetpackActivationWebViewFragment : BaseFragment() {
                     wpComAuthenticator = wpComAuthenticator,
                     userAgent = userAgent,
                     onUrlLoaded = viewModel::onUrlLoaded,
+                    onUrlFailed = viewModel::onUrlFailed,
                     onDismiss = viewModel::onDismiss
                 )
             }
