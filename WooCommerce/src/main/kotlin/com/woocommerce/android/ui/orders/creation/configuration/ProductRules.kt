@@ -39,6 +39,12 @@ class ProductRules private constructor(
             childRules[OptionalRule.KEY] = OptionalRule()
         }
 
+        fun setChildVariableRules(itemId: Long, attributesDefault: List<VariantOption>?, variationIds: List<Long>?) {
+            val childRules = childrenRules.getOrPut(itemId) { mutableMapOf() }
+            val defaultAttributes = if (attributesDefault.isNullOrEmpty()) null else attributesDefault
+            childRules[VariableProductRule.KEY] = VariableProductRule(defaultAttributes, variationIds)
+        }
+
         fun build(): ProductRules {
             val itemChildrenRules = if (childrenRules.isEmpty()) null else childrenRules
             return ProductRules(productType, rules, itemChildrenRules)
@@ -69,6 +75,7 @@ class QuantityRule(val quantityMin: Float?, val quantityMax: Float?, val quantit
                     one = R.string.configuration_quantity_item
                 )
             }
+
             quantityMin != null && quantityMax != null && quantityMin != quantityMax -> resourceProvider.getString(
                 R.string.configuration_quantity_between,
                 quantityMin.formatToString(),
@@ -103,6 +110,18 @@ class OptionalRule : ItemRules {
     }
 
     override fun getInitialValue(): String? = null
+}
+
+@Parcelize
+class VariableProductRule(
+    val attributesDefault: List<VariantOption>?,
+    val variationIds: List<Long>?
+) : ItemRules {
+    companion object {
+        const val KEY = "variable_product_rule"
+    }
+
+    override fun getInitialValue(): String? = attributesDefault?.let { Gson().toJson(it) }
 }
 
 @Parcelize
