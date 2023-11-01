@@ -113,7 +113,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             remoteProductId = REMOTE_PRODUCT_ID,
             localUri = TEST_URI,
             uploadStatus = UploadStatus.Failed(
-                media = MediaModel(),
                 mediaErrorMessage = resourceProvider.getString(string.product_image_service_error_media_null),
                 mediaErrorType = NULL_MEDIA_ARG
             )

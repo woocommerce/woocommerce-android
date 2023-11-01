@@ -143,9 +143,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when media upload fails for an image, then send an event`() = testBlocking {
         val error = MediaUploadException(
-            MediaModel(),
-            GENERIC_ERROR,
-            ""
+            errorType = GENERIC_ERROR,
+            errorMessage = ""
         )
         whenever(mediaFilesRepository.uploadMedia(any(), any())).thenReturn(flowOf(UploadResult.UploadFailure(error)))
 

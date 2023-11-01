@@ -100,7 +100,6 @@ class MediaFilesRepository @Inject constructor(
                 emit(
                     UploadFailure(
                         error = MediaUploadException(
-                            media = MediaModel(),
                             errorMessage = "Media couldn't be found",
                             errorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
                         )
@@ -191,7 +190,7 @@ class MediaFilesRepository @Inject constructor(
     }
 
     class MediaUploadException(
-        val media: MediaModel,
+        val media: MediaModel? = null,
         val errorType: MediaStore.MediaErrorType,
         val errorMessage: String
     ) : Exception()
