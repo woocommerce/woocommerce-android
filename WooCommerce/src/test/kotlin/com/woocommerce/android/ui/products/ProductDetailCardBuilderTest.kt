@@ -53,7 +53,6 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             variationRepository = mock(),
             appPrefsWrapper = mock(),
             isBlazeEnabled = isBlazeEnabled,
-            isProductCurrentlyPromoted = mock(),
             analyticsTrackerWrapper = mock()
         )
     }

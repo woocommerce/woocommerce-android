@@ -266,7 +266,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 productListRepository = mock(),
                 isBlazeEnabled = isBlazeEnabled,
                 blazeUrlsHelper = BlazeUrlsHelper(selectedSite),
-                isProductCurrentlyPromoted = mock(),
             )
         )
 
