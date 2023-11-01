@@ -44,9 +44,8 @@ class ProductConfigurationViewModel @Inject constructor(
         if (rules == null || configuration == null) {
             ViewState.Error("rules not found")
         } else {
-            ViewState.DisplayConfiguration(
-                configuration, productsInfo, configuration.getConfigurationIssues(resourceProvider)
-            )
+            val issues = getConfigurationIssues(productsInfo, configuration)
+            ViewState.DisplayConfiguration(configuration, productsInfo, issues)
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ViewState.Loading)
 
@@ -80,6 +79,29 @@ class ProductConfigurationViewModel @Inject constructor(
         configuration.value?.let {
             triggerEvent(MultiLiveEvent.Event.ExitWithResult(ProductConfigurationResult(productId, it)))
         } ?: triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun getConfigurationIssues(
+        productsInfo: Map<Long, ProductInfo>,
+        productConfiguration: ProductConfiguration
+    ): List<String> {
+        val issues = mutableListOf<String>()
+        productConfiguration.getConfigurationIssues(resourceProvider).forEach { entry ->
+            if (entry.key == ProductConfiguration.PARENT_KEY) {
+                issues.add(entry.value)
+            } else {
+                val productName = productsInfo[entry.key]?.title ?: StringUtils.EMPTY
+                issues.add(resourceProvider.getString(R.string.configuration_children_issue, productName, entry.value))
+            }
+        }
+        return issues
+    }
+
+    fun onSelectChildrenAttributes(itemId: Long) {
+        val productId = productsInformation.value?.get(itemId)?.productId ?: return
+        val rules = rules.value ?: return
+        val rule = rules.childrenRules?.get(itemId)?.get(VariableProductRule.KEY) as VariableProductRule
+        triggerEvent(ConfigurationNavigationTarget.NavigateToVariationSelector(itemId, productId, rule))
     }
 
     sealed class ViewState {

@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.creation.configuration
 
 import android.os.Parcelable
+import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.StringUtils
@@ -132,6 +134,7 @@ class ProductConfiguration(
     val childrenConfiguration: MutableMap<Long, MutableMap<String, String?>>? = null
 ) : Parcelable {
     companion object {
+        const val PARENT_KEY = -1L
         fun getConfiguration(
             rules: ProductRules,
             children: List<OrderCreationProduct.ProductItem>? = null,
@@ -157,8 +160,8 @@ class ProductConfiguration(
         }
     }
 
-    fun getConfigurationIssues(resourceProvider: ResourceProvider): List<String> {
-        val result = mutableListOf<String>()
+    fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
+        val result = mutableMapOf<Long, String>()
 
         if (rules.itemRules.containsKey(QuantityRule.KEY)) {
             val itemQuantityRule = rules.itemRules[QuantityRule.KEY] as QuantityRule
@@ -170,7 +173,16 @@ class ProductConfiguration(
             val isMaximumOutOfBounds = childrenQuantity > (itemQuantityRule.quantityMax ?: Float.MAX_VALUE)
             if (isMinimumOutOfBounds || isMaximumOutOfBounds) {
                 val ruleBounds = itemQuantityRule.getRuleBounds(resourceProvider)
-                result.add(resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds))
+                result[PARENT_KEY] = resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds)
+            }
+        }
+        childrenConfiguration?.forEach { entry ->
+            val itemQuantity = entry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+            val isVariable = entry.value.containsKey(VariableProductRule.KEY)
+            val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
+
+            if (itemQuantity > 0f && isVariable && attributesAreNullOrEmpty) {
+                result[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
         }
         return result
