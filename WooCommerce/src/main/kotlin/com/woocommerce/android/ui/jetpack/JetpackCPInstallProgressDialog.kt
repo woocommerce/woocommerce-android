@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.jetpack
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
@@ -8,7 +9,6 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatu
 import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Failed
 import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Finished
 import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Installing
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -82,10 +83,11 @@ class JetpackCPInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_in
         }
 
         binding.jetpackProgressActionButton.setOnClickListener {
-            findNavController().popBackStack(
-                destinationId = R.id.jetpackBenefitsDialog,
-                inclusive = true
-            )
+            // Restart main screen
+            val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            startActivity(intent)
         }
 
         binding.contactButton.setOnClickListener {
