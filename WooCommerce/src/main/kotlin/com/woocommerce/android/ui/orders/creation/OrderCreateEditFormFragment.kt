@@ -6,13 +6,15 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
@@ -30,6 +32,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -39,11 +42,10 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
@@ -66,6 +68,7 @@ import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
@@ -78,6 +81,9 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var isCustomAmountsFeatureFlagEnabled: IsCustomAmountsFeatureFlagEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -98,10 +104,6 @@ class OrderCreateEditFormFragment :
                 is OrderCreateEditViewModel.Mode.Edit -> null
             }
         )
-
-    private val View?.productsAdapter
-        get() = (this as? RecyclerView)
-            ?.run { adapter as? OrderCreateEditProductsAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
@@ -125,9 +127,6 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleProductDetailsEditResult() {
-        handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
-            viewModel.onProductDetailsEditResult(it)
-        }
         handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
             viewModel.onProductDiscountEditResult(it)
         }
@@ -242,6 +241,14 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            initNewProductsSection()
+        } else {
+            initOldProductsSection()
+        }
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initOldProductsSection() {
         productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
                 text = getString(R.string.order_creation_add_products),
@@ -252,6 +259,28 @@ class OrderCreateEditFormFragment :
             addProductsViaScanButton = AddButton(
                 text = getString(R.string.order_creation_add_product_via_barcode_scanning),
                 onClickListener = { viewModel.onScanClicked() }
+            ),
+        )
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initNewProductsSection() {
+        productsSection.hideHeader()
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+            addCustomAmountsButton = AddButton(
+                text = getString(R.string.order_creation_add_custom_amounts),
+                onClickListener = {
+                    // Implement custom amounts click listener
+                }
             )
         )
     }
@@ -283,7 +312,7 @@ class OrderCreateEditFormFragment :
         }
 
         viewModel.products.observe(viewLifecycleOwner) {
-            bindProductsSection(binding.productsSection, it)
+            bindProductsSection(binding.productsSection, viewModel.products)
         }
 
         observeViewStateChanges(binding)
@@ -309,12 +338,6 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.addCouponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
-                }
-            }
-            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                if (new.isEditable) {
-                    binding.productsSection.content.productsAdapter?.areProductsEditable =
-                        show.not()
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -475,33 +498,70 @@ class OrderCreateEditFormFragment :
             }
     }
 
-    private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
+    private fun bindProductsSection(
+        productsSection: OrderCreateEditSectionView,
+        products: LiveData<List<ProductUIModel>>
+    ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
-        if (products.isNullOrEmpty()) {
-            productsSection.content = null
-        } else {
-            // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
-            if (productsSection.content == null) {
-                val animator = DefaultItemAnimator().apply {
-                    // Disable change animations to avoid duplicating viewholders
-                    supportsChangeAnimations = false
-                }
-                productsSection.content = RecyclerView(requireContext()).apply {
-                    layoutManager = LinearLayoutManager(requireContext())
-                    adapter = OrderCreateEditProductsAdapter(
-                        onProductClicked = viewModel::onProductClicked,
-                        currencyFormatter = currencyFormatter,
-                        currencyCode = viewModel.currentDraft.currency,
-                        onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
-                        onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
-                    )
-                    itemAnimator = animator
-                    isNestedScrollingEnabled = false
-                }
+        if (products.value.isNullOrEmpty() && isCustomAmountsFeatureFlagEnabled()) {
+            productsSection.hideAddProductsHeaderActions()
+            productsSection.hideHeader()
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = { viewModel.onScanClicked() }
+                ),
+                addCustomAmountsButton = AddButton(
+                    text = getString(R.string.order_creation_add_custom_amounts),
+                    onClickListener = {
+                        findNavController().navigateSafely(
+                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
+                        )
+                    }
+                )
+            )
+        } else if (isCustomAmountsFeatureFlagEnabled()) {
+            productsSection.showAddProductsHeaderActions()
+            productsSection.showHeader()
+            productsSection.removeProductsButtons()
+        }
+        if (productsSection.content == null) {
+            productsSection.content = ComposeView(requireContext()).apply {
+                bindExpandableProductsSection(products)
             }
-            productsSection.content.productsAdapter?.apply {
-                submitList(products)
-                areProductsEditable = viewModel.currentDraft.isEditable
+        }
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            productsSection.barcodeIcon.setOnClickListener {
+                viewModel.onScanClicked()
+            }
+            productsSection.addProductIcon.setOnClickListener {
+                viewModel.onAddProductClicked()
+            }
+        }
+    }
+
+    private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<ProductUIModel>>) {
+        setContent {
+            val state = items.observeAsState(emptyList())
+            WooTheme {
+                Column(modifier = Modifier) {
+                    state.value.forEach { item ->
+                        ExpandableProductCard(
+                            viewModel.viewStateData.liveData.observeAsState(),
+                            item,
+                            onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
+                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item.item) },
+                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item.item.itemId) },
+                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item.item.itemId) },
+                        )
+                    }
+                }
             }
         }
     }
@@ -664,7 +724,6 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
-            content.productsAdapter?.areProductsEditable = true
         }
         paymentSection.apply {
             feeButton.isEnabled = true
@@ -680,7 +739,6 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
-            content.productsAdapter?.areProductsEditable = false
         }
         paymentSection.apply {
             feeButton.isEnabled = false

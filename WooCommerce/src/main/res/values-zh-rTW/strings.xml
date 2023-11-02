@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 15:54:04+0000
+Translation-Revision-Date: 2023-10-25 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="previous_order">上一筆訂單</string>
+    <string name="next_order">下一筆訂單</string>
+    <string name="blaze_campaign_details_title">行銷活動詳細資訊</string>
+    <string name="blaze_campaign_list_title">Blaze 行銷活動</string>
+    <string name="blaze_campaign_status_canceled">已取消</string>
+    <string name="blaze_campaign_status_scheduled">已排程</string>
+    <string name="product_creation_package_photo_keywords_info">微調你的文字：取消選取你不需要的掃瞄項目，或點一下即可編輯</string>
+    <string name="product_creation_package_photo_keywords_section">關鍵字</string>
+    <string name="ai_product_creation_photo_button">使用包裹照片 (可留空)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">在「訂單詳細資訊」的「收款」選項或「選單」&gt;「付款」中，\n選擇「Tap to Pay」(輕觸付款)。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">嘗試使用簽帳金融卡或信用卡支付 %s 款項。\n完成後就會退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">簡單、安全且私密。</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">接受所有類型的親自收款，\n全都能在手機上完成。 無須使用額外硬體。</string>
+    <string name="blaze_campaign_status_budget">預算</string>
+    <string name="blaze_campaign_status_clicks">點擊數</string>
+    <string name="blaze_campaign_status_impressions">曝光數</string>
+    <string name="blaze_campaign_status_rejected">已拒絕</string>
+    <string name="blaze_campaign_status_completed">已完成</string>
+    <string name="blaze_campaign_status_active">已啟用</string>
+    <string name="blaze_campaign_status_in_moderation">審核中</string>
+    <string name="blaze_campaign_show_all_button">顯示全部</string>
+    <string name="blaze_campaign_create_campaign_button">建立行銷活動</string>
+    <string name="blaze_campaign_subtitle">提升能見度，加速產品銷售。</string>
+    <string name="blaze_campaign_title">Blaze 行銷活動</string>
+    <string name="card_reader_tap_to_pay_about_copyright">「感應支付符號」為 EMVCo, LLC 所擁有，並經其許可所使用的商標。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. 在你看到「完成」核取記號後，你的商店將處理付款並完成交易。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. 顧客手持卡片，以水平方向置於你手機的感應支付符號上方。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. 向顧客展示你的手機。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. 點選「收取款項」並選擇「輕觸付款」。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">收取付款</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">建立訂單</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s 或 %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">瞭解使用方式</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">深入瞭解讀卡機</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">若要接受高於此限制的付款，請考慮購買可輸入 PIN 碼的讀卡機。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">我們不在 Android 裝置上支援可輸入 PIN 碼的輕觸付款功能。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">在%1$s，有些卡片需要輸入 PIN 碼才能在超過 %2$s 的交易使用感應支付。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">重要資訊</string>
+    <string name="card_reader_tap_to_pay_about_description">「輕觸付款」功能可接受所有類型的感應付款，從實體簽帳金融卡、信用卡，到數位錢包等，讓你無需購買實體讀卡機。</string>
+    <string name="card_reader_tap_to_pay_about_header">「輕觸付款」是什麼？</string>
+    <string name="card_reader_tap_to_pay_about_title">關於「輕觸付款」</string>
+    <string name="ai_feedback_form_negative_button">負面意見回饋</string>
+    <string name="ai_feedback_form_positive_button">正面意見回饋</string>
+    <string name="ai_feedback_form_message">此結果是否有幫助？</string>
+    <string name="product_creation_ai_preview_short_description_section">商品簡短說明</string>
+    <string name="card_reader_payment_update_available">讀卡機有更新可用</string>
+    <string name="card_reader_about_tap_to_pay">關於「卡緊收」</string>
+    <string name="card_reader_tap_to_pay_header">「卡緊收」功能</string>
+    <string name="card_reader_settings_header">設定</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">使用電子郵件手動新增詳情</string>
+    <string name="login_app_login_malformed_link">我們無法處理你的應用程式登入要求</string>
     <string name="ai_product_name_copy_error">複製商品名稱到剪貼簿時發生錯誤。</string>
     <string name="ai_product_name_copy_success">商品名稱已複製到剪貼簿。</string>
     <string name="ai_product_name_copy_label">AI 產生的商品名稱</string>
@@ -20,6 +71,7 @@ Language: zh_TW
     <string name="ai_product_name_sheet_generate_button">幫我撰寫</string>
     <string name="ai_product_name_sheet_input_description">介紹你的產品與其獨特之處！</string>
     <string name="ai_product_name_sheet_subtitle">讓 AI 為你產生吸引人的名稱</string>
+    <string name="ai_product_name_sheet_title">產品名稱</string>
     <string name="empty_review_filtered_list_message">嘗試停用「未讀」篩選條件，便可看到所有產品評論</string>
     <string name="empty_review_filtered_list_title">沒有未讀的產品評論</string>
     <string name="product_creation_ai_tone_selected_content_desc">已選取語氣</string>
@@ -32,6 +84,7 @@ Language: zh_TW
     <string name="product_creation_ai_preview_details_section">詳細資料</string>
     <string name="product_creation_ai_preview_description_section">產品說明</string>
     <string name="product_creation_ai_preview_name_section">產品名稱</string>
+    <string name="product_creation_ai_preview_subtitle">稍後也可隨時變更下方詳細資訊。</string>
     <string name="product_creation_ai_preview_title">預覽</string>
     <string name="product_creation_ai_about_product_continue_button">建立產品詳細資料</string>
     <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>
@@ -475,6 +528,7 @@ Language: zh_TW
     <string name="product_selector_popular_products_heading">熱門</string>
     <string name="jetpack_install_role_eligibility_learn_more">深入瞭解角色和權限</string>
     <string name="jetpack_install_role_eligibility_error_message">你的角色似乎不允許安裝 Jetpack。 \n請聯絡管理員尋求協助。</string>
+    <string name="card_reader_test_tap_to_pay">試用「卡緊收」</string>
     <string name="subscription_free_trial">免費試用</string>
     <string name="subscription_sign_up_fee">註冊費</string>
     <string name="subscription_expire">到期時間：</string>
@@ -511,6 +565,8 @@ Language: zh_TW
     <string name="product_subscription_title">訂閱</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">讀卡機接受信用卡和簽帳金融卡的輕觸、晶片和刷卡付款。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">直接從手機安全地接受零接觸付款。</string>
+    <string name="card_reader_tap_to_pay_description">使用手機接受信用卡\n付款。 立即試用。</string>
+    <string name="card_reader_tap_to_pay_share_feedback">分享意見反應</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">無法登入，因為未核准建立應用程式密碼。</string>
     <string name="login_site_credentials_fetching_site">正在擷取網站…</string>
     <string name="login_site_credentials_fetching_site_failed">擷取你的網站時發生錯誤</string>
@@ -604,9 +660,6 @@ Language: zh_TW
     <string name="jetpack_benefits_fetching_status">擷取 Jetpack 狀態</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">發生錯誤。 請稍後再試一次。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">嘗試付款</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> 若使用 Android 系統，可以在\n「選單」&gt;「付款」找到「點選支付」或「收款」\n，然後選擇「點選支付」。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">使用信用卡嘗試付款\n，完成後就會退款。</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">你的手機已可使用「點選支付」功能。\n你的顧客可以在手機上點選信用卡\n來付款。</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
     <string name="card_reader_hub_actions_category_header">動作</string>
@@ -762,7 +815,7 @@ Language: zh_TW
     <string name="login_jetpack_installation_retry_activating">嘗試重新啟用</string>
     <string name="login_jetpack_installation_retry_installing">嘗試重新安裝</string>
     <string name="login_jetpack_installation_get_support">取得支援</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
     <string name="login_jetpack_installation_error_generic_message">與你的網站通訊時發生錯誤。</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">你無權管理此商店的外掛程式</string>
     <string name="login_jetpack_installation_error_authorizing">授權連結到 Jetpack 時發生錯誤</string>

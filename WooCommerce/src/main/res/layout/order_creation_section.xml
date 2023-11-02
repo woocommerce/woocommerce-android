@@ -13,9 +13,9 @@
         android:layout_marginTop="@dimen/major_75"
         android:accessibilityHeading="true"
         android:textAppearance="?attr/textAppearanceHeadline6"
-        app:layout_constraintEnd_toStartOf="@id/edit_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_weight="2"
         tools:ignore="UnusedAttribute" />
 
     <com.google.android.material.button.MaterialButton
@@ -25,9 +25,42 @@
         android:layout_height="wrap_content"
         android:text="@string/edit"
         android:visibility="gone"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/products_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="add_icon, barcode_icon"/>
+
+    <ImageView
+        android:id="@+id/barcode_icon"
+        android:layout_width="@dimen/image_minor_50"
+        android:layout_height="@dimen/image_minor_50"
+        android:layout_marginEnd="@dimen/major_150"
+        android:src="@drawable/ic_barcode"
+        android:visibility="gone"
+        android:contentDescription="@string/order_editing_barcode_content_description"
+        app:layout_constraintBottom_toBottomOf="@+id/header_label"
+        app:layout_constraintEnd_toStartOf="@id/add_icon"
+        app:layout_constraintTop_toTopOf="@+id/header_label" />
+
+    <ImageView
+        android:id="@+id/add_icon"
+        android:layout_width="@dimen/image_minor_50"
+        android:layout_height="@dimen/image_minor_50"
+        android:layout_marginEnd="@dimen/major_100"
+        android:src="@drawable/ic_add"
+        android:contentDescription="@string/order_editing_add_content_description"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/header_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/header_label" />
+
 
     <ImageView
         android:id="@+id/lock_icon"

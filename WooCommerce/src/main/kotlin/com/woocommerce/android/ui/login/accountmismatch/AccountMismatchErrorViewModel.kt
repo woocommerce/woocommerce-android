@@ -141,12 +141,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         else null,
         inlineButtonAction = { helpFindingEmail() },
         showJetpackTermsConsent = navArgs.primaryButton == AccountMismatchPrimaryButton.CONNECT_JETPACK,
-        showNavigationIcon = navArgs.allowBackNavigation,
-        onBackPressed = {
-            if (navArgs.allowBackNavigation) {
-                triggerEvent(Exit)
-            }
-        }
+        onBackPressed = { triggerEvent(Exit) }
     )
 
     private fun prepareSiteCredentialsState(stepData: Step.SiteCredentials) = ViewState.SiteCredentialsViewState(
@@ -305,8 +300,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     sealed interface ViewState {
-        val showNavigationIcon: Boolean
-            get() = false
         val onBackPressed: () -> Unit
             get() = {}
 
@@ -320,7 +313,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
             @StringRes val inlineButtonText: Int?,
             val inlineButtonAction: () -> Unit,
             val showJetpackTermsConsent: Boolean,
-            override val showNavigationIcon: Boolean,
             override val onBackPressed: () -> Unit
         ) : ViewState
 
@@ -336,7 +328,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
             override val onBackPressed: () -> Unit
         ) : ViewState {
             val isValid = username.isNotBlank() && password.isNotBlank()
-            override val showNavigationIcon: Boolean = true
         }
 
         data class JetpackWebViewState(
@@ -344,9 +335,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val successConnectionUrls: List<String>,
             val onConnected: () -> Unit,
             override val onBackPressed: () -> Unit
-        ) : ViewState {
-            override val showNavigationIcon: Boolean = true
-        }
+        ) : ViewState
 
         object FetchingJetpackEmailViewState : ViewState
         data class JetpackEmailErrorState(val retry: () -> Unit) : ViewState

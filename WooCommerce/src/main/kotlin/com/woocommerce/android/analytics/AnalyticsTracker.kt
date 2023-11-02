@@ -519,6 +519,7 @@ class AnalyticsTracker private constructor(
         const val KEY_NEW_SITE_ID = "new_site_id"
         const val KEY_INITIAL_DOMAIN = "initial_domain"
         const val KEY_CHALLENGE = "challenges"
+        const val KEY_FEATURES = "features"
         const val VALUE_CHALLENGE_SETTING_UP_ONLINE_STORE = "setting_up_online_store"
         const val VALUE_CHALLENGE_FINDING_CUSTOMERS = "finding_customers"
         const val VALUE_CHALLENGE_MANAGING_INVENTORY = "managing_inventory"
@@ -614,6 +615,11 @@ class AnalyticsTracker private constructor(
         // -- AI product creation
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
+
+        // -- AI product from package photo
+        const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"
+        const val KEY_SELECTED_TEXT_COUNT = "selected_text_count"
+        const val VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO = "product_creation_from_package_photo"
 
         const val KEY_IS_AI_CONTENT = "is_ai_content"
 

@@ -80,7 +80,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     }
 
     private fun handleJetpackStatusResult(
-        result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
+        result: Result<JetpackStatusFetchResponse>
     ) {
         fun startJetpackActivation(jetpackStatus: JetpackStatus) {
             triggerEvent(StartJetpackActivationForApplicationPasswords(selectedSite.get().url, jetpackStatus))
@@ -130,14 +130,17 @@ class JetpackBenefitsViewModel @Inject constructor(
         }
 
         result.fold(
-            onSuccess = { (jetpackStatus, fetchResponse) ->
+            onSuccess = { fetchResponse ->
                 when (fetchResponse) {
-                    JetpackStatusFetchResponse.SUCCESS -> {
-                        startJetpackActivation(jetpackStatus)
-                        logSuccess(jetpackStatus)
+                    is JetpackStatusFetchResponse.Success -> {
+                        if (fetchResponse.status.isJetpackInstalled) {
+                            startJetpackActivation(fetchResponse.status)
+                            logSuccess(fetchResponse.status)
+                        } else {
+                            handleUserEligibility(ERROR_CODE_NOT_FOUND, fetchResponse.status)
+                        }
                     }
-                    JetpackStatusFetchResponse.FORBIDDEN -> handleUserEligibility(ERROR_CODE_FORBIDDEN)
-                    JetpackStatusFetchResponse.NOT_FOUND -> handleUserEligibility(ERROR_CODE_NOT_FOUND, jetpackStatus)
+                    JetpackStatusFetchResponse.ConnectionForbidden -> handleUserEligibility(ERROR_CODE_FORBIDDEN)
                 }
             },
             onFailure = {

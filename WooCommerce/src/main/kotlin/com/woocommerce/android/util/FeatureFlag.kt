@@ -25,7 +25,6 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     CUSTOM_AMOUNTS_M1,
     PRODUCT_CREATION_AI,
-    BLAZE_ITERATION_2,
     PACKAGE_PHOTO_SCANNING;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -45,15 +44,14 @@ enum class FeatureFlag {
             BLAZE,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
             ORDER_CREATION_TAX_RATE_SELECTOR,
-            PRODUCT_CREATION_AI -> true
+            PRODUCT_CREATION_AI,
+            PACKAGE_PHOTO_SCANNING -> true
 
             CUSTOM_AMOUNTS_M1,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            BLAZE_ITERATION_2,
-            PACKAGE_PHOTO_SCANNING -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

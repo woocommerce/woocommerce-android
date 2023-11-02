@@ -13,14 +13,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_MIN_MAX_QUANTITY_RULES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -166,7 +163,7 @@ class ProductDetailViewModel @Inject constructor(
 
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
-        if (old?.productDraft != new.productDraft) {
+        if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
             new.productDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
@@ -230,7 +227,9 @@ class ProductDetailViewModel @Inject constructor(
             parameters = parameters,
             addonRepository = addonRepository,
             variationRepository = variationRepository,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            isBlazeEnabled = isBlazeEnabled,
+            analyticsTrackerWrapper = tracker
         )
     }
 
@@ -294,8 +293,7 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = isProductPublished && !isProductUnderCreation,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
-                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
-                showPromoteWithBlaze = shouldShowBlaze(productDraft)
+                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
             )
         }.asLiveData()
 
@@ -451,18 +449,14 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onBlazeClicked() {
-        tracker.track(
-            stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-        )
         viewState.productDraft?.let {
             triggerEvent(
                 NavigateToBlazeWebView(
                     url = blazeUrlsHelper.buildUrlForProduct(
                         productId = it.remoteId,
-                        source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
+                        source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
                     ),
-                    source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
+                    source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
                 )
             )
         }
@@ -2347,20 +2341,6 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product) =
-        getProductVisibility() == PUBLIC &&
-            productDraft.status != DRAFT &&
-            !isProductUnderCreation &&
-            isBlazeEnabled()
-
-    fun trackBlazeDisplayed() {
-        if (menuButtonsState.value?.showPromoteWithBlaze == true)
-            tracker.track(
-                stat = BLAZE_ENTRY_POINT_DISPLAYED,
-                properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-            )
-    }
-
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2496,7 +2476,6 @@ class ProductDetailViewModel @Inject constructor(
         val viewProductOption: Boolean,
         val shareOption: Boolean,
         val showShareOptionAsActionWithText: Boolean,
-        val trashOption: Boolean,
-        val showPromoteWithBlaze: Boolean
+        val trashOption: Boolean
     )
 }
