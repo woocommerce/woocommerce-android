@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 14:54:04+0000
+Translation-Revision-Date: 2023-10-24 16:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="previous_order">الطلب السابق</string>
+    <string name="next_order">الطلب التالي</string>
+    <string name="blaze_campaign_details_title">تفاصيل الحملة</string>
+    <string name="blaze_campaign_list_title">حملات Blaze</string>
+    <string name="blaze_campaign_status_canceled">تم الإلغاء</string>
+    <string name="blaze_campaign_status_scheduled">مجدول</string>
+    <string name="product_creation_package_photo_keywords_info">تعديل النص الخاص بك: إلغاء تحديد الفحوصات التي لا تحتاج إليها أو النقر للتحرير</string>
+    <string name="product_creation_package_photo_keywords_section">كلمات مفتاحية</string>
+    <string name="ai_product_creation_photo_button">استخدام صورة الحزمة (اختياري)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">اختيار Tap to Pay من خيارات Collect Payment في \nتفاصيل الطلب أو القائمة &gt; المدفوعات.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">جرّب مدفوعات %s من خلال بطاقة الخصم أو الائتمان لديك.\nستُستَرد المدفوعات عندما تنتهي.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">إنها سهلة وآمنة وخاصة.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">اقبل كل أنواع المدفوعات الشخصية، مباشرة\nعلى هاتفك. لا يلزم أجهزة إضافة.</string>
     <string name="blaze_campaign_status_budget">الميزانية</string>
     <string name="blaze_campaign_status_clicks">النقرات</string>
     <string name="blaze_campaign_status_impressions">الانطباعات</string>
@@ -647,9 +660,6 @@ Language: ar
     <string name="jetpack_benefits_fetching_status">إحضار حالة Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">حدث خطأ. ترجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> يمكنك العثور على ميزة Pay on Android ضمن\nالقائمة &gt; المدفوعات، أو تحصيل المدفوعات و\nاختر Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">محاولة سداد دفعة باستخدام بطاقتك و\nستُستَرد عند الانتهاء. </string>
-    <string name="card_reader_tap_to_pay_explanation_ready">أصبح هاتفك جاهزًا لميزة Tap to Pay.\nيمكن لعميلك النقر على البطاقة\nعلى هاتفك للدفع.</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
     <string name="card_reader_hub_actions_category_header">الإجراءات</string>

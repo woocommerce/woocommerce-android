@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 14:54:04+0000
+Translation-Revision-Date: 2023-10-26 09:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="previous_order">Vorige bestelling</string>
+    <string name="next_order">Volgende bestelling</string>
+    <string name="blaze_campaign_details_title">Campagnedetails</string>
+    <string name="blaze_campaign_list_title">Blaze-campagnes</string>
+    <string name="blaze_campaign_status_canceled">Geannuleerd</string>
+    <string name="blaze_campaign_status_scheduled">Gepland</string>
+    <string name="product_creation_package_photo_keywords_info">Pas je tekst aan: deselecteer scans die je niet nodig hebt of klik erop om ze te bewerken</string>
+    <string name="product_creation_package_photo_keywords_section">Trefwoorden</string>
+    <string name="ai_product_creation_photo_button">Pakketfoto gebruiken (optioneel)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Kies Tap to Pay uit de opties voor Betalingen ontvangen in\nBestelgegevens of Menu &gt; Betalingen.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probeer een %s-betaling met je betaal- of creditcard.\nJe zal het terugbetaald krijgen zodra je klaar bent.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Het is eenvoudig, veilig en privé.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accepteer alle typen fysieke betalingen, direct\nop je telefoon. Geen extra hardware nodig.</string>
     <string name="blaze_campaign_status_budget">Budget</string>
     <string name="blaze_campaign_status_clicks">Klikken</string>
     <string name="blaze_campaign_status_impressions">Impressies</string>
@@ -647,9 +660,6 @@ Language: nl
     <string name="jetpack_benefits_fetching_status">Jetpack-status ophalen</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Er is iets fout gegaan. Probeer later opnieuw.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Probeer een betaling</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Op Android kun je Tap to Pay vinden bij\nMenu &gt; Betalingen, of Betalingen innen en\nKies Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Probeer een betaling door je betaalpas te kiezen en\nje zult het terugbetaald krijgen zodra je klaar bent.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Je telefoon is gereed voor Tap to Pay.\nDe klant kan met hun pas\njouw telefoon aantikken om te betalen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
     <string name="card_reader_hub_actions_category_header">ACTIES</string>
