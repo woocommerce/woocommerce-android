@@ -395,6 +395,8 @@ dependencies {
     implementation "androidx.camera:camera-view:$androidxCameraVersion"
 
     implementation "com.google.guava:guava:$guavaVersion"
+
+    implementation "com.google.android.gms:play-services-fido:20.1.0"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
