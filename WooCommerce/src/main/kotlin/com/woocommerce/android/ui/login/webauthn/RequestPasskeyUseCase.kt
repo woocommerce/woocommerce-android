@@ -7,18 +7,20 @@ import com.google.android.gms.fido.common.Transport
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnChallengeInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnCredentialResponse
 
 class RequestPasskeyUseCase {
     operator fun invoke(
         context: Context,
-        credentialManagerData: CredentialManagerData,
+        challengeInfo: WebauthnChallengeInfo,
         onPasskeyRequestReady: (IntentSenderRequest) -> Unit
     ) {
         val options = PublicKeyCredentialRequestOptions.Builder()
-            .setRpId(credentialManagerData.rpId)
-            .setAllowList(credentialManagerData.allowCredentials.map(::parseToCredentialDescriptor))
-            .setChallenge(credentialManagerData.challenge)
-            .setTimeoutSeconds(credentialManagerData.timeout.toDouble())
+            .setRpId(challengeInfo.rpId)
+            .setAllowList(challengeInfo.allowCredentials.map(::parseToCredentialDescriptor))
+            .setChallenge(challengeInfo.challenge.decodeBase64())
+            .setTimeoutSeconds(challengeInfo.timeout.toDouble())
             .build()
 
         Fido.getFido2ApiClient(context)
@@ -32,10 +34,10 @@ class RequestPasskeyUseCase {
             }
     }
 
-    private fun parseToCredentialDescriptor(credential: WebauthnCredential) =
+    private fun parseToCredentialDescriptor(credential: WebauthnCredentialResponse) =
         PublicKeyCredentialDescriptor(
             PublicKeyCredentialType.PUBLIC_KEY.toString(),
-            credential.id,
+            credential.id.decodeBase64(),
             allTransports
         )
 

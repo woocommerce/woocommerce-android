@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
-import com.google.gson.Gson
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
@@ -36,7 +35,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -64,9 +62,7 @@ import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
-import com.woocommerce.android.ui.login.webauthn.CredentialManagerData
 import com.woocommerce.android.ui.login.webauthn.RequestPasskeyUseCase
-import com.woocommerce.android.ui.login.webauthn.WebauthnChallengeInfo
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -105,6 +101,7 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnChallengeInfo
 
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
@@ -525,18 +522,11 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    override fun signSecurityKey(challengeRequestJson: String, userId: String) {
-        val credentials = challengeRequestJson
-            .takeIf { it.isNotNullOrEmpty() }
-            ?.let { Gson().fromJson(it, WebauthnChallengeInfo::class.java) }
-            ?.let {
-                CredentialManagerData(it)
-            } ?: return
-
+    override fun signSecurityKey(challengeInfo: WebauthnChallengeInfo, userId: String) {
         onCredentialsAvailable = { keyCredential ->
             val payload = FinishWebauthnChallengePayload().apply {
                 this.mUserId = userId
-                this.mTwoStepNonce = credentials.twoStepNonce
+                this.mTwoStepNonce = challengeInfo.twoStepNonce
                 this.mClientData = keyCredential.toJson()
             }.let { AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(it) }
             dispatcher.dispatch(payload)
@@ -545,7 +535,7 @@ class LoginActivity :
 
         fetchPasskey(
             context = this,
-            credentialManagerData = credentials
+            challengeInfo = challengeInfo
         ) {
             resultLauncher.launch(it)
         }
