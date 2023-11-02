@@ -395,12 +395,6 @@ dependencies {
     implementation "androidx.camera:camera-view:$androidxCameraVersion"
 
     implementation "com.google.guava:guava:$guavaVersion"
-
-    implementation("androidx.credentials:credentials:1.2.0-rc01")
-
-    // optional - needed for credentials support from play services, for devices running
-    // Android 13 and below.
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.0-rc01")
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
