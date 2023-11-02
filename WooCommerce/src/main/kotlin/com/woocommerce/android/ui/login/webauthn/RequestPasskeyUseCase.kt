@@ -7,6 +7,7 @@ import com.google.android.gms.fido.common.Transport
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
+import com.woocommerce.android.extensions.decodeBase64
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnChallengeInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnCredentialResponse
 

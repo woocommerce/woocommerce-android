@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.webauthn
+package com.woocommerce.android.extensions
 
 import android.util.Base64
 
