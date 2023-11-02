@@ -3,8 +3,11 @@ package com.woocommerce.android.tools
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.util.PreferenceUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -18,9 +21,11 @@ import javax.inject.Singleton
 class SelectedSite(
     private val context: Context,
     private val siteStore: SiteStore,
+    private val scope: CoroutineScope
 ) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
+        private const val RESET_DELAY = 1000L
 
         fun getEventBus(): EventBus = EventBus.getDefault()
     }
@@ -81,8 +86,11 @@ class SelectedSite(
     fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
 
     fun reset() {
-        state.value = null
-        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+        scope.launch {
+            delay(RESET_DELAY) // delay the site reset and allow for the requests to fail gracefully
+            state.value = null
+            getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+        }
     }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)

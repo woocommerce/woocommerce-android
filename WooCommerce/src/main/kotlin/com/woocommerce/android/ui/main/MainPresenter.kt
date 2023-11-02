@@ -14,6 +14,8 @@ import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -42,6 +44,8 @@ class MainPresenter @Inject constructor(
     private var mainView: MainContract.View? = null
 
     private var isHandlingMagicLink: Boolean = false
+    private val userLogoutMutex = Mutex()
+    private var isUserLoggingOut = false
 
     override fun takeView(view: MainContract.View) {
         mainView = view
@@ -106,8 +110,13 @@ class MainPresenter @Inject constructor(
             when (event.error.type) {
                 AuthenticationErrorType.INVALID_TOKEN -> {
                     coroutineScope.launch {
-                        accountRepository.logout()
-                        mainView?.restart()
+                        userLogoutMutex.withLock {
+                            if (!isUserLoggingOut) {
+                                isUserLoggingOut = true
+                                accountRepository.logout()
+                                mainView?.restart()
+                            }
+                        }
                     }
                 }
                 else -> {
