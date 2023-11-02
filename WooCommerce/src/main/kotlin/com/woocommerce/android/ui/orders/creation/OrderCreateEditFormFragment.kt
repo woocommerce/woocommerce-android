@@ -48,8 +48,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
@@ -113,10 +111,6 @@ class OrderCreateEditFormFragment :
             }
         )
 
-    private val View?.productsAdapter
-        get() = (this as? RecyclerView)
-            ?.run { adapter as? OrderCreateEditProductsAdapter }
-
     private val View?.customAmountAdapter
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
@@ -143,9 +137,6 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleProductDetailsEditResult() {
-        handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
-            viewModel.onProductDetailsEditResult(it)
-        }
         handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
             viewModel.onProductDiscountEditResult(it)
         }
@@ -369,12 +360,6 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.addCouponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
-                }
-            }
-            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                if (new.isEditable) {
-                    binding.productsSection.content.productsAdapter?.areProductsEditable =
-                        show.not()
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -899,7 +884,6 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
-            content.productsAdapter?.areProductsEditable = true
         }
         paymentSection.apply {
             feeButton.isEnabled = true
@@ -915,7 +899,6 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
-            content.productsAdapter?.areProductsEditable = false
         }
         paymentSection.apply {
             feeButton.isEnabled = false

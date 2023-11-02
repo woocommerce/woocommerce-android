@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 14:54:04+0000
+Translation-Revision-Date: 2023-10-24 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="previous_order">Commande précédente</string>
+    <string name="next_order">Commande suivante</string>
+    <string name="blaze_campaign_details_title">Détails de la campagne</string>
+    <string name="blaze_campaign_list_title">Campagnes Blaze</string>
+    <string name="blaze_campaign_status_canceled">Annulée</string>
+    <string name="blaze_campaign_status_scheduled">Planifiée</string>
+    <string name="product_creation_package_photo_keywords_info">Modifiez votre texte : désélectionnez les analyses dont vous n’avez pas besoin ou appuyez pour modifier</string>
+    <string name="product_creation_package_photo_keywords_section">Mots-clés</string>
+    <string name="ai_product_creation_photo_button">Utiliser la photo de l’emballage (facultatif)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Sélectionnez « Appuyer pour payer » dans les options de perception des paiements dans\nDétails de la commande ou Menu &gt; Paiements.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Essayez de procéder à un paiement %s avec votre carte de débit ou de crédit.\nLe paiement sera remboursé lorsque vous aurez terminé.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">C’est facile, sûr et privé.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Acceptez tous les types de paiements en personne directement\nsur votre téléphone. Aucun matériel supplémentaire nécessaire.</string>
     <string name="blaze_campaign_status_budget">Budget</string>
     <string name="blaze_campaign_status_clicks">Clics</string>
     <string name="blaze_campaign_status_impressions">Impressions</string>
@@ -647,9 +660,6 @@ Language: fr
     <string name="jetpack_benefits_fetching_status">Récupération de l’état de Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Un problème est survenu. Veuillez réessayer plus tard.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Essayer d’effectuer un paiement</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Vous pouvez accéder à Appuyer pour payer sur Android dans\nMenu &gt; Paiements, ou Percevoir le paiement, puis\nsélectionnez Appuyer pour payer.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Essayez d’effectuer un paiement avec votre carte, puis\nil sera remboursé lorsque vous aurez terminé.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Vous pouvez utiliser la fonctionnalité Appuyer pour payer avec votre téléphone.\nVos clients peuvent placer leur carte\nsur votre téléphone pour payer.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Percevoir des paiements par carte\navec votre téléphone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Appuyer pour payer</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>

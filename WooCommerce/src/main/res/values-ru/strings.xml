@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-19 23:54:04+0000
+Translation-Revision-Date: 2023-10-25 20:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="previous_order">Предыдущий заказ</string>
+    <string name="next_order">Следующий заказ</string>
+    <string name="blaze_campaign_details_title">Сведения о кампании</string>
+    <string name="blaze_campaign_list_title">Кампании Blaze</string>
+    <string name="blaze_campaign_status_canceled">Отменено</string>
+    <string name="blaze_campaign_status_scheduled">Запланировано</string>
+    <string name="product_creation_package_photo_keywords_info">Меняйте текст: отмените выбор ненужных отсканированных страниц или нажмите, чтобы отредактировать текст</string>
+    <string name="product_creation_package_photo_keywords_section">Ключевые слова</string>
+    <string name="ai_product_creation_photo_button">Использовать фото упаковки (по желанию)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Выберите «Оплата в касание» в опциях получения платежей в\nсведениях о заказе или разделе «Меню &gt; Платежи».</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Попробуйте оплатить %s банковской картой.\nПосле этого средства будут возвращены.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Просто, безопасно и конфиденциально.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Принимайте все виды очных платежей прямо\nна вашем телефоне. Дополнительное оборудование не требуется.</string>
     <string name="blaze_campaign_status_budget">Бюджет</string>
     <string name="blaze_campaign_status_clicks">Нажатий</string>
     <string name="blaze_campaign_status_impressions">Показов</string>
@@ -647,9 +660,6 @@ Language: ru
     <string name="jetpack_benefits_fetching_status">Получение статуса Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Что-то пошло не так. Повторите попытку позже.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Попробуйте выполнить платёж</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> В Android функцию «Оплата в касание» можно найти в разделе\nМеню &gt; Платежи, либо откройте «Получение платежей» и\nвыберите «Оплата в касание».</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Попробуйте выполнить платёж, используя свою карту, и\nпосле этого средства будут возвращены.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Ваш телефон готов выполнить операцию «Оплата в касание».\nВаш клиент может задействовать свою карту\nна вашем телефоне, чтобы выполнить платёж.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Получение платежей по карте\nна вашем телефоне</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Оплата в касание</string>
     <string name="card_reader_hub_actions_category_header">ДЕЙСТВИЯ</string>

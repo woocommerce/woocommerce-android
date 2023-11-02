@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 12:54:04+0000
+Translation-Revision-Date: 2023-10-24 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="previous_order">Pesanan sebelumnya</string>
+    <string name="next_order">Pesanan berikutnya</string>
+    <string name="blaze_campaign_details_title">Detail kampanye</string>
+    <string name="blaze_campaign_list_title">Kampanye Blaze</string>
+    <string name="blaze_campaign_status_canceled">Dibatalkan</string>
+    <string name="blaze_campaign_status_scheduled">Terjadwal</string>
+    <string name="product_creation_package_photo_keywords_info">Edit tulisannya: Batalkan pilihan pindaian yang tidak perlu atau ketuk untuk mengedit</string>
+    <string name="product_creation_package_photo_keywords_section">Kata kunci</string>
+    <string name="ai_product_creation_photo_button">Gunakan foto kemasan (Opsional)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Pilih Ketuk untuk Bayar dari opsi Terima Pembayaran di\nDetail Pesanan atau Menu &gt; Pembayaran.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Coba lakukan pembayaran %s dengan kartu debit atau kredit Anda.\nDana akan dikembalikan saat selesai.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Mudah, aman, privasi terjaga.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Terima semua jenis pembayaran fisik, langsung\ndari ponsel. Tidak perlu alat tambahan.</string>
     <string name="blaze_campaign_status_budget">Anggaran</string>
     <string name="blaze_campaign_status_clicks">Klik</string>
     <string name="blaze_campaign_status_impressions">Tayangan</string>
@@ -647,9 +660,6 @@ Language: id
     <string name="jetpack_benefits_fetching_status">Memuat Status Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Ada yang salah! Silakan coba lagi nanti.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Uji coba pembayaran</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Fitur Ketuk untuk Membayar di Android dapat ditemukan di\nMenu &gt; Pembayaran, atau Anda bisa memilih Terima Pembayaran dan\nmemilih Ketuk untuk Membayar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Gunakan kartu Anda sendiri untuk uji coba pembayaran lalu\nDana akan dikembalikan saat selesai.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Ketuk untuk Membayar sudah tersedia di ponsel Anda.\nPelanggan dapat menempelkan kartunya\nke ponsel Anda untuk membayar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
     <string name="card_reader_hub_actions_category_header">TINDAKAN</string>

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.0
+Welcome to the latest update of WooCommerce! We've redesigned the order's item list for a more intuitive flow. Blaze experience is now more efficient with improved campaign creation. Also, introducing the Product Creation via AI using package photos for getting automatic title and descriptions. Enjoy a seamless shopping experience!
+
 ## 15.9
 We're thrilled to introduce the new Tap to Pay feature, now available for merchants in the UK and Canada. This means that UK and Canadian-based businesses can now provide a faster and more convenient payment experience to their customers, all from the palm of your hand. Update now and start boosting your sales with Tap to Pay in WooCommerce!
 

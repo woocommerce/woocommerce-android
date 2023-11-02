@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -1095,38 +1094,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when hitting a product that is not synced then do nothing`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        val orderItem = Order.Item.EMPTY
-        sut.onProductClicked(orderItem)
-
-        assertThat(lastReceivedEvent).isNull()
-    }
-
-    @Test
-    fun `when hitting a product that is synced then show product details`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        val orderItem = createOrderItem()
-        sut.onProductClicked(orderItem)
-
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                val currentOrderItem = showProductDetailsEvent.item
-                assertThat(currentOrderItem).isEqualTo(orderItem)
-            } ?: fail("Last event should be of ShowProductDetails type")
-    }
-
-    @Test
     fun `should initialize with empty order`() {
         sut.orderDraft.observeForever {}
 
@@ -1237,37 +1204,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
-        }
-    }
-
-    @Test
-    fun `given products and coupon applied, when going to product details, then should disable discount editing`() {
-        createSut()
-        sut.onCouponAdded("abc")
-        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
-        sut.onProductClicked(sut.currentDraft.items.first())
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-        with(lastReceivedEvent) {
-            assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse
-        }
-    }
-
-    @Test
-    fun `given products and no coupons applied, when going to product details, then should enable discount editing`() {
-        createSut()
-        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
-        sut.onProductClicked(sut.currentDraft.items.first())
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-        with(lastReceivedEvent) {
-            assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue
         }
     }
 
