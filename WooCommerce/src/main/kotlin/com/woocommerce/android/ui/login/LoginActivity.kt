@@ -84,7 +84,6 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
@@ -105,6 +104,7 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
+import org.wordpress.android.fluxc.store.AccountStore.FinishWebauthnChallengePayload
 
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
@@ -534,7 +534,7 @@ class LoginActivity :
             } ?: return // TODO: throw error
 
         onCredentialsAvailable = { keyCredential ->
-            val payload = AccountStore.FinishSecurityKeyChallengePayload().apply {
+            val payload = FinishWebauthnChallengePayload().apply {
                 this.mUserId = userId
                 this.mTwoStepNonce = credentials.twoStepNonce
                 this.mClientData = keyCredential.toJson()
