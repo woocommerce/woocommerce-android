@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
@@ -102,9 +103,18 @@ class MainPresenter @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
-            // TODO Handle AuthenticationErrorType.INVALID_TOKEN
-            isHandlingMagicLink = false
-            return
+            when (event.error.type) {
+                AuthenticationErrorType.INVALID_TOKEN -> {
+                    coroutineScope.launch {
+                        accountRepository.logout()
+                        mainView?.restart()
+                    }
+                }
+                else -> {
+                    isHandlingMagicLink = false
+                    return
+                }
+            }
         }
 
         if (userIsLoggedIn()) {
