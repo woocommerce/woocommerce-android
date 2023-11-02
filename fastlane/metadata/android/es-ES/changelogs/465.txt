@@ -1,2 +1,0 @@
-15,8:
-Esta actualización aporta correcciones de errores esenciales para garantizar una experiencia más fluida. También presenta la capacidad de actualizar tipos de interés al editar pedidos, de forma que tendrás más control. Sigue prestando atención para las nuevas funciones increíbles de las próximas versiones. Gracias por elegir WooCommerce.

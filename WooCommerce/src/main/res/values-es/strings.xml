@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 16:54:04+0000
+Translation-Revision-Date: 2023-10-25 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="previous_order">Pedido anterior</string>
+    <string name="next_order">Siguiente pedido</string>
+    <string name="blaze_campaign_details_title">Detalles de la campaña</string>
+    <string name="blaze_campaign_list_title">Campañas de Blaze</string>
+    <string name="blaze_campaign_status_canceled">Cancelada</string>
+    <string name="blaze_campaign_status_scheduled">Programada</string>
+    <string name="product_creation_package_photo_keywords_info">Ajusta el texto: desmarca las exploraciones que no necesites o toca para editarlas</string>
+    <string name="product_creation_package_photo_keywords_section">Palabras clave</string>
+    <string name="ai_product_creation_photo_button">Usar foto del paquete (opcional)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Elige la opción Tap to Pay en las opciones de Recibir pagos en\nDetalles del pedido o Menú &gt; Pagos.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Haz un pago de %s con tu tarjeta de débito o crédito.\nEl pago se te reembolsará cuando hayas terminado.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Es fácil, seguro y privado.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Acepta todo tipo de pagos en persona, directamente\nen tu teléfono. No se necesita ningún hardware adicional.</string>
     <string name="blaze_campaign_status_budget">Presupuesto</string>
     <string name="blaze_campaign_status_clicks">Clics</string>
     <string name="blaze_campaign_status_impressions">Impresiones</string>
@@ -647,9 +660,6 @@ Language: es
     <string name="jetpack_benefits_fetching_status">Obtención del estado de Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Se ha producido un error. Inténtalo de nuevo más tarde.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Intentar un pago</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Puedes encontrar Tocar para pagar en Android en\nMenú &gt; Pagos, o Recopilar pago y\nelegir Tocar para pagar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Intenta realizar un pago con la tarjeta y\nse te reembolsará cuando hayas terminado.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Tu teléfono está listo para Tocar para pagar.\nTu cliente puede tocar su tarjeta\nen su teléfono para pagar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Recibe pagos con tarjeta\ncon tu teléfono</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tocar para pagar</string>
     <string name="card_reader_hub_actions_category_header">ACCIONES</string>

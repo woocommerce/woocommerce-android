@@ -40,8 +40,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val isLandscape = DisplayUtils.isLandscape(requireContext())
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
@@ -87,7 +85,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
-                binding.buttonDone.text = if (show) "" else getString(R.string.done)
+                binding.buttonDone.text = if (show) "" else getString(R.string.custom_amounts_add_custom_amount)
             }
         }
     }

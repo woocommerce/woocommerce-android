@@ -1,2 +1,0 @@
-15.8:
-Questo aggiornamento contiene importanti correzioni di bug, garantendo un'esperienza più fluida. Introduce inoltre la possibilità di aggiornare le aliquote d'imposta durante la modifica degli ordini, fornendo un maggiore controllo. Non perderti altre interessanti funzionalità nei prossimi rilasci. Grazie per aver scelto WooCommerce.

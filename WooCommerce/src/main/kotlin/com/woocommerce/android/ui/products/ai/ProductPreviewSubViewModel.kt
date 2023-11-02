@@ -141,7 +141,7 @@ class ProductPreviewSubViewModel(
                         is WooException -> it.error.type.name
                         else -> null
                     }
-                    AnalyticsTracker.track(
+                    tracker.track(
                         AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
@@ -163,7 +163,7 @@ class ProductPreviewSubViewModel(
         )
             .fold(
                 onSuccess = {
-                    AnalyticsTracker.track(
+                    tracker.track(
                         AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS,
                         mapOf(
                             AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION
@@ -172,7 +172,7 @@ class ProductPreviewSubViewModel(
                     it
                 },
                 onFailure = { error ->
-                    AnalyticsTracker.track(
+                    tracker.track(
                         AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
