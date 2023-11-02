@@ -2413,6 +2413,7 @@
     <string name="notification_error_wrong_password">Please double check your password to continue.</string>
     <string name="notification_2fa_needed">Please provide an authentication code to continue.</string>
     <string name="notification_login_failed">An error has occurred.</string>
+    <string name="email_or_username">Email address or Username</string>
 
     <!-- Screen titles -->
     <string name="email_address_login_title">Email address login</string>
