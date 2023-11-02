@@ -34,7 +34,11 @@ open class JetpackActivationWPComPostLoginViewModel(
                     }
 
             jetpackActivationRepository.setSelectedSiteAndCleanOldSites(jetpackSite)
-            triggerEvent(GoToStore)
+            if (jetpackStatus.isJetpackInstalled) {
+                triggerEvent(GoToStore)
+            } else {
+                triggerEvent(ShowJetpackCPInstallationScreen)
+            }
             return Result.success(Unit)
         } else {
             triggerEvent(
@@ -51,4 +55,6 @@ open class JetpackActivationWPComPostLoginViewModel(
         val isJetpackInstalled: Boolean,
         val siteUrl: String
     ) : MultiLiveEvent.Event()
+
+    object ShowJetpackCPInstallationScreen : MultiLiveEvent.Event()
 }
