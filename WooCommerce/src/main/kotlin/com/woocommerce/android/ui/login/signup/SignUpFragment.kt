@@ -39,7 +39,7 @@ class SignUpFragment : BaseFragment() {
     }
 
     interface Listener {
-        fun onLoginWithEmail(email: String?)
+        fun onExistingEmail(email: String?)
         fun onAccountCreated()
     }
 
@@ -92,7 +92,7 @@ class SignUpFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnLoginWithEmail -> signUpEmailFragment?.onLoginWithEmail(event.email)
+                is OnLoginWithEmail -> signUpEmailFragment?.onExistingEmail(event.email)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
                 is OnAccountCreated -> signUpEmailFragment?.onAccountCreated()

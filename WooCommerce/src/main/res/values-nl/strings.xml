@@ -815,7 +815,7 @@ Language: nl
     <string name="login_jetpack_installation_retry_activating">Probeer opnieuw te activeren</string>
     <string name="login_jetpack_installation_retry_installing">Probeer opnieuw te installeren</string>
     <string name="login_jetpack_installation_get_support">Vraag ondersteuning</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Probeer het opnieuw en neem contact op met ondersteuning als het probleem aanhoudt.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Probeer het opnieuw en neem contact op met ondersteuning als het probleem aanhoudt.</string>
     <string name="login_jetpack_installation_error_generic_message">Er is een fout opgetreden tijdens het communiceren met je site.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Je hebt geen toestemming om plugins te beheren op deze winkel.</string>
     <string name="login_jetpack_installation_error_authorizing">Fout bij het autoriseren van de verbinding met Jetpack</string>

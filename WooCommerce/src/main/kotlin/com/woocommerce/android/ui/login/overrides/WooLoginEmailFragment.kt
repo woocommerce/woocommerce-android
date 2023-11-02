@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.overrides
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -38,14 +39,20 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
         }
-        val prefilledEmail = requireArguments().getString(ARG_PREFILLED_EMAIL)
-        if (prefilledEmail.isNotNullOrEmpty()) {
-            mEmailInput?.editText?.setText(prefilledEmail)
-        }
     }
 
     override fun setupLabel(label: TextView) {
         // NO-OP, For this custom screen, the correct label is set in the layout
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val prefilledEmail = requireArguments().getString(ARG_PREFILLED_EMAIL)
+        if (prefilledEmail.isNotNullOrEmpty()) {
+            mEmailInput?.editText?.setText(prefilledEmail)
+            next(prefilledEmail)
+            requireArguments().clear()
+        }
     }
 
     override fun onResume() {

@@ -815,7 +815,7 @@ Language: ko_KR
     <string name="login_jetpack_installation_retry_activating">다시 활성화 시도</string>
     <string name="login_jetpack_installation_retry_installing">다시 설치 시도</string>
     <string name="login_jetpack_installation_get_support">지원받기</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">다시 시도하고 이 오류가 계속 발생하면 지원팀에 문의하세요.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">다시 시도하고 이 오류가 계속 발생하면 지원팀에 문의하세요.</string>
     <string name="login_jetpack_installation_error_generic_message">사이트와 통신 중 오류가 발생했습니다.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">이 스토어의 플러그인을 관리할 권한이 없습니다.</string>
     <string name="login_jetpack_installation_error_authorizing">젯팩에 연결하는 권한 부여 중 오류 발생</string>

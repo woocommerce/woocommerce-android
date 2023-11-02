@@ -3,6 +3,7 @@
 -----
 - [*] [Internal] Fixed a bug to handle fallback to WordPress.com username login when email is not allowed in the Jetpack Connection [https://github.com/woocommerce/woocommerce-android/pull/10044]
 - [*] [Internal] Fixed a crash during store creation flow [https://github.com/woocommerce/woocommerce-android/pull/10039]
+- [*] [Internal] Improve error handling during Jetpack Connection when using a custom admin URL [https://github.com/woocommerce/woocommerce-android/pull/10077]
 
 16.0
 -----
