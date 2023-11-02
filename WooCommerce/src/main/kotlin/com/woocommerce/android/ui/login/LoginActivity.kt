@@ -8,16 +8,11 @@ import android.os.Parcelable
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
-import com.google.android.gms.fido.Fido
-import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
@@ -62,7 +57,6 @@ import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
-import com.woocommerce.android.ui.login.webauthn.RequestPasskeyUseCase
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -78,11 +72,8 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
-import org.wordpress.android.fluxc.network.rest.wpcom.auth.webauthn.WebauthnChallengeInfo
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
-import org.wordpress.android.fluxc.store.AccountStore.FinishWebauthnChallengePayload
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -151,9 +142,6 @@ class LoginActivity :
     private lateinit var binding: ActivityLoginBinding
 
     private var connectSiteInfo: ConnectSiteInfo? = null
-    private val fetchPasskey = RequestPasskeyUseCase()
-    private var onCredentialsAvailable: ((PublicKeyCredential) -> Unit)? = null
-    private lateinit var resultLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -202,16 +190,6 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
-        }
-
-        resultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartIntentSenderForResult()
-        ) { result ->
-            result.data?.takeIf { result.resultCode == RESULT_OK }
-                ?.takeIf { it.hasExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA) }
-                ?.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)
-                ?.let { PublicKeyCredential.deserializeFromBytes(it) }
-                ?.let { onCredentialsAvailable?.invoke(it) }
         }
     }
 
@@ -518,28 +496,9 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    override fun needsSecurityKey(email: String?, password: String?, userId: String?, webauthnNonce: String?) {
-        val login2FaFragment = Login2FaFragment.newInstanceSecurityKey("", "", userId, webauthnNonce)
+    override fun needs2faSecurityKey(email: String?, password: String?, userId: String?, webauthnNonce: String?) {
+        val login2FaFragment = Login2FaFragment.newInstanceSecurityKey(email, password, userId, webauthnNonce)
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
-    }
-
-    override fun signSecurityKey(challengeInfo: WebauthnChallengeInfo, userId: String) {
-        onCredentialsAvailable = { keyCredential ->
-            val payload = FinishWebauthnChallengePayload().apply {
-                this.mUserId = userId
-                this.mTwoStepNonce = challengeInfo.twoStepNonce
-                this.mClientData = keyCredential.toJson()
-            }.let { AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(it) }
-            dispatcher.dispatch(payload)
-            onCredentialsAvailable = null
-        }
-
-        fetchPasskey(
-            context = this,
-            challengeInfo = challengeInfo
-        ) {
-            resultLauncher.launch(it)
-        }
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
