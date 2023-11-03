@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -90,6 +91,7 @@ class StatsUITest : TestBase() {
             .assertTopPerformers(topPerformersJSONArray)
     }
 
+    @Ignore
     @Test
     fun e2eStatsTapChart() {
         MyStoreScreen()

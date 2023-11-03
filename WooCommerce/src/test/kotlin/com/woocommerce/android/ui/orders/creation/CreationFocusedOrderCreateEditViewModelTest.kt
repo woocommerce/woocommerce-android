@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -1483,4 +1484,62 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
         }
     }
+
+    // region Custom Amounts
+    @Test
+    fun `when custom amount added, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper amount`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.TEN)
+    }
+
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount")
+    }
+
+    @Test
+    fun `when custom amount added without name, then fee line gets updated with default name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onCustomAmountAdd(BigDecimal.TEN, "")
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
+    }
+
+    @Test
+    fun `when custom amount added, then exit event is triggered`() {
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(sut.event.value).isEqualTo(Exit)
+    }
+    //endregion
 }

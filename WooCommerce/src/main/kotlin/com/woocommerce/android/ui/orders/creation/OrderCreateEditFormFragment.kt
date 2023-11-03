@@ -15,6 +15,9 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
@@ -22,9 +25,11 @@ import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBindin
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
@@ -38,6 +43,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections.Companion.actionOrderCreationFragmentToCustomAmountsDialog
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -104,6 +110,10 @@ class OrderCreateEditFormFragment :
                 is OrderCreateEditViewModel.Mode.Edit -> null
             }
         )
+
+    private val View?.customAmountAdapter
+        get() = (this as? RecyclerView)
+            ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
@@ -315,12 +325,24 @@ class OrderCreateEditFormFragment :
             bindProductsSection(binding.productsSection, viewModel.products)
         }
 
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            viewModel.customAmounts.observe(viewLifecycleOwner) {
+                bindCustomAmountsSection(binding.customAmountsSection, it)
+            }
+        }
+
         observeViewStateChanges(binding)
 
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
+    @Suppress("LongMethod")
     private fun observeViewStateChanges(binding: FragmentOrderCreateEditFormBinding) {
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            viewModel.combinedProductAndCustomAmountsLiveData.observe(viewLifecycleOwner) {
+                modifyProductsAndCustomAmountsSection(it, binding)
+            }
+        }
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
                 if (show) showProgressDialog() else hideProgressDialog()
@@ -371,6 +393,106 @@ class OrderCreateEditFormFragment :
             }
         }
     }
+    private fun modifyProductsAndCustomAmountsSection(
+        viewState: OrderCreateEditViewModel.ViewState?,
+        binding: FragmentOrderCreateEditFormBinding
+    ) {
+        when {
+            // Both products and custom amounts are empty
+            (viewState == null || viewState.productsSectionState.isEmpty) &&
+                (viewState == null || viewState.customAmountSectionState.isEmpty) -> {
+                bothProductsAndCustomAmountsAreUnset(binding)
+            }
+
+            // Product has been added, but the custom amount remains unset.
+            !viewState.productsSectionState.isEmpty && viewState.customAmountSectionState.isEmpty -> {
+                productAddedCustomAmountUnset(binding)
+            }
+
+            // Custom amount has been set, but no product has been added.
+            viewState.productsSectionState.isEmpty && !viewState.customAmountSectionState.isEmpty -> {
+                customAmountAddedProductUnset(binding)
+            }
+
+            // Both the product and custom amount have been added.
+            !viewState.productsSectionState.isEmpty && !viewState.customAmountSectionState.isEmpty -> {
+                productAndCustomAmountAdded(binding)
+            }
+        }
+    }
+
+    private fun customAmountAddedProductUnset(binding: FragmentOrderCreateEditFormBinding) {
+        binding.productsSection.removeCustomSectionButtons()
+        binding.customAmountsSection.show()
+        binding.customAmountsSection.showHeader()
+        binding.customAmountsSection.showAddAction()
+
+        binding.productsSection.hideAddProductsHeaderActions()
+        binding.productsSection.hideHeader()
+        binding.productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+        )
+    }
+
+    private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
+        binding.productsSection.showAddProductsHeaderActions()
+        binding.productsSection.showHeader()
+        binding.productsSection.removeProductsButtons()
+        binding.customAmountsSection.show()
+        binding.customAmountsSection.setCustomAmountsSectionButtons(
+            addCustomAmountsButton = AddButton(
+                text = getString(R.string.order_creation_add_custom_amounts),
+                onClickListener = {
+                    findNavController().navigateSafely(
+                        actionOrderCreationFragmentToCustomAmountsDialog()
+                    )
+                }
+            )
+        )
+    }
+
+    private fun productAndCustomAmountAdded(binding: FragmentOrderCreateEditFormBinding) {
+        binding.productsSection.showAddProductsHeaderActions()
+        binding.productsSection.showHeader()
+        binding.productsSection.removeProductsButtons()
+        binding.customAmountsSection.show()
+    }
+
+    private fun bothProductsAndCustomAmountsAreUnset(binding: FragmentOrderCreateEditFormBinding) {
+        binding.productsSection.hideAddProductsHeaderActions()
+        binding.productsSection.hideHeader()
+        binding.productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+            addCustomAmountsButton =
+            AddButton(
+                text = getString(R.string.order_creation_add_custom_amounts),
+                onClickListener = {
+                    findNavController().navigateSafely(
+                        actionOrderCreationFragmentToCustomAmountsDialog()
+                    )
+                }
+            )
+        )
+        binding.customAmountsSection.hide()
+    }
 
     private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
@@ -388,7 +510,11 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        paymentSection.bindFeesSubSection(newOrderData)
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            paymentSection.bindCustomAmountSubSection(newOrderData)
+        } else {
+            paymentSection.bindFeesSubSection(newOrderData)
+        }
         paymentSection.bindCouponsSubSection(newOrderData)
 
         val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
@@ -446,6 +572,9 @@ class OrderCreateEditFormFragment :
         }
     }
 
+    // NOTE: The method below is replaced by custom amounts.
+    // When transitioning from fees to custom amounts, ensure to remove this method
+    // once the 'custom amounts M1' feature flag is deprecated.
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
         feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
@@ -462,6 +591,22 @@ class OrderCreateEditFormFragment :
             feeButton.setText(R.string.order_creation_add_fee)
             feeButton.setIconResource(R.drawable.ic_add)
             feeValue.isVisible = false
+        }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindCustomAmountSubSection(newOrderData: Order) {
+        val currentCustomAmountTotal = newOrderData.feesTotal
+
+        val hasCustomAmount = currentCustomAmountTotal.isNotEqualTo(BigDecimal.ZERO)
+
+        if (hasCustomAmount) {
+            feeLayout.show()
+            feeButton.setText(R.string.custom_amounts)
+            feeButton.setIconResource(0)
+            feeValue.isVisible = true
+            feeValue.text = bigDecimalFormatter(currentCustomAmountTotal)
+        } else {
+            feeLayout.hide()
         }
     }
 
@@ -504,32 +649,7 @@ class OrderCreateEditFormFragment :
     ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.value.isNullOrEmpty() && isCustomAmountsFeatureFlagEnabled()) {
-            productsSection.hideAddProductsHeaderActions()
-            productsSection.hideHeader()
-            productsSection.setProductSectionButtons(
-                addProductsButton = AddButton(
-                    text = getString(R.string.order_creation_add_products),
-                    onClickListener = {
-                        viewModel.onAddProductClicked()
-                    }
-                ),
-                addProductsViaScanButton = AddButton(
-                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                    onClickListener = { viewModel.onScanClicked() }
-                ),
-                addCustomAmountsButton = AddButton(
-                    text = getString(R.string.order_creation_add_custom_amounts),
-                    onClickListener = {
-                        findNavController().navigateSafely(
-                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
-                        )
-                    }
-                )
-            )
-        } else if (isCustomAmountsFeatureFlagEnabled()) {
-            productsSection.showAddProductsHeaderActions()
-            productsSection.showHeader()
-            productsSection.removeProductsButtons()
+            productsSection.content = null
         }
         if (productsSection.content == null) {
             productsSection.content = ComposeView(requireContext()).apply {
@@ -540,8 +660,40 @@ class OrderCreateEditFormFragment :
             productsSection.barcodeIcon.setOnClickListener {
                 viewModel.onScanClicked()
             }
-            productsSection.addProductIcon.setOnClickListener {
+            productsSection.addIcon.setOnClickListener {
                 viewModel.onAddProductClicked()
+            }
+        }
+    }
+
+    private fun bindCustomAmountsSection(
+        customAmountsSection: OrderCreateEditSectionView,
+        customAmounts: List<CustomAmountUIModel>?
+    ) {
+        customAmountsSection.setContentHorizontalPadding(R.dimen.minor_00)
+        if (customAmounts.isNullOrEmpty()) {
+            customAmountsSection.hide()
+        } else {
+            if (customAmountsSection.content == null) {
+                val animator = DefaultItemAnimator().apply {
+                    // Disable change animations to avoid duplicating viewholders
+                    supportsChangeAnimations = false
+                }
+                customAmountsSection.content = RecyclerView(requireContext()).apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = OrderCreateEditCustomAmountAdapter(currencyFormatter) {
+                    }
+                    itemAnimator = animator
+                    isNestedScrollingEnabled = false
+                }
+            }
+            customAmountsSection.content.customAmountAdapter?.apply {
+                submitList(customAmounts)
+            }
+            customAmountsSection.addIcon.setOnClickListener {
+                findNavController().navigateSafely(
+                    actionOrderCreationFragmentToCustomAmountsDialog()
+                )
             }
         }
     }
@@ -640,6 +792,7 @@ class OrderCreateEditFormFragment :
                         currentStatus = event.currentStatus,
                         orderStatusList = event.orderStatusList
                     ).let { findNavController().navigateSafely(it) }
+
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             is ShowDialog -> event.showDialog()
             is OnAddingProductViaScanningFailed -> {
@@ -649,22 +802,26 @@ class OrderCreateEditFormFragment :
                     actionListener = event.retry
                 ).show()
             }
+
             is OpenBarcodeScanningFragment -> {
                 findNavController().navigateSafely(
                     OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
                 )
             }
+
             is VMKilledWhenScanningInProgress -> {
                 ToastUtils.showToast(
                     context,
                     event.message
                 )
             }
+
             is OnCouponRejectedByBackend -> {
                 uiMessageResolver.getSnack(
                     stringResId = event.message
                 ).show()
             }
+
             is Exit -> findNavController().navigateUp()
         }
     }

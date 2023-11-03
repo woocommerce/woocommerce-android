@@ -4,6 +4,7 @@ import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -92,6 +93,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercenta
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -140,6 +142,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
@@ -194,6 +197,37 @@ class OrderCreateEditViewModel @Inject constructor(
         .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
         }.asLiveData()
+
+    val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
+        .map { order -> order.feesLines }
+        .distinctUntilChanged()
+        .map { feeLines ->
+            feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
+        }.asLiveData()
+
+    val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {
+        addSource(products) { products ->
+            val customAmounts = customAmounts.value
+            val isProductsEmpty = products?.isEmpty() == true
+            this.value = this.value?.copy(
+                productsSectionState = ProductsSectionState(isEmpty = isProductsEmpty),
+                customAmountSectionState = CustomAmountSectionState(customAmounts?.isEmpty() == true)
+            ) ?: run {
+                ViewState()
+            }
+        }
+
+        addSource(customAmounts) { customAmounts ->
+            val products = products.value
+            val isCustomAmountsEmpty = customAmounts?.isEmpty() == true
+            this.value = this.value?.copy(
+                productsSectionState = ProductsSectionState(isEmpty = products?.isEmpty() == true),
+                customAmountSectionState = CustomAmountSectionState(isCustomAmountsEmpty)
+            ) ?: run {
+                ViewState()
+            }
+        }
+    }
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -1063,6 +1097,21 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCustomAmountAdd(amount: BigDecimal, name: String) {
+        _orderDraft.update { draft ->
+            val feesList = draft.feesLines.toMutableList().apply {
+                add(
+                    Order.FeeLine.EMPTY.copy(
+                        name = name.ifEmpty { CUSTOM_AMOUNT },
+                        total = amount
+                    )
+                )
+            }
+            draft.copy(feesLines = feesList)
+        }
+        triggerEvent(Exit)
+    }
+
     fun onFeeRemoved() {
         tracker.track(
             ORDER_FEE_REMOVE,
@@ -1196,6 +1245,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val taxBasedOnSettingLabel: String = "",
         val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
+        val productsSectionState: ProductsSectionState = ProductsSectionState(),
+        val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1204,6 +1255,16 @@ class OrderCreateEditViewModel @Inject constructor(
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
+
+    @Parcelize
+    data class ProductsSectionState(
+        val isEmpty: Boolean = true,
+    ) : Parcelable
+
+    @Parcelize
+    data class CustomAmountSectionState(
+        val isEmpty: Boolean = true,
+    ) : Parcelable
 
     @Parcelize
     data class AutoTaxRateSettingState(
@@ -1266,6 +1327,12 @@ data class ProductUIModel(
     val discountAmount: String,
     val priceAfterDiscount: String,
     val hasDiscount: Boolean = item.discount > BigDecimal.ZERO,
+)
+
+data class CustomAmountUIModel(
+    val id: Long,
+    val amount: BigDecimal,
+    val name: String
 )
 
 enum class ScanningSource(val source: String) {
