@@ -2,6 +2,7 @@
 16.1
 -----
 - [*] [Internal] Fixed a crash during store creation flow [https://github.com/woocommerce/woocommerce-android/pull/10039]
+- [***] Introduce functionality to input custom amounts during the order creation process. [https://github.com/woocommerce/woocommerce-android/pull/10035]
 
 16.0
 -----
