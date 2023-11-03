@@ -19,6 +19,6 @@ class IsProductCurrentlyPromoted @Inject constructor(
                     CampaignStatusUi.fromString(it.uiStatus) == Scheduled ||
                     CampaignStatusUi.fromString(it.uiStatus) == Active
             }
-            .any { it.targetUrn.split(":").last() == productId }
+            .any { it.targetUrn?.split(":")?.last() == productId }
     }
 }
