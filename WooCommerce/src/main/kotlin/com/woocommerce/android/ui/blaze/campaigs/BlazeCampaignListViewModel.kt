@@ -132,7 +132,7 @@ class BlazeCampaignListViewModel @Inject constructor(
                         value = campaignEntity.clicks
                     ),
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_clicks,
+                        name = R.string.blaze_campaign_status_budget,
                         value = campaignEntity.budgetCents
                     )
                 )
