@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections.Companion.actionOrderCreationFragmentToCustomAmountsDialog
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -289,7 +288,7 @@ class OrderCreateEditFormFragment :
             addCustomAmountsButton = AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
                 onClickListener = {
-                    // Implement custom amounts click listener
+                    navigateToCustomAmountsDialog()
                 }
             )
         )
@@ -424,6 +423,7 @@ class OrderCreateEditFormFragment :
 
     private fun customAmountAddedProductUnset(binding: FragmentOrderCreateEditFormBinding) {
         binding.productsSection.removeCustomSectionButtons()
+        binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.show()
         binding.customAmountsSection.showHeader()
         binding.customAmountsSection.showAddAction()
@@ -449,14 +449,13 @@ class OrderCreateEditFormFragment :
         binding.productsSection.showHeader()
         binding.productsSection.removeProductsButtons()
         binding.customAmountsSection.show()
+        binding.customAmountsSection.hideAddAction()
+        binding.customAmountsSection.content = null
+
         binding.customAmountsSection.setCustomAmountsSectionButtons(
             addCustomAmountsButton = AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
-                onClickListener = {
-                    findNavController().navigateSafely(
-                        actionOrderCreationFragmentToCustomAmountsDialog()
-                    )
-                }
+                onClickListener = { navigateToCustomAmountsDialog() }
             )
         )
     }
@@ -466,6 +465,9 @@ class OrderCreateEditFormFragment :
         binding.productsSection.showHeader()
         binding.productsSection.removeProductsButtons()
         binding.customAmountsSection.show()
+        binding.customAmountsSection.removeCustomSectionButtons()
+        binding.customAmountsSection.showHeader()
+        binding.customAmountsSection.showAddAction()
     }
 
     private fun bothProductsAndCustomAmountsAreUnset(binding: FragmentOrderCreateEditFormBinding) {
@@ -486,15 +488,19 @@ class OrderCreateEditFormFragment :
             AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
                 onClickListener = {
-                    findNavController().navigateSafely(
-                        actionOrderCreationFragmentToCustomAmountsDialog()
-                    )
+                    navigateToCustomAmountsDialog()
                 }
             )
         )
         binding.customAmountsSection.hide()
     }
 
+    private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
+        OrderCreateEditNavigator.navigate(
+            this,
+            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel)
+        )
+    }
     private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
@@ -684,13 +690,7 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = {
-                            findNavController().navigateSafely(
-                                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
-                                    it
-                                )
-                            )
-                        },
+                        onCustomAmountClick = { navigateToCustomAmountsDialog(it) },
                         onCustomAmountDeleteClick = {
                             viewModel.onCustomAmountRemoved(it)
                         }
@@ -703,9 +703,7 @@ class OrderCreateEditFormFragment :
                 submitList(customAmounts)
             }
             customAmountsSection.addIcon.setOnClickListener {
-                findNavController().navigateSafely(
-                    actionOrderCreationFragmentToCustomAmountsDialog()
-                )
+                navigateToCustomAmountsDialog()
             }
         }
     }

@@ -251,6 +251,7 @@ class AnalyticsTracker private constructor(
         const val KEY_HAS_CUSTOMER_DETAILS = "has_customer_details"
         const val KEY_HAS_FEES = "has_fees"
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
+        const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
         const val VALUE_FLOW_LIST = "list"

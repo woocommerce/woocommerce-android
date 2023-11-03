@@ -12,11 +12,14 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_DELETE
@@ -33,6 +36,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_F
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPONS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNTS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
@@ -1024,6 +1028,9 @@ class OrderCreateEditViewModel @Inject constructor(
                     put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
                     put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
                     put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
+                    if (_orderDraft.value.feesLines.isNotEmpty()) {
+                        put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
+                    }
                 }
 
             )
@@ -1115,11 +1122,19 @@ class OrderCreateEditViewModel @Inject constructor(
                 updateCustomAmount(draft, customAmountUIModel)
             } else {
                 // If no FeeLine with the given ID exists, we add a new one.
+                tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
                 addCustomAmount(draft, customAmountUIModel)
             }
             draft.copy(feesLines = feesList)
         }
+        trackIfNameAdded(customAmountUIModel)
         triggerEvent(Exit)
+    }
+
+    private fun trackIfNameAdded(customAmountUIModel: CustomAmountUIModel) {
+        if (customAmountUIModel.name.isNotEmpty() && customAmountUIModel.name != CUSTOM_AMOUNT) {
+            tracker.track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+        }
     }
 
     private fun addCustomAmount(
@@ -1159,6 +1174,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
     }
 
     fun onFeeRemoved() {
