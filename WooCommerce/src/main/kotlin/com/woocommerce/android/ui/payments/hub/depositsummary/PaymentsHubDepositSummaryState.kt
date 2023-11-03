@@ -5,10 +5,17 @@ import java.util.Date
 sealed class PaymentsHubDepositSummaryState {
     object Loading : PaymentsHubDepositSummaryState()
     data class Error(val errorMessage: String) : PaymentsHubDepositSummaryState()
-    data class Success(val overviews: List<Overview>) : PaymentsHubDepositSummaryState()
+    data class Success(
+        val defaultCurrency: String,
+        val overviews: List<Overview>,
+    ) : PaymentsHubDepositSummaryState()
 
     data class Overview(
-        val currency: String,
+        val defaultCurrency: String,
+        val infoPerCurrency: Map<String, Info>,
+    )
+
+    data class Info(
         val availableFunds: Int,
         val pendingFunds: Int,
         val depositsCount: Int,
