@@ -393,6 +393,7 @@ class OrderCreateEditFormFragment :
             }
         }
     }
+
     private fun modifyProductsAndCustomAmountsSection(
         viewState: OrderCreateEditViewModel.ViewState?,
         binding: FragmentOrderCreateEditFormBinding
@@ -683,7 +684,13 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = {},
+                        onCustomAmountClick = {
+                            findNavController().navigateSafely(
+                                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
+                                    it
+                                )
+                            )
+                        },
                         onCustomAmountDeleteClick = {
                             viewModel.onCustomAmountRemoved(it)
                         }

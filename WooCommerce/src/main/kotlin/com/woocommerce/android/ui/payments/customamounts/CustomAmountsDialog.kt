@@ -2,10 +2,13 @@ package com.woocommerce.android.ui.payments.customamounts
 
 import android.app.Dialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -14,6 +17,7 @@ import com.woocommerce.android.databinding.DialogCustomAmountsBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.creation.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -26,6 +30,7 @@ import javax.inject.Inject
 class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_amounts) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -54,7 +59,13 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         val binding = DialogCustomAmountsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            sharedViewModel.onCustomAmountAdd(viewModel.currentPrice, binding.customAmountNameText.text.toString())
+            sharedViewModel.onCustomAmountUpsert(
+                CustomAmountUIModel(
+                    id = viewModel.viewState.customAmountUIModel.id,
+                    amount = viewModel.viewState.customAmountUIModel.currentPrice,
+                    name = viewModel.viewState.customAmountUIModel.name
+                )
+            )
         }
         binding.imageClose.setOnClickListener {
             cancelDialog()
@@ -72,10 +83,19 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     }
 
     private fun setupObservers(binding: DialogCustomAmountsBinding) {
-        binding.editPrice.value.filterNotNull().observe(
-            this
-        ) {
-            viewModel.currentPrice = it
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                binding.editPrice.value.filterNotNull().observe(
+                    this
+                ) {
+                    viewModel.currentPrice = it
+                }
+            },
+            EDIT_PRICE_UPDATE_DELAY
+        )
+
+        binding.customAmountNameText.addTextChangedListener {
+            viewModel.currentName = it.toString()
         }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
@@ -86,6 +106,13 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
                 binding.buttonDone.text = if (show) "" else getString(R.string.custom_amounts_add_custom_amount)
+            }
+            new.customAmountUIModel.takeIfNotEqualTo(old?.customAmountUIModel) {
+                if (binding.customAmountNameText.text.toString() != it.name) {
+                    binding.customAmountNameText.setText(it.name)
+                    binding.customAmountNameText.setSelection(it.name.length)
+                }
+                binding.editPrice.setValue(it.currentPrice)
             }
         }
     }
@@ -103,5 +130,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         private const val KEYBOARD_DELAY = 100L
 
         const val CUSTOM_AMOUNT = "Custom Amount"
+        const val EDIT_PRICE_UPDATE_DELAY = 100L
     }
 }
