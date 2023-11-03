@@ -41,6 +41,7 @@ class BlazeCampaignListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
+        private const val CENTS_TO_UNITS = 100
     }
 
     private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
@@ -133,7 +134,7 @@ class BlazeCampaignListViewModel @Inject constructor(
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
-                        value = campaignEntity.budgetCents
+                        value = campaignEntity.budgetCents / CENTS_TO_UNITS
                     )
                 )
             ),
