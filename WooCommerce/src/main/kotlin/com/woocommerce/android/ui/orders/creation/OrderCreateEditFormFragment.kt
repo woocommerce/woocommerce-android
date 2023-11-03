@@ -424,6 +424,7 @@ class OrderCreateEditFormFragment :
 
     private fun customAmountAddedProductUnset(binding: FragmentOrderCreateEditFormBinding) {
         binding.productsSection.removeCustomSectionButtons()
+        binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.show()
         binding.customAmountsSection.showHeader()
         binding.customAmountsSection.showAddAction()
@@ -449,6 +450,9 @@ class OrderCreateEditFormFragment :
         binding.productsSection.showHeader()
         binding.productsSection.removeProductsButtons()
         binding.customAmountsSection.show()
+        binding.customAmountsSection.hideAddAction()
+        binding.customAmountsSection.content = null
+
         binding.customAmountsSection.setCustomAmountsSectionButtons(
             addCustomAmountsButton = AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
@@ -462,6 +466,9 @@ class OrderCreateEditFormFragment :
         binding.productsSection.showHeader()
         binding.productsSection.removeProductsButtons()
         binding.customAmountsSection.show()
+        binding.customAmountsSection.removeCustomSectionButtons()
+        binding.customAmountsSection.showHeader()
+        binding.customAmountsSection.showAddAction()
     }
 
     private fun bothProductsAndCustomAmountsAreUnset(binding: FragmentOrderCreateEditFormBinding) {
@@ -490,8 +497,9 @@ class OrderCreateEditFormFragment :
     }
 
     private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
-        findNavController().navigateSafely(
-            actionOrderCreationFragmentToCustomAmountsDialog(customAmountUIModel)
+        OrderCreateEditNavigator.navigate(
+            this,
+            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel)
         )
     }
     private fun updateProgressBarsVisibility(
