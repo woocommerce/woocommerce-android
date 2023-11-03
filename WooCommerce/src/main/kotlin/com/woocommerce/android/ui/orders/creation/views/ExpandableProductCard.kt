@@ -302,7 +302,6 @@ fun ExtendedProductCardContent(
                 color = MaterialTheme.colors.onSurface
             )
             AmountPicker(
-                isEnabled = editableControlsEnabled,
                 onIncreaseClicked = onIncreaseItemAmountClicked,
                 onDecreaseClicked = onDecreaseItemAmountClicked,
                 item = item,
@@ -449,7 +448,6 @@ private fun AmountPicker(
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit,
     item: ProductUIModel,
-    isEnabled: Boolean
 ) {
     Row(
         modifier = modifier
@@ -461,15 +459,8 @@ private fun AmountPicker(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
-        val buttonTint = if (isEnabled) {
-            MaterialTheme.colors.primary
-        } else {
-            colorResource(id = R.color.color_on_surface_disabled)
-        }
-        IconButton(
-            onClick = onDecreaseClicked,
-            enabled = isEnabled
-        ) {
+        val buttonTint = MaterialTheme.colors.primary
+        IconButton(onClick = onDecreaseClicked) {
             Icon(
                 imageVector = Icons.Filled.Remove,
                 contentDescription =
@@ -478,10 +469,7 @@ private fun AmountPicker(
             )
         }
         Text(text = item.item.quantity.toInt().toString(), color = MaterialTheme.colors.onSurface)
-        IconButton(
-            onClick = onIncreaseClicked,
-            enabled = isEnabled
-        ) {
+        IconButton(onClick = onIncreaseClicked) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription =
@@ -514,7 +502,7 @@ fun AmountPickerPreview() {
         priceAfterDiscount = "$25"
     )
     WooThemeWithBackground {
-        AmountPicker(Modifier, {}, {}, product, true)
+        AmountPicker(Modifier, {}, {}, product)
     }
 }
 
