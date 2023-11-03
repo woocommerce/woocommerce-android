@@ -13,7 +13,8 @@ import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreateEditCustomAmountAdapter(
     private val currencyFormatter: CurrencyFormatter,
-    private val onCustomAmountClick: (CustomAmountUIModel) -> Unit
+    private val onCustomAmountClick: (CustomAmountUIModel) -> Unit,
+    private val onCustomAmountDeleteClick: (CustomAmountUIModel) -> Unit
 ) : ListAdapter<CustomAmountUIModel, CustomAmountViewHolder>(CustomAmountUIModelDiffCallback) {
 
     override fun onCreateViewHolder(
@@ -51,6 +52,11 @@ class OrderCreateEditCustomAmountAdapter(
                 binding.customAmountLayout.divider.hide()
             } else {
                 binding.customAmountLayout.divider.show()
+            }
+            binding.customAmountLayout.customAmountDeleteBtn.setOnClickListener {
+                safePosition?.let {
+                    onCustomAmountDeleteClick(getItem(it))
+                }
             }
         }
     }

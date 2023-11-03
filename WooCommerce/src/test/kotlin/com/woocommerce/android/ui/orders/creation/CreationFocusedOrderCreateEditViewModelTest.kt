@@ -1541,5 +1541,25 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(sut.event.value).isEqualTo(Exit)
     }
+
+    @Test
+    fun `when custom amount removed, then fee line is updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount"
+            )
+        )
+
+        assertThat(orderDraft?.feesLines?.filter { it.name != null }?.size).isEqualTo(0)
+    }
     //endregion
 }
