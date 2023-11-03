@@ -13,7 +13,6 @@ plugins {
 tracks {
     automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
     enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
-    username.set(findProperty('tracksUsername'))
 }
 
 allprojects {
