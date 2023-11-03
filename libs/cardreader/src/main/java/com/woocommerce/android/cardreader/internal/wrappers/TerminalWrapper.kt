@@ -2,7 +2,7 @@ package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
+import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
@@ -50,7 +50,7 @@ internal class TerminalWrapper {
         reader: Reader,
         configuration: ConnectionConfiguration.BluetoothConnectionConfiguration,
         callback: ReaderCallback,
-        listener: BluetoothReaderListener
+        listener: ReaderListener
     ) = Terminal.getInstance().connectBluetoothReader(reader, configuration, listener, callback)
 
     fun connectToMobile(
