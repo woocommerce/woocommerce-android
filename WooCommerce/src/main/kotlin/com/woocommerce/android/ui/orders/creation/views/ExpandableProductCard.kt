@@ -97,7 +97,7 @@ fun ExpandableProductCard(
             )
             .border(
                 1.dp,
-                colorResource(id = R.color.divider_color),
+                colorResource(id = if (isExpanded) R.color.color_on_surface else R.color.divider_color),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
             .clickable(
@@ -456,7 +456,7 @@ private fun AmountPicker(
             .border(
                 1.dp,
                 colorResource(id = R.color.divider_color),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
