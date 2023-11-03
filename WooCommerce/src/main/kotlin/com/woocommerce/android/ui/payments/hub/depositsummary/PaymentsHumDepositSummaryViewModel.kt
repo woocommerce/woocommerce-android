@@ -12,6 +12,7 @@ import javax.inject.Inject
 class PaymentsHumDepositSummaryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PaymentsHubDepositSummaryRepository,
+    private val mapper: PaymentsHumDepositSummaryStateMapper,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableStateFlow<PaymentsHubDepositSummaryState>(PaymentsHubDepositSummaryState.Loading)
@@ -22,8 +23,18 @@ class PaymentsHumDepositSummaryViewModel @Inject constructor(
             repository.retrieveDepositOverview().map {
                 when (it) {
                     is RetrieveDepositOverviewResult.Cache ->
-                    is RetrieveDepositOverviewResult.Error -> TODO()
-                    is RetrieveDepositOverviewResult.Remote -> TODO()
+                        PaymentsHubDepositSummaryState.Success(
+                            mapper.mapDepositOverviewToViewModelOverviews(it.overview)
+                                ?: return@map PaymentsHubDepositSummaryState.Error("Invalid data")
+                        )
+                    is RetrieveDepositOverviewResult.Remote ->
+                        PaymentsHubDepositSummaryState.Success(
+                            mapper.mapDepositOverviewToViewModelOverviews(it.overview)
+                                ?: return@map PaymentsHubDepositSummaryState.Error("Invalid data")
+                        )
+                    is RetrieveDepositOverviewResult.Error -> {
+                        PaymentsHubDepositSummaryState.Error(it.error.message ?: "Unknown error")
+                    }
                 }
             }.collect {
                 _viewState.value = it
@@ -31,4 +42,3 @@ class PaymentsHumDepositSummaryViewModel @Inject constructor(
         }
     }
 }
-

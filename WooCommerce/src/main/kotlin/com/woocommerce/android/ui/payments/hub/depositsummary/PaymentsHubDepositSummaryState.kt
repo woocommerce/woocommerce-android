@@ -5,10 +5,7 @@ import java.util.Date
 sealed class PaymentsHubDepositSummaryState {
     object Loading : PaymentsHubDepositSummaryState()
     data class Error(val errorMessage: String) : PaymentsHubDepositSummaryState()
-    data class Success(
-        val defaultCurrency: String,
-        val overviews: List<Overview>,
-    ) : PaymentsHubDepositSummaryState()
+    data class Success(val overview: Overview) : PaymentsHubDepositSummaryState()
 
     data class Overview(
         val defaultCurrency: String,
@@ -18,10 +15,10 @@ sealed class PaymentsHubDepositSummaryState {
     data class Info(
         val availableFunds: Int,
         val pendingFunds: Int,
-        val depositsCount: Int,
+        val pendingBalanceDepositsCount: Int,
         val fundsAvailableInDays: Interval,
-        val nextDeposit: Deposit,
-        val lastDeposit: Deposit,
+        val nextDeposit: Deposit?,
+        val lastDeposit: Deposit?,
     ) {
         sealed class Interval {
             data class Days(val days: Int) : Interval()
@@ -33,10 +30,10 @@ sealed class PaymentsHubDepositSummaryState {
     data class Deposit(
         val amount: Int,
         val status: Status,
-        val date: Date,
+        val date: Date?,
     ) {
         enum class Status {
-            ESTIMATED, PENDING, IN_TRANSIT, PAID, CANCELED, FAILED
+            ESTIMATED, PENDING, IN_TRANSIT, PAID, CANCELED, FAILED, UNKNOWN
         }
     }
 }

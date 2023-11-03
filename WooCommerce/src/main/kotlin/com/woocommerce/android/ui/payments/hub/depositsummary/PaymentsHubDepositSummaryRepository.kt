@@ -34,5 +34,5 @@ sealed class RetrieveDepositOverviewResult {
         RetrieveDepositOverviewResult()
 
     data class Remote(val overview: WooPaymentsDepositsOverview) :
-        RetrieveDepositOverviewResult(
+        RetrieveDepositOverviewResult()
 }
