@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -320,9 +319,7 @@ class OrderCreateEditFormFragment :
             binding.orderStatusView.updateStatus(it)
         }
 
-        viewModel.products.observe(viewLifecycleOwner) {
-            bindProductsSection(binding.productsSection, viewModel.products)
-        }
+        bindProductsSection(binding.productsSection, viewModel.products)
 
         if (isCustomAmountsFeatureFlagEnabled()) {
             viewModel.customAmounts.observe(viewLifecycleOwner) {
@@ -712,7 +709,7 @@ class OrderCreateEditFormFragment :
         setContent {
             val state = items.observeAsState(emptyList())
             WooTheme {
-                Column(modifier = Modifier) {
+                Column {
                     state.value.forEach { item ->
                         ExpandableProductCard(
                             viewModel.viewStateData.liveData.observeAsState(),
