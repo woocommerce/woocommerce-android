@@ -874,7 +874,7 @@ class LoginActivity :
         showMainActivityAndFinish()
     }
 
-    override fun onLoginWithEmail(email: String?) {
+    override fun onExistingEmail(email: String?) {
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
         changeFragment(

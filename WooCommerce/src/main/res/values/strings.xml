@@ -323,8 +323,10 @@
     <string name="login_jetpack_installation_error_activating">Error activating Jetpack</string>
     <string name="login_jetpack_installation_error_authorizing">Error authorising connection to Jetpack</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">You don’t have permission to manage plugins on this store</string>
+    <string name="login_jetpack_installation_error_connection_message">There was an error communicating with your site.</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Please connect Jetpack through your admin page on a browser or contact support.</string>
     <string name="login_jetpack_installation_error_generic_message">There was an error communicating with your site.</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Please try again and contact support if this error continues.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Please try again and contact support if this error continues.</string>
     <string name="login_jetpack_installation_get_support">Get support</string>
     <string name="login_jetpack_installation_retry_installing">Try installing again</string>
     <string name="login_jetpack_installation_retry_activating">Try activating again</string>
@@ -2413,6 +2415,7 @@
     <string name="notification_error_wrong_password">Please double check your password to continue.</string>
     <string name="notification_2fa_needed">Please provide an authentication code to continue.</string>
     <string name="notification_login_failed">An error has occurred.</string>
+    <string name="email_or_username">Email address or Username</string>
 
     <!-- Screen titles -->
     <string name="email_address_login_title">Email address login</string>

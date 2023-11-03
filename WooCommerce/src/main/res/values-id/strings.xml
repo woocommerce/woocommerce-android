@@ -815,7 +815,7 @@ Language: id
     <string name="login_jetpack_installation_retry_activating">Coba aktifkan ulang</string>
     <string name="login_jetpack_installation_retry_installing">Coba instal ulang</string>
     <string name="login_jetpack_installation_get_support">Dapatkan dukungan</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Harap coba lagi dan hubungi dukungan jika error ini berlanjut.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Harap coba lagi dan hubungi dukungan jika error ini berlanjut.</string>
     <string name="login_jetpack_installation_error_generic_message">Terjadi error saat berkomunikasi dengan situs Anda.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Anda tidak memiliki izin untuk mengelola plugin di toko ini</string>
     <string name="login_jetpack_installation_error_authorizing">Terjadi error saat memberi izin penyambungan ke Jetpack</string>

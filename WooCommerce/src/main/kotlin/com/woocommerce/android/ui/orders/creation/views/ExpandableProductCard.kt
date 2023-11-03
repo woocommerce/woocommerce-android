@@ -41,14 +41,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -57,10 +54,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -111,12 +107,7 @@ fun ExpandableProductCard(
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
         val collapsedStateBottomBarrier = createBottomBarrier(sku, quantity)
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current).data(item.imageUrl).crossfade(true).build(),
-            contentDescription = stringResource(R.string.product_image_content_description),
-            contentScale = ContentScale.Fit,
-            placeholder = painterResource(R.drawable.ic_product),
-            error = painterResource(R.drawable.ic_product),
+        ProductThumbnail(
             modifier = Modifier
                 .constrainAs(img) {
                     top.linkTo(name.top)
@@ -124,8 +115,8 @@ fun ExpandableProductCard(
                     bottom.linkTo(collapsedStateBottomBarrier)
                 }
                 .size(dimensionResource(R.dimen.major_375))
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_image)))
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            imageUrl = item.imageUrl
         )
         Text(
             text = item.item.name,

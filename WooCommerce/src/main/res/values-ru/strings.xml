@@ -815,7 +815,7 @@ Language: ru
     <string name="login_jetpack_installation_retry_activating">Повторить активацию</string>
     <string name="login_jetpack_installation_retry_installing">Повторить установку</string>
     <string name="login_jetpack_installation_get_support">Получить поддержку</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Повторите попытку и обратитесь в службу поддержки, если эта ошибка произойдёт снова.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Повторите попытку и обратитесь в службу поддержки, если эта ошибка произойдёт снова.</string>
     <string name="login_jetpack_installation_error_generic_message">Во время обмена данными с вашим веб-сайтом произошла ошибка.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">У вас нет разрешения на управление плагинами в этом магазине</string>
     <string name="login_jetpack_installation_error_authorizing">Ошибка при авторизации подключения к Jetpack</string>
