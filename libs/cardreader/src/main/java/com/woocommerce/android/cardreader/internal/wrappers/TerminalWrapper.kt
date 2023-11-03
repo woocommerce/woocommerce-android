@@ -73,7 +73,7 @@ internal class TerminalWrapper {
     ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, callback)
 
     fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
-        Terminal.getInstance().processPayment(paymentIntent, callback)
+        Terminal.getInstance().confirmPaymentIntent(paymentIntent, callback)
 
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
@@ -82,7 +82,7 @@ internal class TerminalWrapper {
         Terminal.getInstance().collectRefundPaymentMethod(refundParameters, callback)
 
     fun processRefund(callback: RefundCallback) =
-        Terminal.getInstance().processRefund(callback)
+        Terminal.getInstance().confirmRefund(callback)
 
     fun installSoftwareUpdate() = Terminal.getInstance().installAvailableUpdate()
 
