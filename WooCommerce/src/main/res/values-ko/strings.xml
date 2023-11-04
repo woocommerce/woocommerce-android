@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 09:54:04+0000
+Translation-Revision-Date: 2023-11-02 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_details_blaze_card">Blaze로 홍보</string>
+    <string name="blaze_campaign_ceation_celebration_button">알겠습니다.</string>
+    <string name="blaze_campaign_ceation_celebration_message">승인용 광고가 제출되었습니다. 승인되고 실행되면 확인 이메일을 보내드리겠습니다.</string>
+    <string name="blaze_campaign_creation_celebration_header">모두 준비되었습니다!</string>
+    <string name="blaze_campaign_creation_intro_button">지금 Blaze 캠페인 시작</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">성과를 추적하며 언제든지 Blaze를 시작하고 중지하세요.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">워드프레스와 Tumblr 사이트의 수백만 명에게 다가가세요.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">하루에 단 몇 푼으로 관리하세요. 돈이 많이 들지 않습니다.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">단 몇 분 만에 상품을 홍보하세요.</string>
+    <string name="blaze_campaign_creation_intro_title">스토어에서 Blaze로 판매 증대 유도</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">캠페인 목록 새로 고침 중 오류가 발생했습니다. 나중에 다시 시도하세요.</string>
+    <string name="media_picker_dialog_title">미디어 소스 선택</string>
+    <string name="product_creation_package_photo_error">상품 이름과 설명을 생성하는 동안 오류가 발생했습니다.</string>
+    <string name="product_creation_package_photo_no_text_detected">감지된 텍스트가 없습니다. 다른 포장 사진을 선택하거나 수동으로 상품 상세 정보를 입력하세요.</string>
+    <string name="order_editing_add_content_description">상품 추가</string>
+    <string name="order_editing_barcode_content_description">바코드 스캔</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">상품 카드 축소/확장</string>
+    <string name="order_creation_decrease_item_amount_content_description">상품 수량 줄이기</string>
+    <string name="order_creation_increase_item_amount_content_description">상품 수량 늘리기</string>
+    <string name="order_creation_add_custom_amounts">사용자 정의 금액 추가</string>
+    <string name="order_creation_price_after_discount">할인 후 가격</string>
     <string name="previous_order">이전 주문</string>
     <string name="next_order">다음 주문</string>
     <string name="blaze_campaign_details_title">캠페인 상세 정보</string>
@@ -325,13 +346,6 @@ Language: ko_KR
     <string name="highlights_tooltip_button_hint">버튼 텍스트</string>
     <string name="highlights_tooltip_message_hint">도구 설명 메시지입니다. \n 여러 줄이 될 수 있습니다.</string>
     <string name="highlights_tooltip_title_hint">도구 설명 제목</string>
-    <string name="blaze_banner_dismiss_dialog_button">알겠습니다.</string>
-    <string name="blaze_banner_dismiss_dialog_description">걱정하지 마세요! Blaze는 메뉴 및 상품 상세 정보 메뉴에서 편리하게 접근하실 수 있습니다.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze 광고</string>
-    <string name="blaze_banner_close_button_content_description">Blaze 배너 버튼 닫기</string>
-    <string name="blaze_banner_button">지금 Blaze 사용해 보기</string>
-    <string name="blaze_banner_description">상품을 워드프레스닷컴과 Tumblr의 수백만 사이트에서 실행되는 광고로 전환하세요.</string>
-    <string name="blaze_banner_title">Blaze로 상품 홍보</string>
     <string name="ai_product_description_tooltip_dismiss">알겠습니다.</string>
     <string name="ai_product_description_tooltip_message">AI 기반 도구를 사용하여 상품 설명을 빠르게 생성하세요. 키워드만 입력하시면 나머지는 자동으로 진행됩니다!</string>
     <string name="ai_product_description_tooltip_title">✨ AI로 쓰기</string>

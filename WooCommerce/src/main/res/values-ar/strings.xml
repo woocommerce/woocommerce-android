@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-24 16:54:04+0000
+Translation-Revision-Date: 2023-11-01 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_details_blaze_card">الترويج باستخدام Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">فهمت</string>
+    <string name="blaze_campaign_ceation_celebration_message">تم إرسال الإعلان للموافقة. سنرسل إليك رسالة تأكيد عبر البريد الإلكتروني بمجرد الموافقة والتشغيل.</string>
+    <string name="blaze_campaign_creation_celebration_header">كل شيء جاهز!</string>
+    <string name="blaze_campaign_creation_intro_button">بدء حملة Blaze الآن</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">تعقّب الأداء، وابدأ حملة Blaze الخاصة بك وأوقفها في أي وقت.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">يمكنك الوصول إلى الملايين على مواقع ووردبريس وTumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">تولّ زمام الأمور من خلال بضع دولارات في اليوم فقط. إنها ملائمة للميزانية.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">روِّج لمنتجك في غضون دقائق.</string>
+    <string name="blaze_campaign_creation_intro_title">جذب مزيد من المبيعات إلى متجرك باستخدام Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">كان هناك خطأ في أثناء تحديث قائمة الحملات. ترجى المحاولة مرة أخرى لاحقًا.</string>
+    <string name="media_picker_dialog_title">تحديد مصدر الوسائط</string>
+    <string name="product_creation_package_photo_error">حدث خطأ في أثناء إنشاء اسم المنتج ووصفه.</string>
+    <string name="product_creation_package_photo_no_text_detected">لم يتم الكشف عن نص. يرجى تحديد صورة حزم أخرى أو إدخال تفاصيل المنتج يدويًا.</string>
+    <string name="order_editing_add_content_description">إضافة منتج</string>
+    <string name="order_editing_barcode_content_description">مسح الرمز الشريطي ضوئيًا</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">طي/توسيع بطاقة المنتج</string>
+    <string name="order_creation_decrease_item_amount_content_description">تقليل كمية المنتج</string>
+    <string name="order_creation_increase_item_amount_content_description">زيادة كمية المنتج</string>
+    <string name="order_creation_add_custom_amounts">إضافة مبلغ مخصص</string>
+    <string name="order_creation_price_after_discount">السعر بعد الخصم</string>
     <string name="previous_order">الطلب السابق</string>
     <string name="next_order">الطلب التالي</string>
     <string name="blaze_campaign_details_title">تفاصيل الحملة</string>
@@ -325,13 +346,6 @@ Language: ar
     <string name="highlights_tooltip_button_hint">نص الزر</string>
     <string name="highlights_tooltip_message_hint">رسالة أداوت التلميح. \n يمكن أن يكون هذا أسطرًا متعددة</string>
     <string name="highlights_tooltip_title_hint">عنوان تلميح الأداة</string>
-    <string name="blaze_banner_dismiss_dialog_button">فهمت</string>
-    <string name="blaze_banner_dismiss_dialog_description">لا داعي للقلق! يمكن الوصول إلى Blaze من \"القائمة\" وقائمة تفاصيل المنتج من أجل راحتك.</string>
-    <string name="blaze_banner_dismiss_dialog_title">إعلانات Blaze</string>
-    <string name="blaze_banner_close_button_content_description">إغلاق زر شعار Blaze</string>
-    <string name="blaze_banner_button">تجربة Blaze الآن</string>
-    <string name="blaze_banner_description">حوّل منتجاتك إلى إعلانات تعمل عبر ملايين المواقع على ووردبريس.كوم وTumblr.</string>
-    <string name="blaze_banner_title">ترويج المنتجات باستخدام Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">فهمت</string>
     <string name="ai_product_description_tooltip_message">استخدم أداتنا المدعومة من الذكاء الاصطناعي لإنشاء اشتراكات المنتجات بسرعة. ما عليك سوى إدخال الكلمات المفتاحية وسنتكفل بالبقية!</string>
     <string name="ai_product_description_tooltip_title">✨ الكتابة باستخدام الذكاء الاصطناعي</string>
