@@ -30,6 +30,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
@@ -65,6 +66,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.util.getStockText
 
 private const val ANIM_DURATION_MILLIS = 128
+private const val MULTIPLICATION_CHAR = "×"
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
@@ -95,7 +97,7 @@ fun ExpandableProductCard(
             )
             .border(
                 1.dp,
-                colorResource(id = R.color.divider_color),
+                colorResource(id = if (isExpanded) R.color.color_on_surface else R.color.divider_color),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
             .clickable(
@@ -158,6 +160,7 @@ fun ExpandableProductCard(
                         start.linkTo(stock.end)
                     },
                 text = "-${item.discountAmount}",
+                style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.woo_green_50)
             )
         }
@@ -270,11 +273,13 @@ fun ExtendedProductCardContent(
         ) = createRefs()
         val editableControlsEnabled = state.value?.isIdle == true
         Divider(
-            modifier = Modifier.constrainAs(topDivider) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier
+                .constrainAs(topDivider) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
         )
         Row(
             modifier = Modifier
@@ -297,7 +302,6 @@ fun ExtendedProductCardContent(
                 color = MaterialTheme.colors.onSurface
             )
             AmountPicker(
-                isEnabled = editableControlsEnabled,
                 onIncreaseClicked = onIncreaseItemAmountClicked,
                 onDecreaseClicked = onDecreaseItemAmountClicked,
                 item = item,
@@ -310,7 +314,12 @@ fun ExtendedProductCardContent(
                     end.linkTo(parent.end)
                     top.linkTo(orderCount.bottom)
                 }
-                .padding(dimensionResource(id = R.dimen.minor_100)),
+                .padding(
+                    start = dimensionResource(id = R.dimen.minor_100),
+                    end = dimensionResource(id = R.dimen.minor_100),
+                    top = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100)
+                ),
         ) {
             Text(
                 text = stringResource(id = R.string.product_price),
@@ -344,10 +353,10 @@ fun ExtendedProductCardContent(
                     text = stringResource(id = R.string.discount),
                     style = MaterialTheme.typography.body1,
                 )
-                Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_50)))
+                Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_100)))
                 Icon(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40)),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
+                    imageVector = Icons.Filled.Edit,
                     contentDescription = null
                 )
             }
@@ -404,11 +413,13 @@ fun ExtendedProductCardContent(
             }
         }
         Divider(
-            modifier = Modifier.constrainAs(bottomDivider) {
-                bottom.linkTo(removeButton.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier
+                .constrainAs(bottomDivider) {
+                    bottom.linkTo(removeButton.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
         )
         WCTextButton(
             modifier = Modifier.constrainAs(removeButton) {
@@ -437,27 +448,19 @@ private fun AmountPicker(
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit,
     item: ProductUIModel,
-    isEnabled: Boolean
 ) {
     Row(
         modifier = modifier
             .border(
                 1.dp,
                 colorResource(id = R.color.divider_color),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
-        val buttonTint = if (isEnabled) {
-            MaterialTheme.colors.primary
-        } else {
-            colorResource(id = R.color.color_on_surface_disabled)
-        }
-        IconButton(
-            onClick = onDecreaseClicked,
-            enabled = isEnabled
-        ) {
+        val buttonTint = MaterialTheme.colors.primary
+        IconButton(onClick = onDecreaseClicked) {
             Icon(
                 imageVector = Icons.Filled.Remove,
                 contentDescription =
@@ -466,10 +469,7 @@ private fun AmountPicker(
             )
         }
         Text(text = item.item.quantity.toInt().toString(), color = MaterialTheme.colors.onSurface)
-        IconButton(
-            onClick = onIncreaseClicked,
-            enabled = isEnabled
-        ) {
+        IconButton(onClick = onIncreaseClicked) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription =
@@ -482,7 +482,7 @@ private fun AmountPicker(
 
 @Composable
 private fun getQuantityWithTotalText(item: ProductUIModel) =
-    "${item.item.quantity.toInt()} x ${item.pricePreDiscount}"
+    "${item.item.quantity.toInt()} $MULTIPLICATION_CHAR ${item.pricePreDiscount}"
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -502,7 +502,7 @@ fun AmountPickerPreview() {
         priceAfterDiscount = "$25"
     )
     WooThemeWithBackground {
-        AmountPicker(Modifier, {}, {}, product, true)
+        AmountPicker(Modifier, {}, {}, product)
     }
 }
 
