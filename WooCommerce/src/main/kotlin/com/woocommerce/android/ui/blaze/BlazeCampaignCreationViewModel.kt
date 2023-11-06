@@ -93,7 +93,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             )
         }
         currentBlazeStep = extractCurrentStep(url)
-        if (currentBlazeStep == BlazeFlowStep.STEP_5) {
+        if (currentBlazeStep == BlazeFlowStep.STEP_5 && !isCompleted) {
             isCompleted = true
             analyticsTracker.track(
                 stat = BLAZE_FLOW_COMPLETED,
