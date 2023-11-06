@@ -831,7 +831,7 @@ class OrderCreateEditFormFragment :
             }
 
             // Customer notes added, address not added
-            newOrderData.customerNote.isNotNullOrEmpty() -> {
+            shouldShowNotesSectionOnly(newOrderData) -> {
                 customerNotesAdded(binding, newOrderData)
                 binding.customerSection.content = null
                 customerAddressAdded(binding, newOrderData)
@@ -853,6 +853,10 @@ class OrderCreateEditFormFragment :
     private fun shouldShowCustomerSectionOnly(newOrderData: Order) =
         (newOrderData.customer != null && newOrderData.customer != Order.Customer.EMPTY) &&
             newOrderData.customerNote.isEmpty()
+
+    private fun shouldShowNotesSectionOnly(newOrderData: Order) =
+        (newOrderData.customer == null || newOrderData.customer == Order.Customer.EMPTY) &&
+            newOrderData.customerNote.isNotNullOrEmpty()
 
     private fun customerNotesAdded(
         binding: FragmentOrderCreateEditFormBinding,
