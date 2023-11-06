@@ -63,6 +63,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="custom_amounts">Custom Amounts</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
@@ -322,8 +323,10 @@
     <string name="login_jetpack_installation_error_activating">Error activating Jetpack</string>
     <string name="login_jetpack_installation_error_authorizing">Error authorising connection to Jetpack</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">You don’t have permission to manage plugins on this store</string>
+    <string name="login_jetpack_installation_error_connection_message">There was an error communicating with your site.</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Please connect Jetpack through your admin page on a browser or contact support.</string>
     <string name="login_jetpack_installation_error_generic_message">There was an error communicating with your site.</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Please try again and contact support if this error continues.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Please try again and contact support if this error continues.</string>
     <string name="login_jetpack_installation_get_support">Get support</string>
     <string name="login_jetpack_installation_retry_installing">Try installing again</string>
     <string name="login_jetpack_installation_retry_activating">Try activating again</string>
@@ -498,6 +501,17 @@
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+
+    <!--
+         Custom Amounts
+    -->
+    <string name="custom_amounts_dialog_title">Custom Amount</string>
+    <string name="custom_amounts_enter_amount">Amount</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
+    <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
+
     <!--
          Taxes
     -->
@@ -2288,7 +2302,7 @@
     <string name="alternatively">Alternatively:</string>
     <string name="enter_site_address_instead">Log in by entering your site address.</string>
     <string name="enter_username_instead">Log in with your username.</string>
-    <string name="enter_verification_code">Almost there! Please enter the verification code from your Authenticator app.</string>
+    <string name="enter_verification_code">Almost there! Please enter the verification code for WordPress.com from your authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
 
 
@@ -2401,6 +2415,7 @@
     <string name="notification_error_wrong_password">Please double check your password to continue.</string>
     <string name="notification_2fa_needed">Please provide an authentication code to continue.</string>
     <string name="notification_login_failed">An error has occurred.</string>
+    <string name="email_or_username">Email address or Username</string>
 
     <!-- Screen titles -->
     <string name="email_address_login_title">Email address login</string>
