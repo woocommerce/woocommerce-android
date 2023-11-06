@@ -816,10 +816,7 @@ class OrderCreateEditFormFragment :
         when {
             // Customer address and customer notes not added
             shouldHideBothSections(newOrderData) -> {
-                binding.customerSection.content = null
-                binding.customerSection.hideHeader()
-                binding.notesSection.removeCustomSectionButtons()
-                binding.notesSection.hide()
+                shouldHideBothSections(newOrderData)
             }
 
             // Customer address added, notes is not added
@@ -857,6 +854,20 @@ class OrderCreateEditFormFragment :
     private fun shouldShowNotesSectionOnly(newOrderData: Order) =
         (newOrderData.customer == null || newOrderData.customer == Order.Customer.EMPTY) &&
             newOrderData.customerNote.isNotNullOrEmpty()
+
+    private fun FragmentOrderCreateEditFormBinding.hideBothSections() {
+        customerSection.apply {
+            content = null
+            hideHeader()
+            removeCustomSectionButtons()
+        }
+        notesSection.apply {
+            content = null
+            hideHeader()
+            removeCustomSectionButtons()
+            hide()
+        }
+    }
 
     private fun customerNotesAdded(
         binding: FragmentOrderCreateEditFormBinding,
