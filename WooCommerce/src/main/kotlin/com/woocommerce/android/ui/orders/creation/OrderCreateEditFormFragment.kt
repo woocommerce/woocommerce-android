@@ -815,8 +815,7 @@ class OrderCreateEditFormFragment :
         val customer = newOrderData.customer
         when {
             // Customer address and customer notes not added
-            (customer == null || customer == Order.Customer.EMPTY) &&
-                newOrderData.customerNote.isNullOrEmpty() -> {
+            shouldHideBothSections(newOrderData) -> {
                 binding.customerSection.content = null
                 binding.customerSection.hideHeader()
                 binding.notesSection.removeCustomSectionButtons()
@@ -846,6 +845,10 @@ class OrderCreateEditFormFragment :
 
         }
     }
+
+    private fun shouldHideBothSections(newOrderData: Order) =
+        (newOrderData.customer == null || newOrderData.customer == Order.Customer.EMPTY) &&
+            newOrderData.customerNote.isEmpty()
 
     private fun customerNotesAdded(
         binding: FragmentOrderCreateEditFormBinding,
