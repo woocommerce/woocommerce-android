@@ -179,8 +179,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initView() {
         initOrderStatusView()
-        initNotesSection()
-        initCustomerSection()
+        initCustomerAndNotesEmptySection()
         initProductsSection()
         initPaymentSection()
         initTaxRateSelectorSection()
@@ -249,6 +248,25 @@ class OrderCreateEditFormFragment :
         )
     }
 
+    private fun FragmentOrderCreateEditFormBinding.initCustomerAndNotesEmptySection() {
+        customerSection.setAddButtons(
+            listOf(
+                AddButton(
+                    text = getString(R.string.order_creation_add_customer),
+                    onClickListener = {
+                        viewModel.onAddCustomerClicked()
+                    }
+                ),
+                AddButton(
+                    text = getString(R.string.order_creation_add_customer_note),
+                    onClickListener = {
+                        viewModel.onCustomerNoteClicked()
+                    }
+                )
+            )
+        )
+    }
+
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
         if (isCustomAmountsFeatureFlagEnabled()) {
             initNewProductsSection()
@@ -311,8 +329,7 @@ class OrderCreateEditFormFragment :
     private fun setupObserversWith(binding: FragmentOrderCreateEditFormBinding) {
         viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
-            bindNotesSection(binding.notesSection, newOrderData.customerNote)
-            bindCustomerAddressSection(binding.customerSection, newOrderData)
+            bindCustomerAddressAndNotesSection(binding, newOrderData)
             bindPaymentSection(binding.paymentSection, newOrderData)
         }
 
@@ -649,6 +666,8 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
+        notesSection.show()
+        notesSection.showHeader()
         customerNote.takeIf { it.isNotBlank() }
             ?.let { noteText ->
                 WCReadMoreTextView(requireContext()).also {
@@ -740,7 +759,8 @@ class OrderCreateEditFormFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    private fun bindCustomerAddressSection(customerAddressSection: OrderCreateEditSectionView, order: Order) {
+    private fun bindCustomerAddressSection(binding: FragmentOrderCreateEditFormBinding, order: Order) {
+        val customerAddressSection: OrderCreateEditSectionView = binding.customerSection
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
 
         val customer = order.customer
@@ -789,6 +809,63 @@ class OrderCreateEditFormFragment :
         }
 
         customerAddressSection.content = view.root
+    }
+
+    private fun bindCustomerAddressAndNotesSection(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
+        val customer = newOrderData.customer
+        when {
+            // Customer address and customer notes not added
+            (customer == null || customer == Order.Customer.EMPTY) &&
+                newOrderData.customerNote.isNullOrEmpty() -> {
+                binding.customerSection.content = null
+                binding.customerSection.hideHeader()
+                binding.notesSection.removeCustomSectionButtons()
+                binding.notesSection.hide()
+            }
+
+            // Customer address added, notes is not added
+            newOrderData.customerNote.isNullOrEmpty() -> {
+                binding.notesSection.show()
+                binding.notesSection.showHeader()
+                binding.initNotesSection()
+                customerAddressAdded(binding, newOrderData)
+            }
+
+            // Customer notes added, address not added
+            newOrderData.customerNote.isNotNullOrEmpty() -> {
+                customerNotesAdded(binding, newOrderData)
+                binding.customerSection.content = null
+                customerAddressAdded(binding, newOrderData)
+            }
+
+            // Both customer address and customer notes are added
+            else -> {
+                customerAddressAdded(binding, newOrderData)
+                customerNotesAdded(binding, newOrderData)
+            }
+
+        }
+    }
+
+    private fun customerNotesAdded(
+        binding: FragmentOrderCreateEditFormBinding,
+        newOrderData: Order
+    ) {
+        binding.initNotesSection()
+        binding.notesSection.show()
+        binding.notesSection.showHeader()
+        bindNotesSection(binding.notesSection, newOrderData.customerNote)
+    }
+
+    private fun customerAddressAdded(
+        binding: FragmentOrderCreateEditFormBinding,
+        newOrderData: Order
+    ) {
+        binding.initCustomerSection()
+        binding.customerSection.show()
+        binding.customerSection.showHeader()
+        binding.customerSection.header = getString(R.string.order_creation_customer)
+        bindCustomerAddressSection(binding, newOrderData)
     }
 
     private fun setupHandleResults() {
