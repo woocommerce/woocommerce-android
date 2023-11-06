@@ -170,5 +170,4 @@ class PaymentsHumDepositSummaryViewModelTest : BaseUnitTest() {
         repository = repository,
         mapper = mapper
     )
-
 }

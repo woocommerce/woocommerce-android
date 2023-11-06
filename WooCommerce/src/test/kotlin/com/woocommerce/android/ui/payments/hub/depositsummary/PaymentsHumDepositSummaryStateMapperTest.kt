@@ -14,8 +14,13 @@ class PaymentsHumDepositSummaryStateMapperTest {
             account = WooPaymentsDepositsOverview.Account(
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 0, interval = ""
-                ), defaultCurrency = null, depositsBlocked = false, depositsEnabled = false
-            ), balance = null, deposit = null
+                ),
+                defaultCurrency = null,
+                depositsBlocked = false,
+                depositsEnabled = false
+            ),
+            balance = null,
+            deposit = null
         )
 
         // WHEN
@@ -25,6 +30,7 @@ class PaymentsHumDepositSummaryStateMapperTest {
         assertThat(result).isNull()
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `given overview with instant balances, when mapDepositOverviewToViewModelOverviews, then return Overview with instant balances`() {
         // GIVEN
@@ -36,7 +42,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 1, interval = "DAILY"
                 )
-            ), balance = WooPaymentsDepositsOverview.Balance(
+            ),
+            balance = WooPaymentsDepositsOverview.Balance(
                 available = listOf(
                     WooPaymentsDepositsOverview.Balance.Info(
                         amount = 100,
@@ -48,7 +55,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         sourceTypes = null,
                         depositsCount = null
                     )
-                ), instant = listOf(
+                ),
+                instant = listOf(
                     WooPaymentsDepositsOverview.Balance.Info(
                         amount = 200,
                         currency = "USD",
@@ -59,7 +67,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         sourceTypes = null,
                         depositsCount = null
                     )
-                ), pending = listOf(
+                ),
+                pending = listOf(
                     WooPaymentsDepositsOverview.Balance.Info(
                         amount = 300,
                         currency = "USD",
@@ -71,7 +80,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         depositsCount = 2
                     )
                 )
-            ), deposit = null
+            ),
+            deposit = null
         )
 
         // WHEN
@@ -90,6 +100,7 @@ class PaymentsHumDepositSummaryStateMapperTest {
         )
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `given overview with multiple currencies and different deposit statuses, when mapDepositOverviewToViewModelOverviews, then return Overview with correct statuses`() {
         // GIVEN
@@ -100,9 +111,11 @@ class PaymentsHumDepositSummaryStateMapperTest {
                 depositsBlocked = false,
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
-                    delayDays = 30, interval = "MONTHLY"
+                    delayDays = 30,
+                    interval = "MONTHLY"
                 )
-            ), balance = WooPaymentsDepositsOverview.Balance(
+            ),
+            balance = WooPaymentsDepositsOverview.Balance(
                 available = listOf(
                     WooPaymentsDepositsOverview.Balance.Info(
                         amount = 100,
@@ -113,7 +126,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         transactionIds = null,
                         sourceTypes = null,
                         depositsCount = null
-                    ), WooPaymentsDepositsOverview.Balance.Info(
+                    ),
+                    WooPaymentsDepositsOverview.Balance.Info(
                         amount = 150,
                         currency = "EUR",
                         fee = null,
@@ -123,8 +137,11 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         sourceTypes = null,
                         depositsCount = null
                     )
-                ), instant = null, pending = null
-            ), deposit = WooPaymentsDepositsOverview.Deposit(
+                ),
+                instant = null,
+                pending = null
+            ),
+            deposit = WooPaymentsDepositsOverview.Deposit(
                 lastPaid = listOf(
                     WooPaymentsDepositsOverview.Deposit.Info(
                         amount = 200,
@@ -139,7 +156,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         status = "PAID",
                         type = "type"
                     )
-                ), nextScheduled = listOf(
+                ),
+                nextScheduled = listOf(
                     WooPaymentsDepositsOverview.Deposit.Info(
                         amount = 250,
                         automatic = true,
@@ -215,7 +233,9 @@ class PaymentsHumDepositSummaryStateMapperTest {
         assertThat(result).isNotNull
         assertThat(result?.defaultCurrency).isEqualTo("USD")
         assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.amount).isEqualTo(500)
-        assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.status).isEqualTo(PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED)
+        assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.status).isEqualTo(
+            PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED
+        )
         assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo(0)
     }
