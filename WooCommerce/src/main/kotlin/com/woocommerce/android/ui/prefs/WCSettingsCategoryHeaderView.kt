@@ -9,6 +9,5 @@ import com.woocommerce.android.R
 class WCSettingsCategoryHeaderView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.settingsCategoryHeaderStyle,
     @StyleRes defStyleRes: Int = R.style.Woo_TextView_Subtitle1
-) : MaterialTextView(ctx, attrs, defStyleAttr, defStyleRes)
+) : MaterialTextView(ctx, attrs, defStyleRes)
