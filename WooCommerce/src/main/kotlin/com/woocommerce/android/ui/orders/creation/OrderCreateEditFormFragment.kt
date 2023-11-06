@@ -358,6 +358,8 @@ class OrderCreateEditFormFragment :
                         new.isCouponButtonEnabled && idle
                     binding.paymentSection.addCouponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
+                    binding.paymentSection.shippingButton.isEnabled =
+                        new.isAddShippingButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
                 }
             }
@@ -382,6 +384,9 @@ class OrderCreateEditFormFragment :
             new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
                 binding.paymentSection.couponButton.isEnabled = it
                 binding.paymentSection.addCouponButton.isEnabled = it
+            }
+            new.isAddShippingButtonEnabled.takeIfNotEqualTo(old?.isAddShippingButtonEnabled) {
+                binding.paymentSection.shippingButton.isEnabled = it
             }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
@@ -517,43 +522,49 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        if (isCustomAmountsFeatureFlagEnabled()) {
-            paymentSection.bindCustomAmountSubSection(newOrderData)
+        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty()) {
+            paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+            paymentSection.paymentsLayout.hide()
         } else {
-            paymentSection.bindFeesSubSection(newOrderData)
-        }
-        paymentSection.bindCouponsSubSection(newOrderData)
+            paymentSection.paymentsLayout.show()
+            if (isCustomAmountsFeatureFlagEnabled()) {
+                paymentSection.bindCustomAmountSubSection(newOrderData)
+            } else {
+                paymentSection.bindFeesSubSection(newOrderData)
+            }
+            paymentSection.bindCouponsSubSection(newOrderData)
 
-        val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
-        paymentSection.shippingButton.setText(
-            if (firstShipping != null) R.string.order_creation_edit_shipping
-            else R.string.order_creation_add_shipping
-        )
-        paymentSection.shippingButton.setIconResource(
-            if (firstShipping != null) 0
-            else R.drawable.ic_add
-        )
-        paymentSection.shippingValue.isVisible = firstShipping != null
-        newOrderData.shippingLines.sumByBigDecimal { it.total }.let {
-            paymentSection.shippingValue.text = bigDecimalFormatter(it)
-        }
-
-        paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
-        paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
-        val hasDiscount = newOrderData.discountTotal.isNotEqualTo(BigDecimal.ZERO)
-        paymentSection.discountLayout.isVisible = hasDiscount
-        if (hasDiscount) {
-            paymentSection.discountValue.text = getString(
-                R.string.order_creation_discounts_total_value,
-                bigDecimalFormatter(newOrderData.discountTotal)
+            val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
+            paymentSection.shippingButton.setText(
+                if (firstShipping != null) R.string.order_creation_edit_shipping
+                else R.string.order_creation_add_shipping
             )
+            paymentSection.shippingButton.setIconResource(
+                if (firstShipping != null) 0
+                else R.drawable.ic_add
+            )
+            paymentSection.shippingValue.isVisible = firstShipping != null
+            newOrderData.shippingLines.sumByBigDecimal { it.total }.let {
+                paymentSection.shippingValue.text = bigDecimalFormatter(it)
+            }
+
+            paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
+            paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
+            val hasDiscount = newOrderData.discountTotal.isNotEqualTo(BigDecimal.ZERO)
+            paymentSection.discountLayout.isVisible = hasDiscount
+            if (hasDiscount) {
+                paymentSection.discountValue.text = getString(
+                    R.string.order_creation_discounts_total_value,
+                    bigDecimalFormatter(newOrderData.discountTotal)
+                )
+            }
+            paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+            bindTaxLinesSection(
+                paymentSection,
+                newOrderData
+            )
+            paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
         }
-        paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
-        bindTaxLinesSection(
-            paymentSection,
-            newOrderData
-        )
-        paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
     }
 
     private fun bindTaxBasedOnSettingLabel(
