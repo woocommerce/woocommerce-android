@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDelive
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.DepositSummaryListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.HeaderItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
@@ -185,36 +186,39 @@ class PaymentsHubViewModel @Inject constructor(
         isOnboardingComplete: Boolean,
         cashOnDeliveryItem: ToggleableListItem
     ): List<ListItem> = mutableListOf(
+        DepositSummaryListItem(
+            index = 0
+        ),
         HeaderItem(
             label = UiStringRes(R.string.card_reader_hub_actions_category_header),
-            index = 0
+            index = 1
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_gridicons_money_on_surface,
             label = UiStringRes(R.string.card_reader_hub_collect_payment),
-            index = 1,
+            index = 2,
             onClick = ::onCollectPaymentClicked
         ),
         HeaderItem(
             label = UiStringRes(R.string.card_reader_settings_header),
-            index = 2,
+            index = 3,
         ),
         cashOnDeliveryItem,
         HeaderItem(
             label = UiStringRes(R.string.card_reader_card_readers_header),
-            index = 9,
+            index = 10,
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_shopping_cart,
             label = UiStringRes(R.string.card_reader_purchase_card_reader),
-            index = 10,
+            index = 11,
             onClick = ::onPurchaseCardReaderClicked
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_manage_card_reader,
             label = UiStringRes(R.string.card_reader_manage_card_reader),
             isEnabled = isOnboardingComplete,
-            index = 11,
+            index = 12,
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
@@ -228,7 +232,7 @@ class PaymentsHubViewModel @Inject constructor(
             add(
                 HeaderItem(
                     label = UiStringRes(R.string.card_reader_tap_to_pay_header),
-                    index = 5
+                    index = 6
                 )
             )
             add(
@@ -236,7 +240,7 @@ class PaymentsHubViewModel @Inject constructor(
                     icon = R.drawable.ic_baseline_contactless,
                     label = UiStringRes(R.string.card_reader_test_tap_to_pay),
                     description = UiStringRes(R.string.card_reader_tap_to_pay_description),
-                    index = 6,
+                    index = 7,
                     onClick = ::onTapToPayClicked,
                     iconBadge = R.drawable.ic_badge_new,
                 )
@@ -245,7 +249,7 @@ class PaymentsHubViewModel @Inject constructor(
                 NonToggleableListItem(
                     icon = R.drawable.ic_tintable_info_outline_24dp,
                     label = UiStringRes(R.string.card_reader_about_tap_to_pay),
-                    index = 7,
+                    index = 8,
                     onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
                 )
             )
@@ -254,7 +258,7 @@ class PaymentsHubViewModel @Inject constructor(
                     NonToggleableListItem(
                         icon = R.drawable.ic_feedback_banner_logo,
                         label = UiStringRes(R.string.card_reader_tap_to_pay_share_feedback),
-                        index = 8,
+                        index = 9,
                         onClick = ::onTapToPayFeedbackClicked
                     )
                 )
@@ -268,7 +272,7 @@ class PaymentsHubViewModel @Inject constructor(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 12,
+                    index = 13,
                     onClick = { onCardReaderManualsClicked(countryConfig) }
                 )
             )
@@ -280,7 +284,7 @@ class PaymentsHubViewModel @Inject constructor(
             LearnMoreListItem(
                 icon = R.drawable.ic_info_outline_20dp,
                 label = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true),
-                index = 13,
+                index = 14,
                 onClick = ::onLearnMoreIppClicked
             )
         )
@@ -290,7 +294,7 @@ class PaymentsHubViewModel @Inject constructor(
         NonToggleableListItem(
             icon = R.drawable.ic_payment_provider,
             label = UiStringRes(R.string.card_reader_manage_payment_provider),
-            index = 4,
+            index = 5,
             onClick = ::onCardReaderPaymentProviderClicked
         )
 

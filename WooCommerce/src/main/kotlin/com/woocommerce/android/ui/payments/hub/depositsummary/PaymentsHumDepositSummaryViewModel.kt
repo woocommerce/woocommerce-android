@@ -5,16 +5,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class PaymentsHumDepositSummaryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PaymentsHubDepositSummaryRepository,
     private val mapper: PaymentsHumDepositSummaryStateMapper,
-    private val isFeatureEnabled: IsFeatureEnabled,
+    isFeatureEnabled: IsFeatureEnabled,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableStateFlow<PaymentsHubDepositSummaryState>(PaymentsHubDepositSummaryState.Loading)
@@ -23,7 +25,6 @@ class PaymentsHumDepositSummaryViewModel @Inject constructor(
     init {
         if (!isFeatureEnabled()) {
             _viewState.value = PaymentsHubDepositSummaryState.Error("Invalid data")
-
         } else {
             launch {
                 repository.retrieveDepositOverview().map {
