@@ -16,6 +16,7 @@ import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.RefundConfiguration
 import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
@@ -82,8 +83,8 @@ internal class TerminalWrapper {
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
 
-    fun refundPayment(refundParameters: RefundParameters, callback: Callback) =
-        Terminal.getInstance().collectRefundPaymentMethod(refundParameters, callback)
+    fun refundPayment(refundParameters: RefundParameters, refundConfiguration: RefundConfiguration, callback: Callback) =
+        Terminal.getInstance().collectRefundPaymentMethod(refundParameters, refundConfiguration, callback)
 
     fun processRefund(callback: RefundCallback) =
         Terminal.getInstance().confirmRefund(callback)

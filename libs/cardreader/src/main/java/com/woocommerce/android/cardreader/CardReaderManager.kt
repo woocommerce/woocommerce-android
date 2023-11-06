@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +46,7 @@ interface CardReaderManager {
     suspend fun disconnectReader(): Boolean
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
-    suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus>
+    suspend fun refundInteracPayment(refundParams: RefundParams, refundConfig: RefundConfig): Flow<CardInteracRefundStatus>
 
     suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
     fun cancelPayment(paymentData: PaymentData)
