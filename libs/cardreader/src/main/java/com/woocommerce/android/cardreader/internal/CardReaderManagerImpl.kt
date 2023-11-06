@@ -65,16 +65,6 @@ internal class CardReaderManagerImpl(
         if (!terminal.isInitialized()) {
             terminal.getLifecycleObserver().onCreate(application)
 
-            application.registerComponentCallbacks(object : ComponentCallbacks2 {
-                override fun onConfigurationChanged(newConfig: Configuration) {}
-
-                override fun onLowMemory() {}
-
-                override fun onTrimMemory(level: Int) {
-                    terminal.getLifecycleObserver().onTrimMemory(application, level)
-                }
-            })
-
             val logLevel = if (isDebug) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
