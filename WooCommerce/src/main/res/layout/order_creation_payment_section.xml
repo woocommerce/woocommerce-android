@@ -295,5 +295,10 @@
                 android:textStyle="bold"
                 tools:text="$20.00" />
         </androidx.appcompat.widget.LinearLayoutCompat>
+        <View
+            android:id="@+id/divider"
+            style="@style/Woo.Divider"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginStart="@dimen/major_100"/>
     </androidx.appcompat.widget.LinearLayoutCompat>
 </com.google.android.material.card.MaterialCardView>
