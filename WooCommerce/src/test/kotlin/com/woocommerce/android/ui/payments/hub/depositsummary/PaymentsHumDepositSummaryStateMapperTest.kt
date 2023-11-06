@@ -153,7 +153,8 @@ class PaymentsHumDepositSummaryStateMapperTest {
                         status = "ESTIMATED",
                         type = "type",
                     )
-                ), lastManualDeposits = null
+                ),
+                lastManualDeposits = null
             )
         )
 
