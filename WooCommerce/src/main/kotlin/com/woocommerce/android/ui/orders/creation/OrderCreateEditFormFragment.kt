@@ -812,34 +812,24 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindCustomerAddressAndNotesSection(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
-        val customer = newOrderData.customer
-        when {
-            // Customer address and customer notes not added
-            shouldHideBothSections(newOrderData) -> {
-                shouldHideBothSections(newOrderData)
-            }
+        with(binding) {
+            when {
+                shouldHideBothSections(newOrderData) -> {
+                    hideBothSections()
+                }
+                shouldShowCustomerSectionOnly(newOrderData) -> {
+                    showCustomerSectionOnly(newOrderData)
+                }
+                shouldShowNotesSectionOnly(newOrderData) -> {
+                    showNotesSectionOnly(newOrderData)
+                }
+                // Both customer address and customer notes are added
+                else -> {
+                    displayCustomerAddress(binding, newOrderData)
+                    displayCustomerNotes(binding, newOrderData)
+                }
 
-            // Customer address added, notes is not added
-            shouldShowCustomerSectionOnly(newOrderData) -> {
-                binding.notesSection.show()
-                binding.notesSection.showHeader()
-                binding.initNotesSection()
-                customerAddressAdded(binding, newOrderData)
             }
-
-            // Customer notes added, address not added
-            shouldShowNotesSectionOnly(newOrderData) -> {
-                customerNotesAdded(binding, newOrderData)
-                binding.customerSection.content = null
-                customerAddressAdded(binding, newOrderData)
-            }
-
-            // Both customer address and customer notes are added
-            else -> {
-                customerAddressAdded(binding, newOrderData)
-                customerNotesAdded(binding, newOrderData)
-            }
-
         }
     }
 
@@ -857,9 +847,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.hideBothSections() {
         customerSection.apply {
-            content = null
             hideHeader()
-            removeCustomSectionButtons()
         }
         notesSection.apply {
             content = null
@@ -869,25 +857,46 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun customerNotesAdded(
-        binding: FragmentOrderCreateEditFormBinding,
-        newOrderData: Order
-    ) {
-        binding.initNotesSection()
-        binding.notesSection.show()
-        binding.notesSection.showHeader()
-        bindNotesSection(binding.notesSection, newOrderData.customerNote)
+    private fun FragmentOrderCreateEditFormBinding.showCustomerSectionOnly(newOrderData: Order) {
+        with (this) {
+            notesSection.apply {
+                show()
+                showHeader()
+            }
+            initNotesSection()
+            displayCustomerAddress(this, newOrderData)
+        }
     }
 
-    private fun customerAddressAdded(
-        binding: FragmentOrderCreateEditFormBinding,
-        newOrderData: Order
-    ) {
-        binding.initCustomerSection()
-        binding.customerSection.show()
-        binding.customerSection.showHeader()
-        binding.customerSection.header = getString(R.string.order_creation_customer)
-        bindCustomerAddressSection(binding, newOrderData)
+    private fun FragmentOrderCreateEditFormBinding.showNotesSectionOnly(newOrderData: Order) {
+        with(this) {
+            displayCustomerNotes(this, newOrderData)
+            customerSection.content = null
+            displayCustomerAddress(this, newOrderData)
+        }
+    }
+
+    private fun displayCustomerNotes(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
+        with(binding) {
+            initNotesSection()
+            notesSection.apply {
+                show()
+                showHeader()
+                bindNotesSection(this, newOrderData.customerNote)
+            }
+        }
+    }
+
+    private fun displayCustomerAddress(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
+        with(binding) {
+            initCustomerSection()
+            customerSection.apply {
+                show()
+                showHeader()
+                header = getString(R.string.order_creation_customer)
+            }
+            bindCustomerAddressSection(this, newOrderData)
+        }
     }
 
     private fun setupHandleResults() {
