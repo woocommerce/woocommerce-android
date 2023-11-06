@@ -11,7 +11,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/payments_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/header_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -49,6 +56,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/products_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -225,6 +233,8 @@
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 tools:text="$0.00" />
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
