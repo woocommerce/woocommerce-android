@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.campaigs
 
-import android.icu.text.NumberFormat
+import android.icu.text.DecimalFormat
+import android.icu.text.DecimalFormatSymbols
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -43,7 +44,7 @@ class BlazeCampaignListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
-        private const val CENTS_TO_UNITS = 100
+        private const val CENTS_TO_UNITS = 100f
     }
 
     private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
@@ -136,9 +137,8 @@ class BlazeCampaignListViewModel @Inject constructor(
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
-                        value = NumberFormat.getInstance(Locale.getDefault())
+                        value = DecimalFormat("#.##", DecimalFormatSymbols(Locale.getDefault()))
                             .format(campaignEntity.budgetCents / CENTS_TO_UNITS)
-                            .toString()
                     )
                 )
             ),
