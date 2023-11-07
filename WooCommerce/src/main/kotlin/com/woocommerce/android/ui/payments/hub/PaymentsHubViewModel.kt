@@ -94,7 +94,7 @@ class PaymentsHubViewModel @Inject constructor(
                 R.string.card_reader_enable_pay_in_person_description,
                 containsHtml = true
             ),
-            index = 3,
+            index = 4,
             isChecked = false,
             onToggled = { (::onCashOnDeliveryToggled)(it) },
             onLearnMoreClicked = ::onLearnMoreCodClicked
@@ -186,9 +186,7 @@ class PaymentsHubViewModel @Inject constructor(
         isOnboardingComplete: Boolean,
         cashOnDeliveryItem: ToggleableListItem
     ): List<ListItem> = mutableListOf(
-        DepositSummaryListItem(
-            index = 0
-        ),
+        DepositSummaryListItem(index = 0),
         HeaderItem(
             label = UiStringRes(R.string.card_reader_hub_actions_category_header),
             index = 1
