@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PaymentsHumDepositSummaryViewModel @Inject constructor(
+class PaymentsHubDepositSummaryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PaymentsHubDepositSummaryRepository,
     private val mapper: PaymentsHumDepositSummaryStateMapper,
