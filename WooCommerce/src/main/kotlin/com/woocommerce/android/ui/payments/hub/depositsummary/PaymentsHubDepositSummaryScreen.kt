@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +43,11 @@ fun PaymentsHubDepositSummaryView(
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.color_surface))
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
