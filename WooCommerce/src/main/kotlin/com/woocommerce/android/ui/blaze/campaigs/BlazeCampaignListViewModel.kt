@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.blaze.campaigs
 
+import android.icu.text.DecimalFormat
+import android.icu.text.DecimalFormatSymbols
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
+import java.util.Locale
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -41,7 +44,7 @@ class BlazeCampaignListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
-        private const val CENTS_TO_UNITS = 100
+        private const val CENTS_TO_UNITS = 100f
     }
 
     private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
@@ -126,15 +129,16 @@ class BlazeCampaignListViewModel @Inject constructor(
                 stats = listOf(
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_impressions,
-                        value = campaignEntity.impressions
+                        value = campaignEntity.impressions.toString()
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_clicks,
-                        value = campaignEntity.clicks
+                        value = campaignEntity.clicks.toString()
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
-                        value = campaignEntity.budgetCents / CENTS_TO_UNITS
+                        value = DecimalFormat("#.##", DecimalFormatSymbols(Locale.getDefault()))
+                            .format(campaignEntity.budgetCents / CENTS_TO_UNITS)
                     )
                 )
             ),
