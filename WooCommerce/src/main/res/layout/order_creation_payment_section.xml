@@ -71,7 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/order_creation_payment_products_total"
+                android:text="@string/order_creation_payment_products"
                 android:textAppearance="?attr/textAppearanceSubtitle1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -156,7 +156,7 @@
                 android:paddingVertical="@dimen/minor_100"
                 android:paddingLeft="@dimen/minor_00"
                 android:paddingRight="@dimen/minor_50"
-                android:text="@string/order_creation_payment_tax"
+                android:text="@string/order_creation_payment_tax_label"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintBottom_toBottomOf="@+id/tax_help_button"
                 app:layout_constraintLeft_toLeftOf="parent"
