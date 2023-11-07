@@ -40,7 +40,7 @@ fun JetpackActivationWPComEmailScreen(viewModel: JetpackActivationWPComEmailView
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationWPComEmailScreen(
             viewState = it,
-            onEmailChanged = viewModel::onEmailChanged,
+            onEmailChanged = viewModel::onEmailOrUsernameChanged,
             onCloseClick = viewModel::onCloseClick,
             onContinueClick = viewModel::onContinueClick
         )
@@ -101,9 +101,9 @@ fun JetpackActivationWPComEmailScreen(
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 WCOutlinedTextField(
-                    value = viewState.email,
+                    value = viewState.emailOrUsername,
                     onValueChange = onEmailChanged,
-                    label = stringResource(id = R.string.email_address),
+                    label = stringResource(id = R.string.email_or_username),
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
                     singleLine = true,
@@ -156,7 +156,7 @@ private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
         JetpackActivationWPComEmailScreen(
             viewState = JetpackActivationWPComEmailViewModel.ViewState(
-                email = "",
+                emailOrUsername = "",
                 isJetpackInstalled = false
             )
         )

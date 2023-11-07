@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-24 16:54:03+0000
+Translation-Revision-Date: 2023-11-02 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_details_blaze_card">Promouvoir avec Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">J’ai compris</string>
+    <string name="blaze_campaign_ceation_celebration_message">La publicité a été soumise pour approbation. Nous vous enverrons un e-mail de confirmation dès qu’elle sera approuvée et opérationnelle.</string>
+    <string name="blaze_campaign_creation_celebration_header">Tout est prêt !</string>
+    <string name="blaze_campaign_creation_intro_button">Lancer la campagne Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Suivez vos performances, et activez ou désactivez votre campagne Blaze à tout moment.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Touchez des millions de personnes avec des sites WordPress et Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Prenez le contrôle pour seulement quelques dollars par jour. Une solution économique.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promouvez votre produit en quelques minutes.</string>
+    <string name="blaze_campaign_creation_intro_title">Augmenter les ventes de votre boutique avec Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Une erreur s’est produite lors de l’actualisation de la liste de campagnes. Veuillez réessayer plus tard.</string>
+    <string name="media_picker_dialog_title">Sélectionner une source multimédia</string>
+    <string name="product_creation_package_photo_error">Une erreur est survenue lors de la génération du nom et de la description du produit.</string>
+    <string name="product_creation_package_photo_no_text_detected">Aucun texte détecté. Sélectionnez une autre photo de l’emballage ou entrez manuellement les détails du produit.</string>
+    <string name="order_editing_add_content_description">Ajouter un produit</string>
+    <string name="order_editing_barcode_content_description">Scanner le code-barres</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Réduire/développer l’affichage de la fiche produit</string>
+    <string name="order_creation_decrease_item_amount_content_description">Réduire la quantité de produits</string>
+    <string name="order_creation_increase_item_amount_content_description">Augmenter la quantité de produits</string>
+    <string name="order_creation_add_custom_amounts">Ajouter un montant personnalisé</string>
+    <string name="order_creation_price_after_discount">Prix après remise</string>
     <string name="previous_order">Commande précédente</string>
     <string name="next_order">Commande suivante</string>
     <string name="blaze_campaign_details_title">Détails de la campagne</string>
@@ -325,13 +346,6 @@ Language: fr
     <string name="highlights_tooltip_button_hint">Texte du bouton</string>
     <string name="highlights_tooltip_message_hint">Message de l’info-bulle. \n Il peut comporter plusieurs lignes.</string>
     <string name="highlights_tooltip_title_hint">Titre de l’info-bulle</string>
-    <string name="blaze_banner_dismiss_dialog_button">J’ai compris</string>
-    <string name="blaze_banner_dismiss_dialog_description">Aucune inquiétude ! Blaze est accessible depuis le Menu et la page détaillée du produit, pour plus de praticité.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Annonces Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Bouton Fermer la bannière Blaze</string>
-    <string name="blaze_banner_button">Essayer Blaze maintenant</string>
-    <string name="blaze_banner_description">Transformez vos produits en publicités diffusées sur des millions de sites sur WordPress.com et Tumblr.</string>
-    <string name="blaze_banner_title">Promouvoir des produits avec Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">J’ai compris</string>
     <string name="ai_product_description_tooltip_message">Utilisez notre outil d’intelligence artificielle pour générer rapidement des descriptions de produits. Il vous suffit de saisir des mots-clés, et nous nous chargeons du reste !</string>
     <string name="ai_product_description_tooltip_title">✨ Rédiger avec l’IA</string>
@@ -815,7 +829,7 @@ Language: fr
     <string name="login_jetpack_installation_retry_activating">Réessayer d’activer</string>
     <string name="login_jetpack_installation_retry_installing">Réessayer d’installer</string>
     <string name="login_jetpack_installation_get_support">Obtenir de l’aide</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
     <string name="login_jetpack_installation_error_generic_message">Une erreur est survenue lors de la communication avec votre site.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Vous n’êtes pas autorisé à gérer les extensions sur cette boutique.</string>
     <string name="login_jetpack_installation_error_authorizing">Erreur lors de l’autorisation de la connexion à Jetpack</string>

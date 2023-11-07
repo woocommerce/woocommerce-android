@@ -356,7 +356,6 @@ class SitePickerFragment :
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
                 siteUrl = event.siteUrl,
                 primaryButton = event.primaryButton,
-                allowBackNavigation = event.hasConnectedStores,
                 errorType = AccountMismatchErrorType.WPCOM_ACCOUNT_MISMATCH
             )
         )

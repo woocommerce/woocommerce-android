@@ -656,7 +656,7 @@ class MainActivity :
     /**
      * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
-    private fun restart() {
+    override fun restart() {
         val intent = intent
         intent.addFlags(
             Intent.FLAG_ACTIVITY_CLEAR_TOP or

@@ -91,6 +91,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
     val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
+    private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -177,6 +178,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         getTaxRatePercentageValueText = mock()
         getTaxRateLabel = mock()
         prefs = mock()
+        mapFeeLineToCustomAmountUiModel = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2200,6 +2202,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
             isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
+            mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel
         )
     }
 

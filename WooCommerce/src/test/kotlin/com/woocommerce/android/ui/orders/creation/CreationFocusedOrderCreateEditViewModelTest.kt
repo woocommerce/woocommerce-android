@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
@@ -28,6 +31,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -1483,4 +1487,235 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
         }
     }
+
+    // region Custom Amounts
+    @Test
+    fun `when custom amount added, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper amount`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.TEN)
+    }
+
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount")
+    }
+
+    @Test
+    fun `when custom amount added without name, then fee line gets updated with default name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = ""
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
+    }
+
+    @Test
+    fun `when custom amount added, then exit event is triggered`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(sut.event.value).isEqualTo(Exit)
+    }
+
+    @Test
+    fun `when custom amount is updated, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when custom amount is updated with amount, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.ONE)
+    }
+
+    @Test
+    fun `when custom amount is updated with name, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount updated")
+    }
+
+    @Test
+    fun `when custom amount removed, then fee line is updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount"
+            )
+        )
+
+        assertThat(orderDraft?.feesLines?.filter { it.name != null }?.size).isEqualTo(0)
+    }
+    @Test
+    fun `when custom amount is added, then proper event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+    }
+
+    @Test
+    fun `when custom amount name is added, then proper event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount name is not added, then event is not tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Custom Amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker, never()).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount is removed, then event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Custom Amount"
+        )
+
+        sut.onCustomAmountRemoved(customAmountUIModel)
+
+        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
+    }
+    //endregion
 }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,17 +15,20 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Cancel
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Failure
+import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -34,19 +38,20 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
@@ -61,17 +66,21 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val pluginRepository: PluginRepository,
     private val accountRepository: AccountRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
-        private const val JETPACK_PLANS_URL = "https://wordpress.com/jetpack/connect/plans"
-        private const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
-        private const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
         private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
         private const val CONNECTED_EMAIL_KEY = "connected-email"
+
+        @VisibleForTesting
+        const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
+
+        @VisibleForTesting
+        const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
@@ -198,8 +207,16 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     }
 
-    fun onJetpackConnected() {
-        connectionStep.value = ConnectionStep.Validation
+    fun onJetpackConnectionResult(result: JetpackActivationWebViewViewModel.ConnectionResult) {
+        when (result) {
+            Success -> connectionStep.value = ConnectionStep.Validation
+            Cancel -> triggerEvent(ShowWebViewDismissedError)
+            is Failure -> currentStep.update {
+                it.copy(
+                    state = StepState.Error(result.errorCode)
+                )
+            }
+        }
     }
 
     fun onRetryClick() {
@@ -248,7 +265,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         currentStep.update { it.copy(state = StepState.Ongoing) }
     }
 
-    private fun monitorCurrentStep() {
+    private fun monitorCurrentStep() = launch {
         currentStep
             .map { step ->
                 step.copy(
@@ -260,22 +277,23 @@ class JetpackActivationMainViewModel @Inject constructor(
                 )
             }
             .distinctUntilChanged()
-            .filter { it.state == StepState.Ongoing }
-            .map { it.type }
-            .onEach { stepType ->
+            .collectLatest { step ->
+                if (step.state != StepState.Ongoing) return@collectLatest
+
+                val stepType = step.type
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $stepType")
 
                 when (stepType) {
                     StepType.Installation -> {
                         startJetpackInstallation()
                     }
+
                     StepType.Connection -> {
-                        var connectionStepJob: Job? = null
-                        connectionStepJob = connectionStep.onEach { connectionStep ->
+                        connectionStep.collect { connectionStep ->
                             when (connectionStep) {
                                 ConnectionStep.PreConnection -> startJetpackConnection()
                                 ConnectionStep.Validation -> startJetpackValidation()
-                                ConnectionStep.Approved -> {
+                                ConnectionStep.Approved -> withContext(NonCancellable) {
                                     currentStep.value = Step(
                                         type = StepType.Connection,
                                         state = StepState.Success
@@ -286,11 +304,9 @@ class JetpackActivationMainViewModel @Inject constructor(
                                         type = StepType.Done,
                                         state = StepState.Ongoing
                                     )
-                                    // Cancel collection to move to next steps
-                                    connectionStepJob?.cancel()
                                 }
                             }
-                        }.launchIn(viewModelScope)
+                        }
                     }
 
                     StepType.Done -> {
@@ -311,7 +327,6 @@ class JetpackActivationMainViewModel @Inject constructor(
                     StepType.Activation -> error("Type Activation is not expected here")
                 }
             }
-            .launchIn(viewModelScope)
     }
 
     private fun handleErrorStates() {
@@ -321,6 +336,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                     delay(DELAY_BEFORE_SHOWING_ERROR_STATE_MS)
                     isShowingErrorState.value = true
                 }
+
                 else -> isShowingErrorState.value = false
             }
         }.launchIn(viewModelScope)
@@ -405,7 +421,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     private suspend fun startJetpackConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         val currentSite = site.await()
-        val useApplicationPasswords = currentSite.connectionType == SiteConnectionType.ApplicationPasswords
+        val useApplicationPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
         jetpackActivationRepository.fetchJetpackConnectionUrl(currentSite, useApplicationPasswords).fold(
             onSuccess = { connectionUrl ->
                 if (!isFromBanner) {
@@ -431,41 +447,23 @@ class JetpackActivationMainViewModel @Inject constructor(
                     //  &mobile_redirect=woocommerce://jetpack-connected&from=mobile
                     // See: pe5sF9-1le-p2#comment-1942
 
-                    val chosenUrl =
-                        if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
-                            connectionUrl
-                        } else {
-                            "https://wordpress.com/jetpack/connect?url=" + navArgs.siteUrl +
-                                "&mobile_redirect=" + MOBILE_REDIRECT +
-                                "&from=mobile"
-                        }
-
-                    // We use STARTS_WITH for the special URL case, to make sure MOBILE_REDIRECT is only used
-                    // as validation if it's at the start of the URL, not as a parameter in the special URL.
-                    val comparisonMode =
-                        if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
-                            UrlComparisonMode.PARTIAL
-                        } else {
-                            UrlComparisonMode.STARTS_WITH
-                        }
-
-                    // Occasionally, while connecting Jetpack, the webview may redirect to the Jetpack plans page
-                    // instead of MOBILE_REDIRECT. We are uncertain about the cause. However, since this redirect
-                    // occurs after the site connects, let's use the plans page as a validation URL too.
+                    val chosenUrl = if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
+                        connectionUrl
+                    } else {
+                        "https://wordpress.com/jetpack/connect?url=" + navArgs.siteUrl +
+                            "&mobile_redirect=" + MOBILE_REDIRECT +
+                            "&from=mobile"
+                    }
 
                     triggerEvent(
                         ShowJetpackConnectionWebView(
-                            url = chosenUrl,
-                            connectionValidationUrls = listOf(MOBILE_REDIRECT, JETPACK_PLANS_URL),
-                            urlComparisonMode = comparisonMode,
-                            clearCache = true
+                            url = chosenUrl
                         )
                     )
                 } else {
                     triggerEvent(
                         ShowJetpackConnectionWebView(
-                            url = connectionUrl,
-                            connectionValidationUrls = listOf(JETPACK_PLANS_URL, navArgs.siteUrl)
+                            url = connectionUrl
                         )
                     )
                 }
@@ -536,6 +534,11 @@ class JetpackActivationMainViewModel @Inject constructor(
                     )
                 }
                 currentStep.update { state -> state.copy(state = StepState.Error(error?.errorCode)) }
+                if (it is JetpackActivationRepository.JetpackMissingConnectionEmailException) {
+                    // If we can't find a connected email, we can't confirm the site connection. Let's
+                    // Go back to the connection step to try again.
+                    connectionStep.value = ConnectionStep.PreConnection
+                }
             }
         )
     }
@@ -621,12 +624,10 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     data class ShowJetpackConnectionWebView(
-        val url: String,
-        val connectionValidationUrls: List<String>,
-        val urlComparisonMode: UrlComparisonMode = UrlComparisonMode.PARTIAL,
-        val clearCache: Boolean = false
+        val url: String
     ) : MultiLiveEvent.Event()
 
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()
     data class ShowWooNotInstalledScreen(val siteUrl: String) : MultiLiveEvent.Event()
+    object ShowWebViewDismissedError : MultiLiveEvent.Event()
 }

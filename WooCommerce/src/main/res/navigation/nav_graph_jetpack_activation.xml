@@ -78,6 +78,9 @@
         <argument
             android:name="isJetpackInstalled"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_jetpackActivationMainFragment_to_jetpackActivationWebViewFragment"
+            app:destination="@id/jetpackActivationWebViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationWPComEmailFragment"
@@ -156,5 +159,13 @@
             app:destination="@id/jetpackActivationMainFragment"
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/jetpackActivationWebViewFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewFragment"
+        android:label="JetpackActivationWebViewFragment">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
     </fragment>
 </navigation>

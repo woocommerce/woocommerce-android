@@ -71,10 +71,6 @@
         <argument
             android:name="errorType"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
-        <argument
-            android:name="allowBackNavigation"
-            android:defaultValue="true"
-            app:argType="boolean" />
     </fragment>
     <dialog
         android:id="@+id/addStoreBottomSheetFragment"

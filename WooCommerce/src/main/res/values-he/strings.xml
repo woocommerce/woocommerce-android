@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 13:54:04+0000
+Translation-Revision-Date: 2023-11-01 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_details_blaze_card">לקדם עם Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">הבנתי</string>
+    <string name="blaze_campaign_ceation_celebration_message">הפרסומת נשלחה לאישור. נשלח לך אישור באימייל כשהיא תאושר ותוצג.</string>
+    <string name="blaze_campaign_creation_celebration_header">הכול מוכן!</string>
+    <string name="blaze_campaign_creation_intro_button">להתחיל עכשיו קמפיין ב-Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">ניתן לעקוב אחר ביצועים, ולהתחיל/להפסיק קמפיין ב-Blaze בכל עת.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">להגיע למיליוני מבקרים באתרי WordPress ו-Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">לקבל את השליטה בעלות של דולרים ספורים ליום. פתרון שלא מכביד על התקציב.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">לקדם את המוצרים שלך בתוך דקות.</string>
+    <string name="blaze_campaign_creation_intro_title">להגביר מכירות בחנות שלך בעזרת Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">שגיאה בעת ריענון רשימת הקמפיינים. נא לנסות שוב מאוחר יותר.</string>
+    <string name="media_picker_dialog_title">לבחור מקור מדיה</string>
+    <string name="product_creation_package_photo_error">שגיאה בעת יצירת שם ותיאור מוצר.</string>
+    <string name="product_creation_package_photo_no_text_detected">לא זוהה טקסט. יש לבחור תמונת אריזה אחרת או להזין את פרטי המוצר באופן ידני.</string>
+    <string name="order_editing_add_content_description">להוסיף מוצר</string>
+    <string name="order_editing_barcode_content_description">לסרוק ברקוד</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">לכווץ/להרחיב כרטיס מוצר</string>
+    <string name="order_creation_decrease_item_amount_content_description">להקטין כמות מוצר</string>
+    <string name="order_creation_increase_item_amount_content_description">להגדיל כמות מוצר</string>
+    <string name="order_creation_add_custom_amounts">להוסיף סכום בהתאמה אישית</string>
+    <string name="order_creation_price_after_discount">מחיר לאחר הנחה</string>
     <string name="previous_order">הסדר הקודם</string>
     <string name="next_order">הסדר הבא</string>
     <string name="blaze_campaign_details_title">פרטי הקמפיין</string>
@@ -325,13 +346,6 @@ Language: he_IL
     <string name="highlights_tooltip_button_hint">טקסט כפתור</string>
     <string name="highlights_tooltip_message_hint">הודעת תיאור כלי. \n יכולה להיות מספר שורות.</string>
     <string name="highlights_tooltip_title_hint">כותרת של תיאור כלי</string>
-    <string name="blaze_banner_dismiss_dialog_button">הבנתי</string>
-    <string name="blaze_banner_dismiss_dialog_description">אל דאגה! תמיד אפשר לגשת בצורה נוחה ל-Blaze מה\'תפריט\' ומהתפריט של פרטי המוצר.</string>
-    <string name="blaze_banner_dismiss_dialog_title">פרסומות של Blaze</string>
-    <string name="blaze_banner_close_button_content_description">כפתור לסגירת הבאנר של Blaze</string>
-    <string name="blaze_banner_button">לנסות את Blaze עכשיו</string>
-    <string name="blaze_banner_description">להפוך מוצרים לפרסומות שיופיעו במיליוני אתרים ברחבי WordPress.com ו-Tumblr.</string>
-    <string name="blaze_banner_title">לקדם מוצרים עם Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">הבנתי</string>
     <string name="ai_product_description_tooltip_message">ניתן להשתמש בכלי שלנו, שמופעל על ידי בינה מלאכותית, כדי ליצור תיאורי מוצרים במהירות. אפשר פשוט להזין מילות מפתח ואנחנו נדאג לכל השאר!</string>
     <string name="ai_product_description_tooltip_title">✨ לכתוב באמצעות בינה מלאכותית</string>
@@ -815,7 +829,7 @@ Language: he_IL
     <string name="login_jetpack_installation_retry_activating">יש לנסות להפעיל שוב</string>
     <string name="login_jetpack_installation_retry_installing">יש לנסות להתקין שוב</string>
     <string name="login_jetpack_installation_get_support">לקבלת תמיכה</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">יש לנסות שוב ולפנות לתמיכה אם השגיאה ממשיכה להופיע.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">יש לנסות שוב ולפנות לתמיכה אם השגיאה ממשיכה להופיע.</string>
     <string name="login_jetpack_installation_error_generic_message">אירעה שגיאה בתקשורת עם האתר שלך.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">אין לך הרשאה לניהול התוספים בחנות הזאת</string>
     <string name="login_jetpack_installation_error_authorizing">אירעה שגיאה באישור החיבור אל Jetpack</string>

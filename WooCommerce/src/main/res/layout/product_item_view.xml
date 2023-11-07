@@ -110,6 +110,7 @@
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_marginTop="@dimen/minor_100"
         android:layout_marginBottom="@dimen/minor_00"

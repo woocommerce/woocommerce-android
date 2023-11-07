@@ -22,59 +22,78 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
                     editingOfAddedCustomer = true
                 )
+
             is AddCustomer ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
+
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
+
             is SelectItems ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
                     selectedItems = target.selectedItems.toTypedArray(),
                     productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
                 )
+
             is EditFee ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
                     orderSubTotal = target.orderSubTotal,
                     currentFeeValue = target.currentFeeValue
                 )
+
             is ShowCreatedOrder ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
+
             is EditShipping ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
+
             is EditCoupon ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditFragment(
                     orderCreationMode = target.orderCreationMode,
                     couponCode = target.couponCode
                 )
+
             is OrderCreateEditNavigationTarget.CouponList -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponListFragment(
                     orderCreationMode = target.orderCreationMode,
                     couponLines = target.couponLines.toTypedArray()
                 )
             }
+
             is OrderCreateEditNavigationTarget.AddCoupon -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment()
             }
+
             is OrderCreateEditNavigationTarget.TaxRatesInfoDialog -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToTaxRatesInfoDialogFragment(
                     target.state
                 )
             }
+
             is OrderCreateEditNavigationTarget.TaxRateSelector -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToTaxRateSelectorFragment(
                     target.state
                 )
             }
+
             is OrderCreateEditNavigationTarget.AutoTaxRateSettingDetails -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToAutoTaxRateDetailsFragment(
                     target.state
                 )
             }
+
             is OrderCreateEditNavigationTarget.EditDiscount -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationToOrderCreationProductDiscountFragment(
                     target.item,
                     target.currency
+                )
+            }
+
+            is OrderCreateEditNavigationTarget.CustomAmountDialog -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
+                    target.customAmountUIModel
                 )
             }
         }

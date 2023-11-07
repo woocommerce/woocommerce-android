@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.1
+Discover a more seamless WooCommerce experience with our latest update! We've introduced a new feature allowing you to input custom amounts during order creation, providing you with greater flexibility. Also, we've enhanced our error handling for a smoother Jetpack Connection, especially when using a custom admin URL. Enjoy a more streamlined and efficient app, designed for your convenience.
+
 ## 16.0
 Welcome to the latest update of WooCommerce! We've redesigned the order's item list for a more intuitive flow. Blaze experience is now more efficient with improved campaign creation. Also, introducing the Product Creation via AI using package photos for getting automatic title and descriptions. Enjoy a seamless shopping experience!
 

@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-24 14:54:03+0000
+Translation-Revision-Date: 2023-11-02 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_details_blaze_card">Blaze を使って宣伝する</string>
+    <string name="blaze_campaign_ceation_celebration_button">OK</string>
+    <string name="blaze_campaign_ceation_celebration_message">広告は承認を得るために送信されました。 承認されて掲載されると、確認メールが送信されます。</string>
+    <string name="blaze_campaign_creation_celebration_header">準備完了 ! </string>
+    <string name="blaze_campaign_creation_intro_button">今すぐ Blaze キャンペーンを開始</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">パフォーマンスの追跡、Blaze キャンペーンの開始と停止をいつでも実行できます。</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">WordPress と Tumblr のサイトで数百万人のユーザーにリーチしましょう。</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">1日わずか数ドルでコントロールできます。 リーズナブル。</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">わずか数分で商品を宣伝できます。</string>
+    <string name="blaze_campaign_creation_intro_title">Blaze でストアの売上を増やす</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">キャンペーンのリストを更新中にエラーが発生しました。 後でもう一度お試しください。</string>
+    <string name="media_picker_dialog_title">メディアソースを選択する</string>
+    <string name="product_creation_package_photo_error">商品名と説明文の生成中にエラーが発生しました。</string>
+    <string name="product_creation_package_photo_no_text_detected">テキストが検出されませんでした。 別のパッケージ写真を選択するか、商品の詳細を手動で入力してください。</string>
+    <string name="order_editing_add_content_description">商品を追加する</string>
+    <string name="order_editing_barcode_content_description">バーコードをスキャンする</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">商品カードを折りたたむ / 展開する</string>
+    <string name="order_creation_decrease_item_amount_content_description">商品数量を減らす</string>
+    <string name="order_creation_increase_item_amount_content_description">商品数量を増やす</string>
+    <string name="order_creation_add_custom_amounts">カスタム金額を追加</string>
+    <string name="order_creation_price_after_discount">割引後の価格</string>
     <string name="previous_order">前の注文</string>
     <string name="next_order">次の注文</string>
     <string name="blaze_campaign_details_title">キャンペーン詳細</string>
@@ -325,13 +346,6 @@ Language: ja_JP
     <string name="highlights_tooltip_button_hint">ボタンのテキスト</string>
     <string name="highlights_tooltip_message_hint">ツールチップのメッセージ。 \n 複数行にわたる可能性があります。</string>
     <string name="highlights_tooltip_title_hint">ツールチップのタイトル</string>
-    <string name="blaze_banner_dismiss_dialog_button">OK</string>
-    <string name="blaze_banner_dismiss_dialog_description">心配はご無用です。 Blaze はご都合に合わせて、メニューと商品詳細メニューから利用できるようになっています。</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze 広告</string>
-    <string name="blaze_banner_close_button_content_description">Blaze バナーボタンを閉じる</string>
-    <string name="blaze_banner_button">今すぐ Blaze を試す</string>
-    <string name="blaze_banner_description">商品を広告に変えると WordPress.com や Tumblr にある何百万件ものサイトに掲載されます。</string>
-    <string name="blaze_banner_title">Blaze を使って商品を宣伝する</string>
     <string name="ai_product_description_tooltip_dismiss">OK</string>
     <string name="ai_product_description_tooltip_message">AI 搭載ツールを使用すると商品説明をすぐに生成できます。 キーワードを入力するだけで、あとはこちらで完了します。</string>
     <string name="ai_product_description_tooltip_title">✨ AI で執筆</string>
@@ -815,7 +829,7 @@ Language: ja_JP
     <string name="login_jetpack_installation_retry_activating">有効化を再試行</string>
     <string name="login_jetpack_installation_retry_installing">インストールを再試行</string>
     <string name="login_jetpack_installation_get_support">サポートを受ける</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">もう一度やり直してみてください。エラーが続く場合は、サポートにお問い合わせください。</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">もう一度やり直してみてください。エラーが続く場合は、サポートにお問い合わせください。</string>
     <string name="login_jetpack_installation_error_generic_message">サイトとの通信でエラーが発生しました。</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">このストアのプラグインを管理する権限がありません</string>
     <string name="login_jetpack_installation_error_authorizing">Jetpack との連携を認証する際にエラーが発生しました</string>
