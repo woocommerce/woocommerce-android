@@ -21,8 +21,10 @@ class PaymentsHubDepositSummaryRepository @Inject constructor(
             val fetchedData = store.fetchDepositsOverview(site)
             val data = fetchedData.result
             if (fetchedData.isError || data == null) {
+                store.deleteDepositsOverview(site)
                 emit(RetrieveDepositOverviewResult.Error(fetchedData.error))
             } else {
+                store.insertDepositsOverview(site, data)
                 emit(RetrieveDepositOverviewResult.Remote(data))
             }
         }
