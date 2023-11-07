@@ -17,7 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 
 @ExperimentalCoroutinesApi
-class PaymentsHumDepositSummaryViewModelTest : BaseUnitTest() {
+class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     private val repository: PaymentsHubDepositSummaryRepository = mock()
     private val mapper: PaymentsHumDepositSummaryStateMapper = mock()
 
