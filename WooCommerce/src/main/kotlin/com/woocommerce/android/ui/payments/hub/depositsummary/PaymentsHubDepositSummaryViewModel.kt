@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PaymentsHumDepositSummaryViewModel @Inject constructor(
+class PaymentsHubDepositSummaryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PaymentsHubDepositSummaryRepository,
-    private val mapper: PaymentsHumDepositSummaryStateMapper,
+    private val mapper: PaymentsHubDepositSummaryStateMapper,
     isFeatureEnabled: IsFeatureEnabled,
 ) : ScopedViewModel(savedState) {
 

@@ -4,7 +4,7 @@ import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOvervie
 import java.util.Date
 import javax.inject.Inject
 
-class PaymentsHumDepositSummaryStateMapper @Inject constructor() {
+class PaymentsHubDepositSummaryStateMapper @Inject constructor() {
 
     @Suppress("ReturnCount")
     fun mapDepositOverviewToViewModelOverviews(

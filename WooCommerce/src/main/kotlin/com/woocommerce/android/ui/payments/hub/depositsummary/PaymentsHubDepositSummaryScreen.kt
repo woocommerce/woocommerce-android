@@ -27,7 +27,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun PaymentsHubDepositSummaryView(
-    viewModel: PaymentsHumDepositSummaryViewModel = viewModel()
+    viewModel: PaymentsHubDepositSummaryViewModel = viewModel()
 ) {
     viewModel.viewState.observeAsState().let {
         when (val value = it.value) {

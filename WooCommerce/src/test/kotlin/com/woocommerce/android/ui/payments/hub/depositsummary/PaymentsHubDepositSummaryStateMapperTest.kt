@@ -4,8 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 
-class PaymentsHumDepositSummaryStateMapperTest {
-    private val mapper = PaymentsHumDepositSummaryStateMapper()
+class PaymentsHubDepositSummaryStateMapperTest {
+    private val mapper = PaymentsHubDepositSummaryStateMapper()
 
     @Test
     fun `given overview without default currency, when mapDepositOverviewToViewModelOverviews, then return null`() {
