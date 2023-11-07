@@ -12,7 +12,7 @@ import javax.inject.Inject
 class PaymentsHubDepositSummaryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PaymentsHubDepositSummaryRepository,
-    private val mapper: PaymentsHumDepositSummaryStateMapper,
+    private val mapper: PaymentsHubDepositSummaryStateMapper,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableStateFlow<PaymentsHubDepositSummaryState>(PaymentsHubDepositSummaryState.Loading)

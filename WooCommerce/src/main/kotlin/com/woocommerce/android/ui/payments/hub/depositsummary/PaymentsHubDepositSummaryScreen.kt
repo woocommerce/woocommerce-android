@@ -6,7 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun PaymentsHubDepositSummaryScreen(
-    viewModel: PaymentsHumDepositSummaryViewModel = viewModel()
+    viewModel: PaymentsHubDepositSummaryViewModel = viewModel()
 ) {
     viewModel.viewState.observeAsState().let { }
 }

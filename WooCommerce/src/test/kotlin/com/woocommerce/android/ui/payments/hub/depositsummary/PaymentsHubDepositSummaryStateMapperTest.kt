@@ -5,7 +5,7 @@ import org.junit.Test
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 
 class PaymentsHubDepositSummaryStateMapperTest {
-    private val mapper = PaymentsHumDepositSummaryStateMapper()
+    private val mapper = PaymentsHubDepositSummaryStateMapper()
 
     @Test
     fun `given overview without default currency, when mapDepositOverviewToViewModelOverviews, then return null`() {
