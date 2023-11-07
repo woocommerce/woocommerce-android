@@ -36,12 +36,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
@@ -49,9 +51,22 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
+    @Inject lateinit var wooCommerceStore: WooCommerceStore
+    @Inject lateinit var selectedSite: SelectedSite
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Fetching site plugins here to ensure the subscription eligibility check is up to date
+            wooCommerceStore.fetchSitePlugins(selectedSite.get())
+        }
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
