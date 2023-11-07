@@ -647,6 +647,7 @@ class OrderCreateEditFormFragment :
         addCouponButton.setOnClickListener { viewModel.onAddCouponButtonClicked() }
 
         if (newOrderData.discountCodes.isNotNullOrEmpty()) {
+            couponLayout.show()
             couponButton.isVisible = true
             couponValue.isVisible = true
             addCouponButton.isVisible = true
@@ -656,6 +657,7 @@ class OrderCreateEditFormFragment :
                 bigDecimalFormatter(newOrderData.discountTotal)
             )
         } else {
+            couponLayout.hide()
             couponButton.isVisible = false
             couponValue.isVisible = false
             addCouponButton.isVisible = true
