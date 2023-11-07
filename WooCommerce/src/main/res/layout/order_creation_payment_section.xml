@@ -88,24 +88,23 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:minHeight="@dimen/major_300"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/fee_button"
-                style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="start|center_vertical"
-                android:text="@string/order_creation_add_fee"
-                app:icon="@drawable/ic_add" />
+                android:text="@string/custom_amounts"
+                android:textAppearance="?attr/textAppearanceSubtitle1"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/fee_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_100"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 tools:text="$20.00" />
 

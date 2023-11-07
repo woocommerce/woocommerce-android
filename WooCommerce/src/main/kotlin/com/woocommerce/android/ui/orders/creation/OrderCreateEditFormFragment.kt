@@ -619,12 +619,10 @@ class OrderCreateEditFormFragment :
 
         if (hasFee) {
             feeButton.setText(R.string.order_creation_payment_fee)
-            feeButton.setIconResource(0)
             feeValue.isVisible = true
             feeValue.text = bigDecimalFormatter(currentFeeTotal)
         } else {
             feeButton.setText(R.string.order_creation_add_fee)
-            feeButton.setIconResource(R.drawable.ic_add)
             feeValue.isVisible = false
         }
     }
@@ -637,7 +635,6 @@ class OrderCreateEditFormFragment :
         if (hasCustomAmount) {
             feeLayout.show()
             feeButton.setText(R.string.custom_amounts)
-            feeButton.setIconResource(0)
             feeValue.isVisible = true
             feeValue.text = bigDecimalFormatter(currentCustomAmountTotal)
         } else {
