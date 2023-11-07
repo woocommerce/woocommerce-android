@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 11:54:05+0000
+Translation-Revision-Date: 2023-11-02 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_details_blaze_card">Promocionar con Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">De acuerdo</string>
+    <string name="blaze_campaign_ceation_celebration_message">Se ha enviado el anuncio para su aprobación. Te enviaremos un correo electrónico de confirmación en cuanto esté listo.</string>
+    <string name="blaze_campaign_creation_celebration_header">¡Todo listo!</string>
+    <string name="blaze_campaign_creation_intro_button">Iniciar campaña de Blaze ahora</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Inicia y detén la campaña de Blaze y haz un seguimiento del rendimiento siempre que quieras.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Llega a millones de personas en sitios de WordPress y Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Toma el control con unos pocos dólares al día. Es económico.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promociona tu producto en cuestión de minutos.</string>
+    <string name="blaze_campaign_creation_intro_title">Genera más ventas hacia tu tienda con Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Ha habido un error al actualizar la lista de campañas. Inténtalo de nuevo más tarde.</string>
+    <string name="media_picker_dialog_title">Elige una fuente de medios</string>
+    <string name="product_creation_package_photo_error">Ha ocurrido un error al generar el nombre y la descripción del producto.</string>
+    <string name="product_creation_package_photo_no_text_detected">No se ha detectado texto. Elige otra foto del embalaje o introduce los detalles del producto manualmente.</string>
+    <string name="order_editing_add_content_description">Añadir producto</string>
+    <string name="order_editing_barcode_content_description">Escanear código de barras</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Contraer/ampliar tarjeta de producto</string>
+    <string name="order_creation_decrease_item_amount_content_description">Reducir cantidad de producto</string>
+    <string name="order_creation_increase_item_amount_content_description">Aumentar cantidad de producto</string>
+    <string name="order_creation_add_custom_amounts">Añadir cantidad personalizada</string>
+    <string name="order_creation_price_after_discount">Precio después del descuento</string>
     <string name="previous_order">Pedido anterior</string>
     <string name="next_order">Siguiente pedido</string>
     <string name="blaze_campaign_details_title">Detalles de la campaña</string>
@@ -325,13 +346,6 @@ Language: es
     <string name="highlights_tooltip_button_hint">Texto del botón</string>
     <string name="highlights_tooltip_message_hint">Mensaje de información sobre la herramienta. \n Puede que tenga varias líneas.</string>
     <string name="highlights_tooltip_title_hint">Título de la información sobre la herramienta</string>
-    <string name="blaze_banner_dismiss_dialog_button">De acuerdo</string>
-    <string name="blaze_banner_dismiss_dialog_description">No te preocupes. Para tu comodidad, puedes acceder a Blaze en el menú principal y en el de detalles del producto.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Anuncios de Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Cerrar el botón del banner de Blaze</string>
-    <string name="blaze_banner_button">Probar Blaze ahora</string>
-    <string name="blaze_banner_description">Convierte tus productos en anuncios que se publicarán en millones de sitios web de WordPress.com y Tumblr.</string>
-    <string name="blaze_banner_title">Promociona productos con Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">De acuerdo</string>
     <string name="ai_product_description_tooltip_message">Usa nuestra herramienta con tecnología de IA para generar rápidamente descripciones de productos. Tan solo tendrás que introducir palabras clave y nosotros haremos el resto.</string>
     <string name="ai_product_description_tooltip_title">✨ Escribir con IA</string>
@@ -815,7 +829,7 @@ Language: es
     <string name="login_jetpack_installation_retry_activating">Prueba a activarlo de nuevo</string>
     <string name="login_jetpack_installation_retry_installing">Prueba a instalarlo de nuevo</string>
     <string name="login_jetpack_installation_get_support">Obtener soporte</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Inténtalo de nuevo o ponte en contacto con el soporte si el error continúa.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Inténtalo de nuevo o ponte en contacto con el soporte si el error continúa.</string>
     <string name="login_jetpack_installation_error_generic_message">Se ha producido un error al comunicarse con el sitio.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">No tienes permiso para gestionar plugins en esta tienda.</string>
     <string name="login_jetpack_installation_error_authorizing">Error al autorizar la conexión con Jetpack</string>

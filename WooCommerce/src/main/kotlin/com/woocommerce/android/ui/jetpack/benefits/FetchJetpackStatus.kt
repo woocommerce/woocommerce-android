@@ -5,10 +5,11 @@ import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.JetpackStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 /**
- * Meaning for Jetpack's `/connection/data` endpoint responses, as outlined from the Jetpack codebase:
+ * Jetpack's `/connection/data` endpoint responses, as outlined from the Jetpack codebase:
  * `projects/packages/connection/tests/php/test-rest-endpoints.php`
  *
  * - 404: Jetpack is not activated.
@@ -19,58 +20,65 @@ import javax.inject.Inject
  *  for full response.
  *
  */
-private const val NOT_FOUND_STATUS_CODE = 404
-private const val FORBIDDEN_CODE = 403
-
 class FetchJetpackStatus @Inject constructor(
     private val jetpackStore: JetpackStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) {
-    enum class JetpackStatusFetchResponse {
-        SUCCESS, NOT_FOUND, FORBIDDEN
+    companion object {
+        private const val FORBIDDEN_CODE = 403
+        private const val NOT_FOUND_CODE = 404
+        private const val JETPACK_SLUG = "jetpack"
     }
-    suspend operator fun invoke(): Result<Pair<JetpackStatus, JetpackStatusFetchResponse>> {
-        return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { result ->
+
+    sealed interface JetpackStatusFetchResponse {
+        data class Success(val status: JetpackStatus) : JetpackStatusFetchResponse
+        object ConnectionForbidden : JetpackStatusFetchResponse
+    }
+
+    @Suppress("ReturnCount", "NestedBlockDepth")
+    suspend operator fun invoke(): Result<JetpackStatusFetchResponse> {
+        return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { userResult ->
             when {
-                result.error?.errorCode == NOT_FOUND_STATUS_CODE -> {
+                userResult.error?.errorCode == FORBIDDEN_CODE -> {
+                    Result.success(JetpackStatusFetchResponse.ConnectionForbidden)
+                }
+
+                userResult.error?.errorCode == NOT_FOUND_CODE -> {
                     Result.success(
-                        Pair(
+                        JetpackStatusFetchResponse.Success(
                             JetpackStatus(
                                 isJetpackInstalled = false,
                                 isJetpackConnected = false,
                                 wpComEmail = null
-                            ),
-                            JetpackStatusFetchResponse.NOT_FOUND
+                            )
                         )
                     )
                 }
 
-                result.error?.errorCode == FORBIDDEN_CODE -> {
-                    Result.success(
-                        Pair(
-                            JetpackStatus(
-                                isJetpackInstalled = true,
-                                isJetpackConnected = false,
-                                wpComEmail = null
-                            ),
-                            JetpackStatusFetchResponse.FORBIDDEN
-                        )
-                    )
-                }
-
-                result.isError -> {
-                    Result.failure(OnChangedException(result.error))
+                userResult.isError -> {
+                    Result.failure(OnChangedException(userResult.error))
                 }
 
                 else -> {
+                    val isJetpackInstalled = wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { pluginResult ->
+                        when {
+                            pluginResult.isError -> {
+                                return Result.failure(OnChangedException(pluginResult.error))
+                            }
+                            else -> {
+                                pluginResult.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
+                            }
+                        }
+                    }
+
                     Result.success(
-                        Pair(
+                        JetpackStatusFetchResponse.Success(
                             JetpackStatus(
-                                isJetpackInstalled = true,
-                                isJetpackConnected = result.user!!.isConnected,
-                                wpComEmail = result.user!!.wpcomEmail.orNullIfEmpty()
-                            ),
-                            JetpackStatusFetchResponse.SUCCESS
+                                isJetpackInstalled = isJetpackInstalled,
+                                isJetpackConnected = userResult.user!!.isConnected,
+                                wpComEmail = userResult.user!!.wpcomEmail.orNullIfEmpty()
+                            )
                         )
                     )
                 }

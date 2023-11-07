@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -45,6 +48,7 @@ fun WCWebView(
     modifier: Modifier = Modifier,
     onUrlLoaded: (String) -> Unit = {},
     onPageFinished: (String) -> Unit = {},
+    onUrlFailed: (String, Int?) -> Unit = { _, _ -> },
     captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
@@ -105,9 +109,28 @@ fun WCWebView(
                         }
 
                         override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
                             url?.let { onPageFinished(it) }
                             canGoBack = view?.canGoBack() ?: false
+                        }
+
+                        override fun onReceivedError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            error: WebResourceError?
+                        ) {
+                            request?.url?.let { url ->
+                                onUrlFailed(url.toString(), error?.errorCode)
+                            }
+                        }
+
+                        override fun onReceivedHttpError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            errorResponse: WebResourceResponse?
+                        ) {
+                            request?.url?.let { url ->
+                                onUrlFailed(url.toString(), errorResponse?.statusCode)
+                            }
                         }
                     }
 

@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 15:54:27+0000
+Translation-Revision-Date: 2023-11-01 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_details_blaze_card">Blaze ile tanıt</string>
+    <string name="blaze_campaign_ceation_celebration_button">Anladım</string>
+    <string name="blaze_campaign_ceation_celebration_message">Reklam onaya gönderildi. Reklam onaylanıp yayınlandığında size bir onay e-postası göndereceğiz.</string>
+    <string name="blaze_campaign_creation_celebration_header">Her şey hazır!</string>
+    <string name="blaze_campaign_creation_intro_button">Hemen Blaze kampanyasını başlat</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Performansı takip edin, dilediğiniz zaman Blaze kampanyasını başlatın veya durdurun.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">WordPress ve Tumblr sitelerinde milyonlara ulaşın.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Günde yalnızca birkaç dolar karşılığında kontrolü ele alın. Bütçe dostudur.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Ürününüzü dakikalar içinde tanıtın.</string>
+    <string name="blaze_campaign_creation_intro_title">Blaze ile mağazanızda daha fazla satış yapın</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Kampanya listesi yenilenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="media_picker_dialog_title">Ortam Kaynağı Seçin</string>
+    <string name="product_creation_package_photo_error">Ürün adı ve açıklaması oluşturulurken bir hata oluştu.</string>
+    <string name="product_creation_package_photo_no_text_detected">Metin algılanmadı. Lütfen başka bir ambalaj fotoğrafı seçin veya ürün ayrıntılarını manuel olarak girin.</string>
+    <string name="order_editing_add_content_description">Ürün ekleyin</string>
+    <string name="order_editing_barcode_content_description">Barkodu tarayın</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Ürün kartını daraltın/genişletin</string>
+    <string name="order_creation_decrease_item_amount_content_description">Ürün miktarını azaltın</string>
+    <string name="order_creation_increase_item_amount_content_description">Ürün miktarını artırın</string>
+    <string name="order_creation_add_custom_amounts">Özel tutar ekle</string>
+    <string name="order_creation_price_after_discount">İndirim sonrası fiyat</string>
     <string name="previous_order">Önceki sipariş</string>
     <string name="next_order">Sonraki sipariş</string>
     <string name="blaze_campaign_details_title">Kampanya ayrıntıları</string>
@@ -325,13 +346,6 @@ Language: tr
     <string name="highlights_tooltip_button_hint">Düğme metni</string>
     <string name="highlights_tooltip_message_hint">Araç ipucu mesajı. \n Bu birkaç satırdan oluşabilir.</string>
     <string name="highlights_tooltip_title_hint">Araç ipucu başlığı</string>
-    <string name="blaze_banner_dismiss_dialog_button">Anladım</string>
-    <string name="blaze_banner_dismiss_dialog_description">Endişe etmeyin! Blaze, konforunuz için Menü ve ürün ayrıntıları menüsünden erişilebilir.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze reklamları</string>
-    <string name="blaze_banner_close_button_content_description">Blaze bandı düğmesini kapat</string>
-    <string name="blaze_banner_button">Blaze\'i şimdi deneyin</string>
-    <string name="blaze_banner_description">Ürünlerinizi WordPress.com ve Tumblr\'da milyonlarca sitede gösterilen reklamlara dönüştürün.</string>
-    <string name="blaze_banner_title">Ürünleri Blaze ile tanıt</string>
     <string name="ai_product_description_tooltip_dismiss">Anladım</string>
     <string name="ai_product_description_tooltip_message">Ürün açıklamalarınızı hızlıca oluşturmak için yapay zeka destekli aracımızı kullanın. Anahtar sözcükleri girin ve gerisini bize bırakın!</string>
     <string name="ai_product_description_tooltip_title">✨ Yapay zeka ile yaz</string>
@@ -815,7 +829,7 @@ Language: tr
     <string name="login_jetpack_installation_retry_activating">Tekrar etkinleştirmeyi deneyin</string>
     <string name="login_jetpack_installation_retry_installing">Tekrar kurmayı deneyin</string>
     <string name="login_jetpack_installation_get_support">Destek alın</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
     <string name="login_jetpack_installation_error_generic_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Bu mağazada eklentileri yönetme izniniz yok.</string>
     <string name="login_jetpack_installation_error_authorizing">Jetpack\'e bağlantı yetkisi verilirken hata oluştu</string>
