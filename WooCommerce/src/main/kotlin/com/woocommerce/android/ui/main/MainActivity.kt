@@ -12,6 +12,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.text.method.LinkMovementMethod
 import android.view.Menu
@@ -145,7 +146,7 @@ class MainActivity :
         const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
         const val FIELD_WIDGET_NAME = "widget-name"
 
-        const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
+        const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 7000L
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -200,6 +201,9 @@ class MainActivity :
             duration = 200L
         )
     }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val runnable = Runnable { animateBottomBar(binding.notificationsPermissionBar, show = true) }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
@@ -372,7 +376,9 @@ class MainActivity :
 
     public override fun onDestroy() {
         presenter.dropView()
+        handler.removeCallbacks(runnable)
         super.onDestroy()
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -807,10 +813,8 @@ class MainActivity :
                         }
                     }
                 }
-                Handler().postDelayed(
-                    {
-                        animateBottomBar(binding.notificationsPermissionBar, show = true)
-                    },
+                handler.postDelayed(
+                   runnable,
                     NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
                 )
             } else {
