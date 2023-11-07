@@ -1,20 +1,15 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -30,12 +25,14 @@ fun PaymentsHubDepositSummaryView(
     viewModel: PaymentsHubDepositSummaryViewModel = viewModel()
 ) {
     viewModel.viewState.observeAsState().let {
-        when (val value = it.value) {
-            is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(value.overview)
-            null,
-            PaymentsHubDepositSummaryState.Loading,
-            is PaymentsHubDepositSummaryState.Error -> {
-                // show nothing
+        WooThemeWithBackground {
+            when (val value = it.value) {
+                is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(value.overview)
+                null,
+                PaymentsHubDepositSummaryState.Loading,
+                is PaymentsHubDepositSummaryState.Error -> {
+                    // show nothing
+                }
             }
         }
     }
@@ -45,15 +42,7 @@ fun PaymentsHubDepositSummaryView(
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview
 ) {
-    var isExpanded by rememberSaveable { mutableStateOf(false) }
-    Card(
-        elevation = 4.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                isExpanded = !isExpanded
-            }
-    ) {
+    Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,7 +57,7 @@ fun PaymentsHubDepositSummaryView(
                     color = colorResource(id = R.color.color_on_surface)
                 )
                 Text(
-                    style = MaterialTheme.typography.h2,
+                    style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight(700),
                     text = overview.infoPerCurrency[overview.defaultCurrency]?.availableFunds.toString(),
                     color = colorResource(id = R.color.color_on_surface)
@@ -84,18 +73,25 @@ fun PaymentsHubDepositSummaryView(
                     color = colorResource(id = R.color.color_on_surface)
                 )
                 Text(
-                    style = MaterialTheme.typography.h2,
+                    style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight(700),
                     text = overview.infoPerCurrency[overview.defaultCurrency]?.pendingFunds.toString(),
                     color = colorResource(id = R.color.color_on_surface)
                 )
                 Text(
                     style = MaterialTheme.typography.caption,
-                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_pending_deposits),
-                    color = colorResource(id = R.color.color_on_primary_disabled)
+                    text = stringResource(
+                        id = R.string.card_reader_hub_deposit_summary_pending_deposits,
+                        overview.infoPerCurrency[overview.defaultCurrency]?.pendingBalanceDepositsCount ?: 0
+                    ),
+                    color = colorResource(id = R.color.color_surface_variant)
                 )
             }
         }
+
+        Divider(
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -109,8 +105,8 @@ fun PaymentsHubDepositSummaryViewPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = mapOf(
                     "USD" to PaymentsHubDepositSummaryState.Info(
-                        availableFunds = 100,
-                        pendingFunds = 200,
+                        availableFunds = "100$",
+                        pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
                         fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(
@@ -125,8 +121,8 @@ fun PaymentsHubDepositSummaryViewPreview() {
                         )
                     ),
                     "EUR" to PaymentsHubDepositSummaryState.Info(
-                        availableFunds = 100,
-                        pendingFunds = 200,
+                        availableFunds = "100$",
+                        pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
                         fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(

@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
+import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 import java.util.Date
 import javax.inject.Inject
 
-class PaymentsHubDepositSummaryStateMapper @Inject constructor() {
+class PaymentsHubDepositSummaryStateMapper @Inject constructor(
+    private val currencyFormatter: CurrencyFormatter,
+) {
 
     @Suppress("ReturnCount")
     fun mapDepositOverviewToViewModelOverviews(
@@ -33,8 +36,14 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor() {
             defaultCurrency = defaultCurrency,
             infoPerCurrency = currencies.associateWith { currency ->
                 PaymentsHubDepositSummaryState.Info(
-                    availableFunds = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                    pendingFunds = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                    availableFunds = formatMoney(
+                        amount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                        currency = currency
+                    ),
+                    pendingFunds = formatMoney(
+                        amount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                        currency = currency
+                    ),
                     pendingBalanceDepositsCount = pendingBalances.firstOrNull {
                         it.currency == currency
                     }?.depositsCount ?: 0,
@@ -46,11 +55,17 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor() {
         )
     }
 
-    private fun mapDeposit(it: WooPaymentsDepositsOverview.Deposit.Info) =
+    private fun formatMoney(amount: Long, currency: String) =
+        currencyFormatter.formatCurrencyGivenInTheSmallestCurrencyUnit(
+            amount = amount,
+            currencyCode = currency,
+        )
+
+    private fun mapDeposit(info: WooPaymentsDepositsOverview.Deposit.Info) =
         PaymentsHubDepositSummaryState.Deposit(
-            amount = it.amount ?: 0,
-            status = it.status.toDepositStatus(),
-            date = if (it.date != null) Date(it.date!!) else null
+            amount = info.amount ?: 0L,
+            status = info.status.toDepositStatus(),
+            date = if (info.date != null) Date(info.date!!) else null
         )
 
     // Proper implementation in the following PRs

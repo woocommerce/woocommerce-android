@@ -13,8 +13,8 @@ sealed class PaymentsHubDepositSummaryState {
     )
 
     data class Info(
-        val availableFunds: Int,
-        val pendingFunds: Int,
+        val availableFunds: String,
+        val pendingFunds: String,
         val pendingBalanceDepositsCount: Int,
         val fundsAvailableInDays: Interval,
         val nextDeposit: Deposit?,
@@ -28,7 +28,7 @@ sealed class PaymentsHubDepositSummaryState {
     }
 
     data class Deposit(
-        val amount: Int,
+        val amount: Long,
         val status: Status,
         val date: Date?,
     ) {
