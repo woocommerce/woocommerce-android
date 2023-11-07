@@ -18,15 +18,7 @@ class IsEligibleForSubscriptions @Inject constructor(
             return false
         }
 
-        return wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { pluginResult ->
-            when {
-                pluginResult.isError -> {
-                    false
-                }
-                else -> {
-                    pluginResult.model!!.any { it.slug == SUBSCRIPTIONS_SLUG && it.isActive }
-                }
-            }
-        }
+        return wooCommerceStore.getSitePlugins(selectedSite.get())
+            .any { it.slug == SUBSCRIPTIONS_SLUG && it.isActive }
     }
 }
