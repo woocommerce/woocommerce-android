@@ -63,48 +63,41 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.productTypesBottomSheetList.observe(
-            viewLifecycleOwner,
-            {
-                showProductTypeOptions(it)
-            }
-        )
+        viewModel.productTypesBottomSheetList.observe(viewLifecycleOwner) {
+            showProductTypeOptions(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is Exit -> {
-                        dismiss()
-                    }
-                    is ShowDialog -> WooDialog.showDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction,
-                        event.neutralBtnAction,
-                        event.titleId,
-                        event.messageId,
-                        event.positiveButtonId,
-                        event.negativeButtonId,
-                        event.neutralButtonId
-                    )
-
-                    is ExitWithResult<*> -> {
-                        (event.data as? ProductTypesBottomSheetUiItem)?.let {
-                            navigateWithSelectedResult(productTypesBottomSheetUiItem = it)
-                        }
-                    }
-
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> {
+                    dismiss()
                 }
+
+                is ShowDialog -> WooDialog.showDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.neutralBtnAction,
+                    event.titleId,
+                    event.messageId,
+                    event.positiveButtonId,
+                    event.negativeButtonId,
+                    event.neutralButtonId
+                )
+
+                is ExitWithResult<*> -> {
+                    (event.data as? ProductTypesBottomSheetUiItem)?.let {
+                        navigateWithSelectedResult(productTypesBottomSheetUiItem = it)
+                    }
+                }
+
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
-    private fun showProductTypeOptions(
-        productTypeOptions: List<ProductTypesBottomSheetUiItem>
-    ) {
+    private fun showProductTypeOptions(productTypeOptions: List<ProductTypesBottomSheetUiItem>) {
         productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
     }
 
