@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     private val repository: PaymentsHubDepositSummaryRepository = mock()
     private val mapper: PaymentsHubDepositSummaryStateMapper = mock()
+    private val isFeatureEnabled: IsFeatureEnabled = mock()
 
     @Test
     fun `given repository returns error, when viewmodel init, then error state emitted`() = testBlocking {
@@ -168,6 +169,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     private fun initViewModel() = PaymentsHubDepositSummaryViewModel(
         savedState = mock(),
         repository = repository,
-        mapper = mapper
+        mapper = mapper,
+        isFeatureEnabled
     )
 }
