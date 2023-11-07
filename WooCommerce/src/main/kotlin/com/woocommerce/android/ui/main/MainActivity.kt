@@ -203,7 +203,9 @@ class MainActivity :
     }
 
     private val handler = Handler(Looper.getMainLooper())
-    private val runnable = Runnable { animateBottomBar(binding.notificationsPermissionBar, show = true) }
+    private val notificationPermissionBarRunnable = Runnable {
+        animateBottomBar(binding.notificationsPermissionBar, show = true)
+    }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
@@ -376,9 +378,8 @@ class MainActivity :
 
     public override fun onDestroy() {
         presenter.dropView()
-        handler.removeCallbacks(runnable)
+        handler.removeCallbacks(notificationPermissionBarRunnable)
         super.onDestroy()
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -814,7 +815,7 @@ class MainActivity :
                     }
                 }
                 handler.postDelayed(
-                   runnable,
+                    notificationPermissionBarRunnable,
                     NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
                 )
             } else {
