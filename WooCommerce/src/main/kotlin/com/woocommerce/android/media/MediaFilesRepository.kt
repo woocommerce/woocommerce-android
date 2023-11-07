@@ -60,7 +60,8 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
+
+    @OptIn(DelicateCoroutinesApi::class)
     fun uploadMedia(localMediaModel: MediaModel, stripLocation: Boolean = true): Flow<UploadResult> {
         return callbackFlow {
             WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload ${localMediaModel.filePath}")
