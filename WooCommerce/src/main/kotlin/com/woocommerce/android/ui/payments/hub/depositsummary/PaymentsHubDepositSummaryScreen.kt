@@ -50,8 +50,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 
-private const val ANIM_DURATION_MILLIS = 128
-
 @Composable
 fun PaymentsHubDepositSummaryView(
     viewModel: PaymentsHubDepositSummaryViewModel = viewModel()
