@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun PaymentsHubDepositSummaryView(
@@ -85,9 +87,11 @@ fun PaymentsHubDepositSummaryView(
                 )
                 Text(
                     style = MaterialTheme.typography.caption,
-                    text = stringResource(
-                        id = R.string.card_reader_hub_deposit_summary_pending_deposits,
-                        overview.infoPerCurrency[overview.defaultCurrency]?.pendingBalanceDepositsCount ?: 0
+                    text = StringUtils.getQuantityString(
+                        context = LocalContext.current,
+                        quantity = overview.infoPerCurrency[overview.defaultCurrency]?.pendingBalanceDepositsCount ?: 0,
+                        default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
+                        one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
                     ),
                     color = colorResource(id = R.color.color_surface_variant)
                 )
