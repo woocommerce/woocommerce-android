@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderEvent

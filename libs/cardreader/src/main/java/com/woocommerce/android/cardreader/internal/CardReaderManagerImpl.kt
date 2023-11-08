@@ -1,8 +1,6 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
-import android.content.ComponentCallbacks2
-import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
@@ -106,7 +104,10 @@ internal class CardReaderManagerImpl(
         return paymentManager.acceptPayment(paymentInfo)
     }
 
-    override suspend fun refundInteracPayment(refundParams: RefundParams, refundConfig: RefundConfig): Flow<CardInteracRefundStatus> {
+    override suspend fun refundInteracPayment(
+        refundParams: RefundParams,
+        refundConfig: RefundConfig
+    ): Flow<CardInteracRefundStatus> {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         resetBluetoothDisplayMessage()
         return interacRefundManager.refundInteracPayment(refundParams, refundConfig)

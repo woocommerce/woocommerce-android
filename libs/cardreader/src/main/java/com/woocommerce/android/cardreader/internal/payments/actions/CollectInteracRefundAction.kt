@@ -15,7 +15,10 @@ internal class CollectInteracRefundAction(private val terminal: TerminalWrapper)
         data class Failure(val exception: TerminalException) : CollectInteracRefundStatus()
     }
 
-    fun collectRefund(refundParameters: RefundParameters, refundConfiguration: RefundConfiguration): Flow<CollectInteracRefundStatus> {
+    fun collectRefund(
+        refundParameters: RefundParameters,
+        refundConfiguration: RefundConfiguration
+    ): Flow<CollectInteracRefundStatus> {
         return callbackFlow {
             val cancelable = terminal.refundPayment(
                 refundParameters,

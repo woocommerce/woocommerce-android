@@ -33,7 +33,9 @@ internal class DiscoverReadersAction(
         discoverReaders(DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(isSimulated))
 
     fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
-        discoverReaders(DiscoveryConfiguration.BluetoothDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated))
+        discoverReaders(
+            DiscoveryConfiguration.BluetoothDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated)
+        )
 
     private fun discoverReaders(config: DiscoveryConfiguration): Flow<DiscoverReadersStatus> {
         return callbackFlow {

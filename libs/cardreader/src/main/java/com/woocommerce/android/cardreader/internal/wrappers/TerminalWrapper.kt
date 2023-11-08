@@ -2,13 +2,13 @@ package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
 import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
@@ -83,8 +83,11 @@ internal class TerminalWrapper {
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
 
-    fun refundPayment(refundParameters: RefundParameters, refundConfiguration: RefundConfiguration, callback: Callback) =
-        Terminal.getInstance().collectRefundPaymentMethod(refundParameters, refundConfiguration, callback)
+    fun refundPayment(
+        refundParameters: RefundParameters,
+        refundConfiguration: RefundConfiguration,
+        callback: Callback
+    ) = Terminal.getInstance().collectRefundPaymentMethod(refundParameters, refundConfiguration, callback)
 
     fun processRefund(callback: RefundCallback) =
         Terminal.getInstance().confirmRefund(callback)
