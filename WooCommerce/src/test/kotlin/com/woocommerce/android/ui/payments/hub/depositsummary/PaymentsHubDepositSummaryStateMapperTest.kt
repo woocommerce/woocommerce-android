@@ -1,11 +1,22 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
+import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 
 class PaymentsHubDepositSummaryStateMapperTest {
-    private val mapper = PaymentsHubDepositSummaryStateMapper()
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(100, "USD") }.thenReturn("100$")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(200, "USD") }.thenReturn("200$")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(300, "USD") }.thenReturn("300$")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "EUR") }.thenReturn("0€")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(150, "EUR") }.thenReturn("150€")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(250, "EUR") }.thenReturn("250€")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "USD") }.thenReturn("0$")
+    }
+    private val mapper = PaymentsHubDepositSummaryStateMapper(currencyFormatter)
 
     @Test
     fun `given overview without default currency, when mapDepositOverviewToViewModelOverviews, then return null`() {
@@ -90,8 +101,8 @@ class PaymentsHubDepositSummaryStateMapperTest {
         // THEN
         assertThat(result).isNotNull
         assertThat(result?.defaultCurrency).isEqualTo("USD")
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo(100)
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo(300)
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("300$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(2)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Days(
@@ -236,7 +247,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.status).isEqualTo(
             PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED
         )
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo(0)
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("0$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
     }
 }
