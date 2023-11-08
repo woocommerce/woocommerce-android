@@ -38,4 +38,23 @@ class DetermineMultipleLinesContextTest : BaseUnitTest() {
 
         assertThat(result).isInstanceOf(OrderCreateEditViewModel.MultipleLinesContext.Warning::class.java)
     }
+
+    @Test
+    fun `when order does not have multiple shipping lines, then return None MultipleLinesContext`() {
+        whenever(location.invoke(any(), any())).thenReturn(
+            Pair(
+                Location(code = LocationCode(), name = ""),
+                AmbiguousLocation.EMPTY
+            )
+        )
+        whenever(resourceProvider.getString(any())).thenReturn("")
+        whenever(resourceProvider.getString(any(), any())).thenReturn("")
+        val sut = DetermineMultipleLinesContext(resourceProvider)
+
+        val result = sut.invoke(
+            OrderMapper(location).toAppModel(OrderTestUtils.generateOrder())
+        )
+
+        assertThat(result).isInstanceOf(OrderCreateEditViewModel.MultipleLinesContext.None::class.java)
+    }
 }
