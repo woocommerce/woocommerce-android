@@ -157,6 +157,8 @@ internal class PaymentManager(
         return result
     }
 
+    // Stripe new SDk now has paymentIntent.id as nullable to support offline payment. But we don't support offline yet
+    // so adding paymentIntent.id!! here for now. Code need to be refactored once we support offline payment.
     private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
         receiptUrl: String,
         orderId: Long,
