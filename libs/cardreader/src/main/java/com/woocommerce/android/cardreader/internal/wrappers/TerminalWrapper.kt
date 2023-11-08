@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
+import android.util.Log
 import com.stripe.stripeterminal.Terminal
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
@@ -27,6 +28,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 
+
 /**
  * Injectable wrapper for Stripe's Terminal object.
  */
@@ -44,12 +46,14 @@ internal class TerminalWrapper {
         config: DiscoveryConfiguration,
         discoveryListener: DiscoveryListener,
         callback: Callback
-    ): Cancelable =
-        try {
+    ): Cancelable? {
+        return try {
             Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
         } catch (e: SecurityException) {
-            TODO()
+            Log.e("Error", "Permission denied: ${e.message}")
+            null
         }
+    }
 
     fun connectToReader(
         reader: Reader,
