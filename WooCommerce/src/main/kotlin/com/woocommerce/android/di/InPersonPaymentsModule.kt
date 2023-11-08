@@ -41,7 +41,7 @@ class InPersonPaymentsModule {
             return result.model?.token.orEmpty()
         }
 
-        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String?): CapturePaymentResponse {
+        override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
             val response = inPersonPaymentsStore.capturePayment(
                 appPrefs.getCardReaderPreferredPlugin(
                     selectedSite.get().id,
@@ -49,7 +49,7 @@ class InPersonPaymentsModule {
                     selectedSite.get().selfHostedSiteId
                 )!!.toInPersonPaymentsPluginType(),
                 selectedSite.get(),
-                paymentId!!,
+                paymentId,
                 orderId
             )
             return responseMapper.mapResponse(response)

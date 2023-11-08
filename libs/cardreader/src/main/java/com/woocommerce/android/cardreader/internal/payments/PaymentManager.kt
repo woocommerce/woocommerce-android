@@ -164,7 +164,7 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ) {
         emit(CapturingPayment)
-        when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
+        when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
             is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
