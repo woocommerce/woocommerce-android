@@ -111,6 +111,35 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/shipping_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/major_300">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/shipping_button"
+                style="@style/Woo.Button.TextButton.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shipping"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/shipping_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintBottom_toBottomOf="@+id/shipping_button"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/shipping_button"
+                tools:text="$20.00" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/coupon_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -271,7 +300,7 @@
             android:layout_marginStart="@dimen/major_100"/>
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/shipping_layout"
+            android:id="@+id/add_shipping_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -279,7 +308,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/shipping_button"
+                android:id="@+id/add_shipping_button"
                 style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -289,15 +318,6 @@
                 app:icon="@drawable/ic_add"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tax_label" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/shipping_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginStart="@dimen/major_100"
-                tools:text="$20.00" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
         <com.google.android.material.button.MaterialButton
