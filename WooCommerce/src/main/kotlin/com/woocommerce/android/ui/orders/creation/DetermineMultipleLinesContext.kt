@@ -4,7 +4,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext
 import com.woocommerce.android.viewmodel.ResourceProvider
-import java.util.Locale
 import javax.inject.Inject
 
 class DetermineMultipleLinesContext @Inject constructor(private val resourceProvider: ResourceProvider) {
