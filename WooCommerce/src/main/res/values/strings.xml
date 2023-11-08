@@ -1313,6 +1313,7 @@
     <string name="card_reader_hub_deposit_summary_last">Last</string>
     <string name="card_reader_hub_deposit_summary_available_deposited_time">Available funds are deposited automatically, every week.</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Learn more about when you\'ll receive your funds</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Collapse/expand deposit summary</string>
     <string name="card_reader_hub_deposit_summary_status_estimated">Estimated</string>
     <string name="card_reader_hub_deposit_summary_status_paid">Paid</string>
     <string name="card_reader_hub_deposit_summary_status_pending">Pending</string>

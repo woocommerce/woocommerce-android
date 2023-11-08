@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.payments.hub.depositsummary
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,16 +19,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
@@ -38,6 +48,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.launch
+
+private const val ANIM_DURATION_MILLIS = 128
 
 @Composable
 fun PaymentsHubDepositSummaryView(
@@ -63,17 +76,32 @@ fun PaymentsHubDepositSummaryView(
     isPreview: Boolean = LocalInspectionMode.current,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
+    val chevronRotation by animateFloatAsState(
+        if (isExpanded) 180f else 0f, label = "chevronRotation"
+    )
+
+    val topRowIS = remember { MutableInteractionSource() }
+    val topRowCoroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colorResource(id = R.color.color_surface))
-            .clickable {
-                isExpanded = !isExpanded
-            }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(
+                    interactionSource = topRowIS,
+                    indication = null
+                ) {
+                    val press = PressInteraction.Press(Offset.Zero)
+                    topRowCoroutineScope.launch {
+                        topRowIS.emit(press)
+                        topRowIS.emit(PressInteraction.Release(press))
+                    }
+                    isExpanded = !isExpanded
+                }
                 .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp)
         ) {
             Column(
@@ -116,6 +144,25 @@ fun PaymentsHubDepositSummaryView(
                     ),
                     color = colorResource(id = R.color.color_surface_variant)
                 )
+            }
+
+            Column(
+                modifier = Modifier.weight(.3f),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                IconButton(
+                    onClick = { isExpanded = !isExpanded },
+                    interactionSource = topRowIS,
+                ) {
+                    Icon(
+                        modifier = Modifier.rotate(chevronRotation),
+                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        contentDescription =
+                        stringResource(R.string.card_reader_hub_deposit_summary_collapse_expand_content_description),
+                        tint = MaterialTheme.colors.primary,
+                    )
+                }
             }
         }
 
