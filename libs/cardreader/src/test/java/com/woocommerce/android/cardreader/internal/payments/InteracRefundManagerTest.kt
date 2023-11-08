@@ -138,7 +138,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
                     CardInteracRefundStatus.InteracRefundFailure(expectedErrorType, "Declined", mock())
                 )
 
-            val result = manager.refundInteracPayment(createRefundParams(),refundConfig).toList()
+            val result = manager.refundInteracPayment(createRefundParams(), refundConfig).toList()
 
             assertThat(
                 (result.last() as CardInteracRefundStatus.InteracRefundFailure).type
