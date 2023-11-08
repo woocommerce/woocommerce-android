@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -20,6 +21,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     private val repository: PaymentsHubDepositSummaryRepository = mock()
     private val mapper: PaymentsHubDepositSummaryStateMapper = mock()
+    private val isFeatureEnabled: IsFeatureEnabled = mock() {
+        on { invoke() }.thenReturn(true)
+    }
 
     @Test
     fun `given repository returns error, when viewmodel init, then error state emitted`() = testBlocking {
@@ -165,9 +169,28 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given feature flag off, when viewmodel init, then error is returned and not interactions with repository`() =
+        testBlocking {
+            // GIVEN
+            whenever(isFeatureEnabled()).thenReturn(false)
+
+            // WHEN
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            // THEN
+            val values = viewModel.viewState.captureValues()
+            assertThat((values[0] as PaymentsHubDepositSummaryState.Error).errorMessage).isEqualTo(
+                "Invalid data"
+            )
+            verifyNoInteractions(repository)
+        }
+
     private fun initViewModel() = PaymentsHubDepositSummaryViewModel(
         savedState = mock(),
         repository = repository,
-        mapper = mapper
+        mapper = mapper,
+        isFeatureEnabled
     )
 }
