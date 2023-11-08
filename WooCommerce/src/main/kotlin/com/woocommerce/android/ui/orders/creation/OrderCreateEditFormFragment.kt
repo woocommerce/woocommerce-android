@@ -860,7 +860,7 @@ class OrderCreateEditFormFragment :
         with(this) {
             notesSection.apply {
                 show()
-                showHeader()
+                hideHeader()
             }
             initNotesSection()
             displayCustomerAddress(this, newOrderData)
@@ -869,9 +869,12 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.showNotesSectionOnly(newOrderData: Order) {
         with(this) {
+            customerSection.apply {
+                show()
+                hideHeader()
+            }
             displayCustomerNotes(this, newOrderData)
-            customerSection.content = null
-            displayCustomerAddress(this, newOrderData)
+            initCustomerSection()
         }
     }
 
