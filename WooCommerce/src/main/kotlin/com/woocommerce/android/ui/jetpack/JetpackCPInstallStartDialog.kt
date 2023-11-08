@@ -14,7 +14,7 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install_start) {
+class JetpackCPInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install_start) {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
@@ -48,7 +48,8 @@ class JetpackInstallStartDialog : DialogFragment(R.layout.dialog_jetpack_install
 
         binding.installJetpackButton.setOnClickListener {
             findNavController().navigateSafely(
-                JetpackInstallStartDialogDirections.actionJetpackInstallStartDialogToJetpackInstallProgressDialog()
+                JetpackCPInstallStartDialogDirections
+                    .actionJetpackCPInstallStartDialogToJetpackCPInstallProgressDialog()
             )
         }
     }
