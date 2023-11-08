@@ -99,11 +99,11 @@ class MyStoreBlazeViewModel @Inject constructor(
                     stats = listOf(
                         BlazeCampaignStat(
                             name = R.string.blaze_campaign_status_impressions,
-                            value = campaign.impressions
+                            value = campaign.impressions.toString()
                         ),
                         BlazeCampaignStat(
                             name = R.string.blaze_campaign_status_clicks,
-                            value = campaign.clicks
+                            value = campaign.clicks.toString()
                         )
                     )
                 ),

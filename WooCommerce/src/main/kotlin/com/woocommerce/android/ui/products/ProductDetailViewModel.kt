@@ -55,6 +55,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -144,7 +145,8 @@ class ProductDetailViewModel @Inject constructor(
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val blazeUrlsHelper: BlazeUrlsHelper
+    private val blazeUrlsHelper: BlazeUrlsHelper,
+    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -229,7 +231,8 @@ class ProductDetailViewModel @Inject constructor(
             variationRepository = variationRepository,
             appPrefsWrapper = appPrefsWrapper,
             isBlazeEnabled = isBlazeEnabled,
-            analyticsTrackerWrapper = tracker
+            isProductCurrentlyPromoted = isProductCurrentlyPromoted,
+            analyticsTrackerWrapper = tracker,
         )
     }
 

@@ -17,7 +17,7 @@ data class BlazeCampaignUi(
 
 data class BlazeCampaignStat(
     @StringRes val name: Int,
-    val value: Long
+    val value: String
 )
 
 enum class CampaignStatusUi(
