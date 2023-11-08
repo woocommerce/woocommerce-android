@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -118,7 +119,15 @@ fun PaymentsHubDepositSummaryView(
             }
         }
 
-        Divider(modifier = Modifier.fillMaxWidth())
+        val dividerPaddingAnimation by animateDpAsState(
+            if (isExpanded) 16.dp else 0.dp, label = "dividerPaddingAnimation"
+        )
+
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dividerPaddingAnimation)
+        )
 
         AnimatedVisibility(
             visible = isExpanded || isPreview,
@@ -137,93 +146,94 @@ private fun AdditionInfo(
     nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
     lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 24.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+    Column {
+        Column(
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 24.dp)
         ) {
-            Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
-            Spacer(modifier = Modifier.size(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_funds_available_after),
+                    color = colorResource(id = R.color.color_surface_variant),
+                )
+            }
+
+            Spacer(modifier = Modifier.size(24.dp))
+
             Text(
-                style = MaterialTheme.typography.caption,
-                text = stringResource(id = R.string.card_reader_hub_deposit_summary_funds_available_after),
+                style = MaterialTheme.typography.body2,
+                text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
                 color = colorResource(id = R.color.color_surface_variant),
             )
-        }
 
-        Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(8.dp))
 
-        Text(
-            style = MaterialTheme.typography.body2,
-            text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
-            color = colorResource(id = R.color.color_surface_variant),
-        )
+            nextDeposit?.let {
+                Deposit(
+                    depositType = R.string.card_reader_hub_deposit_summary_next,
+                    deposit = it,
+                    textColor = R.color.color_on_surface
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
 
-        Spacer(modifier = Modifier.size(8.dp))
+            lastDeposit?.let {
+                Deposit(
+                    depositType = R.string.card_reader_hub_deposit_summary_last,
+                    deposit = it,
+                    textColor = R.color.color_surface_variant
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
 
-        nextDeposit?.let {
-            Deposit(
-                depositType = R.string.card_reader_hub_deposit_summary_next,
-                deposit = it,
-                textColor = R.color.color_on_surface
-            )
+            Divider(modifier = Modifier.fillMaxWidth())
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_deposited_time),
+                    color = colorResource(id = R.color.color_surface_variant),
+                )
+            }
+
             Spacer(modifier = Modifier.size(16.dp))
-        }
 
-        lastDeposit?.let {
-            Deposit(
-                depositType = R.string.card_reader_hub_deposit_summary_last,
-                deposit = it,
-                textColor = R.color.color_surface_variant
-            )
-            Spacer(modifier = Modifier.size(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    painter = painterResource(
+                        id = R.drawable.ic_info_outline_20dp
+                    ),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_primary)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_learn_more),
+                    color = colorResource(id = R.color.color_primary),
+                )
+            }
         }
 
         Divider(modifier = Modifier.fillMaxWidth())
-
-        Spacer(modifier = Modifier.size(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                style = MaterialTheme.typography.caption,
-                text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_deposited_time),
-                color = colorResource(id = R.color.color_surface_variant),
-            )
-        }
-
-        Spacer(modifier = Modifier.size(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                modifier = Modifier.size(15.dp),
-                painter = painterResource(
-                    id = R.drawable.ic_info_outline_20dp
-                ),
-                contentDescription = null,
-                tint = colorResource(id = R.color.color_primary)
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                style = MaterialTheme.typography.caption,
-                text = stringResource(id = R.string.card_reader_hub_deposit_summary_learn_more),
-                color = colorResource(id = R.color.color_primary),
-            )
-        }
     }
-
-    Divider(modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
@@ -269,15 +279,15 @@ private fun Deposit(
                 PaymentsHubDepositSummaryState.Deposit.Status.IN_TRANSIT ->
                     DepositStatus(
                         text = R.string.card_reader_hub_deposit_summary_status_in_transit,
-                        backgroundColor = R.color.woo_gray_40,
-                        textColor = R.color.woo_gray_80
+                        backgroundColor = R.color.woo_gray_80,
+                        textColor = R.color.woo_gray_5
                     )
 
                 PaymentsHubDepositSummaryState.Deposit.Status.PAID ->
                     DepositStatus(
                         text = R.string.card_reader_hub_deposit_summary_status_paid,
-                        backgroundColor = R.color.woo_gray_40,
-                        textColor = R.color.woo_gray_80
+                        backgroundColor = R.color.woo_celadon_5,
+                        textColor = R.color.woo_green_50
                     )
 
                 PaymentsHubDepositSummaryState.Deposit.Status.CANCELED ->
