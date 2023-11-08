@@ -824,8 +824,17 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it is PaymentsHubViewState.ListItem.HeaderItem &&
-                    it.index == 2 &&
+                    it.index == 3 &&
                     it.label == UiStringRes(R.string.card_reader_settings_header)
+            }
+    }
+
+    @Test
+    fun `when screen shown, then DepositSummaryListItem shown`() {
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .anyMatch {
+                it is PaymentsHubViewState.ListItem.DepositSummaryListItem &&
+                    it.index == 0
             }
     }
 
@@ -1381,7 +1390,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
                 it is PaymentsHubViewState.ListItem.HeaderItem &&
-                    it.index == 5 &&
+                    it.index == 6 &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_header)
             }
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
@@ -1389,7 +1398,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 6 &&
+                    it.index == 7 &&
                     it.iconBadge == R.drawable.ic_badge_new
             }
         }
@@ -1414,7 +1423,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_tintable_info_outline_24dp &&
                     it.label == UiStringRes(R.string.card_reader_about_tap_to_pay) &&
                     it.description == null &&
-                    it.index == 7 &&
+                    it.index == 8 &&
                     it.iconBadge == null
             }
         }
@@ -1441,7 +1450,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 8 &&
+                    it.index == 9 &&
                     it.iconBadge == null
             }
         }
@@ -1503,7 +1512,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 8
+                    it.index == 9
             }
         }
 
@@ -1594,7 +1603,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
         }
 
     @Test
@@ -1732,7 +1741,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
         )
         assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
-        assertThat(learnMoreListItems[0].index).isEqualTo(13)
+        assertThat(learnMoreListItems[0].index).isEqualTo(14)
     }
 
     @Test
