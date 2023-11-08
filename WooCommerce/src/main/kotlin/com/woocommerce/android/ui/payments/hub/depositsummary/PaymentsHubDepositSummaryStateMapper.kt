@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
+import com.woocommerce.android.extensions.formatToDDMMMYYYY
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 import java.util.Date
@@ -55,17 +56,17 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
         )
     }
 
+    private fun mapDeposit(info: WooPaymentsDepositsOverview.Deposit.Info) =
+        PaymentsHubDepositSummaryState.Deposit(
+            amount = formatMoney(info.amount ?: 0L, info.currency.orEmpty()),
+            status = info.status.toDepositStatus(),
+            date = if (info.date != null) Date(info.date!!).formatToDDMMMYYYY() else ""
+        )
+
     private fun formatMoney(amount: Long, currency: String) =
         currencyFormatter.formatCurrencyGivenInTheSmallestCurrencyUnit(
             amount = amount,
             currencyCode = currency,
-        )
-
-    private fun mapDeposit(info: WooPaymentsDepositsOverview.Deposit.Info) =
-        PaymentsHubDepositSummaryState.Deposit(
-            amount = info.amount ?: 0L,
-            status = info.status.toDepositStatus(),
-            date = if (info.date != null) Date(info.date!!) else null
         )
 
     // Proper implementation in the following PRs
