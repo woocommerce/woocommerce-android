@@ -47,8 +47,6 @@ class DetermineMultipleLinesContextTest : BaseUnitTest() {
                 AmbiguousLocation.EMPTY
             )
         )
-        whenever(resourceProvider.getString(any())).thenReturn("")
-        whenever(resourceProvider.getString(any(), any())).thenReturn("")
         val sut = DetermineMultipleLinesContext(resourceProvider)
 
         val result = sut.invoke(
