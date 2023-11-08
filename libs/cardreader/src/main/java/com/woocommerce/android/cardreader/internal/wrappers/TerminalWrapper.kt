@@ -28,7 +28,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 
-
 /**
  * Injectable wrapper for Stripe's Terminal object.
  */
