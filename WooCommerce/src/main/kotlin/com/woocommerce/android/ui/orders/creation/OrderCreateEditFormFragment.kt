@@ -1046,7 +1046,6 @@ class OrderCreateEditFormFragment :
             isEachAddButtonEnabled = false
         }
         paymentSection.apply {
-            feeButton.isEnabled = false
             addShippingButton.isEnabled = false
             lockIcon.isVisible = true
             couponButton.isEnabled = false
