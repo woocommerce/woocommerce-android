@@ -64,7 +64,7 @@ internal class DiscoverReadersAction(
                 }
             )
             awaitClose {
-                cancelable.takeIf { !it.isCompleted }?.cancel(noopCallback)
+                cancelable.takeIf { !it!!.isCompleted }?.cancel(noopCallback)
             }
         }
     }
