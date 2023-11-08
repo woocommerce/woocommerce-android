@@ -828,7 +828,6 @@ class OrderCreateEditFormFragment :
                     displayCustomerAddress(binding, newOrderData)
                     displayCustomerNotes(binding, newOrderData)
                 }
-
             }
         }
     }
@@ -858,7 +857,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.showCustomerSectionOnly(newOrderData: Order) {
-        with (this) {
+        with(this) {
             notesSection.apply {
                 show()
                 showHeader()
