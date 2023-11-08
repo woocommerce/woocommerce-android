@@ -316,6 +316,9 @@ class OrderCreateEditFormFragment :
         paymentSection.shippingButton.setOnClickListener {
             viewModel.onShippingButtonClicked()
         }
+        paymentSection.addShippingButton.setOnClickListener {
+            viewModel.onShippingButtonClicked()
+        }
     }
 
     private fun LayoutOrderCreationCustomerInfoBinding.changeState() {
@@ -369,13 +372,12 @@ class OrderCreateEditFormFragment :
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->
                 updateProgressBarsVisibility(binding, !idle)
                 if (new.isEditable) {
-                    binding.paymentSection.shippingButton.isEnabled = idle
                     binding.paymentSection.feeButton.isEnabled = idle
                     binding.paymentSection.couponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
                     binding.paymentSection.addCouponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
-                    binding.paymentSection.shippingButton.isEnabled =
+                    binding.paymentSection.addShippingButton.isEnabled =
                         new.isAddShippingButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
                 }
@@ -403,7 +405,7 @@ class OrderCreateEditFormFragment :
                 binding.paymentSection.addCouponButton.isEnabled = it
             }
             new.isAddShippingButtonEnabled.takeIfNotEqualTo(old?.isAddShippingButtonEnabled) {
-                binding.paymentSection.shippingButton.isEnabled = it
+                binding.paymentSection.addShippingButton.isEnabled = it
             }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
@@ -552,14 +554,13 @@ class OrderCreateEditFormFragment :
             paymentSection.bindCouponsSubSection(newOrderData)
 
             val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
-            paymentSection.shippingButton.setText(
-                if (firstShipping != null) R.string.order_creation_edit_shipping
-                else R.string.order_creation_add_shipping
-            )
-            paymentSection.shippingButton.setIconResource(
-                if (firstShipping != null) 0
-                else R.drawable.ic_add
-            )
+            firstShipping?.let {
+                paymentSection.addShippingLayout.hide()
+                paymentSection.shippingLayout.show()
+            } ?: run {
+                paymentSection.addShippingLayout.show()
+                paymentSection.shippingLayout.hide()
+            }
             paymentSection.shippingValue.isVisible = firstShipping != null
             newOrderData.shippingLines.sumByBigDecimal { it.total }.let {
                 paymentSection.shippingValue.text = bigDecimalFormatter(it)
@@ -1012,7 +1013,7 @@ class OrderCreateEditFormFragment :
         }
         paymentSection.apply {
             feeButton.isEnabled = true
-            shippingButton.isEnabled = true
+            addShippingButton.isEnabled = true
             lockIcon.isVisible = false
             couponButton.isEnabled = state.isCouponButtonEnabled
             addCouponButton.isEnabled = state.isCouponButtonEnabled
@@ -1027,7 +1028,7 @@ class OrderCreateEditFormFragment :
         }
         paymentSection.apply {
             feeButton.isEnabled = false
-            shippingButton.isEnabled = false
+            addShippingButton.isEnabled = false
             lockIcon.isVisible = true
             couponButton.isEnabled = false
             addCouponButton.isEnabled = false
