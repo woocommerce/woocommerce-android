@@ -359,7 +359,7 @@ class OrderCreateEditFormFragment :
     private fun observeViewStateChanges(binding: FragmentOrderCreateEditFormBinding) {
         if (isCustomAmountsFeatureFlagEnabled()) {
             viewModel.combinedProductAndCustomAmountsLiveData.observe(viewLifecycleOwner) {
-                modifyProductsAndCustomAmountsSection(it, binding)
+                modifyProductsAndCustomAmountsSectionUI(it, binding)
             }
         }
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -386,7 +386,11 @@ class OrderCreateEditFormFragment :
                 showOrHideErrorSnackBar(show)
             }
             new.isEditable.takeIfNotEqualTo(old?.isEditable) { isEditable ->
-                if (isEditable) binding.showEditableControls(new) else binding.hideEditableControls()
+                if (isEditable) {
+                    binding.showEditableControls(new)
+                } else {
+                    binding.hideEditableControls()
+                }
             }
             new.multipleLinesContext.takeIfNotEqualTo(old?.multipleLinesContext) { multipleLinesContext ->
                 when (multipleLinesContext) {
@@ -417,7 +421,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun modifyProductsAndCustomAmountsSection(
+    private fun modifyProductsAndCustomAmountsSectionUI(
         viewState: OrderCreateEditViewModel.ViewState?,
         binding: FragmentOrderCreateEditFormBinding
     ) {
@@ -450,7 +454,11 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.show()
         binding.customAmountsSection.showHeader()
-        binding.customAmountsSection.showAddAction()
+        if (viewModel.viewStateData.liveData.value?.isEditable == true) {
+            binding.customAmountsSection.showAddAction()
+        } else {
+            binding.customAmountsSection.hideAddAction()
+        }
 
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
@@ -469,7 +477,11 @@ class OrderCreateEditFormFragment :
     }
 
     private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
-        binding.productsSection.showAddProductsHeaderActions()
+        if (viewModel.viewStateData.liveData.value?.isEditable == true) {
+            binding.productsSection.showAddProductsHeaderActions()
+        } else {
+            binding.productsSection.hideAddProductsHeaderActions()
+        }
         binding.productsSection.showHeader()
         binding.productsSection.removeProductsButtons()
         binding.customAmountsSection.show()
@@ -485,13 +497,18 @@ class OrderCreateEditFormFragment :
     }
 
     private fun productAndCustomAmountAdded(binding: FragmentOrderCreateEditFormBinding) {
-        binding.productsSection.showAddProductsHeaderActions()
         binding.productsSection.showHeader()
         binding.productsSection.removeProductsButtons()
         binding.customAmountsSection.show()
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.showHeader()
-        binding.customAmountsSection.showAddAction()
+        if (viewModel.viewStateData.liveData.value?.isEditable == true) {
+            binding.customAmountsSection.showAddAction()
+            binding.productsSection.showAddProductsHeaderActions()
+        } else {
+            binding.customAmountsSection.hideAddAction()
+            binding.productsSection.hideAddProductsHeaderActions()
+        }
     }
 
     private fun bothProductsAndCustomAmountsAreUnset(binding: FragmentOrderCreateEditFormBinding) {
@@ -1035,5 +1052,13 @@ class OrderCreateEditFormFragment :
             couponButton.isEnabled = false
             addCouponButton.isEnabled = false
         }
+        customAmountsSection.apply {
+            isLocked = true
+        }
+        val disabledCustomAmountUIModel = viewModel.customAmounts.value?.map {
+            it.copy(isLocked = true)
+        }
+        modifyProductsAndCustomAmountsSectionUI(viewModel.viewStateData.liveData.value, this)
+        bindCustomAmountsSection(customAmountsSection, disabledCustomAmountUIModel)
     }
 }

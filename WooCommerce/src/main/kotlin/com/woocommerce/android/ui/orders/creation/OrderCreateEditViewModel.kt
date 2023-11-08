@@ -1407,7 +1407,8 @@ data class ProductUIModel(
 data class CustomAmountUIModel(
     val id: Long,
     val amount: BigDecimal,
-    val name: String
+    val name: String,
+    val isLocked: Boolean = false
 ) : Parcelable
 
 enum class ScanningSource(val source: String) {
