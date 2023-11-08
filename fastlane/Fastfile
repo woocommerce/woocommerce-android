@@ -308,7 +308,7 @@ platform :android do
 
     push_to_git_remote_with_confirmation
 
-    trigger_release_build(branch_to_build: "release/#{new_version}")
+    trigger_release_build(branch_to_build: "release/#{current_release_version}")
   end
 
   #####################################################################################
