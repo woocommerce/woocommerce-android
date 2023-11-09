@@ -255,6 +255,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.subscription(),
+                product.subscriptionExpireDate(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),
@@ -821,6 +822,24 @@ class ProductDetailCardBuilder(
                         AnalyticsEvent.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
                     )
                 }
+            )
+        }
+
+    private fun Product.subscriptionExpireDate(): ProductProperty? =
+        this.subscription?.let { subscription ->
+            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
+            val expire = if (subscription.length != null) {
+                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            } else {
+                resources.getString(string.subscription_never_expire)
+            }
+
+            PropertyGroup(
+                title = string.product_subscription_expiration_date_title,
+                icon = drawable.ic_gridicons_calendar_expiration,
+                properties = mapOf(resources.getString(string.subscription_expire) to expire),
+                showTitle = true,
+                onClick = { }
             )
         }
 

@@ -1927,6 +1927,7 @@
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
     <string name="product_subscription_title">Subscription</string>
+    <string name="product_subscription_expiration_date_title">Subscription expiration</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
