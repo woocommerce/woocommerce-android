@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.products.price.ProductPricingViewModel.Pricing
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -254,6 +255,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
                 product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
@@ -500,13 +502,16 @@ class ProductDetailCardBuilder(
             viewModel.onEditProductCardClicked(
                 ViewProductPricing(
                     PricingData(
-                        taxClass,
-                        taxStatus,
-                        isSaleScheduled,
-                        saleStartDateGmt,
-                        saleEndDateGmt,
-                        regularPrice,
-                        salePrice
+                        taxClass = taxClass,
+                        taxStatus = taxStatus,
+                        isSaleScheduled = isSaleScheduled,
+                        saleStartDate = saleStartDateGmt,
+                        saleEndDate = saleEndDateGmt,
+                        regularPrice = regularPrice,
+                        salePrice = salePrice,
+                        isSubscription = this.productType == SUBSCRIPTION,
+                        subscriptionPeriod = subscription?.period,
+                        subscriptionInterval = subscription?.periodInterval,
                     )
                 ),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
