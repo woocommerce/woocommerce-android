@@ -213,23 +213,19 @@ class OrderCreateEditViewModel @Inject constructor(
         addSource(products) { products ->
             val customAmounts = customAmounts.value
             val isProductsEmpty = products?.isEmpty() == true
-            this.value = this.value?.copy(
+            viewState = viewState.copy(
                 productsSectionState = ProductsSectionState(isEmpty = isProductsEmpty),
                 customAmountSectionState = CustomAmountSectionState(customAmounts?.isEmpty() == true)
-            ) ?: run {
-                ViewState()
-            }
+            )
         }
 
         addSource(customAmounts) { customAmounts ->
             val products = products.value
             val isCustomAmountsEmpty = customAmounts?.isEmpty() == true
-            this.value = this.value?.copy(
+            viewState = viewState.copy(
                 productsSectionState = ProductsSectionState(isEmpty = products?.isEmpty() == true),
                 customAmountSectionState = CustomAmountSectionState(isCustomAmountsEmpty)
-            ) ?: run {
-                ViewState()
-            }
+            )
         }
     }
 

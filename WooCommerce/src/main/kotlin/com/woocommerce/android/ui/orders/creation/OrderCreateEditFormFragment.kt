@@ -357,12 +357,8 @@ class OrderCreateEditFormFragment :
 
     @Suppress("LongMethod")
     private fun observeViewStateChanges(binding: FragmentOrderCreateEditFormBinding) {
-        if (isCustomAmountsFeatureFlagEnabled()) {
-            viewModel.combinedProductAndCustomAmountsLiveData.observe(viewLifecycleOwner) {
-                modifyProductsAndCustomAmountsSectionUI(it, binding)
-            }
-        }
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            modifyProductsAndCustomAmountsSectionUI(new, binding)
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
                 if (show) showProgressDialog() else hideProgressDialog()
             }
@@ -372,7 +368,6 @@ class OrderCreateEditFormFragment :
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->
                 updateProgressBarsVisibility(binding, !idle)
                 if (new.isEditable) {
-                    binding.paymentSection.feeButton.isEnabled = idle
                     binding.paymentSection.couponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
                     binding.paymentSection.addCouponButton.isEnabled =
@@ -1037,6 +1032,14 @@ class OrderCreateEditFormFragment :
             couponButton.isEnabled = state.isCouponButtonEnabled
             addCouponButton.isEnabled = state.isCouponButtonEnabled
         }
+        customAmountsSection.apply {
+            isLocked = false
+        }
+        val enabledCustomAmountUIModel = viewModel.customAmounts.value?.map {
+            it.copy(isLocked = false)
+        }
+        modifyProductsAndCustomAmountsSectionUI(viewModel.viewStateData.liveData.value, this)
+        bindCustomAmountsSection(customAmountsSection, enabledCustomAmountUIModel)
     }
 
     private fun FragmentOrderCreateEditFormBinding.hideEditableControls() {
