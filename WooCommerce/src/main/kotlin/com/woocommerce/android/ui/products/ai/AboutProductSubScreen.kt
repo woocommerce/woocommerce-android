@@ -168,11 +168,7 @@ fun AboutProductSubScreen(
                             if (modalSheetState.isVisible)
                                 modalSheetState.hide()
                             else {
-                                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                                    modalSheetState.animateTo(ModalBottomSheetValue.HalfExpanded)
-                                } else {
-                                    modalSheetState.animateTo(ModalBottomSheetValue.Expanded)
-                                }
+                                modalSheetState.show()
                             }
                         }
                     }
