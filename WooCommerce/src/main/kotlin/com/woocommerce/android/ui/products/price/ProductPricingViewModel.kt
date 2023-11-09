@@ -229,7 +229,10 @@ class ProductPricingViewModel @Inject constructor(
                     saleStartDate == it.saleStartDate &&
                     saleEndDate == it.saleEndDate &&
                     regularPrice isEquivalentTo it.regularPrice &&
-                    salePrice isEquivalentTo it.salePrice
+                    salePrice isEquivalentTo it.salePrice &&
+                    isSubscription == it.isSubscription &&
+                    subscriptionPeriod == it.subscriptionPeriod &&
+                    subscriptionInterval == it.subscriptionInterval
             } ?: false
         }
 

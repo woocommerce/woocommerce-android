@@ -209,6 +209,13 @@ class ProductDetailFragment :
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus
             )
+            if (it.isSubscription) {
+                viewModel.updateProductSubscription(
+                    price = it.regularPrice,
+                    period = it.subscriptionPeriod,
+                    periodInterval = it.subscriptionInterval
+                )
+            }
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
