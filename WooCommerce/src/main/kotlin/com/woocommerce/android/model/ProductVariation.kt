@@ -114,7 +114,10 @@ open class ProductVariation(
                     json.addProperty("id", variantImage.id)
                     json.addProperty("name", variantImage.name)
                     json.addProperty("src", variantImage.source)
-                    json.addProperty("date_created_gmt", variantImage.dateCreated.formatToYYYYmmDDhhmmss())
+                    json.addProperty(
+                        /* property = */ "date_created_gmt",
+                        /* value = */ variantImage.dateCreated?.formatToYYYYmmDDhhmmss() ?: ""
+                    )
                 }.toString()
             } ?: ""
         }
