@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -18,6 +19,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog
@@ -51,7 +53,8 @@ class ProductPricingFragment :
     private var _binding: FragmentProductPricingBinding? = null
     private val binding get() = _binding!!
 
-    @Inject lateinit var dateUtils: DateUtils
+    @Inject
+    lateinit var dateUtils: DateUtils
 
     override fun onPause() {
         super.onPause()
@@ -71,6 +74,7 @@ class ProductPricingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProductPricingBinding.bind(view)
+        initSubscriptionViews()
         setupObservers(viewModel)
     }
 
@@ -109,6 +113,16 @@ class ProductPricingFragment :
                 }
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
+            new.pricingData.isSubscription.takeIfNotEqualTo(old?.pricingData?.isSubscription) {
+                binding.subscriptionPeriod.isVisible = it
+                binding.subscriptionInterval.isVisible = it
+            }
+            new.pricingData.subscriptionInterval?.takeIfNotEqualTo(old?.pricingData?.subscriptionInterval) {
+                binding.subscriptionInterval.setText(it.formatSubscriptionInterval())
+            }
+            new.pricingData.subscriptionPeriod?.takeIfNotEqualTo(old?.pricingData?.subscriptionPeriod) {
+                binding.subscriptionPeriod.setText(it.format())
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -164,8 +178,7 @@ class ProductPricingFragment :
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(
                     binding.scheduleSaleStartDate,
-                    OnDateSetListener {
-                        _, selectedYear, selectedMonth, dayOfMonth ->
+                    OnDateSetListener { _, selectedYear, selectedMonth, dayOfMonth ->
                         val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
 
                         viewModel.onDataChanged(saleStartDate = selectedDate)
@@ -179,8 +192,7 @@ class ProductPricingFragment :
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(
                     binding.scheduleSaleEndDate,
-                    OnDateSetListener {
-                        _, selectedYear, selectedMonth, dayOfMonth ->
+                    OnDateSetListener { _, selectedYear, selectedMonth, dayOfMonth ->
                         val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
 
                         viewModel.onDataChanged(saleEndDate = selectedDate)
@@ -297,12 +309,41 @@ class ProductPricingFragment :
         return datePicker
     }
 
+    private fun initSubscriptionViews() {
+        binding.subscriptionInterval.setup(
+            values = Array(6) { it + 1 },
+            onSelected = { viewModel.onDataChanged(subscriptionInterval = it) },
+            mapper = { entry -> entry.formatSubscriptionInterval() }
+        )
+        binding.subscriptionPeriod.setup(
+            arrayOf(
+                SubscriptionPeriod.Day,
+                SubscriptionPeriod.Week,
+                SubscriptionPeriod.Month,
+                SubscriptionPeriod.Year
+            ),
+            onSelected = { viewModel.onDataChanged(subscriptionPeriod = it) },
+            mapper = { it.format() }
+        )
+    }
+
     /**
      * Formats the given [date] or the current date if it's null to `'MMM dd, YYYY'`
      */
     private fun Date?.formatForDisplay(): String {
         val date = this ?: Date()
         return date.formatToMMMddYYYY()
+    }
+
+    private fun Int.formatSubscriptionInterval() =
+        resources.getStringArray(R.array.subscription_interval_options)[this - 1]
+
+    private fun SubscriptionPeriod.format() = when (this) {
+        SubscriptionPeriod.Day -> getString(R.string.subscription_period_day)
+        SubscriptionPeriod.Week -> getString(R.string.subscription_period_week)
+        SubscriptionPeriod.Month -> getString(R.string.subscription_period_month)
+        SubscriptionPeriod.Year -> getString(R.string.subscription_period_year)
+        else -> error("Invalid subscription period")
     }
 
     override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
@@ -313,6 +354,7 @@ class ProductPricingFragment :
                     viewModel.onDataChanged(taxStatus = ProductTaxStatus.fromString(it))
                 }
             }
+
             RequestCodes.PRODUCT_TAX_CLASS -> {
                 selectedItem?.let { selectedTaxClass ->
                     // Fetch the display name of the selected tax class slug

@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.greaterThan
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -76,6 +77,15 @@ class ProductPricingViewModel @Inject constructor(
         )
 
         originalPricingData = navArgs.pricingData
+
+        if (pricingData.isSubscription) {
+            viewState = viewState.copy(
+                pricingData = pricingData.copy(
+                    subscriptionPeriod = viewState.pricingData.subscriptionPeriod ?: SubscriptionPeriod.Month,
+                    subscriptionInterval = viewState.pricingData.subscriptionInterval ?: 1
+                )
+            )
+        }
     }
 
     fun getTaxClassBySlug(slug: String): TaxClass? {
@@ -89,17 +99,21 @@ class ProductPricingViewModel @Inject constructor(
         saleStartDate: Date? = pricingData.saleStartDate,
         saleEndDate: Date? = pricingData.saleEndDate,
         taxStatus: ProductTaxStatus? = pricingData.taxStatus,
-        taxClass: String? = pricingData.taxClass
+        taxClass: String? = pricingData.taxClass,
+        subscriptionPeriod: SubscriptionPeriod? = pricingData.subscriptionPeriod,
+        subscriptionInterval: Int? = pricingData.subscriptionInterval,
     ) {
         viewState = viewState.copy(
-            pricingData = PricingData(
+            pricingData = pricingData.copy(
                 regularPrice = regularPrice,
                 salePrice = salePrice,
                 isSaleScheduled = isSaleScheduled,
                 saleStartDate = saleStartDate,
                 saleEndDate = fixEndDateIfNecessary(saleStartDate, saleEndDate),
                 taxStatus = taxStatus,
-                taxClass = taxClass
+                taxClass = taxClass,
+                subscriptionPeriod = subscriptionPeriod,
+                subscriptionInterval = subscriptionInterval,
             )
         )
     }
@@ -201,7 +215,10 @@ class ProductPricingViewModel @Inject constructor(
         val saleStartDate: Date? = null,
         val saleEndDate: Date? = null,
         val regularPrice: BigDecimal? = null,
-        val salePrice: BigDecimal? = null
+        val salePrice: BigDecimal? = null,
+        val isSubscription: Boolean = false,
+        val subscriptionPeriod: SubscriptionPeriod? = null,
+        val subscriptionInterval: Int? = null,
     ) : Parcelable {
         override fun equals(other: Any?): Boolean {
             val data = other as? PricingData
