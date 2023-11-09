@@ -60,3 +60,13 @@ fun <T : Any> LiveData<T?>.filterNotNull(): LiveData<T> {
     }
     return mediator
 }
+
+fun <T> LiveData<T>.filter(predicate: (T) -> Boolean): LiveData<T> {
+    val mediator = MediatorLiveData<T>()
+    mediator.addSource(this) {
+        if (it != null && predicate(it)) {
+            mediator.value = it
+        }
+    }
+    return mediator
+}
