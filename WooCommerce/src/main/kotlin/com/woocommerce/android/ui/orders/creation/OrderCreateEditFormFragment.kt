@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -340,9 +339,7 @@ class OrderCreateEditFormFragment :
             binding.orderStatusView.updateStatus(it)
         }
 
-        viewModel.products.observe(viewLifecycleOwner) {
-            bindProductsSection(binding.productsSection, viewModel.products)
-        }
+        bindProductsSection(binding.productsSection, viewModel.products)
 
         if (isCustomAmountsFeatureFlagEnabled()) {
             viewModel.customAmounts.observe(viewLifecycleOwner) {
@@ -445,7 +442,6 @@ class OrderCreateEditFormFragment :
     }
 
     private fun customAmountAddedProductUnset(binding: FragmentOrderCreateEditFormBinding) {
-        binding.productsSection.removeCustomSectionButtons()
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.show()
         binding.customAmountsSection.showHeader()
@@ -455,8 +451,10 @@ class OrderCreateEditFormFragment :
             binding.customAmountsSection.hideAddAction()
         }
 
+        binding.productsSection.removeCustomSectionButtons()
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
+        binding.productsSection.content = null
         binding.productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
                 text = getString(R.string.order_creation_add_products),
@@ -509,6 +507,7 @@ class OrderCreateEditFormFragment :
     private fun bothProductsAndCustomAmountsAreUnset(binding: FragmentOrderCreateEditFormBinding) {
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
+        binding.productsSection.content = null
         binding.productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
                 text = getString(R.string.order_creation_add_products),
@@ -754,7 +753,7 @@ class OrderCreateEditFormFragment :
         setContent {
             val state = items.observeAsState(emptyList())
             WooTheme {
-                Column(modifier = Modifier) {
+                Column {
                     state.value.forEach { item ->
                         ExpandableProductCard(
                             viewModel.viewStateData.liveData.observeAsState(),

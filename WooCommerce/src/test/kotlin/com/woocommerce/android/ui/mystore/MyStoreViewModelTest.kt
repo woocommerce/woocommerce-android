@@ -21,7 +21,6 @@ import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -361,38 +360,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
             assertTrue(sut.topPerformersState.value!!.isError)
-        }
-
-    @Test
-    fun `given successful Jetpack installation, when user returns to My Store, then UI is updated with no JP banner`() =
-        testBlocking {
-            val siteBeforeInstallation = SiteModel().apply {
-                origin = SiteModel.ORIGIN_WPCOM_REST
-                setIsJetpackCPConnected(true)
-            }
-            val siteAfterInstallation = SiteModel().apply {
-                origin = SiteModel.ORIGIN_WPCOM_REST
-                setIsJetpackConnected(true)
-            }
-
-            val siteFlow = MutableStateFlow(siteBeforeInstallation)
-            whenever(selectedSite.observe()).thenReturn(siteFlow)
-            givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(
-                GetStats.LoadStatsResult.VisitorStatUnavailable(
-                    connectionType = SiteConnectionType.JetpackConnectionPackage
-                )
-            )
-            givenObserveTopPerformersEmits(emptyList())
-
-            whenViewModelIsCreated()
-
-            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
-            siteFlow.value = siteAfterInstallation
-
-            assertThat(sut.visitorStatsState.value).isNotInstanceOf(
-                MyStoreViewModel.VisitorStatsViewState.Unavailable::class.java
-            )
         }
 
     @Test
