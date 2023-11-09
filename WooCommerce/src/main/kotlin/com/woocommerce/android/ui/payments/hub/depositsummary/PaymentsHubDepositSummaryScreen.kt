@@ -93,16 +93,19 @@ fun PaymentsHubDepositSummaryView(
             .background(colorResource(id = R.color.color_surface))
     ) {
         val pagerState = rememberPagerState()
+        val currencies = overview.infoPerCurrency.keys.toList()
+        val selectedCurrencyInfo = overview.infoPerCurrency[currencies[pagerState.currentPage]] ?: return@Column
 
         AnimatedVisibility(
             visible = (isExpanded || isPreview) && pageCount > 1,
             modifier = Modifier.fillMaxWidth(),
         ) {
             CurrenciesTabs(
-                currencies = overview.infoPerCurrency.keys.map { it.uppercase() }.toList(),
+                currencies = currencies.map { it.uppercase() }.toList(),
                 pagerState = pagerState
             )
         }
+
 
         HorizontalPager(
             pageCount = pageCount,
@@ -113,15 +116,15 @@ fun PaymentsHubDepositSummaryView(
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.color_surface))
             ) {
-                AlwaysVisiblePart(overview, isExpanded) { isExpanded = !isExpanded }
+                AlwaysVisiblePart(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
 
                 AnimatedVisibility(
                     visible = isExpanded || isPreview,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     AdditionInfo(
-                        nextDeposit = overview.infoPerCurrency[overview.defaultCurrency]?.nextDeposit,
-                        lastDeposit = overview.infoPerCurrency[overview.defaultCurrency]?.lastDeposit,
+                        nextDeposit = selectedCurrencyInfo.nextDeposit,
+                        lastDeposit = selectedCurrencyInfo.lastDeposit,
                     )
                 }
             }
@@ -131,7 +134,7 @@ fun PaymentsHubDepositSummaryView(
 
 @Composable
 private fun AlwaysVisiblePart(
-    overview: PaymentsHubDepositSummaryState.Overview,
+    currencyInfo: PaymentsHubDepositSummaryState.Info,
     isExpanded: Boolean,
     onExpandCollapseClick: () -> Unit,
 ) {
@@ -167,7 +170,7 @@ private fun AlwaysVisiblePart(
             Text(
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight(700),
-                text = overview.infoPerCurrency[overview.defaultCurrency]?.availableFunds.toString(),
+                text = currencyInfo.availableFunds,
                 color = colorResource(id = R.color.color_on_surface)
             )
         }
@@ -183,15 +186,14 @@ private fun AlwaysVisiblePart(
             Text(
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight(700),
-                text = overview.infoPerCurrency[overview.defaultCurrency]?.pendingFunds.toString(),
+                text = currencyInfo.pendingFunds,
                 color = colorResource(id = R.color.color_on_surface)
             )
             Text(
                 style = MaterialTheme.typography.caption,
                 text = StringUtils.getQuantityString(
                     context = LocalContext.current,
-                    quantity = overview.infoPerCurrency[overview.defaultCurrency]?.pendingBalanceDepositsCount
-                        ?: 0,
+                    quantity = currencyInfo.pendingBalanceDepositsCount,
                     default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
                     one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
                 ),
