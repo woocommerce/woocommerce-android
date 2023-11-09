@@ -119,9 +119,11 @@ class ProductPricingFragment :
             }
             new.pricingData.subscriptionInterval?.takeIfNotEqualTo(old?.pricingData?.subscriptionInterval) {
                 binding.subscriptionInterval.setText(it.formatSubscriptionInterval())
+                updateSubscriptionSaleHelperText()
             }
             new.pricingData.subscriptionPeriod?.takeIfNotEqualTo(old?.pricingData?.subscriptionPeriod) {
                 binding.subscriptionPeriod.setText(it.format())
+                updateSubscriptionSaleHelperText()
             }
         }
 
@@ -325,6 +327,17 @@ class ProductPricingFragment :
             onSelected = { viewModel.onDataChanged(subscriptionPeriod = it) },
             mapper = { it.format() }
         )
+    }
+
+    private fun updateSubscriptionSaleHelperText() {
+        val interval = viewModel.pricingData.subscriptionInterval
+        val period = viewModel.pricingData.subscriptionPeriod
+
+        if (interval == null || period == null) {
+            binding.productSalePrice.helperText = null
+            return
+        }
+        binding.productSalePrice.helperText = "${interval.formatSubscriptionInterval()} ${period.format()}"
     }
 
     /**
