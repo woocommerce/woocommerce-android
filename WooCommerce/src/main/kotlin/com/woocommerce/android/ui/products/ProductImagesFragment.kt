@@ -319,12 +319,6 @@ class ProductImagesFragment :
         cameraLauncher.launch(intent)
     }
 
-    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-    }
-
     private val photoPicker = registerForActivityResult(PickVisualMedia()) { uri ->
         handlePhotoPickerResult(uri?.let { listOf(it) } ?: emptyList(), AnalyticsTracker.IMAGE_SOURCE_DEVICE)
     }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.mediapicker
 
-import com.woocommerce.android.R
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA

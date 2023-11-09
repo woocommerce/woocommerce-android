@@ -3,21 +3,14 @@ package com.woocommerce.android.mediapicker
 import android.net.Uri
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VisualMediaType
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
-import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
 import dagger.hilt.android.scopes.FragmentScoped
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.model.MediaType
-import org.wordpress.android.mediapicker.model.MediaType.IMAGE
-import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaTypes
-import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
