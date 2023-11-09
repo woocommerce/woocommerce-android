@@ -21,6 +21,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -44,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -81,11 +83,16 @@ fun PaymentsHubDepositSummaryView(
     val topRowIS = remember { MutableInteractionSource() }
     val topRowCoroutineScope = rememberCoroutineScope()
 
+    val pagerState = rememberPagerState(pageCount = { 10 })
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colorResource(id = R.color.color_surface))
     ) {
+        if ((isExpanded || isPreview) && overview.infoPerCurrency.size > 1)
+            CurrenciesTabs()
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -367,6 +374,34 @@ private fun Deposit(
                 color = colorResource(id = textColor),
                 fontWeight = FontWeight(600),
             )
+        }
+    }
+}
+
+@Composable
+private fun CurrenciesTabs(
+    currencies: List<String>,
+    pagerState: PagerState,
+) {
+    TabRow(
+        modifier = Modifier.fillMaxWidth(),
+        selectedTabIndex = pagerState.currentPage
+    ) {
+        currencies.forEachIndexed { index, title ->
+            Tab(selected = pagerState.currentPage == index,
+                onClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                text = {
+                    Text(
+                        text = title,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontFamily = Helvetica
+                    )
+                })
         }
     }
 }
