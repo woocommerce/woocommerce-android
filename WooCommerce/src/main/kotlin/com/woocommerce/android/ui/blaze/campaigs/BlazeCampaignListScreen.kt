@@ -75,7 +75,7 @@ private fun BlazeCampaignListScreen(
 ) {
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = {
+        confirmValueChange = {
             if (it == ModalBottomSheetValue.Hidden) {
                 onCampaignCelebrationDismissed()
             }
