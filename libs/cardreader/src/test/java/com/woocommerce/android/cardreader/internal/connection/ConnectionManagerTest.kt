@@ -18,6 +18,8 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
@@ -48,6 +50,11 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Before
     fun setUp() {
+
+        val defaultReaderStatus: StateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected())
+        whenever(terminalListenerImpl.readerStatus).thenReturn(defaultReaderStatus)
+
+        // uses the previously created mock objects
         connectionManager = ConnectionManager(
             terminalWrapper,
             bluetoothReaderListener,
