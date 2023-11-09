@@ -53,7 +53,7 @@ class WooCommerceGlideModule : AppGlideModule() {
             WooCommerceGlideEntryPoint::class.java
         ).requestQueue()
 
-        glide.registry.replace(GlideUrl::class.java, InputStream::class.java, VolleyUrlLoader.Factory(requestQueue))
+        registry.replace(GlideUrl::class.java, InputStream::class.java, VolleyUrlLoader.Factory(requestQueue))
     }
 
     /**
