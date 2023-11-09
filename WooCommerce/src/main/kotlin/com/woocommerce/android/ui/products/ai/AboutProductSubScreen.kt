@@ -76,7 +76,7 @@ fun AboutProductSubScreen(
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val configuration = LocalConfiguration.current
 
