@@ -322,7 +322,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     ): String {
         return when (activeGranularity) {
             StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
         }
@@ -608,8 +608,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     private fun getEntryValue(dateString: String): String {
         return when (activeGranularity) {
             StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateString.formatToMonthDateOnly()
-            StatsGranularity.MONTHS -> dateString.formatToMonthDateOnly()
+            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            StatsGranularity.MONTHS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
         }
     }

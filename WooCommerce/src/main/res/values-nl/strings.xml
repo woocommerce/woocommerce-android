@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-26 09:54:25+0000
+Translation-Revision-Date: 2023-11-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_details_blaze_card">Promoten met Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Duidelijk</string>
+    <string name="blaze_campaign_ceation_celebration_message">De advertentie is ingediend voor goedkeuring. We sturen je een bevestigingse-mail als de advertentie is goedgekeurd en actief is.</string>
+    <string name="blaze_campaign_creation_celebration_header">Helemaal klaar!</string>
+    <string name="blaze_campaign_creation_intro_button">Blaze-campagne nu starten</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Volg prestaties en start en stop je Blaze-campagne op elk gewenst moment.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Bereik miljoenen WordPress- en Tumblr-sites.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Neem de leiding voor slechts een paar euro per dag. Het is budgetvriendelijk.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promoot je product in enkele minuten.</string>
+    <string name="blaze_campaign_creation_intro_title">Boost je verkoopcijfers met Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Er is een fout opgetreden bij het vernieuwen van de campagnelijst. Probeer later opnieuw.</string>
+    <string name="media_picker_dialog_title">Mediabron selecteren</string>
+    <string name="product_creation_package_photo_error">Er is een fout opgetreden bij de generatie van een productnaam en -beschrijving.</string>
+    <string name="product_creation_package_photo_no_text_detected">Geen tekst gedetecteerd. Kies een andere foto van de verpakking of voer de productgegevens handmatig in.</string>
+    <string name="order_editing_add_content_description">Product toevoegen</string>
+    <string name="order_editing_barcode_content_description">Streepjescode scannen</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Productkaart in-/uitvouwen</string>
+    <string name="order_creation_decrease_item_amount_content_description">Productaantal verlagen</string>
+    <string name="order_creation_increase_item_amount_content_description">Productaantal verhogen</string>
+    <string name="order_creation_add_custom_amounts">Aangepast bedrag toevoegen</string>
+    <string name="order_creation_price_after_discount">Prijs na korting</string>
     <string name="previous_order">Vorige bestelling</string>
     <string name="next_order">Volgende bestelling</string>
     <string name="blaze_campaign_details_title">Campagnedetails</string>
@@ -325,13 +346,6 @@ Language: nl
     <string name="highlights_tooltip_button_hint">Knoptekst</string>
     <string name="highlights_tooltip_message_hint">Tooltipbericht. \n Dit mag uit meerdere regels bestaan.</string>
     <string name="highlights_tooltip_title_hint">Titel van tooltip</string>
-    <string name="blaze_banner_dismiss_dialog_button">Duidelijk</string>
-    <string name="blaze_banner_dismiss_dialog_description">Maak je geen zorgen! Blaze is voor jouw gemak beschikbaar in het Menu en het productdetails-menu.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze-advertenties</string>
-    <string name="blaze_banner_close_button_content_description">Blaze sluiten bannerknop</string>
-    <string name="blaze_banner_button">Probeer Blaze nu</string>
-    <string name="blaze_banner_description">Tover je producten om in advertenties die op miljoenen sites op WordPress.com en Tumblr vertoond worden.</string>
-    <string name="blaze_banner_title">Producten promoten met Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Duidelijk</string>
     <string name="ai_product_description_tooltip_message">Gebruik onze door AI aangedreven tool om snel productbeschrijvingen te genereren. Voer gewoon wat trefwoorden in en wij doen de rest!</string>
     <string name="ai_product_description_tooltip_title">✨ Schijf met AI</string>

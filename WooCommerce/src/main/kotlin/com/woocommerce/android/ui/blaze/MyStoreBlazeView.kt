@@ -215,15 +215,15 @@ fun MyStoreBlazeViewCampaignPreview() {
                 stats = listOf(
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_impressions,
-                        value = 100
+                        value = 100.toString()
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_clicks,
-                        value = 10
+                        value = 10.toString()
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
-                        value = 1000
+                        value = 1000.toString()
                     ),
                 ),
             ),
