@@ -54,7 +54,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -746,9 +745,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PRODUCT_REMOTE_ID,
                 "uri",
                 UploadStatus.Failed(
-                    MediaModel(),
-                    MediaErrorType.GENERIC_ERROR,
-                    "error"
+                    mediaErrorType = MediaErrorType.GENERIC_ERROR,
+                    mediaErrorMessage = "error"
                 )
             )
         )
