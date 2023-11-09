@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.price
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -13,6 +13,9 @@ import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit

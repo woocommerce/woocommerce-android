@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.price
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
@@ -7,6 +7,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.databinding.FragmentProductPricingBinding
 import com.woocommerce.android.extensions.collapse
@@ -18,8 +19,11 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.TaxClass
+import com.woocommerce.android.ui.products.BaseProductEditorFragment
+import com.woocommerce.android.ui.products.ProductItemSelectorDialog
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.ProductTaxStatus
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -197,7 +201,7 @@ class ProductPricingFragment :
                 setClickListener {
                     productTaxStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
                         this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_STATUS,
-                        getString(R.string.product_tax_status), ProductTaxStatus.toMap(requireContext()),
+                        getString(string.product_tax_status), ProductTaxStatus.toMap(requireContext()),
                         getText()
                     ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
                 }
@@ -251,7 +255,7 @@ class ProductPricingFragment :
                 productTaxClassSelectorDialog = ProductItemSelectorDialog.newInstance(
                     this@ProductPricingFragment,
                     RequestCodes.PRODUCT_TAX_CLASS,
-                    getString(R.string.product_tax_class),
+                    getString(string.product_tax_class),
                     taxClasses.map { it.slug to it.name }.toMap(),
                     binding.productTaxClass.getText()
                 ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
