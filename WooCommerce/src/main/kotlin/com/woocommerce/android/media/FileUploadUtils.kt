@@ -67,9 +67,7 @@ object FileUploadUtils {
         localSiteId: Int,
         mimeType: String
     ): MediaModel? {
-        val media = mediaStore.instantiateMediaModel()
-        var filename = FluxCMediaUtils.getFileName(fetchedUri.path)
-
+        var filename = FluxCMediaUtils.getFileName(fetchedUri.path) ?: ""
         val fileExtension: String = filename
             .substringAfterLast(delimiter = ".", missingDelimiterValue = "")
             .ifBlank {
@@ -84,15 +82,23 @@ object FileUploadUtils {
                 return null
             }
 
-        media.fileName = filename
-        media.title = filename
-        media.filePath = path
-        media.localSiteId = localSiteId
-        media.fileExtension = fileExtension
-        media.mimeType = mimeType
-        media.uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000)
-
-        return media
+        val media = MediaModel(
+            localSiteId,
+            DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000),
+            filename,
+            path,
+            fileExtension,
+            mimeType,
+            filename,
+            null
+        )
+        val instantiatedMedia = mediaStore.instantiateMediaModel(media)
+        return if (instantiatedMedia != null) {
+            instantiatedMedia
+        } else {
+            WooLog.w(T.MEDIA, "We couldn't instantiate the media")
+            null
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")

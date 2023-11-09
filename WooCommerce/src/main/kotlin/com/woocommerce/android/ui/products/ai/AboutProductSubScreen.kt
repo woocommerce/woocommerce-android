@@ -76,7 +76,7 @@ fun AboutProductSubScreen(
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val configuration = LocalConfiguration.current
 
@@ -168,11 +168,7 @@ fun AboutProductSubScreen(
                             if (modalSheetState.isVisible)
                                 modalSheetState.hide()
                             else {
-                                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                                    modalSheetState.animateTo(ModalBottomSheetValue.HalfExpanded)
-                                } else {
-                                    modalSheetState.animateTo(ModalBottomSheetValue.Expanded)
-                                }
+                                modalSheetState.show()
                             }
                         }
                     }

@@ -28,7 +28,6 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import java.math.BigDecimal
@@ -153,9 +152,8 @@ class VariationDetailViewModelTest : BaseUnitTest() {
                 TEST_VARIATION.remoteVariationId,
                 "uri",
                 UploadStatus.Failed(
-                    MediaModel(),
-                    GENERIC_ERROR,
-                    "error"
+                    mediaErrorType = GENERIC_ERROR,
+                    mediaErrorMessage = "error"
                 )
             )
         )
