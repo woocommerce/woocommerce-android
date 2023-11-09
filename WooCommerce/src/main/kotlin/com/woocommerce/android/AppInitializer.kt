@@ -268,7 +268,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
                         add(async { jitmStoreInMemoryCache.init() })
                         add(async { trackStoreSnapshot() })
-                        add(async { wooCommerceStore.fetchSitePlugins(selectedSite.get()) })
                     }.awaitAll()
                 }
             }
