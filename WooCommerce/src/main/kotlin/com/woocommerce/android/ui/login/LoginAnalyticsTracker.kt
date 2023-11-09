@@ -324,4 +324,20 @@ class LoginAnalyticsTracker(
     override fun usernamePasswordScreenResumed() {
         unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
     }
+
+    override fun trackLoginSecurityKeyFailure() {
+        // TODO: "Not yet implemented"
+    }
+
+    override fun trackLoginSecurityKeyNeeded() {
+        // TODO: "Not yet implemented"
+    }
+
+    override fun trackLoginSecurityKeySuccess() {
+        // TODO: "Not yet implemented"
+    }
+
+    override fun trackUseSecurityKeyClicked() {
+        // TODO: "Not yet implemented"
+    }
 }
