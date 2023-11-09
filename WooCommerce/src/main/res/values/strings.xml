@@ -1726,6 +1726,8 @@
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
+    <string name="product_subscription_interval">Billing interval</string>
+    <string name="product_subscription_period">Period</string>
     <string name="product_schedule_sale_label">Schedule sale</string>
     <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
     <string name="product_schedule_sale_from_label">From</string>

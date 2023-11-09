@@ -38,13 +38,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_price_heading" />
 
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/product_price_interval"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/product_subscription_interval"
+                app:layout_constraintEnd_toStartOf="@id/product_price_period"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_regular_price" />
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/product_price_period"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/product_subscription_period"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/product_price_interval"
+                app:layout_constraintTop_toTopOf="@id/product_price_interval"
+                app:layout_constraintBottom_toBottomOf="@id/product_price_interval"/>
+
             <View
                 android:id="@+id/divider_1"
                 style="@style/Woo.Divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/product_regular_price" />
+                app:layout_constraintTop_toBottomOf="@+id/product_price_interval" />
 
             <!-- Product Sale Heading -->
             <com.google.android.material.textview.MaterialTextView
