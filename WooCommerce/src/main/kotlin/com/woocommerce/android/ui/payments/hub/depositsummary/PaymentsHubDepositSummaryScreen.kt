@@ -106,7 +106,6 @@ fun PaymentsHubDepositSummaryView(
             )
         }
 
-
         HorizontalPager(
             pageCount = pageCount,
             state = pagerState
