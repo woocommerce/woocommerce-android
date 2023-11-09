@@ -31,9 +31,7 @@ class IsEligibleForSubscriptionsTest : BaseUnitTest() {
 
     @Test
     fun `returns true when plugin is present and active`() = testBlocking {
-        val plugin = spy(SitePluginModel().apply {
-            slug = "woocommerce-subscriptions"
-        })
+        val plugin = spy(SitePluginModel().apply { slug = "woocommerce-subscriptions" })
 
         whenever(plugin.isActive).thenReturn(true)
         whenever(wooCommerceStore.getSitePlugins(site)).thenReturn(listOf(plugin))
@@ -54,9 +52,7 @@ class IsEligibleForSubscriptionsTest : BaseUnitTest() {
 
     @Test
     fun `returns false when plugin is present but not active`() = testBlocking {
-        val plugin = spy(SitePluginModel().apply {
-            slug = "woocommerce-subscriptions"
-        })
+        val plugin = spy(SitePluginModel().apply { slug = "woocommerce-subscriptions" })
 
         whenever(plugin.isActive).thenReturn(false)
 
