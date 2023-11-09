@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class PaymentsHubDepositSummaryStateMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
+    private val dateFormatter: DateToDDMMMYYYYStringFormatter
 ) {
-
     @Suppress("ReturnCount")
     fun mapDepositOverviewToViewModelOverviews(
         overview: WooPaymentsDepositsOverview
@@ -60,7 +60,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
         PaymentsHubDepositSummaryState.Deposit(
             amount = formatMoney(info.amount ?: 0L, info.currency.orEmpty()),
             status = info.status.toDepositStatus(),
-            date = if (info.date != null) Date(info.date!!).formatToDDMMMYYYY() else ""
+            date = if (info.date != null) dateFormatter(Date(info.date!!)) else ""
         )
 
     private fun formatMoney(amount: Long, currency: String) =
@@ -83,4 +83,8 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             "FAILED" -> PaymentsHubDepositSummaryState.Deposit.Status.FAILED
             else -> PaymentsHubDepositSummaryState.Deposit.Status.UNKNOWN
         }
+}
+
+class DateToDDMMMYYYYStringFormatter @Inject constructor() {
+    operator fun invoke(date: Date): String = date.formatToDDMMMYYYY()
 }
