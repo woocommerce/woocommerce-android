@@ -45,8 +45,9 @@
         android:layout_margin="@dimen/major_100"
         android:orientation="vertical"
         app:layout_constrainedWidth="true"
+        android:layout_marginEnd="@dimen/major_75"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/product_btnDelete"
+        app:layout_constraintEnd_toStartOf="@id/customAmountEdit"
         app:layout_constraintStart_toEndOf="@+id/customAmountImageFrame"
         app:layout_constraintTop_toBottomOf="@id/divider"
         app:layout_constraintVertical_bias="0.50">
@@ -59,21 +60,14 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customAmountName"
                 style="@style/Woo.ListItem.Title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_margin="@dimen/minor_00"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
-                android:maxLines="2"
+                android:maxLines="1"
                 tools:text="Services rendered" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/customAmountEdit"
-                android:layout_width="@dimen/major_150"
-                android:layout_height="@dimen/major_150"
-                android:padding="@dimen/minor_25"
-                android:layout_marginStart="@dimen/major_75"
-                android:src="@drawable/ic_edit_pencil"/>
         </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView
@@ -84,6 +78,19 @@
             android:layout_margin="@dimen/minor_00"
             tools:text="$20.00" />
     </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/customAmountEdit"
+        android:layout_width="@dimen/major_150"
+        android:layout_height="@dimen/major_150"
+        android:padding="@dimen/minor_25"
+        android:layout_marginStart="@dimen/major_75"
+        android:layout_marginEnd="@dimen/major_75"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/customAmountInfoContainer"
+        app:layout_constraintEnd_toStartOf="@id/customAmountDeleteBtn"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_edit_pencil"/>
 
     <ImageButton
         android:id="@+id/customAmountDeleteBtn"

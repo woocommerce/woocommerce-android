@@ -419,14 +419,15 @@ class OrderCreateEditFormFragment :
     }
 
     private fun customAmountAddedProductUnset(binding: FragmentOrderCreateEditFormBinding) {
-        binding.productsSection.removeCustomSectionButtons()
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.show()
         binding.customAmountsSection.showHeader()
         binding.customAmountsSection.showAddAction()
 
+        binding.productsSection.removeCustomSectionButtons()
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
+        binding.productsSection.content = null
         binding.productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
                 text = getString(R.string.order_creation_add_products),
@@ -470,6 +471,7 @@ class OrderCreateEditFormFragment :
     private fun bothProductsAndCustomAmountsAreUnset(binding: FragmentOrderCreateEditFormBinding) {
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
+        binding.productsSection.content = null
         binding.productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
                 text = getString(R.string.order_creation_add_products),
