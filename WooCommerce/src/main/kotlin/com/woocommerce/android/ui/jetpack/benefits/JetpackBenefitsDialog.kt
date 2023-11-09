@@ -62,7 +62,7 @@ class JetpackBenefitsDialog : DialogFragment() {
             when (event) {
                 is JetpackBenefitsViewModel.StartJetpackActivationForJetpackCP -> {
                     findNavController().navigateSafely(
-                        JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
+                        JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackCPInstallStartDialog()
                     )
                 }
 

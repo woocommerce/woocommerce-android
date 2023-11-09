@@ -9,14 +9,14 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginAct
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.ACTIVATION
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.CONNECTION
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.INSTALLATION
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Activating
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Connecting
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Failed
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Finished
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Installing
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.ACTIVATION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.CONNECTION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.INSTALLATION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Activating
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Connecting
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Failed
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Finished
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Installing
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,7 +33,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
-class JetpackInstallViewModelTest : BaseUnitTest() {
+class JetpackCPInstallViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val installationStateFlow = MutableSharedFlow<PluginStatus>(extraBufferCapacity = Int.MAX_VALUE)
     private val pluginRepository: PluginRepository = mock {
@@ -48,7 +48,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val exampleResult = WooResult(model = listOf(siteModelMock))
-    private lateinit var viewModel: JetpackInstallViewModel
+    private lateinit var viewModel: JetpackCPInstallViewModel
 
     companion object {
         const val EXAMPLE_SLUG = "plugin-slug"
@@ -61,7 +61,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        viewModel = JetpackInstallViewModel(
+        viewModel = JetpackCPInstallViewModel(
             savedState,
             pluginRepository,
             selectedSiteMock,
@@ -71,7 +71,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when installation is successful, then set proper install states`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         doReturn(true).whenever(siteModelMock).hasWooCommerce
         doReturn(exampleResult).whenever(wooCommerceStore).fetchWooCommerceSites()
 
@@ -93,7 +93,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when installation is failed, then set failed state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
@@ -108,7 +108,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when activation is failed, then set failed state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
@@ -126,7 +126,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when a plugin to install already exists, then set activating state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
@@ -142,7 +142,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when connecting is failed, then set failed state`() = testBlocking {
-        val installStates = mutableListOf<JetpackInstallViewModel.InstallStatus>()
+        val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         doReturn(false).whenever(siteModelMock).hasWooCommerce
         doReturn(exampleResult).whenever(wooCommerceStore).fetchWooCommerceSites()
 

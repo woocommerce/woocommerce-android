@@ -10,14 +10,14 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginAct
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.ACTIVATION
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.CONNECTION
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.INSTALLATION
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Activating
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Connecting
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Failed
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Finished
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Installing
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.ACTIVATION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.CONNECTION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.FailureType.INSTALLATION
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Activating
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Connecting
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Failed
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Finished
+import com.woocommerce.android.ui.jetpack.JetpackCPInstallViewModel.InstallStatus.Installing
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +28,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
-class JetpackInstallViewModel @Inject constructor(
+class JetpackCPInstallViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PluginRepository,
     private val selectedSite: SelectedSite,
@@ -64,7 +64,7 @@ class JetpackInstallViewModel @Inject constructor(
                     is PluginInstallFailed -> {
                         AnalyticsTracker.track(
                             AnalyticsEvent.JETPACK_INSTALL_FAILED,
-                            errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
+                            errorContext = this@JetpackCPInstallViewModel.javaClass.simpleName,
                             errorType = it.errorType,
                             errorDescription = it.errorDescription
                         )
@@ -79,7 +79,7 @@ class JetpackInstallViewModel @Inject constructor(
                     is PluginActivationFailed -> {
                         AnalyticsTracker.track(
                             AnalyticsEvent.JETPACK_INSTALL_FAILED,
-                            errorContext = this@JetpackInstallViewModel.javaClass.simpleName,
+                            errorContext = this@JetpackCPInstallViewModel.javaClass.simpleName,
                             errorType = it.errorType,
                             errorDescription = it.errorDescription
                         )
