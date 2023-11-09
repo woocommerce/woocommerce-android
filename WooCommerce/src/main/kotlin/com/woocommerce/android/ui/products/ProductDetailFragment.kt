@@ -114,7 +114,9 @@ class ProductDetailFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() {
-            val navigationIcon = if (findNavController().backQueue.any { it.destination.id == R.id.products }) {
+            val navigationIcon = if (findNavController().currentBackStack.value
+                    .any { it.destination.id == R.id.products }
+            ) {
                 R.drawable.ic_back_24dp
             } else {
                 R.drawable.ic_gridicons_cross_24dp
