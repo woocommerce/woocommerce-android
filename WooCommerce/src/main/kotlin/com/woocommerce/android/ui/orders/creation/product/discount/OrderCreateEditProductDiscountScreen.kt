@@ -114,7 +114,7 @@ fun OrderCreateEditProductDiscountScreen(
                             .focusRequester(focusRequester)
                             .weight(1f),
                         value = state.value.discountAmount,
-                        valueMapper = NullableCurrencyTextFieldValueMapper(
+                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
                             discountInputFieldConfig.decimalSeparator,
                             discountInputFieldConfig.numberOfDecimals
                         ),
