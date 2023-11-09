@@ -1716,6 +1716,7 @@
     <string name="product_inventory_empty">Add inventory</string>
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
+    <string name="product_sale">Sale</string>
     <string name="product_price_empty">Add price</string>
     <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
