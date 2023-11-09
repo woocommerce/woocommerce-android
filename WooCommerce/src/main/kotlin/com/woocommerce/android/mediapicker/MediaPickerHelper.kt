@@ -1,6 +1,11 @@
 package com.woocommerce.android.mediapicker
 
+import android.net.Uri
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VisualMediaType
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
@@ -8,7 +13,11 @@ import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryRe
 import dagger.hilt.android.scopes.FragmentScoped
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaType.IMAGE
+import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.mediapicker.model.MediaTypes
+import org.wordpress.android.mediapicker.model.MediaUri
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -17,8 +26,9 @@ class MediaPickerHelper @Inject constructor(
     private val fragment: Fragment,
     private val mediaPickerSetupFactory: MediaPickerSetup.Factory
 ) {
-    private val deviceLibraryLauncher = fragment.registerForActivityResult(StartActivityForResult()) {
-        handleDeviceMediaResult(it)
+
+    private val photoPicker = fragment.registerForActivityResult(PickVisualMedia()) { uri ->
+        handlePhotoPickerResult(uri)
     }
 
     private val mediaLibraryLauncher = fragment.registerForActivityResult(StartActivityForResult()) {
@@ -26,25 +36,25 @@ class MediaPickerHelper @Inject constructor(
     }
 
     fun showMediaPicker(source: DataSource) {
-        val mediaPickerIntent = MediaPickerActivity.buildIntent(
-            context = fragment.requireContext(),
-            mediaPickerSetupFactory.build(
-                source = source,
-                mediaTypes = MediaTypes.IMAGES
-            )
-        )
         if (source == DataSource.WP_MEDIA_LIBRARY) {
+            val mediaPickerIntent = MediaPickerActivity.buildIntent(
+                context = fragment.requireContext(),
+                mediaPickerSetupFactory.build(
+                    source = source,
+                    mediaTypes = MediaTypes.IMAGES
+                )
+            )
             mediaLibraryLauncher.launch(mediaPickerIntent)
         } else {
-            deviceLibraryLauncher.launch(mediaPickerIntent)
+            photoPicker.launch(
+                PickVisualMediaRequest(MediaTypes.IMAGES.allowedTypes.toPhotoPickerTypes())
+            )
         }
     }
 
-    private fun handleDeviceMediaResult(result: ActivityResult) {
-        result.processDeviceMediaResult()?.let { mediaUris ->
-            if (mediaUris.isNotEmpty()) {
-                (fragment as MediaPickerResultHandler).onMediaSelected(mediaUris.first().toString())
-            }
+    private fun handlePhotoPickerResult(uri: Uri?) {
+        uri?.let {
+            (fragment as MediaPickerResultHandler).onMediaSelected(it.toString())
         }
     }
 

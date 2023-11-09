@@ -9,7 +9,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
@@ -28,6 +31,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
+import com.woocommerce.android.mediapicker.toPhotoPickerTypes
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
@@ -50,9 +54,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.model.MediaTypes
+import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -299,16 +303,11 @@ class ProductImagesFragment :
     }
 
     private fun showLocalDeviceMediaPicker() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(
-                source = DEVICE,
-                mediaTypes = MediaTypes.IMAGES,
-                isMultiSelectAllowed = viewModel.isMultiSelectionAllowed
-            )
-        )
-
-        mediaDeviceMediaPickerLauncher.launch(intent)
+        if (viewModel.isMultiSelectionAllowed) {
+            multiPhotoPicker.launch(PickVisualMediaRequest(IMAGES.allowedTypes.toPhotoPickerTypes()))
+        } else {
+            photoPicker.launch(PickVisualMediaRequest(IMAGES.allowedTypes.toPhotoPickerTypes()))
+        }
     }
 
     private fun captureProductImage() {
@@ -324,6 +323,14 @@ class ProductImagesFragment :
         ActivityResultContracts.StartActivityForResult()
     ) {
         handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+    }
+
+    private val photoPicker = registerForActivityResult(PickVisualMedia()) { uri ->
+        handlePhotoPickerResult(uri?.let { listOf(it) } ?: emptyList(), AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+    }
+
+    private val multiPhotoPicker = registerForActivityResult(PickMultipleVisualMedia()) { uris ->
+        handlePhotoPickerResult(uris, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
     }
 
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -353,6 +360,16 @@ class ProductImagesFragment :
                 mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
             )
             viewModel.onMediaLibraryImagesAdded(it)
+        }
+    }
+
+    private fun handlePhotoPickerResult(uris: List<Uri>, source: String) {
+        if (uris.isNotEmpty()) {
+            AnalyticsTracker.track(
+                AnalyticsEvent.PRODUCT_IMAGE_ADDED,
+                mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+            )
+            viewModel.uploadProductImages(navArgs.remoteId, uris)
         }
     }
 
