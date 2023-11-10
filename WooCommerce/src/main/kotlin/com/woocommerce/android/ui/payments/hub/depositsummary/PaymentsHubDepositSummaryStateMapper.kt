@@ -70,8 +70,28 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
         )
 
     // Proper implementation in the following PRs
-    private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn() =
-        PaymentsHubDepositSummaryState.Info.Interval.Days(this?.depositsSchedule?.delayDays ?: 0)
+    private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn(): PaymentsHubDepositSummaryState.Info.Interval {
+        val interval = this?.depositsSchedule?.interval
+        return if (interval == null) {
+            PaymentsHubDepositSummaryState.Info.Interval.Unknown
+        } else {
+            when (interval) {
+                "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Days(
+                    this?.depositsSchedule?.delayDays ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
+                )
+
+                "weekly" -> PaymentsHubDepositSummaryState.Info.Interval.Weekly(
+                    this?.depositsSchedule?.weeklyAnchor ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
+                )
+
+                "monthly" -> PaymentsHubDepositSummaryState.Info.Interval.Monthly(
+                    this?.depositsSchedule?.monthlyAnchor ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
+                )
+
+                else -> PaymentsHubDepositSummaryState.Info.Interval.Unknown
+            }
+        }
+    }
 
     private fun String?.toDepositStatus() =
         when (this?.uppercase()) {

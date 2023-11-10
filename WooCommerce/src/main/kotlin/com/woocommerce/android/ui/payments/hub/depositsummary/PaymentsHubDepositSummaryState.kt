@@ -20,8 +20,9 @@ sealed class PaymentsHubDepositSummaryState {
     ) {
         sealed class Interval {
             data class Days(val days: Int) : Interval()
-            data class Weekly(val days: Int) : Interval()
-            data class Monthly(val nameOfTheDay: String) : Interval()
+            data class Weekly(val name: String) : Interval()
+            data class Monthly(val day: Int) : Interval()
+            object Unknown : Interval()
         }
     }
 
