@@ -49,7 +49,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                         it.currency == currency
                     }?.depositsCount ?: 0,
                     fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
-                    fundsDepositScheduler = overview.account.fundsAvailableIn(),
+                    fundsDepositInterval = overview.account.fundsAvailableIn(),
                     nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
                     lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
                 )
@@ -70,21 +70,22 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             currencyCode = currency,
         )
 
-    // Proper implementation in the following PRs
-    private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn(): PaymentsHubDepositSummaryState.Info.Interval {
+    private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn(): PaymentsHubDepositSummaryState.Info.Interval? {
         val interval = this?.depositsSchedule?.interval
         return if (interval == null) {
-            PaymentsHubDepositSummaryState.Info.Interval.Unknown
+            null
         } else {
             when (interval) {
                 "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Daily
                 "weekly" -> PaymentsHubDepositSummaryState.Info.Interval.Weekly(
-                    this?.depositsSchedule?.weeklyAnchor ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
+                    this?.depositsSchedule?.weeklyAnchor ?: return null
                 )
+
                 "monthly" -> PaymentsHubDepositSummaryState.Info.Interval.Monthly(
-                    this?.depositsSchedule?.monthlyAnchor ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
+                    this?.depositsSchedule?.monthlyAnchor ?: return null
                 )
-                else -> PaymentsHubDepositSummaryState.Info.Interval.Unknown
+
+                else -> null
             }
         }
     }
