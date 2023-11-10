@@ -879,7 +879,7 @@ class OrderCreateEditFormFragment :
                 hideHeader()
             }
             initNotesSection()
-            displayCustomerAddress(this, newOrderData)
+            displayCustomerAddress(newOrderData)
         }
     }
 
