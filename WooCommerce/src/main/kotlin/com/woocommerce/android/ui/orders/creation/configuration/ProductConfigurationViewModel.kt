@@ -103,7 +103,7 @@ class ProductConfigurationViewModel @Inject constructor(
         val productId = productsInformation.value?.get(itemId)?.productId ?: return
         val rules = rules.value ?: return
         val rule = rules.childrenRules?.get(itemId)?.get(VariableProductRule.KEY) as VariableProductRule
-        triggerEvent(ConfigurationNavigationTarget.NavigateToVariationSelector(itemId, productId, rule))
+        triggerEvent(ProductConfigurationNavigationTarget.NavigateToVariationSelector(itemId, productId, rule))
     }
 
     sealed class ViewState {
@@ -130,11 +130,3 @@ data class ProductConfigurationResult(
     val productId: Long,
     val productConfiguration: ProductConfiguration
 ) : Parcelable
-
-sealed class ConfigurationNavigationTarget : MultiLiveEvent.Event() {
-    data class NavigateToVariationSelector(
-        val itemId: Long,
-        val productId: Long,
-        val variationRule: VariableProductRule
-    ) : ConfigurationNavigationTarget()
-}

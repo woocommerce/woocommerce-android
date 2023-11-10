@@ -4,16 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +29,8 @@ class ProductConfigurationFragment : BaseFragment() {
     private val viewModel: ProductConfigurationViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
+
+    private val gson = Gson()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -44,6 +49,7 @@ class ProductConfigurationFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleResults()
     }
 
     private fun setupObservers() {
@@ -53,10 +59,22 @@ class ProductConfigurationFragment : BaseFragment() {
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateBackWithResult(PRODUCT_CONFIGURATION_RESULT, event.data)
                 }
-                is ConfigurationNavigationTarget.NavigateToVariationSelector -> {
-                    Toast.makeText(requireContext(), "Navigate to variation selection", Toast.LENGTH_SHORT).show()
+
+                is ProductConfigurationNavigationTarget -> {
+                    ProductConfigurationNavigator.navigate(this, event)
                 }
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<VariationPickerViewModel.VariationPickerResult>(VariationPickerFragment.VARIATION_PICKER_RESULT) {
+            val value = mapOf<String, Any?>(
+                VariableProductRule.VARIATION_ID to it.variationId,
+                VariableProductRule.VARIATION_ATTRIBUTES to it.attributes
+            )
+            val valueString = gson.toJson(value)
+            viewModel.onUpdateChildrenConfiguration(it.itemId, VariableProductRule.KEY, valueString)
         }
     }
 }
