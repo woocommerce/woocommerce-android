@@ -12,6 +12,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.text.method.LinkMovementMethod
 import android.view.Menu
@@ -201,6 +202,11 @@ class MainActivity :
         )
     }
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val notificationPermissionBarRunnable = Runnable {
+        animateBottomBar(binding.notificationsPermissionBar, show = true)
+    }
+
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
     @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
@@ -372,6 +378,7 @@ class MainActivity :
 
     public override fun onDestroy() {
         presenter.dropView()
+        handler.removeCallbacks(notificationPermissionBarRunnable)
         super.onDestroy()
     }
 
@@ -807,10 +814,8 @@ class MainActivity :
                         }
                     }
                 }
-                Handler().postDelayed(
-                    {
-                        animateBottomBar(binding.notificationsPermissionBar, show = true)
-                    },
+                handler.postDelayed(
+                    notificationPermissionBarRunnable,
                     NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
                 )
             } else {

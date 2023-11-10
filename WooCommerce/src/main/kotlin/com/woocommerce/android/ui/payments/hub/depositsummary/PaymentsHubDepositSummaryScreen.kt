@@ -49,6 +49,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -156,7 +157,12 @@ private fun AlwaysVisiblePart(
                 }
                 onExpandCollapseClick()
             }
-            .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp)
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_150),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            )
     ) {
         Column(
             modifier = Modifier.weight(1f)
@@ -220,7 +226,12 @@ private fun AlwaysVisiblePart(
         }
     }
     val dividerPaddingAnimation by animateDpAsState(
-        if (isExpanded) 16.dp else 0.dp, label = "dividerPaddingAnimation"
+        targetValue = if (isExpanded) {
+            dimensionResource(id = R.dimen.major_100)
+        } else {
+            dimensionResource(id = R.dimen.minor_00)
+        },
+        label = "dividerPaddingAnimation"
     )
 
     Divider(
@@ -238,14 +249,19 @@ private fun AdditionInfo(
     Column {
         Column(
             modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 24.dp)
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    top = 10.dp,
+                    bottom = dimensionResource(id = R.dimen.major_150)
+                )
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     style = MaterialTheme.typography.caption,
                     text = stringResource(id = R.string.card_reader_hub_deposit_summary_funds_available_after),
@@ -253,7 +269,7 @@ private fun AdditionInfo(
                 )
             }
 
-            Spacer(modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
 
             Text(
                 style = MaterialTheme.typography.body2,
@@ -261,7 +277,7 @@ private fun AdditionInfo(
                 color = colorResource(id = R.color.color_surface_variant),
             )
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
             nextDeposit?.let {
                 Deposit(
@@ -269,7 +285,7 @@ private fun AdditionInfo(
                     deposit = it,
                     textColor = R.color.color_on_surface
                 )
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
             }
 
             lastDeposit?.let {
@@ -278,19 +294,19 @@ private fun AdditionInfo(
                     deposit = it,
                     textColor = R.color.color_surface_variant
                 )
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
             }
 
             Divider(modifier = Modifier.fillMaxWidth())
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     style = MaterialTheme.typography.caption,
                     text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_deposited_time),
@@ -298,7 +314,7 @@ private fun AdditionInfo(
                 )
             }
 
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -312,7 +328,7 @@ private fun AdditionInfo(
                     contentDescription = null,
                     tint = colorResource(id = R.color.color_primary)
                 )
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     style = MaterialTheme.typography.caption,
                     text = stringResource(id = R.string.card_reader_hub_deposit_summary_learn_more),
@@ -473,7 +489,10 @@ private fun DepositStatus(
                 color = colorResource(backgroundColor),
                 shape = RoundedCornerShape(4.dp)
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.minor_100),
+                vertical = dimensionResource(id = R.dimen.minor_50)
+            )
     ) {
         Text(
             text = stringResource(id = text),

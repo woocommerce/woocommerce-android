@@ -112,7 +112,10 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                     binding.customAmountNameText.setText(it.name)
                     binding.customAmountNameText.setSelection(it.name.length)
                 }
-                binding.editPrice.setValue(it.currentPrice)
+                if (binding.editPrice.editText.text.toString() != it.currentPrice.toString()) {
+                    binding.editPrice.setValue(it.currentPrice)
+                    binding.editPrice.editText.setSelection(binding.editPrice.editText.text?.length ?: 0)
+                }
             }
         }
     }
