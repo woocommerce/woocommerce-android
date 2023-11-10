@@ -830,7 +830,7 @@ class OrderCreateEditFormFragment :
     private fun bindCustomerAddressAndNotesSection(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
         with(binding) {
             when {
-                shouldHideBothSections(newOrderData) -> {
+                shouldHideCustomerAddressAndNotesSections(newOrderData) -> {
                     hideBothSections()
                 }
                 shouldShowCustomerSectionOnly(newOrderData) -> {
@@ -848,7 +848,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun shouldHideBothSections(newOrderData: Order) =
+    private fun shouldHideCustomerAddressAndNotesSections(newOrderData: Order) =
         (newOrderData.customer == null || newOrderData.customer == Order.Customer.EMPTY) &&
             newOrderData.customerNote.isEmpty()
 
