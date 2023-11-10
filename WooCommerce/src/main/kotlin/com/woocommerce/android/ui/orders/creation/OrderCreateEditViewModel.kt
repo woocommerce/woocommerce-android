@@ -220,7 +220,6 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         .asLiveData()
 
-
     val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {
         addSource(products) { products ->
             val customAmounts = customAmounts.value
