@@ -506,8 +506,10 @@ class LoginActivity :
         noncePush: String?,
         supportedAuthTypes: MutableList<String>?
     ) {
-        val login2FaFragment = Login2FaFragment.newInstance(email, password, userId,
-            webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes)
+        val login2FaFragment = Login2FaFragment.newInstance(
+            email, password, userId,
+            webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes
+        )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
