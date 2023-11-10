@@ -158,11 +158,11 @@ private fun AlwaysVisiblePart(
                 onExpandCollapseClick()
             }
             .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.major_150),
-                    bottom = dimensionResource(id = R.dimen.major_100)
-                )
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_150),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            )
     ) {
         Column(
             modifier = Modifier.weight(1f)
@@ -226,8 +226,12 @@ private fun AlwaysVisiblePart(
         }
     }
     val dividerPaddingAnimation by animateDpAsState(
-        if (isExpanded) dimensionResource(id = R.dimen.major_100) else dimensionResource(id = R.dimen.minor_00),
-            label = "dividerPaddingAnimation"
+        targetValue = if (isExpanded) {
+            dimensionResource(id = R.dimen.major_100)
+        } else {
+            dimensionResource(id = R.dimen.minor_00)
+        },
+        label = "dividerPaddingAnimation"
     )
 
     Divider(
