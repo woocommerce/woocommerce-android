@@ -65,7 +65,6 @@ import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
 
-
 @Composable
 fun PaymentsHubDepositSummaryView(
     viewModel: PaymentsHubDepositSummaryViewModel = viewModel()

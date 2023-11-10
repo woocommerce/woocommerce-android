@@ -70,23 +70,19 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             currencyCode = currency,
         )
 
+    @Suppress("ReturnCount")
     private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn(): PaymentsHubDepositSummaryState.Info.Interval? {
-        val interval = this?.depositsSchedule?.interval
-        return if (interval == null) {
-            null
-        } else {
-            when (interval) {
-                "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Daily
-                "weekly" -> PaymentsHubDepositSummaryState.Info.Interval.Weekly(
-                    this?.depositsSchedule?.weeklyAnchor ?: return null
-                )
+        return when (this?.depositsSchedule?.interval?.lowercase()) {
+            "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Daily
+            "weekly" -> PaymentsHubDepositSummaryState.Info.Interval.Weekly(
+                this.depositsSchedule?.weeklyAnchor ?: return null
+            )
 
-                "monthly" -> PaymentsHubDepositSummaryState.Info.Interval.Monthly(
-                    this?.depositsSchedule?.monthlyAnchor ?: return null
-                )
+            "monthly" -> PaymentsHubDepositSummaryState.Info.Interval.Monthly(
+                this.depositsSchedule?.monthlyAnchor ?: return null
+            )
 
-                else -> null
-            }
+            else -> null
         }
     }
 
