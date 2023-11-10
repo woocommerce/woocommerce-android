@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductRe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -835,11 +836,16 @@ class ProductDetailCardBuilder(
             }
 
             PropertyGroup(
-                title = string.product_subscription_expiration_date_title,
+                title = string.product_subscription_expiration_title,
                 icon = drawable.ic_gridicons_calendar_expiration,
                 properties = mapOf(resources.getString(string.subscription_expire) to expire),
                 showTitle = true,
-                onClick = { }
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscriptionExpiration(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
+                    )
+                }
             )
         }
 

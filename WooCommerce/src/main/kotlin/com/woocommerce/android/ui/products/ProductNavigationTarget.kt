@@ -26,11 +26,13 @@ sealed class ProductNavigationTarget : Event() {
         val title: String,
         val subject: String
     ) : ProductNavigationTarget()
+
     data class ShareProductWithAI(
         val permalink: String,
         val title: String,
         val description: String? = null
     ) : ProductNavigationTarget()
+
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
@@ -144,6 +146,10 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductSubscription(
         val subscription: SubscriptionDetails,
         val sale: SaleDetails? = null
+    ) : ProductNavigationTarget()
+
+    data class ViewProductSubscriptionExpiration(
+        val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
