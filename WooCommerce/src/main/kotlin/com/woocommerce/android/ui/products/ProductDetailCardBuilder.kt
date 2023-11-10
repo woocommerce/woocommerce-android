@@ -828,17 +828,14 @@ class ProductDetailCardBuilder(
 
     private fun Product.subscriptionExpireDate(): ProductProperty? =
         this.subscription?.let { subscription ->
-            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
-            val expire = if (subscription.length != null) {
-                resources.getString(string.subscription_period, subscription.length.toString(), period)
-            } else {
-                resources.getString(string.subscription_never_expire)
-            }
-
             PropertyGroup(
                 title = string.product_subscription_expiration_title,
                 icon = drawable.ic_gridicons_calendar_expiration,
-                properties = mapOf(resources.getString(string.subscription_expire) to expire),
+                properties = mapOf(
+                    resources.getString(string.subscription_expire) to subscription.expireDisplayValue(
+                        resources
+                    )
+                ),
                 showTitle = true,
                 onClick = {
                     viewModel.onEditProductCardClicked(
