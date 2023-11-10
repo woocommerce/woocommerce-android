@@ -16,6 +16,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.SubscriptionPeriod
+import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -249,6 +251,22 @@ class VariationDetailViewModel @Inject constructor(
                     weight = weight ?: variation.weight
                 )
             )
+        }
+    }
+
+    fun onVariationSubscriptionChanged(
+        price: BigDecimal? = null,
+        period: SubscriptionPeriod? = null,
+        periodInterval: Int? = null,
+    ) {
+        viewState.variation?.let { variation ->
+            val subscription = (variation as? SubscriptionProductVariation)?.subscriptionDetails ?: return
+            val updatedSubscription = subscription.copy(
+                price = price ?: subscription.price,
+                period = period ?: subscription.period,
+                periodInterval = periodInterval ?: subscription.periodInterval,
+            )
+            viewState = viewState.copy(variation = variation.copy(subscriptionDetails = updatedSubscription))
         }
     }
 

@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -97,6 +98,7 @@ class VariationDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
                 variation.subscription(),
                 variation.warning(),
                 variation.attributes(),
@@ -196,6 +198,7 @@ class VariationDetailCardBuilder(
             isHighlighted = isWarningVisible,
             isDividerVisible = !isWarningVisible
         ) {
+            val subscriptionDetails = (this as? SubscriptionProductVariation)?.subscriptionDetails
             viewModel.onEditVariationCardClicked(
                 ViewPricing(
                     PricingData(
@@ -203,7 +206,10 @@ class VariationDetailCardBuilder(
                         saleStartDate = saleStartDateGmt,
                         saleEndDate = saleEndDateGmt,
                         regularPrice = regularPrice,
-                        salePrice = salePrice
+                        salePrice = salePrice,
+                        isSubscription = this is SubscriptionProductVariation,
+                        subscriptionPeriod = subscriptionDetails?.period,
+                        subscriptionInterval = subscriptionDetails?.periodInterval
                     )
                 ),
                 PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
