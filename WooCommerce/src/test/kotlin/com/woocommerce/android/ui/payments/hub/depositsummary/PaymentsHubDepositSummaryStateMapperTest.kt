@@ -112,7 +112,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("300$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(2)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(
+            PaymentsHubDepositSummaryState.Info.Interval.Daily(
                 1
             )
         )
@@ -216,13 +216,13 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(30)
+            PaymentsHubDepositSummaryState.Info.Interval.Daily(30)
         )
         assertThat(result?.infoPerCurrency?.get("EUR")?.availableFunds).isEqualTo("150€")
         assertThat(result?.infoPerCurrency?.get("EUR")?.pendingFunds).isEqualTo("0€")
         assertThat(result?.infoPerCurrency?.get("EUR")?.pendingBalanceDepositsCount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("EUR")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(30)
+            PaymentsHubDepositSummaryState.Info.Interval.Daily(30)
         )
     }
 
@@ -279,7 +279,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(5)
+            PaymentsHubDepositSummaryState.Info.Interval.Daily(5)
         )
     }
 }

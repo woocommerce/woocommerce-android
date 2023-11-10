@@ -48,7 +48,8 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                     pendingBalanceDepositsCount = pendingBalances.firstOrNull {
                         it.currency == currency
                     }?.depositsCount ?: 0,
-                    fundsAvailableInDays = overview.account.fundsAvailableIn(),
+                    fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
+                    fundsDepositScheduler = overview.account.fundsAvailableIn(),
                     nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
                     lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
                 )
@@ -76,18 +77,13 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             PaymentsHubDepositSummaryState.Info.Interval.Unknown
         } else {
             when (interval) {
-                "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Days(
-                    this?.depositsSchedule?.delayDays ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
-                )
-
+                "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Daily
                 "weekly" -> PaymentsHubDepositSummaryState.Info.Interval.Weekly(
                     this?.depositsSchedule?.weeklyAnchor ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
                 )
-
                 "monthly" -> PaymentsHubDepositSummaryState.Info.Interval.Monthly(
                     this?.depositsSchedule?.monthlyAnchor ?: return PaymentsHubDepositSummaryState.Info.Interval.Unknown
                 )
-
                 else -> PaymentsHubDepositSummaryState.Info.Interval.Unknown
             }
         }

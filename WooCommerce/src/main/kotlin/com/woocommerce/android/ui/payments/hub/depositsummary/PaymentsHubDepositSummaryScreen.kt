@@ -496,7 +496,7 @@ fun PaymentsHubDepositSummaryViewPreview() {
                         availableFunds = "100$",
                         pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
+                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Daily(1),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(
                             amount = "100$",
                             status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
@@ -512,7 +512,7 @@ fun PaymentsHubDepositSummaryViewPreview() {
                         availableFunds = "100$",
                         pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
+                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Daily(1),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(
                             amount = "100$",
                             status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
@@ -528,7 +528,7 @@ fun PaymentsHubDepositSummaryViewPreview() {
                         availableFunds = "100$",
                         pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
+                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Daily(1),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(
                             amount = "100$",
                             status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
