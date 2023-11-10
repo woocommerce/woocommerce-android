@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.Prod
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import javax.inject.Inject
 
+@Suppress("ForbiddenComment")
 class ProductTypeBottomSheetBuilder @Inject constructor(
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) {
@@ -35,7 +36,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = SUBSCRIPTION,
                 titleResource = string.product_type_simple_subscription_title,
                 descResource = string.product_type_simple_subscription_desc,
-                iconResource = drawable.ic_gridicons_money,
+                iconResource = drawable.ic_gridicons_money, // TODO: update icon
                 isVisible = areSubscriptionsSupported
             ),
             ProductTypesBottomSheetUiItem(
@@ -49,7 +50,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = VARIABLE_SUBSCRIPTION,
                 titleResource = string.product_type_variable_subscription_title,
                 descResource = string.product_type_variable_subscription_desc,
-                iconResource = drawable.ic_gridicons_money,
+                iconResource = drawable.ic_gridicons_money, // TODO: update icon
                 isVisible = areSubscriptionsSupported
             ),
             ProductTypesBottomSheetUiItem(
