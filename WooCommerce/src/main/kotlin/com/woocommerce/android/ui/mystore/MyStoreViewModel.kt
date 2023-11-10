@@ -23,7 +23,6 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_C
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
@@ -48,16 +47,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -122,8 +118,6 @@ class MyStoreViewModel @Inject constructor(
 
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
-
-    private var jetpackMonitoringJob: Job? = null
 
     val storeName = selectedSite.observe().map { site ->
         if (!site?.displayName.isNullOrBlank()) {
@@ -303,19 +297,6 @@ class MyStoreViewModel @Inject constructor(
             }
         )
         _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
-        monitorJetpackInstallation()
-    }
-
-    private fun monitorJetpackInstallation() {
-        jetpackMonitoringJob?.cancel()
-        jetpackMonitoringJob = viewModelScope.launch {
-            selectedSite.observe()
-                .filter { it?.connectionType == SiteConnectionType.Jetpack }
-                .take(1)
-                .collect {
-                    loadStoreStats(_activeStatsGranularity.value, false)
-                }
-        }
     }
 
     private suspend fun loadTopPerformersStats(granularity: StatsGranularity, forceRefresh: Boolean) {

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.jetpack.benefits
+package com.woocommerce.android.ui.jetpack
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -10,7 +10,7 @@ import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
-import com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragmentArgs
+import com.woocommerce.android.ui.jetpack.benefits.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.benefits.FetchJetpackStatus.JetpackStatusFetchResponse
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
