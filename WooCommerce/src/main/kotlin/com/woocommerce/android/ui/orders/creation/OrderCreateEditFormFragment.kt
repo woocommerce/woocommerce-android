@@ -339,7 +339,9 @@ class OrderCreateEditFormFragment :
             binding.orderStatusView.updateStatus(it)
         }
 
-        bindProductsSection(binding.productsSection, viewModel.products)
+        viewModel.products.observe(viewLifecycleOwner) {
+            bindProductsSection(binding.productsSection, viewModel.products)
+        }
 
         if (isCustomAmountsFeatureFlagEnabled()) {
             viewModel.customAmounts.observe(viewLifecycleOwner) {
@@ -354,6 +356,9 @@ class OrderCreateEditFormFragment :
 
     @Suppress("LongMethod")
     private fun observeViewStateChanges(binding: FragmentOrderCreateEditFormBinding) {
+        viewModel.combinedProductAndCustomAmountsLiveData.observe(viewLifecycleOwner) {
+            modifyProductsAndCustomAmountsSectionUI(it, binding)
+        }
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             modifyProductsAndCustomAmountsSectionUI(new, binding)
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
@@ -1026,6 +1031,7 @@ class OrderCreateEditFormFragment :
         }
         paymentSection.apply {
             feeButton.isEnabled = true
+            shippingButton.isEnabled = true
             addShippingButton.isEnabled = true
             lockIcon.isVisible = false
             couponButton.isEnabled = state.isCouponButtonEnabled
@@ -1034,11 +1040,6 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = false
         }
-        val enabledCustomAmountUIModel = viewModel.customAmounts.value?.map {
-            it.copy(isLocked = false)
-        }
-        modifyProductsAndCustomAmountsSectionUI(viewModel.viewStateData.liveData.value, this)
-        bindCustomAmountsSection(customAmountsSection, enabledCustomAmountUIModel)
     }
 
     private fun FragmentOrderCreateEditFormBinding.hideEditableControls() {
@@ -1048,6 +1049,7 @@ class OrderCreateEditFormFragment :
             isEachAddButtonEnabled = false
         }
         paymentSection.apply {
+            shippingButton.isEnabled = false
             addShippingButton.isEnabled = false
             lockIcon.isVisible = true
             couponButton.isEnabled = false
@@ -1056,10 +1058,5 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = true
         }
-        val disabledCustomAmountUIModel = viewModel.customAmounts.value?.map {
-            it.copy(isLocked = true)
-        }
-        modifyProductsAndCustomAmountsSectionUI(viewModel.viewStateData.liveData.value, this)
-        bindCustomAmountsSection(customAmountsSection, disabledCustomAmountUIModel)
     }
 }

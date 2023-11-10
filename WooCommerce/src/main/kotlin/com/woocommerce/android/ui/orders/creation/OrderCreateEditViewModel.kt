@@ -204,10 +204,22 @@ class OrderCreateEditViewModel @Inject constructor(
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
-        .distinctUntilChanged()
         .map { feeLines ->
             feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
-        }.asLiveData()
+        }
+        .map { customAmountUIModels ->
+            customAmountUIModels.map {
+                it.copy(
+                    isLocked = !viewState.isEditable ||
+                        (
+                            _orderDraft.value.status.value != Order.Status.Pending.value &&
+                                _orderDraft.value.status.value != Order.Status.OnHold.value
+                            )
+                )
+            }
+        }
+        .asLiveData()
+
 
     val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {
         addSource(products) { products ->
