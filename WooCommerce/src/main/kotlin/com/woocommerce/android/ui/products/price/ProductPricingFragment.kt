@@ -39,6 +39,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductPricingFragment :
     BaseProductEditorFragment(R.layout.fragment_product_pricing), ProductItemSelectorDialogListener {
+    companion object {
+        private const val SUBSCRIPTION_INTERVAL_ITEMS_COUNT = 6
+    }
+
     private val viewModel: ProductPricingViewModel by viewModels()
 
     override val lastEvent: Event?
@@ -313,7 +317,7 @@ class ProductPricingFragment :
 
     private fun initSubscriptionViews() {
         binding.subscriptionInterval.setup(
-            values = Array(6) { it + 1 },
+            values = Array(SUBSCRIPTION_INTERVAL_ITEMS_COUNT) { it + 1 },
             onSelected = { viewModel.onDataChanged(subscriptionInterval = it) },
             mapper = { entry -> entry.formatSubscriptionInterval() }
         )
