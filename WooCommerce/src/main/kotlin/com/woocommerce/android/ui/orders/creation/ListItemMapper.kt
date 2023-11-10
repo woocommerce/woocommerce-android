@@ -1,16 +1,25 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
 import com.woocommerce.android.ui.orders.creation.configuration.OptionalRule
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.configuration.QuantityRule
+import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule
 import com.woocommerce.android.ui.products.GetBundledProducts
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import javax.inject.Inject
 
-class ListItemMapper @Inject constructor(private val getBundledProducts: GetBundledProducts) {
+class ListItemMapper @Inject constructor(
+    private val getBundledProducts: GetBundledProducts,
+    private val gson: Gson
+) {
+
+    private val mapType = object : TypeToken<Map<String, JsonElement>>() {}.type
     suspend fun toRawListItem(item: Order.Item): Map<String, Any> {
         return buildMap {
             item.itemId.takeIf { it != 0L }?.let { put("id", it) }
@@ -46,6 +55,13 @@ class ListItemMapper @Inject constructor(private val getBundledProducts: GetBund
                                 when (rule.key) {
                                     QuantityRule.KEY -> putIfNotNull("quantity" to rule.value)
                                     OptionalRule.KEY -> putIfNotNull("optional_selected" to rule.value)
+                                    VariableProductRule.KEY -> {
+                                        if(rule.value != null){
+                                            gson.fromJson<Map<String, JsonElement>>(rule.value, mapType).forEach {
+                                                putIfNotNull(it.key to it.value)
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
