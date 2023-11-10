@@ -325,19 +325,19 @@ class LoginAnalyticsTracker(
         unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
     }
 
-    override fun trackLoginSecurityKeyFailure() {
-        // TODO: "Not yet implemented"
+    override fun trackLogin2faNeeded() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_2FA_NEEDED)
     }
 
-    override fun trackLogin2faNeeded() {
-        // TODO: "Not yet implemented"
+    override fun trackLoginSecurityKeyFailure() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SECURITY_KEY_FAILURE)
     }
 
     override fun trackLoginSecurityKeySuccess() {
-        // TODO: "Not yet implemented"
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SECURITY_KEY_SUCCESS)
     }
 
     override fun trackUseSecurityKeyClicked() {
-        // TODO: "Not yet implemented"
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_USE_SECURITY_KEY_CLICKED)
     }
 }
