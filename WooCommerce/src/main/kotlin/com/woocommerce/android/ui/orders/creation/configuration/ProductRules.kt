@@ -44,7 +44,8 @@ class ProductRules private constructor(
         fun setChildVariableRules(itemId: Long, attributesDefault: List<VariantOption>?, variationIds: List<Long>?) {
             val childRules = childrenRules.getOrPut(itemId) { mutableMapOf() }
             val defaultAttributes = if (attributesDefault.isNullOrEmpty()) null else attributesDefault
-            childRules[VariableProductRule.KEY] = VariableProductRule(defaultAttributes, variationIds)
+            val allowedVariations = if (variationIds.isNullOrEmpty()) null else variationIds
+            childRules[VariableProductRule.KEY] = VariableProductRule(defaultAttributes, allowedVariations)
         }
 
         fun build(): ProductRules {
@@ -121,9 +122,19 @@ class VariableProductRule(
 ) : ItemRules {
     companion object {
         const val KEY = "variable_product_rule"
+        const val VARIATION_ID = "variation_id"
+        const val VARIATION_ATTRIBUTES = "attributes"
     }
 
-    override fun getInitialValue(): String? = attributesDefault?.let { Gson().toJson(it) }
+    override fun getInitialValue(): String? {
+        return if (variationIds != null && variationIds.size == 1 && attributesDefault != null) {
+            val value = mapOf<String, Any?>(
+                VARIATION_ID to variationIds.first(),
+                VARIATION_ATTRIBUTES to attributesDefault
+            )
+            Gson().toJson(value)
+        } else null
+    }
 }
 
 @Parcelize
