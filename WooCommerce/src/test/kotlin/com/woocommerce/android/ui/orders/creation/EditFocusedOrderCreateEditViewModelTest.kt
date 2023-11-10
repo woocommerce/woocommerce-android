@@ -429,4 +429,16 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
         )
     }
+
+    @Test
+    fun `when the view state is editable and order status is pending, then update custom amount locked state to false`() {
+        var customAmounts: List<CustomAmountUIModel>? = null
+        sut.customAmounts.observeForever {
+            customAmounts = it
+        }
+
+        sut.onOrderStatusChanged(Order.Status.Pending)
+
+        assertThat(customAmounts?.filter { it.isLocked }).isEmpty()
+    }
 }
