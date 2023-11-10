@@ -206,32 +206,39 @@ class OrderCreateEditViewModel @Inject constructor(
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
-        .distinctUntilChanged()
         .map { feeLines ->
             feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
-        }.asLiveData()
+        }
+        .map { customAmountUIModels ->
+            customAmountUIModels.map {
+                it.copy(
+                    isLocked = !viewState.isEditable ||
+                        (
+                            _orderDraft.value.status.value != Order.Status.Pending.value &&
+                                _orderDraft.value.status.value != Order.Status.OnHold.value
+                            )
+                )
+            }
+        }
+        .asLiveData()
 
     val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {
         addSource(products) { products ->
             val customAmounts = customAmounts.value
             val isProductsEmpty = products?.isEmpty() == true
-            this.value = this.value?.copy(
+            viewState = viewState.copy(
                 productsSectionState = ProductsSectionState(isEmpty = isProductsEmpty),
                 customAmountSectionState = CustomAmountSectionState(customAmounts?.isEmpty() == true)
-            ) ?: run {
-                ViewState()
-            }
+            )
         }
 
         addSource(customAmounts) { customAmounts ->
             val products = products.value
             val isCustomAmountsEmpty = customAmounts?.isEmpty() == true
-            this.value = this.value?.copy(
+            viewState = viewState.copy(
                 productsSectionState = ProductsSectionState(isEmpty = products?.isEmpty() == true),
                 customAmountSectionState = CustomAmountSectionState(isCustomAmountsEmpty)
-            ) ?: run {
-                ViewState()
-            }
+            )
         }
     }
 
@@ -291,6 +298,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
+                        updateAddShippingButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
                     }
@@ -533,6 +541,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun updateCouponButtonVisibility(order: Order) {
         viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
+    }
+
+    private fun updateAddShippingButtonVisibility(order: Order) {
+        viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1045,6 +1057,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 }
                             }.also {
                                 updateCouponButtonVisibility(it)
+                                updateAddShippingButtonVisibility(it)
                             }
                         }
                     }
@@ -1362,6 +1375,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
+        val isAddShippingButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
@@ -1441,7 +1455,8 @@ object OnCouponRejectedByBackend : Event() {
 data class CustomAmountUIModel(
     val id: Long,
     val amount: BigDecimal,
-    val name: String
+    val name: String,
+    val isLocked: Boolean = false
 ) : Parcelable
 
 enum class ScanningSource(val source: String) {

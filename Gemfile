@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'danger-dangermattic', git: 'https://github.com/Automattic/dangermattic'
-gem 'fastlane', '~> 2'
+gem 'fastlane', '~> 2.216'
 gem 'nokogiri'
 gem 'rubocop', '~> 1.56'
 
