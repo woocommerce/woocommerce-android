@@ -329,7 +329,7 @@ class LoginAnalyticsTracker(
         // TODO: "Not yet implemented"
     }
 
-    override fun trackLoginSecurityKeyNeeded() {
+    override fun trackLogin2faNeeded() {
         // TODO: "Not yet implemented"
     }
 
