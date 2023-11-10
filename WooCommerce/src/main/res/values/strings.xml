@@ -580,6 +580,7 @@
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_header">Payment totals</string>
     <string name="order_creation_payment_products_total">Products Total</string>
     <string name="order_creation_payment_products">Products</string>
     <string name="order_creation_payment_order_total">Order Total</string>
