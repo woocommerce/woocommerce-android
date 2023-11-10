@@ -841,8 +841,8 @@ class OrderCreateEditFormFragment :
                 }
                 // Both customer address and customer notes are added
                 else -> {
-                    displayCustomerAddress(binding, newOrderData)
-                    displayCustomerNotes(binding, newOrderData)
+                    displayCustomerAddress(newOrderData)
+                    displayCustomerNotes(newOrderData)
                 }
             }
         }
@@ -889,13 +889,13 @@ class OrderCreateEditFormFragment :
                 show()
                 hideHeader()
             }
-            displayCustomerNotes(this, newOrderData)
+            displayCustomerNotes(newOrderData)
             initCustomerSection()
         }
     }
 
-    private fun displayCustomerNotes(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
-        with(binding) {
+    private fun FragmentOrderCreateEditFormBinding.displayCustomerNotes(newOrderData: Order) {
+        with(this) {
             initNotesSection()
             notesSection.apply {
                 show()
@@ -905,8 +905,8 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun displayCustomerAddress(binding: FragmentOrderCreateEditFormBinding, newOrderData: Order) {
-        with(binding) {
+    private fun FragmentOrderCreateEditFormBinding.displayCustomerAddress(newOrderData: Order) {
+        with(this) {
             initCustomerSection()
             customerSection.apply {
                 show()
