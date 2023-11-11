@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphJetpackInstallDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -16,6 +18,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackCPInstallationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -50,6 +53,7 @@ class JetpackActivationMagicLinkHandlerFragment : BaseFragment() {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowJetpackActivationScreen -> navigateToJetpackActivationScreen(event)
+                is ShowJetpackCPInstallationScreen -> navigateToJetpackCPInstallationScreen()
                 is GoToStore -> goToStore()
                 is Exit -> findNavController().popBackStack(R.id.jetpackActivationDispatcherFragment, true)
             }
@@ -63,6 +67,15 @@ class JetpackActivationMagicLinkHandlerFragment : BaseFragment() {
                     isJetpackInstalled = event.isJetpackInstalled,
                     siteUrl = event.siteUrl
                 )
+        )
+    }
+
+    private fun navigateToJetpackCPInstallationScreen() {
+        findNavController().navigateSafely(
+            NavGraphJetpackInstallDirections.actionGlobalJetpackCPInstallProgressDialog(),
+            navOptions = navOptions {
+                popUpTo(R.id.jetpackActivationDispatcherFragment) { inclusive = true }
+            }
         )
     }
 

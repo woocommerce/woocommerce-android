@@ -30,6 +30,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
@@ -41,14 +42,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -57,10 +55,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -72,6 +69,7 @@ import com.woocommerce.android.util.getStockText
 import java.math.BigDecimal
 
 private const val ANIM_DURATION_MILLIS = 128
+private const val MULTIPLICATION_CHAR = "×"
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
@@ -102,7 +100,7 @@ fun ExpandableProductCard(
             )
             .border(
                 1.dp,
-                colorResource(id = R.color.divider_color),
+                colorResource(id = if (isExpanded) R.color.color_on_surface else R.color.divider_color),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
             .clickable(
@@ -114,15 +112,7 @@ fun ExpandableProductCard(
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
         val collapsedStateBottomBarrier = createBottomBarrier(sku, quantity)
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(product.productInfo.imageUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = stringResource(R.string.product_image_content_description),
-            contentScale = ContentScale.Fit,
-            placeholder = painterResource(R.drawable.ic_product),
-            error = painterResource(R.drawable.ic_product),
+        ProductThumbnail(
             modifier = Modifier
                 .constrainAs(img) {
                     top.linkTo(name.top)
@@ -130,8 +120,8 @@ fun ExpandableProductCard(
                     bottom.linkTo(collapsedStateBottomBarrier)
                 }
                 .size(dimensionResource(R.dimen.major_375))
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_image)))
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            imageUrl = product.productInfo.imageUrl
         )
         Text(
             text = product.item.name,
@@ -173,6 +163,7 @@ fun ExpandableProductCard(
                         start.linkTo(stock.end)
                     },
                 text = "-${product.productInfo.discountAmount}",
+                style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.woo_green_50)
             )
         }
@@ -285,11 +276,13 @@ fun ExtendedProductCardContent(
         ) = createRefs()
         val editableControlsEnabled = state.value?.isIdle == true
         Divider(
-            modifier = Modifier.constrainAs(topDivider) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier
+                .constrainAs(topDivider) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
         )
         Row(
             modifier = Modifier
@@ -312,7 +305,6 @@ fun ExtendedProductCardContent(
                 color = MaterialTheme.colors.onSurface
             )
             AmountPicker(
-                isEnabled = editableControlsEnabled,
                 onIncreaseClicked = onIncreaseItemAmountClicked,
                 onDecreaseClicked = onDecreaseItemAmountClicked,
                 product = product,
@@ -325,7 +317,12 @@ fun ExtendedProductCardContent(
                     end.linkTo(parent.end)
                     top.linkTo(orderCount.bottom)
                 }
-                .padding(dimensionResource(id = R.dimen.minor_100)),
+                .padding(
+                    start = dimensionResource(id = R.dimen.minor_100),
+                    end = dimensionResource(id = R.dimen.minor_100),
+                    top = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100)
+                ),
         ) {
             Text(
                 text = stringResource(id = R.string.product_price),
@@ -359,10 +356,10 @@ fun ExtendedProductCardContent(
                     text = stringResource(id = R.string.discount),
                     style = MaterialTheme.typography.body1,
                 )
-                Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_50)))
+                Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_100)))
                 Icon(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40)),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
+                    imageVector = Icons.Filled.Edit,
                     contentDescription = null
                 )
             }
@@ -419,11 +416,13 @@ fun ExtendedProductCardContent(
             }
         }
         Divider(
-            modifier = Modifier.constrainAs(bottomDivider) {
-                bottom.linkTo(removeButton.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier
+                .constrainAs(bottomDivider) {
+                    bottom.linkTo(removeButton.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
         )
         WCTextButton(
             modifier = Modifier.constrainAs(removeButton) {
@@ -451,28 +450,20 @@ private fun AmountPicker(
     modifier: Modifier = Modifier,
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit,
-    product: OrderCreationProduct,
-    isEnabled: Boolean
+    product: OrderCreationProduct
 ) {
     Row(
         modifier = modifier
             .border(
                 1.dp,
                 colorResource(id = R.color.divider_color),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
-        val buttonTint = if (isEnabled) {
-            MaterialTheme.colors.primary
-        } else {
-            colorResource(id = R.color.color_on_surface_disabled)
-        }
-        IconButton(
-            onClick = onDecreaseClicked,
-            enabled = isEnabled
-        ) {
+        val buttonTint = MaterialTheme.colors.primary
+        IconButton(onClick = onDecreaseClicked) {
             Icon(
                 imageVector = Icons.Filled.Remove,
                 contentDescription =
@@ -481,10 +472,7 @@ private fun AmountPicker(
             )
         }
         Text(text = product.item.quantity.toInt().toString(), color = MaterialTheme.colors.onSurface)
-        IconButton(
-            onClick = onIncreaseClicked,
-            enabled = isEnabled
-        ) {
+        IconButton(onClick = onIncreaseClicked) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription =
@@ -497,7 +485,7 @@ private fun AmountPicker(
 
 @Composable
 private fun getQuantityWithTotalText(product: OrderCreationProduct) =
-    "${product.item.quantity.toInt()} x ${product.productInfo.pricePreDiscount}"
+    "${product.item.quantity.toInt()} $MULTIPLICATION_CHAR ${product.productInfo.pricePreDiscount}"
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -522,7 +510,7 @@ fun AmountPickerPreview() {
         )
     )
     WooThemeWithBackground {
-        AmountPicker(Modifier, {}, {}, product, true)
+        AmountPicker(Modifier, {}, {}, product)
     }
 }
 

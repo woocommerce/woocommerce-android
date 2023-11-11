@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.payments.hub
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import androidx.annotation.LayoutRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -12,15 +13,17 @@ import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
 import com.woocommerce.android.databinding.PaymentsHubHeaderBinding
 import com.woocommerce.android.databinding.PaymentsHubListItemBinding
 import com.woocommerce.android.databinding.PaymentsHubToggelableItemBinding
+import com.woocommerce.android.ui.payments.hub.depositsummary.PaymentsHubDepositSummaryView
 import com.woocommerce.android.util.UiHelpers
 
 private const val DISABLED_BUTTON_ALPHA = 0.5f
 
-abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
-    RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false)) {
+abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     abstract fun onBind(uiState: PaymentsHubViewState.ListItem)
 
-    class RowViewHolder(parent: ViewGroup) : PaymentsHubViewHolder(parent, R.layout.payments_hub_list_item) {
+    class RowViewHolder(parent: ViewGroup) : PaymentsHubViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.payments_hub_list_item, parent, false)
+    ) {
         var binding = PaymentsHubListItemBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.NonToggleableListItem
@@ -29,7 +32,7 @@ abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
             binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setDrawableOrHide(
                 binding.paymentsHubBadgeIcon,
-                uiState.iconBadge?.let { AppCompatResources.getDrawable(parent.context, it) }
+                uiState.iconBadge?.let { AppCompatResources.getDrawable(view.context, it) }
             )
 
             if (uiState.isEnabled) {
@@ -52,7 +55,9 @@ abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
     }
 
     class ToggleableViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.payments_hub_toggelable_item) {
+        PaymentsHubViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.payments_hub_toggelable_item, parent, false)
+        ) {
         var binding = PaymentsHubToggelableItemBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.ToggleableListItem
@@ -78,7 +83,9 @@ abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
     }
 
     class HeaderViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.payments_hub_header) {
+        PaymentsHubViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.payments_hub_header, parent, false)
+        ) {
         var binding = PaymentsHubHeaderBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.HeaderItem
@@ -87,27 +94,39 @@ abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
     }
 
     class GapBetweenSectionsViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.payments_hub_gap_between_sections) {
+        PaymentsHubViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.payments_hub_gap_between_sections, parent, false)
+        ) {
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             // no-op
         }
     }
 
     class LearnMoreViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.card_reader_learn_more_section) {
+        PaymentsHubViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.card_reader_learn_more_section, parent, false)
+        ) {
 
         var binding: CardReaderLearnMoreSectionBinding = CardReaderLearnMoreSectionBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.LearnMoreListItem
             UiHelpers.setTextOrHide(binding.learnMore, uiState.label)
             binding.learnMore.setCompoundDrawablesWithIntrinsicBounds(
-                AppCompatResources.getDrawable(parent.context, uiState.icon),
+                AppCompatResources.getDrawable(view.context, uiState.icon),
                 null,
                 null,
                 null
             )
             binding.learnMore.setOnClickListener { uiState.onClick?.invoke() }
             (binding.learnMore.layoutParams as MarginLayoutParams).topMargin = 0
+        }
+    }
+
+    class DepositSummaryViewHolder(private val composeView: ComposeView) : PaymentsHubViewHolder(composeView) {
+        override fun onBind(uiState: PaymentsHubViewState.ListItem) {
+            composeView.setContent {
+                PaymentsHubDepositSummaryView()
+            }
         }
     }
 }
