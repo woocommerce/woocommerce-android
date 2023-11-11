@@ -164,6 +164,9 @@ class ProductConfiguration(
                     if (configuration.containsKey(QuantityRule.KEY)) {
                         configuration[QuantityRule.KEY] = (child.item.quantity / parentQuantity).toString()
                     }
+                    if (configuration.containsKey(OptionalRule.KEY)){
+                        configuration[OptionalRule.KEY] = true.toString()
+                    }
                 }
             }
             val configurationType = rules.productType.getConfigurationType()
