@@ -1,2 +1,0 @@
-16.0:
-Es gibt ein neues WooCommerce-Update! Wir haben die Bestellartikelliste umgestaltet, um den Vorgang intuitiver zu machen. Durch Verbesserungen bei der Kampagnenerstellung kannst du Blaze jetzt noch effizienter nutzen. Darüber hinaus führen wir eine Produkterstellung mit KI ein, bei der anhand von Verpackungsfotos automatisch Titel und Beschreibungen generiert werden. Genieße ein reibungsloses Einkaufserlebnis!
