@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 11:54:04+0000
+Translation-Revision-Date: 2023-11-07 15:54:28+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="email_or_username">電子郵件地址或使用者名稱</string>
+    <string name="custom_amounts_creation_error">無法建立自訂金額訂單</string>
+    <string name="custom_amounts_add_custom_name_hint">輸入自訂名稱</string>
+    <string name="custom_amounts_add_custom_amount">新增自訂金額</string>
+    <string name="custom_amounts_name">名稱</string>
+    <string name="custom_amounts_enter_amount">金額</string>
+    <string name="custom_amounts_dialog_title">自訂金額</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">請透過瀏覽器上的管理頁面連結 Jetpack，或聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_connection_message">與你的網站通訊時發生錯誤。</string>
+    <string name="custom_amounts">自訂金額</string>
     <string name="product_details_blaze_card">使用 Blaze 進行宣傳</string>
     <string name="blaze_campaign_ceation_celebration_button">知道了</string>
     <string name="blaze_campaign_ceation_celebration_message">廣告已提交供核准。 核准並執行後，我們會傳送確認郵件給你。</string>
@@ -3004,7 +3014,7 @@ Language: zh_TW
     <string name="login_text_otp_another">請使用簡訊傳送另一個驗證碼給我。</string>
     <string name="login_text_otp">請改用簡訊傳送驗證碼給我。</string>
     <string name="enter_verification_code_sms">我們已將簡訊傳送至結尾為 %s 的電話號碼。請輸入簡訊中的驗證碼。</string>
-    <string name="enter_verification_code">快完成了！請輸入驗證器應用程式上的驗證碼。</string>
+    <string name="enter_verification_code">快完成了！ 請輸入驗證器應用程式上的 WordPress.com 驗證碼。</string>
     <string name="enter_username_instead">用你的使用者名稱登入。</string>
     <string name="enter_site_address_instead">藉由輸入你的網站位址來登入。</string>
     <string name="alternatively">替代作法：</string>
