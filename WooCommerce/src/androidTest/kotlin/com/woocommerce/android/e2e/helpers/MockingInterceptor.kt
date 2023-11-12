@@ -5,6 +5,7 @@ import okhttp3.Interceptor.Chain
 import okhttp3.Response
 import java.io.IOException
 import javax.inject.Singleton
+import okhttp3.Request
 
 var useMockedAPI: Boolean = true
 
@@ -15,7 +16,7 @@ class MockingInterceptor : Interceptor {
         val request = chain.request()
 
         // Redirect all WordPress.com REST API requests to local mock server
-        if (useMockedAPI && request.url.host == "public-api.wordpress.com") {
+        if (useMockedAPI && request.isValidHost) {
             val newUrl = request.url.newBuilder()
                 .scheme("http")
                 .host("localhost")
@@ -29,4 +30,7 @@ class MockingInterceptor : Interceptor {
 
         return chain.proceed(request)
     }
+
+    private val Request.isValidHost: Boolean
+        get() = url.host == "public-api.wordpress.com" || url.host == "wordpress.com"
 }
