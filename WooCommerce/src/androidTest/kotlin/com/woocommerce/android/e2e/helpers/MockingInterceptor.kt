@@ -2,10 +2,10 @@ package com.woocommerce.android.e2e.helpers
 
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
+import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import javax.inject.Singleton
-import okhttp3.Request
 
 var useMockedAPI: Boolean = true
 
