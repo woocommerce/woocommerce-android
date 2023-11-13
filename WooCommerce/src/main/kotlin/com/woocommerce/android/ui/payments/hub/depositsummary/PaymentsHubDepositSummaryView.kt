@@ -72,7 +72,12 @@ fun PaymentsHubDepositSummaryView(
     viewModel.viewState.observeAsState().let {
         WooThemeWithBackground {
             when (val value = it.value) {
-                is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(value.overview)
+                is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(
+                    value.overview,
+                    value.onLearnMoreClicked,
+                    value.onExpandCollapseClicked,
+                )
+
                 null,
                 PaymentsHubDepositSummaryState.Loading,
                 is PaymentsHubDepositSummaryState.Error -> {
@@ -86,6 +91,8 @@ fun PaymentsHubDepositSummaryView(
 @Composable
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview,
+    onLearnMoreClicked: () -> Unit,
+    onExpandCollapseClicked: () -> Unit,
     isPreview: Boolean = LocalInspectionMode.current,
     selectedPage: Int = 0,
 ) {
@@ -123,13 +130,19 @@ fun PaymentsHubDepositSummaryView(
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.color_surface))
             ) {
-                AlwaysVisiblePart(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
+                AlwaysVisiblePart(selectedCurrencyInfo, isExpanded) {
+                    isExpanded = !isExpanded
+                    onExpandCollapseClicked()
+                }
 
                 AnimatedVisibility(
                     visible = isExpanded || isPreview,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    AdditionInfo(selectedCurrencyInfo)
+                    AdditionInfo(
+                        selectedCurrencyInfo,
+                        onLearnMoreClicked
+                    )
                 }
             }
         }
@@ -248,6 +261,7 @@ private fun AlwaysVisiblePart(
 @Composable
 private fun AdditionInfo(
     currencyInfo: PaymentsHubDepositSummaryState.Info,
+    onLearnMoreClicked: () -> Unit
 ) {
     Column {
         Column(
@@ -256,7 +270,7 @@ private fun AdditionInfo(
                     start = dimensionResource(id = R.dimen.major_100),
                     end = dimensionResource(id = R.dimen.major_100),
                     top = 10.dp,
-                    bottom = dimensionResource(id = R.dimen.major_150)
+                    bottom = dimensionResource(id = R.dimen.major_125)
                 )
         ) {
             currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
@@ -326,10 +340,13 @@ private fun AdditionInfo(
                 }
             }
 
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_75)))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onLearnMoreClicked)
+                    .padding(vertical = dimensionResource(id = R.dimen.minor_50)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -620,6 +637,8 @@ fun PaymentsHubDepositSummaryViewUsdPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState,
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 0
         )
     }
@@ -635,6 +654,8 @@ fun PaymentsHubDepositSummaryViewEurPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 1
         )
     }
@@ -650,6 +671,8 @@ fun PaymentsHubDepositSummaryViewRubPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 2
         )
     }
@@ -665,6 +688,8 @@ fun PaymentsHubDepositSummaryViewGbpPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 3
         )
     }

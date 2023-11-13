@@ -32,13 +32,17 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                         is RetrieveDepositOverviewResult.Cache ->
                             PaymentsHubDepositSummaryState.Success(
                                 mapper.mapDepositOverviewToViewModelOverviews(it.overview)
-                                    ?: return@map PaymentsHubDepositSummaryState.Error("Invalid data")
+                                    ?: return@map PaymentsHubDepositSummaryState.Error("Invalid data"),
+                                onLearnMoreClicked = { onLearnMoreClicked() },
+                                onExpandCollapseClicked = { onExpandCollapseClicked() }
                             )
 
                         is RetrieveDepositOverviewResult.Remote ->
                             PaymentsHubDepositSummaryState.Success(
                                 mapper.mapDepositOverviewToViewModelOverviews(it.overview)
-                                    ?: return@map PaymentsHubDepositSummaryState.Error("Invalid data")
+                                    ?: return@map PaymentsHubDepositSummaryState.Error("Invalid data"),
+                                onLearnMoreClicked = { onLearnMoreClicked() },
+                                onExpandCollapseClicked = { onExpandCollapseClicked() }
                             )
 
                         is RetrieveDepositOverviewResult.Error -> {
@@ -50,6 +54,14 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun onLearnMoreClicked() {
+
+    }
+
+    private fun onExpandCollapseClicked() {
+        // for the future tracking
     }
 }
 
