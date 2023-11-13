@@ -16,14 +16,15 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WcExposedDropDown(
-    items: List<String>,
-    currentSelectedValue: String,
-    onItemSelected: (String, Int) -> Unit,
-    modifier: Modifier = Modifier
+fun <T> WcExposedDropDown(
+    items: Array<T>,
+    onSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    currentValue: T = items.first(),
+    mapper: (T) -> String = { it.toString() },
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(currentSelectedValue) }
+    var selectedText by remember { mutableStateOf(currentValue) }
 
     Box(
         modifier = modifier
@@ -35,7 +36,7 @@ fun WcExposedDropDown(
             }
         ) {
             OutlinedTextField(
-                value = selectedText,
+                value = mapper(selectedText),
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -47,11 +48,11 @@ fun WcExposedDropDown(
             ) {
                 items.forEach { item ->
                     DropdownMenuItem(
-                        content = { Text(text = item) },
+                        content = { Text(text = mapper(item)) },
                         onClick = {
                             selectedText = item
                             expanded = false
-                            onItemSelected(selectedText, items.indexOf(item))
+                            onSelected(selectedText)
                         }
                     )
                 }
