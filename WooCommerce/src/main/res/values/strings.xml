@@ -3525,12 +3525,12 @@
     <string name="subscription_period_multiple_years">years</string>
 
     <string-array name="subscription_interval_options">
-        <item>Every</item>
-        <item>Every 2nd</item>
-        <item>Every 3rd</item>
-        <item>Every 4th</item>
-        <item>Every 5th</item>
-        <item>Every 6th</item>
+        <item>every</item>
+        <item>every 2nd</item>
+        <item>every 3rd</item>
+        <item>every 4th</item>
+        <item>every 5th</item>
+        <item>every 6th</item>
     </string-array>
 
     <!--

@@ -22,46 +22,56 @@ object PriceUtils {
         currencyFormatter: CurrencyFormatter,
         pricingData: PricingData
     ): Map<String, String> = with(pricingData) {
+        if (!regularPrice.isSet()) {
+            return mapOf("" to resources.getString(R.string.product_price_empty))
+        }
+
         val pricingGroup = mutableMapOf<String, String>()
-        if (pricingData.regularPrice.isSet()) {
-            // regular product price
-            pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
-                regularPrice,
+        // regular product price
+        val priceFormatted = formatCurrency(
+            regularPrice,
+            parameters.currencyCode,
+            currencyFormatter
+        )
+        if (isSubscription && subscriptionInterval != null && subscriptionPeriod != null) {
+            pricingGroup[resources.getString(R.string.product_regular_price)] = resources.getString(
+                R.string.product_subscription_description,
+                priceFormatted,
+                subscriptionInterval.toString(),
+                subscriptionPeriod.getPeriodString(resources, subscriptionInterval)
+            )
+        } else {
+            pricingGroup[resources.getString(R.string.product_regular_price)] = priceFormatted
+        }
+
+        if (isSubscription && subscriptionSignUpFee.isSet()) {
+            // display subscription sign up fee if it's set
+            pricingGroup[resources.getString(R.string.subscription_no_sign_up_fee)] = formatCurrency(
+                subscriptionSignUpFee,
                 parameters.currencyCode,
                 currencyFormatter
             )
-            // display product sale price if it's on sale
-            if (salePrice.isSet()) {
-                pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
-                    salePrice,
-                    parameters.currencyCode,
-                    currencyFormatter
-                )
-            }
+        }
 
-            // display product sale dates
-            if (isSaleScheduled != null) {
-                val saleDates = when {
-                    // both dates are set
-                    (saleStartDate != null && saleEndDate != null) -> {
-                        getProductSaleDates(saleStartDate, saleEndDate, resources)
-                    }
-                    // only start date is set
-                    (saleStartDate != null && saleEndDate == null) -> {
-                        resources.getString(R.string.product_sale_date_from, saleStartDate.formatToMMMddYYYY())
-                    }
-                    // only end date is set
-                    (saleStartDate == null && saleEndDate != null) -> {
-                        resources.getString(R.string.product_sale_date_to, saleEndDate.formatToMMMddYYYY())
-                    }
-                    else -> null
-                }
-                saleDates?.let {
-                    pricingGroup[resources.getString(R.string.product_sale_dates)] = it
-                }
+        // display product sale price if it's on sale
+        if (salePrice.isSet()) {
+            pricingGroup[resources.getString(R.string.product_sale_price)] = formatCurrency(
+                salePrice,
+                parameters.currencyCode,
+                currencyFormatter
+            )
+        }
+
+        // display product sale dates
+        if (isSaleScheduled != null) {
+            val saleDates = getProductSaleDates(
+                dateOnSaleFrom = saleStartDate,
+                dateOnSaleTo = saleEndDate,
+                resources = resources
+            )
+            saleDates?.let {
+                pricingGroup[resources.getString(R.string.product_sale_dates)] = it
             }
-        } else {
-            pricingGroup[""] = resources.getString(R.string.product_price_empty)
         }
         return pricingGroup
     }
@@ -72,16 +82,31 @@ object PriceUtils {
         } ?: amount.toString()
     }
 
-    private fun getProductSaleDates(dateOnSaleFrom: Date, dateOnSaleTo: Date, resources: ResourceProvider): String {
-        val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
-            dateOnSaleFrom.formatToMMMdd()
-        } else {
-            dateOnSaleFrom.formatToMMMddYYYY()
+    private fun getProductSaleDates(dateOnSaleFrom: Date?, dateOnSaleTo: Date?, resources: ResourceProvider): String? {
+        return when {
+            // both dates are set
+            (dateOnSaleFrom != null && dateOnSaleTo != null) -> {
+                val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
+                    dateOnSaleFrom.formatToMMMdd()
+                } else {
+                    dateOnSaleFrom.formatToMMMddYYYY()
+                }
+                resources.getString(
+                    R.string.product_sale_date_from_to,
+                    formattedFromDate,
+                    dateOnSaleTo.formatToMMMddYYYY()
+                )
+            }
+            // only start date is set
+            dateOnSaleFrom != null -> {
+                resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToMMMddYYYY())
+            }
+            // only end date is set
+            dateOnSaleTo != null -> {
+                resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToMMMddYYYY())
+            }
+
+            else -> null
         }
-        return resources.getString(
-            R.string.product_sale_date_from_to,
-            formattedFromDate,
-            dateOnSaleTo.formatToMMMddYYYY()
-        )
     }
 }
