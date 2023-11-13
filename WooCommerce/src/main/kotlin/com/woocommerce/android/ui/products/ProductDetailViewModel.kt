@@ -1256,7 +1256,7 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
-            val updatedLength = resetSubscriptionLengthIfThePeriodChanges(period, subscription, length)
+            val updatedLength = resetSubscriptionLengthIfThePeriodChanged(period, subscription, length)
             val updatedSubscription = subscription.copy(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
@@ -1267,11 +1267,14 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun resetSubscriptionLengthIfThePeriodChanges(
+    // The length ranges depend on the subscription period (days,weeks,months,years) so if period changes we need
+    // need to reset the length to "Never expire". This replicates the behavior of the Woo subscription extension
+    private fun resetSubscriptionLengthIfThePeriodChanged(
         period: SubscriptionPeriod?,
         subscription: SubscriptionDetails,
         length: Int?
-    ) = if (period != subscription.period) -1 else length ?: subscription.length
+    ) = if (period != null && period != subscription.period) -1
+    else length ?: subscription.length
 
     private fun productHasSale(
         isSaleScheduled: Boolean?,
