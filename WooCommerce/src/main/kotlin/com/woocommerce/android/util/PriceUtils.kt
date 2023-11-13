@@ -5,25 +5,25 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
 object PriceUtils {
-    @Suppress("LongParameterList")
+    /**
+     *  Returns price & sales price as a group if we have pricing info,
+     *  otherwise provide option to add pricing info for the product
+     */
     fun getPriceGroup(
         parameters: SiteParameters,
         resources: ResourceProvider,
         currencyFormatter: CurrencyFormatter,
-        regularPrice: BigDecimal?,
-        salePrice: BigDecimal?,
-        isSaleScheduled: Boolean,
-        saleStartDateGmt: Date?,
-        saleEndDateGmt: Date?
-    ): Map<String, String> {
+        pricingData: PricingData
+    ): Map<String, String> = with(pricingData) {
         val pricingGroup = mutableMapOf<String, String>()
-        if (regularPrice.isSet()) {
+        if (pricingData.regularPrice.isSet()) {
             // regular product price
             pricingGroup[resources.getString(R.string.product_regular_price)] = formatCurrency(
                 regularPrice,
@@ -40,19 +40,19 @@ object PriceUtils {
             }
 
             // display product sale dates
-            if (isSaleScheduled) {
+            if (isSaleScheduled != null) {
                 val saleDates = when {
                     // both dates are set
-                    (saleStartDateGmt != null && saleEndDateGmt != null) -> {
-                        getProductSaleDates(saleStartDateGmt, saleEndDateGmt, resources)
+                    (saleStartDate != null && saleEndDate != null) -> {
+                        getProductSaleDates(saleStartDate, saleEndDate, resources)
                     }
                     // only start date is set
-                    (saleStartDateGmt != null && saleEndDateGmt == null) -> {
-                        resources.getString(R.string.product_sale_date_from, saleStartDateGmt.formatToMMMddYYYY())
+                    (saleStartDate != null && saleEndDate == null) -> {
+                        resources.getString(R.string.product_sale_date_from, saleStartDate.formatToMMMddYYYY())
                     }
                     // only end date is set
-                    (saleStartDateGmt == null && saleEndDateGmt != null) -> {
-                        resources.getString(R.string.product_sale_date_to, saleEndDateGmt.formatToMMMddYYYY())
+                    (saleStartDate == null && saleEndDate != null) -> {
+                        resources.getString(R.string.product_sale_date_to, saleEndDate.formatToMMMddYYYY())
                     }
                     else -> null
                 }

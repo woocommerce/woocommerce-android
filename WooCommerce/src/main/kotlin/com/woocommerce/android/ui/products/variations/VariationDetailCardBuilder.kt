@@ -174,18 +174,24 @@ class VariationDetailCardBuilder(
         }
     }
 
-    // If we have pricing info, show price & sales price as a group,
-    // otherwise provide option to add pricing info for the variation
     private fun ProductVariation.price(): ProductProperty {
+        val subscriptionDetails = (this as? SubscriptionProductVariation)?.subscriptionDetails
+        val pricingData = PricingData(
+            isSaleScheduled = isSaleScheduled,
+            saleStartDate = saleStartDateGmt,
+            saleEndDate = saleEndDateGmt,
+            regularPrice = regularPrice,
+            salePrice = salePrice,
+            isSubscription = this is SubscriptionProductVariation,
+            subscriptionPeriod = subscriptionDetails?.period,
+            subscriptionInterval = subscriptionDetails?.periodInterval,
+            subscriptionSignUpFee = subscriptionDetails?.signUpFee
+        )
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
             currencyFormatter,
-            regularPrice,
-            salePrice,
-            isSaleScheduled,
-            saleStartDateGmt,
-            saleEndDateGmt
+            pricingData
         )
 
         val isWarningVisible = regularPrice.isNotSet() && this.isVisible
@@ -198,21 +204,8 @@ class VariationDetailCardBuilder(
             isHighlighted = isWarningVisible,
             isDividerVisible = !isWarningVisible
         ) {
-            val subscriptionDetails = (this as? SubscriptionProductVariation)?.subscriptionDetails
             viewModel.onEditVariationCardClicked(
-                ViewPricing(
-                    PricingData(
-                        isSaleScheduled = isSaleScheduled,
-                        saleStartDate = saleStartDateGmt,
-                        saleEndDate = saleEndDateGmt,
-                        regularPrice = regularPrice,
-                        salePrice = salePrice,
-                        isSubscription = this is SubscriptionProductVariation,
-                        subscriptionPeriod = subscriptionDetails?.period,
-                        subscriptionInterval = subscriptionDetails?.periodInterval,
-                        subscriptionSignUpFee = subscriptionDetails?.signUpFee
-                    )
-                ),
+                ViewPricing(pricingData),
                 PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
