@@ -87,6 +87,7 @@ fun PaymentsHubDepositSummaryView(
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview,
     isPreview: Boolean = LocalInspectionMode.current,
+    selectedPage: Int = 0,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -97,7 +98,9 @@ fun PaymentsHubDepositSummaryView(
             .fillMaxWidth()
             .background(colorResource(id = R.color.color_surface))
     ) {
-        val pagerState = rememberPagerState()
+        val pagerState = rememberPagerState(
+            initialPage = selectedPage
+        )
         val currencies = overview.infoPerCurrency.keys.toList()
         val selectedCurrencyInfo = overview.infoPerCurrency[currencies[pagerState.currentPage]] ?: return@Column
 
@@ -528,76 +531,141 @@ private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
 
         is PaymentsHubDepositSummaryState.Info.Interval.Monthly -> {
             val formatter = MessageFormat("{0,ordinal}", Locale.getDefault())
+            val dayOrdinal = formatter.format(day)
             stringResource(
                 id = R.string.card_reader_hub_deposit_summary_available_deposit_time_monthly,
-                formatter.format(day)
+                dayOrdinal
             )
         }
     }
 
+private val previewState = mapOf(
+    "USD" to PaymentsHubDepositSummaryState.Info(
+        availableFunds = "100$",
+        pendingFunds = "200$",
+        pendingBalanceDepositsCount = 1,
+        fundsAvailableInDays = 5,
+        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
+        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
+            date = "13 Oct 2023"
+        ),
+        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.FAILED,
+            date = "13 Oct 2023"
+        )
+    ),
+    "EUR" to PaymentsHubDepositSummaryState.Info(
+        availableFunds = "100$",
+        pendingFunds = "200$",
+        pendingBalanceDepositsCount = 1,
+        fundsAvailableInDays = 2,
+        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Friday"),
+        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.PAID,
+            date = "13 Oct 2023"
+        ),
+        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.PENDING,
+            date = "13 Oct 2023"
+        )
+    ),
+    "RUB" to PaymentsHubDepositSummaryState.Info(
+        availableFunds = "100$",
+        pendingFunds = "200$",
+        pendingBalanceDepositsCount = 1,
+        fundsAvailableInDays = 4,
+        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Monday"),
+        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.IN_TRANSIT,
+            date = "13 Oct 2023"
+        ),
+        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.CANCELED,
+            date = "13 Oct 2023"
+        )
+    ),
+    "GBP" to PaymentsHubDepositSummaryState.Info(
+        availableFunds = "100$",
+        pendingFunds = "200$",
+        pendingBalanceDepositsCount = 1,
+        fundsAvailableInDays = 3,
+        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Tuesday"),
+        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.UNKNOWN,
+            date = "13 Oct 2023"
+        ),
+        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
+            amount = "100$",
+            status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
+            date = "13 Oct 2023"
+        )
+    ),
+)
+
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Ru locale", locale = "ru_RU")
 @Composable
-fun PaymentsHubDepositSummaryViewPreview() {
+fun PaymentsHubDepositSummaryViewUsdPreview() {
     WooThemeWithBackground {
         PaymentsHubDepositSummaryView(
             PaymentsHubDepositSummaryState.Overview(
                 defaultCurrency = "USD",
-                infoPerCurrency = mapOf(
-                    "USD" to PaymentsHubDepositSummaryState.Info(
-                        availableFunds = "100$",
-                        pendingFunds = "200$",
-                        pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = 5,
-                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Monthly(20),
-                        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-                            amount = "100$",
-                            status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
-                            date = "13 Oct 2023"
-                        ),
-                        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
-                            amount = "100$",
-                            status = PaymentsHubDepositSummaryState.Deposit.Status.FAILED,
-                            date = "13 Oct 2023"
-                        )
-                    ),
-                    "EUR" to PaymentsHubDepositSummaryState.Info(
-                        availableFunds = "100$",
-                        pendingFunds = "200$",
-                        pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = 2,
-                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Friday"),
-                        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-                            amount = "100$",
-                            status = PaymentsHubDepositSummaryState.Deposit.Status.PAID,
-                            date = "13 Oct 2023"
-                        ),
-                        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
-                            amount = "100$",
-                            status = PaymentsHubDepositSummaryState.Deposit.Status.PENDING,
-                            date = "13 Oct 2023"
-                        )
-                    ),
-                    "RUB" to PaymentsHubDepositSummaryState.Info(
-                        availableFunds = "100$",
-                        pendingFunds = "200$",
-                        pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = 4,
-                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Monthly(3),
-                        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-                            amount = "100$",
-                            status = PaymentsHubDepositSummaryState.Deposit.Status.IN_TRANSIT,
-                            date = "13 Oct 2023"
-                        ),
-                        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
-                            amount = "100$",
-                            status = PaymentsHubDepositSummaryState.Deposit.Status.CANCELED,
-                            date = "13 Oct 2023"
-                        )
-                    )
-                )
-            )
+                infoPerCurrency = previewState,
+            ),
+            selectedPage = 0
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubDepositSummaryViewEurPreview() {
+    WooThemeWithBackground {
+        PaymentsHubDepositSummaryView(
+            PaymentsHubDepositSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState
+            ),
+            selectedPage = 1
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubDepositSummaryViewRubPreview() {
+    WooThemeWithBackground {
+        PaymentsHubDepositSummaryView(
+            PaymentsHubDepositSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState
+            ),
+            selectedPage = 2
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubDepositSummaryViewGbpPreview() {
+    WooThemeWithBackground {
+        PaymentsHubDepositSummaryView(
+            PaymentsHubDepositSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState
+            ),
+            selectedPage = 3
         )
     }
 }
