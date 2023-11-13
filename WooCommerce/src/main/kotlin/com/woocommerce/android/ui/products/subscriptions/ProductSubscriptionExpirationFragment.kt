@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -21,6 +22,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.string
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.compose.component.DropDownMenu
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -42,31 +46,7 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
             val subscription = navArgs.subscription
             setContent {
                 WooThemeWithBackground {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(colorResource(id = color.color_surface))
-                            .padding(dimensionResource(id = R.dimen.major_100))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .background(colorResource(id = color.color_surface))
-                                .padding(dimensionResource(id = R.dimen.major_100)),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(stringResource(id = R.string.subscription_expire))
-                            DropDownMenu(
-                                items = subscription.expireDisplayOptions(resourceProvider),
-                                currentSelectedValue = subscription.expireDisplayValue(resourceProvider),
-                                onItemSelected = { _, index ->
-                                    viewModel.onSubscriptionExpirationChanged(index)
-                                },
-                                modifier = Modifier
-                                    .background(colorResource(id = color.color_surface))
-                                    .padding(start = dimensionResource(id = R.dimen.major_100))
-                            )
-                        }
-                    }
+                    SubscriptionExpirationPicker(subscription)
                 }
             }
         }
@@ -83,6 +63,35 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitProductSubscriptionExpiration -> findNavController().popBackStack()
+            }
+        }
+    }
+
+    @Composable
+    private fun SubscriptionExpirationPicker(subscription: SubscriptionDetails) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(id = color.color_surface))
+                .padding(dimensionResource(id = dimen.major_100))
+        ) {
+            Row(
+                modifier = Modifier
+                    .background(colorResource(id = color.color_surface))
+                    .padding(dimensionResource(id = dimen.major_100)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(id = string.subscription_expire))
+                DropDownMenu(
+                    items = subscription.expirationDisplayOptions(resourceProvider),
+                    currentSelectedValue = subscription.expirationDisplayValue(resourceProvider),
+                    onItemSelected = { _, index ->
+                        viewModel.onSubscriptionExpirationChanged(index)
+                    },
+                    modifier = Modifier
+                        .background(colorResource(id = color.color_surface))
+                        .padding(start = dimensionResource(id = dimen.major_100))
+                )
             }
         }
     }
