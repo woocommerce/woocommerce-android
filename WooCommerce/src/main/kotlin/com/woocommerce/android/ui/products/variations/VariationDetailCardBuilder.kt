@@ -41,8 +41,8 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
-import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -53,7 +53,6 @@ class VariationDetailCardBuilder(
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) {
     private lateinit var originalSku: String
     private var parentProduct: Product? = null
@@ -101,8 +100,8 @@ class VariationDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (isEligibleForSubscriptions()) variation.price() else null,
-                if (isEligibleForSubscriptions()) variation.subscriptionExpirationDate() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionExpirationDate() else null,
                 variation.subscription(),
                 variation.warning(),
                 variation.attributes(),

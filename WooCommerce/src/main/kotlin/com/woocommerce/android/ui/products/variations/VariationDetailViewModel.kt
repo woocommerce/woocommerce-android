@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
-import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -62,7 +61,6 @@ class VariationDetailViewModel @Inject constructor(
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resources: ResourceProvider,
     private val getProductVariationQuantityRules: GetProductVariationQuantityRules,
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
@@ -107,7 +105,6 @@ class VariationDetailViewModel @Inject constructor(
             resources,
             currencyFormatter,
             parameters,
-            isEligibleForSubscriptions
         )
     }
 
