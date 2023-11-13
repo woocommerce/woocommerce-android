@@ -499,12 +499,14 @@ class LoginActivity :
         userId: String?,
         nonceAuthenticator: String?,
         nonceBackup: String?,
-        nonceSms: String?
+        nonceSms: String?,
+        nonceWebauthn: String?,
+        supportedAuthTypes: MutableList<String>?
     ) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocial(
-            email, userId,
-            nonceAuthenticator, nonceBackup, nonceSms
+            email, userId, nonceAuthenticator,
+            nonceBackup, nonceSms, nonceWebauthn, supportedAuthTypes
         )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
