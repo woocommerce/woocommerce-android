@@ -18,12 +18,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -34,9 +34,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductSubscriptionExpirationFragment : BaseProductFragment() {
+    companion object {
+        const val KEY_SUBSCRIPTION_EXPIRATION_RESULT = "key_subscription_expiration_result"
+    }
 
     private val navArgs: ProductSubscriptionExpirationFragmentArgs by navArgs()
     private val resourceProvider: ResourceProvider by lazy { ResourceProvider(requireContext()) }
+    private var selectedExpiration: Int = -1
 
     override fun getFragmentTitle() = getString(R.string.product_subscription_expiration_title)
 
@@ -44,6 +48,7 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             val subscription = navArgs.subscription
+            selectedExpiration = subscription.length
             setContent {
                 WooThemeWithBackground {
                     SubscriptionExpirationPicker(subscription)
@@ -62,7 +67,8 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ExitProductSubscriptionExpiration -> findNavController().popBackStack()
+                is ExitProductSubscriptionExpiration ->
+                    navigateBackWithResult(KEY_SUBSCRIPTION_EXPIRATION_RESULT, selectedExpiration)
             }
         }
     }
@@ -85,9 +91,7 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
                 WcExposedDropDown(
                     items = subscription.expirationDisplayOptions(resourceProvider),
                     currentSelectedValue = subscription.expirationDisplayValue(resourceProvider),
-                    onItemSelected = { _, index ->
-                        viewModel.onSubscriptionExpirationChanged(index)
-                    },
+                    onItemSelected = { _, index -> selectedExpiration = index },
                     modifier = Modifier
                         .background(colorResource(id = color.color_surface))
                         .padding(start = dimensionResource(id = dimen.major_100))
