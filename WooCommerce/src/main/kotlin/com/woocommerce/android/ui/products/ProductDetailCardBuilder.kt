@@ -259,7 +259,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
                 product.subscription(),
-                product.subscriptionExpireDate(),
+                product.subscriptionExpirationDate(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),
@@ -832,7 +832,7 @@ class ProductDetailCardBuilder(
             )
         }
 
-    private fun Product.subscriptionExpireDate(): ProductProperty? =
+    private fun Product.subscriptionExpirationDate(): ProductProperty? =
         this.subscription?.let { subscription ->
             PropertyGroup(
                 title = string.product_subscription_expiration_title,
@@ -872,8 +872,8 @@ class ProductDetailCardBuilder(
                 )
             }
 
-            val expire = if (subscription.length != null) {
-                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            val expire = if (subscription.length != null && subscription.length > 0) {
+                resources.getString(R.string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
             }
