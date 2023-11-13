@@ -31,7 +31,8 @@ object SubscriptionDetailsMapper {
             val periodInterval = periodIntervalString.toIntOrNull() ?: 0
 
             val lengthString = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH] ?: ""
-            val lengthInt = lengthString.toIntOrNull() ?: -1
+            val lengthInt = lengthString.toIntOrNull()
+            val length = if (lengthInt != null && lengthInt > 0) lengthInt else null
 
             val signUpFee =
                 subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE]?.toBigDecimalOrNull()
@@ -50,7 +51,7 @@ object SubscriptionDetailsMapper {
                 price = price,
                 period = period,
                 periodInterval = periodInterval,
-                length = lengthInt,
+                length = length,
                 signUpFee = signUpFee,
                 trialPeriod = trialPeriod,
                 trialLength = trialLength,

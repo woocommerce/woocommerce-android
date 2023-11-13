@@ -259,7 +259,6 @@ class ProductDetailViewModel @Inject constructor(
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = isProductCurrentlyPromoted,
             analyticsTrackerWrapper = tracker,
-            isEligibleForSubscriptions = isEligibleForSubscriptions,
         )
     }
 
@@ -1273,7 +1272,7 @@ class ProductDetailViewModel @Inject constructor(
         period: SubscriptionPeriod?,
         subscription: SubscriptionDetails,
         length: Int?
-    ) = if (period != null && period != subscription.period) -1
+    ) = if (period != null && period != subscription.period) null
     else length ?: subscription.length
 
     private fun productHasSale(
@@ -2401,8 +2400,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
-        val newLength = if (selectedExpirationValue == 0) -1 else selectedExpirationValue
-        updateProductSubscription(length = newLength)
+        updateProductSubscription(length = selectedExpirationValue)
     }
 
     /**

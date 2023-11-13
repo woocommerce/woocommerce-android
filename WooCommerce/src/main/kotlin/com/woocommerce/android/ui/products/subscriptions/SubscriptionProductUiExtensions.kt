@@ -5,7 +5,7 @@ import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 fun SubscriptionDetails.expirationDisplayValue(resProvider: ResourceProvider): String {
-    return if (length != -1) {
+    return if (length != null && length > 0) {
         val periodString = period.getPeriodString(resProvider, length)
         resProvider.getString(R.string.subscription_period, length.toString(), periodString)
     } else {
