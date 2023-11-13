@@ -512,6 +512,7 @@ class ProductDetailCardBuilder(
                         isSubscription = this.productType == SUBSCRIPTION,
                         subscriptionPeriod = subscription?.period,
                         subscriptionInterval = subscription?.periodInterval,
+                        subscriptionSignUpFee = subscription?.signUpFee,
                     )
                 ),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED

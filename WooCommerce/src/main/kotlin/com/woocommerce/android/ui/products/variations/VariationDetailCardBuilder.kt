@@ -209,7 +209,8 @@ class VariationDetailCardBuilder(
                         salePrice = salePrice,
                         isSubscription = this is SubscriptionProductVariation,
                         subscriptionPeriod = subscriptionDetails?.period,
-                        subscriptionInterval = subscriptionDetails?.periodInterval
+                        subscriptionInterval = subscriptionDetails?.periodInterval,
+                        subscriptionSignUpFee = subscriptionDetails?.signUpFee
                     )
                 ),
                 PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED

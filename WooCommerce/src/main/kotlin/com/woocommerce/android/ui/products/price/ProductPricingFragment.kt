@@ -118,8 +118,7 @@ class ProductPricingFragment :
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
             new.pricingData.isSubscription.takeIfNotEqualTo(old?.pricingData?.isSubscription) {
-                binding.subscriptionPeriod.isVisible = it
-                binding.subscriptionInterval.isVisible = it
+                binding.subscriptionGroup.isVisible = it
             }
             new.pricingData.subscriptionInterval?.takeIfNotEqualTo(old?.pricingData?.subscriptionInterval) {
                 binding.subscriptionInterval.setText(it.formatSubscriptionInterval())
@@ -153,6 +152,18 @@ class ProductPricingFragment :
             setOnTextChangedListener {
                 val price = it.toString().toBigDecimalOrNull()
                 viewModel.onRegularPriceEntered(price)
+            }
+        }
+
+        with(binding.subscriptionSignupFee) {
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
+            pricingData.subscriptionSignUpFee?.let { text = it.toString() }
+            setOnTextChangedListener {
+                val signupFee = it.toString().toBigDecimalOrNull()
+                viewModel.onDataChanged(subscriptionSignupFee = signupFee)
             }
         }
 
