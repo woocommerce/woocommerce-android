@@ -5,8 +5,8 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DropDownMenu(
+fun WcExposedDropDown(
     items: List<String>,
     currentSelectedValue: String,
     onItemSelected: (String, Int) -> Unit,
@@ -34,7 +34,7 @@ fun DropDownMenu(
                 expanded = !expanded
             }
         ) {
-            TextField(
+            OutlinedTextField(
                 value = selectedText,
                 onValueChange = {},
                 readOnly = true,
