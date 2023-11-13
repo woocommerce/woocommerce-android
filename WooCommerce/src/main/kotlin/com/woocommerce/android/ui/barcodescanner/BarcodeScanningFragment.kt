@@ -16,6 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BarcodeScanningFragment : BaseFragment() {
+open class BarcodeScanningFragment : BaseFragment() {
     private val viewModel: BarcodeScanningViewModel by viewModels()
 
     @Inject
@@ -57,7 +58,7 @@ class BarcodeScanningFragment : BaseFragment() {
                             viewLifecycleOwner.lifecycleScope.launch {
                                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                                     codeScannerStatus.collect { status ->
-                                        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
+                                        onScannedResult(status)
                                     }
                                 }
                             }
@@ -67,6 +68,11 @@ class BarcodeScanningFragment : BaseFragment() {
             }
         }
     }
+
+    open fun onScannedResult(status: CodeScannerStatus) {
+        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
+    }
+
     private fun observeViewModelEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
