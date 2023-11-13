@@ -6,7 +6,9 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,9 +20,11 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     private val mapper: PaymentsHubDepositSummaryStateMapper,
     isFeatureEnabled: IsFeatureEnabled,
 ) : ScopedViewModel(savedState) {
-
     private val _viewState = MutableStateFlow<PaymentsHubDepositSummaryState>(PaymentsHubDepositSummaryState.Loading)
     val viewState: LiveData<PaymentsHubDepositSummaryState> = _viewState.asLiveData()
+
+    private val _openBrowserEvents = MutableSharedFlow<String>()
+    val openBrowserEvents = _openBrowserEvents.asSharedFlow()
 
     init {
         if (!isFeatureEnabled()) {
@@ -57,11 +61,18 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     }
 
     private fun onLearnMoreClicked() {
-
+        launch {
+            _openBrowserEvents.emit(LEARN_MORE_ABOUT_DEPOSIT_URL)
+        }
     }
 
     private fun onExpandCollapseClicked() {
         // for the future tracking
+    }
+
+    private companion object {
+        private const val LEARN_MORE_ABOUT_DEPOSIT_URL =
+            "https://woocommerce.com/document/woopayments/deposits/deposit-schedule/"
     }
 }
 

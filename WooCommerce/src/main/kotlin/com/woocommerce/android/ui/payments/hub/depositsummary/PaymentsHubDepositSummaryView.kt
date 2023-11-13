@@ -36,6 +36,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -85,6 +87,19 @@ fun PaymentsHubDepositSummaryView(
                 }
             }
         }
+    }
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel
+            .openBrowserEvents
+            .collect { url ->
+                ChromeCustomTabUtils.launchUrl(
+                    context,
+                    url,
+                    ChromeCustomTabUtils.Height.Partial.ThreeQuarters,
+                )
+            }
     }
 }
 
