@@ -52,6 +52,7 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -1255,15 +1256,22 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
+            val updatedLength = resetSubscriptionLengthIfThePeriodChanges(period, subscription, length)
             val updatedSubscription = subscription.copy(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
-                length = length ?: subscription.length,
+                length = updatedLength,
             )
             viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }
     }
+
+    private fun resetSubscriptionLengthIfThePeriodChanges(
+        period: SubscriptionPeriod?,
+        subscription: SubscriptionDetails,
+        length: Int?
+    ) = if (period != subscription.period) -1 else length ?: subscription.length
 
     private fun productHasSale(
         isSaleScheduled: Boolean?,
@@ -2390,7 +2398,8 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
-        updateProductSubscription(length = selectedExpirationValue)
+        val newLength = if (selectedExpirationValue == 0) -1 else selectedExpirationValue
+        updateProductSubscription(length = newLength)
     }
 
     /**
