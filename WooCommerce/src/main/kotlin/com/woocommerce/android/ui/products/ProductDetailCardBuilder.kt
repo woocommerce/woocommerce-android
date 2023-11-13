@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSu
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.BUNDLE
 import com.woocommerce.android.ui.products.ProductType.COMPOSITE
@@ -66,9 +65,11 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -255,6 +256,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
                 product.subscription(),
                 product.subscriptionExpireDate(),
                 product.inventory(SIMPLE),
@@ -502,13 +504,16 @@ class ProductDetailCardBuilder(
             viewModel.onEditProductCardClicked(
                 ViewProductPricing(
                     PricingData(
-                        taxClass,
-                        taxStatus,
-                        isSaleScheduled,
-                        saleStartDateGmt,
-                        saleEndDateGmt,
-                        regularPrice,
-                        salePrice
+                        taxClass = taxClass,
+                        taxStatus = taxStatus,
+                        isSaleScheduled = isSaleScheduled,
+                        saleStartDate = saleStartDateGmt,
+                        saleEndDate = saleEndDateGmt,
+                        regularPrice = regularPrice,
+                        salePrice = salePrice,
+                        isSubscription = this.productType == SUBSCRIPTION,
+                        subscriptionPeriod = subscription?.period,
+                        subscriptionInterval = subscription?.periodInterval,
                     )
                 ),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED

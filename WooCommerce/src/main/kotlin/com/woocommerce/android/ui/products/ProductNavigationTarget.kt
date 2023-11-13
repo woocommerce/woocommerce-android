@@ -5,9 +5,9 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility

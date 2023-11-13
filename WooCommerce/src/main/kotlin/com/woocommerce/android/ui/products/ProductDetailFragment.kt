@@ -59,11 +59,11 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateP
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
@@ -209,6 +209,13 @@ class ProductDetailFragment :
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus
             )
+            if (it.isSubscription) {
+                viewModel.updateProductSubscription(
+                    price = it.regularPrice,
+                    period = it.subscriptionPeriod,
+                    periodInterval = it.subscriptionInterval
+                )
+            }
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(

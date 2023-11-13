@@ -1,0 +1,2 @@
+16.1:
+Scopri un'esperienza WooCommerce più fluida con il nostro ultimo aggiornamento. Abbiamo introdotto una nuova funzionalità che consente di inserire importi personalizzati durante la creazione dell'ordine, offrendoti maggiore flessibilità. Inoltre, abbiamo migliorato la gestione degli errori per una connessione a Jetpack più fluida, soprattutto quando si utilizza un URL di amministrazione personalizzato. Goditi un'app più semplice ed efficiente, progettata per la tua comodità.

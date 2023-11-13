@@ -398,14 +398,14 @@
     </fragment>
     <fragment
         android:id="@+id/productPricingFragment"
-        android:name="com.woocommerce.android.ui.products.ProductPricingFragment"
+        android:name="com.woocommerce.android.ui.products.price.ProductPricingFragment"
         tools:layout="@layout/fragment_product_pricing">
         <argument
             android:name="requestCode"
             app:argType="integer" />
         <argument
             android:name="pricingData"
-            app:argType="com.woocommerce.android.ui.products.ProductPricingViewModel$PricingData" />
+            app:argType="com.woocommerce.android.ui.products.price.ProductPricingViewModel$PricingData" />
     </fragment>
     <fragment
         android:id="@+id/productDownloadsFragment"

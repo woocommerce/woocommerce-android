@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-01 17:54:04+0000
+Translation-Revision-Date: 2023-11-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="email_or_username">E-posta adresi veya Kullanıcı Adı</string>
+    <string name="custom_amounts_creation_error">Özel tutarlı sipariş oluşturulamadı</string>
+    <string name="custom_amounts_add_custom_name_hint">Özel ad girin</string>
+    <string name="custom_amounts_add_custom_amount">Özel Tutar Ekle</string>
+    <string name="custom_amounts_name">Ad</string>
+    <string name="custom_amounts_enter_amount">Tutar</string>
+    <string name="custom_amounts_dialog_title">Özel Tutar</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Lütfen bir tarayıcıdan yönetici sayfanız aracılığıyla Jetpack\'i bağlayın veya destek ile iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_connection_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
+    <string name="custom_amounts">Özel Tutarlar</string>
     <string name="product_details_blaze_card">Blaze ile tanıt</string>
     <string name="blaze_campaign_ceation_celebration_button">Anladım</string>
     <string name="blaze_campaign_ceation_celebration_message">Reklam onaya gönderildi. Reklam onaylanıp yayınlandığında size bir onay e-postası göndereceğiz.</string>
@@ -3004,7 +3014,7 @@ Language: tr
     <string name="login_text_otp_another">Bana SMS ile başka bir kod gönder.</string>
     <string name="login_text_otp">Bunun yerine bana SMS ile bir kod gönder.</string>
     <string name="enter_verification_code_sms">%s ile biten telefon numaranıza mesaj gönderdik. Lütfen SMS ile aldığınız doğrulama kodunu giriniz.</string>
-    <string name="enter_verification_code">Neredeyse tamam. Lütfen kimlik doğrulayıcı uygulamanızdan doğrulama kodunu girin.</string>
+    <string name="enter_verification_code">Çok az kaldı! Lütfen WordPress.com için kimlik doğrulayıcı uygulamanızdaki doğrulama kodunu girin.</string>
     <string name="enter_username_instead">Kullanıcı adınızla oturum açın.</string>
     <string name="enter_site_address_instead">Site adresinizi girerek oturum açın.</string>
     <string name="alternatively">Alternatif olarak:</string>

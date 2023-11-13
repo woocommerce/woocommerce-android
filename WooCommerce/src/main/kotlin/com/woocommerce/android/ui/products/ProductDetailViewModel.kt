@@ -52,6 +52,7 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -1240,6 +1241,22 @@ class ProductDetailViewModel @Inject constructor(
                 numVariations = numVariation ?: product.numVariations
             )
             viewState = viewState.copy(productDraft = updatedProduct)
+        }
+    }
+
+    fun updateProductSubscription(
+        price: BigDecimal? = null,
+        period: SubscriptionPeriod? = null,
+        periodInterval: Int? = null,
+    ) {
+        viewState.productDraft?.let { product ->
+            val subscription = product.subscription ?: return
+            val updatedSubscription = subscription.copy(
+                price = price ?: subscription.price,
+                period = period ?: subscription.period,
+                periodInterval = periodInterval ?: subscription.periodInterval,
+            )
+            viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }
     }
 
