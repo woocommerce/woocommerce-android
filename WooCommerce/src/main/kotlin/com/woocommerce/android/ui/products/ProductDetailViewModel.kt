@@ -1225,6 +1225,7 @@ class ProductDetailViewModel @Inject constructor(
         price: BigDecimal? = null,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
+        signUpFee: BigDecimal? = null,
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
@@ -1232,6 +1233,7 @@ class ProductDetailViewModel @Inject constructor(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
+                signUpFee = signUpFee ?: subscription.signUpFee,
             )
             viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }
