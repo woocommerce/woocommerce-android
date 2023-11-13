@@ -234,7 +234,7 @@ private fun AlwaysVisiblePart(
                     default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
                     one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
                 ),
-                color = colorResource(id = R.color.color_surface_variant)
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
         }
 
@@ -303,40 +303,18 @@ private fun AdditionInfo(
                             default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
                             one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
                         ),
-                        color = colorResource(id = R.color.color_surface_variant),
+                        color = colorResource(id = R.color.color_on_surface_medium),
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
-
-            Text(
-                style = MaterialTheme.typography.body2,
-                text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
-                color = colorResource(id = R.color.color_on_surface_medium),
-            )
-
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-
-            currencyInfo.nextDeposit?.let {
-                Deposit(
-                    depositType = R.string.card_reader_hub_deposit_summary_next,
-                    deposit = it,
-                    textColor = R.color.color_on_surface
+            if (currencyInfo.nextDeposit != null || currencyInfo.lastDeposit != null) {
+                NextAndLastDeposit(
+                    currencyInfo.nextDeposit,
+                    currencyInfo.lastDeposit
                 )
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+                Divider(modifier = Modifier.fillMaxWidth())
             }
-
-            currencyInfo.lastDeposit?.let {
-                Deposit(
-                    depositType = R.string.card_reader_hub_deposit_summary_last,
-                    deposit = it,
-                    textColor = R.color.color_on_surface_medium
-                )
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
-            }
-
-            Divider(modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
@@ -382,6 +360,40 @@ private fun AdditionInfo(
         }
 
         Divider(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun NextAndLastDeposit(
+    nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
+    lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
+) {
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
+
+    Text(
+        style = MaterialTheme.typography.body2,
+        text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
+        color = colorResource(id = R.color.color_on_surface_medium),
+    )
+
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
+    nextDeposit?.let {
+        Deposit(
+            depositType = R.string.card_reader_hub_deposit_summary_next,
+            deposit = it,
+            textColor = R.color.color_on_surface
+        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+    }
+
+    lastDeposit?.let {
+        Deposit(
+            depositType = R.string.card_reader_hub_deposit_summary_last,
+            deposit = it,
+            textColor = R.color.color_on_surface_medium
+        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
@@ -706,6 +718,33 @@ fun PaymentsHubDepositSummaryViewGbpPreview() {
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             selectedPage = 3
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
+    WooThemeWithBackground {
+        PaymentsHubDepositSummaryView(
+            PaymentsHubDepositSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = mapOf(
+                    "USD" to PaymentsHubDepositSummaryState.Info(
+                        availableFunds = "100$",
+                        pendingFunds = "200$",
+                        pendingBalanceDepositsCount = 1,
+                        fundsAvailableInDays = 5,
+                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
+                        nextDeposit = null,
+                        lastDeposit = null,
+                    )
+                )
+            ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            selectedPage = 0
         )
     }
 }
