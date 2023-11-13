@@ -9,7 +9,7 @@ data class SubscriptionDetails(
     val price: BigDecimal,
     val period: SubscriptionPeriod,
     val periodInterval: Int,
-    val length: Int? = null,
+    val length: Int?,
     val signUpFee: BigDecimal?,
     val trialPeriod: SubscriptionPeriod?,
     val trialLength: Int?,
