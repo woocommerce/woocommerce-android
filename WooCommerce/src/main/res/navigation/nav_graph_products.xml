@@ -687,7 +687,7 @@
     </fragment>
     <fragment
         android:id="@+id/productSubscriptionExpirationFragment"
-        android:name="com.woocommerce.android.ui.products.ProductSubscriptionExpirationFragment"
+        android:name="com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment"
         android:label="ProductSubscriptionExpirationFragment">
         <argument
             android:name="subscription"

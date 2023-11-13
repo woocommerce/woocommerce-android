@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.subscriptions
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,6 +23,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.component.DropDownMenu
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.AndroidEntryPoint

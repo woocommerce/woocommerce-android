@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.subscriptions
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.SubscriptionDetails
