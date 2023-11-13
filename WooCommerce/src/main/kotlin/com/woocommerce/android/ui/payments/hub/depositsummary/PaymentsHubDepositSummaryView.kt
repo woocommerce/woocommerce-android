@@ -284,7 +284,7 @@ private fun AdditionInfo(
             Text(
                 style = MaterialTheme.typography.body2,
                 text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
-                color = colorResource(id = R.color.color_surface_variant),
+                color = colorResource(id = R.color.color_on_surface_medium),
             )
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
@@ -302,7 +302,7 @@ private fun AdditionInfo(
                 Deposit(
                     depositType = R.string.card_reader_hub_deposit_summary_last,
                     deposit = it,
-                    textColor = R.color.color_surface_variant
+                    textColor = R.color.color_on_surface_medium
                 )
                 Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
             }
@@ -321,7 +321,7 @@ private fun AdditionInfo(
                     Text(
                         style = MaterialTheme.typography.caption,
                         text = interval.buildText(),
-                        color = colorResource(id = R.color.color_surface_variant),
+                        color = colorResource(id = R.color.color_on_surface_medium),
                     )
                 }
             }
