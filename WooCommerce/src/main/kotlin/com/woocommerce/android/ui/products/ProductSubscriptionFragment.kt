@@ -63,7 +63,7 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
                 period
             )
         }
-        binding.expireValue.text = if (subscription.length != null && subscription.length > 0) {
+        binding.expireValue.text = if (subscription.length > 0) {
             getString(R.string.subscription_period, subscription.length.toString(), period)
         } else {
             getString(R.string.subscription_never_expire)
@@ -128,6 +128,7 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
                     sale.saleEndDateGmt.formatToMMMddYYYY()
                 )
             }
+
             else -> null
         }
     }

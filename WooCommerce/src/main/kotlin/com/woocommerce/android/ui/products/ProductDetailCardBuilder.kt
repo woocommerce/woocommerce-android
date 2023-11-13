@@ -873,7 +873,7 @@ class ProductDetailCardBuilder(
                 )
             }
 
-            val expire = if (subscription.length != null && subscription.length > 0) {
+            val expire = if (subscription.length > 0) {
                 resources.getString(R.string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
