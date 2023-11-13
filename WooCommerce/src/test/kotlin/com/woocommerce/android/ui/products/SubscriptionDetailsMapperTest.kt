@@ -18,8 +18,8 @@ class SubscriptionDetailsMapperTest : BaseUnitTest() {
         result?.let { subscription ->
             assertThat(subscription.price).isEqualTo(BigDecimal.valueOf(60))
             assertThat(subscription.period).isEqualTo(SubscriptionPeriod.fromValue("month"))
-            assertThat(subscription.periodInterval).isEqualTo(0)
-            assertThat(subscription.length).isEqualTo(-1)
+            assertThat(subscription.periodInterval).isEqualTo(1)
+            assertThat(subscription.length).isEqualTo(0)
             assertThat(subscription.signUpFee).isEqualTo(BigDecimal.valueOf(5))
             assertThat(subscription.trialPeriod).isEqualTo(SubscriptionPeriod.fromValue("day"))
             assertThat(subscription.trialLength).isEqualTo(2)
