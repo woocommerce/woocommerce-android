@@ -2013,6 +2013,7 @@
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
 
     <!--
         Product Add more details Bottom sheet
