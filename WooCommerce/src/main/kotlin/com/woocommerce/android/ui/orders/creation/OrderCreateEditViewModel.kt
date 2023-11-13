@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
@@ -460,6 +461,7 @@ class OrderCreateEditViewModel @Inject constructor(
             it.removeItem(item)
         }
     }
+
     @Suppress("LongMethod", "ComplexMethod")
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
@@ -1366,6 +1368,30 @@ class OrderCreateEditViewModel @Inject constructor(
             AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED
         }
         tracker.track(analyticsEvent)
+    }
+
+    fun onEditConfiguration(product: OrderCreationProduct) {
+        (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
+            triggerEvent(
+                OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration(
+                    productId = product.item.productId,
+                    itemId = product.item.itemId,
+                    configuration = it
+                )
+            )
+        }
+    }
+
+    fun onConfigurationChanged(itemId: Long, productConfiguration: ProductConfiguration) {
+        val product = products.value?.find { product -> product.item.itemId == itemId } ?: return
+        _orderDraft.update { order ->
+            val recreatedItem = product.item.copy(
+                itemId = 0L,
+                configuration = productConfiguration
+            )
+            val orderWithOutOldConfiguration = order.removeItem(product)
+            orderWithOutOldConfiguration.copy(items = orderWithOutOldConfiguration.items + recreatedItem)
+        }
     }
 
     @Parcelize
