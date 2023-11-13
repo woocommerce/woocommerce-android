@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.orders.creation.configuration.GetProductConfiguration
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductType
@@ -16,7 +17,8 @@ class CreateOrderItem @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val variationDetailRepository: VariationDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
-    private val getProductRules: GetProductRules
+    private val getProductRules: GetProductRules,
+    private val getProductConfiguration: GetProductConfiguration
 ) {
     suspend operator fun invoke(
         remoteProductId: Long,
@@ -27,7 +29,7 @@ class CreateOrderItem @Inject constructor(
             val product = productDetailRepository.getProduct(remoteProductId)
             // Try to get the default configuration for not configurable bundles
             val configuration = if (product?.productType == ProductType.BUNDLE && productConfiguration == null) {
-                getProductRules.getRules(remoteProductId)?.let { ProductConfiguration.getConfiguration(it) }
+                getProductRules.getRules(remoteProductId)?.let { getProductConfiguration(it) }
             } else {
                 productConfiguration
             }
