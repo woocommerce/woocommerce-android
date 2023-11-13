@@ -1248,6 +1248,7 @@ class ProductDetailViewModel @Inject constructor(
         price: BigDecimal? = null,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
+        length: Int? = null,
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
@@ -1255,6 +1256,7 @@ class ProductDetailViewModel @Inject constructor(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
+                length = length ?: subscription.length,
             )
             viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }
@@ -2382,6 +2384,10 @@ class ProductDetailViewModel @Inject constructor(
 
     suspend fun getComponents(remoteId: Long): List<Component> {
         return getComponentProducts(remoteId)
+    }
+
+    fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
+        updateProductSubscription(length = selectedExpirationValue)
     }
 
     /**
