@@ -15,14 +15,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_MIN_MAX_QUANTITY_RULES
@@ -778,32 +772,32 @@ class ProductDetailViewModel @Inject constructor(
             }
 
             is ProductExitEvent.ExitExternalLink -> {
-                eventName = EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
 
             is ProductExitEvent.ExitProductCategories -> {
-                eventName = PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
 
             is ProductExitEvent.ExitProductTags -> {
-                eventName = PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
 
             is ProductExitEvent.ExitProductAttributeList -> {
-                eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
             is ProductExitEvent.ExitProductAddAttribute -> {
-                eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
             is ProductExitEvent.ExitAttributesAdded -> {
-                eventName = PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
+                eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
