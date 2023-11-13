@@ -69,8 +69,8 @@ import com.woocommerce.android.ui.products.price.ProductPricingViewModel.Pricing
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -89,7 +89,8 @@ class ProductDetailCardBuilder(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
 ) {
     private var blazeCtaShownTracked = false
     private lateinit var originalSku: String
@@ -257,9 +258,9 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
+                if (isEligibleForSubscriptions()) product.price() else null,
+                if (isEligibleForSubscriptions()) product.subscriptionExpirationDate() else null,
                 product.subscription(),
-                product.subscriptionExpirationDate(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),

@@ -101,6 +101,7 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -169,7 +170,8 @@ class ProductDetailViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
-    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted
+    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -256,6 +258,7 @@ class ProductDetailViewModel @Inject constructor(
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = isProductCurrentlyPromoted,
             analyticsTrackerWrapper = tracker,
+            isEligibleForSubscriptions = isEligibleForSubscriptions,
         )
     }
 
