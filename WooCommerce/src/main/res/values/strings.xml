@@ -3802,4 +3802,7 @@
     <string name="ai_feedback_form_message">Is the result helpful?</string>
     <string name="ai_feedback_form_positive_button">Positive feedback</string>
     <string name="ai_feedback_form_negative_button">Negative feedback</string>
+    <string name="login_text_security_key">Use a security key</string>
+    <string name="login_error_security_key">There was some trouble with the Security key login</string>
+    <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 </resources>
