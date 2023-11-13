@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
-import java.util.Date
-
 sealed class PaymentsHubDepositSummaryState {
     object Loading : PaymentsHubDepositSummaryState()
     data class Error(val errorMessage: String) : PaymentsHubDepositSummaryState()
@@ -28,9 +26,9 @@ sealed class PaymentsHubDepositSummaryState {
     }
 
     data class Deposit(
-        val amount: Long,
+        val amount: String,
         val status: Status,
-        val date: Date?,
+        val date: String,
     ) {
         enum class Status {
             ESTIMATED, PENDING, IN_TRANSIT, PAID, CANCELED, FAILED, UNKNOWN

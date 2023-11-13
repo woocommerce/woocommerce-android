@@ -38,7 +38,10 @@ class OrderCreateEditCustomAmountAdapter(
         init {
             binding.root.setOnClickListener {
                 safePosition?.let {
-                    onCustomAmountClick(getItem(it))
+                    val customAmountUIModel = getItem(it)
+                    if (!customAmountUIModel.isLocked) {
+                        onCustomAmountClick(customAmountUIModel)
+                    }
                 }
             }
         }
@@ -53,6 +56,10 @@ class OrderCreateEditCustomAmountAdapter(
             } else {
                 binding.customAmountLayout.divider.show()
             }
+            if (customAmountUIModel.isLocked) {
+                binding.customAmountLayout.customAmountEdit.hide()
+                binding.customAmountLayout.customAmountDeleteBtn.hide()
+            }
             binding.customAmountLayout.customAmountDeleteBtn.setOnClickListener {
                 safePosition?.let {
                     onCustomAmountDeleteClick(getItem(it))
@@ -65,11 +72,17 @@ class OrderCreateEditCustomAmountAdapter(
         override fun areItemsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = (oldItem.id == newItem.id) && (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
+        ): Boolean = (oldItem.id == newItem.id) &&
+            (oldItem.name == newItem.name) &&
+            (oldItem.amount == newItem.amount) &&
+            (oldItem.isLocked == newItem.isLocked)
 
         override fun areContentsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = (oldItem.id == newItem.id) && (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
+        ): Boolean = (oldItem.id == newItem.id) &&
+            (oldItem.name == newItem.name) &&
+            (oldItem.amount == newItem.amount) &&
+            (oldItem.isLocked == newItem.isLocked)
     }
 }

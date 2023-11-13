@@ -1,2 +1,0 @@
-16.0 :
-Bienvenue dans la dernière mise à jour de WooCommerce ! Nous avons modifié la liste des éléments de commande pour un flux plus intuitif. L’expérience Blaze est désormais plus efficace avec la création de campagnes optimisée. Vous découvrirez également la création de produits avec l’IA en prenant des photos des emballages pour générer des titres et descriptions automatiquement. Profitez d’une expérience d’achat transparente !
