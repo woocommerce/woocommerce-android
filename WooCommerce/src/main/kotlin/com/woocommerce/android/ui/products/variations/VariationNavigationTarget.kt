@@ -42,5 +42,4 @@ sealed class VariationNavigationTarget : Event() {
         val showChooser: Boolean = false,
         val selectedImage: Image? = null
     ) : VariationNavigationTarget()
-
 }
