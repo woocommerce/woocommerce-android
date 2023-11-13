@@ -7,7 +7,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -84,7 +84,7 @@ fun BlazeCampaignCreationScreen(
     ) { paddingValues ->
         AnimatedContent(
             targetState = viewState,
-            transitionSpec = { fadeIn() togetherWith fadeOut() }, label = ""
+            transitionSpec = { fadeIn() with fadeOut() }
         ) { targetState ->
             when (targetState) {
                 is BlazeCreationViewState.Intro -> BlazeCreationIntroScreen(

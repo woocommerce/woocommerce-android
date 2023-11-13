@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
@@ -110,6 +111,18 @@ class ProductDetailFragment :
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
+
+    override val activityAppBarStatus: AppBarStatus
+        get() {
+            val navigationIcon = if (findNavController().backQueue.any { it.destination.id == R.id.products }) {
+                R.drawable.ic_back_24dp
+            } else {
+                R.drawable.ic_gridicons_cross_24dp
+            }
+            return AppBarStatus.Visible(
+                navigationIcon = navigationIcon
+            )
+        }
 
     @Inject lateinit var crashLogging: CrashLogging
 
