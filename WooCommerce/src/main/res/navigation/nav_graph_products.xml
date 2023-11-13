@@ -621,6 +621,13 @@
             android:id="@+id/action_variationDetailFragment_to_productSubscriptionFragment"
             app:destination="@id/productSubscriptionFragment" />
         <action
+            android:id="@+id/action_variationDetailFragment_to_productSubscriptionExpirationFragment"
+            app:destination="@id/productSubscriptionExpirationFragment">
+            <argument
+                android:name="subscription"
+                app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+        </action>
+        <action
             android:id="@+id/action_variationDetailFragment_to_productQuantityRulesFragment"
             app:destination="@id/productQuantityRulesFragment" />
     </fragment>
