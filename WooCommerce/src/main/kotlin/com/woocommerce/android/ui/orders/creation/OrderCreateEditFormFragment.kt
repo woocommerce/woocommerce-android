@@ -44,6 +44,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
+import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
@@ -767,6 +769,7 @@ class OrderCreateEditFormFragment :
                             onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
                             onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
                             onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
+                            onEditConfigurationClicked = { viewModel.onEditConfiguration(item) }
                         )
                     }
                 }
@@ -927,6 +930,11 @@ class OrderCreateEditFormFragment :
         }
         handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
+        }
+        handleResult<EditProductConfigurationResult>(
+            ProductConfigurationFragment.PRODUCT_CONFIGURATION_RESULT
+        ) { result ->
+            viewModel.onConfigurationChanged(result.itemId, result.productConfiguration)
         }
     }
 

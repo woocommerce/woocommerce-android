@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.orders.creation.configuration.Flow
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
@@ -398,10 +399,9 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ProductNavigationTarget.NavigateToProductConfiguration -> {
+                val flow = Flow.Selection(target.productId)
                 fragment.findNavController().navigateSafely(
-                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToProductConfigurationFragment(
-                        target.productId
-                    )
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToProductConfigurationFragment(flow)
                 )
             }
 

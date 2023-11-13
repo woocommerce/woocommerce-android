@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
+import com.woocommerce.android.ui.orders.creation.configuration.Flow
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -95,6 +96,14 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
                     target.customAmountUIModel
                 )
+            }
+            is OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration -> {
+                val flow = Flow.Edit(
+                    itemId = target.itemId,
+                    productID = target.productId,
+                    configuration = target.configuration
+                )
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToEditConfiguration(flow)
             }
         }
         navController.navigate(action)

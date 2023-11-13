@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_RESULT
-import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationResult
+import com.woocommerce.android.ui.orders.creation.configuration.SelectProductConfigurationResult
 import com.woocommerce.android.ui.products.ProductFilterResult
 import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.ProductNavigationTarget
@@ -92,7 +92,7 @@ class ProductSelectorFragment : BaseFragment() {
             )
         }
 
-        handleResult<ProductConfigurationResult>(PRODUCT_CONFIGURATION_RESULT) { result ->
+        handleResult<SelectProductConfigurationResult>(PRODUCT_CONFIGURATION_RESULT) { result ->
             viewModel.onConfigurationChanged(result.productId, result.productConfiguration)
         }
     }

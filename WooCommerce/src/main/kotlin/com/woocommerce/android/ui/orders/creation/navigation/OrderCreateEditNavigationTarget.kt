@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.creation.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.AutoTaxRateSettingState
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -58,5 +59,11 @@ sealed class OrderCreateEditNavigationTarget : Event() {
 
     data class CustomAmountDialog(
         val customAmountUIModel: CustomAmountUIModel? = null
+    ) : OrderCreateEditNavigationTarget()
+
+    data class EditOrderCreationProductConfiguration(
+        val itemId: Long,
+        val productId: Long,
+        val configuration: ProductConfiguration
     ) : OrderCreateEditNavigationTarget()
 }
