@@ -191,7 +191,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 blazeUrlsHelper = BlazeUrlsHelper(selectedSite),
                 isProductCurrentlyPromoted = mock(),
-                isEligibleForSubscriptions = mock(),
             )
         )
 
