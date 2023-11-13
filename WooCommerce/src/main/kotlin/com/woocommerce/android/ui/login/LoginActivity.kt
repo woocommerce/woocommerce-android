@@ -471,7 +471,26 @@ class LoginActivity :
     }
 
     override fun needs2fa(email: String?, password: String?) {
+        loginAnalyticsListener.trackLogin2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstance(email, password)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
+    }
+
+    override fun needs2fa(
+        email: String?,
+        password: String?,
+        userId: String?,
+        webauthnNonce: String?,
+        nonceAuthenticator: String?,
+        nonceBackup: String?,
+        noncePush: String?,
+        supportedAuthTypes: MutableList<String>?
+    ) {
+        loginAnalyticsListener.trackLogin2faNeeded()
+        val login2FaFragment = Login2FaFragment.newInstance(
+            email, password, userId,
+            webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes
+        )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
@@ -493,23 +512,6 @@ class LoginActivity :
     override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
-        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
-    }
-
-    override fun needs2fa(
-        email: String?,
-        password: String?,
-        userId: String?,
-        webauthnNonce: String?,
-        nonceAuthenticator: String?,
-        nonceBackup: String?,
-        noncePush: String?,
-        supportedAuthTypes: MutableList<String>?
-    ) {
-        val login2FaFragment = Login2FaFragment.newInstance(
-            email, password, userId,
-            webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes
-        )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
