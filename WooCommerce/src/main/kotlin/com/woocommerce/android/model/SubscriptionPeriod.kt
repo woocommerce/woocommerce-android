@@ -99,6 +99,7 @@ sealed class SubscriptionPeriod(val value: String) : Parcelable {
         }
     }
 
+    @Suppress("MagicNumber")
     fun getRangeForPeriod(): IntRange {
         return when (this) {
             Day -> 1..90
