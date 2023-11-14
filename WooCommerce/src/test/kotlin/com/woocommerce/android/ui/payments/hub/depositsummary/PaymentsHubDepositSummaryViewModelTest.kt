@@ -17,7 +17,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -29,9 +28,6 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     private val repository: PaymentsHubDepositSummaryRepository = mock()
     private val mapper: PaymentsHubDepositSummaryStateMapper = mock()
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val isFeatureEnabled: IsFeatureEnabled = mock {
-        on { invoke() }.thenReturn(true)
-    }
 
     @Test
     fun `given repository returns error, when viewmodel init, then error state emitted and tracked`() = testBlocking {
@@ -186,25 +182,6 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             assertThat(error.error.message).isEqualTo("Invalid data")
             assertThat(error.error.type).isEqualTo(WooErrorType.API_ERROR)
             assertThat(error.error.original).isEqualTo(BaseRequest.GenericErrorType.UNKNOWN)
-        }
-
-    @Test
-    fun `given feature flag off, when viewmodel init, then error is returned and not interactions with repository`() =
-        testBlocking {
-            // GIVEN
-            whenever(isFeatureEnabled()).thenReturn(false)
-
-            // WHEN
-            val viewModel = initViewModel()
-            advanceUntilIdle()
-
-            // THEN
-            val values = viewModel.viewState.captureValues()
-            val error = values[0] as PaymentsHubDepositSummaryState.Error
-            assertThat(error.error.message).isEqualTo("Invalid data")
-            assertThat(error.error.type).isEqualTo(WooErrorType.API_ERROR)
-            assertThat(error.error.original).isEqualTo(BaseRequest.GenericErrorType.UNKNOWN)
-            verifyNoInteractions(repository)
         }
 
     @Test
@@ -410,6 +387,5 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
         repository = repository,
         mapper = mapper,
         trackerWrapper = trackerWrapper,
-        isFeatureEnabled
     )
 }
