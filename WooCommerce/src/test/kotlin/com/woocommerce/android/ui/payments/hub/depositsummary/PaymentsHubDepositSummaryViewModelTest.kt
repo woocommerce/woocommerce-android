@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +23,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     private val repository: PaymentsHubDepositSummaryRepository = mock()
     private val mapper: PaymentsHubDepositSummaryStateMapper = mock()
-    private val isFeatureEnabled: IsFeatureEnabled = mock() {
+    private val trackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val isFeatureEnabled: IsFeatureEnabled = mock {
         on { invoke() }.thenReturn(true)
     }
 
@@ -49,9 +51,10 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
 
         // THEN
         val values = viewModel.viewState.captureValues()
-        assertThat((values[0] as PaymentsHubDepositSummaryState.Error).errorMessage).isEqualTo(
-            "message"
-        )
+        val error = values[0] as PaymentsHubDepositSummaryState.Error
+        assertThat(error.error.message).isEqualTo("message")
+        assertThat(error.error.type).isEqualTo(WooErrorType.API_ERROR)
+        assertThat(error.error.original).isEqualTo(BaseRequest.GenericErrorType.NETWORK_ERROR)
     }
 
     @Test
@@ -136,9 +139,11 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
 
             // THEN
             val values = viewModel.viewState.captureValues()
-            assertThat((values[0] as PaymentsHubDepositSummaryState.Error).errorMessage).isEqualTo(
-                "Invalid data"
-            )
+
+            val error = values[0] as PaymentsHubDepositSummaryState.Error
+            assertThat(error.error.message).isEqualTo("Invalid data")
+            assertThat(error.error.type).isEqualTo(WooErrorType.API_ERROR)
+            assertThat(error.error.original).isEqualTo(BaseRequest.GenericErrorType.UNKNOWN)
         }
 
     @Test
@@ -165,9 +170,10 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
 
             // THEN
             val values = viewModel.viewState.captureValues()
-            assertThat((values[0] as PaymentsHubDepositSummaryState.Error).errorMessage).isEqualTo(
-                "Invalid data"
-            )
+            val error = values[0] as PaymentsHubDepositSummaryState.Error
+            assertThat(error.error.message).isEqualTo("Invalid data")
+            assertThat(error.error.type).isEqualTo(WooErrorType.API_ERROR)
+            assertThat(error.error.original).isEqualTo(BaseRequest.GenericErrorType.UNKNOWN)
         }
 
     @Test
@@ -182,9 +188,10 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
 
             // THEN
             val values = viewModel.viewState.captureValues()
-            assertThat((values[0] as PaymentsHubDepositSummaryState.Error).errorMessage).isEqualTo(
-                "Invalid data"
-            )
+            val error = values[0] as PaymentsHubDepositSummaryState.Error
+            assertThat(error.error.message).isEqualTo("Invalid data")
+            assertThat(error.error.type).isEqualTo(WooErrorType.API_ERROR)
+            assertThat(error.error.original).isEqualTo(BaseRequest.GenericErrorType.UNKNOWN)
             verifyNoInteractions(repository)
         }
 
@@ -230,6 +237,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
         savedState = mock(),
         repository = repository,
         mapper = mapper,
+        trackerWrapper = trackerWrapper,
         isFeatureEnabled
     )
 }
