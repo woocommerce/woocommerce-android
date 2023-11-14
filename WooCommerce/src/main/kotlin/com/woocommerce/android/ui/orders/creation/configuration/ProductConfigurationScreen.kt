@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -60,6 +63,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 internal const val OUTLINED_BORDER_OPACITY = 0.14f
@@ -145,10 +149,36 @@ fun ProductConfigurationScreen(
                     val hasVariableRule = childMapEntry.value.containsKey(VariableProductRule.KEY)
 
                     val hasVariableRuleAndQuantityRule = hasVariableRule && hasQuantityRule
-
                     val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
+                    val hasVariableQuantityAndOptionalRules = hasVariableRuleAndQuantityRule && hasOptionalRule
 
                     when {
+                        hasVariableQuantityAndOptionalRules -> {
+                            val quantityRule = productRules.childrenRules
+                                ?.get(childMapEntry.key)
+                                ?.get(QuantityRule.KEY) as? QuantityRule
+
+                            val info = childMapEntry.value[VariableProductRule.KEY]
+                                .getAttributeOptionsFromJsonStringOrNull()
+
+                            OptionalVariableQuantityProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = info,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                onQuantityChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
+                                },
+                                minValue = quantityRule?.quantityMin,
+                                maxValue = quantityRule?.quantityMax,
+                                onSelectAttributes = { onSelectChildrenAttributes(item.id) },
+                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                onSwitchChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
+                                }
+                            )
+                        }
+
                         hasVariableRuleAndQuantityRule -> {
                             val quantityRule = productRules.childrenRules
                                 ?.get(childMapEntry.key)
@@ -224,6 +254,10 @@ fun ProductConfigurationScreen(
 
                         else -> {}
                     }
+                    Divider(
+                        color = colorResource(id = R.color.divider_color),
+                        thickness = dimensionResource(id = R.dimen.minor_10)
+                    )
                 }
             }
             Divider(
@@ -268,13 +302,19 @@ fun OptionalQuantityProductItem(
             )
         },
         configurableControlEnd = {
-            Stepper(
-                value = quantity,
-                onStepUp = { value -> onQuantityChanged(value) },
-                onStepDown = { value -> onQuantityChanged(value) },
-                isStepDownEnabled = isIncluded && quantity > (minValue ?: Float.MIN_VALUE),
-                isStepUpEnabled = isIncluded && quantity < (maxValue ?: Float.MAX_VALUE)
-            )
+            AnimatedVisibility(
+                visible = isIncluded,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Stepper(
+                    value = quantity,
+                    onStepUp = { value -> onQuantityChanged(value) },
+                    onStepDown = { value -> onQuantityChanged(value) },
+                    isStepDownEnabled = isIncluded && quantity > (minValue ?: Float.MIN_VALUE),
+                    isStepUpEnabled = isIncluded && quantity < (maxValue ?: Float.MAX_VALUE)
+                )
+            }
         }
     )
 }
@@ -294,15 +334,31 @@ fun QuantityProductItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
+        modifier = modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
+        configurableControlStart = {
+            SelectionCheck(
+                isSelected = quantity > 0f,
+                isEnabled = minValue == null || minValue <= 0f,
+                onSelectionChange = { selected ->
+                    onQuantityChanged(if (selected) 1f else 0f)
+                },
+                modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+            )
+        }
     ) {
-        Stepper(
-            value = quantity,
-            onStepUp = { value -> onQuantityChanged(value) },
-            onStepDown = { value -> onQuantityChanged(value) },
-            isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
-            isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE)
-        )
+        AnimatedVisibility(
+            visible = quantity > 0f,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Stepper(
+                value = quantity,
+                onStepUp = { value -> onQuantityChanged(value) },
+                onStepDown = { value -> onQuantityChanged(value) },
+                isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
+                isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE)
+            )
+        }
     }
 }
 
@@ -333,8 +389,8 @@ fun OptionalProductItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 16.dp),
-        configurableControlEnd = {
+        modifier = modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
+        configurableControlStart = {
             SelectionCheck(
                 isSelected = isIncluded,
                 onSelectionChange = onSwitchChanged,
@@ -362,13 +418,17 @@ fun OptionalChildrenPreview() {
 fun SelectionCheck(
     isSelected: Boolean,
     onSelectionChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true
 ) {
     val selectionDrawable = if (isSelected) {
         R.drawable.ic_rounded_chcekbox_checked
     } else {
         R.drawable.ic_rounded_chcekbox_unchecked
     }
+
+    val colorFilter = if (isEnabled) null else ColorFilter.tint(Color.Gray)
+
     Box(
         modifier = modifier.clickable { onSelectionChange(!isSelected) },
         contentAlignment = Alignment.Center
@@ -380,6 +440,7 @@ fun SelectionCheck(
         ) { icon ->
             Image(
                 painter = painterResource(id = icon),
+                colorFilter = colorFilter,
                 contentDescription = "imageContentDescription"
             )
         }
@@ -407,25 +468,22 @@ fun ConfigurableListItem(
     configurableControlStart: @Composable () -> Unit = {},
     configurableControlEnd: @Composable () -> Unit = {}
 ) {
-    Column {
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(modifier = Modifier.wrapContentSize()) {
-                configurableControlStart()
-            }
-            OrderProductItem(
-                title = title,
-                imageUrl = imageUrl,
-                info = info,
-                modifier = Modifier.weight(2f)
-            )
-            Box(modifier = Modifier.wrapContentSize()) {
-                configurableControlEnd()
-            }
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.wrapContentSize()) {
+            configurableControlStart()
         }
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = OUTLINED_BORDER_OPACITY), thickness = 1.dp)
+        OrderProductItem(
+            title = title,
+            imageUrl = imageUrl,
+            info = info,
+            modifier = Modifier.weight(2f)
+        )
+        Box(modifier = Modifier.wrapContentSize()) {
+            configurableControlEnd()
+        }
     }
 }
 
@@ -653,32 +711,98 @@ fun VariableQuantityProductItem(
     maxValue: Float? = null,
     minValue: Float? = null
 ) {
-    ConfigurableListItem(
-        title = title,
-        imageUrl = imageUrl,
-        info = info,
-        modifier = modifier
-            .clickable { onSelectAttributes() }
-            .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-    ) {
-        Row {
-            Stepper(
-                value = quantity,
-                onStepUp = { value -> onQuantityChanged(value) },
-                onStepDown = { value -> onQuantityChanged(value) },
-                isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
-                isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE),
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = stringResource(id = R.string.product_selector_arrow_content_description),
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_200))
-                    .align(Alignment.CenterVertically),
-                contentScale = ContentScale.FillWidth
-            )
+    Column(modifier = modifier.clickable { onSelectAttributes() }) {
+        ConfigurableListItem(
+            title = title,
+            imageUrl = imageUrl,
+            info = info,
+            configurableControlStart = {
+                SelectionCheck(
+                    isSelected = quantity > 0f,
+                    isEnabled = minValue == null || minValue <= 0f,
+                    onSelectionChange = { selected ->
+                        onQuantityChanged(if (selected) 1f else 0f)
+                    },
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+                )
+            },
+            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 8.dp, end = 0.dp)
+        ) {
+            AnimatedVisibility(
+                visible = quantity > 0f,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Stepper(
+                    value = quantity,
+                    onStepUp = { value -> onQuantityChanged(value) },
+                    onStepDown = { value -> onQuantityChanged(value) },
+                    isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
+                    isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
         }
+
+        WCTextButton(
+            onClick = { onSelectAttributes() },
+            text = stringResource(id = R.string.configuration_variable_update),
+            allCaps = false,
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun OptionalVariableQuantityProductItem(
+    title: String,
+    imageUrl: String?,
+    info: String?,
+    quantity: Float,
+    onQuantityChanged: (Float) -> Unit,
+    onSelectAttributes: () -> Unit,
+    isIncluded: Boolean,
+    onSwitchChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    maxValue: Float? = null,
+    minValue: Float? = null
+) {
+    Column(modifier = modifier.clickable { onSelectAttributes() }) {
+        ConfigurableListItem(
+            title = title,
+            imageUrl = imageUrl,
+            info = info,
+            configurableControlStart = {
+                SelectionCheck(
+                    isSelected = isIncluded,
+                    onSelectionChange = onSwitchChanged,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+                )
+            },
+            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 8.dp, end = 0.dp)
+        ) {
+            AnimatedVisibility(
+                visible = isIncluded,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Stepper(
+                    value = quantity,
+                    onStepUp = { value -> onQuantityChanged(value) },
+                    onStepDown = { value -> onQuantityChanged(value) },
+                    isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
+                    isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+        }
+
+        WCTextButton(
+            onClick = { onSelectAttributes() },
+            text = stringResource(id = R.string.configuration_variable_update),
+            allCaps = false,
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+        )
     }
 }
 
