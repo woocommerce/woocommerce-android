@@ -580,7 +580,9 @@
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_header">Payment totals</string>
     <string name="order_creation_payment_products_total">Products Total</string>
+    <string name="order_creation_payment_products">Products</string>
     <string name="order_creation_payment_order_total">Order Total</string>
     <string name="order_creation_payment_fee">Fees</string>
     <string name="order_creation_loading_dialog_title">Creating your order</string>
@@ -588,6 +590,7 @@
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes Total</string>
+    <string name="order_creation_payment_tax_label">Taxes</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -1303,7 +1306,24 @@
     <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
-
+    <string name="card_reader_hub_deposit_summary_available_funds">Available funds</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Pending funds</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d deposits</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d deposit</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Funds become available after pending for 7 days.</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Deposits</string>
+    <string name="card_reader_hub_deposit_summary_next">Next</string>
+    <string name="card_reader_hub_deposit_summary_last">Last</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Available funds are deposited automatically, every week.</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Learn more about when you\'ll receive your funds</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Collapse/expand deposit summary</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Estimated</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Paid</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Pending</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">In transit</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Canceled</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Failed</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Unknown</string>
     <!--
            Card Reader Tap To Pay Explanation
         -->
@@ -1707,6 +1727,7 @@
     <string name="product_inventory_empty">Add inventory</string>
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
+    <string name="product_sale">Sale</string>
     <string name="product_price_empty">Add price</string>
     <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
@@ -1716,6 +1737,8 @@
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
+    <string name="product_subscription_interval">Billing interval</string>
+    <string name="product_subscription_period">Period</string>
     <string name="product_schedule_sale_label">Schedule sale</string>
     <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
     <string name="product_schedule_sale_from_label">From</string>
@@ -3500,6 +3523,16 @@
     <string name="subscription_period_multiple_weeks">weeks</string>
     <string name="subscription_period_multiple_months">months</string>
     <string name="subscription_period_multiple_years">years</string>
+
+    <string-array name="subscription_interval_options">
+        <item>Every</item>
+        <item>Every 2nd</item>
+        <item>Every 3rd</item>
+        <item>Every 4th</item>
+        <item>Every 5th</item>
+        <item>Every 6th</item>
+    </string-array>
+
     <!--
     Subscription details
     -->
@@ -3769,4 +3802,7 @@
     <string name="ai_feedback_form_message">Is the result helpful?</string>
     <string name="ai_feedback_form_positive_button">Positive feedback</string>
     <string name="ai_feedback_form_negative_button">Negative feedback</string>
+    <string name="login_text_security_key">Use a security key</string>
+    <string name="login_error_security_key">There was some trouble with the Security key login</string>
+    <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 </resources>
