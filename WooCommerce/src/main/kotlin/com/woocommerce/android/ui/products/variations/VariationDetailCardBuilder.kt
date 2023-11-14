@@ -373,10 +373,7 @@ class VariationDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditVariationCardClicked(
-                        ViewProductSubscriptionExpiration(subscription),
-                        AnalyticsEvent.PRODUCT_VARIATION_VIEW_SUBSCRIPTIONS_TAPPED
-                    )
+                    viewModel.onEditVariationCardClicked(ViewProductSubscriptionExpiration(subscription))
                 }
             )
         }
