@@ -257,7 +257,6 @@ class MediaFileUploadHandler @Inject constructor(
     private fun Event.MediaUploadEvent.toStatus(): ProductImageUploadData {
         val uploadStatus = when (this) {
             is Event.MediaUploadEvent.FetchFailed -> UploadStatus.Failed(
-                media = MediaModel(),
                 mediaErrorMessage = resourceProvider.getString(R.string.product_image_service_error_media_null),
                 mediaErrorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
             )
@@ -293,7 +292,7 @@ class MediaFileUploadHandler @Inject constructor(
 
         @Parcelize
         data class Failed(
-            val media: MediaModel,
+            val media: MediaModel? = null,
             val mediaErrorType: MediaStore.MediaErrorType,
             val mediaErrorMessage: String
         ) : UploadStatus()

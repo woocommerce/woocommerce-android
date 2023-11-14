@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-23 15:54:05+0000
+Translation-Revision-Date: 2023-11-06 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="email_or_username">E-Mail-Adresse oder Benutzername</string>
+    <string name="custom_amounts_creation_error">Bestellung mit individuellem Betrag konnte nicht erstellt werden</string>
+    <string name="custom_amounts_add_custom_name_hint">Individuellen Namen eingeben</string>
+    <string name="custom_amounts_add_custom_amount">Individuellen Betrag hinzufügen</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_enter_amount">Betrag</string>
+    <string name="custom_amounts_dialog_title">Individueller Betrag</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Bitte stelle eine Verbindung zu Jetpack über deine Admin-Seite in einem Browser her oder wende dich an den Support.</string>
+    <string name="login_jetpack_installation_error_connection_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
+    <string name="custom_amounts">Individuelle Beträge</string>
+    <string name="product_details_blaze_card">Mit Blaze bewerben</string>
+    <string name="blaze_campaign_ceation_celebration_button">Verstanden</string>
+    <string name="blaze_campaign_ceation_celebration_message">Die Werbung wurde zur Genehmigung eingereicht. Wir senden dir eine Bestätigung per E-Mail, sobald sie genehmigt und gestartet wurde.</string>
+    <string name="blaze_campaign_creation_celebration_header">Fertig!</string>
+    <string name="blaze_campaign_creation_intro_button">Blaze-Kampagne jetzt starten</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Du kannst die Performance verfolgen und deine Blaze-Kampagne jederzeit starten und beenden.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Erreiche Millionen auf WordPress- und Tumblr-Websites.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Volle Kontrolle für lediglich ein paar Dollar pro Tag. Es ist wirklich kostengünstig.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Bewerbe dein Produkt in Minutenschnelle.</string>
+    <string name="blaze_campaign_creation_intro_title">Mit Blaze die Umsätze deines Shops steigern</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Beim Aktualisieren der Kampagnenliste ist ein Fehler aufgetreten. Bitte versuche es später erneut.</string>
+    <string name="media_picker_dialog_title">Medienquelle auswählen</string>
+    <string name="product_creation_package_photo_error">Beim Generieren von Produktname und -beschreibung ist ein Fehler aufgetreten.</string>
+    <string name="product_creation_package_photo_no_text_detected">Kein Text erkannt. Bitte wähle ein anderes Foto der Verpackung aus oder gib die Produktdetails manuell ein.</string>
+    <string name="order_editing_add_content_description">Produkt hinzufügen</string>
+    <string name="order_editing_barcode_content_description">Barcode scannen</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Produktkarte einklappen/aufklappen</string>
+    <string name="order_creation_decrease_item_amount_content_description">Produktmenge verringern</string>
+    <string name="order_creation_increase_item_amount_content_description">Produktmenge erhöhen</string>
+    <string name="order_creation_add_custom_amounts">Individuellen Betrag hinzufügen</string>
+    <string name="order_creation_price_after_discount">Preis mit Rabatt</string>
     <string name="previous_order">Vorherige Bestellung</string>
     <string name="next_order">Nächste Bestellung</string>
     <string name="blaze_campaign_details_title">Details zur Kampagne</string>
@@ -325,13 +356,6 @@ Language: de
     <string name="highlights_tooltip_button_hint">Button-Text</string>
     <string name="highlights_tooltip_message_hint">Tooltip-Nachricht. \n Diese kann mehrere Zeilen umfassen.</string>
     <string name="highlights_tooltip_title_hint">Tooltip-Titel</string>
-    <string name="blaze_banner_dismiss_dialog_button">Verstanden</string>
-    <string name="blaze_banner_dismiss_dialog_description">Kein Sorge! Auf Blaze kannst du ganz praktisch über das Menü und das Menü für Produktdetails zugreifen.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze-Werbung</string>
-    <string name="blaze_banner_close_button_content_description">Blaze-Banner-Button schließen</string>
-    <string name="blaze_banner_button">Blaze jetzt ausprobieren</string>
-    <string name="blaze_banner_description">Schalte Werbung für deine Produkte, die auf Millionen Websites auf WordPress.com und Tumblr präsentiert wird.</string>
-    <string name="blaze_banner_title">Produkte mit Blaze bewerben</string>
     <string name="ai_product_description_tooltip_dismiss">Verstanden</string>
     <string name="ai_product_description_tooltip_message">Nutze unser KI-gestütztes Tool, um Produktbeschreibungen schnell zu generieren. Gib einfach Stichwörter ein und wir erledigen den Rest!</string>
     <string name="ai_product_description_tooltip_title">✨ Mit KI schreiben</string>
@@ -815,7 +839,7 @@ Language: de
     <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>
     <string name="login_jetpack_installation_retry_installing">Installation erneut versuchen</string>
     <string name="login_jetpack_installation_get_support">Unterstützung erhalten</string>
-    <string name="login_jetpack_installation_error_generic_suggestion">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Bitte versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
     <string name="login_jetpack_installation_error_generic_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Du bist nicht berechtigt, Plugins in diesem Shop zu verwalten</string>
     <string name="login_jetpack_installation_error_authorizing">Fehler beim Autorisieren der Verbindung mit Jetpack</string>
@@ -2990,7 +3014,7 @@ Language: de
     <string name="login_text_otp_another">Sende mir stattdessen einen anderen Code per SMS.</string>
     <string name="login_text_otp">Stattdessen Code per SMS senden.</string>
     <string name="enter_verification_code_sms">Wir haben eine Textnachricht an die Telefonnummer mit den Endziffern %s gesendet. Gib bitte den Verifizierungscode aus der SMS ein.</string>
-    <string name="enter_verification_code">Fast geschafft! Gib bitte den Verifizierungscode aus deiner Authenticator-App ein.</string>
+    <string name="enter_verification_code">Fast geschafft! Bitte gib den Verifizierungscode für WordPress.com aus deiner Authenticator-App ein.</string>
     <string name="enter_username_instead">Melde dich mit deinem Benutzernamen an.</string>
     <string name="enter_site_address_instead">Melde dich an, indem du deine Website-Adresse eingibst.</string>
     <string name="alternatively">Alternativ:</string>

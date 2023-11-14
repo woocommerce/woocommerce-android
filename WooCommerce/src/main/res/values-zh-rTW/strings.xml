@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 09:54:04+0000
+Translation-Revision-Date: 2023-11-07 15:54:28+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="email_or_username">電子郵件地址或使用者名稱</string>
+    <string name="custom_amounts_creation_error">無法建立自訂金額訂單</string>
+    <string name="custom_amounts_add_custom_name_hint">輸入自訂名稱</string>
+    <string name="custom_amounts_add_custom_amount">新增自訂金額</string>
+    <string name="custom_amounts_name">名稱</string>
+    <string name="custom_amounts_enter_amount">金額</string>
+    <string name="custom_amounts_dialog_title">自訂金額</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">請透過瀏覽器上的管理頁面連結 Jetpack，或聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_connection_message">與你的網站通訊時發生錯誤。</string>
+    <string name="custom_amounts">自訂金額</string>
+    <string name="product_details_blaze_card">使用 Blaze 進行宣傳</string>
+    <string name="blaze_campaign_ceation_celebration_button">知道了</string>
+    <string name="blaze_campaign_ceation_celebration_message">廣告已提交供核准。 核准並執行後，我們會傳送確認郵件給你。</string>
+    <string name="blaze_campaign_creation_celebration_header">一切都準備好了！</string>
+    <string name="blaze_campaign_creation_intro_button">開始 Blaze 行銷活動</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">你可以追蹤成效，也可以隨時開始/停止使用 Blaze 行銷活動。</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">觸及 WordPress 和 Tumblr 網站上數百萬名使用者。</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">每天只需支付幾美元即可掌握世界。 經濟實惠。</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">只需短短幾分鐘即可宣傳產品。</string>
+    <string name="blaze_campaign_creation_intro_title">使用 Blaze 為你的商店帶動更多銷售業績</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. 請稍後再試。</string>
+    <string name="media_picker_dialog_title">選取媒體來源</string>
+    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
+    <string name="product_creation_package_photo_no_text_detected">未偵測到文字。 請選取另一張包裹照片或手動輸入產品詳細資訊。</string>
+    <string name="order_editing_add_content_description">新增商品</string>
+    <string name="order_editing_barcode_content_description">掃瞄條碼</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
+    <string name="order_creation_decrease_item_amount_content_description">商品數量</string>
+    <string name="order_creation_increase_item_amount_content_description">增加數量</string>
+    <string name="order_creation_add_custom_amounts">新增自訂金額</string>
+    <string name="order_creation_price_after_discount">折扣後價格</string>
     <string name="previous_order">上一筆訂單</string>
     <string name="next_order">下一筆訂單</string>
     <string name="blaze_campaign_details_title">行銷活動詳細資訊</string>
@@ -325,13 +356,6 @@ Language: zh_TW
     <string name="highlights_tooltip_button_hint">按鈕文字</string>
     <string name="highlights_tooltip_message_hint">工具提示訊息。 \n 可以是多行內容。</string>
     <string name="highlights_tooltip_title_hint">工具提示標題</string>
-    <string name="blaze_banner_dismiss_dialog_button">知道了</string>
-    <string name="blaze_banner_dismiss_dialog_description">別擔心！ 你可以從「選單」和產品詳細資訊的選單來存取 Blaze，非常方便。</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze 廣告</string>
-    <string name="blaze_banner_close_button_content_description">關閉 Blaze 橫幅按鈕</string>
-    <string name="blaze_banner_button">立即試用 Blaze</string>
-    <string name="blaze_banner_description">將產品變成廣告，投放到 WordPress.com 和 Tumblr 上的數百萬個網站。</string>
-    <string name="blaze_banner_title">使用 Blaze 宣傳產品</string>
     <string name="ai_product_description_tooltip_dismiss">知道了</string>
     <string name="ai_product_description_tooltip_message">使用 AI 支援的工具來快速產生產品說明。 只要輸入關鍵字，剩下交給我們就行了！</string>
     <string name="ai_product_description_tooltip_title">✨ 使用 AI 撰寫</string>
@@ -2990,7 +3014,7 @@ Language: zh_TW
     <string name="login_text_otp_another">請使用簡訊傳送另一個驗證碼給我。</string>
     <string name="login_text_otp">請改用簡訊傳送驗證碼給我。</string>
     <string name="enter_verification_code_sms">我們已將簡訊傳送至結尾為 %s 的電話號碼。請輸入簡訊中的驗證碼。</string>
-    <string name="enter_verification_code">快完成了！請輸入驗證器應用程式上的驗證碼。</string>
+    <string name="enter_verification_code">快完成了！ 請輸入驗證器應用程式上的 WordPress.com 驗證碼。</string>
     <string name="enter_username_instead">用你的使用者名稱登入。</string>
     <string name="enter_site_address_instead">藉由輸入你的網站位址來登入。</string>
     <string name="alternatively">替代作法：</string>

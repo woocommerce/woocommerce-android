@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 15:54:26+0000
+Translation-Revision-Date: 2023-11-07 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="email_or_username">Indirizzo e-mail o nome utente</string>
+    <string name="custom_amounts_creation_error">Impossibile creare un ordine con importo personalizzato</string>
+    <string name="custom_amounts_add_custom_name_hint">Inserisci nome personalizzato</string>
+    <string name="custom_amounts_add_custom_amount">Aggiungi importo personalizzato</string>
+    <string name="custom_amounts_name">Nome</string>
+    <string name="custom_amounts_enter_amount">Importo</string>
+    <string name="custom_amounts_dialog_title">Importo personalizzato</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Connetti Jetpack tramite la tua pagina di amministrazione su un browser o contatta il supporto.</string>
+    <string name="login_jetpack_installation_error_connection_message">Si è verificato un errore durante la comunicazione con il sito.</string>
+    <string name="custom_amounts">Importi personalizzati</string>
+    <string name="product_details_blaze_card">Promuovi con Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Fatto</string>
+    <string name="blaze_campaign_ceation_celebration_message">L\'annuncio è stato inviato per l\'approvazione. Ti invieremo un\'e-mail di conferma una volta che sarà approvato e pubblicato.</string>
+    <string name="blaze_campaign_creation_celebration_header">Tutto impostato.</string>
+    <string name="blaze_campaign_creation_intro_button">Avvia subito la Campagna Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Tieni traccia delle prestazioni, avvia e interrompi la campagna Blaze in qualsiasi momento.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Raggiungi milioni di persone sui siti WordPress e Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Assumi il controllo con soli pochi dollari al giorno. A prova di budget.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promuovi i tuoi prodotti in pochi minuti.</string>
+    <string name="blaze_campaign_creation_intro_title">Incrementa le vendite nel tuo negozio con Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Si è verificato un errore durante l\'aggiornamento dell\'elenco delle campagne. Riprova più tardi.</string>
+    <string name="media_picker_dialog_title">Seleziona la fonte degli elementi multimediali</string>
+    <string name="product_creation_package_photo_error">Si è verificato un errore durante la generazione del nome e della descrizione del prodotto.</string>
+    <string name="product_creation_package_photo_no_text_detected">Nessun testo rilevato. Seleziona un\'altra foto del pacchetto o inserisci manualmente i dettagli del prodotto.</string>
+    <string name="order_editing_add_content_description">Aggiungi prodotto</string>
+    <string name="order_editing_barcode_content_description">Scansiona codice a barre</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Comprimi/espandi la scheda del prodotto</string>
+    <string name="order_creation_decrease_item_amount_content_description">Diminuisci la quantità del prodotto</string>
+    <string name="order_creation_increase_item_amount_content_description">Aumenta la quantità del prodotto</string>
+    <string name="order_creation_add_custom_amounts">Aggiungi importo personalizzato</string>
+    <string name="order_creation_price_after_discount">Prezzo dopo lo sconto</string>
     <string name="previous_order">Ordine precedente</string>
     <string name="next_order">Ordine successivo</string>
     <string name="blaze_campaign_details_title">Dettagli della campagna</string>
@@ -325,13 +356,6 @@ Language: it
     <string name="highlights_tooltip_button_hint">Testo del pulsante</string>
     <string name="highlights_tooltip_message_hint">Messaggio del tooltip. \n Può essere più righe.</string>
     <string name="highlights_tooltip_title_hint">Titolo del tooltip</string>
-    <string name="blaze_banner_dismiss_dialog_button">Fatto</string>
-    <string name="blaze_banner_dismiss_dialog_description">Non preoccuparti. Blaze è accessibile da Menu e dal menu dei dettagli del prodotto per tua comodità.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Annunci pubblicitari di Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Chiudi il pulsante del banner di Blaze</string>
-    <string name="blaze_banner_button">Prova Blaze ora</string>
-    <string name="blaze_banner_description">Trasforma i tuoi prodotti in annunci pubblicitari pubblicati su milioni di siti su WordPress.com e Tumblr.</string>
-    <string name="blaze_banner_title">Promuovi i prodotti con Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Fatto</string>
     <string name="ai_product_description_tooltip_message">Usa il nostro strumento basato sull\'IA per generare rapidamente le descrizioni dei prodotti. Basta inserire le parole chiave e noi faremo il resto.</string>
     <string name="ai_product_description_tooltip_title">✨ Scrivi con l\'IA</string>
@@ -2990,7 +3014,7 @@ Language: it
     <string name="login_text_otp_another">Inviami invece un messaggio con un altro codice.</string>
     <string name="login_text_otp">Inviami un codice.</string>
     <string name="enter_verification_code_sms">Abbiamo inviato un messaggio di testo al numero di telefono che termina in %s. Inserisci il codice di verifica contenuto nell\'SMS.</string>
-    <string name="enter_verification_code">Ci sei quasi! Inserisci il codice di verifica dalla tua app di autenticazione.</string>
+    <string name="enter_verification_code">Ci sei quasi! Inserisci il codice di verifica per WordPress.com dalla tua app di autenticazione.</string>
     <string name="enter_username_instead">Accedi con il tuo nome utente.</string>
     <string name="enter_site_address_instead">Accedi inserendo l\'indirizzo del tuo sito.</string>
     <string name="alternatively">In alternativa:</string>

@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-25 20:54:04+0000
+Translation-Revision-Date: 2023-11-07 20:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="email_or_username">Адрес электронной почты или имя пользователя</string>
+    <string name="custom_amounts_creation_error">Не удалось создать заказ с индивидуальной суммой</string>
+    <string name="custom_amounts_add_custom_name_hint">Введите индивидуальное имя</string>
+    <string name="custom_amounts_add_custom_amount">Добавить индивидуальную сумму</string>
+    <string name="custom_amounts_name">Имя</string>
+    <string name="custom_amounts_enter_amount">Сумма</string>
+    <string name="custom_amounts_dialog_title">Индивидуальная сумма</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Подключите Jetpack на странице администратора в браузере или обратитесь в службу поддержки.</string>
+    <string name="login_jetpack_installation_error_connection_message">Во время обмена данными с вашим веб-сайтом произошла ошибка.</string>
+    <string name="custom_amounts">Индивидуальные суммы</string>
+    <string name="product_details_blaze_card">Рекламируйте при помощи Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Понятно</string>
+    <string name="blaze_campaign_ceation_celebration_message">Реклама отправлена на утверждение. Когда она будет одобрена и запущена, вы получите сообщение с подтверждением по электронной почте.</string>
+    <string name="blaze_campaign_creation_celebration_header">Всё готово!</string>
+    <string name="blaze_campaign_creation_intro_button">Запустите кампанию Blaze прямо сейчас</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Отслеживайте производительность, запускайте и останавливайте кампании Blaze в любое время.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Взаимодействуйте с миллионами посетителей сайтов WordPress и Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Полный контроль всего за несколько долларов в день. Это очень выгодно.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Прорекламируйте свой товар всего за несколько минут.</string>
+    <string name="blaze_campaign_creation_intro_title">Повышайте продажи в своём магазине с помощью Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">При обновлении списка кампаний произошла ошибка. Повторите попытку позже.</string>
+    <string name="media_picker_dialog_title">Выберите источник медиафайлов</string>
+    <string name="product_creation_package_photo_error">При создании названия и описания товара произошла ошибка.</string>
+    <string name="product_creation_package_photo_no_text_detected">Текст не обнаружен. Выберите другую фотографию упаковки или введите сведения о товаре вручную.</string>
+    <string name="order_editing_add_content_description">Добавить товар</string>
+    <string name="order_editing_barcode_content_description">Сканировать штрихкод</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Свернуть/развернуть карточку товара</string>
+    <string name="order_creation_decrease_item_amount_content_description">Уменьшить количество товара</string>
+    <string name="order_creation_increase_item_amount_content_description">Увеличить количество товара</string>
+    <string name="order_creation_add_custom_amounts">Добавить индивидуальную сумму</string>
+    <string name="order_creation_price_after_discount">Цена со скидкой</string>
     <string name="previous_order">Предыдущий заказ</string>
     <string name="next_order">Следующий заказ</string>
     <string name="blaze_campaign_details_title">Сведения о кампании</string>
@@ -325,13 +356,6 @@ Language: ru
     <string name="highlights_tooltip_button_hint">Текст кнопки</string>
     <string name="highlights_tooltip_message_hint">Текст всплывающей подсказки. \n Может занимать несколько строк.</string>
     <string name="highlights_tooltip_title_hint">Заголовок всплывающей подсказки</string>
-    <string name="blaze_banner_dismiss_dialog_button">Понятно</string>
-    <string name="blaze_banner_dismiss_dialog_description">Не волнуйтесь! Для удобства пользователей Blaze отображается в меню и разделе сведений о товаре.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Реклама в Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Кнопка закрытия баннера Blaze</string>
-    <string name="blaze_banner_button">Попробовать Blaze</string>
-    <string name="blaze_banner_description">Демонстрируйте товары в рекламных объявлениях на миллионах сайтов WordPress.com и Tumblr.</string>
-    <string name="blaze_banner_title">Продвигайте товары с помощью Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Понятно</string>
     <string name="ai_product_description_tooltip_message">Наши инструменты на базе ИИ помогут вам быстро составлять описания товаров. Введите ключевые слова, а мы сделаем остальное.</string>
     <string name="ai_product_description_tooltip_title">✨ Пишите тексты с помощью ИИ</string>
@@ -2990,7 +3014,7 @@ Language: ru
     <string name="login_text_otp_another">Пришлите мне другой код.</string>
     <string name="login_text_otp">Пришлите мне сообщение с кодом.</string>
     <string name="enter_verification_code_sms">Мы послали текстовое сообщение на телефонный номер оканчивающийся на %s. Пожалуйста введите проверочный код из SMS.</string>
-    <string name="enter_verification_code">Почти готово! Введите проверочный код из приложения Authenticator.</string>
+    <string name="enter_verification_code">Почти готово! Введите проверочный код для WordPress.com из приложения Authenticator.</string>
     <string name="enter_username_instead">Войти с именем пользователя.</string>
     <string name="enter_site_address_instead">Войти с адресом вашего сайта.</string>
     <string name="alternatively">Альтернативно:</string>

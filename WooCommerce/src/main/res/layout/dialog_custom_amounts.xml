@@ -99,12 +99,10 @@
                 style="@style/Woo.TextView.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
                 android:gravity="center"
                 android:hint="@string/custom_amounts_add_custom_name_hint"
+                android:inputType="text"
                 android:imeOptions="actionDone"
-                android:inputType="textMultiLine"
-                android:maxLines="2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/customAmountNameCaptionText" />

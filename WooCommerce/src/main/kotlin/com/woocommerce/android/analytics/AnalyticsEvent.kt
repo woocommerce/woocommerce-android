@@ -111,6 +111,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SIGNUP_ERROR(siteless = true),
     LOGIN_SITE_CREDENTIALS_LOGIN_FAILED(siteless = true),
     LOGIN_INSUFFICIENT_ROLE(siteless = false),
+    LOGIN_2FA_NEEDED(siteless = true),
+    LOGIN_USE_SECURITY_KEY_CLICKED(siteless = true),
+    LOGIN_SECURITY_KEY_FAILURE(siteless = true),
+    LOGIN_SECURITY_KEY_SUCCESS(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -284,6 +288,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     TAX_RATE_AUTO_TAX_BOTTOM_SHEET_DISPLAYED,
     TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED,
     TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED,
+
+    // -- Custom Amounts
+    ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED,
+    ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED,
+    ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED,
+    ADD_CUSTOM_AMOUNT_NAME_ADDED,
+    ADD_CUSTOM_AMOUNT_DONE_TAPPED,
 
     // -- Barcode Scanner
     BARCODE_SCANNING_SUCCESS,

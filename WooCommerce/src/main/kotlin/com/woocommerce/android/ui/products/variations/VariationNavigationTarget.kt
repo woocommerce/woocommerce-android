@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.products.variations
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.SaleDetails
 import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 /**
@@ -25,11 +25,17 @@ sealed class VariationNavigationTarget : Event() {
         val subscription: SubscriptionDetails,
         val sale: SaleDetails?
     ) : VariationNavigationTarget()
+
+    data class ViewProductSubscriptionExpiration(
+        val subscription: SubscriptionDetails
+    ) : VariationNavigationTarget()
+
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : VariationNavigationTarget()
     data class ViewAttributes(
         val remoteProductId: Long,
         val remoteVariationId: Long
     ) : VariationNavigationTarget()
+
     data class ViewImageGallery(
         val remoteId: Long,
         val images: List<Image>,

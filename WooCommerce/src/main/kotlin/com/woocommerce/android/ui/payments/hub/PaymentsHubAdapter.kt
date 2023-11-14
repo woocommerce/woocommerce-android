@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.hub
 
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.GapBetweenSections
@@ -29,6 +30,9 @@ class PaymentsHubAdapter :
             is LearnMoreListItem -> {
                 VIEW_TYPE_LEARN_MORE
             }
+            is PaymentsHubViewState.ListItem.DepositSummaryListItem -> {
+                VIEW_TYPE_DEPOSIT_SUMMARY
+            }
         }
     }
 
@@ -48,6 +52,9 @@ class PaymentsHubAdapter :
             }
             VIEW_TYPE_LEARN_MORE -> {
                 PaymentsHubViewHolder.LearnMoreViewHolder(parent)
+            }
+            VIEW_TYPE_DEPOSIT_SUMMARY -> {
+                PaymentsHubViewHolder.DepositSummaryViewHolder(ComposeView(parent.context))
             }
             else -> error("Unknown section")
         }
@@ -84,5 +91,6 @@ class PaymentsHubAdapter :
         const val VIEW_TYPE_NON_TOGGELABLE = 2
         const val VIEW_TYPE_GAP_BETWEEN_SECTIONS = 3
         const val VIEW_TYPE_LEARN_MORE = 4
+        const val VIEW_TYPE_DEPOSIT_SUMMARY = 5
     }
 }

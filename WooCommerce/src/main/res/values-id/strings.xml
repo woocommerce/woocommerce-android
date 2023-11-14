@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-24 09:54:04+0000
+Translation-Revision-Date: 2023-11-07 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="email_or_username">Alamat email atau Nama Pengguna</string>
+    <string name="custom_amounts_creation_error">Tidak dapat membuat pesanan berjumlah kustom</string>
+    <string name="custom_amounts_add_custom_name_hint">Masukkan Nama kustom</string>
+    <string name="custom_amounts_add_custom_amount">Tambahkan Jumlah Kustom</string>
+    <string name="custom_amounts_name">Nama</string>
+    <string name="custom_amounts_enter_amount">Jumlah</string>
+    <string name="custom_amounts_dialog_title">Jumlah Kustom</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Hubungkan Jetpack melalui halaman admin Anda di browser atau hubungi dukungan.</string>
+    <string name="login_jetpack_installation_error_connection_message">Terjadi error saat berkomunikasi dengan situs Anda.</string>
+    <string name="custom_amounts">Jumlah Kustom</string>
+    <string name="product_details_blaze_card">Promosikan dengan Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Saya mengerti</string>
+    <string name="blaze_campaign_ceation_celebration_message">Iklan telah dikirimkan untuk disetujui. Kami akan mengirimkan email konfirmasi umtuk Anda setelah iklan disetujui dan ditayangkan.</string>
+    <string name="blaze_campaign_creation_celebration_header">Semua sudah siap!</string>
+    <string name="blaze_campaign_creation_intro_button">Mulai kampanye Blaze sekarang</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Lacak performa, mulai, dan hentikan kampanye Blaze Anda kapan saja.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Jangkau jutaan pengguna di situs WordPress dan Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Ambil kendali hanya dengan beberapa dolar per hari. Harganya terjangkau.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promosikan produk Anda hanya dalam hitungan menit.</string>
+    <string name="blaze_campaign_creation_intro_title">Tingkatkan penjualan toko Anda dengan Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Terjadi error ketika menyegarkan daftar kampanye. Silakan coba lagi nanti.</string>
+    <string name="media_picker_dialog_title">Pilih Sumber Media</string>
+    <string name="product_creation_package_photo_error">Terjadi error ketika membuat nama &amp; deskripsi produk.</string>
+    <string name="product_creation_package_photo_no_text_detected">Tidak ada teks yang terdeteksi. Pilih foto kemasan lainnya atau masukkan detail produk secara manual.</string>
+    <string name="order_editing_add_content_description">Tambahkan produk</string>
+    <string name="order_editing_barcode_content_description">Pindai barcode</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Ciutkan/perluas kartu produk</string>
+    <string name="order_creation_decrease_item_amount_content_description">Kurangi kuantitas produk</string>
+    <string name="order_creation_increase_item_amount_content_description">Tingkatkan kuantitas produk</string>
+    <string name="order_creation_add_custom_amounts">Tambahkan jumlah kustom</string>
+    <string name="order_creation_price_after_discount">Harga setelah diskon</string>
     <string name="previous_order">Pesanan sebelumnya</string>
     <string name="next_order">Pesanan berikutnya</string>
     <string name="blaze_campaign_details_title">Detail kampanye</string>
@@ -325,13 +356,6 @@ Language: id
     <string name="highlights_tooltip_button_hint">Teks tombol</string>
     <string name="highlights_tooltip_message_hint">Pesan tooltip. \n Jumlahnya bisa beberapa baris.</string>
     <string name="highlights_tooltip_title_hint">Judul tooltip</string>
-    <string name="blaze_banner_dismiss_dialog_button">Saya mengerti</string>
-    <string name="blaze_banner_dismiss_dialog_description">Jangan khawatir! Blaze dapat diakses dari Menu dan menu detail produk demi kenyamanan Anda.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Iklan Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Tombol Tutup banner Blaze</string>
-    <string name="blaze_banner_button">Coba Blaze sekarang</string>
-    <string name="blaze_banner_description">Promosikan produk dengan iklan yang ditayangkan di jutaan situs WordPress.com dan Tumblr.</string>
-    <string name="blaze_banner_title">Promosikan produk dengan Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Saya mengerti</string>
     <string name="ai_product_description_tooltip_message">Gunakan alat berbasis AI untuk membuat deskripsi produk secara cepat. Cukup masukkan kata kunci dan biarkan kami mengurus selebihnya!</string>
     <string name="ai_product_description_tooltip_title">✨ Tulis dengan AI</string>
@@ -2990,7 +3014,7 @@ Language: id
     <string name="login_text_otp_another">Kirimi saya kode baru.</string>
     <string name="login_text_otp">Kirimi saya kode saja.</string>
     <string name="enter_verification_code_sms">Kami mengirimkan SMS ke nomor ponsel yang berakhiran %s. Masukkan kode verifikasi yang tercantum di SMS tersebut.</string>
-    <string name="enter_verification_code">Hampir selesai! Masukkan kode verifikasi dari aplikasi Pengautentikasi.</string>
+    <string name="enter_verification_code">Hampir selesai! Masukkan kode verifikasi untuk WordPress.com dari aplikasi pengautentikasi.</string>
     <string name="enter_username_instead">Login dengan nama pengguna Anda.</string>
     <string name="enter_site_address_instead">Login dengan memasukkan alamat situs Anda.</string>
     <string name="alternatively">Atau:</string>

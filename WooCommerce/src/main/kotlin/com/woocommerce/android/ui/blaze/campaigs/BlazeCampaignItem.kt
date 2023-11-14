@@ -81,7 +81,7 @@ fun BlazeCampaignItem(
 @Composable
 private fun CampaignStat(
     statName: String,
-    statValue: Long,
+    statValue: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -95,7 +95,7 @@ private fun CampaignStat(
         Text(
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.minor_50)),
-            text = statValue.toString(),
+            text = statValue,
             style = MaterialTheme.typography.h6,
         )
     }

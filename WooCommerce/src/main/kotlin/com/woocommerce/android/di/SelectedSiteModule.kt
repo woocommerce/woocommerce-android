@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Singleton
 
@@ -14,5 +15,9 @@ import javax.inject.Singleton
 class SelectedSiteModule {
     @Provides
     @Singleton
-    fun provideSelectedSite(context: Context, siteStore: SiteStore) = SelectedSite(context, siteStore)
+    fun provideSelectedSite(
+        context: Context,
+        siteStore: SiteStore,
+        @AppCoroutineScope scope: CoroutineScope
+    ) = SelectedSite(context, siteStore, scope)
 }
