@@ -31,7 +31,10 @@ class PaymentsHubDepositSummaryStateMapperTest {
         val overview = WooPaymentsDepositsOverview(
             account = WooPaymentsDepositsOverview.Account(
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
-                    delayDays = 0, interval = ""
+                    delayDays = 0,
+                    interval = "",
+                    monthlyAnchor = null,
+                    weeklyAnchor = null
                 ),
                 defaultCurrency = null,
                 depositsBlocked = false,
@@ -58,7 +61,10 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 depositsBlocked = false,
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
-                    delayDays = 1, interval = "DAILY"
+                    delayDays = 1,
+                    interval = "DAILY",
+                    monthlyAnchor = null,
+                    weeklyAnchor = null
                 )
             ),
             balance = WooPaymentsDepositsOverview.Balance(
@@ -130,7 +136,9 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 30,
-                    interval = "MONTHLY"
+                    interval = "MONTHLY",
+                    monthlyAnchor = null,
+                    weeklyAnchor = null
                 )
             ),
             balance = WooPaymentsDepositsOverview.Balance(
@@ -237,7 +245,9 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 5,
-                    interval = "DAILY"
+                    interval = "DAILY",
+                    monthlyAnchor = null,
+                    weeklyAnchor = null
                 )
             ),
             balance = null,
