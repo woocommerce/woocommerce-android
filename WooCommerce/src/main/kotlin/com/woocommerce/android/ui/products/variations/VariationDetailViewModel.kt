@@ -272,7 +272,11 @@ class VariationDetailViewModel @Inject constructor(
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 length = updatedLength
             )
-            viewState = viewState.copy(variation = variation.copy(subscriptionDetails = updatedSubscription))
+            val updatedVariation = variation.copy(subscriptionDetails = updatedSubscription)
+            viewState = viewState.copy(
+                variation = updatedVariation,
+                isDoneButtonVisible = updatedVariation != variation
+            )
         }
     }
 
