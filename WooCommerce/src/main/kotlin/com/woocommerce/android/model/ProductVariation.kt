@@ -17,6 +17,8 @@ import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -119,6 +121,31 @@ open class ProductVariation(
             } ?: ""
         }
 
+        // Add any other editable variation metadata here.
+        // Currently, only subscription details metadata is editable from the app. The rest is read only
+        fun SubscriptionDetails.toMetadataJson(): String {
+            val jsonArray = JsonArray()
+            val subscriptionValues = mapOf(
+                SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to price,
+                SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD to period.value,
+                SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL to periodInterval,
+                SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH to length,
+                SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to signUpFee,
+                SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to trialPeriod?.value,
+                SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to trialLength,
+                SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to oneTimeShipping
+            )
+            subscriptionValues.forEach { (key, value) ->
+                jsonArray.add(
+                    JsonObject().also { json ->
+                        json.addProperty(WCMetaData.KEY, key)
+                        json.addProperty(WCMetaData.VALUE, value.toString())
+                    }
+                )
+            }
+            return jsonArray.toString()
+        }
+
         return (cachedVariation ?: WCProductVariationModel()).also {
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
@@ -154,6 +181,9 @@ open class ProductVariation(
             it.width = if (width == 0f) "" else width.formatToString()
             it.weight = if (weight == 0f) "" else weight.formatToString()
             it.height = if (height == 0f) "" else height.formatToString()
+            if (this is SubscriptionProductVariation) {
+                it.metadata = subscriptionDetails?.toMetadataJson()
+            }
         }
     }
 
