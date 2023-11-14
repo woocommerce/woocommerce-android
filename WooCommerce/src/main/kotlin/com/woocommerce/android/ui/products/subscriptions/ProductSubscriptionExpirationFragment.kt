@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +23,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
@@ -80,28 +87,45 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
         items: List<String>,
         currentValue: String
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(id = color.color_surface))
-                .padding(dimensionResource(id = dimen.major_100))
+                .fillMaxSize(),
         ) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .background(colorResource(id = color.color_surface))
-                    .padding(dimensionResource(id = dimen.major_100)),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxWidth()
             ) {
-                Text(stringResource(id = string.subscription_expire))
-                WcExposedDropDown(
-                    items = items.toTypedArray(),
-                    onSelected = { selectedExpiration = items.indexOf(it) },
-                    currentValue = currentValue,
+                Row(
                     modifier = Modifier
                         .background(colorResource(id = color.color_surface))
-                        .padding(start = dimensionResource(id = dimen.major_100))
-                )
+                        .padding(dimensionResource(id = dimen.major_100)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(id = string.subscription_expire))
+                    WcExposedDropDown(
+                        items = items.toTypedArray(),
+                        onSelected = { selectedExpiration = items.indexOf(it) },
+                        currentValue = currentValue,
+                        modifier = Modifier
+                            .background(colorResource(id = color.color_surface))
+                            .padding(start = dimensionResource(id = dimen.major_100))
+                    )
+                }
             }
+            Divider(
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
+            )
         }
     }
+
+    @Preview
+    @Composable
+    private fun PreviewSubscriptionExpirationPicker() {
+        SubscriptionExpirationPicker(
+            items = listOf("Never", "1 month", "2 months", "3 months", "4 months", "5 months", "6 months"),
+            currentValue = "Never"
+        )
+    }
 }
+
