@@ -411,27 +411,25 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
 
     // Add any other editable product metadata here.
     // Currently now only subscription metadata is supported the rest is read only
-    fun metadataToJson(): String {
+    fun SubscriptionDetails.toMetadataJson(): String {
         val jsonArray = JsonArray()
-        subscription?.let {
-            val subscriptionValues = mapOf(
-                SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to it.price,
-                SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD to it.period.value,
-                SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL to it.periodInterval,
-                SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH to it.length,
-                SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to it.signUpFee,
-                SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to it.trialPeriod?.value,
-                SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to it.trialLength,
-                SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to it.oneTimeShipping
+        val subscriptionValues = mapOf(
+            SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to price,
+            SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD to period.value,
+            SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL to periodInterval,
+            SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH to length,
+            SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to signUpFee,
+            SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to trialPeriod?.value,
+            SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to trialLength,
+            SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to oneTimeShipping
+        )
+        subscriptionValues.forEach { (key, value) ->
+            jsonArray.add(
+                JsonObject().also { json ->
+                    json.addProperty(WCMetaData.KEY, key)
+                    json.addProperty(WCMetaData.VALUE, value.toString())
+                }
             )
-            subscriptionValues.forEach { (key, value) ->
-                jsonArray.add(
-                    JsonObject().also { json ->
-                        json.addProperty(WCMetaData.KEY, key)
-                        json.addProperty(WCMetaData.VALUE, value.toString())
-                    }
-                )
-            }
         }
         return jsonArray.toString()
     }
@@ -500,7 +498,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
         it.purchasable = isPurchasable
-        it.metadata = metadataToJson()
+        it.metadata = subscription?.toMetadataJson() ?: ""
     }
 }
 
