@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment.Companion.KEY_SUBSCRIPTION_EXPIRATION_RESULT
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.ui.promobanner.PromoBanner
@@ -271,6 +272,9 @@ class ProductDetailFragment :
         handleResult<Pair<String, String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { resultPair ->
             viewModel.updateProductDraft(description = resultPair.first, title = resultPair.second)
         }
+        handleResult<Int>(KEY_SUBSCRIPTION_EXPIRATION_RESULT) { newExpiration ->
+            viewModel.onSubscriptionExpirationChanged(newExpiration)
+        }
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
@@ -338,6 +342,7 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
+
                 is ShowAIProductDescriptionBottomSheet -> showAIProductDescriptionBottomSheet(
                     event.productTitle,
                     event.productDescription

@@ -32,11 +32,13 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewAttributes
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
 import com.woocommerce.android.util.CurrencyFormatter
@@ -50,7 +52,7 @@ class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: SiteParameters
+    private val parameters: SiteParameters,
 ) {
     private lateinit var originalSku: String
     private var parentProduct: Product? = null
@@ -99,6 +101,7 @@ class VariationDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionExpirationDate() else null,
                 variation.subscription(),
                 variation.warning(),
                 variation.attributes(),
@@ -299,6 +302,7 @@ class VariationDetailCardBuilder(
                 ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
+
             this.sku.isNotEmpty() -> mapOf(
                 Pair(resources.getString(R.string.product_sku), this.sku),
                 Pair(
@@ -306,6 +310,7 @@ class VariationDetailCardBuilder(
                     ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
                 )
             )
+
             else -> mapOf(
                 Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
             )
@@ -356,6 +361,23 @@ class VariationDetailCardBuilder(
         )
     }
 
+    private fun SubscriptionProductVariation.subscriptionExpirationDate(): ProductProperty? =
+        this.subscriptionDetails?.let { subscription ->
+            PropertyGroup(
+                title = string.product_subscription_expiration_title,
+                icon = drawable.ic_gridicons_calendar_expiration,
+                properties = mapOf(
+                    resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
+                        resources
+                    )
+                ),
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditVariationCardClicked(ViewProductSubscriptionExpiration(subscription))
+                }
+            )
+        }
+
     private fun SubscriptionProductVariation.subscription(): ProductProperty? =
         this.subscriptionDetails?.let { subscription ->
 
@@ -384,7 +406,7 @@ class VariationDetailCardBuilder(
                 )
             }
 
-            val expire = if (subscription.length != null) {
+            val expire = if (subscription.length != null && subscription.length > 0) {
                 resources.getString(string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
