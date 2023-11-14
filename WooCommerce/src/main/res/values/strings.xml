@@ -3523,16 +3523,6 @@
     <string name="subscription_period_multiple_weeks">weeks</string>
     <string name="subscription_period_multiple_months">months</string>
     <string name="subscription_period_multiple_years">years</string>
-
-    <string-array name="subscription_interval_options">
-        <item>every</item>
-        <item>every 2nd</item>
-        <item>every 3rd</item>
-        <item>every 4th</item>
-        <item>every 5th</item>
-        <item>every 6th</item>
-    </string-array>
-
     <!--
     Subscription details
     -->
