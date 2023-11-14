@@ -16,8 +16,11 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
+import org.wordpress.android.mediapicker.model.MediaTypes.MEDIA
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -40,26 +43,43 @@ class MediaPickerHelper @Inject constructor(
     }
 
     private val cameraLauncher = fragment.registerForActivityResult(StartActivityForResult()) {
-        handleCameraCaptureResult(it)
+        handleMediaPickerResult(it, AnalyticsTracker.IMAGE_SOURCE_CAMERA)
     }
 
-    fun showMediaPicker(source: DataSource, allowMultiSelect: Boolean = false) {
+    private val systemMediaPickerLauncher = fragment.registerForActivityResult(StartActivityForResult()) {
+        handleMediaPickerResult(it, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
+    }
+
+    fun showMediaPicker(source: DataSource, allowMultiSelect: Boolean = false, mediaTypes: MediaTypes = IMAGES) {
         when (source) {
-            WP_MEDIA_LIBRARY -> launchWPMediaLibrary(source, allowMultiSelect)
+            WP_MEDIA_LIBRARY -> launchWPMediaLibrary(source, allowMultiSelect, mediaTypes)
             CAMERA -> launchCamera()
-            DEVICE -> launchPhotoPicker(allowMultiSelect)
+            DEVICE -> launchPhotoPicker(allowMultiSelect, mediaTypes)
+            SYSTEM_PICKER -> launchSystemMediaPicker(mediaTypes)
             else -> throw IllegalArgumentException("Unsupported data source: $source")
         }
     }
 
-    private fun launchPhotoPicker(allowMultiSelect: Boolean) {
+    private fun launchSystemMediaPicker(mediaTypes: MediaTypes) {
+        val intent = MediaPickerActivity.buildIntent(
+            fragment.requireContext(),
+            mediaPickerSetupFactory.build(
+                source = SYSTEM_PICKER,
+                mediaTypes = mediaTypes
+            )
+        )
+
+        systemMediaPickerLauncher.launch(intent)
+    }
+
+    private fun launchPhotoPicker(allowMultiSelect: Boolean, mediaTypes: MediaTypes) {
         if (allowMultiSelect) {
             multiPhotoPicker.launch(
-                PickVisualMediaRequest(IMAGES.allowedTypes.toPhotoPickerTypes())
+                PickVisualMediaRequest(mediaTypes.allowedTypes.toPhotoPickerTypes())
             )
         } else {
             photoPicker.launch(
-                PickVisualMediaRequest(IMAGES.allowedTypes.toPhotoPickerTypes())
+                PickVisualMediaRequest(mediaTypes.allowedTypes.toPhotoPickerTypes())
             )
         }
     }
@@ -75,23 +95,18 @@ class MediaPickerHelper @Inject constructor(
 
     private fun launchWPMediaLibrary(
         source: DataSource,
-        allowMultiSelect: Boolean
+        allowMultiSelect: Boolean,
+        mediaTypes: MediaTypes
     ) {
         val mediaPickerIntent = MediaPickerActivity.buildIntent(
             context = fragment.requireContext(),
             mediaPickerSetupFactory.build(
                 source = source,
-                mediaTypes = IMAGES,
+                mediaTypes = mediaTypes,
                 isMultiSelectAllowed = allowMultiSelect
             )
         )
         mediaLibraryLauncher.launch(mediaPickerIntent)
-    }
-
-    private fun handleCameraCaptureResult(result: ActivityResult) {
-        result.processDeviceMediaResult()?.let { uris ->
-            (fragment as MediaPickerResultHandler).onDeviceMediaSelected(uris, AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-        }
     }
 
     private fun handlePhotoPickerResult(uris: List<Uri>) {
@@ -103,6 +118,12 @@ class MediaPickerHelper @Inject constructor(
     private fun handleMediaLibraryPickerResult(result: ActivityResult) {
         result.processMediaLibraryResult()?.let { mediaItems ->
             (fragment as MediaPickerResultHandler).onWPMediaSelected(mediaItems)
+        }
+    }
+
+    private fun handleMediaPickerResult(result: ActivityResult, source: String) {
+        result.processDeviceMediaResult()?.let { uris ->
+            (fragment as MediaPickerResultHandler).onDeviceMediaSelected(uris, source)
         }
     }
 
