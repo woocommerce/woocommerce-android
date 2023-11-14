@@ -445,8 +445,7 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
-        val newLength = if (selectedExpirationValue == 0) -1 else selectedExpirationValue
-        onVariationSubscriptionChanged(length = newLength)
+        onVariationSubscriptionChanged(length = selectedExpirationValue)
     }
 
     object HideImageUploadErrorSnackbar : Event()
