@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +23,6 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     private val repository: PaymentsHubDepositSummaryRepository,
     private val mapper: PaymentsHubDepositSummaryStateMapper,
     private val trackerWrapper: AnalyticsTrackerWrapper,
-    isFeatureEnabled: IsFeatureEnabled,
 ) : ScopedViewModel(savedState) {
     private val _viewState = MutableStateFlow<PaymentsHubDepositSummaryState>(PaymentsHubDepositSummaryState.Loading)
     val viewState: LiveData<PaymentsHubDepositSummaryState> = _viewState.asLiveData()
@@ -33,38 +31,34 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     val openBrowserEvents = _openBrowserEvents.asSharedFlow()
 
     init {
-        if (!isFeatureEnabled()) {
-            _viewState.value = constructApiError()
-        } else {
-            launch {
-                repository.retrieveDepositOverview().map {
-                    when (it) {
-                        is RetrieveDepositOverviewResult.Cache ->
-                            PaymentsHubDepositSummaryState.Success(
-                                mapper.mapDepositOverviewToViewModelOverviews(it.overview)
-                                    ?: return@map constructApiError(),
-                                onLearnMoreClicked = { onLearnMoreClicked() },
-                                onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
-                            )
+        launch {
+            repository.retrieveDepositOverview().map {
+                when (it) {
+                    is RetrieveDepositOverviewResult.Cache ->
+                        PaymentsHubDepositSummaryState.Success(
+                            mapper.mapDepositOverviewToViewModelOverviews(it.overview)
+                                ?: return@map constructApiError(),
+                            onLearnMoreClicked = { onLearnMoreClicked() },
+                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
+                        )
 
-                        is RetrieveDepositOverviewResult.Remote ->
-                            PaymentsHubDepositSummaryState.Success(
-                                mapper.mapDepositOverviewToViewModelOverviews(it.overview)
-                                    ?: return@map constructApiError(),
-                                onLearnMoreClicked = { onLearnMoreClicked() },
-                                onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
-                            )
+                    is RetrieveDepositOverviewResult.Remote ->
+                        PaymentsHubDepositSummaryState.Success(
+                            mapper.mapDepositOverviewToViewModelOverviews(it.overview)
+                                ?: return@map constructApiError(),
+                            onLearnMoreClicked = { onLearnMoreClicked() },
+                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
+                        )
 
-                        is RetrieveDepositOverviewResult.Error -> {
-                            PaymentsHubDepositSummaryState.Error(it.error)
-                        }
+                    is RetrieveDepositOverviewResult.Error -> {
+                        PaymentsHubDepositSummaryState.Error(it.error)
                     }
-                }.collect {
-                    if (it is PaymentsHubDepositSummaryState.Error) {
-                        trackApiError(it)
-                    }
-                    _viewState.value = it
                 }
+            }.collect {
+                if (it is PaymentsHubDepositSummaryState.Error) {
+                    trackApiError(it)
+                }
+                _viewState.value = it
             }
         }
     }
@@ -116,8 +110,4 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
 
         private const val NUMBER_OF_CURRENCIES_TRACK_PROP_KEY = "number_of_currencies"
     }
-}
-
-class IsFeatureEnabled @Inject constructor() {
-    operator fun invoke() = FeatureFlag.DEPOSIT_SUMMARY.isEnabled()
 }
