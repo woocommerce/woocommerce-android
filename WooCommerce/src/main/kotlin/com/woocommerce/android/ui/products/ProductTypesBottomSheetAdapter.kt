@@ -40,7 +40,7 @@ class ProductTypesBottomSheetAdapter(
         val diffResult =
             DiffUtil.calculateDiff(ProductTypesBottomSheetItemDiffUtil(options, optionList))
         options.clear()
-        options.addAll(optionList)
+        options.addAll(optionList.filter { it.isVisible })
         diffResult.dispatchUpdatesTo(this)
     }
 
