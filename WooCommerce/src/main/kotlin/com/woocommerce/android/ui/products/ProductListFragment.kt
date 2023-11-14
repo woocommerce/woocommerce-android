@@ -307,6 +307,7 @@ class ProductListFragment :
                 ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
                     findNavController().navigate(it)
                 }
+                searchMenuItem?.collapseActionView()
                 true
             }
             else -> false

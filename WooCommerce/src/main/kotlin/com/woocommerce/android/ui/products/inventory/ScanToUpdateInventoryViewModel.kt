@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.inventory
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -15,5 +16,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
 ) : ScopedViewModel(savedState) {
     fun onBarcodeScanningResult(status: CodeScannerStatus) {
+        Log.d("ScanToUpdateInventoryViewModel", "onBarcodeScanningResult: $status")
     }
 }
