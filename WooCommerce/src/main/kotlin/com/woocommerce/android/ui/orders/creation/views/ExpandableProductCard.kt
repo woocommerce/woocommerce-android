@@ -508,8 +508,8 @@ private fun AmountPicker(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
-        val decreaseButtonTint = if(isDecreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
-        val increaseButtonTint = if(isIncreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
+        val decreaseButtonTint = if (isDecreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
+        val increaseButtonTint = if (isIncreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
         IconButton(onClick = onDecreaseClicked, enabled = isDecreaseButtonEnabled) {
             Icon(
                 imageVector = Icons.Filled.Remove,
@@ -519,7 +519,7 @@ private fun AmountPicker(
             )
         }
         Text(text = product.item.quantity.toInt().toString(), color = MaterialTheme.colors.onSurface)
-        IconButton(onClick = onIncreaseClicked , enabled = isIncreaseButtonEnabled) {
+        IconButton(onClick = onIncreaseClicked, enabled = isIncreaseButtonEnabled) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription =

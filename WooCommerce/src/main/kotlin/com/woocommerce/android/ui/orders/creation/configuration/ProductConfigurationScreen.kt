@@ -117,7 +117,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
         }
     }
 }
-
+@Suppress("ComplexMethod")
 @Composable
 fun ProductConfigurationScreen(
     productRules: ProductRules,
