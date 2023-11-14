@@ -20,7 +20,6 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES
-import org.wordpress.android.mediapicker.model.MediaTypes.MEDIA
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
