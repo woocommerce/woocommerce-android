@@ -530,7 +530,7 @@ private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
             val formatter = MessageFormat("{0,ordinal}", Locale.getDefault())
             stringResource(
                 id = R.string.card_reader_hub_deposit_summary_available_deposit_time_monthly,
-                formatter.format(day)
+                formatter.format(arrayOf(day))
             )
         }
     }
