@@ -25,11 +25,17 @@ sealed class VariationNavigationTarget : Event() {
         val subscription: SubscriptionDetails,
         val sale: SaleDetails?
     ) : VariationNavigationTarget()
+
+    data class ViewProductSubscriptionExpiration(
+        val subscription: SubscriptionDetails
+    ) : VariationNavigationTarget()
+
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : VariationNavigationTarget()
     data class ViewAttributes(
         val remoteProductId: Long,
         val remoteVariationId: Long
     ) : VariationNavigationTarget()
+
     data class ViewImageGallery(
         val remoteId: Long,
         val images: List<Image>,

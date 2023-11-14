@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductRe
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -66,6 +67,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECON
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -256,6 +258,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
                 product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
@@ -824,6 +827,23 @@ class ProductDetailCardBuilder(
             )
         }
 
+    private fun Product.subscriptionExpirationDate(): ProductProperty? =
+        this.subscription?.let { subscription ->
+            PropertyGroup(
+                title = string.product_subscription_expiration_title,
+                icon = drawable.ic_gridicons_calendar_expiration,
+                properties = mapOf(
+                    resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
+                        resources
+                    )
+                ),
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(ViewProductSubscriptionExpiration(subscription))
+                }
+            )
+        }
+
     private fun Product.subscription(): ProductProperty? =
         this.subscription?.let { subscription ->
 
@@ -844,8 +864,8 @@ class ProductDetailCardBuilder(
                 )
             }
 
-            val expire = if (subscription.length != null) {
-                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            val expire = if (subscription.length != null && subscription.length > 0) {
+                resources.getString(R.string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
             }

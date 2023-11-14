@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.model.VariantOption
@@ -59,7 +60,7 @@ class VariationDetailViewModel @Inject constructor(
     private val parameterRepository: ParameterRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resources: ResourceProvider,
-    private val getProductVariationQuantityRules: GetProductVariationQuantityRules
+    private val getProductVariationQuantityRules: GetProductVariationQuantityRules,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
@@ -103,7 +104,7 @@ class VariationDetailViewModel @Inject constructor(
             this,
             resources,
             currencyFormatter,
-            parameters
+            parameters,
         )
     }
 
@@ -160,6 +161,7 @@ class VariationDetailViewModel @Inject constructor(
                     )
                 )
             }
+
             viewState.variation != originalVariation -> {
                 triggerEvent(
                     Event.ShowDialog.buildDiscardDialogEvent(
@@ -169,6 +171,7 @@ class VariationDetailViewModel @Inject constructor(
                     )
                 )
             }
+
             else -> {
                 triggerEvent(Event.Exit)
             }
@@ -259,14 +262,17 @@ class VariationDetailViewModel @Inject constructor(
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
         signUpFee: BigDecimal? = null,
+        length: Int? = null
     ) {
         viewState.variation?.let { variation ->
             val subscription = (variation as? SubscriptionProductVariation)?.subscriptionDetails ?: return
+            val updatedLength = resetSubscriptionLengthIfThePeriodChanged(period, subscription, length)
             val updatedSubscription = subscription.copy(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
-                signUpFee = signUpFee ?: subscription.signUpFee
+                signUpFee = signUpFee ?: subscription.signUpFee,
+                length = updatedLength
             )
             viewState = viewState.copy(variation = variation.copy(subscriptionDetails = updatedSubscription))
         }
@@ -280,6 +286,15 @@ class VariationDetailViewModel @Inject constructor(
             }
         }
     }
+
+    // The length ranges depend on the subscription period (days,weeks,months,years) so if period changes we need
+    // need to reset the length to "Never expire". This replicates the behavior of the Woo subscription extension
+    private fun resetSubscriptionLengthIfThePeriodChanged(
+        period: SubscriptionPeriod?,
+        subscription: SubscriptionDetails,
+        length: Int?
+    ) = if (period != null && period != subscription.period) -1
+    else length ?: subscription.length
 
     private suspend fun updateVariation(variation: ProductVariation) {
         if (networkStatus.isConnected()) {
@@ -429,6 +444,11 @@ class VariationDetailViewModel @Inject constructor(
 
     suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
         return getProductVariationQuantityRules(remoteProductId, remoteVariationId)
+    }
+
+    fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
+        val newLength = if (selectedExpirationValue == 0) -1 else selectedExpirationValue
+        onVariationSubscriptionChanged(length = newLength)
     }
 
     object HideImageUploadErrorSnackbar : Event()
