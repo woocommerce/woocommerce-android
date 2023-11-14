@@ -703,7 +703,7 @@ class ProductDetailViewModel @Inject constructor(
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
             if (updatedDownloads.isEmpty()) triggerEvent(
-                ProductExitEvent.ExitProductDownloads()
+                ProductExitEvent.ExitProductDownloads
             )
         }
     }
@@ -790,50 +790,50 @@ class ProductDetailViewModel @Inject constructor(
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
-            is ExitSettings -> {
+            ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
 
-            is ExitExternalLink -> {
+            ExitExternalLink -> {
                 eventName = EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
 
-            is ExitProductCategories -> {
+            ExitProductCategories -> {
                 eventName = PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
 
-            is ExitProductTags -> {
+            ExitProductTags -> {
                 eventName = PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
 
-            is ExitProductAttributeList -> {
+            ExitProductAttributeList -> {
                 eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ExitProductAddAttribute -> {
+            ExitProductAddAttribute -> {
                 eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ExitAttributesAdded -> {
+            ExitAttributesAdded -> {
                 eventName = PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ExitLinkedProducts -> Unit // Do nothing
-            is ExitProductAddAttributeTerms -> Unit // Do nothing
-            is ExitProductAddons -> Unit // Do nothing
-            is ExitProductDownloads -> Unit // Do nothing
-            is ExitProductDownloadsSettings -> Unit // Do nothing
-            is ExitProductRenameAttribute -> Unit // Do nothing
-            is ExitProductSubscriptions -> Unit // Do nothing
-            is ExitProductQuantityRules -> Unit // Do nothing
-            is ExitProductSubscriptionExpiration -> Unit // Do nothing
-            ExitProductSubscriptionFreeTrial -> Unit
+            ExitLinkedProducts -> Unit // Do nothing
+            ExitProductAddAttributeTerms -> Unit // Do nothing
+            ExitProductAddons -> Unit // Do nothing
+            ExitProductDownloads -> Unit // Do nothing
+            ExitProductDownloadsSettings -> Unit // Do nothing
+            ExitProductRenameAttribute -> Unit // Do nothing
+            ExitProductSubscriptions -> Unit // Do nothing
+            ExitProductQuantityRules -> Unit // Do nothing
+            ExitProductSubscriptionExpiration -> Unit // Do nothing
+            ExitProductSubscriptionFreeTrial -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -2178,11 +2178,11 @@ class ProductDetailViewModel @Inject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onBackButtonClicked(ProductExitEvent.ExitProductTags())
+                onBackButtonClicked(ExitProductTags)
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onBackButtonClicked(ProductExitEvent.ExitProductTags())
+            onBackButtonClicked(ExitProductTags)
         }
     }
 
@@ -2411,33 +2411,22 @@ class ProductDetailViewModel @Inject constructor(
      * Add a new class here for each new product sub detail screen to handle back navigation.
      */
     sealed class ProductExitEvent : Event() {
-        class ExitExternalLink : ProductExitEvent()
-        class ExitSettings : ProductExitEvent()
-        class ExitProductCategories : ProductExitEvent()
-        class ExitProductTags : ProductExitEvent()
-        class ExitLinkedProducts : ProductExitEvent()
-        class ExitProductDownloads : ProductExitEvent()
-        class ExitProductDownloadsSettings :
-            ProductExitEvent()
-
-        class ExitProductAttributeList : ProductExitEvent()
-
-        class ExitProductAddAttribute : ProductExitEvent()
-
-        class ExitProductAddAttributeTerms : ProductExitEvent()
-
-        class ExitProductRenameAttribute : ProductExitEvent()
-
+        object ExitExternalLink : ProductExitEvent()
+        object ExitSettings : ProductExitEvent()
+        object ExitProductCategories : ProductExitEvent()
+        object ExitProductTags : ProductExitEvent()
+        object ExitLinkedProducts : ProductExitEvent()
+        object ExitProductDownloads : ProductExitEvent()
+        object ExitProductDownloadsSettings : ProductExitEvent()
+        object ExitProductAttributeList : ProductExitEvent()
+        object ExitProductAddAttribute : ProductExitEvent()
+        object ExitProductAddAttributeTerms : ProductExitEvent()
+        object ExitProductRenameAttribute : ProductExitEvent()
         object ExitAttributesAdded : ProductExitEvent()
-
         object ExitProductAddons : ProductExitEvent()
-
         object ExitProductSubscriptions : ProductExitEvent()
-
         object ExitProductQuantityRules : ProductExitEvent()
-
         object ExitProductSubscriptionExpiration : ProductExitEvent()
-
         object ExitProductSubscriptionFreeTrial : ProductExitEvent()
     }
 
