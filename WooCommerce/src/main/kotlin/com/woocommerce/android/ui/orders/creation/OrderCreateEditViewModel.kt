@@ -70,6 +70,7 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -1409,14 +1410,6 @@ data class ProductUIModel(
     val priceAfterDiscount: String,
     val hasDiscount: Boolean = item.discount > BigDecimal.ZERO,
 )
-
-@Parcelize
-data class CustomAmountUIModel(
-    val id: Long,
-    val amount: BigDecimal,
-    val name: String,
-    val isLocked: Boolean = false
-) : Parcelable
 
 enum class ScanningSource(val source: String) {
     ORDER_CREATION("order_creation"),
