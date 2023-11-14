@@ -1,13 +1,14 @@
 package com.woocommerce.android.extensions
 
+import android.app.Activity
 import androidx.fragment.app.FragmentActivity
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 
 /**
  * Used for starting the HelpActivity in a wrapped way whenever a troubleshooting URL click happens
  */
-fun FragmentActivity.startHelpActivity(origin: Origin) =
+fun FragmentActivity.startHelpActivity(origin: HelpOrigin) =
     startActivity(
         HelpActivity.createIntent(
             this,
@@ -15,3 +16,9 @@ fun FragmentActivity.startHelpActivity(origin: Origin) =
             null
         )
     )
+
+var Activity.currentScreenBrightness: Float
+    get() = window.attributes.screenBrightness
+    set(value) {
+        window.attributes = window.attributes.apply { screenBrightness = value }
+    }

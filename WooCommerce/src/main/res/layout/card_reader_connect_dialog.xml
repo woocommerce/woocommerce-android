@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.prefs.cardreader.connect.CardReaderConnectDialogFragment">
+    tools:context="com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
         android:layout_height="@dimen/payments_dialog_height"
-        android:background="?attr/colorSurface"
+        android:background="@color/color_surface_elevated"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingTop="@dimen/major_200"
@@ -50,10 +50,10 @@
             android:layout_marginStart="@dimen/major_125"
             android:layout_marginEnd="@dimen/major_125"
             android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/illustration"
-            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
             tools:text="Please wait" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -86,9 +86,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_200"
+            app:layout_constraintBottom_toTopOf="@id/tertiary_action_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Keep Searching" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tertiary_action_btn"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_200"
+            android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Cancel" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

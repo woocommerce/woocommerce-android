@@ -1,14 +1,21 @@
 package com.woocommerce.android.model
 
 import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.extensions.greaterThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import java.util.Calendar
+import java.util.Date
 
 data class FeatureFeedbackSettings(
-    val name: String,
-    val state: FeedbackState = UNANSWERED
+    val feature: Feature,
+    val feedbackState: FeedbackState = UNANSWERED,
+    val settingChangeDate: Long = Calendar.getInstance().time.time,
 ) {
-    val shouldRequestFeedback
-        get() = state == UNANSWERED
+    val key
+        get() = feature.toString()
+
+    fun registerItself(feedbackPrefs: FeedbackPrefs) = feedbackPrefs.setFeatureFeedbackSettings(this)
 
     enum class FeedbackState {
         GIVEN,
@@ -16,13 +23,17 @@ data class FeatureFeedbackSettings(
         UNANSWERED
     }
 
-    enum class Feature(val description: String) {
-        SHIPPING_LABELS_M4("shipping_labels_m4"),
-        PRODUCTS_VARIATIONS("products_variations"),
-        PRODUCT_ADDONS("product_addons")
+    enum class Feature {
+        SHIPPING_LABEL_M4,
+        PRODUCT_VARIATIONS,
+        PRODUCT_ADDONS,
+        SIMPLE_PAYMENTS_AND_ORDER_CREATION,
+        COUPONS,
+        ANALYTICS_HUB,
+        TAP_TO_PAY,
     }
 
-    fun registerItselfWith(featureKey: String) {
-        FeedbackPrefs.setFeatureFeedbackSettings(featureKey, this)
-    }
+    fun isFeedbackGivenMoreThanDaysAgo(days: Int) =
+        feedbackState == FeedbackState.GIVEN &&
+            Date(settingChangeDate).pastTimeDeltaFromNowInDays greaterThan days
 }

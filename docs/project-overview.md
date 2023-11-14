@@ -44,22 +44,6 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 | wc.reset_db_on_downgrade   | Debug/Beta builds: If `true` will drop all tables and recreate the db if a database downgrade is detected. |
 | wc.sentry.dsn              | Used for Sentry integration. Can be ignored.|
 
-### Setting up Checkstyle
-
-The woocommerce-android project uses [Checkstyle][checkstyle]. You can run checkstyle using `./gradlew checkstyle`.
-
-Optionally, you can also view errors and warnings in realtime with the Checkstyle plugin. Follow the steps below if needed.
-
-You can install the CheckStyle-IDEA plugin in Android Studio here:
-
-`Android Studio > Preferences... > Plugins > CheckStyle-IDEA`
-
-Once installed, you can configure the plugin here:
-
-`Android Studio > Preferences... > Other Settings > Checkstyle`
-
-From there, add and enable the configuration file for woocommerce-android, located at [config/checkstyle.xml](https://github.com/woocommerce/woocommerce-android/blob/develop/config/checkstyle.xml).
-
 ### Using detekt
 
 The woocommerce-android project uses [detekt][detekt] for Kotlin linting and code style check.
@@ -87,3 +71,13 @@ Contributors can build and run the app without issue, but Google Sign-In will al
 Google Sign-In requires configuration files which contain client and server information
 that can't be shared publicly. More documentation and guides can be found on the
 [Google Identity Platform website][google-ident].
+
+
+
+[wp-com-apps]: https://developer.wordpress.com/apps/
+[wp-app]: https://apps.wordpress.com/mobile/
+[wp-api]: https://developer.wordpress.org/rest-api/
+[oauth]: https://oauth.net
+[google-ident]: https://cloud.google.com/identity-platform/docs/
+[detekt]: https://detekt.github.io/detekt/
+[jetpack]: https://wordpress.org/plugins/jetpack/

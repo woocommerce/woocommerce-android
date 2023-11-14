@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
-import android.os.Build
-import android.text.Html
-import android.text.Spanned
 import android.util.Patterns
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.FormatUtils
 import java.io.IOException
 import java.util.Locale
+import java.util.regex.Pattern
 import kotlin.math.abs
 
 @Suppress("unused")
@@ -23,6 +24,8 @@ object StringUtils {
     const val EMPTY = ""
     private const val ONE_MILLION = 1000000
     private const val ONE_THOUSAND = 1000
+    private const val A8C = "@a8c.com"
+    private const val AUTOMATTIC = "@automattic.com"
 
     /**
      * Borrowed and modified from WordPress-Android :)
@@ -81,6 +84,21 @@ object StringUtils {
         }
     }
 
+    /* The variant to be used inside Jetpack Compose components */
+    @Composable
+    fun getQuantityString(
+        quantity: Int,
+        @StringRes default: Int,
+        @StringRes zero: Int? = null,
+        @StringRes one: Int? = null
+    ): String {
+        return when (quantity) {
+            0 -> stringResource(id = zero ?: default, quantity)
+            1 -> stringResource(id = one ?: default, quantity)
+            else -> stringResource(id = default, quantity)
+        }
+    }
+
     /**
      * Similar to UrlUtils.getHost() except that it includes the path (subfolder)
      *
@@ -97,11 +115,35 @@ object StringUtils {
 
     /**
      * Returns true if the passed string is a valid email address
+     *
+     * @param [allowWildCardLocalPart] To support inputs like "*@gmail.com", which are not supported by
+     *                                 Patterns.EMAIL_ADDRESS
      */
-    fun isValidEmail(email: String?): Boolean {
+    fun isValidEmail(email: String?, allowWildCardLocalPart: Boolean = false): Boolean {
         return email?.let {
-            return Patterns.EMAIL_ADDRESS.matcher(it).matches()
+            if (allowWildCardLocalPart) {
+                // This is identical to Patterns.EMAIL_ADDRESS, just with "*" added at the local part regex.
+                val emailAddressWithWildCardLocalPart = Pattern.compile(
+                    "[a-zA-Z0-9+._%-*]{1,256}" +
+                        "@" +
+                        "[a-zA-Z0-9][a-zA-Z0-9-]{0,64}" +
+                        "(" +
+                        "." +
+                        "[a-zA-Z0-9][a-zA-Z0-9-]{0,25}" +
+                        ")+"
+                )
+                emailAddressWithWildCardLocalPart.matcher(it).matches()
+            } else {
+                Patterns.EMAIL_ADDRESS.matcher(it).matches()
+            }
         } ?: false
+    }
+
+    /**
+     * Returns true if the passed string is an Automattic/A8c email
+     */
+    fun isA8cEmail(email: String?): Boolean {
+        return email != null && (AUTOMATTIC in email.lowercase() || A8C in email.lowercase())
     }
 
     /**
@@ -203,18 +245,9 @@ object StringUtils {
      * double spaces with a single space (just in case)
      */
     fun getRawTextFromHtml(htmlStr: String) =
-        Html.fromHtml(htmlStr).toString().replace("\n", " ").replace("  ", " ")
-
-    /**
-     * Helper method for using the appropriate `Html.fromHtml()` for the build version.
-     */
-    fun fromHtml(htmlStr: String): Spanned {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(htmlStr, Html.FROM_HTML_MODE_LEGACY)
-        } else {
-            Html.fromHtml(htmlStr)
-        }
-    }
+        HtmlCompat.fromHtml(htmlStr, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+            .replace("\n", " ")
+            .replace("  ", " ")
 
     /**
      * Returns a string for the specified locale.

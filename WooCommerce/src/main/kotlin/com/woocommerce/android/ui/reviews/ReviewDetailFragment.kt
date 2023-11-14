@@ -1,36 +1,41 @@
 package com.woocommerce.android.ui.reviews
 
 import android.content.Context
-import android.graphics.PorterDuff
-import android.graphics.drawable.LayerDrawable
-import android.os.Build
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.transition.MaterialContainerTransform
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
-import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.MarkNotificationAsRead
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Reply
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -46,10 +51,11 @@ import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
+class ReviewDetailFragment :
+    BaseFragment(R.layout.fragment_review_detail),
+    BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val viewModel: ReviewDetailViewModel by viewModels()
 
@@ -63,7 +69,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
     private val navArgs: ReviewDetailFragmentArgs by navArgs()
 
     private val moderateListener = OnCheckedChangeListener { _, isChecked ->
-        AnalyticsTracker.track(Stat.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_APPROVE_BUTTON_TAPPED)
         when (isChecked) {
             true -> processReviewModeration(APPROVED)
             false -> processReviewModeration(HOLD)
@@ -74,6 +80,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val dimen = requireActivity().resources.getDimensionPixelSize(R.dimen.image_minor_50)
@@ -85,7 +92,29 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
 
         _binding = FragmentReviewDetailBinding.bind(view)
 
+        ViewCompat.setTransitionName(
+            binding.scrollView,
+            getString(R.string.review_card_detail_transition_name)
+        )
+
         initializeViewModel()
+
+        handleResult<String>(SimpleTextEditorFragment.SIMPLE_TEXT_EDITOR_RESULT) {
+            viewModel.onReviewReplied(it)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.snack_root
+            duration = transitionDuration
+            scrimColor = Color.TRANSPARENT
+            startContainerColor = backgroundColor
+            endContainerColor = backgroundColor
+        }
     }
 
     override fun onStart() {
@@ -121,19 +150,30 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is MarkNotificationAsRead -> {
-                        notificationMessageHandler.removeNotificationByRemoteIdFromSystemsBar(
-                            event.remoteNoteId
-                        )
-                    }
-                    is Exit -> exitDetailView()
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> exitDetailView()
+                is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
+                is Reply -> navigateToReply()
             }
+        }
+    }
+
+    private fun navigateToReply() {
+        NavGraphMainDirections.actionGlobalSimpleTextEditorFragment(
+            currentText = "",
+            screenTitle = "Answer review",
+            hint = "Answer review",
+            strategy = SEND_RESULT_ON_CONFIRMATION
+        ).let {
+            findNavController().navigateSafely(it)
+        }
+    }
+
+    private fun exitReviewDetailOpenedFromNotification() {
+        findNavController().navigateSafely(
+            ReviewDetailFragmentDirections.actionReviewDetailFromNotificationToReviewListFragment()
         )
     }
 
@@ -157,7 +197,7 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         review.product?.let { product ->
             binding.reviewProductName.text = product.name.fastStripHtml()
             binding.reviewOpenProduct.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_OPEN_EXTERNAL_BUTTON_TAPPED)
                 ChromeCustomTabUtils.launchUrl(activity as Context, product.externalUrl)
             }
             refreshProductImage(product.remoteProductId)
@@ -170,19 +210,15 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
             binding.reviewRatingBar.visibility = View.GONE
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
-            stars?.getDrawable(2)?.setColorFilter(
-                ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
-                PorterDuff.Mode.SRC_ATOP
-            )
-        }
-
         // Set the review text
         binding.reviewDescription.text = HtmlUtils.fromHtml(review.review)
 
         // Initialize the moderation buttons and set review status
         configureModerationButtons(ProductReviewStatus.fromString(review.status))
+
+        binding.reviewReply.setOnClickListener {
+            viewModel.onReplyClicked()
+        }
     }
 
     private fun refreshProductImage(remoteProductId: Long) {
@@ -210,46 +246,43 @@ class ReviewDetailFragment : BaseFragment(R.layout.fragment_review_detail) {
         if (isStateSaved) {
             runOnStartFunc = { findNavController().popBackStack() }
         } else {
-            findNavController().popBackStack()
+            findNavController().navigateSafely(
+                ReviewDetailFragmentDirections.actionReviewDetailFromNotificationToReviewListFragment()
+            )
         }
     }
 
     private fun configureModerationButtons(status: ProductReviewStatus) {
-        val visibility = if (navArgs.enableModeration) View.VISIBLE else View.GONE
-        binding.reviewApprove.visibility = visibility
-        binding.reviewSpam.visibility = visibility
-        binding.reviewTrash.visibility = visibility
+        binding.reviewApprove.setOnCheckedChangeListener(null)
 
-        if (navArgs.enableModeration) {
-            binding.reviewApprove.setOnCheckedChangeListener(null)
+        // Use the status override if present,else new status
+        when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
+            APPROVED -> binding.reviewApprove.isChecked = true
+            HOLD -> binding.reviewApprove.isChecked = false
+            else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
+        }
 
-            // Use the status override if present,else new status
-            when (val newStatus = navArgs.tempStatus?.let { ProductReviewStatus.fromString(it) } ?: status) {
-                APPROVED -> binding.reviewApprove.isChecked = true
-                HOLD -> binding.reviewApprove.isChecked = false
-                else -> WooLog.w(REVIEWS, "Unable to process Review with a status of $newStatus")
-            }
+        // Configure the moderate button
+        binding.reviewApprove.setOnCheckedChangeListener(moderateListener)
 
-            // Configure the moderate button
-            binding.reviewApprove.setOnCheckedChangeListener(moderateListener)
+        // Configure the spam button
+        binding.reviewSpam.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
 
-            // Configure the spam button
-            binding.reviewSpam.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_SPAM_BUTTON_TAPPED)
+            processReviewModeration(SPAM)
+        }
 
-                processReviewModeration(SPAM)
-            }
+        // Configure the trash button
+        binding.reviewTrash.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
 
-            // Configure the trash button
-            binding.reviewTrash.setOnClickListener {
-                AnalyticsTracker.track(Stat.REVIEW_DETAIL_TRASH_BUTTON_TAPPED)
-
-                processReviewModeration(TRASH)
-            }
+            processReviewModeration(TRASH)
         }
     }
 
     private fun processReviewModeration(newStatus: ProductReviewStatus) {
         viewModel.moderateReview(newStatus)
     }
+
+    override fun onRequestAllowBackPress(): Boolean = viewModel.onBackPressed()
 }

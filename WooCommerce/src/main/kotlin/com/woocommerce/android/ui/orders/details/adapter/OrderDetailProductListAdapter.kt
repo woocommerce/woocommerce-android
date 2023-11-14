@@ -18,21 +18,26 @@ class OrderDetailProductListAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
     private val onViewAddonsClick: ViewAddonClickListener? = null
-) : RecyclerView.Adapter<OrderDetailProductListAdapter.ViewHolder>() {
-    class ViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    class ProductViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view: OrderDetailProductItemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.order_detail_product_list_item, parent, false)
             as OrderDetailProductItemView
-        return ViewHolder(view)
+        return ProductViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = orderItems[position]
-        val imageSize = holder.view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+        val imageSize = holder.itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
-        holder.view.initView(orderItems[position], productImage, formatCurrencyForDisplay, onViewAddonsClick)
+        (holder as ProductViewHolder).view.initView(
+            orderItems[position],
+            productImage,
+            formatCurrencyForDisplay,
+            onViewAddonsClick
+        )
         holder.view.setOnClickListener {
             if (item.isVariation) {
                 productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)

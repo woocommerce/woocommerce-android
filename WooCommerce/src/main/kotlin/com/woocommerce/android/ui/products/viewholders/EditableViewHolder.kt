@@ -19,5 +19,11 @@ class EditableViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
         }
 
         editableView.show(hint, item.text, item.shouldFocus, item.isReadOnly)
+
+        if (item.badgeText != null && item.badgeColor != null) {
+            editableView.showBadge(item.badgeText, item.badgeColor)
+        } else {
+            editableView.hideBadge()
+        }
     }
 }

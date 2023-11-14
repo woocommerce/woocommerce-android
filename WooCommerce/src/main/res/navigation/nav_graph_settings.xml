@@ -1,133 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
-
     <fragment
         android:id="@+id/mainSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
         android:label="MainSettingsFragment">
         <action
-            android:id="@+id/action_mainSettingsFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-        <action
             android:id="@+id/action_mainSettingsFragment_to_privacySettingsFragment"
-            app:destination="@id/privacySettingsFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/privacySettingsFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_licensesFragment"
-            app:destination="@id/licensesFragment2"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/licensesFragment2" />
         <action
-            android:id="@+id/action_mainSettingsFragment_to_aboutFragment"
-            app:destination="@id/aboutFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            android:id="@+id/action_mainSettingsFragment_to_aboutActivity"
+            app:destination="@id/aboutActivity" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_betaFeaturesFragment"
-            app:destination="@id/betaFeaturesFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/betaFeaturesFragment" />
 
         <action
             android:id="@+id/action_mainSettingsFragment_feedbackSurveyFragment"
-            app:destination="@id/feedbackSurveyFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
-    </fragment>
-    <dialog
-        android:id="@+id/cardReaderConnectFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment"
-        android:label="CardReaderConnectFragment">
-        <argument
-            android:name="skipOnboarding"
-            app:argType="boolean"
-            app:nullable="false" />
+            app:destination="@id/feedbackSurveyFragment" />
         <action
-            android:id="@+id/action_cardReaderConnectFragment_to_cardReaderTutorialDialogFragment"
-            app:destination="@id/cardReaderTutorialDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderUpdateDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateDialogFragment"
-        android:label="CardReaderUpdateDialogFragment" >
-        <argument
-            android:name="startedByUser"
-            android:defaultValue="false"
-            app:argType="boolean" />
-    </dialog>
-    <dialog
-        android:id="@+id/cardReaderTutorialDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment"
-        android:label="CardReaderTutorialDialogFragment" />
-    <fragment
-        android:id="@+id/cardReaderDetailFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailFragment"
-        android:label="CardReaderDetailFragment" >
+            android:id="@+id/action_mainSettingsFragment_to_featureAnnouncementDialogFragment"
+            app:destination="@id/featureAnnouncementDialogFragment" />
         <action
-            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderConnectFragment"
-            app:destination="@id/cardReaderConnectFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
+            android:id="@+id/action_mainSettingsFragment_to_nav_graph_jetpack_install"
+            app:destination="@id/nav_graph_jetpack_install" />
         <action
-            android:id="@+id/action_cardReaderDetailFragment_to_cardReaderUpdateDialogFragment"
-            app:destination="@id/cardReaderUpdateDialogFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:popExitAnim="@anim/activity_fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/cardReaderOnboardingFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment"
-        android:label="CardReaderOnboardingFragment">
+            android:id="@+id/action_mainSettingsFragment_to_developerOptionsFragment"
+            app:destination="@id/developerOptionsFragment" />
         <action
-            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
-            app:destination="@id/cardReaderHubFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
-            app:popUpTo="@+id/mainSettingsFragment"
-            app:popUpToInclusive="false" />
-    </fragment>
-    <fragment
-        android:id="@+id/cardReaderHubFragment"
-        android:name="com.woocommerce.android.ui.prefs.cardreader.hub.CardReaderHubFragment"
-        android:label="CardReaderHubFragment">
+            android:id="@+id/action_mainSettingsFragment_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change">
+            <argument
+                android:name="source"
+                android:defaultValue="SETTINGS"
+                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
+        </action>
         <action
-            android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
-            app:destination="@id/cardReaderDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            android:id="@+id/action_mainSettingsFragment_to_accountSettingsFragment"
+            app:destination="@id/accountSettingsFragment" />
+
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.PrivacySettingsFragment"
-        android:label="PrivacySettingsFragment" />
+        android:label="PrivacySettingsFragment">
+        <argument
+            android:name="requestedAnalyticsValue"
+            app:argType="com.woocommerce.android.ui.prefs.RequestedAnalyticsValue" />
+        <action
+            android:id="@+id/action_privacySettingsFragment_to_privacySettingsPolicesFragment"
+            app:destination="@id/privacySettingsPolicesFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/aboutFragment"
-        android:name="com.woocommerce.android.ui.prefs.AboutFragment"
-        android:label="AboutFragment" />
+        android:id="@+id/privacySettingsPolicesFragment"
+        android:name="com.woocommerce.android.ui.prefs.PrivacySettingsPolicesFragment"
+        android:label="PrivacySettingsPolicesFragment" />
+
+    <activity
+        android:id="@+id/aboutActivity"
+        android:name="com.woocommerce.android.ui.prefs.UnifiedAboutScreenActivity"
+        android:label="AboutActivity"
+        tools:layout="@layout/unified_about_screen_activity" />
+
     <fragment
         android:id="@+id/licensesFragment2"
         android:name="com.woocommerce.android.ui.prefs.LicensesFragment"
@@ -144,13 +87,14 @@
             android:name="surveyType"
             android:defaultValue='MAIN'
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+        <argument
+            android:name="customUrl"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/mainSettingsFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -162,4 +106,79 @@
             android:name="surveyType"
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
     </fragment>
+    <dialog
+        android:id="@+id/featureAnnouncementDialogFragment"
+        android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
+        android:label="FeatureAnnouncementDialogFragment">
+        <argument
+            android:name="announcement"
+            app:argType="com.woocommerce.android.model.FeatureAnnouncement"
+            app:nullable="false" />
+    </dialog>
+    <fragment
+        android:id="@+id/WPComWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
+        android:label="WPComWebViewFragment"
+        tools:layout="@layout/fragment_wpcom_webview">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_WPComWebViewFragment"
+        app:destination="@id/WPComWebViewFragment" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <fragment
+        android:id="@+id/developerOptionsFragment"
+        android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
+        android:label="DeveloperOptionsFragment" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
+    <fragment
+        android:id="@+id/accountSettingsFragment"
+        android:name="com.woocommerce.android.ui.prefs.account.AccountSettingsFragment"
+        android:label="AccountSettingsFragment" >
+        <action
+            android:id="@+id/action_accountSettingsFragment_to_closeAccountDialogFragment"
+            app:destination="@id/closeAccountDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/closeAccountDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
+        android:label="CloseAccountDialogFragment" />
+    <dialog
+        android:id="@+id/nameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment" >
+        <argument
+            android:name="fromOnboarding"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </dialog>
+
 </navigation>

@@ -14,7 +14,7 @@ class ShippingLabelServicePackageAdapter(
     private val onChecked: (String) -> Unit,
     private val dimensionUnit: String
 ) :
-    ListAdapter<ShippingLabelServicePackageAdapter.ListItem, RecyclerView.ViewHolder>(DiffCallback()) {
+    ListAdapter<ShippingLabelServicePackageAdapter.ListItem, RecyclerView.ViewHolder>(DiffCallback) {
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_PACKAGE = 1
@@ -87,7 +87,7 @@ class ShippingLabelServicePackageAdapter(
         }
     }
 
-    private class DiffCallback : DiffUtil.ItemCallback<ListItem>() {
+    object DiffCallback : DiffUtil.ItemCallback<ListItem>() {
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem) =
             when (oldItem) {
                 is ListItem.Header -> oldItem.title == (newItem as ListItem.Header).title

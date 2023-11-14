@@ -1,13 +1,16 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "json": {
         "equalTo": "true"
       },
-      "path": {
-        "equalTo": "/&_method=get&_fields=authentication%2Cnamespaces"
+      "query": {
+        "matches": "(.*)fields(.*)authentication,namespaces(.*)"
+      },
+      "locale": {
+        "matches": "(.*)"
       }
     }
   },
@@ -15,11 +18,25 @@
     "status": 200,
     "jsonBody": {
       "data": {
-        "namespaces": ["oembed\/1.0", "wpcomsh\/v1", "akismet\/v1", "jetpack\/v4", "wpcom\/v2", "wc-shipment-tracking\/v3", "wc\/v1", "wc\/v2", "wc\/store", "wc-analytics", "wc-admin", "wc\/v3", "wccom-site\/v1", "wp\/v2"],
-        "authentication": [],
+        "namespaces": ["oembed\/1.0", "wpcomsh\/v1", "akismet\/v1", "jetpack\/v4", "wc\/v1", "wc\/v2", "amp\/v1", "wc-admin", "wc-analytics", "wc-product-add-ons\/v1", "wpcom\/v2", "wc\/v3", "wc\/store", "wccom-site\/v1", "wc-calypso-bridge\/v1", "wp\/v2", "wp-site-health\/v1"],
+        "authentication": {
+          "application-passwords": {
+            "endpoints": {
+              "authorization": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-admin\/authorize-application.php"
+            }
+          }
+        },
         "_links": {
           "help": [{
-            "href": "http:\/\/v2.wp-api.org\/"
+            "href": "https:\/\/developer.wordpress.org\/rest-api\/"
+          }],
+          "wp:active-theme": [{
+            "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wp\/v2\/themes\/storefront"
+          }],
+          "curies": [{
+            "name": "wp",
+            "href": "https:\/\/api.w.org\/{rel}",
+            "templated": true
           }]
         }
       }

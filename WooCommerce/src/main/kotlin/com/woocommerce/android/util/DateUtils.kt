@@ -19,6 +19,8 @@ class DateUtils @Inject constructor(
     private val crashLogger: CrashLogging
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
+    private val friendlyMonthDayYearFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", locale)
+    private val friendlyTimeFormat: SimpleDateFormat = SimpleDateFormat("h:mm a", locale)
 
     private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-'W'ww", locale).apply {
         calendar = Calendar.getInstance().apply {
@@ -90,6 +92,24 @@ class DateUtils @Inject constructor(
     }
 
     /**
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d, YYYY") format.
+     *
+     * For example, given 2018-07-03 returns "Jul 3, 2018", and given 2018-07-28 returns "Jul 28, 2018".
+     *
+     * return null if the argument is not a valid iso8601 date string.
+     */
+    fun getShortMonthDayAndYearString(iso8601Date: String): String? {
+        return try {
+            val (year, month, day) = iso8601Date.split("-")
+            val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
+            friendlyMonthDayYearFormat.format(date)
+        } catch (e: Exception) {
+            "Date string argument is not of format YYYY-MM-DD: $iso8601Date".reportAsError(e)
+            return null
+        }
+    }
+
+    /**
      * Given a date of format YYYY-MM-DD, returns the string in a localized full long date format.
      *
      * return null if the argument is not a valid YYYY-MM-DD date string.
@@ -103,17 +123,6 @@ class DateUtils @Inject constructor(
             "Date string argument is not of format YYYY-MM-DD: $dateString".reportAsError(e)
             return null
         }
-    }
-
-    /**
-     * Given a date string in localized format, returns a date object.
-     *
-     * return null from the [DateFormat] class if [dateString] cannot be
-     * properly parsed
-     */
-    fun getDateFromLocalizedLongDateString(context: Context, dateString: String): Date? {
-        val df = DateFormat.getLongDateFormat(context)
-        return df.parse(dateString)
     }
 
     /**
@@ -185,7 +194,7 @@ class DateUtils @Inject constructor(
             val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
             val targetFormat = SimpleDateFormat("hha", locale)
             val date = originalFormat.parse(iso8601Date)
-            targetFormat.format(date!!).toLowerCase(locale).trimStart('0')
+            targetFormat.format(date!!).lowercase(locale).trimStart('0')
         } catch (e: Exception) {
             "Date string argument is not of format yyyy-MM-dd H: $iso8601Date".reportAsError(e)
             return null
@@ -233,6 +242,7 @@ class DateUtils @Inject constructor(
      *
      * return null if the argument is not a valid iso8601 date string.
      */
+    @Suppress("UNUSED_VARIABLE") // Applying the suggestion to rename 'month' to '_' makes the test fail
     fun getYearString(iso8601Month: String): String? {
         return try {
             val (year, month) = iso8601Month.split("-")
@@ -244,52 +254,14 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Converts the given [year] [month] [day] to a [Date] object
-     * and applies the passed [gmtOffset] to the date
-     *
-     * [timeAtStartOfDay] is set to true for start date and set to false for end dates
+     * Converts the given [year], [month], [day] to a [Date] object at midnight
      */
-    fun localDateToGmt(
+    fun getDateAtStartOfDay(
         year: Int,
         month: Int,
-        day: Int,
-        gmtOffset: Float,
-        timeAtStartOfDay: Boolean
+        day: Int
     ): Date {
-        val hour = if (timeAtStartOfDay) 0 else 23
-        val minuteSecond = if (timeAtStartOfDay) 0 else 59
-        val operator: (Int, Int) -> Int = if (timeAtStartOfDay) Int::minus else Int::plus
-        val date = GregorianCalendar(year, month, day, hour, minuteSecond, minuteSecond).time
-        return offsetGmtDate(date, gmtOffset, operator)
-    }
-
-    /**
-     * Converts the given [dateString] to a [Date] object
-     * and applies the passed [gmtOffset] to the date
-     */
-    fun localDateToGmt(
-        dateString: String,
-        gmtOffset: Float,
-        timeAtStartOfDay: Boolean
-    ): Date? {
-        return try {
-            val dateFormat = SimpleDateFormat("MMM dd, yyyy", locale)
-            val date = dateFormat.parse(dateString) ?: Date()
-
-            val calendar = Calendar.getInstance()
-            calendar.time = date
-
-            localDateToGmt(
-                year = calendar.get(Calendar.YEAR),
-                month = calendar.get(Calendar.MONTH),
-                day = calendar.get(Calendar.DATE),
-                gmtOffset = gmtOffset,
-                timeAtStartOfDay = timeAtStartOfDay
-            )
-        } catch (e: Exception) {
-            "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
-            return null
-        }
+        return GregorianCalendar(year, month, day).time
     }
 
     /**
@@ -312,25 +284,107 @@ class DateUtils @Inject constructor(
         crashLogger.sendReport(exception = exception)
     }
 
-    companion object {
-        /**
-         * Returns a date with the passed GMT offset applied - note that this assumes the passed date is GMT
-         *
-         * The [operator] can either be [Int::plus] or [Int::minus]
-         * [Int::plus] is passed when formatting gmtDate to local date
-         * [Int::minus] is passed when formatting local date to gmt
-         */
-        fun offsetGmtDate(dateGmt: Date, gmtOffset: Float, operator: (Int, Int) -> Int = Int::plus): Date {
-            if (gmtOffset == 0f) {
-                return dateGmt
-            }
+    /**
+     * Returns the same date received as parameter in millis at the end of the day: 23:59:59
+     */
+    fun getDateInMillisAtTheEndOfTheDay(dateMillis: Long): Long =
+        Calendar.getInstance(Locale.getDefault()).apply {
+            timeInMillis = dateMillis
+            set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+            set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+            set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        }.timeInMillis
 
-            val secondsOffset = (3600 * gmtOffset).toInt() // 3600 is the number of seconds in an hour
-            val calendar = Calendar.getInstance()
-            calendar.time = dateGmt
-            calendar.set(Calendar.SECOND, operator(calendar.get(Calendar.SECOND), secondsOffset))
-            return calendar.time
+    /**
+     * Returns the same date received as parameter in millis at the start of the day: 00:00:00
+     */
+    fun getDateInMillisAtTheStartOfTheDay(dateMillis: Long): Long =
+        Calendar.getInstance(Locale.getDefault()).apply {
+            timeInMillis = dateMillis
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+        }.timeInMillis
+
+    /**
+     * Returns a date time in millis with the date for current day at 00:00:00
+     */
+    fun getDateForTodayAtTheStartOfTheDay(): Long =
+        Calendar.getInstance().apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+        }.timeInMillis
+
+    fun getCurrentDateTimeMinusDays(days: Int): Long =
+        Calendar.getInstance().apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.DATE, -days)
+        }.timeInMillis
+
+    /**
+     * Returns current date in the format h:mm a
+     */
+    fun getCurrentTime(): String = friendlyTimeFormat.format(Date())
+
+    /**
+     * Returns date millis in the format h:mm a
+     */
+    fun getDateMillisInFriendlyTimeFormat(dateMillis: Long): String = friendlyTimeFormat.format(Date(dateMillis))
+
+    fun toIso8601Format(dateMillis: Long): String? =
+        try {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                .format(Date(dateMillis))
+        } catch (e: Exception) {
+            "Error while parsing date in millis to Iso8601 string format".reportAsError(e)
+            null
         }
+
+    fun toDisplayMMMddYYYYDate(dateMillis: Long): String? =
+        try {
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                .format(Date(dateMillis))
+        } catch (e: Exception) {
+            "Date string argument is not a valid date".reportAsError(e)
+            null
+        }
+
+    fun getDateFromIso8601String(isoStringDate: String): Date? =
+        try {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                .parse(isoStringDate)
+        } catch (e: Exception) {
+            "Date string argument is not a valid format".reportAsError(e)
+            null
+        }
+
+    /***
+     * Will generate a formatted date string in two possible formats:
+     * 1. If the date is today, it will return the time in the format h:mm a
+     * 2. If the date is not today, it will return the date in the format MMM dd, yyyy
+     */
+    fun getDateOrTimeFromMillis(millis: Long): String? {
+        val date = Date(millis)
+        return if (isToday(date)) {
+            getDateMillisInFriendlyTimeFormat(millis)
+        } else {
+            getDayMonthDateString(date.formatToYYYYmmDD())
+        }
+    }
+
+    private fun isToday(date: Date): Boolean {
+        val todayStart = getDateForTodayAtTheStartOfTheDay()
+        return DateUtils.isSameDay(date, Date(todayStart))
+    }
+
+    companion object {
+        const val ZERO = 0
 
         /**
          * Compares two dates to determine if [date2] is after [date1]. Note that
@@ -344,11 +398,6 @@ class DateUtils @Inject constructor(
             val dateOnly1 = DateUtils.round(date1, Calendar.DATE)
             val dateOnly2 = DateUtils.round(date2, Calendar.DATE)
             return dateOnly2.after(dateOnly1)
-        }
-
-        fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
-            val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
-            return dateFormat.format(date)
         }
     }
 }

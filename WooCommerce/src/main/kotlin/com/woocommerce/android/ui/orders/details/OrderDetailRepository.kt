@@ -1,200 +1,172 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelMapper
+import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
-import com.woocommerce.android.util.isSuccessful
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderModel
+import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
-import org.wordpress.android.fluxc.store.*
-import org.wordpress.android.fluxc.store.WCOrderStore.*
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class OrderDetailRepository @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val productStore: WCProductStore,
     private val refundStore: WCRefundStore,
     private val shippingLabelStore: WCShippingLabelStore,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val dispatchers: CoroutineDispatchers,
+    private val orderMapper: OrderMapper,
+    private val shippingLabelMapper: ShippingLabelMapper
 ) {
-    private var continuationFetchOrder = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationFetchOrderNotes = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationFetchOrderShipmentTrackingList = ContinuationWrapper<RequestResult>(ORDERS)
-    private var continuationUpdateOrderStatus = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationAddOrderNote = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationAddShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
-    private var continuationDeleteShipmentTracking = ContinuationWrapper<Boolean>(ORDERS)
-
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
-    suspend fun fetchOrder(orderIdentifier: OrderIdentifier): Order? {
-        val remoteOrderId = orderIdentifier.toIdSet().remoteOrderId
-        val requestResult = continuationFetchOrder.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCOrderStore.FetchSingleOrderPayload(selectedSite.get(), remoteOrderId)
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchSingleOrderAction(payload))
+    suspend fun fetchOrderById(orderId: Long): Order? {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchSingleOrder(
+                selectedSite.get(),
+                orderId
+            )
         }
-        return if (requestResult.isSuccessful()) {
-            getOrder(orderIdentifier)
+
+        return if (result?.isError == false) {
+            getOrderById(orderId)
         } else {
             null
         }
     }
 
     suspend fun fetchOrderNotes(
-        localOrderId: Int,
-        remoteOrderId: Long
-    ): Boolean {
-        val result = continuationFetchOrderNotes.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchOrderNotesPayload(localOrderId, remoteOrderId, selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderNotesAction(payload))
+        orderId: Long,
+    ): Boolean = withContext(dispatchers.io) {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderNotes(selectedSite.get(), orderId)
         }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
+        result?.isError == false
+    }
+
+    suspend fun fetchOrderShipmentTrackingList(orderId: Long): RequestResult {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchOrderShipmentTrackings(orderId, selectedSite.get())
+        }
+
+        return if (result?.isError == false) {
+            RequestResult.SUCCESS
+        } else {
+            if (result?.error?.type == WCOrderStore.OrderErrorType.PLUGIN_NOT_ACTIVE) {
+                RequestResult.API_ERROR
+            } else RequestResult.ERROR
         }
     }
 
-    suspend fun fetchOrderShipmentTrackingList(
-        localOrderId: Int,
-        remoteOrderId: Long
-    ): RequestResult {
-        val result = continuationFetchOrderShipmentTrackingList.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchOrderShipmentTrackingsPayload(localOrderId, remoteOrderId, selectedSite.get())
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderShipmentTrackingsAction(payload))
+    suspend fun fetchOrderRefunds(orderId: Long): List<Refund> {
+        return withContext(dispatchers.io) {
+            refundStore.fetchAllRefunds(selectedSite.get(), orderId)
+                .model?.map { it.toAppModel() } ?: emptyList()
         }
-        return when (result) {
-            is Cancellation -> RequestResult.ERROR
-            is Success -> result.value
-        }
-    }
-
-    suspend fun fetchOrderRefunds(remoteOrderId: Long): List<Refund> {
-        return withContext(Dispatchers.IO) {
-            refundStore.fetchAllRefunds(selectedSite.get(), remoteOrderId)
-        }.model?.map { it.toAppModel() } ?: emptyList()
     }
 
     suspend fun fetchOrderShippingLabels(remoteOrderId: Long): List<ShippingLabel> {
-        val result = withContext(Dispatchers.IO) {
-            shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+        return withContext(dispatchers.io) {
+            val result = shippingLabelStore.fetchShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
+
+            val action = if (result.isError) {
+                VALUE_API_FAILED
+            } else VALUE_API_SUCCESS
+            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
+            result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }
+                ?.map { shippingLabelMapper.toAppModel(it) }
+                ?: emptyList()
         }
-
-        val action = if (result.isError) {
-            VALUE_API_FAILED
-        } else VALUE_API_SUCCESS
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_API_REQUEST, mapOf(KEY_FEEDBACK_ACTION to action))
-
-        return result.model?.filter { it.status == LabelItem.STATUS_PURCHASED }?.map { it.toAppModel() } ?: emptyList()
     }
 
     suspend fun updateOrderStatus(
-        orderModel: WCOrderModel,
+        orderId: Long,
         newStatus: String
-    ): ContinuationResult<Boolean> {
-        return continuationUpdateOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = UpdateOrderStatusPayload(
-                orderModel, selectedSite.get(), newStatus
-            )
-            dispatcher.dispatch(WCOrderActionBuilder.newUpdateOrderStatusAction(payload))
+    ): Flow<WCOrderStore.UpdateOrderResult> {
+        val status = withContext(dispatchers.io) {
+            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
+                ?: WCOrderStatusModel(statusKey = newStatus)
         }
+        return orderStore.updateOrderStatus(
+            orderId,
+            selectedSite.get(),
+            status
+        )
     }
 
     suspend fun addOrderNote(
-        orderIdentifier: OrderIdentifier,
-        remoteOrderId: Long,
+        orderId: Long,
         noteModel: OrderNote
-    ): Boolean {
-        val order = orderStore.getOrderByIdentifier(orderIdentifier)
-        if (order == null) {
-            WooLog.e(ORDERS, "Can't find order with identifier $orderIdentifier")
-            return false
-        }
-        val result = continuationAddOrderNote.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val dataModel = noteModel.toDataModel()
-            val payload = PostOrderNotePayload(order.id, remoteOrderId, selectedSite.get(), dataModel)
-            dispatcher.dispatch(WCOrderActionBuilder.newPostOrderNoteAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
+    ): Result<Unit> {
+        return orderStore.postOrderNote(
+            site = selectedSite.get(),
+            orderId = orderId,
+            note = noteModel.note,
+            isCustomerNote = noteModel.isCustomerNote
+        ).let {
+            if (it.isError) Result.failure(WooException(it.error))
+            else Result.success(Unit)
         }
     }
 
     suspend fun addOrderShipmentTracking(
-        orderIdentifier: OrderIdentifier,
+        orderId: Long,
         shipmentTrackingModel: OrderShipmentTracking
-    ): Boolean {
-        val orderIdSet = orderIdentifier.toIdSet()
-        val result = continuationAddShipmentTracking.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = AddOrderShipmentTrackingPayload(
-                selectedSite.get(),
-                orderIdSet.id,
-                orderIdSet.remoteOrderId,
-                shipmentTrackingModel.toDataModel(),
-                shipmentTrackingModel.isCustomProvider
+    ): OnOrderChanged {
+        return orderStore.addOrderShipmentTracking(
+            WCOrderStore.AddOrderShipmentTrackingPayload(
+                site = selectedSite.get(),
+                orderId = orderId,
+                tracking = shipmentTrackingModel.toDataModel(),
+                isCustomProvider = shipmentTrackingModel.isCustomProvider
             )
-            dispatcher.dispatch(WCOrderActionBuilder.newAddOrderShipmentTrackingAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        )
     }
 
     suspend fun deleteOrderShipmentTracking(
-        localOrderId: Int,
-        remoteOrderId: Long,
+        orderId: Long,
         shipmentTrackingModel: WCOrderShipmentTrackingModel
-    ): Boolean {
-        val result = continuationDeleteShipmentTracking.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = DeleteOrderShipmentTrackingPayload(
-                selectedSite.get(), localOrderId, remoteOrderId, shipmentTrackingModel
+    ): OnOrderChanged {
+        return orderStore.deleteOrderShipmentTracking(
+            WCOrderStore.DeleteOrderShipmentTrackingPayload(
+                selectedSite.get(), orderId, shipmentTrackingModel
             )
-            dispatcher.dispatch(WCOrderActionBuilder.newDeleteOrderShipmentTrackingAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
-        }
+        )
     }
 
-    fun getOrder(orderIdentifier: OrderIdentifier) = orderStore.getOrderByIdentifier(orderIdentifier)?.toAppModel()
+    suspend fun getOrderById(orderId: Long) = withContext(dispatchers.io) {
+        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
+            orderMapper.toAppModel(it)
+        }
+    }
 
     fun getOrderStatus(key: String): OrderStatus {
         return (
@@ -207,8 +179,9 @@ class OrderDetailRepository @Inject constructor(
 
     fun getOrderStatusOptions() = orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
-    fun getOrderNotes(localOrderId: Int) =
-        orderStore.getOrderNotesForOrder(localOrderId).map { it.toAppModel() }
+    suspend fun getOrderNotes(orderId: Long) =
+        orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = orderId)
+            .map { it.toAppModel() }
 
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
@@ -227,6 +200,13 @@ class OrderDetailRepository @Inject constructor(
         } else 0
     }
 
+    suspend fun getUniqueProductTypes(remoteProductIds: List<Long>): String {
+        return if (remoteProductIds.isNotEmpty()) {
+            val products = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+            products.map { product -> product.type }.toSet().joinToString()
+        } else ""
+    }
+
     fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
             productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
@@ -234,30 +214,60 @@ class OrderDetailRepository @Inject constructor(
         } else false
     }
 
-    fun getOrderRefunds(remoteOrderId: Long) = refundStore
-        .getAllRefunds(selectedSite.get(), remoteOrderId)
+    fun getOrderRefunds(orderId: Long) = refundStore
+        .getAllRefunds(selectedSite.get(), orderId)
         .map { it.toAppModel() }
         .reversed()
         .sortedBy { it.id }
 
     fun getOrderShipmentTrackingByTrackingNumber(
-        localOrderId: Int,
+        orderId: Long,
         trackingNumber: String
     ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
-        selectedSite.get(), localOrderId, trackingNumber
+        selectedSite.get(), orderId, trackingNumber
     )?.toAppModel()
 
-    fun getOrderShipmentTrackings(localOrderId: Int) =
-        orderStore.getShipmentTrackingsForOrder(selectedSite.get(), localOrderId).map { it.toAppModel() }
+    fun getOrderShipmentTrackings(orderId: Long) =
+        orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)
         .filter { it.status == LabelItem.STATUS_PURCHASED }
-        .map { it.toAppModel() }
+        .map { shippingLabelMapper.toAppModel(it) }
 
     fun getWooServicesPluginInfo(): WooPlugin {
         val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
-        return WooPlugin(info != null, info?.active ?: false, info?.version)
+        return WooPlugin(info != null, info?.isActive ?: false, info?.version)
+    }
+
+    suspend fun getOrderDetailsPluginsInfo(): Map<String, WooPlugin> {
+        // Add WOO_CORE to the list to make sure if there is data in the plugins table
+        val plugins = listOf(
+            WooCommerceStore.WooPlugin.WOO_CORE,
+            WooCommerceStore.WooPlugin.WOO_SERVICES,
+            WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING,
+            WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS,
+            WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
+        )
+
+        val result = HashMap<String, WooPlugin>()
+        val information = wooCommerceStore.getSitePlugins(selectedSite.get(), plugins).associateBy { it.name }
+
+        if (information.isEmpty()) {
+            AnalyticsTracker.track(AnalyticsEvent.PLUGINS_NOT_SYNCED_YET)
+            // return earlier, no plugins info in the database
+            return result
+        }
+
+        plugins.associateByTo(
+            destination = result,
+            keySelector = { plugin -> plugin.pluginName },
+            valueTransform = { plugin ->
+                val info = information[plugin.pluginName]
+                WooPlugin(info != null, info?.isActive ?: false, info?.version)
+            }
+        )
+        return result
     }
 
     fun getStoreCountryCode(): String? {
@@ -297,116 +307,9 @@ class OrderDetailRepository @Inject constructor(
         )?.isEligible ?: false
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            WCOrderAction.FETCH_SINGLE_ORDER -> {
-                if (event.isError) {
-                    continuationFetchOrder.continueWith(false)
-                } else {
-                    continuationFetchOrder.continueWith(true)
-                }
-            }
-            WCOrderAction.FETCH_ORDER_NOTES -> {
-                if (event.isError) {
-                    continuationFetchOrderNotes.continueWith(false)
-                } else {
-                    continuationFetchOrderNotes.continueWith(true)
-                }
-            }
-            WCOrderAction.FETCH_ORDER_SHIPMENT_TRACKINGS -> {
-                if (event.isError) {
-                    val error = if (event.error.type == OrderErrorType.PLUGIN_NOT_ACTIVE) {
-                        RequestResult.API_ERROR
-                    } else RequestResult.ERROR
-                    continuationFetchOrderShipmentTrackingList.continueWith(error)
-                } else {
-                    continuationFetchOrderShipmentTrackingList.continueWith(RequestResult.SUCCESS)
-                }
-            }
-            WCOrderAction.UPDATE_ORDER_STATUS -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_STATUS_CHANGE_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationUpdateOrderStatus.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_STATUS_CHANGE_SUCCESS)
-                    continuationUpdateOrderStatus.continueWith(true)
-                }
-            }
-            WCOrderAction.POST_ORDER_NOTE -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_NOTE_ADD_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationAddOrderNote.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_NOTE_ADD_SUCCESS)
-                    continuationAddOrderNote.continueWith(true)
-                }
-            }
-            WCOrderAction.ADD_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_ADD_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationAddShipmentTracking.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
-                    continuationAddShipmentTracking.continueWith(true)
-                }
-            }
-            WCOrderAction.DELETE_ORDER_SHIPMENT_TRACKING -> {
-                if (event.isError) {
-                    AnalyticsTracker.track(
-                        Stat.ORDER_TRACKING_DELETE_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-                            AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-                        )
-                    )
-                    continuationDeleteShipmentTracking.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(Stat.ORDER_TRACKING_DELETE_SUCCESS)
-                    continuationDeleteShipmentTracking.continueWith(true)
-                }
-            }
-            else -> {
-            }
-        }
-    }
+    suspend fun orderHasMetadata(orderId: Long) = orderStore.hasDisplayableOrderMetadata(orderId, selectedSite.get())
 
-    class OnProductImageChanged(val remoteProductId: Long)
-
-    /**
-     * This will be triggered if we fetched a product via ProduictImageMap so we could get its image.
-     * Here we fire an event that tells the fragment to update that product in the order product list.
-     */
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && !event.isError) {
-            EventBus.getDefault().post(OnProductImageChanged(event.remoteProductId))
-        }
-    }
+    suspend fun getOrderMetadata(orderId: Long) = orderStore.getDisplayableOrderMetadata(orderId, selectedSite.get())
 
     companion object {
         const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"

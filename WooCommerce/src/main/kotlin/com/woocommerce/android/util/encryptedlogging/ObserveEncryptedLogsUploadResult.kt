@@ -1,7 +1,7 @@
 package com.woocommerce.android.util.encryptedlogging
 
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ENCRYPTED_LOGGING_UPLOAD_FAILED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL
+import com.woocommerce.android.analytics.AnalyticsEvent.ENCRYPTED_LOGGING_UPLOAD_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.ASYNC

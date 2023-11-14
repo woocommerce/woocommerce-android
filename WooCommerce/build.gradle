@@ -1,25 +1,30 @@
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    dependencies {
-        classpath 'com.google.gms:google-services:4.3.8'
-        classpath 'se.bjurr.violations:violation-comments-to-github-gradle-plugin:1.51'
-        classpath 'io.sentry:sentry-android-gradle-plugin:2.0.0'
-    }
+import se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask
+import se.bjurr.violations.lib.model.SEVERITY
+
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
+    id 'com.google.dagger.hilt.android'
+    id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
+    id 'io.sentry.android.gradle'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-allopen'
-apply plugin: 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
-apply plugin: 'io.sentry.android.gradle'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
+sentry {
+    tracingInstrumentation {
+        enabled = true
+        features = [io.sentry.android.gradle.extensions.InstrumentationFeature.DATABASE]
+        logcat {
+            enabled = false
+        }
+    }
+    autoInstallation {
+        enabled = false
+    }
+}
 
 repositories {
     maven {
@@ -28,6 +33,10 @@ repositories {
             includeGroup "org.wordpress"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
+            includeGroup "org.wordpress.mediapicker"
+            includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {
@@ -38,65 +47,103 @@ repositories {
         }
     }
     mavenCentral()
-    maven { url "https://jitpack.io" }
+    maven {
+        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
+        content {
+            includeVersion "com.android.volley", "volley", "1.1.1"
+            includeVersion "com.google.android", "flexbox", "2.0.1"
+            includeVersion "com.jraska", "falcon", "2.1.1"
+            includeVersion "org.wordpress", "wellsql", "1.6.0"
+            includeVersion "org.wordpress", "wellsql-core", "1.6.0"
+        }
+    }
+    maven {
+        url "https://jitpack.io"
+        content {
+            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
+            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
+            includeModule("com.github.chrisbanes", "PhotoView")
+            includeModule("com.github.PhilJay", "MPAndroidChart")
+        }
+    }
 }
 
-allOpen {
-    annotation("com.woocommerce.android.annotations.OpenClass")
-}
+def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 android {
-    compileSdkVersion 30
+    namespace "com.woocommerce.android"
+
+    compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        // Allow versionName to be overridden with property. e.g. -PversionName=1234
-        if (project.hasProperty("versionName")) {
-            versionName project.property("versionName")
-        } else {
-            versionName "7.5"
-        }
-        versionCode 246
 
-        minSdkVersion 21
-        targetSdkVersion 30
+        versionName versionProperties.getProperty("versionName")
+        versionCode versionProperties.getProperty("versionCode").toInteger()
 
-        multiDexEnabled true
-        vectorDrawables.useSupportLibrary = true
+        minSdkVersion gradle.ext.minSdkVersion
+        // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
+        // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
+        // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
+        targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
-        buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+        resValue "bool", "enable_leak_canary", isLeakCanaryEnabled().toString()
+
+        packagingOptions {
+            exclude 'META-INF/gradle/incremental.annotation.processors'
+            exclude("META-INF/*.kotlin_module")
+            pickFirst 'META-INF/AL2.0'
+            pickFirst 'META-INF/LGPL2.1'
+        }
+
+        resConfigs(
+                "en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko", "nl", "pt-rBR", "ru", "sv", "tr", "zh-rCN", "zh-rTW"
+        )
     }
 
     buildFeatures {
+        buildConfig true
+        compose true
         viewBinding true
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
+    composeOptions {
+        kotlinCompilerExtensionVersion composeCompilerVersion
     }
 
     flavorDimensions "buildType"
 
     productFlavors {
-        vanilla { // Release version
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
             dimension "buildType"
         }
 
-        wasabi { // Development only version, can be installed along release versions
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
+            isDefault true
+
+            resConfigs("en", "xxhdpi")
         }
 
-        jalapeno { // Pre-Alpha version, used for PR builds, can be installed along release and dev versions.
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
             applicationId "com.woocommerce.android.prealpha"
             dimension "buildType"
         }
@@ -113,6 +160,7 @@ android {
         debug {
             minifyEnabled false
             pseudoLocalesEnabled true
+            isDefault true
         }
     }
 
@@ -122,15 +170,14 @@ android {
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+
+        if (isLeakCanaryEnabled()) {
+            debug.java.srcDirs += 'src/leakcanary/kotlin'
+        }
     }
 
     lintOptions {
         disable 'InvalidPackage'
-        // see https://github.com/woocommerce/woocommerce-android/pull/3699
-        disable "NullSafeMutableLiveData"
-        // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
-        // see: https://issuetracker.google.com/issues/168794947
-        disable "ParcelCreator"
     }
 
     testOptions {
@@ -139,43 +186,49 @@ android {
 }
 
 dependencies {
-
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging:21.0.0'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation platform('com.google.firebase:firebase-bom:30.3.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
-    implementation "androidx.legacy:legacy-support-v4:1.0.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
-    implementation "androidx.multidex:multidex:2.0.1"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation ("androidx.browser:browser:1.3.0") {
+    implementation("androidx.browser:browser:1.5.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.preference:preference:1.2.0"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
+    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
-    implementation('org.wordpress:utils:1.40.0') {
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+
+    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
 
-    implementation 'com.github.Automattic:Automattic-Tracks-Android:2.1.0'
-    constraints {
-        implementation('com.fasterxml.jackson.core:jackson-core:2.10.2') {
-            because 'previous version from tracks conflicts with WireMock for UI tests'
-        }
+    implementation("com.automattic.tracks:experimentation:$automatticTracksVersion") {
+        exclude group: "org.wordpress", module: "fluxc"
     }
+    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -186,8 +239,9 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation ("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
+    implementation("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
         exclude group: "org.wordpress", module: "utils"
+        exclude group: "org.wordpress", module: "fluxc"
     }
 
     implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:$aztecVersion") {
@@ -203,91 +257,146 @@ dependencies {
     }
 
     implementation project(":libs:cardreader")
+    implementation project(":libs:iap")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
-    implementation 'com.github.vihtarb:tooltip:0.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
-    // Dagger
-    implementation "com.google.dagger:hilt-android:$daggerVersion"
-    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
-    kapt "com.google.dagger:hilt-compiler:$daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
-    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    implementation "com.automattic:about:$aboutAutomatticVersion"
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    // Dagger
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+
+    kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
+
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
-    implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
+
+    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
+
+    implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
+    implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
+
+    implementation "com.google.zxing:core:3.5.1"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
-    debugImplementation "com.facebook.soloader:soloader:0.10.1"
-    debugImplementation ("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+    debugImplementation "com.facebook.soloader:soloader:0.10.4"
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+
+    if (isLeakCanaryEnabled()) {
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+    }
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
         exclude group: 'com.android.support', module: 'support-compat'
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     })
-    testImplementation "org.robolectric:robolectric:$robolectricVersion"
 
     // Dependencies for Espresso UI tests
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
-    androidTestImplementation "androidx.test:rules:1.3.0"
+    androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$daggerVersion"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$daggerVersion"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
     // Dependencies for screenshots
-    androidTestImplementation 'tools.fastlane:screengrab:2.0.0'
-    androidTestImplementation('com.github.tomakehurst:wiremock:2.27.2') {
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
+    androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
     }
-    androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 
-    // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.1.0"
-
-    implementation "com.zendesk:support:5.0.2"
+    implementation("com.zendesk:support:5.0.8") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
 
     // ViewModel and LiveData
-    // TODO Try to re-enable NullSafeMutableLiveData lint check when we move to fragment-ktx v1.4.0+
-    implementation "androidx.fragment:fragment-ktx:1.3.3"
-    implementation "androidx.activity:activity-ktx:1.2.3"
+    implementation "androidx.fragment:fragment-ktx:1.6.1"
+    implementation "androidx.activity:activity-ktx:1.8.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
-    // Use caution when updating these, as commons-text 1.9 caused the reviews tab to crash on API 21
-    implementation "org.apache.commons:commons-lang3:3.9"
-    implementation "org.apache.commons:commons-text:1.8"
+    testImplementation 'app.cash.turbine:turbine:0.8.0'
+
+    implementation "org.apache.commons:commons-text:$commonsText"
+    implementation "commons-io:commons-io:$commonsIO"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
+
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+        exclude group: "org.wordpress", module: "fluxc"
+    }
+
+    // Jetpack Compose
+    implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
+    // Dependencies managed by BOM
+    implementation 'androidx.activity:activity-compose'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.animation:animation'
+    implementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.runtime:runtime-livedata'
+    implementation "androidx.compose.material:material-icons-extended"
+    implementation 'androidx.compose.ui:ui-text-google-fonts'
+
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
+    implementation "io.coil-kt:coil-compose:$coilVersion"
+    implementation "io.coil-kt:coil-svg:$coilVersion"
+
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.3.2'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.8'
+
+    // CameraX
+    implementation "androidx.camera:camera-camera2:$androidxCameraVersion"
+    implementation "androidx.camera:camera-lifecycle:$androidxCameraVersion"
+    implementation "androidx.camera:camera-view:$androidxCameraVersion"
+
+    implementation "com.google.guava:guava:$guavaVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
@@ -312,6 +421,14 @@ android.buildTypes.all { buildType ->
         }
     }
 
+    buildConfigField "String",
+            "IAP_TESTING_SANDBOX_URL",
+            "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
+
+    buildConfigField "String",
+            "JITM_TESTING_JSON_FILE_NAME",
+            "\"${project.properties.getOrDefault('jitm_testing_json_file_name', '')}\""
+
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {
         tasks.copyGoogleServicesExampleFile.copy()
@@ -323,7 +440,7 @@ android.buildTypes.all { buildType ->
     }
 }
 
-task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask) {
+tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
     repositoryOwner = "woocommerce"
     repositoryName = "woocommerce-android"
     pullRequestId = System.properties['GITHUB_PULLREQUESTID']
@@ -334,17 +451,48 @@ task violationCommentsToGitHub(type: se.bjurr.violations.comments.github.plugin.
     createCommentWithAllSingleFileComments = false
     createSingleFileComments = true
     commentOnlyChangedContent = true
-    minSeverity = se.bjurr.violations.lib.model.SEVERITY.INFO //ERROR, INFO, WARN
+    minSeverity = SEVERITY.INFO //ERROR, INFO, WARN
     commentTemplate = """
 **Reporter**: {{violation.reporter}}{{#violation.rule}}\n
 **Rule**: {{violation.rule}}{{/violation.rule}}
 **Severity**: {{violation.severity}}
-**File**: {{violation.file}} L{{violation.startLine}}{{#violation.source}}
+**File**: {{violation.file}}:{{violation.startLine}}{{#violation.source}}
 **Source**: {{violation.source}}{{/violation.source}}
 {{violation.message}}
 """
     violations = [
-            ["CHECKSTYLE", ".", ".*/build/.*\\.xml\$", "Checkstyle"]
+            ["CHECKSTYLE", ".", ".*/build/.*/detekt/.*\\.xml\$", "Detekt"]
+    ]
+}
+
+tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTask) {
+    repositoryOwner = "woocommerce"
+    repositoryName = "woocommerce-android"
+    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
+    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
+    gitHubUrl = "https://api.github.com/"
+    createCommentWithAllSingleFileComments = true
+    createSingleFileComments = false
+    commentOnlyChangedContent = true
+    commentOnlyChangedFiles = false
+    minSeverity = SEVERITY.INFO
+    commentTemplate = """
+### The PR caused the following dependency changes:
+
+<details><summary>expand</summary>
+<p>
+
+```diff
+{{{violation.message}}}
+```
+
+</p>
+</details>
+
+*Please review and act accordingly*
+"""
+    violations = [
+            ["GENERIC", ".", ".*/build/.*/diff/.*\\.txt\$", "DependenciesDiffChecker"],
     ]
 }
 
@@ -368,6 +516,10 @@ static def loadPropertiesFromFile(inputFile) {
         properties.load(stream)
     }
     return properties
+}
+
+def isLeakCanaryEnabled() {
+    return project.properties.getOrDefault('enableLeakCanary', 'true') == 'true'
 }
 
 // For app signing
@@ -398,5 +550,3 @@ if (project.hasProperty("debugStoreFile")) {
     }
 }
 
-// Keep this at the bottom (https://stackoverflow.com/a/37565535)
-apply plugin: 'com.google.gms.google-services'

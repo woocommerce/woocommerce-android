@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/group_update">
+        <item
+            android:id="@+id/menu_update_status"
+            android:title="@string/product_selection_menu_update_status"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/menu_update_price"
+            android:title="@string/product_selection_menu_update_price"
+            app:showAsAction="never" />
+    </group>
+    <group android:id="@+id/group_select">
+        <item
+            android:id="@+id/menu_select_all"
+            android:title="@string/product_selection_menu_select_all"
+            app:showAsAction="never" />
+    </group>
+</menu>

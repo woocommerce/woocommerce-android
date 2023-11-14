@@ -3,13 +3,14 @@ package com.woocommerce.android.ui.media
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
@@ -27,20 +28,37 @@ class MediaUploadErrorListViewModel @Inject constructor(
     private var viewState by viewStateData
 
     init {
-        mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteId)
-            .onEach { errors ->
-                val currentErrors = viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as Failed) }
-                viewState = viewState.copy(
-                    uploadErrorList = currentErrors,
-                    toolBarTitle = resourceProvider.getString(
-                        R.string.product_images_error_detail_title,
-                        currentErrors.size
-                    )
-                )
-                // Remove errors from mediaFileUploadHandler to avoid duplicate notifications
-                mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
+        val errorList = navArgs.errorList
+        if (errorList != null) {
+            val currentErrors = errorList.map<ProductImageUploadData, ErrorUiModel> {
+                ErrorUiModel(it.uploadStatus as UploadStatus.Failed)
             }
-            .launchIn(this)
+            viewState = viewState.copy(
+                uploadErrorList = currentErrors,
+                toolBarTitle = resourceProvider.getString(
+                    R.string.product_images_error_detail_title,
+                    currentErrors.size
+                )
+            )
+            mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
+        } else {
+            mediaFileUploadHandler.observeCurrentUploadErrors(navArgs.remoteId)
+                .filter { it.isNotEmpty() }
+                .onEach { errors ->
+                    val currentErrors =
+                        viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as UploadStatus.Failed) }
+                    viewState = viewState.copy(
+                        uploadErrorList = currentErrors,
+                        toolBarTitle = resourceProvider.getString(
+                            R.string.product_images_error_detail_title,
+                            currentErrors.size
+                        )
+                    )
+                    // Remove errors from mediaFileUploadHandler to avoid duplicate notifications
+                    mediaFileUploadHandler.clearImageErrors(navArgs.remoteId)
+                }
+                .launchIn(this)
+        }
     }
 
     @Parcelize
@@ -56,9 +74,9 @@ class MediaUploadErrorListViewModel @Inject constructor(
         val filePath: String
     ) : Parcelable {
         constructor(state: UploadStatus.Failed) : this(
-            fileName = state.media.fileName,
+            fileName = state.media?.fileName.orEmpty(),
             errorMessage = state.mediaErrorMessage,
-            filePath = state.media.filePath
+            filePath = state.media?.filePath.orEmpty()
         )
     }
 }

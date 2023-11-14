@@ -4,14 +4,13 @@ import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 
 sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class ShowAddressEditor(
         val address: Address,
         val type: AddressType,
         val validationResult: ValidationResult?,
-        val requiresPhoneNumber: Boolean
+        val isCustomsFormRequired: Boolean
     ) : CreateShippingLabelEvent()
 
     data class ShowSuggestedAddress(
@@ -43,7 +42,7 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     ) : CreateShippingLabelEvent()
 
     data class ShowPackageDetails(
-        val orderIdentifier: OrderIdentifier,
+        val orderId: Long,
         val shippingLabelPackages: List<ShippingLabelPackage>
     ) : CreateShippingLabelEvent()
 
@@ -51,7 +50,8 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val originCountryCode: String,
         val destinationCountryCode: String,
         val shippingPackages: List<ShippingLabelPackage>,
-        val customsPackages: List<CustomsPackage>
+        val customsPackages: List<CustomsPackage>,
+        val isEUShippingScenario: Boolean
     ) : CreateShippingLabelEvent()
 
     data class ShowShippingRates(

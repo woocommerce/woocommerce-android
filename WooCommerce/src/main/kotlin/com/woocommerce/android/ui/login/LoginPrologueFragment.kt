@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
@@ -13,40 +16,55 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
+open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     companion object {
         const val TAG = "login-prologue-fragment"
-
-        fun newInstance(): LoginPrologueFragment {
-            return LoginPrologueFragment()
-        }
     }
 
     interface PrologueFinishedListener {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
+        fun onNewToWooButtonClicked()
+        fun onGetStartedClicked()
     }
 
-    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    constructor() : this(R.layout.fragment_login_prologue)
+
+    @Inject
+    lateinit var unifiedLoginTracker: UnifiedLoginTracker
+
+    @Inject
+    lateinit var appPrefsWrapper: AppPrefsWrapper
+
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        with(FragmentLoginPrologueBinding.bind(view)) {
+            buttonLoginStore.setOnClickListener {
+                // Login with site address
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onPrimaryButtonClicked()
+            }
 
-        val binding = FragmentLoginPrologueBinding.bind(view)
+            buttonLoginWpcom.setOnClickListener {
+                // Login with WordPress.com account
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onSecondaryButtonClicked()
+            }
 
-        binding.buttonLoginStore.setOnClickListener {
-            // Login with site address
-            prologueFinishedListener?.onPrimaryButtonClicked()
+            buttonGetStarted.setOnClickListener {
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+
+                AnalyticsTracker.track(
+                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to true)
+                )
+
+                appPrefsWrapper.removeLoginSiteAddress()
+
+                prologueFinishedListener?.onGetStartedClicked()
+            }
         }
-
-        binding.buttonLoginWpcom.setOnClickListener {
-            // Login with WordPress.com account
-            prologueFinishedListener?.onSecondaryButtonClicked()
-        }
-
-        binding.viewPager.adapter = LoginPrologueAdapter(this)
-        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)

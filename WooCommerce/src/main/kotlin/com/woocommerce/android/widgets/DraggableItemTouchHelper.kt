@@ -15,8 +15,8 @@ class DraggableItemTouchHelper(
             viewHolder: ViewHolder,
             target: ViewHolder
         ): Boolean {
-            val from = viewHolder.adapterPosition
-            val to = target.adapterPosition
+            val from = viewHolder.bindingAdapterPosition
+            val to = target.bindingAdapterPosition
             onMove(from, to)
 
             return true

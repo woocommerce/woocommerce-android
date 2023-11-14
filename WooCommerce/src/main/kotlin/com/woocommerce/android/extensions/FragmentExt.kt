@@ -1,9 +1,18 @@
 package com.woocommerce.android.extensions
 
+import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.woocommerce.android.R
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlin.math.abs
 
 /**
  * A helper function that sets the submitted key-value pair in the Fragment's SavedStateHandle. The value can be
@@ -28,6 +37,23 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
     } else {
         findNavController().navigateUp()
     }
+}
+
+/**
+ * A helper function that pops back stack to the [childId] and then invokes [navigateBackWithResult]
+ * This is useful for scenarios when the fragment returning result doesn't know who their parent is since
+ * they can be added to the navigation graph from various places of the app
+ *
+ * @param [key] A unique string that is the same as the one used in [handleResult]
+ * @param [result] A result value to be returned
+ * @param [childId] an destinationId, that used to navigate up from the specified destination
+ *
+ */
+fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes childId: Int) {
+    if (findNavController().currentDestination?.id != childId) {
+        findNavController().popBackStack(childId, false)
+    }
+    navigateBackWithResult(key, result, null)
 }
 
 /**
@@ -63,15 +89,12 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<T?>(key).observe(
-            this.viewLifecycleOwner,
-            Observer {
-                it?.let {
-                    handler(it)
-                    saveState.set(key, null)
-                }
+        saveState.getLiveData<T?>(key).observe(this.viewLifecycleOwner) {
+            it?.let {
+                handler(it)
+                saveState.set(key, null)
             }
-        )
+        }
     }
 }
 
@@ -107,8 +130,8 @@ fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> U
  * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
  * a particular key-result pair to 1.
  */
-fun <T> Fragment.handleDialogNotice(key: String, entryId: Int, handler: (T) -> Unit) {
-    handleResult(key, entryId, handler)
+fun Fragment.handleDialogNotice(key: String, entryId: Int, handler: () -> Unit) {
+    handleNotice(key, entryId, handler)
 }
 
 /**
@@ -132,14 +155,36 @@ fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<String>(key).observe(
-            this.viewLifecycleOwner,
-            Observer {
-                it?.let {
-                    handler()
-                    saveState.set(key, null)
-                }
+        saveState.getLiveData<String>(key).observe(this.viewLifecycleOwner) {
+            it?.let {
+                handler()
+                saveState.set(key, null)
             }
-        )
+        }
     }
+}
+
+/**
+ * A helper function that apply a flow observation to changes of the Fragment view vertical offset,
+ * making possible to keep the FAB button pinned into the same position as the view is scrolled
+ *
+ * @param [fabButton] The FAB button to be pinned in place using the App Bar Layout as reference
+ */
+fun Fragment.pinFabAboveBottomNavigationBar(fabButton: FloatingActionButton) {
+    val appBarLayout = (requireActivity().findViewById<View>(R.id.app_bar_layout) as AppBarLayout)
+    appBarLayout.verticalOffsetChanges()
+        .onEach { verticalOffset ->
+            fabButton.translationY =
+                (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
+}
+
+fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
+    startActivity(
+        HelpActivity.createIntent(
+            context = requireContext(),
+            origin = origin,
+            extraSupportTags = null
+        )
+    )
 }

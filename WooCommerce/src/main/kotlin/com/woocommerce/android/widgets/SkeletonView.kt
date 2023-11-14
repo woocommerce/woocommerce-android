@@ -1,6 +1,7 @@
 package com.woocommerce.android.widgets
 
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +15,18 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 
 class SkeletonView {
-    private lateinit var parentView: ViewGroup
-    private lateinit var actualView: ViewGroup
+    private var _parentView: ViewGroup? = null
+    private val parentView: ViewGroup
+        get() = _parentView!!
+
+    private var _actualView: ViewGroup? = null
+    private val actualView: ViewGroup
+        get() = _actualView!!
+
     private lateinit var skeletonView: View
     private lateinit var shimmerView: ShimmerFrameLayout
 
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     private var isShowing = false
 
@@ -37,8 +44,8 @@ class SkeletonView {
 
         val viewParent = viewActual.parent ?: throw IllegalStateException("Source view isn't attached")
 
-        parentView = viewParent as ViewGroup
-        actualView = viewActual
+        _parentView = viewParent as ViewGroup
+        _actualView = viewActual
 
         // create the shimmer view
         shimmerView = ShimmerFrameLayout(parentView.context)
@@ -47,6 +54,11 @@ class SkeletonView {
         // add our skeleton layout to the shimmer view
         skeletonView = viewSkeleton
         shimmerView.addView(skeletonView)
+
+        // take the replaced view's top position into account
+        if (actualView.top > 0) {
+            (skeletonView.layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin = actualView.top
+        }
 
         // hide the actual data view
         actualView.visibility = View.GONE
@@ -99,6 +111,8 @@ class SkeletonView {
         WooAnimUtils.fadeIn(actualView, Duration.MEDIUM)
 
         isShowing = false
+        _actualView = null
+        _parentView = null
     }
 
     fun findViewById(@IdRes id: Int): View? = parentView.findViewById(id)

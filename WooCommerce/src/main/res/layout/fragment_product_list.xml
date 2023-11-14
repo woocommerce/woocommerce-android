@@ -11,6 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Product search type view -->
+        <com.woocommerce.android.ui.products.WCProductSearchTabView
+            android:id="@+id/productsSearchTabView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
         <!-- Products work in progress notice card -->
         <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
             android:id="@+id/products_wip_card"
@@ -22,7 +33,7 @@
             app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/productsSearchTabView"
             tools:visibility="visible" />
 
         <!-- Products filter and sort view -->
@@ -38,6 +49,17 @@
             app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
             tools:visibility="visible" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/blaze_banner_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/empty_state_bg_color"
+            android:paddingBottom="@dimen/minor_100"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/products_sort_filter_card" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productsRecycler"
             android:layout_width="match_parent"
@@ -46,7 +68,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/products_sort_filter_card"
+            app:layout_constraintTop_toBottomOf="@+id/blaze_banner_view"
             tools:itemCount="5"
             tools:listitem="@layout/product_list_item" />
 
@@ -58,7 +80,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/productsSearchTabView" />
 
         <ProgressBar
             android:id="@+id/loadMoreProgress"
@@ -73,6 +95,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="gone" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addProductButton"
+            style="@style/Woo.AddButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:contentDescription="@string/add_products_button"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

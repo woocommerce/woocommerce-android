@@ -1,6 +1,5 @@
 package com.woocommerce.android.util
 
-import org.mockito.kotlin.mock
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
@@ -9,8 +8,11 @@ import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
+import java.util.Calendar
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -51,6 +53,21 @@ class DateUtilsTest {
     fun `getShortMonthDayString() returns correct values`() {
         assertEquals("Jul 3", dateUtilsUnderTest.getShortMonthDayString("2018-07-03"))
         assertEquals("Jul 28", dateUtilsUnderTest.getShortMonthDayString("2018-07-28"))
+
+        // Test for invalid value handling
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))
+
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("2018-22"))
+
+        assertNull(dateUtilsUnderTest.getShortMonthDayString("-07-41"))
+
+        assertNull(dateUtilsUnderTest.getShortMonthDayString(""))
+    }
+
+    @Test
+    fun `getShortMonthDayAndYearString() returns correct values`() {
+        assertEquals("Jul 3, 2018", dateUtilsUnderTest.getShortMonthDayAndYearString("2018-07-03"))
+        assertEquals("Jul 28, 2018", dateUtilsUnderTest.getShortMonthDayAndYearString("2018-07-28"))
 
         // Test for invalid value handling
         assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))
@@ -431,5 +448,24 @@ class DateUtilsTest {
         assertFailsWith(IllegalArgumentException::class) {
             "21".formatToMonthDateOnly(Locale.US)
         }
+    }
+
+    @Test
+    fun `getDateAtStartOfDay() returns correct value`() {
+        val year = 1999
+        val month = 11
+        val day = 31
+
+        val calendar = Calendar.getInstance().apply {
+            time = dateUtilsUnderTest.getDateAtStartOfDay(1999, month, day)
+        }
+
+        assertEquals(year, calendar.get(Calendar.YEAR))
+        assertEquals(month, calendar.get(Calendar.MONTH))
+        assertEquals(day, calendar.get(Calendar.DAY_OF_MONTH))
+
+        assertThat(calendar.get(Calendar.MINUTE)).isZero
+        assertThat(calendar.get(Calendar.HOUR)).isZero
+        assertThat(calendar.get(Calendar.SECOND)).isZero
     }
 }

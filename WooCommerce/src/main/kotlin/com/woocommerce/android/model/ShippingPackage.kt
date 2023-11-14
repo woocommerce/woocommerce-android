@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingPackage.Companion.INDIVIDUAL_PACKAGE
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.shippinglabels.WCPackagesResult.CustomPackage
@@ -18,7 +19,8 @@ data class ShippingPackage(
     val category: String,
     val dimensions: PackageDimensions,
     val boxWeight: Float,
-    val carrierId: String = "" /* Can be empty, only needed by predefined packages */
+    val carrierId: String = "", /* Can be empty, only needed by predefined packages */
+    val hazmatCategory: ShippingLabelHazmatCategory? = null
 ) : Parcelable {
     companion object {
         const val CUSTOM_PACKAGE_CATEGORY = "custom"

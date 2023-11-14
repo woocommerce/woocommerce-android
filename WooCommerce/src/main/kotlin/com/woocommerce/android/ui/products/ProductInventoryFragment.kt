@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -104,15 +103,15 @@ class ProductInventoryFragment :
                 }
             }
             new.inventoryData.sku?.takeIfNotEqualTo(old?.inventoryData?.sku) {
-                if (binding.productSku.getText() != it) {
-                    binding.productSku.setText(it)
+                if (binding.productSku.text != it) {
+                    binding.productSku.text = it
                 }
             }
             new.inventoryData.stockQuantity?.takeIfNotEqualTo(old?.inventoryData?.stockQuantity) {
                 val quantity = StringUtils.formatCountDecimal(it, forInput = true)
 
-                if (binding.productStockQuantity.getText() != quantity) {
-                    binding.productStockQuantity.setText(quantity)
+                if (binding.productStockQuantity.text != quantity) {
+                    binding.productStockQuantity.text = quantity
                 }
             }
             new.isStockQuantityEditable?.takeIfNotEqualTo(old?.isStockQuantityEditable) {
@@ -122,18 +121,15 @@ class ProductInventoryFragment :
                 binding.soldIndividuallySwitch.isChecked = it
             }
 
-            viewModel.event.observe(
-                viewLifecycleOwner,
-                Observer { event ->
-                    when (event) {
-                        is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                        is ExitWithResult<*> -> navigateBackWithResult(KEY_INVENTORY_DIALOG_RESULT, event.data)
-                        is Exit -> findNavController().navigateUp()
-                        is ShowDialog -> event.showDialog()
-                        else -> event.isHandled = false
-                    }
+            viewModel.event.observe(viewLifecycleOwner) { event ->
+                when (event) {
+                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                    is ExitWithResult<*> -> navigateBackWithResult(KEY_INVENTORY_DIALOG_RESULT, event.data)
+                    is Exit -> findNavController().navigateUp()
+                    is ShowDialog -> event.showDialog()
+                    else -> event.isHandled = false
                 }
-            )
+            }
         }
     }
 

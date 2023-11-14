@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.settings
 
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -18,12 +19,14 @@ abstract class BaseProductSettingsFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
+    @CallSuper
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
         activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 
+    @CallSuper
     override fun onRequestAllowBackPress(): Boolean {
         if (hasChanges()) {
             // we only want to return to the previous screen if the changes are valid, which means if they're

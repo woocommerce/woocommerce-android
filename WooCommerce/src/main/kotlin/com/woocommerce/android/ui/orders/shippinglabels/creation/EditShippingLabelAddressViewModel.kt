@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -15,7 +17,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.common.OptionalField
 import com.woocommerce.android.ui.common.RequiredField
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -42,7 +48,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     private val addressValidator: ShippingLabelAddressValidator,
     private val resourceProvider: ResourceProvider,
     private val dataStore: WCDataStore,
-    private val site: SelectedSite
+    private val site: SelectedSite,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
@@ -91,7 +98,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_DONE_BUTTON_TAPPED)
         viewState = viewState.validateAllFields()
         val address = viewState.getAddress()
         if (viewState.areAllRequiredFieldsValid) {
@@ -103,7 +110,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 val result = addressValidator.validateAddress(
                     address,
                     arguments.addressType,
-                    arguments.requiresPhoneNumber
+                    arguments.isCustomsFormRequired
                 )
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
@@ -137,7 +144,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     private fun handleValidationResult(address: Address, result: ValidationResult, showToastErrors: Boolean = true) {
         when (result) {
-            ValidationResult.Valid -> triggerEvent(ExitWithResult(address))
+            ValidationResult.Valid -> {
+                exitWithAddress(address)
+            }
             is ValidationResult.Invalid -> {
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
@@ -148,13 +157,15 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     )
                 )
             }
+
             is ValidationResult.SuggestedChanges -> {
                 if (result.isTrivial) {
-                    triggerEvent(ExitWithResult(result.suggested))
+                    exitWithAddress(result.suggested)
                 } else {
                     triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
                 }
             }
+
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
                     bannerMessage = resourceProvider.getString(
@@ -166,9 +177,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(getAddressErrorStringRes(result.message)))
                 }
             }
+
             is ValidationResult.Error -> if (showToastErrors) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_edit_address_validation_error))
             }
+
             is NameMissing -> {
                 viewState = viewState.copy(
                     nameField = viewState.nameField.validate()
@@ -177,6 +190,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
                 }
             }
+
             is PhoneInvalid -> {
                 viewState = viewState.copy(
                     phoneField = viewState.phoneField.validate()
@@ -189,13 +203,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onUseAddressAsIsButtonClicked() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_USE_ADDRESS_AS_IS_BUTTON_TAPPED)
         // Clear remote validation error of `address1`
         viewState = viewState.copy(address1Field = viewState.address1Field.copy(validationError = null))
         // Validate fields locally
         viewState = viewState.validateAllFields()
         if (viewState.areAllRequiredFieldsValid) {
-            triggerEvent(ExitWithResult(viewState.getAddress()))
+            exitWithAddress(viewState.getAddress())
         } else {
             triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
         }
@@ -210,13 +224,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onOpenMapTapped() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_OPEN_MAP_BUTTON_TAPPED)
 
         triggerEvent(OpenMapWithAddress(viewState.getAddress()))
     }
 
     fun onContactCustomerTapped() {
-        AnalyticsTracker.track(Stat.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_EDIT_ADDRESS_CONTACT_CUSTOMER_BUTTON_TAPPED)
 
         triggerEvent(DialPhoneNumber(viewState.phoneField.content))
     }
@@ -238,13 +252,17 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onAddressSelected(address: Address) {
+        exitWithAddress(address)
+    }
+
+    private fun exitWithAddress(address: Address) {
+        if (arguments.addressType == ORIGIN) {
+            appPrefs.setStorePhoneNumber(site.getSelectedSiteId(), address.phone)
+        }
         triggerEvent(ExitWithResult(address))
     }
 
     fun onEditRequested(address: Address) {
-        val country = countries.first { it.code == address.country }
-        val state = dataStore.getStates(address.country).firstOrNull { it.code == address.state }?.toAppModel()
-            ?: Location(code = address.state, name = address.state)
         viewState = with(viewState) {
             copy(
                 nameField = nameField.copy(content = "${address.firstName} ${address.lastName}"),
@@ -253,8 +271,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 address1Field = address1Field.copy(content = address.address1),
                 address2Field = address2Field.copy(content = address.address2),
                 cityField = cityField.copy(content = address.city),
-                stateField = stateField.copy(location = state),
-                countryField = countryField.copy(location = country)
+                stateField = stateField.copy(location = address.state.asLocation()),
+                countryField = countryField.copy(location = address.country)
             )
         }
     }
@@ -265,31 +283,39 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 Field.Name -> copy(
                     nameField = nameField.copy(content = content).validate()
                 )
+
                 Field.Company -> copy(
                     companyField = companyField.copy(content = content).validate(),
                     nameField = nameField.copy(companyContent = content).validate()
                 )
+
                 Field.Phone -> copy(
                     phoneField = phoneField.copy(content = content).validate()
                 )
+
                 Field.Address1 -> copy(
                     address1Field = address1Field.copy(content = content, validationError = null).validate()
                 )
+
                 Field.Address2 -> copy(
                     address2Field = address2Field.copy(content = content).validate()
                 )
+
                 Field.City -> copy(
                     cityField = cityField.copy(content = content).validate()
                 )
+
                 Field.State -> {
                     val state = states.firstOrNull { it.code == content } ?: Location(code = content, name = content)
                     copy(
                         stateField = stateField.copy(location = state).validate()
                     )
                 }
+
                 Field.Zip -> copy(
                     zipField = zipField.copy(content = content).validate()
                 )
+
                 Field.Country -> {
                     val country = countries.first { it.code == content }
                     val stateField = if (countryField.location != country) {
@@ -347,11 +373,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             companyField = OptionalField(content = args.address.company),
             address1Field = Address1Field(args.address.address1),
             address2Field = OptionalField(args.address.address2),
-            phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
+            phoneField = PhoneField(args.address.phone, args.isCustomsFormRequired, args.addressType),
             cityField = RequiredField(args.address.city),
             zipField = RequiredField(args.address.postcode),
-            stateField = LocationField(Location(code = args.address.state, name = args.address.state)),
-            countryField = LocationField(Location(code = args.address.country, name = ""), isRequired = true)
+            stateField = LocationField(args.address.state.asLocation()),
+            countryField = LocationField(args.address.country, isRequired = true)
         )
 
         @IgnoredOnParcel
@@ -397,8 +423,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 address1 = address1Field.content,
                 address2 = address2Field.content,
                 city = cityField.content,
-                state = stateField.location.code,
-                country = countryField.location.code,
+                state = AmbiguousLocation.Defined(stateField.location),
+                country = countryField.location,
                 postcode = zipField.content,
                 email = ""
             )
@@ -433,18 +459,22 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     @Parcelize
     data class PhoneField(
         override val content: String,
-        val needsValidation: Boolean,
+        val isCustomsFormRequired: Boolean,
         val addressType: AddressType
     ) : InputField<PhoneField>(content) {
         override fun validateInternal(): UiString? {
-            if (!needsValidation) return null
-            return when {
-                content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
-                addressType == ORIGIN && !content.isValidPhoneNumber(addressType) ->
-                    UiStringRes(R.string.shipping_label_origin_address_phone_invalid)
-                addressType == DESTINATION && !content.isValidPhoneNumber(addressType) ->
-                    UiStringRes(R.string.shipping_label_destination_address_phone_invalid)
-                else -> null
+            return if (content.isValidPhoneNumber(addressType, isCustomsFormRequired)) null
+            else {
+                when {
+                    content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
+                    addressType == ORIGIN ->
+                        UiStringRes(R.string.shipping_label_origin_address_phone_invalid)
+
+                    addressType == DESTINATION ->
+                        UiStringRes(R.string.shipping_label_destination_address_phone_invalid)
+
+                    else -> null
+                }
             }
         }
     }

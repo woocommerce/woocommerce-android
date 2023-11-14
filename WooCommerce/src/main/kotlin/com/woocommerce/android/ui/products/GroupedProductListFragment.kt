@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -16,10 +15,10 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,12 +26,13 @@ import javax.inject.Inject
 class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: GroupedProductListViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
     private val productListAdapter: GroupedProductListAdapter by lazy {
-        GroupedProductListAdapter(viewModel::onProductDeleted)
+        GroupedProductListAdapter(viewModel::onProductDeleted, currencyFormatter)
     }
 
     private var _binding: FragmentGroupedProductListBinding? = null
@@ -72,29 +72,26 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
             new.isAddProductButtonVisible.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
                 showAddProductButton(it)
             }
+            new.isEmptyViewShown?.takeIfNotEqualTo(old?.isEmptyViewShown) {
+                showEmptyView(it)
+            }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> findNavController().navigateUp()
-                    is ExitWithResult<*> -> {
-                        navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
-                    }
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                    navigateBackWithResult(viewModel.getKeyForGroupedProductListType(), event.data as List<*>)
                 }
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                productListAdapter.setProductList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            productListAdapter.submitList(it)
+        }
     }
 
     private fun setupResultHandlers() {
@@ -122,6 +119,14 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
                 skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
             }
             false -> skeletonView.hide()
+        }
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            binding.emptyView.show(WCEmptyView.EmptyViewType.GROUPED_PRODUCT_LIST)
+        } else {
+            binding.emptyView.hide()
         }
     }
 

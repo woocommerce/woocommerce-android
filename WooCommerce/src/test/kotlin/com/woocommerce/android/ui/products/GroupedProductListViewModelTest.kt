@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -11,14 +8,13 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class GroupedProductListViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
@@ -49,7 +45,7 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the grouped product list view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the grouped product list view correctly`() = testBlocking {
         doReturn(productList).whenever(productRepository).fetchProductList(groupedProductIds)
 
         createViewModel()

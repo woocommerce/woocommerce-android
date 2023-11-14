@@ -1,23 +1,28 @@
 package com.woocommerce.android.cardreader.internal.connection.actions
 
-import com.stripe.stripeterminal.callable.Callback
-import com.stripe.stripeterminal.callable.DiscoveryListener
-import com.stripe.stripeterminal.model.external.DeviceType.CHIPPER_2X
-import com.stripe.stripeterminal.model.external.DiscoveryConfiguration
-import com.stripe.stripeterminal.model.external.Reader
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.*
+import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.DiscoveryListener
+import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.DiscoveryMethod
+import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.FoundReaders
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Started
+import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
+import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 private const val DISCOVERY_TIMEOUT_IN_SECONDS = 60
 
-@ExperimentalCoroutinesApi
-internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
+internal class DiscoverReadersAction(
+    private val terminal: TerminalWrapper,
+    private val logWrapper: LogWrapper,
+) {
     sealed class DiscoverReadersStatus {
         object Started : DiscoverReadersStatus()
         object Success : DiscoverReadersStatus()
@@ -25,10 +30,20 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
     }
 
-    fun discoverReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> {
+    fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
+        discoverReaders(isSimulated, DiscoveryMethod.LOCAL_MOBILE)
+
+    fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
+        discoverReaders(isSimulated, DiscoveryMethod.BLUETOOTH_SCAN)
+
+    private fun discoverReaders(isSimulated: Boolean, discoveryMethod: DiscoveryMethod): Flow<DiscoverReadersStatus> {
         return callbackFlow {
-            this.sendBlocking(Started)
-            val config = DiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, CHIPPER_2X, isSimulated)
+            sendAndLog(Started, logWrapper)
+            val config = DiscoveryConfiguration(
+                DISCOVERY_TIMEOUT_IN_SECONDS,
+                discoveryMethod,
+                isSimulated,
+            )
             var foundReaders: List<Reader>? = null
             val cancelable = terminal.discoverReaders(
                 config,
@@ -36,18 +51,18 @@ internal class DiscoverReadersAction(private val terminal: TerminalWrapper) {
                     override fun onUpdateDiscoveredReaders(readers: List<Reader>) {
                         if (readers != foundReaders) {
                             foundReaders = readers
-                            this@callbackFlow.sendBlocking(FoundReaders(readers))
+                            this@callbackFlow.sendAndLog(FoundReaders(readers), logWrapper)
                         }
                     }
                 },
                 object : Callback {
                     override fun onFailure(e: TerminalException) {
-                        this@callbackFlow.sendBlocking(Failure(e))
+                        this@callbackFlow.sendAndLog(Failure(e), logWrapper)
                         this@callbackFlow.close()
                     }
 
                     override fun onSuccess() {
-                        this@callbackFlow.sendBlocking(Success)
+                        this@callbackFlow.sendAndLog(Success, logWrapper)
                         this@callbackFlow.close()
                     }
                 }

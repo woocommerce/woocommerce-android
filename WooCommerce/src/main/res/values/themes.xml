@@ -4,13 +4,17 @@
     <!-- Final top-level theme -->
     <style name="Theme.Woo.DayNight" parent="Theme.Woo"/>
 
-    <style name="Theme.Woo.Splash" parent="Theme.Woo">
-        <item name="android:navigationBarColor">@color/splash_background</item>
-        <item name="android:statusBarColor">@color/splash_background</item>
-        <item name="android:windowBackground">@drawable/bg_splash</item>
+    <style name="Theme.Woo.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/img_woo_bubble_white_animated</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.Woo.DayNight</item>
     </style>
 
-    <style name="Theme.Woo" parent="Theme.WooBase"/>
+    <style name="Theme.Woo" parent="Theme.WooBase">
+        <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
     <style name="Theme.WooBase" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
         <item name="colorPrimary">@color/color_primary</item>
@@ -37,7 +41,7 @@
         <item name="android:navigationBarColor">@color/nav_bar</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
-        <item name="android:textColorLink">@color/color_secondary</item>
+        <item name="android:textColorLink">@color/color_primary</item>
 
         <item name="minTouchTargetSize">@dimen/min_tap_target</item>
 
@@ -67,7 +71,8 @@
         <item name="bottomSheetStyle">@style/Widget.MaterialComponents.BottomSheet.Modal</item>
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.Woo.Toolbar</item>
-        <item name="actionModeStyle">@style/Widget.MaterialComponents.ActionBar.PrimarySurface</item>
+        <item name="actionModeStyle">@style/Woo.ActionMode.Style</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_back_24dp</item>
         <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Entry</item>
         <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
@@ -86,6 +91,7 @@
         <item name="autoCompleteTextViewStyle">@style/Woo.AutoCompleteTextView</item>
         <item name="bottomSheetDialogTheme">@style/Woo.Theme.BottomSheetDialog</item>
         <item name="actionOverflowButtonStyle">@style/Woo.ActionMode.OverflowButtonStyle</item>
+        <item name="secondaryTextButtonStyle">@style/Woo.Button.TextButton.Secondary</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -106,33 +112,33 @@
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
         <item name="wcSingleOptionTextViewStyle">@style/Widget.Woo.WCSingleOptionTextView</item>
+
+        <!-- Default animations -->
+        <item name="enterAnim">@anim/default_enter_anim</item>
+        <item name="exitAnim">@anim/default_exit_anim</item>
+        <item name="popEnterAnim">@anim/default_pop_enter_anim</item>
+        <item name="popExitAnim">@anim/default_pop_exit_anim</item>
     </style>
 
     <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <!-- Colors -->
-        <item name="colorPrimary">@color/color_secondary</item>
-        <item name="colorSecondary">@color/color_primary</item>
-
-        <item name="android:colorBackground">@color/default_window_background</item>
-        <item name="colorSurface">@color/color_surface</item>
-        <item name="colorError">@color/color_error</item>
-
-        <item name="colorOnPrimary">@color/color_on_primary</item>
-        <item name="colorOnPrimarySurface">@color/color_on_primary_surface_high</item>
-        <item name="colorOnSecondary">@color/color_on_secondary</item>
-        <item name="colorOnBackground">@color/color_on_background</item>
-        <item name="colorOnSurface">@color/color_on_surface_high</item>
-        <item name="colorOnError">@color/color_on_error</item>
         <item name="buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
         <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
+    </style>
+
+    <style name="Theme.Woo.Dialog.RoundedCorners" parent="Theme.Woo.Dialog">
+        <item name="dialogCornerRadius">8dp</item>
+    </style>
+
+    <style name="Theme.Woo.Dialog.RoundedCorners.NoMinWidth" parent="Theme.Woo.Dialog.RoundedCorners">
+        <item name="android:windowMinWidthMajor">0%</item>
+        <item name="android:windowMinWidthMinor">0%</item>
     </style>
 
     <style name="Woo.Dialog"/>
     <style name="Woo.Dialog.ButtonBar">
         <item name="android:paddingStart">@dimen/minor_100</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
-        <item name="android:paddingTop">@dimen/minor_50</item>
-        <item name="android:paddingBottom">@dimen/minor_50</item>
     </style>
 
     <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">
@@ -146,4 +152,6 @@
         <item name="colorAccent">@color/color_primary</item>
         <item name="android:colorForeground">@color/woo_black_90</item>
     </style>
+
+    <style name="MediaPicker.Button.Colored" parent="Woo.Button.Colored" />
 </resources>

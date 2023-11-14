@@ -1,6 +1,6 @@
 package com.woocommerce.android.extensions
 
-import com.woocommerce.android.ui.refunds.RefundProductListAdapter.ProductRefundListItem
+import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.ProductRefundListItem
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 

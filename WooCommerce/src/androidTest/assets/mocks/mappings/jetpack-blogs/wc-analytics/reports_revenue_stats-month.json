@@ -1,13 +1,19 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "json": {
         "equalTo": "true"
       },
       "path": {
-        "matches": "\/wc-analytics\/reports\/revenue\/stats/(.*)&interval=month(.*)"
+        "matches": "/wc-analytics/reports/revenue/stats/(.*)"
+      },
+      "query": {
+        "matches": "(.*)interval\":\"month(.*)"
+      },
+      "locale": {
+          "matches": "(.*)"
       }
     }
   },
@@ -16,10 +22,10 @@
     "jsonBody": {
       "data": {
         "totals": {
-          "orders_count": 123,
+          "orders_count": 6000,
           "num_items_sold": 300,
           "gross_sales": 10757.929999999997,
-          "total_sales": 10391.919999999998,
+          "total_sales": 10391.92,
           "coupons": 0,
           "coupons_count": 0,
           "refunds": 1106.05,
@@ -33,11 +39,11 @@
           "segments": []
         },
         "intervals": [{
-          "interval": "2020-01",
-          "date_start": "2020-01-01 00:00:00",
-          "date_start_gmt": "2020-01-01 00:00:00",
-          "date_end": "2020-01-31 23:59:59",
-          "date_end_gmt": "2020-01-31 23:59:59",
+          "interval": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-01",
+          "date_start": "{{currentYear}}-01-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-01-01 00:00:00",
+          "date_end": "{{currentYear}}-01-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-01-31 23:59:59",
           "subtotals": {
             "orders_count": 28,
             "num_items_sold": 67,
@@ -55,11 +61,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-02",
-          "date_start": "2020-02-01 00:00:00",
-          "date_start_gmt": "2020-02-01 00:00:00",
-          "date_end": "2020-02-29 23:59:59",
-          "date_end_gmt": "2020-02-29 23:59:59",
+          "interval": "{{currentYear}}-02",
+          "date_start": "{{currentYear}}-02-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-02-01 00:00:00",
+          "date_end": "{{currentYear}}-02-29 23:59:59",
+          "date_end_gmt": "{{currentYear}}-02-29 23:59:59",
           "subtotals": {
             "orders_count": 19,
             "num_items_sold": 16,
@@ -77,11 +83,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-03",
-          "date_start": "2020-03-01 00:00:00",
-          "date_start_gmt": "2020-03-01 00:00:00",
-          "date_end": "2020-03-31 23:59:59",
-          "date_end_gmt": "2020-03-31 22:59:59",
+          "interval": "{{currentYear}}-03",
+          "date_start": "{{currentYear}}-03-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-03-01 00:00:00",
+          "date_end": "{{currentYear}}-03-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-03-31 22:59:59",
           "subtotals": {
             "orders_count": 7,
             "num_items_sold": 13,
@@ -99,11 +105,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-04",
-          "date_start": "2020-04-01 00:00:00",
-          "date_start_gmt": "2020-03-31 23:00:00",
-          "date_end": "2020-04-30 23:59:59",
-          "date_end_gmt": "2020-04-30 22:59:59",
+          "interval": "{{currentYear}}-04",
+          "date_start": "{{currentYear}}-04-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-03-31 23:00:00",
+          "date_end": "{{currentYear}}-04-30 23:59:59",
+          "date_end_gmt": "{{currentYear}}-04-30 22:59:59",
           "subtotals": {
             "orders_count": 14,
             "num_items_sold": 28,
@@ -121,11 +127,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-05",
-          "date_start": "2020-05-01 00:00:00",
-          "date_start_gmt": "2020-04-30 23:00:00",
-          "date_end": "2020-05-31 23:59:59",
-          "date_end_gmt": "2020-05-31 22:59:59",
+          "interval": "{{currentYear}}-05",
+          "date_start": "{{currentYear}}-05-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-04-30 23:00:00",
+          "date_end": "{{currentYear}}-05-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-05-31 22:59:59",
           "subtotals": {
             "orders_count": 11,
             "num_items_sold": 33,
@@ -143,11 +149,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-06",
-          "date_start": "2020-06-01 00:00:00",
-          "date_start_gmt": "2020-05-31 23:00:00",
-          "date_end": "2020-06-30 23:59:59",
-          "date_end_gmt": "2020-06-30 22:59:59",
+          "interval": "{{currentYear}}-06",
+          "date_start": "{{currentYear}}-06-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-05-31 23:00:00",
+          "date_end": "{{currentYear}}-06-30 23:59:59",
+          "date_end_gmt": "{{currentYear}}-06-30 22:59:59",
           "subtotals": {
             "orders_count": 3,
             "num_items_sold": 14,
@@ -165,11 +171,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-07",
-          "date_start": "2020-07-01 00:00:00",
-          "date_start_gmt": "2020-06-30 23:00:00",
-          "date_end": "2020-07-31 23:59:59",
-          "date_end_gmt": "2020-07-31 22:59:59",
+          "interval": "{{currentYear}}-07",
+          "date_start": "{{currentYear}}-07-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-06-30 23:00:00",
+          "date_end": "{{currentYear}}-07-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-07-31 22:59:59",
           "subtotals": {
             "orders_count": 27,
             "num_items_sold": 104,
@@ -187,11 +193,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-08",
-          "date_start": "2020-08-01 00:00:00",
-          "date_start_gmt": "2020-07-31 23:00:00",
-          "date_end": "2020-08-31 23:59:59",
-          "date_end_gmt": "2020-08-31 22:59:59",
+          "interval": "{{currentYear}}-08",
+          "date_start": "{{currentYear}}-08-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-07-31 23:00:00",
+          "date_end": "{{currentYear}}-08-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-08-31 22:59:59",
           "subtotals": {
             "orders_count": 14,
             "num_items_sold": 26,
@@ -209,11 +215,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-09",
-          "date_start": "2020-09-01 00:00:00",
-          "date_start_gmt": "2020-08-31 23:00:00",
-          "date_end": "2020-09-30 23:59:59",
-          "date_end_gmt": "2020-09-30 22:59:59",
+          "interval": "{{currentYear}}-09",
+          "date_start": "{{currentYear}}-09-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-08-31 23:00:00",
+          "date_end": "{{currentYear}}-09-30 23:59:59",
+          "date_end_gmt": "{{currentYear}}-09-30 22:59:59",
           "subtotals": {
             "orders_count": 0,
             "num_items_sold": -1,
@@ -231,11 +237,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-10",
-          "date_start": "2020-10-01 00:00:00",
-          "date_start_gmt": "2020-09-30 23:00:00",
-          "date_end": "2020-10-31 23:59:59",
-          "date_end_gmt": "2020-10-31 23:59:59",
+          "interval": "{{currentYear}}-10",
+          "date_start": "{{currentYear}}-10-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-09-30 23:00:00",
+          "date_end": "{{currentYear}}-10-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-10-31 23:59:59",
           "subtotals": {
             "orders_count": 0,
             "num_items_sold": 0,
@@ -253,11 +259,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-11",
-          "date_start": "2020-11-01 00:00:00",
-          "date_start_gmt": "2020-11-01 00:00:00",
-          "date_end": "2020-11-30 23:59:59",
-          "date_end_gmt": "2020-11-30 23:59:59",
+          "interval": "{{currentYear}}-11",
+          "date_start": "{{currentYear}}-11-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-11-01 00:00:00",
+          "date_end": "{{currentYear}}-11-30 23:59:59",
+          "date_end_gmt": "{{currentYear}}-11-30 23:59:59",
           "subtotals": {
             "orders_count": 0,
             "num_items_sold": 0,
@@ -275,11 +281,11 @@
             "segments": []
           }
         }, {
-          "interval": "2020-12",
-          "date_start": "2020-12-01 00:00:00",
-          "date_start_gmt": "2020-12-01 00:00:00",
-          "date_end": "2020-12-31 23:59:59",
-          "date_end_gmt": "2020-12-31 23:59:59",
+          "interval": "{{currentYear}}-12",
+          "date_start": "{{currentYear}}-12-01 00:00:00",
+          "date_start_gmt": "{{currentYear}}-12-01 00:00:00",
+          "date_end": "{{currentYear}}-12-31 23:59:59",
+          "date_end_gmt": "{{currentYear}}-12-31 23:59:59",
           "subtotals": {
             "orders_count": 0,
             "num_items_sold": 0,

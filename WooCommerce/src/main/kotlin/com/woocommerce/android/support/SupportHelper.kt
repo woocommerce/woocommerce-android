@@ -7,12 +7,14 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import javax.inject.Inject
 
-class SupportHelper {
+class SupportHelper @Inject constructor() {
     /**
      * This is a helper function that shows the support identity input dialog and runs the provided function with
      * the input from it.
@@ -43,11 +45,15 @@ class SupportHelper {
         dialog.setOnShowListener {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
-                val newEmail = emailEditText.getText()
-                val newName = nameEditText.getText()
+                val newEmail = emailEditText.text
+                val newName = nameEditText.text
                 if (StringUtils.isValidEmail(newEmail)) {
-                    emailAndNameSelected(newEmail, newName)
-                    dialog.dismiss()
+                    if (StringUtils.isA8cEmail(newEmail)) {
+                        emailEditText.error = context.getString(R.string.a8c_email_message)
+                    } else {
+                        emailAndNameSelected(newEmail, newName)
+                        dialog.dismiss()
+                    }
                 } else {
                     emailEditText.error = context.getString(R.string.invalid_email_message)
                 }
@@ -74,6 +80,16 @@ class SupportHelper {
         val nameSuggestion = if (!accountDisplayName.isNullOrEmpty()) accountDisplayName else selectedSite?.username
         return Pair(emailSuggestion, nameSuggestion)
     }
+
+    fun getSupportEmailSuggestion(
+        account: AccountModel?,
+        selectedSite: SiteModel?
+    ) = account?.email.takeIf { it.isNotNullOrEmpty() } ?: selectedSite?.email
+
+    fun getSupportNameSuggestion(
+        account: AccountModel?,
+        selectedSite: SiteModel?
+    ) = account?.displayName.takeIf { it.isNotNullOrEmpty() } ?: selectedSite?.username
 }
 
 /**
@@ -106,7 +122,7 @@ private fun supportIdentityInputDialogLayout(
         R.id.support_identity_input_dialog_email_edit_text
     )
     emailSuggestion?.let {
-        emailEditText.setText(it)
+        emailEditText.text = it
         emailEditText.setSelection(0, it.length)
     }
 
@@ -114,7 +130,7 @@ private fun supportIdentityInputDialogLayout(
         R.id.support_identity_input_dialog_name_edit_text
     )
     nameSuggestion?.let {
-        nameEditText.setText(it)
+        nameEditText.text = it
     }
     nameEditText.visibility = if (isNameInputHidden) View.GONE else View.VISIBLE
 

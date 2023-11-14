@@ -31,7 +31,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:contentDescription="@string/shipping_label_edit_address_validation_error"
-                android:src="@drawable/ic_info_outline_24dp"
+                android:src="@drawable/ic_tintable_info_outline_24dp"
                 app:layout_constraintBottom_toTopOf="@id/bannerDivider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/suggestionBannerMessage"

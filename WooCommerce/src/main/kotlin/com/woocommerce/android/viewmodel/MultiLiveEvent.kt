@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -31,16 +33,13 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
     @MainThread
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
         // Observe the internal MutableLiveData
-        super.observe(
-            owner,
-            Observer { t ->
-                if (pending.get()) {
-                    t.isHandled = true
-                    observer.onChanged(t)
-                    pending.compareAndSet(t.isHandled, false)
-                }
+        super.observe(owner) { t ->
+            if (pending.get()) {
+                t.isHandled = true
+                observer.onChanged(t)
+                pending.compareAndSet(t.isHandled, false)
             }
-        )
+        }
     }
 
     fun reset() {
@@ -58,6 +57,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         super.postValue(value)
     }
 
+    @Suppress("UnnecessaryAbstractClass")
     abstract class Event(var isHandled: Boolean = false) {
         data class ShowSnackbar(
             @StringRes val message: Int,
@@ -115,8 +115,12 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val action: View.OnClickListener
         ) : Event()
 
+        data class ShowUiStringSnackbar(val message: UiString) : Event()
+
         object Logout : Event()
         object Exit : Event()
+
+        data class NavigateToHelpScreen(val origin: HelpOrigin) : Event()
 
         data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
 

@@ -4,20 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
-    val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
+class ProductDetailBottomSheetFragment : WCBottomSheetDialogFragment() {
+    val viewModel: ProductDetailViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_products)
 
     private lateinit var productDetailBottomSheetAdapter: ProductDetailBottomSheetAdapter
 
@@ -53,33 +52,26 @@ class ProductDetailBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         setupObservers()
-        viewModel.fetchBottomSheetList()
     }
 
     private fun setupObservers() {
-        viewModel.productDetailBottomSheetList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductDetailBottomSheetOptions(it)
-            }
-        )
+        viewModel.productDetailBottomSheetList.observe(viewLifecycleOwner) {
+            showProductDetailBottomSheetOptions(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is Exit -> {
-                        dismiss()
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> {
+                    dismiss()
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showProductDetailBottomSheetOptions(
         productDetailBottomSheetOptions: List<ProductDetailBottomSheetUiItem>
     ) {
-        productDetailBottomSheetAdapter.setProductDetailBottomSheetOptions(productDetailBottomSheetOptions)
+        productDetailBottomSheetAdapter.options = productDetailBottomSheetOptions
     }
 }

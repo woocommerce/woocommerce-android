@@ -6,13 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
-import android.view.WindowManager
-import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
+import android.os.Build.VERSION.SDK_INT
+import android.os.Parcelable
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.intentActivities
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
@@ -27,9 +25,7 @@ object ActivityUtils {
 
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_APP_EMAIL)
-        val packageManager = context.packageManager
-        val emailApps = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-
+        val emailApps = context.packageManager.intentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
         return !emailApps.isEmpty()
     }
 
@@ -38,6 +34,25 @@ object ActivityUtils {
         intent.addCategory(Intent.CATEGORY_APP_EMAIL)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+    @Suppress("SwallowedException")
+    fun dialPhoneNumber(context: Context, phoneNumber: String) {
+        dialPhoneNumber(context, phoneNumber) {
+            ToastUtils.showToast(context, R.string.error_no_phone_app)
+        }
+    }
+
+    @Suppress("SwallowedException")
+    fun dialPhoneNumber(context: Context, phoneNumber: String, onError: (e: ActivityNotFoundException) -> Unit) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phoneNumber")
+
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            onError(e)
+        }
     }
 
     /**
@@ -56,7 +71,8 @@ object ActivityUtils {
         } catch (se: SecurityException) {
             WooLog.e(T.UTILS, "Error opening url in default browser. Url: $url", se)
 
-            val infos = context.packageManager.queryIntentActivities(intent, 0)
+            val infos = context.packageManager.intentActivities(intent, 0)
+
             if (infos.size == 1) {
                 // there's only one handler and apparently it caused the exception so, just inform and bail
                 WooLog.d(T.UTILS, "Only one url handler found so, bailing.")
@@ -84,18 +100,35 @@ object ActivityUtils {
         }
     }
 
-    fun composeEmail(activity: Activity, billingEmail: String, subject: UiString, content: UiString): Boolean {
+    @Suppress("SwallowedException")
+    fun sendEmail(context: Context, email: String) {
+        sendEmail(context, email) {
+            ToastUtils.showToast(context, R.string.error_no_email_app)
+        }
+    }
+
+    @Suppress("SwallowedException")
+    fun sendEmail(
+        context: Context,
+        email: String,
+        subject: UiString? = null,
+        content: UiString? = null,
+        onError: (e: ActivityNotFoundException) -> Unit = {}
+    ) {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:") // only email apps should handle this
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(billingEmail))
-            putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(activity, subject))
-            putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(activity, content))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            if (subject != null) {
+                putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(context, subject))
+            }
+            if (content != null) {
+                putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(context, content))
+            }
         }
-        return try {
-            activity.startActivity(intent)
-            true
+        try {
+            context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            false
+            onError(e)
         }
     }
 
@@ -108,13 +141,10 @@ object ActivityUtils {
         val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
+}
 
-    fun setStatusBarColor(activity: Activity, @ColorRes colorRes: Int) {
-        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            val window = activity.window
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = ContextCompat.getColor(activity, colorRes)
-        }
-    }
+@Suppress("MagicNumber")
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
 }

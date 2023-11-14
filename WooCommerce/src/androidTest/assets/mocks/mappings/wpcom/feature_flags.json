@@ -1,0 +1,40 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/wpcom/v2/mobile/feature-flags/(.*)",
+    "queryParameters": {
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "wordpress_ios_unified_login_and_signup": true,
+      "jetpack_powered_bottom_sheet_remote_field": false,
+      "jetpack_shared_login_remote_field": false,
+      "mp4_composer_video_optimization_enabled": true,
+      "my_site_dashboard_todays_stats_card": true,
+      "qrcode_auth_flow_remote_field": true,
+      "prevent_duplicate_notifs_remote_field": true,
+      "jp_removal_one": true,
+      "jp_removal_two": true,
+      "jp_removal_three": true,
+      "jp_removal_four": false,
+      "jp_removal_static_posters": false,
+      "jp_removal_new_users": false,
+      "jp_removal_self_hosted": false,
+      "blaze": false,
+      "open_web_links_with_jetpack_flow": true,
+      "wordpress_support_forum_remote_field": false,
+      "manage_categories": true,
+      "dashboard_card_activity_log": false,
+      "dashboard_card_pages": false,
+      "dashboard_card_domain": false,
+      "google_signin_without_sdk": false,
+      "feature-flags-enabled": false,
+      "woo_notification_store_creation_ready": false,
+      "woo_notification_nudge_free_trial_after_1d": false,
+      "woo_notification_1d_before_free_trial_expires": false,
+      "woo_notification_1d_after_free_trial_expires": false
+    }
+  }
+}

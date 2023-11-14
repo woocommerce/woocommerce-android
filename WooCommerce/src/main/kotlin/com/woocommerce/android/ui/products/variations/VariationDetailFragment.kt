@@ -7,18 +7,24 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED
 import com.woocommerce.android.databinding.FragmentVariationDetailBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.parcelable
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
@@ -28,25 +34,31 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.util.Optional
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
-    OnGalleryImageInteractionListener {
+    OnGalleryImageInteractionListener,
+    MenuProvider {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
@@ -66,7 +78,7 @@ class VariationDetailFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var detailSnackbar: Snackbar? = null
+    private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private val viewModel: VariationDetailViewModel by viewModels()
 
@@ -78,13 +90,14 @@ class VariationDetailFragment :
 
         _binding = FragmentVariationDetailBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         initializeViewModel()
     }
 
     override fun onDestroyView() {
         skeletonView.hide()
+        imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
         _binding = null
     }
@@ -99,19 +112,17 @@ class VariationDetailFragment :
         progressDialog?.dismiss()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
         doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    override fun onPrepareMenu(menu: Menu) {
         doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
         doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
@@ -123,7 +134,7 @@ class VariationDetailFragment :
                 viewModel.onDeleteVariationClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -131,7 +142,7 @@ class VariationDetailFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
         binding.cardsRecyclerView.layoutManager = layoutManager
@@ -152,6 +163,14 @@ class VariationDetailFragment :
                 saleStartDate = it.saleStartDate,
                 saleEndDate = it.saleEndDate
             )
+
+            if (it.isSubscription) {
+                viewModel.onVariationSubscriptionChanged(
+                    price = it.regularPrice,
+                    period = it.subscriptionPeriod,
+                    periodInterval = it.subscriptionInterval
+                )
+            }
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.onVariationChanged(
@@ -172,13 +191,8 @@ class VariationDetailFragment :
                 shippingClassId = it.shippingClassId
             )
         }
-        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
-            // If empty, the image was deleted. Create a placeholder image with ID 0
-            val updatedImage = it.firstOrNull() ?: Image(0, "", "", Date())
-
-            viewModel.onVariationChanged(
-                image = updatedImage
-            )
+        handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) { updatedImage ->
+            viewModel.onVariationChanged(image = Optional(updatedImage.firstOrNull()))
         }
         handleResult<Bundle>(AztecEditorFragment.AZTEC_EDITOR_RESULT) { result ->
             if (result.getBoolean(AztecEditorFragment.ARG_AZTEC_HAS_CHANGES)) {
@@ -188,9 +202,7 @@ class VariationDetailFragment :
             }
         }
         handleResult<Array<VariantOption>>(KEY_VARIATION_ATTRIBUTES_RESULT) {
-            viewModel.onVariationChanged(
-                attributes = it
-            )
+            viewModel.onVariationChanged(attributes = it)
         }
     }
 
@@ -230,37 +242,32 @@ class VariationDetailFragment :
             }
         }
 
-        viewModel.variationDetailCards.observe(
-            viewLifecycleOwner,
-            Observer {
-                showVariationCards(it)
-            }
-        )
+        viewModel.variationDetailCards.distinctUntilChanged().observe(viewLifecycleOwner) {
+            showVariationCards(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is VariationNavigationTarget -> {
-                        navigator.navigate(this, event)
-                    }
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
-                    is ShowDialog -> event.showDialog()
-                    is Exit -> requireActivity().onBackPressed()
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                is VariationNavigationTarget -> {
+                    navigator.navigate(this, event)
                 }
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
+                is ShowDialog -> event.showDialog()
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        if (variation.image == null && !viewModel.isUploadingImages(variation.remoteVariationId)) {
+        if (variation.image == null && !viewModel.isUploadingImages()) {
             binding.imageGallery.hide()
             binding.addImageContainer.show()
             binding.addImageContainer.setOnClickListener {
-                AnalyticsTracker.track(Stat.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
                 viewModel.onAddImageButtonClicked()
             }
         } else {
@@ -320,19 +327,20 @@ class VariationDetailFragment :
         message: String,
         actionListener: View.OnClickListener
     ) {
-        if (detailSnackbar == null) {
-            detailSnackbar = uiMessageResolver.getIndefiniteActionSnack(
+        if (imageUploadErrorsSnackbar == null) {
+            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
                 actionText = getString(R.string.details),
                 actionListener = actionListener
             )
         } else {
-            detailSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(message)
         }
-        detailSnackbar?.show()
+        imageUploadErrorsSnackbar?.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         layoutManager?.let {
             outState.putParcelable(LIST_STATE_KEY, it.onSaveInstanceState())
         }

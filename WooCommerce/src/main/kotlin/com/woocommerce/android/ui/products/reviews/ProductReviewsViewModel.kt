@@ -4,16 +4,30 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewListRepository
+import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
+import com.woocommerce.android.ui.reviews.ReviewModerationHandler
+import com.woocommerce.android.ui.reviews.observeModerationEvents
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -22,71 +36,159 @@ import javax.inject.Inject
 class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val reviewsRepository: ProductReviewsRepository
-) : ScopedViewModel(savedState) {
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val reviewListRepository: ReviewListRepository
+) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
-    val reviewList: LiveData<List<ProductReview>> = _reviewList
 
-    final val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
+    override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
+        get() = this@ProductReviewsViewModel.reviewModerationHandler
+
+    override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
+        get() = _reviewList
+
+    val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
     private var productReviewsViewState by productReviewsViewStateData
 
     private val navArgs: ProductReviewsFragmentArgs by savedState.navArgs()
 
-    override fun onCleared() {
-        super.onCleared()
-        reviewsRepository.onCleanup()
-    }
+    private var hasModifiedReviews: Boolean = false
+    private var fetchingReviewsJob: Job? = null
 
     init {
         if (_reviewList.value == null) {
             loadProductReviews()
         }
+        launch { observeModerationEvents() }
     }
 
     fun refreshProductReviews() {
         productReviewsViewState = productReviewsViewState.copy(isRefreshing = true)
-        launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = false) }
+        fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = false)
     }
 
     fun loadMoreReviews() {
-        if (!reviewsRepository.canLoadMore) {
+        if (!reviewListRepository.canLoadMore) {
             WooLog.d(PRODUCTS, "No more reviews to load for product: ${navArgs.remoteProductId}")
             return
         }
 
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = true)
-        launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true) }
+        fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true)
+    }
+
+    override fun ReviewModerationConsumer.onReviewModerationSuccess() {
+        reloadReviewsFromCache()
+        hasModifiedReviews = true
+    }
+
+    fun onBackButtonClicked() {
+        if (hasModifiedReviews) {
+            triggerEvent(ExitWithResult(Unit))
+        } else {
+            triggerEvent(Exit)
+        }
+    }
+
+    private fun reloadReviewsFromCache() {
+        launch {
+            _reviewList.value = reviewListRepository.getCachedProductReviews()
+            productReviewsViewState = productReviewsViewState.copy(
+                isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            )
+        }
     }
 
     private fun loadProductReviews() {
-        // Initial load. Get and show reviewList from the db if any
-        val reviewsInDb = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
-        if (reviewsInDb.isNotEmpty()) {
-            _reviewList.value = reviewsInDb
-            productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = false)
-        } else {
-            productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
+        launch {
+            // Initial load. Get and show reviewList from the db if any
+            val reviewsInDb = reviewListRepository.getCachedProductReviews(navArgs.remoteProductId)
+            if (reviewsInDb.isNotEmpty()) {
+                _reviewList.value = reviewsInDb
+                productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = false)
+            } else {
+                productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
+            }
         }
-
-        launch { fetchProductReviews(navArgs.remoteProductId, loadMore = false) }
+        fetchProductReviews(navArgs.remoteProductId, loadMore = false)
     }
 
-    private suspend fun fetchProductReviews(
+    private fun fetchProductReviews(
         remoteProductId: Long,
         loadMore: Boolean
     ) {
-        if (networkStatus.isConnected()) {
-            _reviewList.value = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
-        } else {
-            // Network is not connected
-            triggerEvent(ShowSnackbar(string.offline_error))
-        }
+        fetchingReviewsJob = launch {
+            if (networkStatus.isConnected()) {
+                if (productReviewsViewState.isUnreadFilterEnabled) {
+                    fetchUnreadReviews(loadMore = loadMore, productId = remoteProductId)
+                } else {
+                    val result = reviewListRepository.fetchProductReviews(
+                        loadMore,
+                        remoteProductId
+                    )
+                    trackFetchProductReviewsResult(result, loadMore)
+                    when (result) {
+                        SUCCESS,
+                        NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedProductReviews()
 
+                        ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                        else -> {}
+                    }
+                }
+            } else {
+                triggerEvent(ShowSnackbar(R.string.offline_error))
+            }
+
+            productReviewsViewState = productReviewsViewState.copy(
+                isSkeletonShown = false,
+                isLoadingMore = false,
+                isRefreshing = false,
+                isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            )
+        }
+    }
+
+    private suspend fun fetchUnreadReviews(loadMore: Boolean, productId: Long) {
+        productReviewsViewState = productReviewsViewState.copy(isLoadingMore = loadMore)
+        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore, productId)) {
+            SUCCESS,
+            NO_ACTION_NEEDED -> {
+                val unreadReviews = reviewListRepository.getCachedUnreadProductReviews()
+                _reviewList.value = unreadReviews
+            }
+
+            ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+            else -> {}
+        }
+    }
+
+    private fun trackFetchProductReviewsResult(
+        result: RequestResult,
+        loadMore: Boolean
+    ) {
+        when (result) {
+            SUCCESS -> AnalyticsTracker.track(
+                PRODUCT_REVIEWS_LOADED,
+                mapOf(
+                    AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
+                )
+            )
+
+            else -> {
+                AnalyticsTracker.track(PRODUCT_REVIEWS_LOAD_FAILED)
+            }
+        }
+    }
+
+    fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
+        fetchingReviewsJob?.cancel()
         productReviewsViewState = productReviewsViewState.copy(
-            isSkeletonShown = false,
-            isLoadingMore = false,
-            isRefreshing = false,
-            isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            isUnreadFilterEnabled = isEnabled,
+            isSkeletonShown = true
+        )
+        fetchProductReviews(
+            remoteProductId = navArgs.remoteProductId,
+            loadMore = false
         )
     }
 
@@ -95,6 +197,7 @@ class ProductReviewsViewModel @Inject constructor(
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 }

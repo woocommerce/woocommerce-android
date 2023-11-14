@@ -1,4 +1,0 @@
-7.5:
-En ny funktion är möjligheten att visa beställningar med produkter med hjälp av WooCommerce-utökningen Produkttillägg! Gå till inställningarna för din butik på fliken Min butik i appen och aktivera den här funktionen under Betafunktioner. Kom ihåg att skicka oss feedback om upplevelsen!
-
-Du kommer också att märka att du kan filtrera produktlistan efter kategori. Ni önskade, vi levererar!

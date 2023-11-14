@@ -14,7 +14,9 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
@@ -45,7 +47,7 @@ class OrderListRepository @Inject constructor(
     }
 
     suspend fun fetchOrderStatusOptionsFromApi(): RequestResult {
-        return if (!isFetchingOrderStatusOptions) {
+        return if (!isFetchingOrderStatusOptions && selectedSite.exists()) {
             val result = continuationOrderStatus.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
                 isFetchingOrderStatusOptions = true
 
@@ -80,7 +82,7 @@ class OrderListRepository @Inject constructor(
 
     suspend fun fetchPaymentGateways(): RequestResult {
         return withContext(coroutineDispatchers.io) {
-            if (!isFetchingPaymentGateways) {
+            if (!isFetchingPaymentGateways && selectedSite.exists()) {
                 isFetchingPaymentGateways = true
                 val result = gatewayStore.fetchAllGateways(selectedSite.get())
                 isFetchingPaymentGateways = false
@@ -92,12 +94,9 @@ class OrderListRepository @Inject constructor(
         }
     }
 
-    /**
-     * Checks to see if there are any orders in the db for the active store.
-     *
-     * @return True if there are orders in the db, else False
-     */
-    fun hasCachedOrdersForSite() = orderStore.hasCachedOrdersForSite(selectedSite.get())
+    fun getAllPaymentGateways(site: SiteModel): List<WCGatewayModel> {
+        return gatewayStore.getAllGateways(site)
+    }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)

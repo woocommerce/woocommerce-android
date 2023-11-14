@@ -16,7 +16,7 @@ enum class ProductReviewStatus {
     ALL;
 
     override fun toString(): String {
-        return this.name.toLowerCase(Locale.US)
+        return this.name.lowercase(Locale.US)
     }
 
     companion object {

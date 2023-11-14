@@ -3,12 +3,90 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_main"
-    app:startDestination="@id/dashboard">
+    app:startDestination="@id/getPaidFragment">
+
+    <include app:graph="@navigation/nav_graph_orders" />
+    <include app:graph="@navigation/nav_graph_order_filters" />
+    <include app:graph="@navigation/nav_graph_products" />
+    <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_coupons" />
+    <include app:graph="@navigation/nav_graph_site_picker" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
+
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
         android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store" />
+        tools:layout="@layout/fragment_my_store">
+        <action
+            android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
+            app:destination="@id/nav_graph_jetpack_install" />
+        <action
+            android:id="@+id/action_myStore_to_analytics"
+            app:destination="@id/analytics"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="targetGranularity"
+                app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
+        </action>
+        <action
+            android:id="@+id/action_myStore_to_onboardingFragment"
+            app:destination="@id/storeOnboardingFragment" />
+        <action
+            android:id="@+id/action_myStore_to_launchStoreFragment"
+            app:destination="@id/launchStoreFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change">
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
+        </action>
+        <action
+            android:id="@+id/action_myStore_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="true"
+                app:argType="boolean" />
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
+        </action>
+        <action
+            android:id="@+id/action_myStore_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
+        <action
+            android:id="@+id/action_myStore_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment" />
+        <action
+            android:id="@+id/action_myStore_to_aboutYourStoreFragment"
+            app:destination="@id/aboutYourStoreFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
+            app:destination="@id/AIProductDescriptionDialogFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
+        <action
+            android:id="@+id/action_myStore_to_blazeCampaignListFragment"
+            app:destination="@id/blazeCampaignListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/orders"
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
@@ -16,19 +94,56 @@
         tools:layout="@layout/fragment_order_list">
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
-            app:destination="@id/nav_graph_orders"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
+            app:destination="@id/nav_graph_orders">
             <argument
                 android:name="orderId"
-                android:defaultValue='""'
-                app:argType="string" />
+                app:argType="long" />
+            <argument
+                android:name="allOrderIds"
+                app:argType="long[]" />
             <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
+            app:destination="@id/nav_graph_order_filters"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_orderListFragment_to_orderCreationFragment"
+            app:destination="@id/nav_graph_order_creations"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="mode"
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+            <argument
+                android:name="sku"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="barcodeFormat"
+                app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+                app:nullable="true" />
+        </action>
+        <action
+            android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment" />
+        <action
+            android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
+            app:destination="@id/createTestOrderDialogFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/products"
         android:name="com.woocommerce.android.ui.products.ProductListFragment"
@@ -38,6 +153,8 @@
             android:id="@+id/action_productListFragment_to_productFilterListFragment"
             app:destination="@id/nav_graph_product_filters"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="selectedStockStatus"
@@ -64,23 +181,100 @@
             android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
             app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_products_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
         android:label="fragment_reviews_list"
-        tools:layout="@layout/fragment_reviews_list" >
+        tools:layout="@layout/fragment_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
-            app:destination="@id/reviewDetailFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right"/>
+            app:destination="@id/reviewDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/analytics"
+        android:name="com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment"
+        android:label="fragment_analytics"
+        tools:layout="@layout/fragment_analytics">
+        <argument
+            android:name="targetGranularity"
+            app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
+        <action
+            android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
+            app:destination="@id/analyticsDateRangeSelectorDialog" />
+    </fragment>
+    <dialog
+        android:id="@+id/analyticsDateRangeSelectorDialog"
+        android:name="com.woocommerce.android.ui.ItemSelectorDialog"
+        android:label="ItemSelectorDialog">
+        <argument
+            android:name="selectedItem"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="keys"
+            app:argType="string[]" />
+        <argument
+            android:name="values"
+            app:argType="string[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <action
+        android:id="@+id/action_global_item_selector_dialog"
+        app:destination="@id/itemSelectorDialog" />
+    <fragment
+        android:id="@+id/subscriptions"
+        android:name="com.woocommerce.android.ui.upgrades.UpgradesFragment"
+        android:label="fragment_subscriptions" />
+    <fragment
+        android:id="@+id/moreMenu"
+        android:name="com.woocommerce.android.ui.moremenu.MoreMenuFragment"
+        android:label="fragment_more_menu">
+        <action
+            android:id="@+id/action_moreMenu_to_reviewList"
+            app:destination="@id/reviews" />
+        <action
+            android:id="@+id/action_moreMenu_to_settingsActivity"
+            app:destination="@id/appSettingsActivity" />
+        <action
+            android:id="@+id/action_moreMenuFragment_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_moreMenu_to_paymentFlow"
+            app:destination="@id/paymentFlow"
+            app:enterAnim="@null">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
+        <action
+            android:id="@+id/action_moreMenu_to_subscriptions"
+            app:destination="@id/subscriptions" />
+        <action
+            android:id="@+id/action_moreMenu_to_blazeCampaignListFragment"
+            app:destination="@id/blazeCampaignListFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -90,23 +284,21 @@
             android:name="surveyType"
             android:defaultValue='MAIN'
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+        <argument
+            android:name="customUrl"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right"
             app:popUpTo="@id/feedbackSurveyFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
     <action
         android:id="@+id/action_global_feedbackSurveyFragment"
-        app:destination="@id/feedbackSurveyFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/feedbackSurveyFragment" />
     <fragment
         android:id="@+id/feedbackCompletedFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackCompletedFragment"
@@ -118,9 +310,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
-        app:destination="@id/nav_graph_products"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right">
+        app:destination="@id/nav_graph_products">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -133,7 +323,18 @@
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="isAIContent"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </action>
+    <action
+        android:id="@+id/action_global_reviewDetailFragment"
+        app:destination="@id/reviewDetailFragment" />
     <fragment
         android:id="@+id/reviewDetailFragment"
         android:name="com.woocommerce.android.ui.reviews.ReviewDetailFragment"
@@ -150,13 +351,11 @@
         <argument
             android:name="launchedFromNotification"
             app:argType="boolean" />
-        <argument
-            android:name="enableModeration"
-            app:argType="boolean" />
+        <action
+            android:id="@+id/action_reviewDetailFromNotification_to_reviewListFragment"
+            app:destination="@id/reviews"
+            app:popUpTo="@+id/moreMenu" />
     </fragment>
-    <include app:graph="@navigation/nav_graph_orders" />
-    <include app:graph="@navigation/nav_graph_products" />
-    <include app:graph="@navigation/nav_graph_product_filters" />
 
     <fragment
         android:id="@+id/infoScreenFragment"
@@ -202,23 +401,54 @@
             android:name="urlToLoad"
             app:argType="string" />
         <argument
-            android:name="urlToTriggerExit"
+            android:name="title"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
-    <action android:id="@+id/action_global_WPComWebViewFragment" app:destination="@id/WPComWebViewFragment"/>
+    <action
+        android:id="@+id/action_global_WPComWebViewFragment"
+        app:destination="@id/WPComWebViewFragment" />
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
-        app:destination="@id/userEligibilityErrorFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/userEligibilityErrorFragment" />
 
     <action
         android:id="@+id/action_global_infoScreenFragment"
         app:destination="@id/infoScreenFragment"
         app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
+    <action
+        android:id="@+id/action_global_login_to_sitePickerFragment"
+        app:destination="@id/nav_graph_site_picker">
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </action>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -231,5 +461,282 @@
             android:name="isAddProduct"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="currentProductType"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="isCurrentProductVirtual"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </dialog>
+    <dialog
+        android:id="@+id/featureAnnouncementDialogFragmentOnMain"
+        android:name="com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment"
+        android:label="FeatureAnnouncementDialogFragment">
+        <argument
+            android:name="announcement"
+            app:argType="com.woocommerce.android.model.FeatureAnnouncement"
+            app:nullable="false" />
+    </dialog>
+    <action
+        android:id="@+id/action_open_Whatsnew_from_Main"
+        app:destination="@id/featureAnnouncementDialogFragmentOnMain"
+        app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
+        app:popExitAnim="@anim/activity_fade_out" />
+    <activity
+        android:id="@+id/appSettingsActivity"
+        android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
+        android:label="AppSettingsActivity" />
+    <fragment
+        android:id="@+id/inboxFragment"
+        android:name="com.woocommerce.android.ui.inbox.InboxFragment"
+        android:label="InboxFragment" />
+    <fragment
+        android:id="@+id/simpleTextEditorFragment"
+        android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
+        android:label="SimpleTextEditorFragment">
+        <argument
+            android:name="currentText"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="screenTitle"
+            app:argType="string" />
+        <argument
+            android:name="hint"
+            app:argType="string" />
+        <argument
+            android:name="requestCode"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="strategy"
+            app:argType="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy"
+            app:nullable="false" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_simpleTextEditorFragment"
+        app:destination="@id/simpleTextEditorFragment" />
+    <fragment
+        android:id="@+id/storeOnboardingFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingFragment"
+        android:label="StoreOnboardingFragment">
+        <action
+            android:id="@+id/action_onboardingFragment_to_launchStoreFragment"
+            app:destination="@id/launchStoreFragment"
+            app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change"
+            app:popUpTo="@id/dashboard">
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
+        </action>
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_aboutYourStoreFragment"
+            app:destination="@id/aboutYourStoreFragment"
+            app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="true"
+                app:argType="boolean" />
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
+        </action>
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment"
+            app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment"
+            app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
+    </fragment>
+    <dialog
+        android:id="@+id/privacyBannerFragment"
+        android:name="com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragment" />
+    <fragment
+        android:id="@+id/launchStoreFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
+        android:label="LaunchStoreFragment" />
+    <fragment
+        android:id="@+id/getPaidFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
+        android:label="GetPaidFragment">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_getPaidFragment_to_wooPaymentsSetupCelebrationDialog"
+            app:destination="@id/wooPaymentsSetupCelebrationDialog"
+            app:popUpTo="@id/getPaidFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <dialog
+        android:id="@+id/wooPaymentsSetupCelebrationDialog"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
+        android:label="WooPaymentsSetupCelebrationDialog" />
+    <fragment
+        android:id="@+id/wooPaymentsSetupInstructionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupInstructionsFragment"
+        android:label="WooPaymentsSetupInstructionsFragment">
+        <action
+            android:id="@+id/action_wooPaymentsSetupInstructionsFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.PaymentsPreSetupFragment"
+        android:label="PaymentsPreSetupFragment">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
+            app:destination="@id/getPaidFragment"
+            app:popUpTo="@id/dashboard" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutYourStoreFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
+        android:label="AboutYourStoreFragment" />
+    <fragment
+        android:id="@+id/planUpgradeStartFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment"
+        android:label="PlanUpgradeStartFragment">
+        <argument
+            android:name="source"
+            app:argType="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment$PlanUpgradeStartSource"
+            app:nullable="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignCreationFragment"
+        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
+        android:label="BlazeWebViewFragment">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="source"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationFragment_to_blazeCampaignListFragment"
+            app:destination="@id/blazeCampaignListFragment"
+            app:popUpTo="@id/blazeCampaignCreationFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/freeTrialSurveyFragment"
+        android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
+        android:label="FreeTrialSurveyFragment" />
+    <action
+        android:id="@+id/action_global_blazeCampaignCreationFragment"
+        app:destination="@id/blazeCampaignCreationFragment" />
+    <action
+        android:id="@+id/action_global_planUpgradeStartFragment"
+        app:destination="@id/planUpgradeStartFragment" />
+    <action
+        android:id="@+id/action_global_privacyBannerFragment"
+        app:destination="@id/privacyBannerFragment" />
+    <action
+        android:id="@+id/action_global_freeTrialSurveyFragment"
+        app:destination="@id/freeTrialSurveyFragment" />
+    <dialog
+        android:id="@+id/AIProductDescriptionDialogFragment"
+        android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"
+        android:label="AIProductDescriptionDialogFragment" />
+    <dialog
+        android:id="@+id/createTestOrderDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
+        android:label="CreateTestOrderDialogFragment">
+        <argument
+            android:name="siteUrl"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
+    <dialog
+        android:id="@+id/nameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment">
+        <argument
+            android:name="fromOnboarding"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
+    <dialog
+        android:id="@+id/addProductWithAIBottomSheet"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIBottomSheet"
+        android:label="AddProductWithAIBottomSheet">
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:popUpTo="@id/addProductWithAIBottomSheet"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
+            app:destination="@id/addProductWithAIFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/addProductWithAIFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
+        android:label="AddProductWithAIFragment">
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_AIProductNameBottomSheetFragment"
+            app:destination="@id/aiProductNameBottomSheetFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
+            app:destination="@id/packagePhotoBottomSheetFragment" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/aiProductNameBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
+        android:label="AIProductNameBottomSheetFragment">
+        <argument
+            android:name="initialName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/packagePhotoBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragment"
+        android:label="PackagePhotoBottomSheetFragment" >
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/blazeCampaignListFragment"
+        android:name="com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListFragment"
+        android:label="BlazeCampaignListFragment" >
+        <argument
+            android:name="isPostCampaignCreation"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

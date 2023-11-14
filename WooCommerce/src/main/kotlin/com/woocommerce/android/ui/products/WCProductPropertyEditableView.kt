@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.products
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.text.Editable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 
 class WCProductPropertyEditableView @JvmOverloads constructor(
@@ -16,6 +19,7 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
     private val view = View.inflate(context, R.layout.product_property_editable_view_layout, this)
     private val editableText = view.findViewById<EditText>(R.id.editText)
+    private val badgeTextView = view.findViewById<MaterialTextView>(R.id.badgeTextView)
 
     // Flag to check if [EditText] already has a [EditText.doAfterTextChanged] defined to avoid multiple callbacks
     private var isTextChangeListenerActive: Boolean = false
@@ -33,6 +37,17 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
         if (isFocused) {
             editableText.requestFocus()
         }
+    }
+
+    fun showBadge(badgeTextRes: Int, badgeColorRes: Int) {
+        badgeTextView.visibility = View.VISIBLE
+        badgeTextView.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, badgeColorRes))
+        badgeTextView.setText(badgeTextRes)
+    }
+
+    fun hideBadge() {
+        badgeTextView.visibility = View.GONE
+        badgeTextView.text = ""
     }
 
     fun setOnTextChangedListener(cb: (text: Editable?) -> Unit) {

@@ -1,30 +1,36 @@
 package com.woocommerce.android.ui.prefs
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.findNavController
-import androidx.preference.PreferenceManager
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
-import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.PreferencesWrapper
+import com.woocommerce.android.util.parcelable
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
+import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,8 +39,8 @@ class AppSettingsActivity :
     AppSettingsListener,
     AppSettingsContract.View {
     companion object {
-        private const val KEY_SITE_CHANGED = "key_site_changed"
-        const val RESULT_CODE_SITE_CHANGED = Activity.RESULT_FIRST_USER
+        const val EXTRA_SHOW_PRIVACY_SETTINGS = "extra_show_privacy_settings"
+        const val EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR = "extra_requested_analytics_value_from_error"
         const val RESULT_CODE_BETA_OPTIONS_CHANGED = 2
         const val KEY_BETA_OPTION_CHANGED = "key_beta_option_changed"
     }
@@ -44,13 +50,12 @@ class AppSettingsActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var prefs: AppPrefs
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
+    @Inject lateinit var statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
-    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(this) }
-    private var siteChanged = false
     private var isBetaOptionChanged = false
 
     private lateinit var binding: ActivityAppSettingsBinding
-    private lateinit var toolbar: Toolbar
+    private var toolbar: Toolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,16 +69,43 @@ class AppSettingsActivity :
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
+
         savedInstanceState?.let {
-            siteChanged = it.getBoolean(KEY_SITE_CHANGED)
             isBetaOptionChanged = it.getBoolean(KEY_BETA_OPTION_CHANGED)
         }
 
-        if (siteChanged) {
-            setResult(RESULT_CODE_SITE_CHANGED)
-        }
         if (isBetaOptionChanged) {
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
+        }
+
+        if (intent.getBooleanExtra(EXTRA_SHOW_PRIVACY_SETTINGS, false)) {
+
+            val requestedAnalyticsValue =
+                intent.parcelable(EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR)
+                    ?: RequestedAnalyticsValue.NONE
+
+            navHostFragment.navController.navigate(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToPrivacySettingsFragment(
+                    requestedAnalyticsValue
+                )
+            )
+        }
+    }
+
+    private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
+        override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            if (f is DialogFragment) return
+
+            when ((f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
+                AppBarStatus.Hidden -> {
+                    toolbar?.isVisible = false
+                }
+                is AppBarStatus.Visible -> {
+                    toolbar?.isVisible = true
+                }
+            }
         }
     }
 
@@ -88,7 +120,6 @@ class AppSettingsActivity :
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(KEY_SITE_CHANGED, siteChanged)
         outState.putBoolean(KEY_BETA_OPTION_CHANGED, isBetaOptionChanged)
         super.onSaveInstanceState(outState)
     }
@@ -102,29 +133,6 @@ class AppSettingsActivity :
             finish()
             true
         }
-    }
-
-    /**
-     * User switched sites from the main settings fragment, set the result code so the calling activity
-     * will know the site changed
-     */
-    override fun onSiteChanged() {
-        if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
-        siteChanged = true
-        setResult(RESULT_CODE_SITE_CHANGED)
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
-        // Display a message to the user advising notifications will only be shown
-        // for the current store.
-        selectedSite.getIfExists()?.let {
-            Snackbar.make(
-                binding.mainContent,
-                getString(R.string.settings_switch_site_notifs_msg, it.name),
-                BaseTransientBottomBar.LENGTH_LONG
-            ).show()
-        }
-
-        prefs.resetSitePreferences()
     }
 
     override fun onRequestLogout() {
@@ -141,41 +149,38 @@ class AppSettingsActivity :
 
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
+        statsWidgetUpdaters.updateTodayWidget()
 
-        val mainIntent = Intent(this, MainActivity::class.java)
-        mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(mainIntent)
-        setResult(Activity.RESULT_OK)
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            LoginMode.WOO_LOGIN_MODE.putInto(this)
+        }
 
-        close()
-    }
-
-    override fun close() {
+        startActivity(intent)
         finish()
     }
 
     override fun confirmLogout() {
-        val message = String.format(
-            Locale.getDefault(),
-            getString(R.string.settings_confirm_logout),
-            presenter.getAccountDisplayName()
-        )
+        val message = when (selectedSite.connectionType) {
+            SiteConnectionType.ApplicationPasswords -> getString(R.string.settings_confirm_logout_site_credentials)
+            else -> getString(R.string.settings_confirm_logout, presenter.getAccountDisplayName())
+        }
+
         MaterialAlertDialogBuilder(this)
             .setMessage(message)
             .setPositiveButton(R.string.signout) { _, _ ->
                 AnalyticsTracker.track(
-                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    AnalyticsEvent.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
                     mapOf(
                         AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(true)
                     )
                 )
 
-                if (FeatureFlag.CARD_READER.isEnabled()) presenter.clearCardReaderData()
                 presenter.logout()
             }
             .setNegativeButton(R.string.back) { _, _ ->
                 AnalyticsTracker.track(
-                    Stat.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
+                    AnalyticsEvent.SETTINGS_LOGOUT_CONFIRMATION_DIALOG_RESULT,
                     mapOf(
                         AnalyticsTracker.KEY_RESULT to AnalyticsUtils.getConfirmationResultLabel(false)
                     )
@@ -184,9 +189,5 @@ class AppSettingsActivity :
             .setCancelable(true)
             .create()
             .show()
-    }
-
-    override fun clearNotificationPreferences() {
-        sharedPreferences.edit().remove(PreferencesWrapper.WPCOM_PUSH_DEVICE_TOKEN).apply()
     }
 }

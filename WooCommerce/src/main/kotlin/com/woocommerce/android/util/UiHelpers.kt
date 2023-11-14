@@ -1,17 +1,13 @@
 package com.woocommerce.android.util
 
-import android.app.Dialog
 import android.content.Context
-import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.view.WindowManager.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
-import com.woocommerce.android.R
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.model.UiDimen.UiDimenDPInt
 import com.woocommerce.android.model.UiDimen.UiDimenRes
@@ -73,7 +69,7 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHide(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
+    fun setImageOrHideInLandscape(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
         updateVisibility(imageView, resId != null && !isLandscape, setInvisible)
         resId?.let {
@@ -84,25 +80,5 @@ object UiHelpers {
     fun setDrawableOrHide(imageView: ImageView, image: Drawable?) {
         updateVisibility(imageView, image != null)
         image?.let { imageView.setImageDrawable(image) }
-    }
-
-    fun adjustDialogSize(dialog: Dialog) {
-        dialog.window?.let { window ->
-            val size = Point()
-
-            val display = window.windowManager.defaultDisplay
-            display.getSize(size)
-
-            val width = size.x
-
-            val maximumWidth = window.context.resources.getDimension(R.dimen.alert_dialog_max_width).toInt()
-            var proposedWidth = (width * 0.8).toInt()
-
-            if (proposedWidth > maximumWidth) {
-                proposedWidth = maximumWidth
-            }
-
-            window.setLayout(proposedWidth, LayoutParams.WRAP_CONTENT)
-        }
     }
 }

@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.products
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
@@ -12,18 +13,18 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ProductShippingViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val initialData = ShippingData(
         10f, 9f, 8f, 7f, "Class 1", 1
@@ -46,13 +47,14 @@ class ProductShippingViewModelTest : BaseUnitTest() {
             ProductShippingViewModel(
                 savedState,
                 parameterRepository,
-                productDetailRepository
+                productDetailRepository,
+                analyticsTracker,
             )
         )
     }
 
     @Test
-    fun `Test that the initial data is displayed correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that the initial data is displayed correctly`() = testBlocking {
         var actual: ShippingData? = null
         viewModel.viewStateData.observeForever { _, new ->
             actual = new.shippingData
@@ -63,7 +65,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that when data is changed the view state is updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var actual: ShippingData? = null
             viewModel.viewStateData.observeForever { _, new ->
                 actual = new.shippingData
@@ -83,7 +85,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that a discard dialog isn't shown if no data changed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -99,7 +101,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Test that a the correct data is returned when exiting`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that a the correct data is returned when exiting`() = testBlocking {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
             events.add(it)
@@ -126,7 +128,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that the class section is visible for products`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that the class section is visible for products`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new ->
             viewState = new
@@ -137,7 +139,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that the class section is not visible for variations`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_SHIPPING)
 
             var viewState: ViewState? = null
@@ -147,4 +149,29 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
             assertThat(viewState?.isShippingClassSectionVisible).isFalse()
         }
+
+    @Test
+    fun `Send tracks event upon exit if there was no changes`() {
+        // when
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to false)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change`() {
+        // when
+        viewModel.onDataChanged(weight = 31415f)
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
+    }
 }

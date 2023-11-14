@@ -4,4 +4,6 @@ data class WooPlugin(
     val isInstalled: Boolean,
     val isActive: Boolean,
     val version: String?
-)
+) {
+    val isOperational = isInstalled && isActive
+}

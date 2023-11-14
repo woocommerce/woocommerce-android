@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.NavGraphProductsDirections
@@ -9,16 +10,22 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithAI
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithMessage
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAddonsDetails
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
@@ -46,9 +53,9 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTa
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVisibility
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
@@ -77,10 +84,32 @@ class ProductNavigator @Inject constructor() {
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
             }
 
+            is ShareProductWithMessage -> {
+                val shareIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, target.subject)
+                    putExtra(Intent.EXTRA_TITLE, target.title)
+                    type = "text/plain"
+                }
+                val title = fragment.resources.getText(R.string.product_share_dialog_title)
+                fragment.startActivity(Intent.createChooser(shareIntent, title))
+            }
+
+            is ShareProductWithAI -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductSharingFragment(
+                        target.permalink,
+                        target.title,
+                        target.description
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToVariationListFragment(
-                        target.remoteId
+                        target.remoteId,
+                        target.isReadOnlyMode
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -97,7 +126,8 @@ class ProductNavigator @Inject constructor() {
                         target.description,
                         target.title,
                         null,
-                        RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION
+                        RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION,
+                        target.productTitle
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -184,7 +214,11 @@ class ProductNavigator @Inject constructor() {
             is ViewProductVisibility -> {
                 val visibility = target.visibility.toString()
                 val action = ProductSettingsFragmentDirections
-                    .actionProductSettingsFragmentToProductVisibilityFragment(visibility, target.password)
+                    .actionProductSettingsFragmentToProductVisibilityFragment(
+                        target.isApplicationPasswordsLogin,
+                        visibility,
+                        target.password
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -230,7 +264,11 @@ class ProductNavigator @Inject constructor() {
 
             is ViewProductTypes -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(target.isAddProduct)
+                    .actionProductDetailFragmentToProductTypesBottomSheetFragment(
+                        target.isAddProduct,
+                        currentProductType = target.currentProductType,
+                        isCurrentProductVirtual = target.isCurrentProductVirtual
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
@@ -267,38 +305,50 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductAdd -> {
-                val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
-                fragment.findNavController().navigate(action)
+                val directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
+                    isAddProduct = true,
+                    source = target.source
+                )
+
+                fragment.findNavController().navigateSafely(
+                    directions = directions,
+                    navOptions =
+                    if (target.source == STORE_ONBOARDING)
+                        NavOptions.Builder()
+                            .setPopUpTo(R.id.dashboard, false)
+                            .build()
+                    else null
+                )
             }
 
             is ViewProductDownloads -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductDownloadsFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloadsSettings -> {
                 val action = ProductDownloadsFragmentDirections
                     .actionProductDownloadsFragmentToProductDownloadsSettingsFragment()
 
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductDownloadDetails -> {
                 val action = NavGraphProductsDirections
                     .actionGlobalProductDownloadDetailsFragment(target.isEditing, target.file)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductAddonsDetails -> {
                 ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductAddonsFragment()
-                    .apply { fragment.findNavController().navigate(this) }
+                    .apply { fragment.findNavController().navigateSafely(this) }
             }
 
             is AddProductDownloadableFile -> {
                 val action = NavGraphProductsDirections.actionGlobalAddProductDownloadBottomSheetFragment()
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductAttribute -> {
@@ -306,29 +356,29 @@ class ProductNavigator @Inject constructor() {
                     true ->
                         ProductDetailFragmentDirections
                             .actionProductDetailFragmentToAddAttributeFragment(isVariationCreation = true)
-                            .run { fragment.findNavController().navigate(this) }
+                            .run { fragment.findNavController().navigateSafely(this) }
 
                     else ->
                         AttributeListFragmentDirections
                             .actionAttributeListFragmentToAddAttributeFragment()
-                            .run { fragment.findNavController().navigate(this) }
+                            .run { fragment.findNavController().navigateSafely(this) }
                 }
             }
 
             is RenameProductAttribute -> {
                 val action = AddAttributeTermsFragmentDirections
                     .actionAttributeTermsFragmentToRenameAttributeFragment(target.attributeName)
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is AddProductAttributeTerms -> {
                 val action = NavGraphProductsDirections.actionGlobalAddVariationAttributeTermsFragment(
-                    target.attributeId,
-                    target.attributeName,
-                    target.isNewAttribute,
-                    target.isVariationCreation
+                    attributeId = target.attributeId,
+                    attributeName = target.attributeName,
+                    isNewAttribute = target.isNewAttribute,
+                    isVariationCreation = target.isVariationCreation
                 )
-                fragment.findNavController().navigate(action)
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewMediaUploadErrors -> {
@@ -336,7 +386,66 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
+            is NavigateToVariationSelector -> {
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                        target.productId,
+                        target.selectedVariationIds.toLongArray(),
+                        target.productSelectorFlow,
+                        target.productSourceForTracking,
+                    )
+                )
+            }
+
+            is NavigateToProductFilter -> {
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToNavGraphProductFilters(
+                        target.stockStatus,
+                        target.productType,
+                        target.productStatus,
+                        target.productCategory,
+                        target.productCategoryName,
+                    )
+                )
+            }
+
+            is ProductNavigationTarget.ViewProductSubscription -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductSubscriptionFragment(
+                    target.subscription,
+                    target.sale
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ProductNavigationTarget.ViewProductQuantityRules -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
+                    target.quantityRules
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ProductNavigationTarget.ViewBundleProducts -> {
+                ProductDetailFragmentDirections.actionProductDetailFragmentToProductBundleFragment(
+                    target.productId
+                ).let { fragment.findNavController().navigateSafely(it) }
+            }
+
+            is ProductNavigationTarget.ViewProductComponents -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCompositeProductFragment(
+                    target.components.toTypedArray()
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ExitProduct -> fragment.findNavController().navigateUp()
+
+            is ProductNavigationTarget.ViewFirstProductCelebration -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToFirstProductCelebrationDialog(
+                    productName = target.productName,
+                    permalink = target.permalink
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
         }
     }
 
@@ -347,14 +456,13 @@ class ProductNavigator @Inject constructor() {
         selectedImage: Image?,
         showChooser: Boolean
     ) {
-        val action = ProductDetailFragmentDirections
-            .actionProductDetailFragmentToNavGraphImageGallery(
-                remoteId,
-                images.toTypedArray(),
-                selectedImage,
-                showChooser,
-                RequestCodes.PRODUCT_DETAIL_IMAGES
-            )
+        val action = ProductDetailFragmentDirections.actionProductDetailFragmentToNavGraphImageGallery(
+            remoteId = remoteId,
+            images = images.toTypedArray(),
+            selectedImage = selectedImage,
+            showChooser = showChooser,
+            requestCode = RequestCodes.PRODUCT_DETAIL_IMAGES
+        )
         fragment.findNavController().navigateSafely(action)
     }
 }

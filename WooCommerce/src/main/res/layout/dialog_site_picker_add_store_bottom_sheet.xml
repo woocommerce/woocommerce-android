@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/createNewStoreButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="@dimen/major_100"
+        android:text="@string/site_picker_create_new_store"
+        android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/connectExistingStoreButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="@dimen/major_100"
+        android:text="@string/site_picker_connect_existing_store"
+        android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+</LinearLayout>

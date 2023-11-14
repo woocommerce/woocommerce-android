@@ -47,8 +47,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productList_barrier"
             tools:itemCount="3"
-            tools:listitem="@layout/order_detail_product_list_item"
-            tools:targetApi="lollipop" />
+            tools:listitem="@layout/order_detail_product_list_item" />
 
         <!-- Button: Mark order complete -->
         <com.google.android.material.button.MaterialButton
@@ -91,7 +90,7 @@
             android:layout_marginBottom="@dimen/major_100"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:drawableStart="@drawable/ic_info_outline_24dp"
+            android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
             android:drawablePadding="@dimen/major_100"
             android:text="@string/orderdetail_shipping_label_notice"
             android:visibility="gone"

@@ -11,11 +11,17 @@ import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.Produ
 class ProductDetailBottomSheetAdapter(
     private val onItemClicked: (bottomSheetUiItem: ProductDetailBottomSheetUiItem) -> Unit
 ) : RecyclerView.Adapter<ProductDetailBottomSheetViewHolder>() {
-    private val options = ArrayList<ProductDetailBottomSheetUiItem>()
-
-    init {
-        setHasStableIds(true)
-    }
+    var options: List<ProductDetailBottomSheetUiItem> = emptyList()
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(
+                ProductDetailBottomSheetItemDiffUtil(
+                    field,
+                    value
+                )
+            )
+            field = value
+            diffResult.dispatchUpdatesTo(this)
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductDetailBottomSheetViewHolder {
         return ProductDetailBottomSheetViewHolder(
@@ -31,24 +37,7 @@ class ProductDetailBottomSheetAdapter(
         holder.bind(options[position], onItemClicked)
     }
 
-    override fun getItemId(position: Int) = position.toLong()
-
     override fun getItemCount() = options.size
-
-    fun setProductDetailBottomSheetOptions(optionList: List<ProductDetailBottomSheetUiItem>) {
-        if (options.isEmpty()) {
-            options.addAll(optionList)
-            notifyDataSetChanged()
-        } else {
-            val diffResult =
-                DiffUtil.calculateDiff(
-                    ProductDetailBottomSheetItemDiffUtil(options, optionList)
-                )
-            options.clear()
-            options.addAll(optionList)
-            diffResult.dispatchUpdatesTo(this)
-        }
-    }
 
     class ProductDetailBottomSheetViewHolder(private val viewBinding: ProductDetailBottomSheetListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
@@ -69,7 +58,7 @@ class ProductDetailBottomSheetAdapter(
         val result: List<ProductDetailBottomSheetUiItem>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            items[oldItemPosition].type == result[newItemPosition].type
+            items[oldItemPosition].type.ordinal == result[newItemPosition].type.ordinal
 
         override fun getOldListSize(): Int = items.size
 

@@ -1,111 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
-    android:keepScreenOn="true"
-    android:minWidth="@dimen/floating_dialog_min_width"
-    android:paddingHorizontal="@dimen/major_150"
-    android:paddingVertical="@dimen/major_100">
+    tools:context="com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/update_reader_title_tv"
-        style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:textColor="@color/color_on_surface_high"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@string/card_reader_software_update_title" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/payments_dialog_width"
+        android:layout_height="@dimen/payments_dialog_height"
+        android:background="@color/color_surface_elevated"
+        android:keepScreenOn="true"
+        android:paddingVertical="@dimen/major_175">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/update_reader_pb"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintVertical_bias="0.0"
-        android:layout_marginTop="@dimen/major_250"
-        android:layout_marginBottom="@dimen/major_150"
-        app:layout_constraintBottom_toTopOf="@+id/content_group"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/update_reader_title_tv"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/titleTextView"
+            style="@style/Woo.TextView.Subtitle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@color/color_on_surface_high"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/card_reader_software_update_title" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/update_reader_progress_description_tv"
-        style="@style/Woo.TextView.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_200"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textColor="@color/color_on_surface_medium"
-        app:layout_constraintTop_toBottomOf="@id/update_reader_pb"
-        app:layout_constraintStart_toStartOf="@id/update_reader_pb"
-        app:layout_constraintEnd_toEndOf="@id/update_reader_pb" />
+        <com.woocommerce.android.widgets.CircleProgressOverlayView
+            android:id="@+id/progressCircleProgressOverlayView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:circleProgressProgressColor="@color/reader_update_progress_color"
+            app:circleProgressRestColor="@color/reader_update_rest_color"
+            app:circleProgressBorderColor="@color/reader_update_border_color"
+            app:circleProgressBorderSize="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/progressImageView"
+            app:layout_constraintEnd_toEndOf="@id/progressImageView"
+            app:layout_constraintStart_toStartOf="@id/progressImageView"
+            app:layout_constraintTop_toTopOf="@id/progressImageView" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/update_reader_progress_warning_tv"
-        style="@style/Woo.TextView.Body2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:paddingBottom="@dimen/margin_large"
-        tools:text="@string/card_reader_software_update_progress_cancel_warning"
-        android:textColor="@color/color_on_surface_medium"
-        app:layout_constraintEnd_toEndOf="@+id/update_reader_pb"
-        app:layout_constraintStart_toStartOf="@+id/update_reader_pb"
-        app:layout_constraintTop_toBottomOf="@id/update_reader_progress_description_tv" />
+        <ImageView
+            android:id="@+id/progressImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_175"
+            tools:src="@drawable/img_card_reader_update_progress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/update_reader_progress_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="update_reader_progress_description_tv, update_reader_pb" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/progressTextView"
+            style="@style/Woo.TextView.Subtitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:layout_marginTop="@dimen/major_125"
+            android:gravity="center_horizontal"
+            android:textColor="@color/color_on_surface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressImageView"
+            tools:text="100% complete" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/update_reader_description_tv"
-        style="@style/Woo.TextView.Body2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        android:visibility="gone"
-        android:textColor="@color/color_on_surface_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/update_reader_title_tv"
-        app:layout_constraintBottom_toTopOf="@+id/content_group"
-        tools:text="@string/card_reader_software_update_description" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/descriptionTextView"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:gravity="center_horizontal"
+            android:textColor="@color/color_on_surface_high"
+            app:layout_constraintBottom_toTopOf="@id/actionButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressTextView"
+            tools:text="@string/card_reader_software_update_progress_cancel_required_warning" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/content_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="update_reader_description_tv,update_reader_progress_description_tv,update_reader_progress_warning_tv" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/actionButton"
+            style="@style/Woo.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_200"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Cancel" />
 
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/update_reader_primary_action_btn"
-        style="@style/Woo.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_75"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content_group"
-        tools:text="Update" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/update_reader_secondary_action_btn"
-        style="@style/Woo.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/update_reader_primary_action_btn"
-        app:layout_constraintTop_toTopOf="@id/update_reader_primary_action_btn"
-        tools:text="Skip" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

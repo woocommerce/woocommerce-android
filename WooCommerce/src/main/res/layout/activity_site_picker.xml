@@ -70,6 +70,16 @@
                     tools:listitem="@layout/site_picker_item" />
             </LinearLayout>
 
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/login_user_info"
+                android:visibility="gone"/>
+
             <include
                 android:id="@+id/login_user_info"
                 layout="@layout/view_login_user_info"

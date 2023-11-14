@@ -1,13 +1,5 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
@@ -18,25 +10,32 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     companion object {
-        private const val ORDER_IDENTIFIER = "1-1-1"
+        private const val ORDER_ID = 1L
     }
 
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
-    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_IDENTIFIER).initSavedStateHandle()
+    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
     private lateinit var viewModel: AddOrderShipmentTrackingViewModel
 
@@ -51,8 +50,8 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Add order shipment tracking when network is available - success`() = runBlockingTest {
-        doReturn(true).whenever(repository).addOrderShipmentTracking(any(), any())
+    fun `Add order shipment tracking when network is available - success`() = testBlocking {
+        doReturn(OnOrderChanged()).whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -62,7 +61,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(1))
             .addOrderShipmentTracking(
-                orderIdentifier = eq(ORDER_IDENTIFIER),
+                orderId = eq(ORDER_ID),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -75,8 +74,9 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Add order shipment tracking fails`() = runBlockingTest {
-        doReturn(false).whenever(repository).addOrderShipmentTracking(any(), any())
+    fun `Add order shipment tracking fails`() = testBlocking {
+        doReturn(OnOrderChanged().also { it.error = OrderError(type = GENERIC_ERROR, message = "") })
+            .whenever(repository).addOrderShipmentTracking(any(), any())
 
         val events = mutableListOf<Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -86,7 +86,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(1))
             .addOrderShipmentTracking(
-                orderIdentifier = eq(ORDER_IDENTIFIER),
+                orderId = eq(ORDER_ID),
                 shipmentTrackingModel = argThat {
                     trackingProvider == "test" &&
                         trackingNumber == "123456" && !isCustomProvider
@@ -98,7 +98,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Add order shipment tracking when network offline`() = runBlockingTest {
+    fun `Add order shipment tracking when network offline`() = testBlocking {
         doReturn(false).whenever(networkStatus).isConnected()
 
         var event: Event? = null

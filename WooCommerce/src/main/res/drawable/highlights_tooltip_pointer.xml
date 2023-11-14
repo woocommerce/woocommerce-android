@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="21dp"
+    android:height="13dp"
+    android:viewportWidth="21"
+    android:viewportHeight="13">
+  <path
+      android:pathData="M11.955,1.54C11.166,0.704 9.837,0.704 9.047,1.539L2,9L19,9L11.955,1.54Z"
+      android:fillColor="@color/highlights_tooltip_background"/>
+</vector>

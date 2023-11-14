@@ -20,6 +20,6 @@
     </issue>
 
     <issue id="IconDuplicates" severity="error">
-        <ignore path="**/login_notification_icon.png" />
+        <ignore path="**/login_notification_icon.webp" />
     </issue>
 </lint>

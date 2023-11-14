@@ -1,23 +1,21 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import java.math.BigDecimal
 import java.math.RoundingMode
-import javax.inject.Inject
+import java.util.Currency
 
-private const val USD_CURRENCY = "usd"
-internal const val USD_TO_CENTS_DECIMAL_PLACES = 2
+object PaymentUtils {
+    fun isSupportedCurrency(
+        currency: String,
+        cardReaderConfigFor: CardReaderConfigForSupportedCountry
+    ): Boolean = currency.equals(
+        cardReaderConfigFor.currency, ignoreCase = true
+    )
 
-internal class PaymentUtils @Inject constructor() {
-    // TODO cardreader Add support for other currencies
-    fun convertBigDecimalInDollarsToIntegerInCents(amount: BigDecimal): Int {
-        return amount
-            // round to USD_TO_CENTS_DECIMAL_PLACES decimal places
-            .setScale(USD_TO_CENTS_DECIMAL_PLACES, RoundingMode.HALF_UP)
-            // convert dollars to cents
-            .movePointRight(USD_TO_CENTS_DECIMAL_PLACES)
-            .intValueExact()
+    fun convertToSmallestCurrencyUnit(value: BigDecimal, currencyCode: String): Long {
+        val currencyObj = Currency.getInstance(currencyCode)
+        val smallestCurrencyUnit = BigDecimal.TEN.pow(currencyObj.defaultFractionDigits)
+        return value.multiply(smallestCurrencyUnit).setScale(0, RoundingMode.HALF_UP).toLong()
     }
-
-    // TODO Add Support for other currencies
-    fun isSupportedCurrency(currency: String): Boolean = currency.equals(USD_CURRENCY, ignoreCase = true)
 }

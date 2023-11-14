@@ -1,18 +1,26 @@
 package com.woocommerce.android.ui.orders.details
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_FEEDBACK_BANNER
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleDialogNotice
@@ -25,17 +33,19 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABELS_M4
+import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -44,46 +54,61 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.cardreader.CardReaderPaymentDialogFragment
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
+import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectDialogFragment
-import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment
-import com.woocommerce.android.ui.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
+class OrderDetailFragment :
+    BaseFragment(R.layout.fragment_order_detail),
+    OrderProductActionListener,
+    MenuProvider {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
+    private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
-    @Inject lateinit var navigator: OrderNavigator
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var dateUtils: DateUtils
-    @Inject lateinit var cardReaderManager: CardReaderManager
+    @Inject
+    lateinit var navigator: OrderNavigator
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var productImageMap: ProductImageMap
+    @Inject
+    lateinit var dateUtils: DateUtils
+    @Inject
+    lateinit var cardReaderManager: CardReaderManager
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+
     private var screenTitle = ""
         set(value) {
             field = value
@@ -91,7 +116,8 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(TAG)?.state ?: UNANSWERED
+        get() = feedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
+            ?: UNANSWERED
 
     override fun onResume() {
         super.onResume()
@@ -103,6 +129,20 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         super.onStop()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.snack_root
+            duration = transitionDuration
+            scrimColor = Color.TRANSPARENT
+            startContainerColor = backgroundColor
+            endContainerColor = backgroundColor
+        }
+    }
+
     override fun getFragmentTitle() = screenTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -110,19 +150,81 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
+        setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
 
+        binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
+            viewModel.onEditOrderStatusSelected()
+        }
         binding.orderRefreshLayout.apply {
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
+        binding.customFieldsCard.customFieldsButton.setOnClickListener {
+            viewModel.onCustomFieldsButtonClicked()
+        }
+
+        ViewCompat.setTransitionName(
+            binding.scrollView,
+            getString(R.string.order_card_detail_transition_name)
+        )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_order_detail, menu)
+        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+        menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.menu_edit_order)?.let {
+            it.isEnabled = viewModel.hasOrder()
+        }
+
+        menu.findItem(R.id.menu_arrow_up)?.let {
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.previousOrderNavigationIsEnabled()
+            }
+        }
+
+        menu.findItem(R.id.menu_arrow_down)?.let {
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.nextOrderNavigationIsEnabled()
+            }
+        }
+    }
+
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_edit_order -> {
+                viewModel.onEditClicked()
+                true
+            }
+
+            R.id.menu_arrow_up -> {
+                viewModel.onPreviousOrderClicked()
+                true
+            }
+
+            R.id.menu_arrow_down -> {
+                viewModel.onNextOrderClicked()
+                true
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     override fun openOrderProductDetail(remoteProductId: Long) {
@@ -139,6 +241,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
+                requireActivity().invalidateOptionsMenu()
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -165,59 +268,116 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                 binding.orderRefreshLayout.isRefreshing = it
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
+            new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
+                showInstallWcShippingBanner(it)
+            }
+            new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
+                binding.customFieldsCard.isVisible = it
+            }
         }
 
-        viewModel.orderNotes.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderNotes(it)
-            }
-        )
-        viewModel.orderRefunds.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderRefunds(it, viewModel.order)
-            }
-        )
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderProducts(it, viewModel.order.currency)
-            }
-        )
-        viewModel.shipmentTrackings.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShipmentTrackings(it)
-            }
-        )
-        viewModel.shippingLabels.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShippingLabels(it, viewModel.order.currency)
-            }
-        )
+        viewModel.orderNotes.observe(viewLifecycleOwner) {
+            showOrderNotes(it)
+        }
+        viewModel.orderRefunds.observe(viewLifecycleOwner) {
+            showOrderRefunds(it, viewModel.order)
+        }
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showOrderProducts(it, viewModel.order.currency)
+        }
+        viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
+            showShipmentTrackings(it)
+        }
+        viewModel.shippingLabels.observe(viewLifecycleOwner) {
+            showShippingLabels(it, viewModel.order.currency)
+        }
+        viewModel.subscriptions.observe(viewLifecycleOwner) {
+            showSubscriptions(it)
+        }
+        viewModel.giftCards.observe(viewLifecycleOwner) {
+            showGiftCards(it, viewModel.order.currency)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> {
-                        if (event.args.isNotEmpty()) {
-                            uiMessageResolver.getSnack(event.message, *event.args).show()
-                        } else {
-                            uiMessageResolver.showSnack(event.message)
-                        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    if (event.args.isNotEmpty()) {
+                        uiMessageResolver.getSnack(event.message, *event.args).show()
+                    } else {
+                        uiMessageResolver.showSnack(event.message)
                     }
-                    is ShowUndoSnackbar -> {
-                        displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                    }
-                    is OrderNavigationTarget -> navigator.navigate(this, event)
-                    else -> event.isHandled = false
                 }
+                is ShowUndoSnackbar -> {
+                    displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                }
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                else -> event.isHandled = false
             }
-        )
+        }
         viewModel.start()
+    }
+
+    private fun showSubscriptions(subscriptions: List<Subscription>) {
+        binding.orderDetailSubscriptionList.run {
+            updateSubscriptionList(
+                subscriptions = subscriptions,
+                currencyFormatter = currencyFormatter
+            )
+
+            // Animate visibility only when necessary
+            if (subscriptions.isEmpty() && visibility == View.GONE) return
+
+            TransitionManager.endTransitions(binding.orderDetailContainer)
+            TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
+            visibility = if (subscriptions.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun showGiftCards(giftCardSummaries: List<GiftCardSummary>, currencyCode: String) {
+        binding.orderDetailGiftCardList.run {
+            updateGiftCardList(
+                giftCards = giftCardSummaries,
+                currencyFormatter = currencyFormatter,
+                currencyCode = currencyCode
+            )
+
+            // Animate visibility only when necessary
+            if (giftCardSummaries.isEmpty() && visibility == View.GONE) return@run
+
+            TransitionManager.endTransitions(binding.orderDetailContainer)
+            TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
+
+            visibility = if (giftCardSummaries.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+        binding.orderDetailPaymentInfo.updateGiftCardSection(
+            giftCardSummaries = giftCardSummaries,
+            formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currencyCode)
+        )
+    }
+
+    private fun navigateToInstallWcShippingFlow() {
+        findNavController().navigateSafely(
+            OrderDetailFragmentDirections.actionOrderDetailFragmentToInstallWcShippingFlow()
+        )
+    }
+
+    private fun showInstallWcShippingBanner(isVisible: Boolean) {
+        val banner = binding.orderDetailInstallWcShippingBanner
+        banner.isVisible = isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.setClickListeners(
+            onInstallWcShipping = { viewModel.onGetWcShippingClicked() },
+            onDismiss = { viewModel.onWcShippingBannerDismissed() }
+        )
+    }
+
+    private fun setupOrderEditingObservers(orderEditingViewModel: OrderEditingViewModel) {
+        orderEditingViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrderEditingViewModel.OrderEdited -> viewModel.onOrderEdited()
+                is OrderEditingViewModel.OrderEditFailed -> viewModel.onOrderEditFailed(event.message)
+            }
+        }
     }
 
     private fun setupResultHandlers(viewModel: OrderDetailViewModel) {
@@ -242,27 +402,17 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleResult<Boolean>(CardReaderConnectDialogFragment.KEY_CONNECT_TO_READER_RESULT) { connected ->
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onConnectToReaderResultReceived(connected)
-            }
-        }
-        handleDialogNotice<String>(
+        handleDialogNotice(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
-            if (FeatureFlag.CARD_READER.isEnabled()) {
-                viewModel.onCardReaderPaymentCompleted()
-            }
+            viewModel.onCardReaderPaymentCompleted()
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
         }
         handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
             viewModel.onShippingLabelsPurchased()
-        }
-        handleNotice(CardReaderOnboardingFragment.KEY_READER_ONBOARDING_SUCCESS) {
-            viewModel.onOnboardingSuccess()
         }
     }
 
@@ -272,10 +422,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         isReceiptButtonsVisible: Boolean
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
-        binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
+        binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly()
+            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isReadOnly = false
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
@@ -284,29 +435,21 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onSeeReceiptClicked()
-                }
+                viewModel.onSeeReceiptClicked()
             },
             onCollectCardPresentPaymentClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    cardReaderManager.let {
-                        viewModel.onAcceptCardPresentPaymentClicked(it)
-                    }
+                cardReaderManager.let {
+                    viewModel.onAcceptCardPresentPaymentClicked()
                 }
             },
             onPrintingInstructionsClickListener = {
-                if (FeatureFlag.CARD_READER.isEnabled()) {
-                    viewModel.onPrintingInstructionsClicked()
-                }
+                viewModel.onPrintingInstructionsClicked()
             }
         )
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
-        binding.orderDetailOrderStatus.updateStatus(orderStatus) {
-            viewModel.onEditOrderStatusSelected()
-        }
+        binding.orderDetailOrderStatus.updateStatus(orderStatus)
     }
 
     private fun showMarkOrderCompleteButton(isVisible: Boolean) {
@@ -347,7 +490,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumBy { refund -> refund.items.sumBy { it.quantity } }
+        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
         if (refundsCount > 0) {
             binding.orderDetailRefundsInfo.show()
             binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
@@ -371,11 +514,11 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         }
     }
 
-    private fun showOrderProducts(products: List<Order.Item>, currency: String) {
+    private fun showOrderProducts(products: List<OrderProduct>, currency: String) {
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
-                updateProductList(
-                    orderItems = products,
+                updateProductItemsList(
+                    orderProductItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
@@ -478,8 +621,10 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(SHIPPING_LABELS_M4.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+        FeatureFeedbackSettings(
+            SHIPPING_LABEL_M4,
+            state
+        ).registerItself(feedbackPrefs)
     }
 
     private fun displayUndoSnackbar(

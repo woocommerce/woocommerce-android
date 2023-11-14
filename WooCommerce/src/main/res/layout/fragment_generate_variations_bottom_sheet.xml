@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.Card.Header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/product_detail_add_variations"
+        android:textColor="@color/color_on_surface_medium" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/new_variation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/major_100">
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/variation_add_new"
+            android:textColor="@color/color_on_surface_high_selector" />
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.Card.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:lineSpacingExtra="@dimen/minor_25"
+            android:paddingTop="@dimen/minor_50"
+            android:text="@string/variation_add_new_description"
+            android:textColor="@color/color_on_surface_medium_selector" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/all_variation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/major_100">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/all_variation_title"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:text="@string/variation_add_all"
+            android:textColor="@color/color_on_surface_high_selector" />
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/Woo.Card.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:lineSpacingExtra="@dimen/minor_25"
+            android:paddingTop="@dimen/minor_50"
+            android:text="@string/variation_add_all_description"
+            android:textColor="@color/color_on_surface_medium_selector" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>

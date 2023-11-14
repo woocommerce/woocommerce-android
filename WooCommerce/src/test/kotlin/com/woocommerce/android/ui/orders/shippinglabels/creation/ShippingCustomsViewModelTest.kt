@@ -1,10 +1,5 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyVararg
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ContentsType
@@ -16,15 +11,19 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.store.WCDataStore
 import kotlin.math.ceil
 
-@RunWith(RobolectricTestRunner::class)
+@ExperimentalCoroutinesApi
 class ShippingCustomsViewModelTest : BaseUnitTest() {
     private val countries = listOf(
         WCLocationModel().apply {
@@ -59,7 +58,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
         shippingPackages = emptyArray(),
         originCountryCode = "US",
         destinationCountryCode = "CA",
-        customsPackages = arrayOf(CreateShippingLabelTestUtils.generateCustomsPackage())
+        customsPackages = arrayOf(CreateShippingLabelTestUtils.generateCustomsPackage()),
+        isEUShippingScenario = false
     )
 
     fun setup(navArgs: ShippingCustomsFragmentArgs = defaultNavArgs) {
@@ -92,7 +92,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 shippingPackages = arrayOf(shippingPackage),
                 originCountryCode = originCountryCode,
                 destinationCountryCode = "CA",
-                customsPackages = emptyArray()
+                customsPackages = emptyArray(),
+                isEUShippingScenario = false
             )
         )
 
@@ -116,7 +117,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 shippingPackages = emptyArray(),
                 originCountryCode = "US",
                 destinationCountryCode = "CA",
-                customsPackages = arrayOf(customsPackage)
+                customsPackages = arrayOf(customsPackage),
+                isEUShippingScenario = false
             )
         )
 
@@ -135,7 +137,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 shippingPackages = emptyArray(),
                 originCountryCode = "US",
                 destinationCountryCode = "CA",
-                customsPackages = arrayOf(customsPackage)
+                customsPackages = arrayOf(customsPackage),
+                isEUShippingScenario = false
             )
         )
 

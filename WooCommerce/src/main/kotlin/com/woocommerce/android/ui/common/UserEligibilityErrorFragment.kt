@@ -7,9 +7,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle.State
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -18,8 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentUserEligibilityErrorBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.User
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin.USER_ELIGIBILITY_ERROR
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginActivity
@@ -36,7 +37,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibility_error), BackPressListener {
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: UserEligibilityErrorViewModel by viewModels()
 
@@ -49,27 +51,36 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUserEligibilityErrorBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        setupMenu()
         setupView()
         setupObservers(viewModel)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_login, menu)
-    }
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(org.wordpress.android.login.R.menu.menu_login, menu)
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.help) {
-            startActivity(
-                HelpActivity.createIntent(
-                    requireActivity(), Origin.USER_ELIGIBILITY_ERROR, arrayListOf(binding.textUserRoles.text.toString())
-                )
-            )
-            return true
-        }
+                override fun onMenuItemSelected(item: MenuItem): Boolean {
+                    if (item.itemId == org.wordpress.android.login.R.id.help) {
+                        startActivity(
+                            HelpActivity.createIntent(
+                                requireActivity(),
+                                USER_ELIGIBILITY_ERROR,
+                                arrayListOf(binding.textUserRoles.text.toString())
+                            )
+                        )
+                        return true
+                    }
 
-        return false
+                    return false
+                }
+            },
+            viewLifecycleOwner,
+            State.RESUMED
+        )
     }
 
     private fun setupView() {
@@ -103,36 +114,32 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
             new.user?.takeIfNotEqualTo(old?.user) { showView(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) { showProgressDialog(it) }
         }
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
-                    is Exit -> {
-                        findNavController().navigateUp()
-                    }
-                    is Logout -> {
-                        requireActivity().apply {
-                            setResult(Activity.RESULT_CANCELED)
-                            val intent = Intent(activity, LoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            LoginMode.WOO_LOGIN_MODE.putInto(intent)
-                            startActivity(intent)
-                            finish()
-                        }
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
                 }
+                is Exit -> {
+                    findNavController().navigateUp()
+                }
+                is Logout -> {
+                    requireActivity().apply {
+                        setResult(Activity.RESULT_CANCELED)
+                        val intent = Intent(activity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+                else -> event.isHandled = false
             }
-        )
-        viewModel.start()
+        }
     }
 
     private fun showView(user: User) {
         binding.textDisplayname.text = user.getUserNameForDisplay()
-        binding.textUserRoles.text = user.roles.joinToString(", ")
+        binding.textUserRoles.text = user.roles.joinToString(", ") { it.value }
     }
 
     private fun showProgressDialog(show: Boolean) {

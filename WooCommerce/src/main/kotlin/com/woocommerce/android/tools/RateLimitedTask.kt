@@ -6,14 +6,6 @@ import java.util.Date
 abstract class RateLimitedTask(private val minRateInSeconds: Int) {
     private var lastUpdate: Date? = null
 
-    @Synchronized fun forceRun(): Boolean {
-        if (run()) {
-            lastUpdate = Date()
-            return true
-        }
-        return false
-    }
-
     @Synchronized fun runIfNotLimited(): Boolean {
         val now = Date()
         if (lastUpdate == null || DateTimeUtils.secondsBetween(now, lastUpdate) >= minRateInSeconds) {

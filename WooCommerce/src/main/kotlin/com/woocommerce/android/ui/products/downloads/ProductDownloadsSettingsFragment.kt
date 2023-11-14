@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -36,15 +35,12 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     }
 
     fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is ExitProductDownloadsSettings -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductDownloadsSettings -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         initFromProductDraft()
         setupListeners()
@@ -53,8 +49,8 @@ class ProductDownloadsSettingsFragment : BaseProductFragment(R.layout.fragment_p
     private fun initFromProductDraft() {
         fun Number.formatLimitAndExpiry(): String = if (this.toLong() == -1L) "" else this.toString()
         val product = requireNotNull(viewModel.getProduct().productDraft)
-        binding.productDownloadLimit.setText(product.downloadLimit.formatLimitAndExpiry())
-        binding.productDownloadExpiry.setText(product.downloadExpiry.formatLimitAndExpiry())
+        binding.productDownloadLimit.text = product.downloadLimit.formatLimitAndExpiry()
+        binding.productDownloadExpiry.text = product.downloadExpiry.formatLimitAndExpiry()
     }
 
     private fun setupListeners() {

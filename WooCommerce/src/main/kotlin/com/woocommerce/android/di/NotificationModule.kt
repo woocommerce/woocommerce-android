@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
 import android.content.Context
-import com.woocommerce.android.push.WooNotificationBuilder
+import com.woocommerce.android.notifications.WooNotificationBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

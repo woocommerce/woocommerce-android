@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import android.content.Context
-import android.os.Build
 import android.os.storage.StorageManager
 import com.android.volley.RequestQueue
 import com.bumptech.glide.Glide
@@ -13,12 +12,14 @@ import com.bumptech.glide.load.engine.cache.DiskCache
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -60,8 +61,9 @@ class WooCommerceGlideModule : AppGlideModule() {
      * default cache size. Note that this only affects devices running API 26 or later since earlier
      * APIs don't support getCacheQuotaBytes().
      */
+    @OptIn(DelicateCoroutinesApi::class)
     private fun initGlideCache(context: Context, builder: GlideBuilder) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (SystemVersionUtils.isAtLeastO()) {
             val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
             try {
                 // can't do this on the main thread - docs for getCacheQuoteBytes() state:

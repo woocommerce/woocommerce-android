@@ -1,0 +1,101 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeCardView">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100">
+
+            <ImageView
+                android:id="@+id/calendar_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_calendar_gray_circle"
+                android:importantForAccessibility="no"
+                android:padding="@dimen/major_85"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_analytics_calendar"
+                app:tint="@color/color_on_surface" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/selection_title"
+                style="@style/Woo.Card.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textSize="@dimen/text_minor_125"
+                app:layout_constraintBottom_toTopOf="@+id/current_range_description"
+                app:layout_constraintStart_toEndOf="@id/calendar_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Last Year" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/current_range_description"
+                style="@style/Woo.Card.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:maxLines="1"
+                android:textSize="@dimen/text_minor_125"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/calendar_icon"
+                app:layout_constraintTop_toBottomOf="@id/selection_title"
+                tools:text="Jan 1 - Dec 31, 2022" />
+
+            <ImageView
+                android:id="@+id/btn_dateRangeSelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_drop_down" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Woo.Card.Body"
+            android:layout_margin="@dimen/major_100"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/previous_range_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                tools:text="Compared to Jan 1 - Dec 31, 2021" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/last_update_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                tools:text="Last update: 9:35 AM (Updates every 30 minutes)" />
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</merge>
+

@@ -1,11 +1,7 @@
 package com.woocommerce.android.extensions
 
 import org.apache.commons.text.StringEscapeUtils
-
-/**
- * Checks if a given string is a number (supports positive or negative numbers)
- */
-fun String?.isNumeric() = this?.toIntOrNull()?.let { true } ?: false
+import java.util.Locale
 
 /**
  * Checks if a given string is a Float
@@ -26,7 +22,7 @@ fun StringBuilder.appendWithIfNotEmpty(line: String?, separator: String = ", "):
 }
 
 /**
- * This is much faster than Html.fromHtml but should only be used when we know the html is valid
+ * This is much faster than HtmlCompat.fromHtml but should only be used when we know the html is valid
  * since the regex will be unpredictable with invalid html
  * String param containing only valid html
  * @return String without HTML
@@ -51,7 +47,7 @@ fun String.fastStripHtml(): String {
     if (htmlString.isEmpty()) return str
 
     var start = 0
-    while (start != 0 && (Character.isWhitespace(htmlString[start]) || htmlString[start].toInt() == 160)) {
+    while (start != 0 && (Character.isWhitespace(htmlString[start]) || htmlString[start].code == 160)) {
         start++
     }
 
@@ -76,4 +72,22 @@ fun String.semverCompareTo(otherVersion: String): Int {
         // if the parsing fails, consider this version lower than the other one
         return -1
     }
+}
+
+/**
+ * Returns this string if it's not empty or null otherwise.
+ * Syntactic sugar for `string.ifEmpty { null }`.
+ */
+fun String.orNullIfEmpty(): String? = this.ifEmpty { null }
+
+fun String?.isNotNullOrEmpty() = this.isNullOrEmpty().not()
+
+fun String.toCamelCase(delimiter: String = " "): String {
+    return split(delimiter).joinToString(delimiter) { word ->
+        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+}
+
+fun String.capitalize(locale: Locale = Locale.getDefault()) = replaceFirstChar {
+    if (it.isLowerCase()) it.titlecase(locale) else it.toString()
 }

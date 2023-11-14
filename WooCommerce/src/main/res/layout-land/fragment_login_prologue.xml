@@ -11,8 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="64dp"
-        android:layout_marginBottom="@dimen/image_major_72"
+        android:layout_marginTop="@dimen/major_200"
         android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,53 +32,82 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/viewPagerIndicator"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        app:layout_constraintWidth_percent="0.5"
-        tools:background="@color/blue_dark" />
-
-    <com.woocommerce.android.widgets.WCViewPagerIndicator
-        android:id="@+id/viewPagerIndicator"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueIntro"
+        style="@style/Woo.TextView.Headline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_150"
-        app:layout_constraintBottom_toTopOf="@+id/button_login_store"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/major_200"
+        android:text="@string/simplified_login_prologue_intro"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_prologue"
+        app:layout_constraintBottom_toTopOf="@id/prologueTitle" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_store"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="0dp"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueTitle"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/major_150"
-        android:text="@string/login_store_address"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_login_wpcom"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_wpcom"
-        style="@style/Woo.Button.Colored.White"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/minor_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="@dimen/major_150"
-        android:text="@string/login_wpcom"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/button_login_store" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/prologueIntro"
+        app:layout_constraintBottom_toTopOf="@+id/loginButtons"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="@string/simplified_login_prologue_title" />
+
+    <LinearLayout
+        android:id="@+id/loginButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_login_wpcom"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/minor_100"
+            android:layout_marginBottom="@dimen/minor_50"
+            android:layout_weight="1"
+            android:text="@string/login_wpcom"
+            android:textAllCaps="false"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_login_store"
+            style="@style/Woo.Button.Colored.Circle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/minor_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:layout_weight="1"
+            android:text="@string/login_store_address"
+            android:textAllCaps="false"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_get_started"
+            style="@style/Woo.Button.Colored.Circle.White"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_150"
+            android:layout_weight="1"
+            android:text="@string/signup_get_started_button"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

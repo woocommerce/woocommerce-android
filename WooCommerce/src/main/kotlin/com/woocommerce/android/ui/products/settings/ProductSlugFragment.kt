@@ -25,7 +25,7 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
 
         _binding = FragmentProductSlugBinding.bind(view)
 
-        binding.editSlug.setText(navArgs.slug)
+        binding.editSlug.text = navArgs.slug
     }
 
     override fun onDestroyView() {
@@ -42,7 +42,7 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
     /**
      * As with the web, we trim the string and replace any spaces with hyphens
      */
-    private fun getSlug() = binding.editSlug.getText().trim().replace(" ", "-")
+    private fun getSlug() = binding.editSlug.text.trim().replace(" ", "-")
 
     override fun onResume() {
         super.onResume()

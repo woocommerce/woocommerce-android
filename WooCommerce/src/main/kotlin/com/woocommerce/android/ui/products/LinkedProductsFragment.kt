@@ -2,13 +2,12 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_LINKED_PRODUCTS_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLinkedProductsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -45,21 +44,18 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(
-            Stat.LINKED_PRODUCTS,
+            AnalyticsEvent.LINKED_PRODUCTS,
             mapOf(KEY_LINKED_PRODUCTS_ACTION to LinkedProductsAction.SHOWN.value)
         )
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitLinkedProducts -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitLinkedProducts -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
         handleResult<List<Long>>(UPSELLS.resultKey) {
             viewModel.updateProductDraft(upsellProductIds = it)
@@ -121,26 +117,16 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
     private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
         val productIds = when (groupedProductType) {
-            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds
-            else -> viewModel.getProduct().productDraft?.crossSellProductIds
+            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds ?: emptyList()
+            else -> viewModel.getProduct().productDraft?.crossSellProductIds ?: emptyList()
         }
 
-        // go straight to the "add products" screen if the list is empty, otherwise show the grouped
-        // products screen
-        val action = if (productIds.isNullOrEmpty()) {
-            ProductDetailFragmentDirections
-                .actionGlobalProductSelectionListFragment(
-                    remoteProductId = viewModel.getRemoteProductId(),
-                    groupedProductListType = groupedProductType,
-                    excludedProductIds = longArrayOf()
-                )
-        } else {
+        findNavController().navigateSafely(
             GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
-                viewModel.getRemoteProductId(),
-                productIds.toLongArray(),
-                groupedProductType
+                remoteProductId = viewModel.getRemoteProductId(),
+                productIds = productIds.toLongArray(),
+                groupedProductListType = groupedProductType
             )
-        }
-        findNavController().navigateSafely(action)
+        )
     }
 }

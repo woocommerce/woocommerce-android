@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/minor_100"
+    android:elevation="@dimen/minor_10"
+    android:id="@+id/componentOptionsSection"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/minor_100">
+
+        <View
+            android:layout_width="@dimen/skeleton_text_large_width"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:background="@color/skeleton_color"
+            android:layout_marginVertical="@dimen/minor_100"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_75" />
+
+        <View
+            android:layout_width="@dimen/skeleton_text_medium_width"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:background="@color/skeleton_color"/>
+
+        <include layout="@layout/skeleton_component_option_list_item"/>
+        <View style="@style/Woo.Divider.TitleAligned"/>
+        <include layout="@layout/skeleton_component_option_list_item"/>
+        <View style="@style/Woo.Divider.TitleAligned"/>
+        <include layout="@layout/skeleton_component_option_list_item"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_75" />
+
+        <View
+            android:layout_width="@dimen/skeleton_text_medium_width"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:background="@color/skeleton_color"/>
+
+        <View
+            android:layout_width="@dimen/skeleton_text_extra_large_width"
+            android:layout_height="@dimen/skeleton_text_height_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
+            android:background="@color/skeleton_color"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginBottom="@dimen/major_100"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,57 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "queryParameters": {
+      "json": {
+        "equalTo": "true"
+      },
+      "path": {
+        "matches": "/wc-admin/onboarding/tasks/(.*)"
+      }
+    }
+  },
+  "response": {
+    "jsonBody": {
+      "status": 200,
+      "data": [
+        {
+          "id": "setup",
+          "title": "Get ready to start selling",
+          "isHidden": false,
+          "isVisible": true,
+          "isComplete": false,
+          "tasks": [
+            {
+              "id": "store_details",
+              "parentId": "setup",
+              "title": "You added store details",
+              "canView": true,
+              "content": "Your store address is required to set the origin country for shipping, currencies, and payment options.",
+              "additionalInfo": "",
+              "actionLabel": "Let's go",
+              "actionUrl": "https://proxied.site/wp-admin/admin.php?page=wc-settings&tab=general",
+              "isComplete": true,
+              "time": "4 minutes",
+              "level": 3,
+              "isActioned": false,
+              "isDismissed": false,
+              "isDismissable": false,
+              "isSnoozed": false,
+              "isSnoozeable": false,
+              "isVisited": false,
+              "isDisabled": false,
+              "snoozedUntil": null,
+              "additionalData": null,
+              "eventPrefix": "tasklist_",
+              "recordViewEvent": false
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  }
+}

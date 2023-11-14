@@ -5,5 +5,20 @@
 
     <application
         android:name=".WooCommerceRelease"
-        tools:replace="android:name" />
+        tools:replace="android:name">
+
+        <meta-data
+            android:name="com.google.android.play.billingclient.version"
+            tools:node="remove" />
+
+        <activity
+            android:name="com.android.billingclient.api.ProxyBillingActivity"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
+
+    </application>
+
+    <uses-permission
+        android:name="com.android.vending.BILLING"
+        tools:node="remove" />
 </manifest>

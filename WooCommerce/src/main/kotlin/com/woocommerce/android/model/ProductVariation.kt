@@ -4,14 +4,13 @@ import android.os.Parcelable
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
-import com.woocommerce.android.extensions.roundError
-import com.woocommerce.android.model.ProductVariation.Option
+import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
@@ -24,35 +23,37 @@ import java.math.BigDecimal
 import java.util.Date
 
 @Parcelize
-data class ProductVariation(
-    val remoteProductId: Long,
-    val remoteVariationId: Long,
-    val sku: String,
-    val image: Product.Image?,
-    val regularPrice: BigDecimal?,
-    val salePrice: BigDecimal?,
-    val saleEndDateGmt: Date?,
-    val saleStartDateGmt: Date?,
-    val isSaleScheduled: Boolean,
-    val stockStatus: ProductStockStatus,
-    val backorderStatus: ProductBackorderStatus,
-    val stockQuantity: Double,
-    val options: List<Option>,
-    var priceWithCurrency: String? = null,
-    val isPurchasable: Boolean,
-    val isVirtual: Boolean,
-    val isDownloadable: Boolean,
-    val isStockManaged: Boolean,
-    val description: String,
-    val isVisible: Boolean,
-    val shippingClass: String,
-    val shippingClassId: Long,
-    val attributes: Array<VariantOption>,
+@Suppress("LongParameterList")
+open class ProductVariation(
+    open val remoteProductId: Long,
+    open val remoteVariationId: Long,
+    open val sku: String,
+    open val image: Image?,
+    open val price: BigDecimal?,
+    open val regularPrice: BigDecimal?,
+    open val salePrice: BigDecimal?,
+    open val saleEndDateGmt: Date?,
+    open val saleStartDateGmt: Date?,
+    open val isSaleScheduled: Boolean,
+    open val stockStatus: ProductStockStatus,
+    open val backorderStatus: ProductBackorderStatus,
+    open val stockQuantity: Double,
+    open var priceWithCurrency: String? = null,
+    open val isPurchasable: Boolean,
+    open val isVirtual: Boolean,
+    open val isDownloadable: Boolean,
+    open val isStockManaged: Boolean,
+    open val description: String,
+    open val isVisible: Boolean,
+    open val shippingClass: String,
+    open val shippingClassId: Long,
+    open val menuOrder: Int,
+    open val attributes: Array<VariantOption>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
     override val weight: Float
-) : Parcelable, IProduct {
+) : Parcelable, IProduct, Comparable<ProductVariation> {
     val isSaleInEffect: Boolean
         get() {
             val now = Date()
@@ -80,7 +81,6 @@ data class ProductVariation(
                 stockQuantity == variation.stockQuantity &&
                 stockStatus == variation.stockStatus &&
                 backorderStatus == variation.backorderStatus &&
-                options == variation.options &&
                 isPurchasable == variation.isPurchasable &&
                 isVirtual == variation.isVirtual &&
                 isDownloadable == variation.isDownloadable &&
@@ -95,6 +95,12 @@ data class ProductVariation(
                 height == variation.height &&
                 width == variation.width
         } ?: false
+    }
+
+    override fun compareTo(other: ProductVariation): Int {
+        val menuOrdering = menuOrder.compareTo(other.menuOrder)
+        if (menuOrdering != 0) return menuOrdering
+        return getName().compareTo(other.getName())
     }
 
     override fun hashCode(): Int {
@@ -140,6 +146,7 @@ data class ProductVariation(
             it.status = if (isVisible) PUBLISH.value else PRIVATE.value
             it.shippingClass = shippingClass
             it.shippingClassId = shippingClassId.toInt()
+            it.menuOrder = menuOrder
             it.attributes = JsonArray().toString()
             attributes.takeIf { list -> list.isNotEmpty() }
                 ?.forEach { variant -> it.addVariant(variant.asSourceModel()) }
@@ -152,16 +159,72 @@ data class ProductVariation(
 
     fun getName(parentProduct: Product? = null): String {
         return parentProduct?.variationEnabledAttributes?.joinToString(" - ") { attribute ->
-            val option = options.firstOrNull { it.attributeName == attribute.name }
-            option?.optionChoice ?: "Any ${attribute.name}"
-        } ?: options.joinToString(" - ") { o -> o.optionChoice }
+            val option = attributes.firstOrNull { it.name == attribute.name }
+            option?.option ?: "Any ${attribute.name}"
+        } ?: attributes.filter { it.option != null }.joinToString(" - ") { o -> o.option!! }
     }
 
-    @Parcelize
-    data class Option(
-        val attributeName: String,
-        val optionChoice: String
-    ) : Parcelable
+    open fun copy(
+        remoteProductId: Long = this.remoteProductId,
+        remoteVariationId: Long = this.remoteVariationId,
+        sku: String = this.sku,
+        image: Image? = this.image,
+        price: BigDecimal? = this.price,
+        regularPrice: BigDecimal? = this.regularPrice,
+        salePrice: BigDecimal? = this.salePrice,
+        saleEndDateGmt: Date? = this.saleEndDateGmt,
+        saleStartDateGmt: Date? = this.saleStartDateGmt,
+        isSaleScheduled: Boolean = this.isSaleScheduled,
+        stockStatus: ProductStockStatus = this.stockStatus,
+        backorderStatus: ProductBackorderStatus = this.backorderStatus,
+        stockQuantity: Double = this.stockQuantity,
+        priceWithCurrency: String? = this.priceWithCurrency,
+        isPurchasable: Boolean = this.isPurchasable,
+        isVirtual: Boolean = this.isVirtual,
+        isDownloadable: Boolean = this.isDownloadable,
+        isStockManaged: Boolean = this.isStockManaged,
+        description: String = this.description,
+        isVisible: Boolean = this.isVisible,
+        shippingClass: String = this.shippingClass,
+        shippingClassId: Long = this.shippingClassId,
+        menuOrder: Int = this.menuOrder,
+        attributes: Array<VariantOption> = this.attributes,
+        length: Float = this.length,
+        width: Float = this.width,
+        height: Float = this.height,
+        weight: Float = this.weight
+    ): ProductVariation {
+        return ProductVariation(
+            remoteProductId = remoteProductId,
+            remoteVariationId = remoteVariationId,
+            sku = sku,
+            image = image,
+            price = price,
+            regularPrice = regularPrice,
+            salePrice = salePrice,
+            saleEndDateGmt = saleEndDateGmt,
+            saleStartDateGmt = saleStartDateGmt,
+            isSaleScheduled = isSaleScheduled,
+            stockStatus = stockStatus,
+            backorderStatus = backorderStatus,
+            stockQuantity = stockQuantity,
+            priceWithCurrency = priceWithCurrency,
+            isPurchasable = isPurchasable,
+            isVirtual = isVirtual,
+            isDownloadable = isDownloadable,
+            isStockManaged = isStockManaged,
+            description = description,
+            isVisible = isVisible,
+            shippingClass = shippingClass,
+            shippingClassId = shippingClassId,
+            menuOrder = menuOrder,
+            attributes = attributes,
+            length = length,
+            width = width,
+            height = height,
+            weight = weight
+        )
+    }
 }
 
 @Parcelize
@@ -185,10 +248,10 @@ data class VariantOption(
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
     return ProductVariation(
-        this.remoteProductId,
-        this.remoteVariationId,
-        this.sku,
-        this.getImageModel()?.let {
+        remoteProductId = this.remoteProductId,
+        remoteVariationId = this.remoteVariationId,
+        sku = this.sku,
+        image = this.getImageModel()?.let {
             Product.Image(
                 it.id,
                 it.name,
@@ -196,25 +259,24 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
                 DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
             )
         },
-        this.regularPrice.toBigDecimalOrNull()?.roundError(),
-        this.salePrice.toBigDecimalOrNull()?.roundError(),
-        this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        this.dateOnSaleFromGmt.formatDateToISO8601Format(),
-        this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
-        ProductStockStatus.fromString(this.stockStatus),
-        ProductBackorderStatus.fromString(this.backorders),
-        this.stockQuantity,
-        this.getProductVariantOptions()
-            .filter { it.name != null && it.option != null }
-            .map { Option(it.name!!, it.option!!) },
+        price = this.price.toBigDecimalOrNull(),
+        regularPrice = this.regularPrice.toBigDecimalOrNull(),
+        salePrice = this.salePrice.toBigDecimalOrNull(),
+        saleEndDateGmt = this.dateOnSaleToGmt.parseFromIso8601DateFormat(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
+        isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
+        stockStatus = ProductStockStatus.fromString(this.stockStatus),
+        backorderStatus = ProductBackorderStatus.fromString(this.backorders),
+        stockQuantity = this.stockQuantity,
         isPurchasable = this.purchasable,
-        isDownloadable = this.downloadable,
         isVirtual = this.virtual,
+        isDownloadable = this.downloadable,
         isStockManaged = this.manageStock,
         description = this.description.fastStripHtml(),
         isVisible = ProductStatus.fromString(this.status) == PUBLISH,
         shippingClass = this.shippingClass,
         shippingClassId = this.shippingClassId.toLong(),
+        menuOrder = this.menuOrder,
         attributes = this.attributeList
             ?.map { VariantOption(it) }
             ?.toTypedArray()

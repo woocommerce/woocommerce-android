@@ -1,6 +1,6 @@
 package com.woocommerce.android.extensions
 
-import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelType
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind.COMMENT
 
@@ -18,6 +18,7 @@ fun NotificationModel.getCommentId(): Long {
     return this.meta?.ids?.comment ?: 0L
 }
 
-class NotificationsUnseenReviewsEvent(var hasUnseen: Boolean)
-
-class NotificationReceivedEvent(var channel: NotificationChannelType)
+class NotificationReceivedEvent(
+    val siteId: Long,
+    val channel: NotificationChannelType
+)

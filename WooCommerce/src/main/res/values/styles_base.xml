@@ -17,10 +17,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="titleTextStyle">@style/TextAppearance.Woo.CollapsingToolbar.Collapsed</item>
         <item name="navigationIcon">@drawable/ic_back_24dp</item>
         <item name="android:theme">@style/Widget.Woo.Toolbar.Surface</item>
+        <item name="android:background">@color/color_toolbar</item>
     </style>
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
-        <item name="actionMenuTextColor">@color/woo_pink_50</item>
-        <item name="colorControlNormal">@color/woo_pink_50</item>
+        <item name="actionMenuTextColor">@color/color_primary_selector</item>
     </style>
     <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
@@ -33,6 +33,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
     <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
+        <item name="android:background">@color/color_toolbar</item>
         <item name="collapsedTitleTextAppearance">
             @style/TextAppearance.Woo.CollapsingToolbar.Collapsed
         </item>
@@ -44,7 +45,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingEnd">4dp</item>
     </style>
     <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="tint">@color/color_secondary</item>
+        <item name="tint">@color/color_primary</item>
         <item name="android:paddingEnd">16dp</item>
     </style>
     <style name="Woo.TextView.Subtitle1.ToolbarSubtitle">
@@ -84,7 +85,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="tabPaddingStart">25dp</item>
         <item name="tabPaddingEnd">25dp</item>
         <item name="android:background">@color/color_surface</item>
-        <item name="tabTextColor">@color/color_on_surface</item>
+        <item name="tabTextColor">@color/color_on_surface_medium</item>
     </style>
 
     <style name="Woo.TabLayout.Scrollable">
@@ -150,7 +151,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
-        <item name="drawableTint">@color/color_on_surface_medium</item>
+        <item name="drawableTint">@color/color_primary</item>
         <item name="drawableTintMode">src_atop</item>
         <item name="android:drawablePadding">@dimen/major_100</item>
         <item name="android:textAllCaps">false</item>
@@ -163,7 +164,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Card.Title" parent="Woo.TextView.Subtitle1">
-        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Woo.Card.Header" parent="Woo.TextView.Subtitle2">
@@ -174,7 +175,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface_disabled</item>
     </style>
 
-    <style name="Woo.Card.Body" parent="Woo.TextView.Body2"/>
+    <style name="Woo.Card.Body" parent="Woo.TextView.Body2" />
 
     <style name="Woo.Card.Body.High" parent="Woo.TextView.Body2">
         <item name="android:textColor">@color/color_on_surface_high</item>
@@ -187,8 +188,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Card.StatusMessage" parent="Woo.TextView.Subtitle1"/>
 
-    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Subtitle2">
-        <item name="android:layout_marginTop">@dimen/major_100</item>
+    <style name="Woo.Card.ListHeader" parent="Woo.TextView.Body2">
         <item name="android:layout_marginBottom">@dimen/major_75</item>
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
@@ -240,6 +240,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">gravity</item>
     </style>
 
     <!--
@@ -262,6 +263,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
         <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">gravity</item>
     </style>
 
     <style name="Woo.TextView.Body1">
@@ -271,9 +273,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.TextView.Body2">
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
         <item name="android:textColor">@color/color_on_surface_medium</item>
-        <item name="android:gravity">center_horizontal|start</item>
         <item name="android:layout_marginTop">@dimen/minor_00</item>
         <item name="android:layout_marginBottom">@dimen/minor_00</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">gravity</item>
     </style>
 
     <style name="Woo.TextView.Warning" parent="Woo.TextView.Body2">
@@ -303,7 +306,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <!-- Set at the theme level so no need to set it in the layout -->
     <style name="Woo.CheckedTextView">
-        <item name="textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
         <item name="android:textAppearance">@style/TextAppearance.Woo.Subtitle1</item>
         <item name="android:checkMark">?android:attr/listChoiceIndicatorSingle</item>
         <item name="android:background">?attr/selectableItemBackground</item>
@@ -314,6 +316,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:minHeight">@dimen/min_tap_target</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Woo.ActionMode.Style" parent="Widget.Woo.Toolbar">
+        <item name="background">?attr/colorSurface</item>
+        <item name="height">?attr/actionBarSize</item>
+        <item name="android:elevation">@dimen/appbar_elevation</item>
+        <item name="android:tint">@color/woo_black</item>
     </style>
 
     <!--
@@ -335,10 +344,10 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">gravity</item>
         <item name="android:lineSpacingExtra">@dimen/line_spacing_extra_100</item>
         <item name="android:layout_marginTop">@dimen/major_75</item>
         <item name="android:layout_marginBottom">@dimen/minor_75</item>
-        <item name="android:textAlignment">viewStart</item>
         <item name="android:background">@null</item>
         <item name="android:paddingStart" tools:ignore="NewApi">0dp</item>
         <item name="android:paddingEnd" tools:ignore="NewApi">0dp</item>
@@ -417,15 +426,30 @@ theme across the entire app. Overridden versions should be added to the styles.x
     -->
     <!--  Borderless button (i.e: text button)  -->
     <style name="Woo.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/button_fg_selector</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
-        <item name="iconTint">@color/button_fg_selector</item>
+    </style>
+
+    <style name="Woo.Button.TextButton.TextStart" parent="Woo.Button.TextButton">
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:textAlignment">gravity</item>
     </style>
 
     <!--  Borderless button with smaller text used for inner options  -->
     <style name="Woo.Button.TextButton.Secondary">
         <item name="android:textAppearance">@style/TextAppearance.Woo.Body1</item>
+    </style>
+
+    <style name="Woo.Button.Icon" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minHeight">@dimen/min_tap_target</item>
+        <item name="android:minWidth">@dimen/min_tap_target</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@color/button_fg_selector</item>
     </style>
 
     <style name="Woo.Button.TextButton.Expander">
@@ -437,8 +461,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Button with only a border and no color fill  -->
     <style name="Woo.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
-        <item name="android:textColor">@color/button_fg_selector</item>
-        <item name="iconTint">@color/button_fg_selector</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="drawableTintMode">src_atop</item>
@@ -447,14 +469,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Button filled with color  -->
     <style name="Woo.Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">@color/woo_white</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
-        <item name="backgroundTint">@color/button_colored_bg_selector</item>
+        <item name="rippleColor">?colorPrimaryVariant</item>
     </style>
 
     <!--  Circular button filled with color  -->
     <style name="Woo.Button.Colored.Circle" parent="Widget.MaterialComponents.Button">
         <item name="cornerSize">50%</item>
+        <item name="android:textColor">@color/woo_white</item>
         <item name="android:insetTop">@dimen/minor_00</item>
         <item name="android:insetBottom">@dimen/minor_00</item>
         <item name="android:insetLeft">@dimen/minor_00</item>
@@ -463,13 +487,23 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="backgroundTint">@color/color_primary</item>
     </style>
 
+    <style name="Woo.Button.Colored.Circle.White" parent="Woo.Button.Colored.Circle">
+        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="backgroundTint">@color/color_surface_elevated</item>
+    </style>
+
     <style name="Woo.Button.Colored.White">
         <item name="android:textColor">@color/color_on_secondary</item>
         <item name="backgroundTint">@color/button_colored_bg_white_selector</item>
     </style>
 
+    <style name="Woo.Button.Colored.Gray">
+        <item name="android:textColor">@color/light_colored_button_text</item>
+        <item name="backgroundTint">@color/light_colored_button_background</item>
+        <item name="iconTint">@color/light_colored_button_text</item>
+    </style>
+
     <style name="Woo.Button.TextButton.Toggle">
-        <item name="android:textColor">@color/button_toggle_fg_secondary_selector</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
 
@@ -496,8 +530,17 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.AddButton">
         <item name="android:src">@drawable/ic_add</item>
         <item name="tint">@color/woo_white</item>
-        <item name="backgroundTint">@color/color_secondary</item>
+        <item name="backgroundTint">?colorPrimary</item>
     </style>
+
+    <!--  Button used in Jetpack Installation dialogs   -->
+    <style name="Woo.JetpackButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:paddingStart">@dimen/major_100</item>
+        <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="backgroundTint">@color/jetpack_button_color</item>
+    </style>
+
 
 
     <!-- Set at the theme level so no need to set directly on the component -->
@@ -607,6 +650,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:indeterminateTint">?attr/colorPrimary</item>
         <item name="android:indeterminateTintMode">src_in</item>
     </style>
+
+    <style name="Woo.JetpackProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/jetpack_install_progressbar</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
 
     <!--
         TagView Style
@@ -746,13 +795,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Animations">
-        <item name="android:windowEnterAnimation">@anim/activity_slide_in_from_right</item>
-        <item name="android:windowExitAnimation">@anim/activity_slide_out_to_right</item>
+        <item name="android:windowEnterAnimation">@anim/default_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/default_pop_exit_anim</item>
     </style>
 
     <style name="Woo.Animations.Dialog">
-        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+        <item name="android:windowEnterAnimation">@anim/slide_up_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_fade_out</item>
     </style>
 
     <style name="Woo.Theme.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">

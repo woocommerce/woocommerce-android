@@ -1,6 +1,6 @@
 {
     "request": {
-        "urlPattern": "/rest/v1/devices/[0-9]+/delete/(.*)",
+        "urlPattern": "/rest/v1/devices/(.*)/delete/(.*)",
         "method": "POST"
     },
     "response": {

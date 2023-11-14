@@ -13,7 +13,7 @@
         android:layout_height="@dimen/image_minor_100"
         android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
-        android:padding="1dp"
+        android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +27,7 @@
             android:background="@drawable/picture_corners"
             android:contentDescription="@string/product_image_content_description"
             android:scaleType="centerCrop"
+            android:padding="@dimen/image_frame_stroke_width"
             tools:src="@drawable/ic_product" />
     </FrameLayout>
 

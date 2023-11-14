@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <objectAnimator
+        android:duration="300"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:propertyName="pathData"
+        android:startOffset="350"
+        android:valueFrom="M 17.5 10.75 L 17.5 10.75 C 15.153 10.75 13.25 8.847 13.25 6.5 L 13.25 6.5 C 13.25 4.153 15.153 2.25 17.5 2.25 L 17.5 2.25 C 19.847 2.25 21.75 4.153 21.75 6.5 L 21.75 6.5 C 21.75 8.847 19.847 10.75 17.5 10.75 Z"
+        android:valueTo="M 17.5 21.75 L 17.5 21.75 C 15.153 21.75 13.25 19.847 13.25 17.5 L 13.25 17.5 C 13.25 15.153 15.153 13.25 17.5 13.25 L 17.5 13.25 C 19.847 13.25 21.75 15.153 21.75 17.5 L 21.75 17.5 C 21.75 19.847 19.847 21.75 17.5 21.75 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+</set>

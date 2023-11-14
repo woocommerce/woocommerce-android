@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+  <!--
+   The default sharedPreferences file is com.woocommerce.android_preferences and
+   this file is backed up by default by the system, unless specified otherwise
+   Reference: https://developer.android.com/guide/topics/data/autobackup#define-device-conditions
+   -->
+  <exclude domain="sharedpref" path="com.woocommerce.android_deletable_preferences.xml"/>
+</full-backup-content>

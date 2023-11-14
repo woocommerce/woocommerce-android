@@ -92,7 +92,6 @@
             android:nestedScrollingEnabled="false"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_product_list_item"
-            tools:targetApi="lollipop"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -217,7 +216,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/shippingLabelItem_viewMoreButtonTitle"
-                style="@style/Woo.Button.TextButton"
+                style="@style/Woo.Button.TextButton.TextStart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -227,7 +226,6 @@
                 android:paddingStart="@dimen/major_100"
                 android:paddingEnd="@dimen/major_100"
                 android:text="@string/orderdetail_shipping_label_item_show_shipping"
-                android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/shippingLabelItem_viewMoreButtonImage"
                 app:layout_constraintStart_toStartOf="parent"

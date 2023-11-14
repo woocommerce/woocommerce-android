@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.transition.TransitionManager
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
@@ -15,6 +17,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
+import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
@@ -22,13 +25,20 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProducts
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.widgets.WooClickableSpan
 
+typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, Int, OnHazmatCategorySelected) -> Unit
+
+@Suppress("LongParameterList")
 class ShippingLabelPackagesAdapter(
     val siteParameters: SiteParameters,
     val onWeightEdited: (Int, Float) -> Unit,
     val onExpandedChanged: (Int, Boolean) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit,
-    val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit
+    val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit,
+    val onHazmatCategoryClicked: OnHazmatCategoryClicked,
+    val onHazmatToggleChecked: (Boolean) -> Unit,
+    val onURLClick: (String) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var uiModels: List<ShippingLabelPackageUiModel> = emptyList()
         set(value) {
@@ -78,25 +88,27 @@ class ShippingLabelPackagesAdapter(
         val isExpanded
             get() = binding.expandIcon.rotation == 180f
 
+        private var currentHazmatSelection: ShippingLabelHazmatCategory? = null
+
         init {
+            val context = binding.root.context
             with(binding.itemsList) {
                 layoutManager =
-                    LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = PackageProductsAdapter(weightUnit)
             }
-            binding.weightEditText.hint = binding.root.context.getString(
+            binding.weightEditText.hint = context.getString(
                 R.string.shipping_label_package_details_weight_hint,
                 weightUnit
             )
             binding.weightEditText.setOnTextChangedListener {
                 val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toFloat() ?: Float.NaN
                 // Return early if the weight wasn't changed
-                if (weight == uiModels[adapterPosition].data.weight) return@setOnTextChangedListener
+                if (weight == uiModels[bindingAdapterPosition].data.weight) return@setOnTextChangedListener
 
-                onWeightEdited(adapterPosition, weight)
+                onWeightEdited(bindingAdapterPosition, weight)
 
                 if (weight <= 0.0) {
-                    val context = binding.root.context
                     binding.weightEditText.error =
                         context.getString(R.string.shipping_label_package_details_weight_error)
                 } else {
@@ -105,20 +117,63 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.selectedPackageSpinner.setClickListener {
-                onPackageSpinnerClicked(adapterPosition)
+                onPackageSpinnerClicked(bindingAdapterPosition)
             }
 
             binding.titleLayout.setOnClickListener {
                 if (isExpanded) {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
-                    onExpandedChanged(adapterPosition, false)
+                    onExpandedChanged(bindingAdapterPosition, false)
                 } else {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
-                    onExpandedChanged(adapterPosition, true)
+                    onExpandedChanged(bindingAdapterPosition, true)
                 }
             }
+
+            binding.hazmatToggle.setOnCheckedChangeListener { _, isChecked ->
+                TransitionManager.beginDelayedTransition(binding.root)
+                binding.hazmatContent.isVisible = isChecked
+                onHazmatToggleChecked(isChecked)
+            }
+
+            binding.hazmatCategoryContainer.setOnClickListener {
+                onHazmatCategoryClicked(currentHazmatSelection, bindingAdapterPosition) {
+                    currentHazmatSelection = it
+                    binding.hazmatCategory.text = context.getString(it.stringResourceID)
+                }
+            }
+
+            val uspsHazmatLink = context.getString(R.string.shipping_label_usps_instructions_link_text)
+            binding.hazmatUspsInstructionsFirstSection.setClickableText(
+                content = context.getString(R.string.shipping_label_usps_hazmat_instructions, uspsHazmatLink),
+                clickableContent = uspsHazmatLink,
+                clickAction = WooClickableSpan(
+                    customLinkColor = context.getColor(R.color.free_trial_component_text),
+                    onClickListener = { onURLClick(AppUrls.USPS_HAZMAT_INSTRUCTIONS) }
+                )
+            )
+
+            val searchToolLink = context.getString(R.string.shipping_label_usps_search_tool_link_text)
+            binding.hazmatUspsInstructionsSecondSection.setClickableText(
+                content = context.getString(R.string.shipping_label_usps_search_tool, searchToolLink),
+                clickableContent = searchToolLink,
+                clickAction = WooClickableSpan(
+                    customLinkColor = context.getColor(R.color.free_trial_component_text),
+                    onClickListener = { onURLClick(AppUrls.USPS_HAZMAT_SEARCH_TOOL) }
+                )
+            )
+
+            val dhlHazmatLink = context.getString(R.string.shipping_label_hazmat_content_dhl_instructions_link_text)
+            binding.hazmatDhlInstructions.setClickableText(
+                content = context.getString(R.string.shipping_label_hazmat_content_dhl_instructions, dhlHazmatLink),
+                clickableContent = dhlHazmatLink,
+                clickAction = WooClickableSpan(
+                    customLinkColor = context.getColor(R.color.free_trial_component_text),
+                    onClickListener = { onURLClick(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
+                )
+            )
         }
 
         @SuppressLint("SetTextI18n")
@@ -171,6 +226,11 @@ class ShippingLabelPackagesAdapter(
             } else {
                 binding.expandIcon.rotation = 0f
                 binding.detailsLayout.isVisible = false
+            }
+
+            shippingLabelPackage.selectedPackage?.hazmatCategory?.let {
+                binding.hazmatToggle.isChecked = true
+                binding.hazmatCategory.text = context.getString(it.stringResourceID)
             }
         }
 

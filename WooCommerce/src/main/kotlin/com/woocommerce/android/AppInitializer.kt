@@ -1,22 +1,41 @@
 package com.woocommerce.android
 
 import android.app.Application
-import android.content.Context
+import android.appwidget.AppWidgetManager
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
+import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.lesserThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.push.FCMRegistrationIntentService
-import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.notifications.WooNotificationBuilder
+import com.woocommerce.android.notifications.push.RegisterDevice
+import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
+import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.tracker.SendTelemetry
+import com.woocommerce.android.tracker.TrackStoreSnapshot
+import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
+import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
@@ -25,65 +44,88 @@ import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import com.woocommerce.android.util.WooLog.T.UTILS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
-import com.woocommerce.android.util.payment.CardPresentEligibleFeatureChecker
 import com.woocommerce.android.widgets.AppRatingDialog
+import dagger.Lazy
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
-import org.wordpress.android.fluxc.generated.WCCoreActionBuilder
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Suppress("TooManyFunctions")
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
+        private const val UNAUTHORIZED_STATUS_CODE = 401
+        private const val CARD_READER_USAGE_THIRTY_DAYS = 30
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var accountRepository: Lazy<AccountRepository>
     @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
-    @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
+    @Inject lateinit var sendTelemetry: SendTelemetry
+    @Inject lateinit var siteObserver: SiteObserver
+    @Inject lateinit var wooLog: WooLogWrapper
+    @Inject lateinit var registerDevice: RegisterDevice
+    @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
+    @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
+    @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
+
+    @Inject lateinit var explat: ExPlat
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver
 
     @Inject lateinit var prefs: AppPrefs
-    @Inject lateinit var cardPresentEligibleFeatureChecker: CardPresentEligibleFeatureChecker
+
+    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+
+    @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
+    @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
+    @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
 
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
-
-    private var appInForegroundScope: CoroutineScope? = null
 
     /**
      * Update WP.com and WooCommerce settings in a background task.
@@ -91,20 +133,19 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     private val updateSelectedSite: RateLimitedTask = object : RateLimitedTask(SECONDS_BETWEEN_SITE_UPDATE) {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
-                dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(it))
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchSiteSettingsAction(it))
-                dispatcher.dispatch(WCCoreActionBuilder.newFetchProductSettingsAction(it))
-            }
-            return true
-        }
-    }
+                appCoroutineScope.launch {
+                    wooCommerceStore.fetchWooCommerceSite(it).let {
+                        if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
+                            // The previously selected site doesn't have Woo anymore, take the user to the login screen
+                            WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
 
-    private val checkIfPaymentsEligible: RateLimitedTask = object : RateLimitedTask(
-        CardPresentEligibleFeatureChecker.CACHE_VALIDITY_TIME_S
-    ) {
-        override fun run(): Boolean {
-            appInForegroundScope = CoroutineScope(Dispatchers.IO).apply {
-                launch { cardPresentEligibleFeatureChecker.doCheck() }
+                            selectedSite.reset()
+                            restartMainActivity()
+                        }
+                    }
+                    wooCommerceStore.fetchSiteGeneralSettings(it)
+                    wooCommerceStore.fetchSiteProductSettings(it)
+                }
             }
             return true
         }
@@ -112,10 +153,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     fun init(application: Application) {
         this.application = application
+
         // Apply Theme
         AppThemeUtils.setAppTheme()
 
         dispatcher.register(this)
+
+        FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
 
         AppRatingDialog.init(application)
 
@@ -132,84 +176,153 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        zendeskHelper.setupZendesk(
-            application, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
-            BuildConfig.ZENDESK_OAUTH_CLIENT_ID
+        zendeskSettings.setup(
+            context = application,
+            zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
+            applicationId = BuildConfig.ZENDESK_APP_ID,
+            oauthClientId = BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
 
         observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
+
+        appCoroutineScope.launch {
+            sendTelemetry(BuildConfig.VERSION_NAME).collect { result ->
+                wooLog.i(UTILS, "WCTracker telemetry result: $result")
+            }
+        }
+        appCoroutineScope.launch {
+            siteObserver.observeAndUpdateSelectedSiteData()
+        }
+        appCoroutineScope.launch {
+            featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
+        }
+
+        monitorApplicationPasswordsStatus()
     }
 
+    @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
-        AnalyticsTracker.track(Stat.APPLICATION_OPENED)
+        trackApplicationOpened()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
             application.registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
 
-        if (isGooglePlayServicesAvailable(application)) {
-            // Register for Cloud messaging
-            FCMRegistrationIntentService.enqueueWork(application)
-        }
-
         if (networkStatus.isConnected()) {
             updateSelectedSite.runIfNotLimited()
-            checkIfPaymentsEligible.runIfNotLimited()
+
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
+            }
         }
     }
 
     override fun onFirstActivityResumed() {
-        // Update the WP.com account details, settings, and site list every time the app is completely restarted,
-        // only if the logged in
-        if (networkStatus.isConnected() && accountStore.hasAccessToken()) {
-            dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
-            dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+        // App is completely restarted
+        if (networkStatus.isConnected()) {
+            if (accountStore.hasAccessToken()) {
+                // Update the WPCom account if the user is signed in using a WPCom account
+                dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
+                dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+            }
 
-            // Update the user info for the currently logged in user
+            // Update the list of sites
+            appCoroutineScope.launch {
+                wooCommerceStore.fetchWooCommerceSites()
+
+                // Added to fix this crash
+                // https://github.com/woocommerce/woocommerce-android/issues/4842
+                if (selectedSite.getSelectedSiteId() != -1 &&
+                    !selectedSite.exists()
+                ) {
+                    // The previously selected site is not connected anymore, take the user to the site picker
+                    WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
+                    restartMainActivity()
+                }
+            }
+
             if (selectedSite.exists()) {
-                userEligibilityFetcher.fetchUserEligibility()
+                appCoroutineScope.launch {
+                    userEligibilityFetcher.fetchUserInfo().onSuccess {
+                        if (!it.isEligible) {
+                            WooLog.w(T.LOGIN, "Current user is not eligible to access the current site")
+                            restartMainActivity()
+                        }
+                    }
+
+                    buildList {
+                        val isIPPUser = Date(
+                            prefs.getCardReaderLastSuccessfulPaymentTime()
+                        ).pastTimeDeltaFromNowInDays lesserThan CARD_READER_USAGE_THIRTY_DAYS
+
+                        if (isIPPUser) {
+                            add(
+                                async {
+                                    cardReaderOnboardingChecker.invalidateCache()
+                                    cardReaderOnboardingChecker.getOnboardingState()
+                                }
+                            )
+                        }
+
+                        add(async { jitmStoreInMemoryCache.init() })
+                        add(async { trackStoreSnapshot() })
+                    }.awaitAll()
+                }
             }
         }
     }
 
     override fun onAppGoesToBackground() {
-        AnalyticsTracker.track(Stat.APPLICATION_CLOSED)
+        AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
             application.unregisterReceiver(connectionReceiver)
         }
-
-        appInForegroundScope?.cancel()
     }
 
-    private fun isGooglePlayServicesAvailable(context: Context): Boolean {
-        val googleApiAvailability = GoogleApiAvailability.getInstance()
+    private fun restartMainActivity() {
+        if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+            val intent = Intent(application, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            application.startActivity(intent)
+        }
+    }
 
-        return when (val connectionResult = googleApiAvailability.isGooglePlayServicesAvailable(context)) {
-            ConnectionResult.SUCCESS -> true
-            else -> {
-                WooLog.w(
-                    T.NOTIFS,
-                    "Google Play Services unavailable, connection result: " +
-                        googleApiAvailability.getErrorString(connectionResult)
-                )
-                return false
-            }
+    private fun monitorApplicationPasswordsStatus() {
+        suspend fun logUserOut() {
+            accountRepository.get().logout()
+            restartMainActivity()
+        }
+
+        appCoroutineScope.launch {
+            // Log user out if the Application Passwords feature gets disabled
+            applicationPasswordsNotifier.featureUnavailableEvents
+                .onEach {
+                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
+                        logUserOut()
+                    }
+                }.launchIn(this)
+
+            // Log user out if the Application Passwords generation fails due to a 401 error
+            applicationPasswordsNotifier.passwordGenerationFailures
+                .filter { it.networkError.volleyError?.networkResponse?.statusCode == UNAUTHORIZED_STATUS_CODE }
+                .onEach {
+                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
+                        logUserOut()
+                    }
+                }.launchIn(this)
         }
     }
 
     private fun initAnalytics() {
-        AnalyticsTracker.init(application)
+        AnalyticsTracker.init(application, selectedSite)
 
-        if (selectedSite.exists()) {
-            AnalyticsTracker.refreshMetadata(accountStore.account?.userName, selectedSite.get())
-        } else {
-            AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
-        }
+        AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }
 
     private fun trackStartupAnalytics() {
@@ -217,52 +330,47 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         val versionCode = PackageUtils.getVersionCode(application)
         val oldVersionCode = prefs.getLastAppVersionCode()
 
-        if (oldVersionCode == 0) {
-            AnalyticsTracker.track(Stat.APPLICATION_INSTALLED)
-
-            // Store the current app version code to SharedPrefs, even if the value is -1
-            // to prevent duplicate install events being called
-            prefs.setLastAppVersionCode(versionCode)
-        } else if (oldVersionCode < versionCode) {
-            // Track upgrade event only if oldVersionCode is not -1, to prevent
-            // duplicate upgrade events being called
-            if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-                AnalyticsTracker.track(Stat.APPLICATION_UPGRADED)
+        when {
+            oldVersionCode == 0 -> {
+                AnalyticsTracker.track(AnalyticsEvent.APPLICATION_INSTALLED)
+                // Store the current app version code to SharedPrefs, even if the value is -1
+                // to prevent duplicate install events being called
+                prefs.setLastAppVersionCode(versionCode)
             }
+            oldVersionCode < versionCode -> {
+                // Track upgrade event only if oldVersionCode is not -1, to prevent
+                // duplicate upgrade events being called
+                if (oldVersionCode > PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
+                    AnalyticsTracker.track(AnalyticsEvent.APPLICATION_UPGRADED)
+                }
 
-            // store the latest version code to SharedPrefs, only if the value
-            // is greater than the stored version code
-            prefs.setLastAppVersionCode(versionCode)
-        } else if (versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT) {
-            // we are not able to read the current app version code
-            // track this event along with the last stored version code
-            AnalyticsTracker.track(
-                Stat.APPLICATION_VERSION_CHECK_FAILED,
-                mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
-            )
+                // store the latest version code to SharedPrefs, only if the value
+                // is greater than the stored version code
+                prefs.setLastAppVersionCode(versionCode)
+            }
+            versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT -> {
+                // we are not able to read the current app version code
+                // track this event along with the last stored version code
+                AnalyticsTracker.track(
+                    AnalyticsEvent.APPLICATION_VERSION_CHECK_FAILED,
+                    mapOf(AnalyticsTracker.KEY_LAST_KNOWN_VERSION_CODE to oldVersionCode)
+                )
+            }
         }
     }
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
-        val isLoggedOut = event.causeOfChange == null && event.error == null
-        if (!accountStore.hasAccessToken() && isLoggedOut) {
-            // Logged out
-            AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT)
+        val isLoggedOut = event.causeOfChange == AccountAction.SIGN_OUT && event.error == null
+        if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
+            analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+        }
 
-            // Reset analytics
-            AnalyticsTracker.flush()
-            AnalyticsTracker.clearAllData()
-            zendeskHelper.reset()
-
-            // Wipe user-specific preferences
-            prefs.resetUserPreferences()
-        } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
-            // make sure local usage tracking matches the account setting
-            val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
-            if (hasUserOptedOut != accountStore.account.tracksOptOut) {
-                AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+        val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
+        if (userAccountFetched) {
+            appCoroutineScope.launch {
+                registerDevice(IF_NEEDED)
             }
         }
     }
@@ -288,7 +396,23 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 "protocol" to protocol,
                 "times_retried" to timesRetried.toString()
             )
-            AnalyticsTracker.track(Stat.JETPACK_TUNNEL_TIMEOUT, properties)
+            AnalyticsTracker.track(AnalyticsEvent.JETPACK_TUNNEL_TIMEOUT, properties)
         }
+    }
+
+    private fun trackApplicationOpened() {
+        val widgetManager = AppWidgetManager.getInstance(application)
+
+        val widgets = widgetManager.installedProviders.filter { providerInfo ->
+            // We only care about WooCommerce widgets so we filter providerInfo by packageName
+            // and we also check that it has at least one widget id (at least one widget installed)
+            providerInfo.provider.packageName == application.packageName &&
+                widgetManager.getAppWidgetIds(providerInfo.provider).isNotEmpty()
+        }.map { providerInfo -> providerInfo.getWidgetName() }
+
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.APPLICATION_OPENED,
+            properties = mapOf(AnalyticsTracker.KEY_WIDGETS to widgets)
+        )
     }
 }

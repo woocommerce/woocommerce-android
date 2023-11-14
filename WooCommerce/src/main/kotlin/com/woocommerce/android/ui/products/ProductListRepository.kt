@@ -1,40 +1,45 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
-import com.woocommerce.android.util.PreferencesWrapper
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.DELETED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
-    prefsWrapper: PreferencesWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val dispatchers: CoroutineDispatchers,
 ) {
     companion object {
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
-        private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
 
     private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
@@ -42,22 +47,23 @@ class ProductListRepository @Inject constructor(
     private var trashContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
-    private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
-
     var canLoadMoreProducts = true
         private set
 
     var lastSearchQuery: String? = null
         private set
 
+    var lastIsSkuSearch = SkuSearchOptions.Disabled
+        private set
+
     var productSortingChoice: ProductSorting
         get() {
             return ProductSorting.valueOf(
-                sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, TITLE_ASC.name) ?: TITLE_ASC.name
+                appPrefsWrapper.getProductSortingChoice(selectedSite.getSelectedSiteId()) ?: TITLE_ASC.name
             )
         }
         set(value) {
-            sharedPreferences.edit().putString(PRODUCT_SORTING_PREF_KEY, value.name).commit()
+            appPrefsWrapper.setProductSortingChoice(selectedSite.getSelectedSiteId(), value.name)
         }
 
     init {
@@ -75,16 +81,18 @@ class ProductListRepository @Inject constructor(
     suspend fun fetchProductList(
         loadMore: Boolean = false,
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>? = null,
+        sortType: ProductSorting? = null
     ): List<Product> {
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = null
+            lastIsSkuSearch = SkuSearchOptions.Disabled
             val payload = WCProductStore.FetchProductsPayload(
-                selectedSite.get(),
-                PRODUCT_PAGE_SIZE,
-                offset,
-                productSortingChoice,
+                site = selectedSite.get(),
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = sortType ?: productSortingChoice,
                 filterOptions = productFilterOptions,
                 excludedProductIds = excludedProductIds
             )
@@ -101,8 +109,10 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
+        skuSearchOptions: SkuSearchOptions,
         loadMore: Boolean = false,
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>? = null,
+        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
     ): List<Product>? {
         // cancel any existing load
         loadContinuation.cancel()
@@ -110,13 +120,16 @@ class ProductListRepository @Inject constructor(
         val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
+            lastIsSkuSearch = skuSearchOptions
             val payload = WCProductStore.SearchProductsPayload(
-                selectedSite.get(),
-                searchQuery,
-                PRODUCT_PAGE_SIZE,
-                offset,
-                productSortingChoice,
-                excludedProductIds = excludedProductIds
+                site = selectedSite.get(),
+                searchQuery = searchQuery,
+                skuSearchOptions = skuSearchOptions,
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
+                excludedProductIds = excludedProductIds,
+                filterOptions = productFilterOptions
             )
             dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
         }
@@ -151,14 +164,15 @@ class ProductListRepository @Inject constructor(
      */
     fun getProductList(
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>? = null,
+        sortType: ProductSorting? = null
     ): List<Product> {
         val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProductsByFilterOptions(
+            val wcProducts = productStore.getProducts(
                 selectedSite.get(),
                 filterOptions = productFilterOptions,
-                sortType = productSortingChoice,
+                sortType = sortType ?: productSortingChoice,
                 excludedProductIds = excludedIds
             )
             wcProducts.map { it.toAppModel() }
@@ -210,4 +224,50 @@ class ProductListRepository @Inject constructor(
             searchContinuation.continueWith(products)
         }
     }
+
+    suspend fun bulkUpdateProductsStatus(
+        productsIds: Collection<Long>,
+        newStatus: ProductStatus,
+    ): RequestResult = withContext(dispatchers.io) {
+        val updatedProducts = productStore.getProductsByRemoteIds(
+            site = selectedSite.get(),
+            remoteProductIds = productsIds.toList()
+        ).map {
+            it.apply {
+                status = newStatus.toString()
+            }
+        }
+
+        bulkUpdateProducts(updatedProducts)
+    }
+
+    suspend fun bulkUpdateProductsPrice(
+        productsIds: List<Long>,
+        newRegularPrice: String,
+    ): RequestResult = withContext(dispatchers.io) {
+        val updatedProducts = productStore.getProductsByRemoteIds(
+            site = selectedSite.get(),
+            remoteProductIds = productsIds
+        ).map {
+            it.apply {
+                regularPrice = newRegularPrice
+            }
+        }
+
+        bulkUpdateProducts(updatedProducts)
+    }
+
+    private suspend fun bulkUpdateProducts(updatedProducts: List<WCProductModel>) =
+        productStore.batchUpdateProducts(
+            WCProductStore.BatchUpdateProductsPayload(
+                selectedSite.get(),
+                updatedProducts
+            )
+        ).let {
+            if (it.isError) {
+                RequestResult.ERROR
+            } else {
+                RequestResult.SUCCESS
+            }
+        }
 }

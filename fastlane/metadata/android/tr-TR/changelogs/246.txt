@@ -1,4 +1,0 @@
-7.5:
-Yeni bir özellik, WooCommerce Ürün Eklentileri Uzantısını kullanan ürünlerle ilgili siparişleri görüntüleme olanağı sunuyor. Mağazam sekmesindeki uygulamada mağazanızın ayarlarına gidin ve Beta özellikler altından bu özelliğin etkinleştirin. Bize mutlaka deneyiminizle ilgili geri bildirim gönderin.
-
-Ayrıca ürün listesini kategoriye göre filtreleyebileceğinizi de göreceksiniz. Siz istediniz, biz yaptık.

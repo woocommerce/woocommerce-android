@@ -3,12 +3,10 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -17,6 +15,7 @@ import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +28,9 @@ class ParentCategoryListFragment :
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: AddProductCategoryViewModel by hiltNavGraphViewModels(R.id.nav_graph_add_product_category)
+    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(
+        navGraphId = R.id.nav_graph_add_product_category
+    )
 
     private lateinit var parentCategoryListAdapter: ParentCategoryListAdapter
 
@@ -54,20 +55,20 @@ class ParentCategoryListFragment :
 
         _binding = FragmentProductCategoriesListBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(viewModel)
         viewModel.fetchParentCategories()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_category)
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
 
         parentCategoryListAdapter = ParentCategoryListAdapter(
-            activity.baseContext, viewModel.getSelectedParentId(), this, this
+            viewModel.getSelectedParentId(), this, this
         )
         with(binding.productCategoriesRecycler) {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
@@ -77,7 +78,7 @@ class ParentCategoryListFragment :
         binding.productCategoriesLayout.apply {
             scrollUpChild = binding.productCategoriesRecycler
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PARENT_CATEGORIES_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PARENT_CATEGORIES_PULLED_TO_REFRESH)
                 viewModel.refreshParentCategories()
             }
         }
@@ -99,27 +100,21 @@ class ParentCategoryListFragment :
             }
         }
 
-        viewModel.parentCategories.observe(
-            viewLifecycleOwner,
-            Observer {
-                showParentCategories(it)
-            }
-        )
+        viewModel.parentCategories.observe(viewLifecycleOwner) {
+            showParentCategories(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showParentCategories(productCategories: List<ProductCategoryItemUiModel>) {
-        parentCategoryListAdapter.parentCategoryList = productCategories
+        parentCategoryListAdapter.submitList(productCategories)
     }
 
     private fun showSkeleton(show: Boolean) {

@@ -1,40 +1,71 @@
+pluginManagement {
+    gradle.ext.agpVersion = '8.1.0'
+    gradle.ext.googleServicesVersion = '4.4.0'
+    gradle.ext.daggerVersion = '2.45'
+    gradle.ext.detektVersion = '1.19.0'
+    gradle.ext.kotlinVersion = '1.8.21'
+    gradle.ext.navigationVersion = '2.5.3'
+    gradle.ext.sentryVersion = '3.5.0'
+    gradle.ext.violationCommentsVersion = '1.69.0'
+    gradle.ext.wziebaTracksVersion = '1.0.0'
+
+    repositories {
+        google()
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://a8c-libs.s3.amazonaws.com/android")
+                }
+            }
+            filter {
+                includeGroup "com.automattic.android"
+            }
+        }
+        gradlePluginPortal()
+    }
+
+    plugins {
+        id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
+        id 'com.android.application' version gradle.ext.agpVersion
+        id 'com.android.library' version gradle.ext.agpVersion
+        id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
+        id 'io.github.wzieba.tracks.plugin' version gradle.ext.wziebaTracksVersion
+        id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
+        id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
+        id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
+        id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
+        id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
+        id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
+        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version gradle.ext.violationCommentsVersion
+        id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
+    }
+}
+
+plugins {
+    id 'com.gradle.enterprise' version '3.15.1'
+}
+
+rootProject.name = 'WCAndroid'
+
+include ':quicklogin'
 include ':libs:cardreader'
+include ':libs:iap'
 include ':WooCommerce'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
 gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:woocommerce"
 gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
+gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
+gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
+gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
+gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
+gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
-def localBuilds = new File('local-builds.gradle')
-if (localBuilds.exists()) {
-    apply from: localBuilds
-
-    /*
-    In order to add a new included build:
-    1. Define a property for its path in the `local-builds.gradle-example` file.
-    2. Check if that property exists in `ext` since it may be commented out.
-    3. Include the build using the property.
-    4. Add dependencySubstitution block and substitute the binary module with the project.
-    Note that `project` dependencies are resolved in the context of the included build.
-    https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/ConfigurableIncludedBuild.html#dependencySubstitution-org.gradle.api.Action-
-    */
-
-    if (ext.has("localFluxCPath")) {
-        includeBuild(ext.localFluxCPath) {
-            dependencySubstitution {
-                println "Substituting fluxc with the local build"
-                substitute module(gradle.ext.fluxCBinaryPath) with project(':fluxc')
-                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) with project(':plugins:woocommerce')
-            }
-        }
-    }
-
-    if (ext.has("localLoginFlowPath")) {
-        includeBuild(ext.localLoginFlowPath) {
-            dependencySubstitution {
-                println "Substituting login-flow with the local build"
-                substitute module("$gradle.ext.loginFlowBinaryPath") with project(':WordPressLoginFlow')
-            }
-        }
-    }
+gradle.ext {
+    compileSdkVersion = 34
+    targetSdkVersion = 33
+    minSdkVersion = 24
 }
+
+apply from: './config/gradle/include_builds.gradle'
+apply from: './config/gradle/gradle_build_cache.gradle'

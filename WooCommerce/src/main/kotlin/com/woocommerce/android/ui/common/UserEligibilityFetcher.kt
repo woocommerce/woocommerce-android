@@ -1,39 +1,39 @@
 package com.woocommerce.android.ui.common
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.WooException
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.user.WCUserModel
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCUserStore
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class UserEligibilityFetcher @Inject constructor(
     private val appPrefs: AppPrefs,
     private val userStore: WCUserStore,
     private val selectedSite: SelectedSite
-) : CoroutineScope {
-    private val job: Job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+) {
+    suspend fun fetchUserInfo(): Result<User> = fetchUserInfo(selectedSite.get())
 
-    fun fetchUserEligibility() {
-        launch(Dispatchers.Default) {
-            fetchUserInfo()?.let { updateUserInfo(it) }
+    suspend fun fetchUserInfo(site: SiteModel): Result<User> {
+        return userStore.fetchUserRole(site).let {
+            when {
+                it.isError -> Result.failure(WooException(it.error))
+                it.model != null -> Result.success(it.model!!.toAppModel())
+                else -> Result.failure(NullPointerException("Response is null"))
+            }
+        }.onSuccess {
+            updateUserInfo(it)
         }
     }
 
-    suspend fun fetchUserInfo(): WCUserModel? = userStore.fetchUserRole(selectedSite.get()).model
+    fun getUser() = userStore.getUserByEmail(selectedSite.get(), appPrefs.getUserEmail())?.toAppModel()
 
-    fun getUserByEmail(email: String) = userStore.getUserByEmail(selectedSite.get(), email)
-
-    fun updateUserInfo(user: WCUserModel) {
-        appPrefs.setIsUserEligible(user.isUserEligible())
+    private fun updateUserInfo(user: User) {
+        appPrefs.setIsUserEligible(user.isEligible)
         appPrefs.setUserEmail(user.email)
     }
 }

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="woo_purple_0">#F2EDFF</color>
+    <color name="woo_purple_10">#F7EDF7</color>
+    <color name="woo_purple_15">#E5CFE8</color>
+    <color name="woo_purple_20">#C792E0</color>
     <color name="woo_purple_30">#B17FD4</color>
+    <color name="woo_purple_40">#AF7DD1</color>
     <color name="woo_purple_50">#7F54B3</color>
     <color name="woo_purple_60">#674399</color>
     <color name="woo_purple_60_alpha_33">#33674399</color>
     <color name="woo_purple_80">#3C2861</color>
+    <color name="woo_purple_90">#271B3D</color>
+    <color name="woo_purple_dark_secondary">#99EBEBF5</color>
 
     <color name="woo_pink_10">#ED9BB8</color>
     <color name="woo_pink_30">#EB6594</color>
@@ -15,11 +22,15 @@
     <color name="woo_red_5">#FACFD2</color>
     <color name="woo_red_30">#F86368</color>
     <color name="woo_red_50">#D63638</color>
+    <color name="woo_red_60">#B32D2E</color>
 
+    <color name="woo_blue_5">#BBE0FA</color>
     <color name="woo_blue_30">#5198D9</color>
+    <color name="woo_blue_40">#1689DB</color>
     <color name="woo_blue_50">#2271B1</color>
 
     <color name="woo_orange_5">#F7DCC6</color>
+    <color name="woo_orange_10">#FFBF86</color>
     <color name="woo_orange_30">#E68B28</color>
     <color name="woo_orange_50">#B26200</color>
     <color name="woo_orange_70">#351F04</color>
@@ -30,9 +41,11 @@
     <color name="woo_celadon_5">#A7E8D4</color>
     <color name="woo_celadon_40">#009172</color>
     <color name="woo_green_5">#71B02F</color>
+    <color name="woo_green_50">#008A20</color>
 
-    <color name="woo_white">@android:color/white</color>
+    <color name="woo_white">#FFFFFF</color>
     <color name="woo_white_alpha_005">#0DFFFFFF</color>
+    <color name="woo_white_alpha_008">#14FFFFFF</color>
     <color name="woo_white_alpha_009">#17FFFFFF</color>
     <color name="woo_white_alpha_012">#1FFFFFFF</color>
     <color name="woo_white_alpha_038">#61FFFFFF</color>
@@ -41,16 +54,37 @@
 
     <color name="woo_gray_0">#F6F7F7</color>
     <color name="woo_gray_5">#DCDCDE</color>
+    <color name="woo_gray_6">#F2F2F7</color>
     <color name="woo_gray_40">#787C82</color>
     <color name="woo_gray_80">#2C3338</color>
+    <color name="woo_gray_80_alpha_012">#1F2C3338</color>
+    <color name="woo_gray_80_alpha_030">#4D3C3C43</color>
     <color name="woo_gray_900">#F7F7F7</color>
 
-    <color name="woo_black">@android:color/black</color>
+    <color name="woo_black">#FF000000</color>
     <color name="woo_black_90">#121212</color>
+    <color name="woo_black_90_alpha_004">#0A000000</color>
     <color name="woo_black_90_alpha_012">#1F121212</color>
     <color name="woo_black_90_alpha_020">#33121212</color>
     <color name="woo_black_90_alpha_038">#61121212</color>
     <color name="woo_black_90_alpha_060">#99121212</color>
     <color name="woo_black_90_alpha_087">#DE121212</color>
     <color name="woo_black_900">#272727</color>
+    <color name="woo_black_60">#6A6A6A</color>
+    <color name="woo_black_80">#363636</color>
+    <color name="woo_black_alpha_008">#14212121</color>
+
+    <color name="jetpack_green_40">#069e08</color>
+    <color name="jetpack_black">#0B2621</color>
+
+    <color name="wp_blue">#399CE3</color>
+
+    <color name="blaze_yellow_5">#F5E6B3</color>
+    <color name="blaze_yellow_70">#674600</color>
+    <color name="blaze_green_5">#B8E6BF</color>
+    <color name="blaze_green_60">#007017</color>
+    <color name="blaze_blue_5">#BBE0FA</color>
+    <color name="blaze_blue_60">#055D9C</color>
+    <color name="blaze_red_5">#FACFD2</color>
+    <color name="blaze_red_6">#B32D2E</color>
 </resources>

@@ -9,6 +9,7 @@
     <color name="color_secondary">@color/woo_pink_30</color>
     <color name="color_secondary_variant">@color/woo_pink_50</color>
     <color name="color_surface">@color/woo_black_90</color>
+    <color name="color_surface_elevated">@color/woo_black_80</color>
     <color name="color_error">@color/woo_red_30</color>
     <color name="color_alert">@color/woo_yellow_30</color>
 
@@ -35,17 +36,19 @@
     <color name="color_accent_3">@color/woo_blue_30</color>
 
     <color name="inverted_surface_overlay">@color/color_surface</color>
+    <color name="color_text_link">@color/woo_pink_30</color>
 
     <!--
         App colors
     -->
-    <color name="color_status_bar">@color/color_surface</color>
+    <color name="color_status_bar">@color/color_toolbar</color>
     <color name="default_window_background">@color/woo_black_90</color>
     <color name="divider_color">@color/woo_white_alpha_012</color>
     <color name="image_border_color">@color/woo_white_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_white_alpha_012</color>
     <color name="color_scrim_background">@color/woo_black_90_alpha_038</color>
     <color name="color_default_image_background">@color/woo_gray_40</color>
+    <color name="color_toolbar">@color/woo_black_900</color>
 
     <!--
         Elevation colors
@@ -68,6 +71,11 @@
         TagView colors
     -->
     <color name="tagView_text">@color/color_on_primary_high</color>
+    <color name="tag_bg_main">@color/color_primary_variant</color>
+    <color name="tag_text_main">@color/white</color>
+    <color name="tag_task_label">@color/color_primary_variant</color>
+    <color name="tag_task_label_text">@color/white</color>
+    <color name="tag_icon">@color/white</color>
 
     <!--
         Warning colors
@@ -104,14 +112,103 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
+    <color name="skeleton_compose_background">@color/woo_black_80</color>
 
     <!--
     Empty state view
     -->
     <color name="empty_state_bg_color">@color/woo_black_90</color>
-  
+
     <!--
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_black_900</color>
+    <color name="select_payment_gateway_stroke">@color/woo_gray_80</color>
+
+    <!--
+    Jetpack plugin installation dialog
+    -->
+    <color name="jetpack_button_color">@color/woo_white</color>
+    <color name="jetpack_install_progressbar">@color/woo_white</color>
+
+    <color name="reader_update_progress_color">@color/woo_purple_40</color>
+    <color name="reader_update_rest_color">@color/woo_purple_20</color>
+    <color name="reader_update_border_color">#7F54B3</color>
+
+    <!--
+    More menu button
+    -->
+    <color name="more_menu_button_background">#232323</color>
+    <color name="more_menu_button_icon_background">#383838</color>
+
+    <!-- Woo application log - all white -->
+    <color name="log_text_verbose">@color/white</color>
+    <color name="log_text_debug">@color/white</color>
+    <color name="log_text_info">@color/white</color>
+    <color name="log_text_warning">@color/white</color>
+    <color name="log_text_error">@color/white</color>
+
+    <!-- Text colors -->
+    <color name="link_text">@color/woo_blue_30</color>
+
+    <!--
+    Button colors
+    -->
+    <color name="light_colored_button_text">@color/color_primary</color>
+    <color name="light_colored_button_background">@color/woo_black_80</color>
+
+    <!--
+    Analytics
+    -->
+    <color name="analytics_background">@color/woo_black_90</color>
+    <color name="analytics_delta_positive_color">#B8E6BF</color>
+    <color name="analytics_delta_text_color">@color/woo_black_90</color>
+    <color name="analytics_calendar_bg_color">@color/woo_white_alpha_008</color>
+
+    <!--
+    "OR" divider in Login screens
+    -->
+    <color name="or_divider_line">#5A5F66</color>
+    <color name="or_divider_text">#999BA4</color>
+
+
+    <!--
+    Free Trial
+    -->
+    <color name="free_trial_component_background">@color/woo_purple_90</color>
+    <color name="free_trial_component_text">@color/woo_purple_40</color>
+    <color name="free_trial_banner_content">@color/color_on_surface</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="store_creation_summary_top_illustration_background">@color/woo_purple_80</color>
+
+    <!--
+    Highlight tooltip
+    -->
+    <color name="highlights_tooltip_background">@color/color_surface_elevated</color>
+    <color name="highlights_tooltip_title">@color/color_on_surface</color>
+
+    <!--
+    Test order step number
+    -->
+    <color name="try_test_order_step">@color/woo_black_60</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="woo_payments_setup_bullet_background">@color/woo_purple_80</color>
+
+    <!--
+    AI
+    -->
+    <color name="ai_generated_text_background">@color/woo_black_80</color>
+    <color name="ai_feedback_form_background">@color/woo_white_alpha_012</color>
+
+    <!--
+    Tap To Pay About
+    -->
+    <color name="tap_to_pay_about_important_info_background">@color/woo_purple_90</color>
+
 </resources>

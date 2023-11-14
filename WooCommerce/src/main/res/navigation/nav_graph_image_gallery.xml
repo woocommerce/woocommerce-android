@@ -40,31 +40,28 @@
         <argument
             android:name="mediaId"
             app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/wpMediaPickerFragment"
-        android:name="com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment"
-        android:label="WPMediaPickerFragment"
-        tools:layout="@layout/fragment_wpmedia_picker">
         <argument
-            android:name="allowMultiple"
+            android:name="remoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="images"
+            app:argType="com.woocommerce.android.model.Product$Image[]" />
+        <argument
+            android:name="selectedImage"
+            android:defaultValue="@null"
+            app:argType="com.woocommerce.android.model.Product$Image"
+            app:nullable="true" />
+        <argument
+            android:name="showChooser"
             app:argType="boolean" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
     </fragment>
 
     <action
         android:id="@+id/action_global_productImageViewerFragment"
-        app:destination="@id/productImageViewerFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
-
-    <action
-        android:id="@+id/action_global_wpMediaFragment"
-        app:destination="@id/wpMediaPickerFragment"
-        app:enterAnim="@anim/activity_slide_in_from_right"
-        app:exitAnim="@anim/activity_slide_out_to_left"
-        app:popEnterAnim="@anim/activity_slide_in_from_left"
-        app:popExitAnim="@anim/activity_slide_out_to_right" />
+        app:destination="@id/productImageViewerFragment" />
 
 </navigation>

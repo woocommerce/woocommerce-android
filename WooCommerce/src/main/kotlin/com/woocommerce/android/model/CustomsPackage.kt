@@ -58,6 +58,10 @@ data class CustomsLine(
             originCountry = originCountry.code
         )
     }
+
+    companion object {
+        const val MINIMUM_EU_DESCRIPTION_LENGTH = 3
+    }
 }
 
 enum class ContentsType(@StringRes val title: Int) {

@@ -11,12 +11,13 @@ import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.APP_FEEDBACK_RATE_APP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_DECLINED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_RATED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.APP_FEEDBACK_RATE_APP
+import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import java.lang.ref.WeakReference
@@ -185,7 +186,7 @@ object AppRatingDialog {
         var installDate = Date()
         val packMan = context.packageManager
         try {
-            val pkgInfo = packMan.getPackageInfo(context.packageName, 0)
+            val pkgInfo = packMan.packageInfo(context.packageName, 0)
             installDate = Date(pkgInfo.firstInstallTime)
         } catch (e: PackageManager.NameNotFoundException) {
             WooLog.e(T.UTILS, e)

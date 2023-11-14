@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/productImageFrame"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
+        android:layout_margin="@dimen/major_100"
+        android:background="@drawable/picture_frame"
+        android:padding="@dimen/image_frame_stroke_width"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.50">
+
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:padding="@dimen/image_frame_stroke_width"
+            tools:src="@drawable/ic_product" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/productImageSelected"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="@dimen/alpha_emphasis_high"
+        android:importantForAccessibility="no"
+        android:src="@drawable/product_selected_overlay"
+        app:layout_constraintTop_toTopOf="@+id/productImageFrame"
+        app:layout_constraintStart_toStartOf="@+id/productImageFrame"
+        app:layout_constraintEnd_toEndOf="@+id/productImageFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/productImageFrame"/>
+
+    <!--
+        LinearLayout is necessary to ensure the contents will always center properly in the
+        view, even when the productStockAndStatus is hidden, or if productName takes up
+        two lines.
+    -->
+    <LinearLayout
+        android:id="@+id/productInfoContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:orientation="vertical"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toStartOf="@+id/product_btnDelete"
+        app:layout_constraintStart_toEndOf="@+id/productImageFrame"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.50">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productName"
+            style="@style/Woo.ListItem.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            tools:text="Awesome Sauce and all that jazz is all I gotta tell you how do we go " />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productStockAndStatus"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            tools:text="Out of stock this is a really long version to see what happens when we move o" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productDiscount"
+            style="@style/Woo.ListItem.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            android:visibility="gone"
+            tools:text="Discount $5.40" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productSku"
+            style="@style/Woo.ListItem.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            tools:text="SKU" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/product_btnDelete"
+        style="@style/Woo.ImageButton.Close"
+        android:layout_margin="@dimen/minor_100"
+        android:contentDescription="@string/grouped_product_btn_delete"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_00"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/productInfoContainer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

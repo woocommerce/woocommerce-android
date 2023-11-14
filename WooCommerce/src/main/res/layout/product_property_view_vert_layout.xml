@@ -59,7 +59,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textPropertyName"
         app:layout_goneMarginStart="@dimen/major_100"
         app:layout_goneMarginTop="@dimen/major_100"
-        tools:visibility="gone"
+        tools:visibility="visible"
         tools:text="textPropertyValue thil wrap." />
 
     <ImageView

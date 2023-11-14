@@ -5,12 +5,14 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -19,10 +21,13 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageCreatorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenURL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShowMoveItemDialog
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -30,13 +35,17 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+typealias OnHazmatCategorySelected = (ShippingLabelHazmatCategory) -> Unit
+
 @AndroidEntryPoint
 class EditShippingLabelPackagesFragment :
     BaseFragment(R.layout.fragment_edit_shipping_label_packages),
-    BackPressListener {
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"
         const val EDIT_PACKAGES_RESULT = "edit_packages_result"
+        const val KEY_HAZMAT_CATEGORY_SELECTOR_RESULT = "hazmat_category_selector_result"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -50,7 +59,10 @@ class EditShippingLabelPackagesFragment :
             viewModel::onWeightEdited,
             viewModel::onExpandedChanged,
             viewModel::onPackageSpinnerClicked,
-            viewModel::onMoveButtonClicked
+            viewModel::onMoveButtonClicked,
+            viewModel::onHazmatCategoryClicked,
+            viewModel::onContainsHazmatChanged,
+            viewModel::onURLClicked
         )
     }
 
@@ -58,33 +70,29 @@ class EditShippingLabelPackagesFragment :
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
         doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.isDataValid ?: false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked()
                 true
             }
             else -> {
-                super.onOptionsItemSelected(item)
+                false
             }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
         val binding = FragmentEditShippingLabelPackagesBinding.bind(view)
         with(binding.packagesList) {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -153,6 +161,12 @@ class EditShippingLabelPackagesFragment :
 
                     findNavController().navigateSafely(action)
                 }
+                is OpenHazmatCategorySelector -> showHazmatCategoryPicker(
+                    event.packagePosition,
+                    event.currentSelection,
+                    event.onHazmatCategorySelected
+                )
+                is OpenURL -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PACKAGES_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
@@ -172,5 +186,32 @@ class EditShippingLabelPackagesFragment :
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked()
         return false
+    }
+
+    private fun showHazmatCategoryPicker(
+        packagePosition: Int,
+        currentSelection: ShippingLabelHazmatCategory?,
+        onHazmatCategorySelected: OnHazmatCategorySelected
+    ) {
+        handleDialogResult<String>(
+            key = KEY_HAZMAT_CATEGORY_SELECTOR_RESULT,
+            entryId = R.id.editShippingLabelPackagesFragment
+        ) { hazmatSelection ->
+            val selectedCategory = ShippingLabelHazmatCategory.valueOf(hazmatSelection)
+            viewModel.onHazmatCategorySelected(selectedCategory, packagePosition)
+            onHazmatCategorySelected(selectedCategory)
+        }
+        EditShippingLabelPackagesFragmentDirections
+            .actionEditShippingLabelPaymentFragmentToHazmatCategorySelector(
+                title = getString(R.string.shipping_label_package_details_hazmat_select_category_action),
+                requestKey = KEY_HAZMAT_CATEGORY_SELECTOR_RESULT,
+                keys = ShippingLabelHazmatCategory.values()
+                    .map { getString(it.stringResourceID) }
+                    .toTypedArray(),
+                values = ShippingLabelHazmatCategory.values()
+                    .map { it.toString() }
+                    .toTypedArray(),
+                selectedItem = currentSelection.toString()
+            ).let { findNavController().navigateSafely(it) }
     }
 }

@@ -6,23 +6,33 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
-import org.wordpress.android.fluxc.model.MediaModel
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
-import org.wordpress.android.fluxc.store.MediaStore
 import java.sql.Date
 import java.time.Instant
 
 object ProductTestUtils {
-    fun generateProduct(productId: Long = 1L, isVirtual: Boolean = false): Product {
+    fun generateProduct(
+        productId: Long = 1L,
+        parentID: Long = 0L,
+        isVirtual: Boolean = false,
+        isVariable: Boolean = false,
+        isPurchasable: Boolean = true,
+        customStatus: String? = null,
+        variationIds: String = if (isVariable) "[123]" else "[]",
+        productType: String? = null,
+        amount: String = "20.00",
+    ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
-            status = "publish"
-            type = "simple"
+            parentId = parentID
+            status = customStatus ?: "publish"
+            type = productType ?: if (isVariable) "variable" else "simple"
             stockStatus = "instock"
-            price = "20.00"
+            price = amount
             salePrice = "10.00"
             regularPrice = "30.00"
             averageRating = "3.0"
@@ -41,8 +51,17 @@ object ProductTestUtils {
             length = "1"
             width = "2"
             height = "3"
-            variations = "[]"
-            attributes = "[]"
+            variations = variationIds
+            attributes = """[
+                                {
+                                    "id": 1,
+                                    "name":"Color",
+                                    "position":0",
+                                    "visible":"true",
+                                    "variation":"true",
+                                    "options": ["Blue","Green","Red"]
+                                }
+                            ]"""
             categories = ""
             ratingCount = 4
             groupedProductIds = "[10,11]"
@@ -50,6 +69,7 @@ object ProductTestUtils {
             shortDescription = "short desc"
             virtual = isVirtual
             stockQuantity = 4.2
+            purchasable = isPurchasable
         }.toAppModel()
     }
 
@@ -67,6 +87,25 @@ object ProductTestUtils {
             return this
         }
     }
+
+    fun generateProductListWithDrafts(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
+                add(generateProduct(6, customStatus = DRAFT.toString()))
+            }
+
+    fun generateProductListWithNonPurchasable(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
+                add(generateProduct(6, isPurchasable = false))
+            }
+
+    fun generateProductListWithVariations(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply { add(generateProduct(6, isVariable = true)) }
 
     private fun generateProductVariation(
         productId: Long = 1L,
@@ -94,7 +133,7 @@ object ProductTestUtils {
         }
     }
 
-    fun generateTags(): List<ProductTag> {
+    private fun generateTags(): List<ProductTag> {
         return listOf(ProductTag(1, "Tag", "Slug", "Desc"))
     }
 
@@ -122,25 +161,10 @@ object ProductTestUtils {
             dateCreated = Date.from(Instant.EPOCH)
         )
 
-    fun generateProductMedia(remoteProductId: Long = 1, siteId: Long = 1) =
-        MediaModel().apply {
-            id = 1
-            localPostId = remoteProductId.toInt()
-            localSiteId = siteId.toInt()
-            mediaId = 1L
-            fileName = "Image filename $remoteProductId"
-            url = "google.com"
-        }
-
-    fun generateMediaUploadErrorModel() = MediaStore.MediaError(
-        MediaStore.MediaErrorType.GENERIC_ERROR,
-        "Error uploading media"
-    )
-
     fun generateProductImagesList() =
         (1L..10L).map { id -> generateProductImage(imageId = id) }
 
-    fun generateProductAttribute(id: Long): ProductAttribute {
+    private fun generateProductAttribute(id: Long): ProductAttribute {
         return ProductAttribute(
             id = id,
             name = "attribute$id",

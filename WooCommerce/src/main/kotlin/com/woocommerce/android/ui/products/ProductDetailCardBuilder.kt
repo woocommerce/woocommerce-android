@@ -1,19 +1,28 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_INVENTORY_SETTINGS_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -25,21 +34,28 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDo
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
+import com.woocommerce.android.ui.products.ProductType.COMPOSITE
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.ProductType.VIRTUAL
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Button
+import com.woocommerce.android.ui.products.models.ProductProperty.Button.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -48,55 +64,123 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.putIfNotNull
+import java.math.BigDecimal
 
+@Suppress("LargeClass", "LongParameterList")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
+    private val selectedSite: SelectedSite,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: SiteParameters
+    private val parameters: SiteParameters,
+    private val addonRepository: AddonRepository,
+    private val variationRepository: VariationRepository,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val isBlazeEnabled: IsBlazeEnabled,
+    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
+    private var blazeCtaShownTracked = false
     private lateinit var originalSku: String
 
-    fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+    companion object {
+        const val MAXIMUM_TIMES_TO_SHOW_TOOLTIP = 3
+    }
+
+    private val onTooltipDismiss = { appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true }
+
+    suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+
         this.originalSku = originalSku
 
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
 
+        cards.addIfNotEmpty(getBlazeCard(product))
+
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
-            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
+            VARIABLE, VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            VIRTUAL -> cards.addIfNotEmpty(getOtherProductCard(product))
-            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
+            SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
+            COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(product))
+            else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
         return cards
     }
 
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
+        val showTooltip = product.description.isEmpty() &&
+            !appPrefsWrapper.isAIProductDescriptionTooltipDismissed &&
+            appPrefsWrapper.getAIDescriptionTooltipShownNumber() <= MAXIMUM_TIMES_TO_SHOW_TOOLTIP
         return ProductPropertyCard(
             type = PRIMARY,
-            properties = listOf(
-                product.title(),
-                product.description()
-            ).filterNotEmpty()
+            properties = (
+                listOf(product.title()) +
+                    product.description(
+                        showAIButton = selectedSite.get().isEligibleForAI,
+                        showTooltip = showTooltip,
+                        onWriteWithAIClicked = viewModel::onWriteWithAIClicked,
+                        onLearnMoreClicked = viewModel::onLearnMoreClicked
+                    )
+                ).filterNotEmpty()
         )
     }
 
-    private fun getSimpleProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
+        val isProductPublic = product.status == ProductStatus.PUBLISH &&
+            viewModel.getProductVisibility() == ProductVisibility.PUBLIC
+
+        @Suppress("ComplexCondition")
+        if (!isBlazeEnabled() ||
+            !isProductPublic ||
+            viewModel.isProductUnderCreation ||
+            isProductCurrentlyPromoted(product.remoteId.toString())
+        ) return null
+
+        if (!blazeCtaShownTracked) {
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON.trackingName
+                )
+            )
+            blazeCtaShownTracked = true
+        }
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                ProductProperty.Link(
+                    title = R.string.product_details_blaze_card,
+                    icon = R.drawable.ic_blaze,
+                    isDividerVisible = false,
+                    onClick = viewModel::onBlazeClicked
+                )
+            )
+        )
+    }
+
+    private suspend fun getSimpleProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -108,14 +192,15 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getGroupedProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getGroupedProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.groupedProducts(),
-                product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(GROUPED),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -125,15 +210,16 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getExternalProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getExternalProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -143,16 +229,75 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun getVariableProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getVariableProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                product.warning(),
                 product.variations(),
                 product.variationAttributes(),
-                product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(VARIABLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getSubscriptionProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
+                product.subscription(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getBundleProductsCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.bundleProducts(),
+                product.price(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getCompositeProductsCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.componentProducts(),
+                product.price(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -166,12 +311,13 @@ class ProductDetailCardBuilder(
      * Used for product types the app doesn't support yet (ex: subscriptions), uses a subset
      * of properties since we can't be sure pricing, shipping, etc., are applicable
      */
-    private fun getOtherProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getOtherProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -195,7 +341,7 @@ class ProductDetailCardBuilder(
             onClick = {
                 viewModel.onEditProductCardClicked(
                     ViewProductDownloads,
-                    Stat.PRODUCT_DETAIL_VIEW_DOWNLOADABLE_FILES_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_DOWNLOADABLE_FILES_TAPPED
                 )
             }
         )
@@ -213,7 +359,7 @@ class ProductDetailCardBuilder(
                         shortDescription,
                         resources.getString(string.product_short_description)
                     ),
-                    Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
                 )
             }
         } else {
@@ -299,7 +445,7 @@ class ProductDetailCardBuilder(
                             shippingClassId
                         )
                     ),
-                    Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
                 )
             }
         } else {
@@ -325,7 +471,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductExternalLink(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_PRODUCT_LINK_TAPPED
                 )
             }
         } else {
@@ -356,20 +502,24 @@ class ProductDetailCardBuilder(
             viewModel.onEditProductCardClicked(
                 ViewProductPricing(
                     PricingData(
-                        taxClass,
-                        taxStatus,
-                        isSaleScheduled,
-                        saleStartDateGmt,
-                        saleEndDateGmt,
-                        regularPrice,
-                        salePrice
+                        taxClass = taxClass,
+                        taxStatus = taxStatus,
+                        isSaleScheduled = isSaleScheduled,
+                        saleStartDate = saleStartDateGmt,
+                        saleEndDate = saleEndDateGmt,
+                        regularPrice = regularPrice,
+                        salePrice = salePrice,
+                        isSubscription = this.productType == SUBSCRIPTION,
+                        subscriptionPeriod = subscription?.period,
+                        subscriptionInterval = subscription?.periodInterval,
                     )
                 ),
-                Stat.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun Product.productTypeDisplayName(): String {
         return when (productType) {
             SIMPLE -> {
@@ -379,19 +529,20 @@ class ProductDetailCardBuilder(
                     else -> resources.getString(string.product_type_physical)
                 }
             }
-            VIRTUAL -> resources.getString(string.product_type_virtual)
+
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
-            OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
+            SUBSCRIPTION -> resources.getString(string.product_type_subscription)
+            else -> this.type.capitalize() // show the actual product type string for unsupported products
         }
     }
 
     private fun Product.productType(): ProductProperty {
         val onClickHandler = {
             viewModel.onEditProductCardClicked(
-                ViewProductTypes(false),
-                Stat.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
+                ViewProductTypes(false, currentProductType = type, isCurrentProductVirtual = isVirtual),
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_TYPE_TAPPED
             )
         }
 
@@ -418,7 +569,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductReviews(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRODUCT_REVIEWS_TAPPED
                 )
             }
         } else {
@@ -449,7 +600,7 @@ class ProductDetailCardBuilder(
         ) {
             viewModel.onEditProductCardClicked(
                 ViewGroupedProducts(this.remoteId, this.groupedProductIds),
-                Stat.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_GROUPED_PRODUCTS_TAPPED
             )
         }
     }
@@ -478,45 +629,86 @@ class ProductDetailCardBuilder(
         ) {
             viewModel.onEditProductCardClicked(
                 ViewLinkedProducts(this.remoteId),
-                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         }
     }
 
     private fun Product.title(): ProductProperty {
         val name = this.name.fastStripHtml()
+        val (badgeText, badgeColor) = this.status.getBadgeResources()
         return Editable(
-            string.product_detail_title_hint,
-            name,
+            hint = string.product_detail_title_hint,
+            text = name,
+            badgeText = badgeText,
+            badgeColor = badgeColor,
             onTextChanged = viewModel::onProductTitleChanged
         )
     }
 
-    private fun Product.description(): ProductProperty {
+    private fun Product.description(
+        showAIButton: Boolean,
+        showTooltip: Boolean,
+        onWriteWithAIClicked: () -> Unit,
+        onLearnMoreClicked: () -> Unit
+    ): List<ProductProperty> {
         val productDescription = this.description
+        val productTitle = this.name
         val showTitle = productDescription.isNotEmpty()
-        val description = if (productDescription.isEmpty()) {
+        val description = productDescription.ifEmpty {
             resources.getString(string.product_description_empty)
-        } else {
-            productDescription
         }
 
-        return ComplexProperty(
-            string.product_description,
-            description,
-            showTitle = showTitle
-        ) {
-            viewModel.onEditProductCardClicked(
-                ViewProductDescriptionEditor(
-                    productDescription, resources.getString(string.product_description)
-                ),
-                PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+        val properties = mutableListOf<ProductProperty>()
+        properties.add(
+            ComplexProperty(
+                string.product_description,
+                description,
+                showTitle = showTitle,
+                isDividerVisible = !showAIButton
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductDescriptionEditor(
+                        productDescription, resources.getString(string.product_description),
+                        productTitle
+                    ),
+                    PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+                )
+            }
+        )
+
+        if (showAIButton) {
+            val tooltip = if (showTooltip) {
+                appPrefsWrapper.recordAIDescriptionTooltipShown()
+
+                Button.Tooltip(
+                    title = string.ai_product_description_tooltip_title,
+                    text = string.ai_product_description_tooltip_message,
+                    dismissButtonText = string.ai_product_description_tooltip_dismiss,
+                    onDismiss = onTooltipDismiss
+                )
+            } else {
+                null
+            }
+            properties.add(
+                Button(
+                    string.product_sharing_write_with_ai,
+                    drawable.ic_ai,
+                    onClick = onWriteWithAIClicked,
+                    tooltip = tooltip,
+                    link = Link(
+                        string.ai_product_description_learn_more_link,
+                        onLearnMoreClicked
+                    )
+                )
             )
         }
+        return properties
     }
 
     // show product variations only if product type is variable and if there are variations for the product
-    private fun Product.variations(): ProductProperty {
+    private fun Product.variations(): ProductProperty? {
+        val isVariableSubscription = this.productType == VARIABLE_SUBSCRIPTION
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
@@ -531,13 +723,16 @@ class ProductDetailCardBuilder(
                 drawable.ic_gridicons_types
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductVariations(this.remoteId),
+                    ViewProductVariations(
+                        remoteId = this.remoteId,
+                        isReadOnlyMode = isVariableSubscription
+                    ),
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
-        } else {
+        } else if (isVariableSubscription.not()) {
             emptyVariations()
-        }
+        } else null
     }
 
     private fun Product.emptyVariations() =
@@ -546,8 +741,8 @@ class ProductDetailCardBuilder(
             icon = drawable.ic_gridicons_types,
             showTitle = false,
             onClick = {
-                AnalyticsTracker.track(
-                    Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED,
                     mapOf(AnalyticsTracker.KEY_PRODUCT_ID to remoteId)
                 )
                 viewModel.saveAsDraftIfNewVariableProduct()
@@ -556,7 +751,7 @@ class ProductDetailCardBuilder(
         )
 
     private fun Product.variationAttributes() =
-        takeIf { this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty() }?.let {
+        takeIf { this.variationEnabledAttributes.isNotEmpty() }?.let {
             val properties = mutableMapOf<String, String>()
             for (attribute in this.variationEnabledAttributes) {
                 properties[attribute.name] = attribute.terms.size.toString()
@@ -587,7 +782,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductCategories(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
                 )
             }
         } else {
@@ -607,7 +802,7 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductTags(this.remoteId),
-                    Stat.PRODUCT_DETAIL_VIEW_TAGS_TAPPED
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_TAGS_TAPPED
                 )
             }
         } else {
@@ -615,8 +810,12 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.addons(): ProductProperty? =
-        takeIf { addons.isNotEmpty() && AppPrefs.isProductAddonsEnabled }?.let {
+    private suspend fun Product.addons(): ProductProperty? =
+        takeIf { product ->
+            addonRepository.hasAnyProductSpecificAddons(
+                productRemoteID = product.remoteId
+            ) && AppPrefs.isProductAddonsEnabled
+        }?.let {
             ComplexProperty(
                 value = resources.getString(string.product_add_ons_title),
                 icon = drawable.ic_gridicon_circle_plus,
@@ -624,9 +823,160 @@ class ProductDetailCardBuilder(
                 onClick = {
                     viewModel.onEditProductCardClicked(
                         ViewProductAddonsDetails,
-                        Stat.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+                        AnalyticsEvent.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
                     )
                 }
             )
         }
+
+    private fun Product.subscription(): ProductProperty? =
+        this.subscription?.let { subscription ->
+
+            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
+            val price = resources.getString(
+                string.product_subscription_description,
+                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
+                subscription.periodInterval.toString(),
+                period
+            )
+
+            val salePriceString = salePrice?.let {
+                resources.getString(
+                    string.product_subscription_description,
+                    currencyFormatter.formatCurrency(salePrice, viewModel.currencyCode, true),
+                    subscription.periodInterval.toString(),
+                    period
+                )
+            }
+
+            val expire = if (subscription.length != null) {
+                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            } else {
+                resources.getString(string.subscription_never_expire)
+            }
+
+            val properties: Map<String, String> = buildMap {
+                put(resources.getString(string.product_regular_price), price)
+                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
+                put(resources.getString(string.subscription_expire), expire)
+            }
+
+            val salesDetails = if (isSaleScheduled || salePrice != null) {
+                SaleDetails(
+                    isSaleScheduled = isSaleScheduled,
+                    salePrice = salePrice,
+                    saleStartDateGmt = saleStartDateGmt,
+                    saleEndDateGmt = saleEndDateGmt
+                )
+            } else null
+
+            PropertyGroup(
+                title = string.product_subscription_title,
+                icon = drawable.ic_gridicons_money,
+                properties = properties,
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscription(subscription, salesDetails),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
+                    )
+                }
+            )
+        }
+
+    private fun Product.warning(): ProductProperty? {
+        if (this.variationIds.isEmpty() && productType == VARIABLE_SUBSCRIPTION) {
+            return ProductProperty.Warning(resources.getString(string.no_variable_subscription_warning))
+        }
+
+        val variations = variationRepository.getProductVariationList(this.remoteId)
+
+        val missingPriceVariation = variations
+            .find { it.regularPrice == null || it.regularPrice == BigDecimal.ZERO }
+
+        return missingPriceVariation?.let {
+            ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
+        }
+    }
+
+    private suspend fun Product.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
+        }
+
+        return PropertyGroup(
+            title = string.product_quantity_rules_title,
+            icon = drawable.ic_gridicons_product,
+            properties = properties,
+            showTitle = true,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    ViewProductQuantityRules(rules),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
+                )
+            }
+        )
+    }
+
+    private suspend fun Product.bundleProducts(): ProductProperty? {
+        val bundledProductsSize = viewModel.getBundledProductsSize(this.remoteId)
+        return if (bundledProductsSize > 0) {
+            val content = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = bundledProductsSize,
+                default = string.product_bundle_multiple_count,
+                one = string.product_bundle_single_count
+            )
+
+            ComplexProperty(
+                string.product_bundle,
+                content,
+                drawable.ic_widgets
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ProductNavigationTarget.ViewBundleProducts(this.remoteId),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
+                )
+            }
+        } else null
+    }
+
+    private suspend fun Product.componentProducts(): ProductProperty? {
+        val components = viewModel.getComponents(this.remoteId)
+        return if (components.isNullOrEmpty()) {
+            null
+        } else {
+            val content = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = components.size,
+                default = string.product_component_multiple_count,
+                one = string.product_component_single_count
+            )
+
+            ComplexProperty(
+                string.product_components,
+                content,
+                drawable.ic_widgets
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ProductNavigationTarget.ViewProductComponents(components),
+                    AnalyticsEvent.PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED
+                )
+            }
+        }
+    }
+}
+
+fun ProductStatus?.getBadgeResources(): Pair<Int?, Int?> {
+    return if (this == null) Pair(null, null)
+    else when (this) {
+        ProductStatus.PUBLISH -> Pair(null, null)
+        ProductStatus.PENDING -> Pair(string.product_status_pending, R.color.product_status_badge_pending)
+        ProductStatus.PRIVATE -> Pair(string.product_status_privately_published, R.color.product_status_badge_draft)
+        else -> Pair(this.stringResource, R.color.product_status_badge_draft)
+    }
 }

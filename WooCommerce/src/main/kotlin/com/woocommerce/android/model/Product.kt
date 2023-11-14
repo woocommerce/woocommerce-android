@@ -5,11 +5,12 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.formatDateToISO8601Format
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isNotSet
+import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -27,6 +28,7 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
+    val parentId: Long,
     val name: String,
     val description: String,
     val shortDescription: String,
@@ -47,6 +49,7 @@ data class Product(
     val permalink: String,
     val externalUrl: String,
     val buttonText: String,
+    val price: BigDecimal?,
     val salePrice: BigDecimal?,
     val regularPrice: BigDecimal?,
     val taxClass: String,
@@ -68,17 +71,21 @@ data class Product(
     val isSoldIndividually: Boolean,
     val taxStatus: ProductTaxStatus,
     val isSaleScheduled: Boolean,
+    val isPurchasable: Boolean,
     val menuOrder: Int,
     val categories: List<ProductCategory>,
     val tags: List<ProductTag>,
     val groupedProductIds: List<Long>,
     val crossSellProductIds: List<Long>,
     val upsellProductIds: List<Long>,
-    val addons: List<ProductAddon>,
+    val variationIds: List<Long>,
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    val subscription: SubscriptionDetails?,
+    val isSampleProduct: Boolean,
+    val specialStockStatus: ProductStockStatus? = null
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -138,7 +145,8 @@ data class Product(
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
-            addons == product.addons
+            subscription == product.subscription &&
+            specialStockStatus == product.specialStockStatus
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -324,7 +332,8 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                addons = updatedProduct.addons
+                subscription = updatedProduct.subscription,
+                specialStockStatus = specialStockStatus
             )
         } ?: this.copy()
     }
@@ -461,12 +470,20 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadExpiry = downloadExpiry
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
+        it.purchasable = isPurchasable
     }
 }
 
 fun WCProductModel.toAppModel(): Product {
+    val productType = ProductType.fromString(type)
+    val subscription = if (productType == ProductType.SUBSCRIPTION) {
+        SubscriptionDetailsMapper.toAppModel(this.metadata)
+    } else {
+        null
+    }
     return Product(
         remoteId = this.remoteProductId,
+        parentId = this.parentId,
         name = this.name,
         description = this.description,
         shortDescription = this.shortDescription,
@@ -486,6 +503,7 @@ fun WCProductModel.toAppModel(): Product {
         permalink = this.permalink,
         externalUrl = this.externalUrl,
         buttonText = this.buttonText,
+        price = this.price.toBigDecimalOrNull(),
         salePrice = this.salePrice.toBigDecimalOrNull(),
         regularPrice = this.regularPrice.toBigDecimalOrNull(),
         // In Core, if a tax class is empty it is considered as standard and we are following the same
@@ -513,7 +531,7 @@ fun WCProductModel.toAppModel(): Product {
         downloadExpiry = this.downloadExpiry,
         purchaseNote = this.purchaseNote,
         numVariations = this.getNumVariations(),
-        images = this.getImageList().map {
+        images = this.getImageListOrEmpty().map {
             Product.Image(
                 it.id,
                 it.name,
@@ -522,8 +540,8 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map { it.toAppModel() },
-        saleEndDateGmt = this.dateOnSaleToGmt.formatDateToISO8601Format(),
-        saleStartDateGmt = this.dateOnSaleFromGmt.formatDateToISO8601Format(),
+        saleEndDateGmt = this.dateOnSaleToGmt.parseFromIso8601DateFormat(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
         isSoldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
@@ -545,14 +563,22 @@ fun WCProductModel.toAppModel(): Product {
         groupedProductIds = this.getGroupedProductIdList(),
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
-        addons = this.addons?.map { it.toAppModel() }.orEmpty()
+        variationIds = this.getVariationIdList(),
+        isPurchasable = this.purchasable,
+        subscription = subscription,
+        isSampleProduct = isSampleProduct,
+        specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
+            ProductStockStatus.fromString(this.specialStockStatus)
+        } else {
+            null
+        }
     )
 }
 
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
         id = this.mediaId,
-        name = this.fileName,
+        name = this.fileName.orEmpty(),
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
     )

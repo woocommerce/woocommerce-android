@@ -43,29 +43,6 @@ class AddOrderTrackingProviderListAdapter(
         providerSearchList.addAll(providerList)
     }
 
-    fun clearAdapterData() {
-        if (providerList.isNotEmpty()) {
-            removeAllSections()
-            providerList.clear()
-            notifyDataSetChanged()
-        }
-    }
-
-    /**
-     * returns the total item count in a given section
-     * @param title = the title of the section
-     */
-    fun getSectionItemsTotal(title: String): Int {
-        for (entry in sectionsMap) {
-            (entry.value as? ProviderListSection)?.let {
-                if (title == it.country) {
-                    return it.list.size
-                }
-            }
-        }
-        return 0
-    }
-
     private fun updateAdapter(providers: List<OrderShipmentProvider>) {
         // clear all the current data from the adapter
         removeAllSections()

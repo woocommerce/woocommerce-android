@@ -1,7 +1,7 @@
 {
   "project_name": "woocommerce-android",
   "branch": "trunk",
-  "pinned_hash": "eed37c9c53eddc3993181c3f463ae5740bbd7996",
+  "pinned_hash": "805d877705dbc5587a8aee6dc28e80cba87ad137",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/gradle.properties",
@@ -36,6 +36,11 @@
     {
       "file": "android/WCAndroid/google-upload-credentials.json",
       "destination": "~/.configure/woocommerce-android/secrets/google-upload-credentials.json",
+      "encrypt": true
+    },
+    {
+      "file": "android/WCAndroid/firebase.secrets.json",
+      "destination": ".configure-files/firebase.secrets.json",
       "encrypt": true
     }
   ],

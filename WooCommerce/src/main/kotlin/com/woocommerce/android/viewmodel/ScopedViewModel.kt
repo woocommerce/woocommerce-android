@@ -7,6 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -16,8 +22,10 @@ import kotlin.coroutines.CoroutineContext
  * When the ViewModel is destroyed, the coroutine job is cancelled and any running coroutine tied to it is stopped.
  */
 abstract class ScopedViewModel(
-    protected val savedState: SavedStateHandle
-) : ViewModel(), CoroutineScope {
+    protected val savedState: SavedStateHandle,
+    closeable: Closeable? = null,
+) : ViewModel(closeable), CoroutineScope {
+
     protected open val _event: MutableLiveData<Event> = MultiLiveEvent()
     open val event: LiveData<Event> = _event
 
@@ -28,4 +36,24 @@ abstract class ScopedViewModel(
         event.isHandled = false
         _event.value = event
     }
+
+    protected fun triggerEventWithDelay(event: Event, delay: Long) {
+        launch {
+            delay(delay)
+            triggerEvent(event)
+        }
+    }
+
+    /**
+     * Convert a [Flow] to [StateFlow].
+     *
+     * This uses a policy of keeping the upstream active for 5 seconds after disappearance of last collector
+     * to avoid restarting the Flow during configuration changes.
+     */
+    @Suppress("MagicNumber")
+    protected fun <T> Flow<T>.toStateFlow(initialValue: T) = stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = initialValue
+    )
 }

@@ -8,13 +8,10 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.junit.Test
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ShippingLabelCreatePackageViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ShippingLabelCreatePackageViewModel
 

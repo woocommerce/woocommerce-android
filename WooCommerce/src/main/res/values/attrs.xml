@@ -10,53 +10,54 @@
     </declare-styleable>
 
     <declare-styleable name="TagView">
-        <attr name="tagText" format="reference|string"/>
-        <attr name="tagTextColor" format="reference|color"/>
-        <attr name="tagTextSize" format="dimension"/>
-        <attr name="tagColor" format="reference|color"/>
-        <attr name="tagBorderColor" format="reference|color"/>
+        <attr name="tagText" format="reference|string" />
+        <attr name="tagTextColor" format="reference|color" />
+        <attr name="tagTextSize" format="dimension" />
+        <attr name="tagColor" format="reference|color" />
+        <attr name="tagBorderColor" format="reference|color" />
     </declare-styleable>
 
     <declare-styleable name="WooTheme">
-        <attr name="tagViewStyle" format="reference"/>
-        <attr name="flowLayoutStyle" format="reference"/>
-        <attr name="settingsToggleOptionStyle" format="reference"/>
-        <attr name="settingsOptionValueStyle" format="reference"/>
-        <attr name="settingsCategoryHeaderStyle" format="reference"/>
-        <attr name="settingsButtonStyle" format="reference"/>
+        <attr name="tagViewStyle" format="reference" />
+        <attr name="flowLayoutStyle" format="reference" />
+        <attr name="settingsToggleOptionStyle" format="reference" />
+        <attr name="settingsOptionValueStyle" format="reference" />
+        <attr name="settingsCategoryHeaderStyle" format="reference" />
+        <attr name="settingsButtonStyle" format="reference" />
+        <attr name="secondaryTextButtonStyle" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="WCTextViewCompat">
-        <attr name="drawableStartCompat" format="reference"/>
-        <attr name="drawableEndCompat" format="reference"/>
-        <attr name="drawableTopCompat" format="reference"/>
-        <attr name="drawableBottomCompat" format="reference"/>
+        <attr name="drawableStartCompat" format="reference" />
+        <attr name="drawableEndCompat" format="reference" />
+        <attr name="drawableTopCompat" format="reference" />
+        <attr name="drawableBottomCompat" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="WCToggleSingleOptionView">
-        <attr name="switchTitle" format="reference|string"/>
-        <attr name="switchSummary" format="reference|string"/>
-        <attr name="switchChecked" format="boolean"/>
+        <attr name="switchTitle" format="reference|string" />
+        <attr name="switchSummary" format="reference|string" />
+        <attr name="switchChecked" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="WCSettingsOptionValueView">
-        <attr name="optionTitle" format="reference|string"/>
-        <attr name="optionValue" format="reference|string"/>
-        <attr name="optionValueMaxLines" format="reference|integer"/>
-        <attr name="tools_optionTitle" format="reference|string"/>
-        <attr name="tools_optionValue" format="reference|string"/>
-        <attr name="tools_optionValueMaxLines" format="reference|integer"/>
+        <attr name="optionTitle" format="reference|string" />
+        <attr name="optionValue" format="reference|string" />
+        <attr name="optionValueMaxLines" format="reference|integer" />
+        <attr name="tools_optionTitle" format="reference|string" />
+        <attr name="tools_optionValue" format="reference|string" />
+        <attr name="tools_optionValueMaxLines" format="reference|integer" />
     </declare-styleable>
 
     <declare-styleable name="WCSettingsToggleOptionView">
-        <attr name="toggleOptionTitle" format="reference|string"/>
-        <attr name="toggleOptionDesc" format="reference|string"/>
-        <attr name="toggleOptionIcon" format="reference"/>
-        <attr name="toggleOptionChecked" format="boolean"/>
-        <attr name="tools_toggleOptionTitle" format="reference|string"/>
-        <attr name="tools_toggleOptionDesc" format="reference|string"/>
-        <attr name="tools_toggleOptionIcon" format="reference"/>
-        <attr name="tools_toggleOptionChecked" format="boolean"/>
+        <attr name="toggleOptionTitle" format="reference|string" />
+        <attr name="toggleOptionDesc" format="reference|string" />
+        <attr name="toggleOptionIcon" format="reference" />
+        <attr name="toggleOptionChecked" format="boolean" />
+        <attr name="tools_toggleOptionTitle" format="reference|string" />
+        <attr name="tools_toggleOptionDesc" format="reference|string" />
+        <attr name="tools_toggleOptionIcon" format="reference" />
+        <attr name="tools_toggleOptionChecked" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="WCProductImageGalleryView">
@@ -72,58 +73,71 @@
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedEditTextView">
-        <attr name="android:inputType"/>
-        <attr name="android:maxLength"/>
-        <attr name="android:enabled"/>
-        <attr name="android:text"/>
+        <attr name="android:inputType" />
+        <attr name="android:maxLength" />
+        <attr name="android:enabled" />
+        <attr name="android:text" />
+        <attr name="android:imeOptions" />
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedSpinnerView">
-        <attr name="android:text"/>
-        <attr name="android:enabled"/>
+        <attr name="android:text" />
+        <attr name="android:enabled" />
     </declare-styleable>
 
     <declare-styleable name="WCMaterialOutlinedCurrencyEditTextView">
-        <attr name="android:enabled"/>
+        <attr name="android:enabled" />
+        <attr name="android:textSize" />
+        <attr name="android:gravity" />
+        <attr name="android:imeOptions" />
+        <attr name="editTextLayoutMode" format="enum">
+            <enum name="fill" value="0" />
+            <enum name="wrap" value="1" />
+        </attr>
+        <attr name="supportsNegativeValues" format="boolean" />
+        <attr name="supportsEmptyState" format="boolean" />
+        <!-- Specifies whether the edit text should full format the price, or offers a normal
+             Editing experience, default value is false -->
+        <attr name="usesFullFormatting" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ShippingLabelItemView">
-        <attr name="shippingLabelItemIcon" format="reference"/>
-        <attr name="shippingLabelItemTitle" format="string"/>
-        <attr name="shippingLabelItemValue" format="string"/>
-        <attr name="showTrackShipmentButton" format="boolean"/>
+        <attr name="shippingLabelItemIcon" format="reference" />
+        <attr name="shippingLabelItemTitle" format="string" />
+        <attr name="shippingLabelItemValue" format="string" />
+        <attr name="showTrackShipmentButton" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ActionableEmptyView">
         <!-- Optional: string text of button -->
-        <attr name="aevButton" format="string"/>
+        <attr name="aevButton" format="string" />
         <!-- Optional: resource id of image -->
-        <attr name="aevImage" format="reference"/>
+        <attr name="aevImage" format="reference" />
         <!-- Required: string text of title -->
-        <attr name="aevTitle" format="string"/>
+        <attr name="aevTitle" format="string" />
         <!-- Optional: resource id of title style -->
-        <attr name="aevTitleAppearance" format="reference"/>
+        <attr name="aevTitleAppearance" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="WCElevatedLinearLayout">
         <!-- Optional: resource id of dimension -->
-        <attr name="android:elevation"/>
+        <attr name="android:elevation" />
     </declare-styleable>
 
     <declare-styleable name="WCElevatedConstraintLayout">
         <!-- Optional: resource id of dimension -->
-        <attr name="android:elevation"/>
+        <attr name="android:elevation" />
     </declare-styleable>
 
     <!--
         Badge attributes for the bottom bar
     -->
-    <attr name="textAppearanceBadge" format="reference"/>
+    <attr name="textAppearanceBadge" format="reference" />
 
     <!--
         Attribute for defining different types of TabLayout styles
     -->
-    <attr name="scrollableTabStyle" format="reference"/>
+    <attr name="scrollableTabStyle" format="reference" />
     <!--
         General app attributes
     -->
@@ -133,10 +147,10 @@
     <!--
         Theme-level Text Input styles
     -->
-    <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference"/>
-    <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference"/>
-    <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference"/>
-    <attr name="wcSingleOptionTextViewStyle" format="reference"/>
+    <attr name="wcMaterialOutlinedSpinnerViewStyle" format="reference" />
+    <attr name="wcMaterialOutlinedCurrencyEditTextViewStyle" format="reference" />
+    <attr name="wcMaterialOutlinedEditTextViewStyle" format="reference" />
+    <attr name="wcSingleOptionTextViewStyle" format="reference" />
 
     <declare-styleable name="DashboardStatsBarChart">
         <!-- Optional: Specifies the radius of the rounded corners of the bar chart -->
@@ -147,31 +161,78 @@
         Theme-level default style attribute for WCToggleOutlinedSelectorButton since MaterialButton
         doesn't allow for overriding defStyleRes for some stupid reason.
     -->
-    <attr name="wcToggleOutlinedSelectorButtonStyle" format="reference"/>
+    <attr name="wcToggleOutlinedSelectorButtonStyle" format="reference" />
 
     <!--
         Theme-level default style attribute for WCToggleOutlinedButton since MaterialButton doesn't
         allow for overriding defStyleRes for some stupid reason.
     -->
-    <attr name="wcToggleOutlinedButtonStyle" format="reference"/>
+    <attr name="wcToggleOutlinedButtonStyle" format="reference" />
 
     <declare-styleable name="AddProductElementView">
-        <attr name="buttonText" format="string"/>
+        <attr name="buttonText" format="string" />
     </declare-styleable>
 
     <declare-styleable name="ShippingLabelCreationStepView">
-        <attr name="caption" format="string"/>
-        <attr name="details" format="string"/>
-        <attr name="icon" format="reference"/>
-        <attr name="continue_button_visible" format="boolean"/>
-        <attr name="edit_button_visible" format="boolean"/>
-        <attr name="divider_visible" format="boolean"/>
-        <attr name="highlighted" format="boolean"/>
-        <attr name="android:enabled"/>
+        <attr name="caption" format="string" />
+        <attr name="details" format="string" />
+        <attr name="icon" />
+        <attr name="continue_button_visible" format="boolean" />
+        <attr name="edit_button_visible" format="boolean" />
+        <attr name="divider_visible" format="boolean" />
+        <attr name="highlighted" format="boolean" />
+        <attr name="android:enabled" />
     </declare-styleable>
 
+    <attr name="title" format="reference|string" />
+    <attr name="message" format="reference|string" />
+    <attr name="icon" format="reference" />
+
     <declare-styleable name="WCWarningBanner">
-        <attr name="title" format="string" />
-        <attr name="message" format="string" />
+        <attr name="title" />
+        <attr name="message" />
     </declare-styleable>
+
+    <declare-styleable name="CircleProgressOverlayView">
+        <attr name="circleProgressProgressColor" format="color" />
+        <attr name="circleProgressRestColor" format="color" />
+        <attr name="circleProgressBorderColor" format="color" />
+        <attr name="circleProgressBorderSize" format="dimension" />
+    </declare-styleable>
+
+
+    <declare-styleable name="OrderCreateEditSectionView">
+        <attr name="header" format="string" />
+        <attr name="keepAddButtons" format="boolean" />
+        <attr name="hasEditButton" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ScalableImageView">
+        <attr name="scalableType" format="enum">
+            <enum name="center" value="0" />
+            <enum name="centerCrop" value="1" />
+            <enum name="centerInside" value="2" />
+            <enum name="fitCenter" value="3" />
+            <enum name="fitEnd" value="4" />
+            <enum name="fitStart" value="5" />
+            <enum name="fitXY" value="6" />
+            <enum name="fitTop" value="7" />
+            <enum name="fitBottom" value="8" />
+            <enum name="matrix" value="9" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ExpandableMessageView">
+        <attr name="title" />
+        <attr name="message" />
+        <attr name="icon" />
+        <attr name="iconTint" />
+        <attr name="isExpanded" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="FeedbackBanner">
+        <attr name="title" />
+        <attr name="message" />
+    </declare-styleable>
+
 </resources>

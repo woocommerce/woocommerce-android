@@ -6,28 +6,72 @@ import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.locale.LocaleProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.util.Locale
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class WCCrashLoggingDataProvider @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val accountStore: AccountStore,
-    private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
     private val uuidGenerator: UuidGenerator,
+    @AppCoroutineScope private val appScope: CoroutineScope,
+    specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig,
     buildConfig: BuildConfigWrapper,
+    selectedSite: SelectedSite,
+    dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
+    init {
+        dispatcher.register(this)
+    }
+
+    private val crashLoggingUser = MutableStateFlow(accountStore.account?.toCrashLoggingUser())
+
+    @Suppress("unused", "unused_parameter")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAccountChanged(event: AccountStore.OnAccountChanged) {
+        appScope.launch {
+            crashLoggingUser.emit(accountStore.account.toCrashLoggingUser())
+        }
+    }
+
+    override val applicationContextProvider: Flow<Map<String, String>> = selectedSite
+        .observe()
+        .map { site ->
+            site?.let {
+                mapOf(
+                    SITE_ID_KEY to site.siteId.takeIf { it != 0L }?.toString(),
+                    SITE_URL_KEY to site.url
+                )
+                    .filterNotNull()
+            }.orEmpty()
+        }
+
     override val buildType: String = BuildConfig.BUILD_TYPE
 
     override val enableCrashLoggingLogs: Boolean = BuildConfig.DEBUG
 
     override val locale: Locale?
         get() = localeProvider.provideLocale()
+
+    override val performanceMonitoringConfig = specifyPerformanceMonitoringConfig()
 
     override val releaseName: String = if (buildConfig.debug) {
         DEBUG_RELEASE_NAME
@@ -37,14 +81,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
-    override fun applicationContextProvider(): Map<String, String> {
-        return selectedSite.getIfExists()?.let {
-            mapOf(
-                SITE_ID_KEY to it.siteId.toString(),
-                SITE_URL_KEY to it.url
-            )
-        }.orEmpty()
-    }
+    override val user: Flow<CrashLoggingUser?> = crashLoggingUser
 
     override fun crashLoggingEnabled(): Boolean {
         return appPrefs.isCrashReportingEnabled()
@@ -78,14 +115,14 @@ class WCCrashLoggingDataProvider @Inject constructor(
         return false
     }
 
-    override fun userProvider(): CrashLoggingUser? {
-        return accountStore.account?.let { accountModel ->
-            CrashLoggingUser(
-                userID = accountModel.userId.toString(),
-                email = accountModel.email,
-                username = accountModel.userName
-            )
-        }
+    private fun AccountModel.toCrashLoggingUser(): CrashLoggingUser? {
+        if (userId == 0L) return null
+
+        return CrashLoggingUser(
+            userID = userId.toString(),
+            email = email,
+            username = userName
+        )
     }
 
     companion object {

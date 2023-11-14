@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_jetpack_install"
+    app:startDestination="@id/jetpackBenefitsDialog">
+    <include app:graph="@navigation/nav_graph_jetpack_activation" />
+    <action
+        android:id="@+id/action_global_jetpackCPInstallProgressDialog"
+        app:destination="@id/jetpackCPInstallProgressDialog" />
+    <dialog
+        android:id="@+id/jetpackCPInstallStartDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackCPInstallStartDialog"
+        android:label="JetpackCPInstallStartDialog"
+        tools:layout="@layout/dialog_jetpack_install_start">
+        <action
+            android:id="@+id/action_jetpackCPInstallStartDialog_to_jetpackCPInstallProgressDialog"
+            app:destination="@id/jetpackCPInstallProgressDialog" />
+    </dialog>
+    <dialog
+        android:id="@+id/jetpackCPInstallProgressDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackCPInstallProgressDialog"
+        android:label="JetpackInstallProgressDialog"
+        tools:layout="@layout/dialog_jetpack_install_progress" />
+    <dialog
+        android:id="@+id/jetpackBenefitsDialog"
+        android:name="com.woocommerce.android.ui.jetpack.benefits.JetpackBenefitsDialog"
+        android:label="JetpackBenefitsDialog">
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackCPInstallStartDialog"
+            app:destination="@id/jetpackCPInstallStartDialog" />
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation">
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackActivationEligibilityErrorFragment"
+            app:destination="@id/jetpackActivationEligibilityErrorFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/jetpackActivationEligibilityErrorFragment"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragment"
+        android:label="JetpackActivationEligibilityErrorFragment">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_jetpackActivationEligibilityErrorFragment_to_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation"
+            app:popUpTo="@id/jetpackActivationEligibilityErrorFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
+    </fragment>
+</navigation>

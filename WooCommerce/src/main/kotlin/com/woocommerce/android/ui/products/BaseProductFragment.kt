@@ -2,9 +2,8 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -13,6 +12,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -27,48 +27,38 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    protected val viewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
+    protected val viewModel: ProductDetailViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_products)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // if this is the initial creation of this fragment, tell the viewModel to make a copy of the product
-        // as it exists now so we can easily discard changes are determine if any changes were made inside
-        // this fragment
-        if (savedInstanceState == null) {
-            viewModel.updateProductBeforeEnteringFragment()
-        }
-    }
-
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupObservers(viewModel)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> requireActivity().onBackPressed()
-                    is ShowDialog -> WooDialog.showDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction,
-                        event.neutralBtnAction,
-                        titleId = event.titleId,
-                        messageId = event.messageId,
-                        positiveButtonId = event.positiveButtonId,
-                        negativeButtonId = event.negativeButtonId,
-                        neutralButtonId = event.neutralButtonId
-                    )
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is ShowDialog -> WooDialog.showDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.neutralBtnAction,
+                    titleId = event.titleId,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
+                )
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
+    @CallSuper
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()

@@ -1,0 +1,91 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+        "queryParameters": {
+            "json": {
+                "equalTo": "true"
+            },
+            "path": {
+                "matches": "/wc/v1/connect/label/2201(.*)"
+            },         
+            "locale": {
+                "matches": "(.*)"
+            }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "data": {
+                "orderId": 2789,
+                "paperSize": "letter",
+                "formData": {
+                    "is_packed": true,
+                    "selected_packages": {
+                        "default_box": {
+                            "id": "default_box",
+                            "box_id": "not_selected",
+                            "height": 0,
+                            "length": 0,
+                            "weight": 0,
+                            "width": 0,
+                            "items": [{
+                                "height": 0,
+                                "product_id": 2129,
+                                "length": 0,
+                                "quantity": 1,
+                                "weight": 0,
+                                "width": 0,
+                                "name": "#2129 - Akoya Pearl shades",
+                                "url": "https://automatticwidgets.wpcomstaging.com/wp-admin/post.php?post=2129&action=edit",
+                                "value": 110
+                            }]
+                        }
+                    },
+                    "origin": {
+                        "company": "Automattic Widgets",
+                        "name": "Jeremy Massel",
+                        "phone": "",
+                        "country": "US",
+                        "state": "CA",
+                        "address": "60 29TH ST # 343",
+                        "address_2": "",
+                        "city": "SAN FRANCISCO",
+                        "postcode": "94110-4929"
+                    },
+                    "destination": {
+                        "company": "bbbbbjj",
+                        "address_2": "",
+                        "city": "ROBOROUGH",
+                        "state": "",
+                        "postcode": "EX14 5HN",
+                        "country": "GB",
+                        "phone": "078 1369 7987",
+                        "name": "bbbbb bbbbb",
+                        "address": "74 Eastbourne Rd"
+                    },
+                    "origin_normalized": true,
+                    "destination_normalized": false,
+                    "rates": {
+                        "selected": {}
+                    },
+                    "order_id": 2789
+                },
+                "labelsData": [],
+                "storeOptions": {
+                    "currency_symbol": "$",
+                    "dimension_unit": "in",
+                    "weight_unit": "oz",
+                    "origin_country": "US"
+                },
+                "canChangeCountries": true,
+                "success": true
+            }     
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Connection": "keep-alive"
+        }
+    }
+}

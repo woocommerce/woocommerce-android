@@ -5,6 +5,7 @@
     android:id="@+id/dashboardStats_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/empty_state_bg_color"
     tools:context="com.woocommerce.android.ui.mystore.MyStoreFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -12,23 +13,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Date bar -->
-        <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-            android:id="@+id/my_store_date_bar"
-            style="@style/Woo.Card.WithoutPadding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
             android:id="@+id/my_store_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/stats_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:transitionGroup="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -37,18 +33,39 @@
                     android:descendantFocusability="blocksDescendants"
                     android:orientation="vertical">
 
-                    <com.woocommerce.android.widgets.WCEmptyStatsView
-                        android:id="@+id/empty_stats_view"
-                        style="@style/Woo.Card.WithoutPadding"
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/jitmFragment"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_100" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/store_onboarding_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_100"
+                        android:transitionName="@string/store_onboarding_collapsed_transition_name"
+                        android:visibility="gone" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/blaze_banner_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_100"
+                        android:visibility="gone" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/blaze_campaign_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_100"
+                        android:visibility="gone" />
 
                     <com.woocommerce.android.widgets.WCEmptyView
                         android:id="@+id/empty_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/major_100"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -81,6 +98,9 @@
 
         </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
+        <include
+            android:id="@+id/jetpack_benefits_banner"
+            layout="@layout/view_jetpack_benefits_bottom_banner" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ScrollView
@@ -113,8 +133,8 @@
                 android:id="@+id/stats_availability_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:importantForAccessibility="no"
                 android:layout_marginTop="@dimen/major_250"
+                android:importantForAccessibility="no"
                 android:src="@drawable/img_empty_search"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

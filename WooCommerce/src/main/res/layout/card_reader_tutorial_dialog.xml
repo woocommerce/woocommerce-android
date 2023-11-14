@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
-    tools:context=".ui.prefs.cardreader.tutorial.CardReaderTutorialDialogFragment">
+    android:background="@color/color_surface_elevated"
+    tools:context="com.woocommerce.android.ui.payments.cardreader.tutorial.CardReaderTutorialDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"

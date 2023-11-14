@@ -10,22 +10,35 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentEditShippingLabelAddressBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
+import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.ActivityUtils.dialPhoneNumber
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -41,7 +54,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class EditShippingLabelAddressFragment :
     BaseFragment(R.layout.fragment_edit_shipping_label_address),
-    BackPressListener {
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
@@ -60,12 +74,6 @@ class EditShippingLabelAddressFragment :
             field = value
             updateActivityTitle()
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -86,6 +94,8 @@ class EditShippingLabelAddressFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = FragmentEditShippingLabelAddressBinding.bind(view)
 
@@ -116,20 +126,18 @@ class EditShippingLabelAddressFragment :
 
     override fun getFragmentTitle() = screenTitle
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -228,29 +236,35 @@ class EditShippingLabelAddressFragment :
                     findNavController().navigateSafely(action)
                 }
                 is ShowCountrySelector -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                            event.currentCountryCode,
-                            event.locations.map { it.name }.toTypedArray(),
-                            event.locations.map { it.code }.toTypedArray(),
-                            SELECT_COUNTRY_REQUEST,
-                            getString(R.string.shipping_label_edit_address_country)
-                        )
+                    val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
+                        items = event.locations.map {
+                            SearchFilterItem(
+                                name = it.name,
+                                value = it.code
+                            )
+                        }.toTypedArray(),
+                        hint = getString(R.string.shipping_label_edit_address_country_search_hint),
+                        requestKey = SELECT_COUNTRY_REQUEST,
+                        title = getString(R.string.shipping_label_edit_address_country)
+                    )
                     findNavController().navigateSafely(action)
                 }
                 is ShowStateSelector -> {
-                    val action = EditShippingLabelAddressFragmentDirections
-                        .actionEditShippingLabelAddressFragmentToItemSelectorDialog(
-                            event.currentStateCode,
-                            event.locations.map { it.name }.toTypedArray(),
-                            event.locations.map { it.code }.toTypedArray(),
-                            SELECT_STATE_REQUEST,
-                            getString(R.string.shipping_label_edit_address_state)
-                        )
+                    val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
+                        items = event.locations.map {
+                            SearchFilterItem(
+                                name = it.name,
+                                value = it.code
+                            )
+                        }.toTypedArray(),
+                        hint = getString(R.string.shipping_label_edit_address_state_search_hint),
+                        requestKey = SELECT_STATE_REQUEST,
+                        title = getString(R.string.shipping_label_edit_address_state)
+                    )
                     findNavController().navigateSafely(action)
                 }
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)
-                is DialPhoneNumber -> dialPhoneNumber(event.phoneNumber)
+                is DialPhoneNumber -> dialPhoneNumber(requireContext(), event.phoneNumber)
                 else -> event.isHandled = false
             }
         }
@@ -290,16 +304,6 @@ class EditShippingLabelAddressFragment :
             startActivity(mapIntent)
         } catch (e: ActivityNotFoundException) {
             ToastUtils.showToast(context, R.string.error_no_gmaps_app)
-        }
-    }
-
-    private fun dialPhoneNumber(phone: String) {
-        val intent = Intent(Intent.ACTION_DIAL)
-        intent.data = Uri.parse("tel:$phone")
-        try {
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
     }
 

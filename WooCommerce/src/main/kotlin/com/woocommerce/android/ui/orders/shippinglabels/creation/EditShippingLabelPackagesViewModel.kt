@@ -3,9 +3,16 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.IProduct
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.createIndividualShippingPackage
+import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
@@ -25,20 +32,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
 import kotlin.math.ceil
 
 @HiltViewModel
-@Suppress("TooManyFunctions")
 class EditShippingLabelPackagesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
-    private val shippingLabelRepository: ShippingLabelRepository
+    private val shippingLabelRepository: ShippingLabelRepository,
+    private val analyticsWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -86,7 +92,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
         val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
-        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        val order = requireNotNull(orderDetailRepository.getOrderById(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
 
         val items = order.getShippableItems().map { it.toShippingItem() }
@@ -104,7 +110,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
         suspend fun fetchProductIfNeeded(productId: Long): Boolean {
             if (productDetailRepository.getProduct(productId) == null) {
-                return productDetailRepository.fetchProduct(productId) != null ||
+                return productDetailRepository.fetchProductOrLoadFromCache(productId) != null ||
                     productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
@@ -113,8 +119,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
             if (!fetchProductIfNeeded(productId)) return false
             if (variationDetailRepository.getVariation(productId, variationId) == null) {
-                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
-                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
+                val response = variationDetailRepository.fetchVariation(productId, variationId)
+                return !response.isError || response.error.type == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
         }
@@ -178,8 +184,46 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
+        analyticsWrapper.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
+    }
+
+    fun onHazmatCategoryClicked(
+        currentSelection: ShippingLabelHazmatCategory?,
+        packagePosition: Int,
+        onHazmatCategorySelected: OnHazmatCategorySelected
+    ) {
+        analyticsWrapper.track(AnalyticsEvent.HAZMAT_CATEGORY_SELECTOR_OPENED)
+        triggerEvent(OpenHazmatCategorySelector(packagePosition, currentSelection, onHazmatCategorySelected))
+    }
+
+    fun onHazmatCategorySelected(
+        newSelection: ShippingLabelHazmatCategory,
+        packagePosition: Int
+    ) {
+        analyticsWrapper.track(
+            AnalyticsEvent.HAZMAT_CATEGORY_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_CATEGORY to newSelection.toString(),
+                AnalyticsTracker.KEY_ORDER_ID to arguments.orderId
+            )
+        )
+        val packages = viewState.packagesUiModels.toMutableList()
+        with(packages[packagePosition].data) {
+            selectedPackage?.copy(hazmatCategory = newSelection)
+                ?.let { copy(selectedPackage = it) }
+        }?.let { packages[packagePosition] = packages[packagePosition].copy(data = it) }
+        viewState = viewState.copy(packagesUiModels = packages)
+    }
+
+    fun onURLClicked(url: String) {
+        triggerEvent(OpenURL(url))
+    }
+
+    fun onContainsHazmatChanged(isActive: Boolean) {
+        if (isActive) {
+            analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
+        }
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
@@ -253,11 +297,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
         }
 
-        fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
+        suspend fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
             val updatedPackages = removeItemFromCurrentPackage()
 
             // We fetch products when this screen is opened, so we can retrieve details from DB
-            val product: IProduct? = orderDetailRepository.getOrder(arguments.orderId)
+            val product: IProduct? = orderDetailRepository.getOrderById(arguments.orderId)
                 ?.items
                 ?.find { it.uniqueId == item.productId }
                 ?.let {
@@ -309,7 +353,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {
-        val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
+        val refunds = orderDetailRepository.getOrderRefunds(id)
         return refunds.getNonRefundedProducts(items)
             .filter {
                 val product = productDetailRepository.getProduct(it.productId)
@@ -318,7 +362,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
     }
 
-    private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
+    private suspend fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
         val weight = if (isVariation) {
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {
@@ -340,7 +384,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     data class ViewState(
         val packagesUiModels: List<ShippingLabelPackageUiModel> = emptyList(),
         val showSkeletonView: Boolean = false,
-        val packagesWithEditedWeight: Set<String> = setOf()
+        val packagesWithEditedWeight: Set<String> = setOf(),
+        val hazmatContentIsChecked: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val packages: List<ShippingLabelPackage>
@@ -371,4 +416,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val currentPackage: ShippingLabelPackage,
         val packagesList: List<ShippingLabelPackage>
     ) : MultiLiveEvent.Event()
+
+    data class OpenHazmatCategorySelector(
+        val packagePosition: Int,
+        val currentSelection: ShippingLabelHazmatCategory?,
+        val onHazmatCategorySelected: OnHazmatCategorySelected
+    ) : MultiLiveEvent.Event()
+
+    data class OpenURL(val url: String) : MultiLiveEvent.Event()
 }

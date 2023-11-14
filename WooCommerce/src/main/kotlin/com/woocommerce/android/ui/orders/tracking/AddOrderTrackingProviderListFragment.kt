@@ -3,12 +3,13 @@ package com.woocommerce.android.ui.orders.tracking
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogOrderTrackingProviderListBinding
@@ -29,7 +30,8 @@ import javax.inject.Inject
 class AddOrderTrackingProviderListFragment :
     BaseFragment(R.layout.dialog_order_tracking_provider_list),
     OnQueryTextListener,
-    OnProviderClickListener {
+    OnProviderClickListener,
+    MenuProvider {
     companion object {
         const val TAG: String = "AddOrderTrackingProviderListFragment"
         const val SHIPMENT_TRACKING_PROVIDER_RESULT = "tracking-provider-result"
@@ -52,13 +54,10 @@ class AddOrderTrackingProviderListFragment :
 
     private val skeletonView = SkeletonView()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = DialogOrderTrackingProviderListBinding.bind(view)
 
@@ -66,7 +65,7 @@ class AddOrderTrackingProviderListFragment :
         setupObservers(binding)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
         val searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem!!.actionView as SearchView
@@ -77,8 +76,9 @@ class AddOrderTrackingProviderListFragment :
             it.imeOptions = it.imeOptions or EditorInfo.IME_FLAG_NO_EXTRACT_UI
             it.setOnQueryTextListener(this@AddOrderTrackingProviderListFragment)
         }
-        super.onCreateOptionsMenu(menu, inflater)
     }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = false
 
     override fun onResume() {
         super.onResume()

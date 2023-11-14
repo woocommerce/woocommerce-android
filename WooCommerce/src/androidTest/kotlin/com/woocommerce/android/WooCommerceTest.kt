@@ -1,6 +1,8 @@
 package com.woocommerce.android
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.yarolegovich.wellsql.WellSql
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -14,14 +16,18 @@ import dagger.hilt.components.SingletonComponent
 @CustomTestApplication(BaseWooCommerce::class)
 interface WooCommerceTest
 
-open class BaseWooCommerce : Application(), HasAndroidInjector {
+open class BaseWooCommerce : Application(), HasAndroidInjector, Configuration.Provider {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface AndroidInjectorEntryPoint {
         fun injector(): DispatchingAndroidInjector<Any>
     }
 
-    private lateinit var injector: AndroidInjector<Any>
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface HiltWorkerFactoryEntryPoint {
+        fun workerFactory(): HiltWorkerFactory
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -30,12 +36,20 @@ open class BaseWooCommerce : Application(), HasAndroidInjector {
     }
 
     override fun androidInjector(): AndroidInjector<Any> {
-        if (!this::injector.isInitialized) {
-            injector = EntryPoints.get(
-                applicationContext,
-                AndroidInjectorEntryPoint::class.java
-            ).injector()
-        }
-        return injector
+        return EntryPoints.get(
+            applicationContext,
+            AndroidInjectorEntryPoint::class.java
+        ).injector()
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        val hiltWorkerFactory = EntryPoints.get(
+            applicationContext,
+            HiltWorkerFactoryEntryPoint::class.java
+        ).workerFactory()
+
+        return Configuration.Builder()
+            .setWorkerFactory(hiltWorkerFactory)
+            .build()
     }
 }

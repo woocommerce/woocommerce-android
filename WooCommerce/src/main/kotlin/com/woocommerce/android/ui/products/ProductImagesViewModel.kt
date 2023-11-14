@@ -2,15 +2,16 @@ package com.woocommerce.android.ui.products
 
 import android.net.Uri
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.areSameImagesAs
-import com.woocommerce.android.media.ProductImagesService
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
@@ -32,6 +33,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -41,6 +43,7 @@ class ProductImagesViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
@@ -51,7 +54,8 @@ class ProductImagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(
         savedState,
         ViewState(
-            uploadingImageUris = ProductImagesService.getUploadingImageUris(navArgs.remoteId),
+            showSourceChooser = navArgs.showChooser,
+            uploadingImageUris = emptyList(),
             isImageDeletingAllowed = true,
             images = navArgs.images.toList(),
             isWarningVisible = !isMultiSelectionAllowed,
@@ -72,7 +76,8 @@ class ProductImagesViewModel @Inject constructor(
         get() = viewState.isImageDeletingAllowed ?: true
 
     init {
-        if (navArgs.showChooser) {
+        if (viewState.showSourceChooser == true) {
+            viewState = viewState.copy(showSourceChooser = false)
             clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else if (navArgs.selectedImage != null) {
@@ -82,21 +87,22 @@ class ProductImagesViewModel @Inject constructor(
         observeImageUploadEvents()
     }
 
-    fun uploadProductImages(remoteProductId: Long, localUriList: ArrayList<Uri>) {
+    fun uploadProductImages(remoteProductId: Long, localUriList: List<Uri>) {
         if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
             return
         }
-        if (ProductImagesService.isBusy()) {
-            triggerEvent(ShowSnackbar(string.product_image_service_busy))
-            return
+
+        mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList.map { it.toString() })
+
+        if (!isMultiSelectionAllowed) {
+            viewState = viewState.copy(images = emptyList())
         }
-        mediaFileUploadHandler.enqueueUpload(remoteProductId, localUriList)
     }
 
     fun onShowStorageChooserButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_DEVICE)
         )
         triggerEvent(ShowStorageChooser)
@@ -104,7 +110,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun onShowCameraButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_CAMERA)
         )
         triggerEvent(ShowCamera)
@@ -112,7 +118,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun onShowWPMediaPickerButtonClicked() {
         AnalyticsTracker.track(
-            Stat.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_SOURCE_TAPPED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
         )
         triggerEvent(ShowWPMediaPicker)
@@ -122,7 +128,7 @@ class ProductImagesViewModel @Inject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
-    fun onImagesAdded(newImages: List<Image>) {
+    fun onMediaLibraryImagesAdded(newImages: List<Image>) {
         viewState = if (isMultiSelectionAllowed) {
             viewState.copy(images = images + newImages)
         } else {
@@ -154,10 +160,15 @@ class ProductImagesViewModel @Inject constructor(
                 )
             }
             Browsing -> {
-                if (images.areSameImagesAs(originalImages)) {
-                    triggerEvent(Exit)
-                } else {
+                val hasChange = !images.areSameImagesAs(originalImages)
+                analyticsTracker.track(
+                    AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChange)
+                )
+                if (hasChange) {
                     triggerEvent(ExitWithResult(images))
+                } else {
+                    triggerEvent(Exit)
                 }
             }
         }
@@ -167,9 +178,9 @@ class ProductImagesViewModel @Inject constructor(
         val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
         viewState = viewState.copy(
             chooserButtonButtonTitleRes = when {
-                isMultiSelectionAllowed -> string.product_add_photos
-                numImages > 0 -> string.product_replace_photo
-                else -> string.product_add_photo
+                isMultiSelectionAllowed -> R.string.product_add_photos
+                numImages > 0 -> R.string.product_replace_photo
+                else -> R.string.product_add_photo
             }
         )
     }
@@ -188,6 +199,7 @@ class ProductImagesViewModel @Inject constructor(
     private fun observeImageUploadEvents() {
         val remoteProductId = navArgs.remoteId
         mediaFileUploadHandler.observeCurrentUploads(remoteProductId)
+            .map { list -> list.map { it.toUri() } }
             .onEach { viewState = viewState.copy(uploadingImageUris = it) }
             .launchIn(this)
 
@@ -202,6 +214,7 @@ class ProductImagesViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(remoteProductId)
+            .filter { it.isNotEmpty() }
             .onEach {
                 val errorMsg = resourceProvider.getMediaUploadErrorMessage(it.size)
                 triggerEvent(
@@ -236,6 +249,7 @@ class ProductImagesViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val showSourceChooser: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isImageDeletingAllowed: Boolean? = null,
         val images: List<Image>? = null,

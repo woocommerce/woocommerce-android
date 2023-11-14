@@ -5,9 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import java.util.Locale
 
@@ -21,28 +22,23 @@ object OrderCustomerHelper {
     fun createEmail(
         context: Context,
         order: Order,
-        emailAddr: String
+        email: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION,
+            AnalyticsEvent.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.toLowerCase(Locale.US)
+                AnalyticsTracker.KEY_TYPE to Action.EMAIL.name.lowercase(Locale.US)
             )
         )
 
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
+        ActivityUtils.sendEmail(context, email) { error ->
             AnalyticsTracker.track(
-                Stat.ORDER_CONTACT_ACTION_FAILED,
+                AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No e-mail app was found"
+                error.javaClass.simpleName, "No e-mail app was found"
             )
-
             ToastUtils.showToast(context, R.string.error_no_email_app)
         }
     }
@@ -53,25 +49,20 @@ object OrderCustomerHelper {
         phone: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION,
+            AnalyticsEvent.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to Action.CALL.name.toLowerCase(Locale.US)
+                AnalyticsTracker.KEY_TYPE to Action.CALL.name.lowercase(Locale.US)
             )
         )
 
-        val intent = Intent(Intent.ACTION_DIAL)
-        intent.data = Uri.parse("tel:$phone")
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
+        ActivityUtils.dialPhoneNumber(context, phone) { error ->
             AnalyticsTracker.track(
-                Stat.ORDER_CONTACT_ACTION_FAILED,
+                AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No phone app was found"
+                error.javaClass.simpleName, "No phone app was found"
             )
-
             ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
     }
@@ -82,11 +73,11 @@ object OrderCustomerHelper {
         phone: String
     ) {
         AnalyticsTracker.track(
-            Stat.ORDER_CONTACT_ACTION,
+            AnalyticsEvent.ORDER_CONTACT_ACTION,
             mapOf(
-                AnalyticsTracker.KEY_ID to order.remoteId,
+                AnalyticsTracker.KEY_ID to order.id,
                 AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_TYPE to Action.SMS.name.toLowerCase(Locale.US)
+                AnalyticsTracker.KEY_TYPE to Action.SMS.name.lowercase(Locale.US)
             )
         )
 
@@ -96,7 +87,7 @@ object OrderCustomerHelper {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             AnalyticsTracker.track(
-                Stat.ORDER_CONTACT_ACTION_FAILED,
+                AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
                 e.javaClass.simpleName, "No SMS app was found"
             )

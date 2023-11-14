@@ -52,10 +52,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     interface OnGalleryImageInteractionListener {
         fun onGalleryImageClicked(image: Product.Image)
-        fun onGalleryAddImageClicked() { }
-        fun onGalleryImageDragStarted() { }
-        fun onGalleryImageMoved(from: Int, to: Int) { }
-        fun onGalleryImageDeleteIconClicked(image: Product.Image) { }
+        fun onGalleryAddImageClicked() {}
+        fun onGalleryImageDragStarted() {}
+        fun onGalleryImageMoved(from: Int, to: Int) {}
+        fun onGalleryImageDeleteIconClicked(image: Product.Image) {}
     }
 
     private var imageSize = 0
@@ -116,6 +116,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         // cancel pending Glide request when a view is recycled
         val glideRequests = GlideApp.with(this)
+        @Suppress("DEPRECATION")
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).viewBinding.productImage)
         }
@@ -132,10 +133,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         glideTransform = RequestOptions.bitmapTransform(RoundedCorners(borderRadius))
 
         imageSize = if (isGridView) {
-            val screenWidth = DisplayUtils.getDisplayPixelWidth(context)
-            val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            ((screenWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
+            val windowWidth = DisplayUtils.getWindowPixelWidth(context)
+            val margin = context.resources.getDimensionPixelSize(R.dimen.major_100)
+            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.major_100)
+            ((windowWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
         }
@@ -144,7 +145,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (isGridView) {
                 GridItemDecoration(
                     spanCount = NUM_COLUMNS,
-                    spacing = resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+                    spacing = resources.getDimensionPixelSize(R.dimen.major_100)
                 )
             } else {
                 HorizontalItemDecoration(
@@ -378,6 +379,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             setMargins()
         }
+
         @SuppressLint("ClickableViewAccessibility")
         private val dragOnTouchListener = OnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN && draggableItemTouchHelper.isAttached) {
@@ -387,8 +389,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         private val onClickListener = OnClickListener {
-            if (adapterPosition > NO_POSITION) {
-                onImageClicked(adapterPosition)
+            if (bindingAdapterPosition > NO_POSITION) {
+                onImageClicked(bindingAdapterPosition)
             }
         }
 
@@ -442,7 +444,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private fun setMargins() {
             (viewBinding.productImage.layoutParams as FrameLayout.LayoutParams).apply {
                 val margin = if (isGridView) {
-                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
+                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(R.dimen.minor_100)
                     additionalMarginToFitDeleteIcon
                 } else {
                     0

@@ -11,7 +11,7 @@
     <a href="https://github.com/woocommerce/woocommerce-android/releases">
         <img alt="Release" src="https://img.shields.io/github/v/tag/woocommerce/woocommerce-android?label=release&sort=semver">
     </a>
-    <a href="https://github.com/woocommerce/woocommerce-android/blob/develop/LICENSE.md">
+    <a href="https://github.com/woocommerce/woocommerce-android/blob/trunk/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/woocommerce/woocommerce-android">
     </a>
 </p>
@@ -38,7 +38,7 @@
     $ cd woocommerce-android
     ```
 
-1. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](docs/project_overview.md#oauth2-authentication) section for details.
+1. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
 1. Generate the `gradle.properties` file for this app:
 
     ```bash
@@ -47,8 +47,8 @@
 
 1. Open and modify the newly created `gradle.properties` files. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
-1. Go to Tools → AVD Manager and create an emulated device.
-1. Run.
+1. Optional: Go to Tools → Device Manager and create an emulated device.
+1. Run. (Creates a default virtual device if you skipped the previous step)
 
 ## Build & Test
 
@@ -67,7 +67,6 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
 - Project Overview
     - [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication)
     - [Configuration Files](docs/project-overview.md#configuration-files)
-    - [Setting up Checkstyle](docs/project-overview.md#setting-up-checkstyle)
     - [Using Detekt](docs/project-overview.md#using-detekt)
     - [Google Configuration](docs/project-overview.md#google-configuration)
 - Development Practices
@@ -114,8 +113,13 @@ General usage and development questions:
 
 ## 📜 License
 
-WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/develop/LICENSE.md).
+WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/trunk/LICENSE.md).
 
+## 📚 Proprietary Libraries
+
+In order to offer a great experience to our users, we use some proprietary libraries that are not open source. These libraries are:
+
+- [ML Kit](https://developers.google.com/ml-kit) for barcode scanning and text recognition. You can find its Terms of Service [here](https://developers.google.com/ml-kit/terms).
 
 <p align="center">
     <br/><br/>

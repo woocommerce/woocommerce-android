@@ -6,87 +6,79 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.View.OnClickListener
+import androidx.core.view.MenuProvider
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
-import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.UnreadItemDecoration
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
-import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReviewListFragment :
-    TopLevelFragment(R.layout.fragment_reviews_list),
+    BaseFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
-    ReviewListAdapter.OnReviewClickListener {
+    ReviewListAdapter.OnReviewClickListener,
+    ReviewModerationUi,
+    MenuProvider {
     companion object {
         const val TAG = "ReviewListFragment"
-        const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
 
         fun newInstance() = ReviewListFragment()
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
-    private lateinit var reviewsAdapter: ReviewListAdapter
+    private var _reviewsAdapter: ReviewListAdapter? = null
+    private val reviewsAdapter: ReviewListAdapter
+        get() = _reviewsAdapter!!
 
     private val viewModel: ReviewListViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
     private var menuMarkAllRead: MenuItem? = null
 
-    private var pendingModerationRequest: ProductReviewModerationRequest? = null
-    private var pendingModerationRemoteReviewId: Long? = null
-    private var pendingModerationNewStatus: String? = null
     private var changeReviewStatusSnackbar: Snackbar? = null
 
     private var _binding: FragmentReviewsListBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentReviewsListBinding.bind(view)
+        view.doOnPreDraw { startPostponedEnterTransition() }
 
         val activity = requireActivity()
-
-        reviewsAdapter = ReviewListAdapter(activity, this)
+        ViewGroupCompat.setTransitionGroup(binding.notifsRefreshLayout, true)
+        _reviewsAdapter = ReviewListAdapter(this)
         val unreadDecoration = UnreadItemDecoration(activity as Context, this)
         binding.reviewsList.apply {
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
@@ -98,10 +90,6 @@ class ReviewListFragment :
 
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    // noop
-                }
-
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
 
@@ -121,34 +109,34 @@ class ReviewListFragment :
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = binding.reviewsList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.REVIEWS_LIST_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEWS_LIST_PULLED_TO_REFRESH)
                 viewModel.forceRefreshReviews()
             }
         }
 
         setupObservers()
         viewModel.start()
+        setUnreadFilterChangedListener()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_reviews_list_fragment, menu)
         menuMarkAllRead = menu.findItem(R.id.menu_mark_all_read)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         viewModel.checkForUnreadReviews()
-        super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_mark_all_read -> {
-                AnalyticsTracker.track(Stat.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
                 true
             }
-            else -> return super.onOptionsItemSelected(item)
+
+            else -> false
         }
     }
 
@@ -165,6 +153,7 @@ class ReviewListFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
+        _reviewsAdapter = null
         super.onDestroyView()
         _binding = null
     }
@@ -179,36 +168,20 @@ class ReviewListFragment :
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { binding.notifsLoadMoreProgress.isVisible = it }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MarkAllAsRead -> handleMarkAllAsReadEvent(event.status)
             }
-        )
+        }
 
-        viewModel.moderateProductReview.observe(
-            viewLifecycleOwner,
-            Observer {
-                if (reviewsAdapter.isEmpty()) {
-                    pendingModerationRequest = it
-                } else {
-                    it?.let { request -> handleReviewModerationRequest(request) }
-                }
-            }
-        )
+        viewModel.reviewList.observe(viewLifecycleOwner) {
+            showReviewList(it)
+        }
 
-        viewModel.reviewList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showReviewList(it)
-                pendingModerationRequest?.let {
-                    handleReviewModerationRequest(it)
-                    pendingModerationRequest = null
-                }
-            }
+        observeModerationStatus(
+            reviewModerationConsumer = viewModel,
+            uiMessageResolver = uiMessageResolver
         )
     }
 
@@ -217,13 +190,12 @@ class ReviewListFragment :
             ActionStatus.SUBMITTED -> {
                 menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
             }
+
             ActionStatus.SUCCESS -> {
                 menuMarkAllRead?.actionView = null
                 showMarkAllReadMenuItem(show = false)
-
-                // Remove all active notifications from the system bar
-                notificationMessageHandler.removeNotificationsOfTypeFromSystemsBar(NotificationChannelType.REVIEW)
             }
+
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
             else -> {
             }
@@ -231,6 +203,7 @@ class ReviewListFragment :
     }
 
     private fun showReviewList(reviews: List<ProductReview>) {
+        binding.unreadReviewsFilterLayout.show()
         reviewsAdapter.setReviews(reviews)
         showEmptyView(reviews.isEmpty())
     }
@@ -241,14 +214,21 @@ class ReviewListFragment :
                 skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
+
             false -> skeletonView.hide()
         }
     }
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
-                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+            if (binding.unreadFilterSwitch.isChecked) {
+                binding.unreadReviewsFilterLayout.show()
+                binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
+            } else {
+                binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+                }
+                binding.unreadReviewsFilterLayout.hide()
             }
         } else {
             binding.emptyView.hide()
@@ -259,113 +239,33 @@ class ReviewListFragment :
         menuMarkAllRead?.let { if (it.isVisible != show) it.isVisible = show }
     }
 
-    private fun openReviewDetail(review: ProductReview) {
-        (activity as? MainNavigationRouter)?.showReviewDetail(
-            review.remoteId,
-            launchedFromNotification = false,
-            enableModeration = true,
-            tempStatus = pendingModerationNewStatus
-        )
-    }
-
-    private fun handleReviewModerationRequest(request: ProductReviewModerationRequest) {
-        when (request.actionStatus) {
-            ActionStatus.PENDING -> processNewModerationRequest(request)
-            ActionStatus.SUCCESS -> {
-                reviewsAdapter.removeHiddenReviewFromList()
-                resetPendingModerationVariables()
-            }
-            ActionStatus.ERROR -> revertPendingModerationState()
-            else -> { /* do nothing */
-            }
+    private fun setUnreadFilterChangedListener() {
+        binding.unreadFilterSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onUnreadReviewsFilterChanged(isChecked)
         }
-    }
-
-    private fun processNewModerationRequest(request: ProductReviewModerationRequest) {
-        with(request) {
-            pendingModerationRemoteReviewId = productReview.remoteId
-            pendingModerationNewStatus = newStatus.toString()
-
-            var changeReviewStatusCanceled = false
-
-            // Listener for the UNDO button in the snackbar
-            val actionListener = OnClickListener {
-                AnalyticsTracker.track(Stat.SNACK_REVIEW_ACTION_APPLIED_UNDO_BUTTON_TAPPED)
-
-                // User canceled the action to change the status
-                changeReviewStatusCanceled = true
-
-                // Add the notification back to the list
-                revertPendingModerationState()
-            }
-
-            val callback = object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (!changeReviewStatusCanceled) {
-                        viewModel.submitReviewStatusChange(productReview, newStatus)
-                    }
-                }
-            }
-
-            changeReviewStatusSnackbar = uiMessageResolver
-                .getUndoSnack(
-                    R.string.review_moderation_undo,
-                    ProductReviewStatus.getLocalizedLabel(context, newStatus)
-                        .toLowerCase(Locale.getDefault()),
-                    actionListener = actionListener
-                ).also {
-                    it.addCallback(callback)
-                    it.show()
-                }
-
-            // Manually remove the product review from the list if it's new
-            // status will be spam or trash
-            if (newStatus == SPAM || newStatus == TRASH) {
-                removeProductReviewFromList(productReview.remoteId)
-            }
-
-            AppRatingDialog.incrementInteractions()
-        }
-    }
-
-    private fun removeProductReviewFromList(remoteReviewId: Long) {
-        reviewsAdapter.hideReviewWithId(remoteReviewId)
-    }
-
-    private fun resetPendingModerationVariables() {
-        pendingModerationNewStatus = null
-        pendingModerationRemoteReviewId = null
-        reviewsAdapter.resetPendingModerationState()
-    }
-
-    private fun revertPendingModerationState() {
-        AnalyticsTracker.track(Stat.REVIEW_ACTION_UNDO)
-
-        pendingModerationNewStatus?.let {
-            val status = ProductReviewStatus.fromString(it)
-            if (status == SPAM || status == TRASH) {
-                val itemPos = reviewsAdapter.revertHiddenReviewAndReturnPos()
-                if (itemPos != SectionedRecyclerViewAdapter.INVALID_POSITION && !reviewsAdapter.isEmpty()) {
-                    binding.reviewsList.smoothScrollToPosition(itemPos)
-                }
-            }
-        }
-
-        resetPendingModerationVariables()
     }
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)
 
-    override fun scrollToTop() {
-        binding.reviewsList.smoothScrollToPosition(0)
-    }
-
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
-    override fun onReviewClick(review: ProductReview) {
-        openReviewDetail(review)
+    override fun onReviewClick(review: ProductReview, sharedView: View?) {
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_OPEN)
+        (activity as? MainNavigationRouter)?.let { router ->
+            if (sharedView == null) {
+                router.showReviewDetail(
+                    review.remoteId,
+                    launchedFromNotification = false,
+                    tempStatus = review.status
+                )
+            } else {
+                router.showReviewDetailWithSharedTransition(
+                    review.remoteId,
+                    launchedFromNotification = false,
+                    tempStatus = review.status,
+                    sharedView = sharedView
+                )
+            }
+        }
     }
-
-    override fun shouldExpandToolbar() = binding.reviewsList.computeVerticalScrollOffset() == 0
 }

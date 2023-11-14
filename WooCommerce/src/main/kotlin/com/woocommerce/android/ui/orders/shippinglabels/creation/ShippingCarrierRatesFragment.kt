@@ -6,9 +6,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -32,7 +32,10 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_carrier_rates), BackPressListener {
+class ShippingCarrierRatesFragment :
+    BaseFragment(R.layout.fragment_shipping_carrier_rates),
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val SHIPPING_CARRIERS_CLOSED = "shipping_carriers_closed"
         const val SHIPPING_CARRIERS_RESULT = "shipping_carriers_result"
@@ -50,12 +53,6 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
     private val skeletonView: SkeletonView = SkeletonView()
 
     val viewModel: ShippingCarrierRatesViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -76,6 +73,8 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentShippingCarrierRatesBinding.bind(view)
 
@@ -102,22 +101,20 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_shipping_carriers_title)
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
         doneMenuItem?.isVisible = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -143,17 +140,14 @@ class ShippingCarrierRatesFragment : BaseFragment(R.layout.fragment_shipping_car
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(SHIPPING_CARRIERS_RESULT, event.data)
-                    is Exit -> navigateBackWithNotice(SHIPPING_CARRIERS_CLOSED)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(SHIPPING_CARRIERS_RESULT, event.data)
+                is Exit -> navigateBackWithNotice(SHIPPING_CARRIERS_CLOSED)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showEmptyView(isVisible: Boolean) {

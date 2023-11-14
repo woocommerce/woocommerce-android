@@ -1,176 +1,161 @@
 package com.woocommerce.android.cardreader.internal.firmware
 
+import com.stripe.stripeterminal.external.callable.Cancelable
+import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
+import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
+import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
+import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceTimeBy
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import com.stripe.stripeterminal.model.external.ReaderSoftwareUpdate
-import com.stripe.stripeterminal.model.external.TerminalException
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction
-import com.woocommerce.android.cardreader.internal.firmware.actions.CheckSoftwareUpdatesAction.CheckSoftwareUpdates
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Failed
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Installing
-import com.woocommerce.android.cardreader.internal.firmware.actions.InstallSoftwareUpdateAction.InstallSoftwareUpdateStatus.Success
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
-class SoftwareUpdateManagerTest {
-    private lateinit var updateManager: SoftwareUpdateManager
-    private val checkUpdatesAction: CheckSoftwareUpdatesAction = mock()
-    private val installSoftwareUpdatesAction: InstallSoftwareUpdateAction = mock()
-
-    @Before
-    fun setUp() = runBlockingTest {
-        updateManager = SoftwareUpdateManager(checkUpdatesAction, installSoftwareUpdatesAction)
-
-        whenever(checkUpdatesAction.checkUpdates())
-            .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
-        whenever(installSoftwareUpdatesAction.installUpdate(any()))
-            .thenAnswer {
-                flow<InstallSoftwareUpdateStatus> {}
-            }
-    }
+@ExperimentalCoroutinesApi
+class SoftwareUpdateManagerTest : CardReaderBaseUnitTest() {
+    private val terminalWrapper: TerminalWrapper = mock()
+    private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
+    private val logWrapper: LogWrapper = mock()
+    private val softwareUpdateManager = SoftwareUpdateManager(
+        terminalWrapper,
+        bluetoothReaderListener,
+        logWrapper,
+    )
 
     @Test
-    fun `when check for udpate started, then Initializing emitted`() = runBlockingTest {
-        val result = updateManager.updateSoftware().single()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Initializing)
-    }
-
-    @Test
-    fun `when update not available, then UpToDate emitted`() = runBlockingTest {
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
-
-        val result = updateManager.updateSoftware().toList().last()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.UpToDate)
-    }
-
-    @Test
-    fun `when check for updates fails, then CheckForUpdatesFailed emitted`() = runBlockingTest {
-        val message = "error"
-        val terminalException: TerminalException = mock {
-            on { errorMessage }.thenReturn(message)
-        }
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(terminalException))
-
-        val result = updateManager.updateSoftware().toList().last()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed(message))
-    }
-
-    @Test
-    fun `when udpate available, then installation is started`() = runBlockingTest {
-        whenever(checkUpdatesAction.checkUpdates())
-            .thenReturn(CheckSoftwareUpdates.UpdateAvailable(mock()))
-
-        updateManager.updateSoftware().toList().last()
-
-        verify(installSoftwareUpdatesAction).installUpdate(any())
-    }
-
-    @Test
-    fun `when installation progresses, then Installing state with progress emitted`() = runBlockingTest {
-        whenever(installSoftwareUpdatesAction.installUpdate(any())).thenAnswer {
-            flow<InstallSoftwareUpdateStatus> {
-                emit(Installing(0.1f))
-            }
-        }
-
-        val result = updateManager.updateSoftware().toList().last()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Installing(0.1f))
-    }
-
-    @Test
-    fun `when installation succeeds, then Success state emitted`() = runBlockingTest {
-        whenever(installSoftwareUpdatesAction.installUpdate(any())).thenAnswer {
-            flow<InstallSoftwareUpdateStatus> {
-                emit(Success)
-            }
-        }
-
-        val result = updateManager.updateSoftware().toList().last()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Success)
-    }
-
-    @Test
-    fun `when installation fails, then Failed state emitted`() = runBlockingTest {
-        val terminalException = mock<TerminalException>().also {
-            whenever(it.errorMessage).thenReturn("dummy message")
-        }
-        whenever(installSoftwareUpdatesAction.installUpdate(any())).thenAnswer {
-            flow<InstallSoftwareUpdateStatus> {
-                emit(Failed(terminalException))
-            }
-        }
-
-        val result = updateManager.updateSoftware().toList().last()
-
-        assertThat(result).isEqualTo(SoftwareUpdateStatus.Failed("dummy message"))
-    }
-
-    @Test
-    fun `when software update check starts then initializing emitted`() = runBlockingTest {
+    fun `given update status changes to started, when start update, then function resumes`() = testBlocking {
         // GIVEN
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
+        val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
+        whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
 
         // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().first()
+        val asyncJob = launch {
+            softwareUpdateManager.startAsyncSoftwareUpdate()
+        }
 
         // THEN
-        assertThat(status).isEqualTo(SoftwareUpdateAvailability.Initializing)
+        assertThat(asyncJob.isActive).isTrue()
+        availabilityEvents.emit(SoftwareUpdateStatus.InstallationStarted)
+        assertThat(asyncJob.isActive).isFalse()
     }
 
     @Test
-    fun `when software update check returns up to date then uptodate emitted`() = runBlockingTest {
+    fun `given update status changes to installing, when start update, then function resumes`() = testBlocking {
         // GIVEN
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.UpToDate)
+        val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
+        whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
 
         // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().last()
+        val asyncJob = launch {
+            softwareUpdateManager.startAsyncSoftwareUpdate()
+        }
 
         // THEN
-        assertThat(status).isEqualTo(SoftwareUpdateAvailability.UpToDate)
+        assertThat(asyncJob.isActive).isTrue()
+        availabilityEvents.emit(SoftwareUpdateStatus.Installing(1f))
+        assertThat(asyncJob.isActive).isFalse()
     }
 
     @Test
-    fun `when software update check returns update available then updateavailable emitted`() = runBlockingTest {
+    fun `given update status changes to success, when start update, then function resumes`() = testBlocking {
         // GIVEN
-        val updateData: ReaderSoftwareUpdate = mock()
-        val updateStatus = CheckSoftwareUpdates.UpdateAvailable(updateData)
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(updateStatus)
+        val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
+        whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
 
         // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().last()
+        val asyncJob = launch {
+            softwareUpdateManager.startAsyncSoftwareUpdate()
+        }
 
         // THEN
-        assertThat(status).isInstanceOf(SoftwareUpdateAvailability.UpdateAvailable::class.java)
+        assertThat(asyncJob.isActive).isTrue()
+        availabilityEvents.emit(SoftwareUpdateStatus.Success)
+        assertThat(asyncJob.isActive).isFalse()
     }
 
     @Test
-    fun `when software update check returns failed then check failed emitted`() = runBlockingTest {
+    fun `given update status changes to failed, when start update, then function resumes`() = testBlocking {
         // GIVEN
-        whenever(checkUpdatesAction.checkUpdates()).thenReturn(CheckSoftwareUpdates.Failed(mock()))
+        val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
+        whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
 
         // WHEN
-        val status = updateManager.softwareUpdateStatus().toList().last()
+        val asyncJob = launch {
+            softwareUpdateManager.startAsyncSoftwareUpdate()
+        }
 
         // THEN
-        assertThat(status).isEqualTo(SoftwareUpdateAvailability.CheckForUpdatesFailed)
+        assertThat(asyncJob.isActive).isTrue()
+        availabilityEvents.emit(SoftwareUpdateStatus.Failed(SoftwareUpdateStatusErrorType.ServerError, null))
+        assertThat(asyncJob.isActive).isFalse()
+    }
+
+    @Test
+    fun `given update status is install started, when start update, then function resumes`() = testBlocking {
+        // GIVEN
+        val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.InstallationStarted)
+        whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
+
+        // WHEN
+        val asyncJob = launch {
+            softwareUpdateManager.startAsyncSoftwareUpdate()
+        }
+
+        // THEN
+        assertThat(asyncJob.isActive).isFalse()
+    }
+
+    @Test
+    fun `given unknown status and timeout, when start update, then function resumes`() = testBlocking {
+        // GIVEN
+        val availabilityEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
+        whenever(bluetoothReaderListener.updateStatusEvents).thenReturn(availabilityEvents)
+
+        // WHEN
+        val asyncJob = launch {
+            softwareUpdateManager.startAsyncSoftwareUpdate()
+        }
+
+        // THEN
+        assertThat(asyncJob.isActive).isTrue()
+        advanceTimeBy(TIMEOUT_LONGER_THAN_UPDATE_STARTED_MS)
+        assertThat(asyncJob.isActive).isFalse()
+    }
+
+    @Test
+    fun `given non null cancel update action, when cancel ongoing update, then action invoked`() {
+        // GIVEN
+        val cancelUpdateAction: Cancelable = mock()
+        whenever(bluetoothReaderListener.cancelUpdateAction).thenReturn(cancelUpdateAction)
+
+        // WHEN
+        softwareUpdateManager.cancelOngoingFirmwareUpdate()
+
+        // THEN
+        verify(cancelUpdateAction).cancel(any())
+    }
+
+    @Test
+    fun `given non null cancel update action, when cancel ongoing update, then action nullified`() {
+        // GIVEN
+        val cancelUpdateAction: Cancelable = mock()
+        whenever(bluetoothReaderListener.cancelUpdateAction).thenReturn(cancelUpdateAction)
+
+        // WHEN
+        softwareUpdateManager.cancelOngoingFirmwareUpdate()
+
+        // THEN
+        verify(bluetoothReaderListener).cancelUpdateAction = null
+    }
+
+    companion object {
+        private const val TIMEOUT_LONGER_THAN_UPDATE_STARTED_MS = 30_100L
     }
 }

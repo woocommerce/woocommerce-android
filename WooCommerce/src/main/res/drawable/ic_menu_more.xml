@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:width="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24">
+
+    <group
+        android:name="top_left_group">
+
+        <clip-path
+            android:name="top_left_clip"
+            android:pathData="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 6.5 9.25 C 4.981 9.25 3.75 8.019 3.75 6.5 C 3.75 4.981 4.981 3.75 6.5 3.75 C 8.019 3.75 9.25 4.981 9.25 6.5 C 9.25 8.019 8.019 9.25 6.5 9.25 Z">
+        </clip-path>
+
+        <path
+            android:name="top_left_path"
+            android:fillColor="@color/color_icon_menu"
+            android:pathData="M 6.5 10.75 L 6.5 10.75 C 4.153 10.75 2.25 8.847 2.25 6.5 L 2.25 6.5 C 2.25 4.153 4.153 2.25 6.5 2.25 L 6.5 2.25 C 8.847 2.25 10.75 4.153 10.75 6.5 L 10.75 6.5 C 10.75 8.847 8.847 10.75 6.5 10.75 Z">
+        </path>
+
+    </group>
+
+    <group
+        android:name="top_right_group">
+
+        <clip-path
+            android:name="top_right_clip"
+            android:pathData="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 17.5 9.25 C 15.981 9.25 14.75 8.019 14.75 6.5 C 14.75 4.981 15.981 3.75 17.5 3.75 C 19.019 3.75 20.25 4.981 20.25 6.5 C 20.25 8.019 19.019 9.25 17.5 9.25 Z">
+        </clip-path>
+
+        <path
+            android:name="top_right_path"
+            android:fillColor="@color/color_icon_menu"
+            android:pathData="M 17.5 10.75 L 17.5 10.75 C 15.153 10.75 13.25 8.847 13.25 6.5 L 13.25 6.5 C 13.25 4.153 15.153 2.25 17.5 2.25 L 17.5 2.25 C 19.847 2.25 21.75 4.153 21.75 6.5 L 21.75 6.5 C 21.75 8.847 19.847 10.75 17.5 10.75 Z">
+        </path>
+
+    </group>
+
+    <group
+        android:name="bottom_right_group">
+
+        <clip-path
+            android:name="bottom_right_clip"
+            android:pathData="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 17.5 20.25 C 15.981 20.25 14.75 19.019 14.75 17.5 C 14.75 15.981 15.981 14.75 17.5 14.75 C 19.019 14.75 20.25 15.981 20.25 17.5 C 20.25 19.019 19.019 20.25 17.5 20.25 Z">
+        </clip-path>
+
+        <path
+            android:name="bottom_right_path"
+            android:fillColor="@color/color_icon_menu"
+            android:pathData="M 17.5 21.75 L 17.5 21.75 C 15.153 21.75 13.25 19.847 13.25 17.5 L 13.25 17.5 C 13.25 15.153 15.153 13.25 17.5 13.25 L 17.5 13.25 C 19.847 13.25 21.75 15.153 21.75 17.5 L 21.75 17.5 C 21.75 19.847 19.847 21.75 17.5 21.75 Z">
+        </path>
+
+    </group>
+
+    <group
+        android:name="bottom_left_group">
+
+        <clip-path
+            android:name="bottom_left_clip"
+            android:pathData="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 6.5 20.25 C 4.981 20.25 3.75 19.019 3.75 17.5 C 3.75 15.981 4.981 14.75 6.5 14.75 C 8.019 14.75 9.25 15.981 9.25 17.5 C 9.25 19.019 8.019 20.25 6.5 20.25 Z">
+        </clip-path>
+
+        <path
+            android:name="bottom_left_path"
+            android:fillColor="@color/color_icon_menu"
+            android:pathData="M 6.5 21.75 L 6.5 21.75 C 4.153 21.75 2.25 19.847 2.25 17.5 L 2.25 17.5 C 2.25 15.153 4.153 13.25 6.5 13.25 L 6.5 13.25 C 8.847 13.25 10.75 15.153 10.75 17.5 L 10.75 17.5 C 10.75 19.847 8.847 21.75 6.5 21.75 Z">
+        </path>
+
+    </group>
+
+</vector>

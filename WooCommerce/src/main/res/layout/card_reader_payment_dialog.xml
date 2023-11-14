@@ -8,9 +8,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
         android:layout_height="@dimen/payments_dialog_height"
-        android:background="?attr/colorSurface"
+        android:background="@color/color_surface_elevated"
         android:paddingTop="@dimen/major_150"
-        android:paddingBottom="@dimen/major_150">
+        android:paddingBottom="@dimen/major_75">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/header_label"
@@ -20,6 +20,11 @@
             android:layout_marginHorizontal="@dimen/major_125"
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
+            android:maxLines="1"
+            android:textColor="@color/color_on_surface_high"
+            app:autoSizeMaxTextSize="@dimen/text_minor_100"
+            app:autoSizeMinTextSize="@dimen/text_minor_80"
+            app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toTopOf="@id/amount_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +37,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small_medium"
+            android:maxLines="1"
+            app:autoSizeMaxTextSize="@dimen/text_major_25"
+            app:autoSizeMinTextSize="@dimen/text_minor_130"
+            app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_label"
@@ -80,7 +89,11 @@
             android:layout_marginHorizontal="@dimen/major_125"
             android:layout_marginTop="@dimen/major_100"
             android:gravity="center_horizontal"
+            android:maxLines="2"
             android:textColor="@color/color_on_surface_high"
+            app:autoSizeMinTextSize="@dimen/text_minor_60"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/content_group"
@@ -98,6 +111,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/payment_state_label"
             tools:text="Tap or insert to pay" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/receipt_sent_label"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_125"
+            android:layout_marginTop="@dimen/margin_extra_large"
+            android:gravity="center_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_group"
+            tools:text="A receipt has been emailed to xyz" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/primary_action_btn"

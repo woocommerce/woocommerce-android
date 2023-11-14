@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
@@ -15,16 +12,15 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     private val availablePackages = listOf(
         ShippingPackage(
@@ -47,13 +43,13 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
             SiteParameters(
                 currencyCode = "USD",
                 currencySymbol = "$",
-                currencyPosition = null,
+                currencyFormattingParameters = null,
                 weightUnit = "kg",
                 dimensionUnit = "cm",
                 gmtOffset = 0f
             )
         )
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(shippingRepository.getShippingPackages()).thenReturn(WooResult(availablePackages))
         }
         viewModel = ShippingPackageSelectorViewModel(
@@ -64,7 +60,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `display list of packages`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `display list of packages`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, state -> viewState = state }
 

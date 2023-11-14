@@ -17,7 +17,7 @@
         android:focusable="true"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tracking_btnTrack"
+        app:layout_constraintEnd_toStartOf="@+id/tracking_btnLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             tools:text="USPS" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <com.woocommerce.android.widgets.WCSelectableTextView
             android:id="@+id/tracking_number"
             style="@style/Woo.Card.Body.Bold"
             android:layout_width="match_parent"
@@ -43,27 +43,30 @@
             tools:text="Shipped February 27, 2019" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/tracking_btnTrack"
-        style="@style/Woo.ImageButton.More"
-        android:contentDescription="@string/order_detail_shipment_tracking_button_contentdesc"
-        android:scaleType="centerInside"
-        android:visibility="gone"
+    <FrameLayout
+        android:id="@+id/tracking_btnLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tracking_infoContent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageButton
-        android:id="@+id/tracking_btnDelete"
-        style="@style/Woo.ImageButton.Delete"
-        android:contentDescription="@string/orderdetail_delete_tracking"
-        android:scaleType="centerInside"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        <ImageButton
+            android:id="@+id/tracking_btnTrack"
+            style="@style/Woo.ImageButton.More"
+            android:contentDescription="@string/order_detail_shipment_tracking_button_contentdesc"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            tools:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/tracking_btnDelete"
+            style="@style/Woo.ImageButton.Delete"
+            android:contentDescription="@string/orderdetail_delete_tracking"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

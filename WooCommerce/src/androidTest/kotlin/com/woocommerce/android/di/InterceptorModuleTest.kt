@@ -1,6 +1,6 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.helpers.MockingInterceptor
+import com.woocommerce.android.e2e.helpers.MockingInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

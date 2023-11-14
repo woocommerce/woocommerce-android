@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source.DEFAULT
 import com.woocommerce.android.util.WooLog
@@ -26,16 +26,25 @@ class UnifiedLoginTracker
     var currentStep: Step? = null
         private set
 
+    // Saves the previous step before going to the Help step.
+    // Used for tracking purposes on the Login Help Center feature.
+    var previousStepBeforeHelpStep: Step? = null
+        private set
+
     @JvmOverloads
     fun track(
         flow: Flow? = currentFlow,
         step: Step
     ) {
         currentFlow = flow
+        if (step == Step.HELP) {
+            previousStepBeforeHelpStep = currentStep
+        }
         currentStep = step
+
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
-                stat = Stat.UNIFIED_LOGIN_STEP,
+                stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
                 properties = buildDefaultParams()
             )
         } else {
@@ -47,7 +56,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             currentFlow.let {
                 analyticsTracker.track(
-                    stat = Stat.UNIFIED_LOGIN_FAILURE,
+                    stat = AnalyticsEvent.UNIFIED_LOGIN_FAILURE,
                     properties = buildDefaultParams().apply {
                         error?.let {
                             put(FAILURE, error)
@@ -64,7 +73,7 @@ class UnifiedLoginTracker
         if (currentFlow != null && currentStep != null) {
             currentFlow.let {
                 analyticsTracker.track(
-                    stat = Stat.UNIFIED_LOGIN_INTERACTION,
+                    stat = AnalyticsEvent.UNIFIED_LOGIN_INTERACTION,
                     properties = buildDefaultParams().apply {
                         put(CLICK, click.value)
                     }
@@ -93,10 +102,6 @@ class UnifiedLoginTracker
         } else {
             WooLog.e(LOGIN, errorMessage)
         }
-    }
-
-    fun setSource(source: Source) {
-        currentSource = source
     }
 
     fun setSource(value: String) {
@@ -141,10 +146,12 @@ class UnifiedLoginTracker
         LOGIN_SITE_ADDRESS("login_site_address"),
         SIGNUP("signup"),
         GOOGLE_SIGNUP("google_signup"),
-        EPILOGUE("epilogue")
+        EPILOGUE("epilogue"),
+        LOGIN_QR("login_qr"),
     }
 
     enum class Step(val value: String) {
+        PROLOGUE_CAROUSEL("prologue_carousel"),
         PROLOGUE("prologue"),
         START("start"),
         MAGIC_LINK_REQUESTED("magic_link_requested"),
@@ -165,7 +172,7 @@ class UnifiedLoginTracker
         NOT_WORDPRESS_SITE("not_wordpress_site");
 
         companion object {
-            private val valueMap = Step.values().associateBy(Step::value)
+            private val valueMap = values().associateBy(Step::value)
 
             fun fromValue(value: String) = valueMap[value]
         }
@@ -194,7 +201,10 @@ class UnifiedLoginTracker
         HELP_FINDING_CONNECTED_EMAIL("help_finding_connected_email"),
         REFRESH_APP("refresh_app"),
         HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
-        TRY_AGAIN("try_again")
+        TRY_AGAIN("try_again"),
+        WHAT_IS_WORDPRESS_COM("what_is_wordpress_com"),
+        WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN("what_is_wordpress_com_on_invalid_email_screen"),
+        CREATE_ACCOUNT("create_account")
     }
 
     companion object {

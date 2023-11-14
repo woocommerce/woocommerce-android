@@ -1,0 +1,21 @@
+AllCops:
+  Exclude:
+    - vendor/**/*
+  NewCops: enable
+
+Metrics/BlockLength:
+  Exclude:
+    - fastlane/Fastfile
+
+Metrics/MethodLength:
+  Max: 30
+
+Layout/LineLength:
+  Max: 180
+
+Naming/VariableNumber:
+  Exclude:
+    - fastlane/Fastfile
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never

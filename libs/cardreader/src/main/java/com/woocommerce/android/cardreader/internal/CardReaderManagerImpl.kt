@@ -4,88 +4,126 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
-import com.woocommerce.android.cardreader.*
+import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateAvailability
-import com.woocommerce.android.cardreader.firmware.SoftwareUpdateStatus
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
+import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
-import com.woocommerce.android.cardreader.internal.wrappers.LogWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
  */
+@Suppress("LongParameterList")
 internal class CardReaderManagerImpl(
+    private var application: Application,
     private val terminal: TerminalWrapper,
     private val tokenProvider: TokenProvider,
     private val logWrapper: LogWrapper,
     private val paymentManager: PaymentManager,
+    private val interacRefundManager: InteracRefundManager,
     private val connectionManager: ConnectionManager,
-    private val softwareUpdateManager: SoftwareUpdateManager
+    private val softwareUpdateManager: SoftwareUpdateManager,
+    private val terminalListener: TerminalListenerImpl,
 ) : CardReaderManager {
     companion object {
         private const val TAG = "CardReaderManager"
     }
 
-    private lateinit var application: Application
-
-    override val isInitialized: Boolean
+    override val initialized: Boolean
         get() {
             return terminal.isInitialized()
         }
 
-    override val readerStatus: MutableStateFlow<CardReaderStatus> = connectionManager.readerStatus
+    override val readerStatus = terminalListener.readerStatus
 
-    override fun initialize(app: Application) {
+    override val softwareUpdateStatus = connectionManager.softwareUpdateStatus
+
+    override val softwareUpdateAvailability = connectionManager.softwareUpdateAvailability
+
+    override val batteryStatus = connectionManager.batteryStatus
+
+    override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
+
+    override fun initialize(
+        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
+        useInterac: Boolean,
+        isDebug: Boolean
+    ) {
         if (!terminal.isInitialized()) {
-            application = app
+            terminal.getLifecycleObserver().onCreate(application)
 
-            // Register the observer for all lifecycle hooks
-            app.registerActivityLifecycleCallbacks(terminal.getLifecycleObserver())
-
-            app.registerComponentCallbacks(object : ComponentCallbacks2 {
+            application.registerComponentCallbacks(object : ComponentCallbacks2 {
                 override fun onConfigurationChanged(newConfig: Configuration) {}
 
                 override fun onLowMemory() {}
 
                 override fun onTrimMemory(level: Int) {
-                    terminal.getLifecycleObserver().onTrimMemory(level, application)
+                    terminal.getLifecycleObserver().onTrimMemory(application, level)
                 }
             })
 
-            val logLevel = if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.ERROR
+            val logLevel = if (isDebug) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
+
+            terminal.setupSimulator(updateFrequency, useInterac)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
-    override fun discoverReaders(isSimulated: Boolean): Flow<CardReaderDiscoveryEvents> {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.discoverReaders(isSimulated)
+    override fun reinitializeSimulatedTerminal(
+        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
+        useInterac: Boolean
+    ) {
+        terminal.setupSimulator(updateFrequency, useInterac)
     }
 
-    override suspend fun connectToReader(cardReader: CardReader): Boolean {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
-        return connectionManager.connectToReader(cardReader)
+    override fun discoverReaders(
+        isSimulated: Boolean,
+        cardReaderTypesToDiscover: CardReaderTypesToDiscover,
+    ): Flow<CardReaderDiscoveryEvents> {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
+    }
+
+    override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        connectionManager.startConnectionToReader(cardReader, locationId)
     }
 
     override suspend fun disconnectReader(): Boolean {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         if (terminal.getConnectedReader() == null) return false
         return connectionManager.disconnectReader()
     }
 
-    override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
-        paymentManager.acceptPayment(paymentInfo)
+    override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
+        resetBluetoothDisplayMessage()
+        return paymentManager.acceptPayment(paymentInfo)
+    }
+
+    override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        resetBluetoothDisplayMessage()
+        return interacRefundManager.refundInteracPayment(refundParams)
+    }
+
+    private fun resetBluetoothDisplayMessage() {
+        connectionManager.resetBluetoothCardReaderDisplayMessage()
+    }
 
     override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> =
         paymentManager.retryPayment(orderId, paymentData)
@@ -93,16 +131,20 @@ internal class CardReaderManagerImpl(
     override fun cancelPayment(paymentData: PaymentData) = paymentManager.cancelPayment(paymentData)
 
     private fun initStripeTerminal(logLevel: LogLevel) {
-        terminal.initTerminal(application, logLevel, tokenProvider, connectionManager)
+        terminal.initTerminal(application, logLevel, tokenProvider, terminalListener)
     }
 
-    override suspend fun softwareUpdateAvailability(): Flow<SoftwareUpdateAvailability> =
-        softwareUpdateManager.softwareUpdateStatus()
-
-    override suspend fun updateSoftware(): Flow<SoftwareUpdateStatus> = softwareUpdateManager.updateSoftware()
+    override suspend fun startAsyncSoftwareUpdate() {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        softwareUpdateManager.startAsyncSoftwareUpdate()
+    }
 
     override suspend fun clearCachedCredentials() {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         terminal.clearCachedCredentials()
+    }
+
+    override fun cancelOngoingFirmwareUpdate() {
+        softwareUpdateManager.cancelOngoingFirmwareUpdate()
     }
 }

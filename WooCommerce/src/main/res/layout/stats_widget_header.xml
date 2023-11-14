@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_title_container"
+    style="@style/Woo.StatsWidgetHeader"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/stats_widget_header_height"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/stats_widget_header_height"
+    android:orientation="horizontal"
+    tools:ignore="UseCompoundDrawables"
+    tools:showIn="@layout/stats_widget_list">
+
+    <ImageView
+        android:id="@+id/widget_app_icon"
+        android:layout_width="@dimen/image_minor_80"
+        android:layout_height="@dimen/image_minor_80"
+        android:layout_alignTop="@+id/widget_title"
+        android:layout_alignBottom="@+id/widget_update_time"
+        android:importantForAccessibility="no"
+        android:src="@mipmap/ic_launcher_round"
+        tools:src="@mipmap/ic_launcher_round" />
+
+    <TextView
+        android:id="@+id/widget_title"
+        style="@style/Woo.StatsWidgetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_toStartOf="@+id/widget_type"
+        android:layout_toEndOf="@+id/widget_app_icon"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="@string/my_store" />
+
+    <TextView
+        android:id="@+id/widget_type"
+        style="@style/Woo.StatsWidgetSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/widget_title"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/minor_10"
+        android:text="@string/today" />
+
+    <TextView
+        android:id="@+id/widget_update_time"
+        style="@style/Woo.StatsWidgetSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/widget_title"
+        android:layout_alignStart="@+id/widget_title"
+        tools:text="As of 10:00 PM" />
+
+</RelativeLayout>

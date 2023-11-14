@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -49,7 +49,7 @@ class ShippingLabelRefundViewModel @Inject constructor(
 
     fun onRefundShippingLabelButtonClicked() {
         if (networkStatus.isConnected()) {
-            AnalyticsTracker.track(Stat.SHIPPING_LABEL_REFUND_REQUESTED)
+            AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_REFUND_REQUESTED)
             triggerEvent(ShowSnackbar(string.shipping_label_refund_progress_message))
 
             refundJob = launch {

@@ -5,12 +5,11 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
+import androidx.core.view.MenuProvider
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAddProductCategoryBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -22,13 +21,17 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_category), BackPressListener {
+class AddProductCategoryFragment :
+    BaseFragment(R.layout.fragment_add_product_category),
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val ARG_ADDED_CATEGORY = "arg-added-category"
     }
@@ -42,7 +45,9 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
     private var _binding: FragmentAddProductCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AddProductCategoryViewModel by hiltNavGraphViewModels(R.id.nav_graph_add_product_category)
+    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(
+        navGraphId = R.id.nav_graph_add_product_category
+    )
 
     override fun getFragmentTitle() = getString(R.string.product_add_category)
 
@@ -56,21 +61,20 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
         activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
-        super.onCreateOptionsMenu(menu, inflater)
         doneMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.addProductCategory(getCategoryName())
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -79,7 +83,7 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
 
         _binding = FragmentAddProductCategoryBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         binding.productCategoryName.setOnTextChangedListener {
@@ -117,18 +121,15 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
             new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> requireActivity().onBackPressed()
-                    is ShowDialog -> event.showDialog()
-                    is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is ShowDialog -> event.showDialog()
+                is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun displayCategoryNameError(messageId: Int) {
@@ -163,5 +164,5 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
         progressDialog = null
     }
 
-    private fun getCategoryName() = binding.productCategoryName.getText()
+    private fun getCategoryName() = binding.productCategoryName.text
 }

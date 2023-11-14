@@ -15,6 +15,7 @@ class AttributeOptionSelectorDialog : DialogFragment() {
     companion object {
         const val TAG: String = "AttributeOptionSelectorDialog"
 
+        @Suppress("DEPRECATION")
         fun newInstance(
             attributeGroup: VariationAttributeSelectionGroup,
             onAttributeOptionSelected: (VariationAttributeSelectionGroup) -> Unit

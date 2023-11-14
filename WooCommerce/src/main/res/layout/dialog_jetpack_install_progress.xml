@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    android:orientation="vertical"
+    android:padding="@dimen/major_100">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/major_300">
+
+            <LinearLayout
+                android:id="@+id/headerLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintEnd_toEndOf="@id/jetpackProgressEndGuideline"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="@dimen/image_major_100">
+
+                <ImageView
+                    android:id="@+id/jetpackLogoImage"
+                    android:layout_width="@dimen/image_minor_100"
+                    android:layout_height="@dimen/image_minor_100"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_jetpack_logo" />
+
+                <ImageView
+                    android:layout_width="@dimen/major_75"
+                    android:layout_height="@dimen/major_75"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginStart="@dimen/minor_100"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_connecting" />
+
+                <ImageView
+                    android:id="@+id/wooLogoImage"
+                    android:layout_width="@dimen/image_minor_100"
+                    android:layout_height="@dimen/image_minor_100"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_woo_bubble"
+                    android:layout_marginStart="@dimen/minor_100"/>
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/jetpackProgressTitleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_200"
+                android:text="@string/jetpack_install_progress_title"
+                android:textAlignment="textStart"
+                android:textAppearance="?attr/textAppearanceHeadline4"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintEnd_toEndOf="@id/jetpackProgressEndGuideline"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/jetpackProgressSubtitleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:text="@string/jetpack_install_progress_subtitle"
+                android:textAlignment="textStart"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintEnd_toEndOf="@id/jetpackProgressEndGuideline"
+                app:layout_constraintTop_toBottomOf="@id/jetpackProgressTitleTextView" />
+
+            <ImageView
+                android:id="@+id/icon1"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_progress_circle_complete"
+                android:layout_marginTop="@dimen/major_200"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/jetpackProgressSubtitleTextView"
+                android:visibility="invisible" />
+
+            <ProgressBar
+                android:id="@+id/progress1"
+                style="@style/Woo.JetpackProgressBar"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:layout_marginTop="@dimen/major_200"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/jetpackProgressSubtitleTextView"
+                android:visibility="invisible"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/message1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/minor_100"
+                android:text="@string/jetpack_install_progress_step_one_message"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                android:layout_marginBottom="@dimen/minor_10"
+                android:layout_marginStart="@dimen/major_150"
+                app:layout_constraintStart_toEndOf="@id/icon1"
+                app:layout_constraintBottom_toBottomOf="@id/icon1" />
+
+            <ImageView
+                android:id="@+id/icon2"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_progress_circle_start"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/icon1"
+                android:visibility="visible"/>
+
+            <ProgressBar
+                android:id="@+id/progress2"
+                style="@style/Woo.JetpackProgressBar"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/icon1"
+                android:visibility="invisible"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/message2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/minor_100"
+                android:text="@string/jetpack_install_progress_step_two_message"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                android:layout_marginBottom="@dimen/minor_10"
+                android:layout_marginStart="@dimen/major_150"
+                app:layout_constraintStart_toEndOf="@id/icon2"
+                app:layout_constraintBottom_toBottomOf="@id/icon2" />
+
+            <ImageView
+                android:id="@+id/icon3"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_progress_circle_start"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/icon2" />
+
+            <ProgressBar
+                android:id="@+id/progress3"
+                style="@style/Woo.JetpackProgressBar"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/icon2"
+                android:visibility="invisible"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/message3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/minor_100"
+                android:text="@string/jetpack_install_progress_step_three_message"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:layout_marginBottom="@dimen/minor_10"
+                android:layout_marginStart="@dimen/major_150"
+                app:layout_constraintStart_toEndOf="@id/icon3"
+                app:layout_constraintBottom_toBottomOf="@id/icon3" />
+
+            <ImageView
+                android:id="@+id/icon4"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_progress_circle_start"
+                android:layout_marginTop="@dimen/major_125"
+                app:layout_constraintStart_toStartOf="@id/jetpackProgressStartGuideline"
+                app:layout_constraintTop_toBottomOf="@id/icon3" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/message4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/minor_100"
+                android:text="@string/jetpack_install_progress_step_four_message"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:layout_marginBottom="@dimen/minor_10"
+                android:layout_marginStart="@dimen/major_150"
+                app:layout_constraintStart_toEndOf="@id/icon4"
+                app:layout_constraintBottom_toBottomOf="@id/icon4" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/jetpackProgressStartGuideline"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/major_200" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/jetpackProgressEndGuideline"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/major_200" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/openAdminOrRetryButton"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/jetpack_install_progress_failed_option_wp_admin"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/contactButton"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/jetpack_install_progress_failed_option_contact_support"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/jetpackProgressActionButton"
+        style="@style/Woo.JetpackButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/done" />
+
+</LinearLayout>

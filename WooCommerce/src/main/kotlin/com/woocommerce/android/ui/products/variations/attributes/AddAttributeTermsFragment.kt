@@ -7,8 +7,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,11 +20,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Appending
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
@@ -34,7 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
 @AndroidEntryPoint
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), MenuProvider {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
@@ -42,6 +45,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
         private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
     }
+
+    private val termsViewModel: AddAttributeTermsViewModel by viewModels()
 
     private var layoutManagerAssigned: LinearLayoutManager? = null
     private var layoutManagerGlobal: LinearLayoutManager? = null
@@ -95,7 +100,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     attribute.terms.find {
                         it == termName
                     }
-                }?.let { term ->
+                }?.let {
                     globalTermsAdapter.addTerm(termName)
                 }
 
@@ -135,7 +140,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         setupResultHandlers()
         getAttributeTerms()
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
@@ -150,7 +155,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun getAttributeTerms() {
         // if this is a global attribute, fetch the attribute's terms
         if (isGlobalAttribute) {
-            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
+            termsViewModel.onFetchAttributeTerms(navArgs.attributeId)
         }
 
         // get the attribute terms for attributes already assigned to this product
@@ -158,19 +163,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onDestroyView() {
-        viewModel.resetGlobalAttributeTerms()
+        termsViewModel.resetGlobalAttributeTerms()
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_attribute_terms, menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    override fun onPrepareMenu(menu: Menu) {
         /**
          * we only want to show the Next menu item if we're under the creation of
          * the first variation for a Variable Product
@@ -191,7 +193,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             !navArgs.isVariationCreation
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_remove -> {
                 confirmRemoveAttribute()
@@ -208,7 +210,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 ).run { findNavController().navigateSafely(this) }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -233,6 +235,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
         }
@@ -251,29 +254,31 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         layoutManagerAssigned = initializeRecycler(
             binding.assignedTermList,
             enableDragAndDrop = !isGlobalAttribute,
-            enableDeleting = true
+            enableDeleting = true,
+            supportsLoadMore = false
         )
         assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
         assignedTermsAdapter.setOnTermListener(assignedTermListener)
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
         layoutManagerGlobal = initializeRecycler(
             binding.globalTermList,
             enableDragAndDrop = false,
-            enableDeleting = false
+            enableDeleting = false,
+            supportsLoadMore = true
         )
         globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
         globalTermsAdapter.setOnTermListener(globalTermListener)
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
         binding.termEditText.setOnEditorActionListener { termName ->
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName)
-                binding.termEditText.setText("")
+                binding.termEditText.text = ""
             }
             true
         }
@@ -282,7 +287,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun initializeRecycler(
         recycler: RecyclerView,
         enableDragAndDrop: Boolean,
-        enableDeleting: Boolean
+        enableDeleting: Boolean,
+        supportsLoadMore: Boolean
     ): LinearLayoutManager {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recycler.layoutManager = layoutManager
@@ -294,14 +300,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 recycler.adapter = AttributeTermsListAdapter(
                     enableDragAndDrop = true,
                     enableDeleting = enableDeleting,
-                    defaultItemBackground = this
+                    defaultItemBackground = this,
+                    loadMoreListener = (::onLoadMoreRequested).takeIf { supportsLoadMore }
                 )
                 itemTouchHelper.attachToRecyclerView(recycler)
             } else {
                 recycler.adapter = AttributeTermsListAdapter(
                     enableDragAndDrop = false,
                     enableDeleting = enableDeleting,
-                    defaultItemBackground = this
+                    defaultItemBackground = this,
+                    loadMoreListener = (::onLoadMoreRequested).takeIf { supportsLoadMore }
                 )
             }
         }
@@ -310,28 +318,21 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun setupObservers() {
-        viewModel.attributeTermsList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showGlobalAttributeTerms(it)
-            }
-        )
-
-        viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
-                showSkeleton(it)
-            }
+        termsViewModel.termsListState.observe(viewLifecycleOwner) {
+            showGlobalAttributeTerms(it)
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitProductAddAttributeTerms -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        termsViewModel.loadingState.observe(viewLifecycleOwner) {
+            showSkeleton(it == Loading)
+            binding.loadMoreProgress.isVisible = it == Appending
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductAddAttributeTerms -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {
@@ -433,5 +434,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun removeAttribute() {
         viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
         saveChangesAndReturn()
+    }
+
+    private fun onLoadMoreRequested() {
+        termsViewModel.onLoadMore(navArgs.attributeId)
     }
 }

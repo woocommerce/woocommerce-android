@@ -1,15 +1,560 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.2
+-----
+- [*] [Internal] Improve handling of Jetpack Connection for Jetpack CP sites when using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/10083]
+- [***] Custom Amounts M2: Redesign Payments and Customers section [https://github.com/woocommerce/woocommerce-android/pull/10122]
+
+16.1
+-----
+- [*] [Internal] Fixed a bug to handle fallback to WordPress.com username login when email is not allowed in the Jetpack Connection [https://github.com/woocommerce/woocommerce-android/pull/10044]
+- [*] [Internal] Fixed a crash during store creation flow [https://github.com/woocommerce/woocommerce-android/pull/10039]
+- [***] Introduce functionality to input custom amounts during the order creation process. [https://github.com/woocommerce/woocommerce-android/pull/10035]
+- [*] [Internal] Improve error handling during Jetpack Connection when using a custom admin URL [https://github.com/woocommerce/woocommerce-android/pull/10077]
+
+16.0
+-----
+- [**] Revamped UI of order's item list in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9851]
+- [*] [Internal] Fixed a crash during jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/10019]
+- [*] [Internal] Fixed a rare crash that occurs in the Jetpack Connection flow [https://github.com/woocommerce/woocommerce-android/pull/10012]
+- [***] Optimized Blaze experience: Improved Blaze campaign creation and list screens. [https://github.com/woocommerce/woocommerce-android/issues/9929]
+- [***] Product Creation using AI: Generate product title and description using a package photo. [https://github.com/woocommerce/woocommerce-android/pull/10038]
+
+15.9
+-----
+- [***] In-Person Payments: Tap To Pay On Android in the UK and Canada [https://github.com/woocommerce/woocommerce-android/pull/9922]
+
+15.8
+-----
+- [*] Order details: Users can navigate to the previous or next order from the order detail screen [https://github.com/woocommerce/woocommerce-android/pull/9904]
+
+15.8
+-----
+- [*] [Internal] Fixed a crash when navigation to Excluded Products from the Coupon Details screen [https://github.com/woocommerce/woocommerce-android/pull/9952]
+- [*] [Internal] Fixed some crashes that occurred when restoring the app after a process-death [https://github.com/woocommerce/woocommerce-android/pull/9956]
+
+15.7
+-----
+- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
+- [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]
+- [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
+- [*] Product Listing: Fixed a product filter bug where users were not able to filter product by "Product Status" [https://github.com/woocommerce/woocommerce-android/pull/9891]
+- [*] Order creation: Customers selected from the list that don't have address information now properly displayed on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/9863]
+- [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]
+- [*] Product Creation using AI: Added support for suggesting new categories and tags [https://github.com/woocommerce/woocommerce-android/pull/9919]
+
+15.6
+-----
+- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
+- [**] Added possibility to set up automatic tax rate setting for merchants selling temporarily in different locations [https://github.com/woocommerce/woocommerce-android/pull/9791]
+- [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
+- [***]  WPCOM stores and self-hosted stores with Jetpack AI plugin can now create products using AI.[https://github.com/woocommerce/woocommerce-android/issues/9785]
+
+15.5
+-----
+- [*] Add new filter for unread product reviews [https://github.com/woocommerce/woocommerce-android/pull/9753]
+
+15.4
+-----
+- [*] [Internal] In-Person Payments: Fixed tracking of the country for the cases when IPP onboarding is not finished [https://github.com/woocommerce/woocommerce-android/pull/9764]
+- [**] [Internal] In-Person Payments: if WcPay setup not finished then we allow a user to finish it from the app [https://github.com/woocommerce/woocommerce-android/pull/9732]
+- [*] [Internal] Store Onboarding: show an explanation screen before open the Payments task in a WebView [https://github.com/woocommerce/woocommerce-android/pull/9772]
+- [**] Order creation: Merchants can now select a tax rate when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9773]
+- [**] Product editing: Merchants can now add downloadable files from all supported file types [https://github.com/woocommerce/woocommerce-android/pull/9745]
+
+15.3
+-----
+- [**] [Internal] In-Person Payments: if WcPay not install then we allow a user to install that from the app using API [https://github.com/woocommerce/woocommerce-android/pull/9690]
+- [**] [Internal] In-Person Payments: if WcPay not activated then we allow a user to install that from the app using API [https://github.com/woocommerce/woocommerce-android/pull/9728]
+
+15.2
+-----
+- [*] [Internal] Improved Product Discount Screen [https://github.com/woocommerce/woocommerce-android/pull/9639]
+- [*] Settings: Close Account option is moved to a new section Account Settings. [https://github.com/woocommerce/woocommerce-android/pull/9659]
+- [*] Fix some issues with the order's badge counter [https://github.com/woocommerce/woocommerce-android/pull/9671]
+- [*] Improvements to the WooPayments onboarding task [https://github.com/woocommerce/woocommerce-android/pull/9714]
+
+15.1
+-----
+- [*] [Internal] Tap To Pay: Enable NFC button to the NFC disabled error state to help merchants to enable NFC on their devices [https://github.com/woocommerce/woocommerce-android/pull/9611]
+- [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
+- [*] Fix a crash that occurs when using Magic Link to login during the Jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/9642]
+- [**] [Internal] Handle "enabled" WCPay account status the same way as "completed" [https://github.com/woocommerce/woocommerce-android/pull/9637]
+- [*] Onboarding: A new onboarding item, "Name Your Store", is added. Also, changing store name is now possible in Settings. [https://github.com/woocommerce/woocommerce-android/issues/9621]
+- [**] Store creation: Store creation flow has been revamped and now profiler steps are shown while the site is being created [https://github.com/woocommerce/woocommerce-android/issues/9587]
+15.0
+-----
+- [*] Store creation: Country selector screen is now more intuitive and easier to use. [https://github.com/woocommerce/woocommerce-android/issues/9606]
+
+
+14.9
+-----
+- [*] Orders with Coupons: Users can now select a coupon from a list when adding it to an order. [https://github.com/woocommerce/woocommerce-android/pull/9510]
+- [*] [Internal] Refactor product restrictions logic into it's own class to make it more reusable [https://github.com/woocommerce/woocommerce-android/pull/9480]
+- [*] AI: For better results, product description generation now require both product title and features [https://github.com/woocommerce/woocommerce-android/pull/9522]
+
+14.8
+- [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
+- [*] Added a "Create test order" screen for published sites with existing product(s) and payment gateway(s) and no orders yet. [https://github.com/woocommerce/woocommerce-android/pull/9508]
+- [*] Added coupon creation feature [https://github.com/woocommerce/woocommerce-android/pull/9474]
+- [*] [Internal] now add `was_ecommerce_trial` and `plan_product_slug` for default tracking on logged-in state [https://github.com/woocommerce/woocommerce-android/pull/9514]
+- [*] [Internal] Fixed logic disabling editable controls in order creation/edit form [https://github.com/woocommerce/woocommerce-android/pull/9515]
+- [**] Improvements have been made to the process of adding customer details to an order [https://github.com/woocommerce/woocommerce-android/pull/9477]
+
+14.7
+-----
+- [*] [Internal] Changed the way how we get WCPay and Stripe plugin's info from the API response [https://github.com/woocommerce/woocommerce-android/pull/9460]
+- [**] You can now see your shipping zone list from Settings. [https://github.com/woocommerce/woocommerce-android/pull/9496]
+
+14.7
+-----
+
+14.6
+-----
+- [*] [Internal] All payment methods are disabled during Tap To Pay testing except TTP itself [https://github.com/woocommerce/woocommerce-android/pull/9428]
+- [*] [Internal] In-Person Payments: learn more link to the Tap To Pay Summary screen. [https://github.com/woocommerce/woocommerce-android/pull/9426]
+- [*] [Internal] AI: Now uses new endpoints. [https://github.com/woocommerce/woocommerce-android/pull/9445]
+- [*] AI: Language accuracy improvements are added for messages and descriptions generated by Jetpack AI. [https://github.com/woocommerce/woocommerce-android/pull/9410]
+
+14.5
+- [***] In-Person Payments: Tap To Pay On Android. [https://github.com/woocommerce/woocommerce-android/pull/9385]
+- [*] [Internal] Fix for the crash on Payment Selection screen [https://github.com/woocommerce/woocommerce-android/pull/9370]
+- [**] [Internal] Improve the camera permission handling flow in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/9376]
+- [**] Added direct product discounts in order create/edit flow [https://github.com/woocommerce/woocommerce-android/pull/9411]
+
+14.4
+-----
+- [*] Blaze: New Blaze banners added to My Store tab and product list tab. [https://github.com/woocommerce/woocommerce-android/issues/9332]
+- [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product description for you. [https://github.com/woocommerce/woocommerce-android/issues/9214]
+
+14.3
+-----
+- [***] [Internal] Migrate the barcode scanning library from Google Code Scanner to Google's MLKit [https://github.com/woocommerce/woocommerce-android/pull/9298]
+- [*] Payments: Products are removed directly from an order when its count is below one, instead of opening an extra screen to remove it. [https://github.com/woocommerce/woocommerce-android/pull/9280]
+- [**] Added multiple coupons support in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9300]
+
+14.3
+-----
+- [*] Fixed scenarios in which the app would lose state when it was relaunched [https://github.com/woocommerce/woocommerce-android/pull/9285]
+
+14.2
+-----
+- [*] [Internal] Center the text on the "more menu" screen buttons [https://github.com/woocommerce/woocommerce-android/pull/9241]
+- [*] [Internal] Stripe SDK updated to 2.21.0 [https://github.com/woocommerce/woocommerce-android/pull/9223]
+- [*] [Internal] Rounded corners to the payments dialogs [https://github.com/woocommerce/woocommerce-android/pull/9231]
+- [*] [Internal] Adding products via barcode scanning - Handle EAN-13, EAN-8 barcode formats [https://github.com/woocommerce/woocommerce-android/pull/9240]
+- [*] [Internal] Changes the endpoint use for customer search during order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9212]
+- [*] Store creation: improve messaging while waiting for the new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/9252]
+- [*] Handle case when backend rejects discount coupon while creating an order [https://github.com/woocommerce/woocommerce-android/pull/9263]
+
+14.1
+-----
+- [*] [Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
+- [*] [Internal] Added caching mechanism for JITMs [https://github.com/woocommerce/woocommerce-android/pull/9158]
+- [***] Adds new entry point to promote product using Blaze [https://github.com/woocommerce/woocommerce-android/issues/9209]
+- [*] [Internal] Fixed coupon validation logic [https://github.com/woocommerce/woocommerce-android/pull/9210]
+- [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product sharing messages for you. [https://github.com/woocommerce/woocommerce-android/pull/9236]
+
+14.0
+-----
+- [*] [Internal] Handle process death in Order creation and Order listing screen while scanning is in progress [https://github.com/woocommerce/woocommerce-android/pull/9197]
+- [*] Improved search UI in product selector [https://github.com/woocommerce/woocommerce-android/pull/9193]
+- [*] Add Products: A new view is display to celebrate when the first product is created in a store. [https://github.com/woocommerce/woocommerce-android/pull/9123]
+
+13.9
+-----
+- [*] [Internal] Changes buttons font color in both dark and light mode to light on the login flow [https://github.com/woocommerce/woocommerce-android/pull/9166]
+- [**] Added possibility to search by SKU in the product selector screen [https://github.com/woocommerce/woocommerce-android/pull/9164]
+
+13.8
+-----
+- [*] Scan To Pay: Set maximum screen brightness to make QR easier to scan. [https://github.com/woocommerce/woocommerce-android/pull/9098]
+- [*] [Internal] Fixed a crash related to a product image viewing [https://github.com/woocommerce/woocommerce-android/pull/9111]
+- [*] [Internal] Fixes crashes in order details list when activity gets destroyed and recreated [https://github.com/woocommerce/woocommerce-android/pull/9113]
+- [***] In-Person Payments: A merchant can now scan to add product during order creation. [https://github.com/woocommerce/woocommerce-android/pull/9125]
+- [*] Allow EU merchants to have better control of their privacy choices. A privacy choices banner will be shown the next time they open the app.
+[https://github.com/woocommerce/woocommerce-android/pull/9001]
+
+13.7
+-----
+- [**] In-Person Payments: A merchant can now generate a QR code for a payment and the customer can scan the QR code to pay. [https://github.com/woocommerce/woocommerce-android/pull/9032]
+- [*] [Internal] "Colored" buttons have white text in the dark mode [https://github.com/woocommerce/woocommerce-android/pull/9044]
+- [*] [Internal] Added local coupon validation in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9066]
+- [**] Support for adding coupon code when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9024]
+
+13.6
+-----
+- [*] [Internal] JITM added to the Orders list screen (behind TTP feature flag) [https://github.com/woocommerce/woocommerce-android/pull/8914]
+- [**] Enable coupon management by default [https://github.com/woocommerce/woocommerce-android/pull/8995]
+
+13.5
+- [*] [Internal] Adds "contact support" button on some IPP error states. [https://github.com/woocommerce/woocommerce-android/pull/8882]
+- [*] [Internal] Adds guidance for new Customs rule when shipping to some EU countries [https://github.com/woocommerce/woocommerce-android/pull/8958]
+-----
+
+
+13.4
+- [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
+- [*] [Internal] Better payments error tracking [https://github.com/woocommerce/woocommerce-android/pull/8875]
+- [**] Allow users to show or hide onboarding list [https://github.com/woocommerce/woocommerce-android/pull/8907]
+
+13.3
+-----
+- [*] [Internal] Removed IPP upsell banner from the Payment Method Selection Screen. [https://github.com/woocommerce/woocommerce-android/pull/8815]
+- [*] Improves loading experience while users wait for their new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/8799]
+- [*] [Internal] Profiler during new site free trial creation is now added [https://github.com/woocommerce/woocommerce-android/pull/8832]
+- [*] Products: Adds read-only support for the Composite Products extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8818]
+- [***] Extend support of in-person card reader payments to the UK [https://github.com/woocommerce/woocommerce-android/pull/8662]
+
+13.2
+-----
+- [**] Fix adding variable subscription products to an order [https://github.com/woocommerce/woocommerce-android/pull/8798]
+- [*] Added RTL languages support in search fields [https://github.com/woocommerce/woocommerce-android/pull/8770]
+- [*][internal] Visual improvements to the Payments Hub Screen [https://github.com/woocommerce/woocommerce-android/pull/8768]
+- [*] Orders: Adds read-only support for the Gift cards extension in the Order details. [https://github.com/woocommerce/woocommerce-android/pull/8684]
+- [*] Products: Adds read-only support for the Max/min quantity rules extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8715]
+- [*] Products: Adds read-only support for the Bundled Products extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8806]
+
+13.1
+-----
+- [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
+- [**] Add Popular and Last sold sections to product selector screen [https://github.com/woocommerce/woocommerce-android/pull/8756]
+- [**] Jetpack activation now supported for merchants logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8698]
+
+13.0
+-----
+- [*][Internal] Added analytics events for Product Selector interactions [https://github.com/woocommerce/woocommerce-android/pull/8665]
+- [***] Add read-only support for the WooCommerce Subscription extension on order details and product details. [https://github.com/woocommerce/woocommerce-android/pull/8440]
+
+12.9
+-----
+- [*] Jetpack benefit banner and dialog are now available on the dashboard screen after logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8596]
+- [*] Fixed item's stock status labels on product picker lists [https://github.com/woocommerce/woocommerce-android/pull/8627]
+- [*] Users can now log in to self-hosted sites without Jetpack by approving application password authorization to their sites. [https://github.com/woocommerce/woocommerce-android/pull/8618]
+- [***] Adds a new onboarding list on my store tab to guide the user setting up their store [https://github.com/woocommerce/woocommerce-android/pull/8645]
+
+12.8
+-----
+- [*][Internal] Do not show full screen input for the payment amount for simple payments flow. [https://github.com/woocommerce/woocommerce-android/pull/8517]
+- [*][Internal] Fix the wording for the cases when we don't have due date on stripe pending requirements state for IPP [https://github.com/woocommerce/woocommerce-android/pull/8516]
+- [**] Added product multi-selection in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/8557]
+- [*] Improved product selector component to allow filtering out redundant products [https://github.com/woocommerce/woocommerce-android/pull/8557]
+- [**] Added local search feature in the products selector component (available in orders creation and coupon edition flows) [https://github.com/woocommerce/woocommerce-android/pull/8391]
+- [*] Analytics Hub: Improved Accessibility
+
+12.7
+-----
+- [*][Internal] Fixed IPP feedback survey banner display logic. [https://github.com/woocommerce/woocommerce-android/pull/8482]
+
+12.6
+-----
+- [**] Support: Merchants can now contact support with a new and refined experience. [https://github.com/woocommerce/woocommerce-android/issues/8336]
+- [*] Search in local database when searching for products in the edit coupons flow. [https://github.com/woocommerce/woocommerce-android/pull/8391]
+- [***] We added a new Domain change feature, which allows the store owners to register a TLD. [https://github.com/woocommerce/woocommerce-android/issues/8238]
+
+
+12.5
+-----
+
+
+12.4
+-----
+- [***] Add support for signing to self-hosted sites without Jetpack using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8323]
+- [***] [Internal] Remove XMRPC discovery steps from the REST API login [https://github.com/woocommerce/woocommerce-android/pull/8289]
+- [*][Internal] We added a cancel button to the error states of the IPP flow [https://github.com/woocommerce/woocommerce-android/pull/8317]
+- [*] [Internal] Add a Zendesk tag to allow differentiating sites accessed using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/8320]
+- [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/8341]
+12.3
+-----
+- [*] Add IPP feedback banner icon for dark mode [https://github.com/woocommerce/woocommerce-android/pull/8309]
+- [**] [Internal] Improved error handling in `GetIPPFeedbackBannerData` [https://github.com/woocommerce/woocommerce-android/pull/8312]
+
+12.2
+-----
+- [*] [Internal] Update Stripe SDK terminal version to 2.16
+
+12.1
+-----
+- [*] Adds an In-Person Payments survey banner on top of the Orders view [https://github.com/woocommerce/woocommerce-android/pull/8247]
+- [***] [Internal] Start the AB test for allowing login to the app using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8204]
+
+12.0
+-----
+- [**] Add a feature of duplicating products [https://github.com/woocommerce/woocommerce-android/pull/8164]
+- [*] [Internal] Improve crash reporting for logged out state and for site credentials login [https://github.com/woocommerce/woocommerce-android/pull/8233]
+
+11.9
+-----
+- [**] Adds new profiler steps to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8097]
+- [**] Adds country picker step to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8167]
+
+11.8
+-----
+- [*] Add variations bottom sheet is fully visible right after showing up in the landscape mode [https://github.com/woocommerce/woocommerce-android/pull/8043]
+- [*] UI improvements to the products on the analytics screen [https://github.com/woocommerce/woocommerce-android/pull/8098]
+- [*] Add a feature of replying to customer reviews [https://github.com/woocommerce/woocommerce-android/pull/8045]
+- [*] Add Shortcuts for the Payments and Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/8035]
+
+11.7
+-----
+- [*] Adds a feature of bulk updating products from the product's list. [https://github.com/woocommerce/woocommerce-android/pull/8020]
+- [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow [https://github.com/woocommerce/woocommerce-android/pull/7995]
+- [*] Fix for the create a new order button jerky animation [https://github.com/woocommerce/woocommerce-android/pull/7987]
+
+11.6
+-----
+- [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
+- [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/7998]
+- [*] Fix for the broken card reader manuals links [https://github.com/woocommerce/woocommerce-android/pull/8002]
+
+11.5
+-----
+- [**] Adds a feature of generating all variations from existing attributes. [https://github.com/woocommerce/woocommerce-android/pull/7944]
+- [*][Internal] JITM: Dismiss irrelevant JITM Banner when pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7966]
+
+11.4
+-----
+- [**] [Internal] Store creation flow was improved with native implementation. It is available from the login prologue (`Get Started` CTA), login email error screen, and store picker (`Add a store` CTA from the empty stores screen or at the bottom of the store list). [Example testing steps in https://github.com/woocommerce/woocommerce-android/pull/7947]
+- [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
+- [*] [Internal] Add support for installing and connecting Jetpack natively, still behind an AB test [https://github.com/woocommerce/woocommerce-android/pull/7889]
+
+11.3
+-----
+- [*] [Internal] Remove simple payments from the orders list screen [https://github.com/woocommerce/woocommerce-android/pull/7844]
+- [*] [Internal] Red badge that indicates that payments have moved to the more menu has removed [https://github.com/woocommerce/woocommerce-android/pull/7843]
+
+11.2
+-----
+- [*] [Internal] Hide the Upsell card reader banner in the order listing screen [https://github.com/woocommerce/woocommerce-android/pull/7781]
+- [*] [Internal] Login: remove the prologue survey [https://github.com/woocommerce/woocommerce-android/pull/7762]
+
+11.1
+-----
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+- [*] [Internal] Removes the hardcoded UTM params and instead uses the fields from the JITM fetch API response as UTM params [https://github.com/woocommerce/woocommerce-android/pull/7718]
+- [*] [Internal] Simplified login: update prologue screen layout [https://github.com/woocommerce/woocommerce-android/pull/7634]
+- [*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
+- [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
+- [*] [Internal] Simplified login: update the password sceen [https://github.com/woocommerce/woocommerce-android/pull/7711]
+- [*] We improved orders search behavior. In case there are filters set on Orders page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7728]
+- [*] Adds new CTA to scan QR code from magic link email sent screen. [https://github.com/woocommerce/woocommerce-android/pull/7740]
+- [*] Bulk updating of product variations stock quantity is now supported [https://github.com/woocommerce/woocommerce-android/pull/7736]
+- [*] [Internal] Add encoded query params and phone locale while fetching JITM [https://github.com/woocommerce/woocommerce-android/pull/7737]
+
+11.0
+-----
+- [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
+- [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
+- [*] [Internal] Simplified login: update the "WP Account not found" screen [https://github.com/woocommerce/woocommerce-android/pull/7639]
+- [**] Display Just In Time Message (JITM) related to card reader purchase on the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7652]
+- [*] [Internal] IPP plugins statuses added as zendesk tags [https://github.com/woocommerce/woocommerce-android/pull/7624]
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+
+10.9
+-----
+- [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]
+- [*] [Internal] In-Person Payments: add UTM parameters to card reader purchase URLs to allow attribution [https://github.com/woocommerce/woocommerce-android/pull/7554]
+
+10.8
+-----
+[*] [Internal] Signed-in card reader purchase from upsell banner both from the orders list and selection of a payment method [https://github.com/woocommerce/woocommerce-android/pull/7535]
+
+10.7
+-----
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+- [*] Adds a new option to log in scanning the QR code embedded in the magic link email [https://github.com/woocommerce/woocommerce-android/pull/7481]
+- [**] Login: Add ability to connect Jetpack when signing with WPCom account to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7471]
+- [*] Fixes bug with visitor stats discrepancies between monthly and yearly granularities [https://github.com/wordpress-mobile/WordPress-FluxC-Android/pull/2535]
+- [*] Show an explanation when getting an account mismatch using a WP.com site [https://github.com/woocommerce/woocommerce-android/pull/7491]
+
+10.6
+-----
+- [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+
+
+10.5
+-----
+- [**] Fixed a bug that caused new products to default to one per order [https://github.com/woocommerce/woocommerce-android/pull/7450]
+- [*] We redesigned the today's stats widget [https://github.com/woocommerce/woocommerce-android/pull/7442]
+
+10.4
+-----
+- [***] We added a today's stats app widget. Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. (https://github.com/woocommerce/woocommerce-android/pull/7393)
+
+10.3
+-----
+- [*] Login: fix an issue where the app shows that Jetpack is not installed when connecting using wrong account [https://github.com/woocommerce/woocommerce-android/pull/7330]
+- [**] Login: Add ability to connect Jetpack when signing with site credentials to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7375]
+
+10.2
+-----
+-[**] In-Person Payments: Added Pay in Person toggle option in the Payments (Menu -> Payments) screen. Merchants can enable or disable "Pay in Person" from the app [https://github.com/woocommerce/woocommerce-android/pull/7280]
+- [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
+- [*] Login: "Help Center" option now show specific login-related help page if opened from certain login steps [https://github.com/woocommerce/woocommerce-android/pull/7319]
+- [*] My store stats: Save selected stats granularity in My store tab between app session and site switching [https://github.com/woocommerce/woocommerce-android/pull/7304
+- [*] [Internal] extract the account mismatch error to a standalone screen [https://github.com/woocommerce/woocommerce-android/pull/7311]
+
+10.1
+-----
+- [*] In-Person Payments: Fixed a bug when Stripe pending requirements make it impossible to manage card readers [https://github.com/woocommerce/woocommerce-android/pull/7233]
+
+10.0
+-----
+- [**] Login: Add ability to enter site address manually after signing in if the account is not connected to any stores [https://github.com/woocommerce/woocommerce-android/pull/7225]
+- [**] In-Person Payments: Show a new "Pay in Person" screen during IPP onboarding if the store has cash on delivery disabled. Give merchants an option to enable "Pay in Person" on the same screen.
+- [*] In-Person Payments: learn more button was added connection dialog [https://github.com/woocommerce/woocommerce-android/pull/7193]
+
+9.9
+-----
+- [**] Login: list non-woo sites in the site picker during login to allow installing Woo [https://github.com/woocommerce/woocommerce-android/pull/7148]
+- [**] In-Person Payments and Simple Payments have been moved to a new Payments section [https://github.com/woocommerce/woocommerce-android/pull/7150]
+- [**] Login: Users running into invalid password errors during login will receive a support/help notification after 24h from the error with email magic link option [https://github.com/woocommerce/woocommerce-android/issues/6989]
+- [**] Login: Various improvements on the screen shown after entering an invalid WordPress.com email. [https://github.com/woocommerce/woocommerce-android/issues/7121]
+
+9.8
+-----
+- [**] Orders: Now you can quickly mark an order as completed by swiping it to the left! [https://github.com/woocommerce/woocommerce-android/pull/7114]
+- [*] Login: add ability to install Woo for sites that don't have during login with address flow [https://github.com/woocommerce/woocommerce-android/pull/7090]
+- [**] Users will now receive notifications with help info and actions 24h after running into some issue during login [https://github.com/woocommerce/woocommerce-android/pull/7072]
+
+9.7
+-----
+- [***] The product list now enables searching by SKU
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
+- [***] In-Person Payments: Display Upsell Card reader banner in the Payment, Order List, and Settings screen for the stores set up in the US and Canada [https://github.com/woocommerce/woocommerce-android/pull/6984]
+- [***] Order detail now enables viewing custom fields (metadata) for the order [https://github.com/woocommerce/woocommerce-android/pull/6993]
+- [***] Orders: Orders can now be edited within the app. [https://github.com/woocommerce/woocommerce-android/pull/6987]
+- [**] You can now search customers when creating or editing an order. [https://github.com/woocommerce/woocommerce-android/pull/6999]
+- [*] Fixed a bug that resulted in not showing ongoing image uploads in product details. [https://github.com/woocommerce/woocommerce-android/pull/6964]
+- [*] Login: Jetpack setup flow is now accessible from the Login with Store Address flow. [https://github.com/woocommerce/woocommerce-android/pull/7015]
+
+9.6
+-----
+- [*] New "What is WordPress.com?" link in login with email screen, to provide better context of why WordPress.com account is needed during login [https://github.com/woocommerce/woocommerce-android/pull/6891]
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
+- [**] Order Details: All unpaid orders have a Collect Payment button, which shows a payment method selection screen. Choices are Cash, Card, and Payment Link. [https://github.com/woocommerce/woocommerce-android/pull/6861]
+- [**] In-Person Payments: Support for selecting preferred payment gateway when multiple extensions are installed on the store. [https://github.com/woocommerce/woocommerce-android/pull/6887]
+- [*] In-Person Payments: Update phrasing of IPP description [https://github.com/woocommerce/woocommerce-android/pull/6867]
+- [*] Login: add a "new to woocommerce" button to the prologue [https://github.com/woocommerce/woocommerce-android/pull/6947]
+
+9.5
+-----
+- [*] Coupon Management: Merchants can now edit the existing coupons just like on the web (must be enabled in Beta Features) [https://github.com/woocommerce/woocommerce-android/pull/6825]
+
+
+9.4
+-----
+
+
+9.3
+-----
+- [*] In-Person Payments: Individual Card Reader Manual tabs removed from IPP Screen and moved to the new screen `Card Reader Manuals` [https://github.com/woocommerce/woocommerce-android/pull/6518]
+- [*] Show "We don't support stripe in Canada" when both WCPay and Stripe are active [https://github.com/woocommerce/woocommerce-android/pull/6573]
+- [***] In-Person Payments: In-Person Payments in Canada is now available for public! [https://github.com/woocommerce/woocommerce-android/pull/6579]
+- [*] In-Person Payments: Removed unnecessary notification when interac refund is initiated [https://github.com/woocommerce/woocommerce-android/pull/6601]
+- [*] In-Person Payments: Do not connect to the last know reader automatically after logout and site change [https://github.com/woocommerce/woocommerce-android/pull/6616]
+
+9.2
+-----
+- [*] In-Person Payments: update the reader's battery level when it's changed on the card reader's details screen
+- [*] In-Person Payments: In cases when IPP onboarding is not completed, we show the details about what's wrong right away, without making a network call
+- [*] Fixed a bug that caused decimal values to be rounded when the decimal separator was a comma [https://github.com/woocommerce/woocommerce-android/pull/6426]
+- [*] Most of the fields in order detail now support long press to copy to the clipboard [https://github.com/woocommerce/woocommerce-android/pull/6430]
+- [*] Fixed a crash when trying to remove an unsynchronized product in a new synced order [https://github.com/woocommerce/woocommerce-android/pull/6459]
+
+9.1
+-----
+- [**] Variation Detail: Don't clear price on attribute/visibility/inventory change. [https://github.com/woocommerce/woocommerce-android/compare/issue/6345-fix-price-on-variations-2?expand=1]
+- [*] Introduced Location permission rationale dialog in IPP connection flow
+[***] Merchants can now view coupons in their stores by enabling Coupon Management in Beta Features. [https://github.com/woocommerce/woocommerce-android/pull/6318]
+
+9.0
+-----
+- [*] Fixes a bug that caused the scheduled sale dates of a product to be different than the selected dates. [https://github.com/woocommerce/woocommerce-android/pull/6188]
+
+8.9
+-----
+- [*] Fixed an issue to update the product price to zero, if required. [https://github.com/woocommerce/woocommerce-android/pull/6039]
+- [*] Added support for moderating reviews of specific products from the Product Details screen. [https://github.com/woocommerce/woocommerce-android/pull/6070]
+- [*] In-Person Payments: Removed collecting L2/L3 data. [https://github.com/woocommerce/woocommerce-android/pull/6084]
+- [***] Order Creation is now available for the general public making possible to fully create custom orders directly from the app [https://github.com/woocommerce/woocommerce-android/pull/6092]
+
+8.8
+-----
+
+8.7
+-----
+- [*] Fixed an issue where on rare cases the app might end up displaying order notes for the wrong note. [https://github.com/woocommerce/woocommerce-android/pull/5971]
+- [*] In-Person Payments: Add support for accepting payments on bookable products
+- [***] Beta Feature: Order Creation is now improved, supporting Fees and Shipping costs.
+
+8.6
+-----
+- [**] In-Person Payments: Add support for Stripe by WooCommerce extension
+- [***] All merchants can create Simple Payments orders. [https://github.com/woocommerce/woocommerce-android/issues/5804]
+- [***] Introduced a new main navigation tab called "More", where you can browse different sub-sections of the app: Switch Store, Settings, WooCommerce Admin, View Store and Reviews. [https://github.com/woocommerce/woocommerce-android/pull/5897]
+
+8.5
+-----
+- [***] Beta Feature: It's now possible to create Orders from the app. For now only including products, customer notes, shipping and billing addresses.
+- [***] Store admins can now access sites with plugins that have Jetpack Connection Package (e.g. WooCommerce Payments, Jetpack Backup) in the app. These sites do not require Jetpack-the-plugin to connect anymore. Store admins can still install Jetpack-the-plugin from the app through settings or a Jetpack banner. [https://github.com/woocommerce/woocommerce-android/pull/5771]
+
+8.4
+-----
+- [*] New Home Screen UI. Store stats are now shown in a line chart, new stats have been added such as conversion rate and revenue stats are not rounded anymore.
+- [*] Fixed an issue which resulted in showing wrong order prices if the store used more than 2 digits for price formatting [https://github.com/woocommerce/woocommerce-android/pull/5612]
+- [***] Fixed a bug that resulted in crashing app on start after upgrading from 7.4 or 7.5
+
+8.3
+-----
+- [*] App Settings: Updated the About screen
+- [**] Refunds: Add support for refunding fees
+
+8.2
+-----
+- [*] In-Person Payments: Better error handling
+
+
+8.1
+-----
+- [***] Order list filters: Merchants can now filter orders by status or date range [https://github.com/woocommerce/woocommerce-android/issues/4934]
+
+8.0
+-----
+- [***] In-Person Payments: Support of Stripe M2 Card Reader
+- [***] In-Person Payments: Some firmware updates are required and update will be started automatically
+- [**] In-Person Payments: Improved Accessibility
+
+7.9
+-----
+[**] Merchants can now edit Customer Notes, shipping, and billing addresses from orders. [https://github.com/woocommerce/woocommerce-android/pull/5106]
+
+7.8
+-----
+- [*] In-Person Payments: Long click on the readers name copies it to the clipboard
+- [*] In-Person Payments: Firmware version fully visible
+- [*] App is now able to display new feature announcement after app upgrade. [https://github.com/woocommerce/woocommerce-android/pull/5019]
+
+7.7
+-----
+- [***] In-Person Payments: Added support for accepting In-Person Card Payments in the US
+- [*] Help & Support: A site's System Status Report can now be found, copied, and shared from Settings > Help & Support > System Status Report [https://github.com/woocommerce/woocommerce-android/pull/4890]
+
+7.6.1
+-----
+- [*] Reverted the support for multi store notifications due to a bug with new order notifications not being received.
 
 7.6
 -----
-
+- [***] Product Images: uploading will continue now in background to allow merchants to continue their other tasks without getting blocked [https://github.com/woocommerce/woocommerce-android/pull/4720]
+- [*] Fixed a bug that resulted in a failure when purchasing DHL shipping labels under some circumstances.
+- [*] Due to popular demand, we have added support to receive push notifications for all the stores that you are logged into from the app. [https://github.com/woocommerce/woocommerce-android/pull/4673]
 
 7.5
 -----
 - [***] Merchants using WooCommerce Product Add-ons in their store can view Add-on information at Orders and Products views [https://github.com/woocommerce/woocommerce-android/pull/4689]
 - [*] Products: Filtering by category is now available. [https://github.com/woocommerce/woocommerce-android/pull/4715]
 - [*] Fixed a bug where a new order notification opened incorrect order detail info. [https://github.com/woocommerce/woocommerce-android/pull/4635]
-
 
 7.4
 -----

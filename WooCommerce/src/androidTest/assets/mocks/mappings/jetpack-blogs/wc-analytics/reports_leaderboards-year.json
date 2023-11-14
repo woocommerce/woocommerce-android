@@ -1,13 +1,19 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "json": {
         "equalTo": "true"
       },
       "path": {
-        "matches": "\/wc-analytics\/leaderboards\/(.*)&interval=year(.*)"
+        "matches": "/wc-analytics/leaderboards/(.*)"
+      },
+      "query": {
+        "matches": "(.*)interval\":\"year(.*)"
+      },   
+      "locale": {
+        "matches": "(.*)"
       }
     }
   },
@@ -93,31 +99,31 @@
             "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2130'>Black Coral shades<\/a>",
             "value": "Black Coral shades"
           }, {
-            "display": "17",
-            "value": 17
+            "display": "67",
+            "value": 67
           }, {
             "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>2,550.00<\/bdi><\/span>",
-            "value": 2550
+            "value": 25450
           }],
           [{
             "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2123'>Malaya shades<\/a>",
             "value": "Malaya shades"
           }, {
-            "display": "11",
-            "value": 11
+            "display": "34",
+            "value": 34
           }, {
             "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>1,540.00<\/bdi><\/span>",
-            "value": 1540
+            "value": 15840
           }],
           [{
             "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2131'>Colorado shades<\/a>",
             "value": "Colorado shades"
           }, {
-            "display": "5",
-            "value": 5
+            "display": "45",
+            "value": 54
           }, {
             "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>500.00<\/bdi><\/span>",
-            "value": 500
+            "value": 7890
           }]
         ]
       }]

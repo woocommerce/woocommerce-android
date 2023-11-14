@@ -42,7 +42,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/products_total"/>
+                    android:text="@string/products_total" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_productsTotal"
@@ -69,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/minor_100"
-                    android:text="@string/discount"/>
+                    android:text="@string/discount" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_discountItems"
@@ -83,6 +83,44 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_discountTotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/minor_100"
+                    tools:text="-$4.00"/>
+            </LinearLayout>
+
+            <!-- Gift Cards -->
+            <LinearLayout
+                android:id="@+id/paymentInfo_giftCardSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblGiftCards"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/minor_100"
+                    android:text="@string/gift_cards" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_giftCardItems"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/minor_00"
+                    android:layout_marginEnd="@dimen/minor_00"
+                    android:layout_weight="1"
+                    tools:text="(NZR8-67YT-XZGF-FFG9,\nFGRT-6789-KJUY-OILK9\nERT5-UIY7-IOU8-MNB0)"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_giftCardTotal"
                     style="@style/Woo.Card.Body.High"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -105,7 +143,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/orderdetail_payment_fees"/>
+                    android:text="@string/orderdetail_payment_fees" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_Fees"
@@ -129,7 +167,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/shipping"/>
+                    android:text="@string/shipping" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_shippingTotal"
@@ -153,7 +191,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/taxes"/>
+                    android:text="@string/taxes" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_taxesTotal"
@@ -178,7 +216,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/order_total"/>
+                    android:text="@string/order_total" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_total"
@@ -202,6 +240,7 @@
 
                 <!-- Paid by customer -->
                 <LinearLayout
+                    android:id="@+id/paymentInfo_amountPaidSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/major_75"
@@ -214,7 +253,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/orderdetail_payment_paid_by_customer"/>
+                        android:text="@string/orderdetail_payment_paid_by_customer" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/paymentInfo_paid"
@@ -227,7 +266,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentInfo_paymentMsg"
                     style="@style/Woo.Card.Body"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_50"
                     android:layout_marginBottom="@dimen/major_75"
@@ -251,8 +290,7 @@
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
                     tools:itemCount="3"
-                    tools:listitem="@layout/order_detail_refund_payment_item"
-                    tools:targetApi="lollipop" />
+                    tools:listitem="@layout/order_detail_refund_payment_item" />
 
                 <!-- Refund total -->
                 <LinearLayout
@@ -283,7 +321,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="@string/orderdetail_refunded"/>
+                            android:text="@string/orderdetail_refunded" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/paymentInfo_refundTotal"
@@ -317,7 +355,7 @@
                         android:layout_marginTop="@dimen/major_75"
                         android:layout_marginBottom="@dimen/major_75"
                         android:layout_weight="1"
-                        android:text="@string/orderdetail_net"/>
+                        android:text="@string/orderdetail_net" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/paymentInfo_newTotal"
@@ -331,14 +369,11 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Refund button section -->
+        <!-- Refund button & In-Person Payments section -->
         <LinearLayout
-            android:id="@+id/paymentInfo_issueRefundButtonSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:orientation="vertical">
 
             <!-- See Receipt button -->
             <com.google.android.material.button.MaterialButton
@@ -386,7 +421,7 @@
                 android:textColor="@color/color_on_surface_medium"
                 android:layout_marginVertical="@dimen/major_100"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_info_outline_24dp"
+                android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
                 android:drawablePadding="@dimen/major_100"
                 android:background="?attr/selectableItemBackground"
                 android:layout_marginEnd="@dimen/major_100"

@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.ShippingLabelAddressMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
@@ -23,16 +23,17 @@ import javax.inject.Inject
 
 class ShippingLabelAddressValidator @Inject constructor(
     private val shippingLabelStore: WCShippingLabelStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val shippingLabelAddressMapper: ShippingLabelAddressMapper,
 ) {
     suspend fun validateAddress(
         address: Address,
         type: AddressType,
-        requiresPhoneNumber: Boolean
+        isCustomsFormRequired: Boolean
     ): ValidationResult {
         return when {
             isNameMissing(address) -> ValidationResult.NameMissing
-            requiresPhoneNumber && !address.phone.isValidPhoneNumber(type) -> ValidationResult.PhoneInvalid
+            !address.phone.isValidPhoneNumber(type, isCustomsFormRequired) -> ValidationResult.PhoneInvalid
             else -> verifyAddress(address, type)
         }
     }
@@ -48,7 +49,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
         if (result.isError) {
             AnalyticsTracker.track(
-                Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                 mapOf("error" to result.error.type.name)
             )
 
@@ -57,32 +58,35 @@ class ShippingLabelAddressValidator @Inject constructor(
         return when (val validationResult = result.model) {
             null -> {
                 AnalyticsTracker.track(
-                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                     mapOf("error" to "response_model_null")
                 )
 
                 ValidationResult.Error(GENERIC_ERROR)
             }
+
             is InvalidRequest -> {
                 AnalyticsTracker.track(
-                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                     mapOf("error" to "address_not_found")
                 )
 
                 ValidationResult.NotFound(validationResult.message)
             }
+
             is InvalidAddress -> {
                 AnalyticsTracker.track(
-                    Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
+                    AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
                     mapOf("error" to "invalid_address")
                 )
 
                 ValidationResult.Invalid(validationResult.message)
             }
+
             is WCAddressVerificationResult.Valid -> {
-                AnalyticsTracker.track(Stat.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
+                AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
                 val suggestion =
-                    validationResult.suggestedAddress.toAppModel()
+                    validationResult.suggestedAddress.let { shippingLabelAddressMapper.toAppModel(it) }
                 if (suggestion.toString() != address.toString()) {
                     ValidationResult.SuggestedChanges(suggestion, validationResult.isTrivialNormalization)
                 } else {
@@ -133,19 +137,38 @@ class ShippingLabelAddressValidator @Inject constructor(
 }
 
 /**
- * Checks whether the phone number is valid or not, depending on the [addressType], the check is:
- * - [ORIGIN]: Checks whether the phone number contains 10 digits exactly after deleting an optional 1 as
- *             the area code.
- * - [DESTINATION]: Checks whether the phone has any digits.
+ * Checks whether the phone number is valid or not, depending on the [addressType] and [isCustomsFormRequired].
+ * The logic of the check is:
+ * - [ORIGIN]:
+ *    - If a customs form is required, then checks whether the phone number contains 10 digits exactly after deleting
+ *      an optional 1 as the area code.
+ *      As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
+ *      and that's similar to what the web client does.
+ *      Source: https://github.com/Automattic/woocommerce-services/issues/1351
+ *    - If no customs form is required, then checks whether the phone number is not blank.
+ *      Check ticket for discussion on why https://github.com/woocommerce/woocommerce-android/issues/8578
  *
- * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
- * and that's similar to what the web client does.
- * Source: https://github.com/Automattic/woocommerce-services/issues/1351
+ * - [DESTINATION]:
+ *   - If a customs form is required, then checks whether the phone has any digits.
+ *   - If no customs form is required, then the phone number not required, so no validation is needed.
  */
 @Suppress("MagicNumber")
-fun String.isValidPhoneNumber(addressType: AddressType): Boolean {
+fun String.isValidPhoneNumber(addressType: AddressType, isCustomsFormRequired: Boolean): Boolean {
     return when (addressType) {
-        ORIGIN -> replace(Regex("^1|[^\\d]"), "").length == 10
-        DESTINATION -> contains(Regex("\\d"))
+        ORIGIN -> {
+            if (isCustomsFormRequired) {
+                replace(Regex("^1|[^\\d]"), "").length == 10
+            } else {
+                isNotBlank()
+            }
+        }
+
+        DESTINATION -> {
+            if (isCustomsFormRequired) {
+                contains(Regex("\\d"))
+            } else {
+                true
+            }
+        }
     }
 }

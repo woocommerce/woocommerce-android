@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.orders
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.view.View
 import android.widget.PopupMenu
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -19,12 +18,7 @@ object OrderShipmentTrackingHelper {
         trackingNumber: String
     ) {
         try {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(
-                ClipData.newPlainText(
-                    context.getString(R.string.order_shipment_tracking_number), trackingNumber
-                )
-            )
+            context.copyToClipboard(context.getString(R.string.order_shipment_tracking_number), trackingNumber)
             ToastUtils.showToast(context, R.string.order_shipment_tracking_number_clipboard)
         } catch (e: Exception) {
             WooLog.e(WooLog.T.UTILS, e)
@@ -54,7 +48,7 @@ object OrderShipmentTrackingHelper {
             isVisible = trackingLink.isNotEmpty()
             setOnMenuItemClickListener {
                 AnalyticsTracker.track(
-                    Stat.SHIPMENT_TRACKING_MENU_ACTION,
+                    AnalyticsEvent.SHIPMENT_TRACKING_MENU_ACTION,
                     mapOf(
                         AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_TRACK
                     )
@@ -66,7 +60,7 @@ object OrderShipmentTrackingHelper {
 
         popup.menu.findItem(R.id.menu_copy_tracking)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(
-                Stat.SHIPMENT_TRACKING_MENU_ACTION,
+                AnalyticsEvent.SHIPMENT_TRACKING_MENU_ACTION,
                 mapOf(
                     AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_SHIPMENT_COPY
                 )

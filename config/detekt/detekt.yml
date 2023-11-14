@@ -3,12 +3,14 @@ build:
 
 complexity:
   LargeClass:
-    excludes: ['**/test/**']
+    excludes: [ '**/test/**' ]
   LongParameterList:
     ignoreDefaultParameters: true
-    ignoreAnnotated: ['Inject']
+    ignoreAnnotated: [ 'Inject', 'Composable' ]
   TooManyFunctions:
-    ignoreOverridden: true
+    active: false
+  LongMethod:
+    ignoreAnnotated: [ 'Composable' ]
 
 formatting:
   active: true
@@ -16,9 +18,21 @@ formatting:
   Indentation:
     active: true
     autoCorrect: true
-  NoWildcardImports:
-    active: false
+  MaximumLineLength:
+    active: true
+    ignoreBackTickedIdentifier: true
 
 style:
-  WildcardImport:
+  UnnecessaryAbstractClass:
+    active: true
+    ignoreAnnotated: [ 'Module' ]
+  MagicNumber:
+    ignoreAnnotated: [ 'Composable' ]
+  UnusedPrivateMember:
+    ignoreAnnotated: [ 'Preview' ]
+  MaxLineLength:
     active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: [ 'Composable' ]

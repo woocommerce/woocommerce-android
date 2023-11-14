@@ -17,7 +17,7 @@
         android:title="@string/products" />
 
     <item
-        android:id="@+id/reviews"
-        android:icon="@drawable/as_menu_reviews"
-        android:title="@string/review_notifications" />
+        android:id="@+id/moreMenu"
+        android:icon="@drawable/as_menu_more"
+        android:title="@string/more_menu" />
 </menu>

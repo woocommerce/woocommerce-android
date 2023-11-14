@@ -62,7 +62,7 @@
         android:layout_marginTop="@dimen/major_75"
         android:layout_marginBottom="@dimen/major_75"
         android:background="@drawable/refund_product_item_qty_bg"
-        android:gravity="center"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -63,6 +63,7 @@ open class ConfirmationDialog : DialogFragment(), DialogInterface.OnClickListene
         super.onDismiss(dialog)
     }
 
+    @Suppress("DEPRECATION")
     open fun returnResult(result: Boolean) {
         val target = targetFragment
         val resultIntent = Intent()

@@ -1,19 +1,35 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.media.ProductImagesService.Companion.OnProductImagesUpdateCompletedEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -24,7 +40,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -34,16 +53,18 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    mediaFileUploadHandler: MediaFileUploadHandler,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
@@ -73,6 +94,11 @@ class ProductListViewModel @Inject constructor(
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
 
         selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
+
+        // Reload products if any image changes occur
+        mediaFileUploadHandler.observeProductImageChanges()
+            .onEach { loadProducts() }
+            .launchIn(this)
     }
 
     override fun onCleared() {
@@ -83,12 +109,23 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
+    fun isSelecting() = viewState.productListState == ProductListState.Selecting
+
+    fun isSkuSearch() = isSearching() && viewState.isSkuSearch
+
     private fun isLoading() = viewState.isLoading == true
 
     fun getSearchQuery() = viewState.query
 
-    fun onSearchQueryChanged(query: String) {
-        viewState = viewState.copy(query = query, isEmptyViewVisible = false)
+    fun onSearchQueryChanged(
+        query: String,
+    ) {
+        // If the view is not searching, ignore this change
+        if (!isSearching()) return
+        viewState = viewState.copy(
+            query = query,
+            isEmptyViewVisible = false
+        )
 
         if (query.length > 2) {
             onSearchRequested()
@@ -115,7 +152,7 @@ class ProductListViewModel @Inject constructor(
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
             productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
             productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
-            productCategoryName?. let {
+            productCategoryName?.let {
                 selectedCategoryName = it
                 savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = it
             }
@@ -138,7 +175,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(
             ShowProductFilterScreen(
                 productFilterOptions[ProductFilterOption.STOCK_STATUS],
@@ -151,39 +188,41 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSortButtonTapped() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         triggerEvent(ShowProductSortingBottomSheet)
     }
 
     fun onRefreshRequested() {
-        AnalyticsTracker.track(Stat.PRODUCT_LIST_PULLED_TO_REFRESH)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
     }
 
     fun onAddProductButtonClicked() {
         launch {
-            cancelSearch()
-
-            AnalyticsTracker.track(Stat.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
             triggerEvent(ShowAddProductBottomSheet)
         }
     }
 
-    private suspend fun cancelSearch() {
-        searchJob?.cancelAndJoin()
-        viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
-        _productList.value = productRepository.getProductList()
-    }
-
     fun onSearchOpened() {
         _productList.value = emptyList()
-        viewState = viewState.copy(isSearchActive = true)
+        viewState = viewState.copy(
+            isSearchActive = true,
+            displaySortAndFilterCard = false,
+            isAddProductButtonVisible = false
+        )
     }
 
     fun onSearchClosed() {
         launch {
             searchJob?.cancelAndJoin()
-            viewState = viewState.copy(query = null, isSearchActive = false, isEmptyViewVisible = false)
+            viewState = viewState.copy(
+                query = null,
+                isSearchActive = false,
+                isEmptyViewVisible = false,
+                displaySortAndFilterCard = true,
+                isAddProductButtonVisible = true
+            )
             loadProducts()
         }
     }
@@ -192,10 +231,27 @@ class ProductListViewModel @Inject constructor(
         loadProducts(loadMore = true)
     }
 
+    fun onSearchTypeChanged(isSkuSearch: Boolean) {
+        viewState = viewState.copy(isSkuSearch = isSkuSearch)
+        viewState.query?.let { query ->
+            if (query.length > 2) {
+                onSearchRequested()
+            }
+        }
+    }
+
     fun onSearchRequested() {
+        val searchFilter = if (viewState.isSkuSearch) {
+            AnalyticsTracker.VALUE_SEARCH_SKU
+        } else {
+            AnalyticsTracker.VALUE_SEARCH_ALL
+        }
         AnalyticsTracker.track(
-            Stat.PRODUCT_LIST_SEARCHED,
-            mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH to viewState.query,
+                AnalyticsTracker.KEY_SEARCH_FILTER to searchFilter
+            )
         )
         refreshProducts()
     }
@@ -210,12 +266,13 @@ class ProductListViewModel @Inject constructor(
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
             /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = products.isNotEmpty(),
+            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
 
-    final fun loadProducts(
+    @Suppress("LongMethod")
+    fun loadProducts(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false,
         isRefreshing: Boolean = false
@@ -236,7 +293,7 @@ class ProductListViewModel @Inject constructor(
             // the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
                 if (checkConnection()) {
                     viewState = viewState.copy(
                         isLoading = true,
@@ -244,9 +301,16 @@ class ProductListViewModel @Inject constructor(
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
                         displaySortAndFilterCard = false,
-                        isAddProductButtonVisible = false
+                        isAddProductButtonVisible = false,
                     )
-                    fetchProductList(viewState.query, loadMore = loadMore)
+                    fetchProductList(
+                        viewState.query,
+                        skuSearchOptions = if (viewState.isSkuSearch)
+                            SkuSearchOptions.PartialMatch
+                        else
+                            SkuSearchOptions.Disabled,
+                        loadMore = loadMore
+                    )
                 }
             }
         } else {
@@ -275,7 +339,7 @@ class ProductListViewModel @Inject constructor(
                         isEmptyViewVisible = false,
                         isRefreshing = isRefreshing,
                         displaySortAndFilterCard = !showSkeleton,
-                        isAddProductButtonVisible = !showSkeleton
+                        isAddProductButtonVisible = false
                     )
                     fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
                 }
@@ -301,8 +365,14 @@ class ProductListViewModel @Inject constructor(
                     else -> false
                 }
             } else {
-                true
+                !isSearching() && !isSelecting()
             }
+
+        val shouldShowEmptyView = if (isSearching()) {
+            viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
+        } else {
+            _productList.value?.isEmpty() == true
+        }
 
         viewState = viewState.copy(
             isSkeletonShown = false,
@@ -310,9 +380,10 @@ class ProductListViewModel @Inject constructor(
             isLoadingMore = false,
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
-            isEmptyViewVisible = _productList.value?.isEmpty() == true,
+            isEmptyViewVisible = shouldShowEmptyView,
             isAddProductButtonVisible = shouldShowAddProductButton,
-            displaySortAndFilterCard = productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true
+            displaySortAndFilterCard = !isSearching() &&
+                (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
         )
     }
 
@@ -331,6 +402,41 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun onSelectionChanged(count: Int) {
+        when {
+            count == 0 -> exitSelectionMode()
+            count > 0 && !isSelecting() -> enterSelectionMode(count)
+            count > 0 -> viewState = viewState.copy(selectionCount = count)
+        }
+    }
+
+    fun onRestoreSelection(selectedProductsIds: List<Long>) {
+        triggerEvent(SelectProducts(selectedProductsIds))
+    }
+
+    fun onSelectAllProductsClicked() {
+        analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
+        productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
+            triggerEvent(SelectProducts(allLoadedProductsIds))
+        }
+    }
+
+    fun enterSelectionMode(count: Int) {
+        viewState = viewState.copy(
+            productListState = ProductListState.Selecting,
+            isAddProductButtonVisible = false,
+            selectionCount = count
+        )
+    }
+
+    fun exitSelectionMode() {
+        viewState = viewState.copy(
+            productListState = ProductListState.Browsing,
+            isAddProductButtonVisible = true,
+            selectionCount = null
+        )
+    }
+
     fun refreshProducts(scrollToTop: Boolean = false) {
         if (checkConnection()) {
             loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
@@ -339,21 +445,36 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    @Suppress("NestedBlockDepth")
     private suspend fun fetchProductList(
         searchQuery: String? = null,
+        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (searchQuery.isNullOrEmpty()) {
-            _productList.value = productRepository.fetchProductList(loadMore, productFilterOptions)
-        } else {
-            productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+        if (!isSearching()) {
+            val products = productRepository.fetchProductList(loadMore, productFilterOptions)
+            // don't update the product list if a search was initiated while fetching
+            if (isSearching()) {
+                WooLog.i(WooLog.T.PRODUCTS, "Search initiated while fetching products")
+            } else {
+                _productList.value = products
+            }
+        } else if (searchQuery?.isNotEmpty() == true) {
+            productRepository.searchProductList(
+                searchQuery = searchQuery,
+                skuSearchOptions = skuSearchOptions,
+                loadMore = loadMore,
+                productFilterOptions = productFilterOptions
+            )?.let { products ->
                 // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery) {
+                if (searchQuery == productRepository.lastSearchQuery &&
+                    skuSearchOptions == productRepository.lastIsSkuSearch
+                ) {
                     if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + fetchedProducts
+                        _productList.value = _productList.value.orEmpty() + products
                     } else {
-                        _productList.value = fetchedProducts
+                        _productList.value = products
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
@@ -401,17 +522,122 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnProductImagesUpdateCompletedEvent) {
-        loadProducts()
-    }
-
-    @Suppress("unused")
+    @Suppress("unused", "UNUSED_PARAMETER")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshProducts(event: OnProductSortingChanged) {
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
         refreshProducts(scrollToTop = true)
+    }
+
+    fun onUpdateStatusConfirmed(
+        selectedProductsRemoteIds: List<Long>,
+        newStatus: ProductStatus,
+    ) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
+            onSuccess = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                )
+            },
+            onFailure = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                )
+            },
+            successMessage = R.string.product_bulk_update_status_updated
+        )
+    }
+
+    fun onUpdatePriceConfirmed(
+        selectedProductsRemoteIds: List<Long>,
+        newPrice: String,
+    ) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                KEY_PROPERTY to VALUE_PRICE,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
+            onSuccess = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                )
+            },
+            onFailure = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                )
+            },
+            successMessage = R.string.product_bulk_update_price_updated
+        )
+    }
+
+    private fun bulkUpdateProducts(
+        update: suspend () -> RequestResult,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit,
+        @StringRes successMessage: Int
+    ) {
+        launch {
+            viewState = viewState.copy(isRefreshing = true)
+            when (update.invoke()) {
+                RequestResult.SUCCESS -> {
+                    onSuccess()
+                    refreshProducts()
+                    exitSelectionMode()
+                    triggerEventWithDelay(
+                        event = ShowSnackbar(successMessage),
+                        delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
+                    )
+                }
+                else -> {
+                    exitSelectionMode()
+                    onFailure()
+                    triggerEventWithDelay(
+                        event = ShowSnackbar(R.string.error_generic),
+                        delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
+                    )
+                }
+            }
+            viewState = viewState.copy(isRefreshing = false)
+        }
+    }
+
+    fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_PRICE,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        triggerEvent(ShowUpdateDialog.Price(selectedProductsRemoteIds))
+    }
+
+    fun onBulkUpdateStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
     }
 
     object OnProductSortingChanged
@@ -424,13 +650,22 @@ class ProductListViewModel @Inject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val query: String? = null,
+        val isSkuSearch: Boolean = false,
         val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
-        val isAddProductButtonVisible: Boolean? = null
-    ) : Parcelable
+        val isAddProductButtonVisible: Boolean? = null,
+        val productListState: ProductListState? = null,
+        val selectionCount: Int? = null
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
+
+        @IgnoredOnParcel
+        val isFilteringActive = filterCount != null && filterCount > 0
+    }
 
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
@@ -443,5 +678,14 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
+        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+        sealed class ShowUpdateDialog : ProductListEvent() {
+            abstract val productsIds: List<Long>
+
+            data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
+            data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
+        }
     }
+
+    enum class ProductListState { Selecting, Browsing }
 }

@@ -1,5 +1,7 @@
 package com.woocommerce.android.extensions
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 
 fun <T> MutableLiveData<MutableList<T>>.addNewItem(item: T) {
@@ -33,4 +35,28 @@ fun <T> MutableLiveData<MutableList<T>>.getList(): MutableList<T> =
 
 fun <T> MutableLiveData<MutableList<T>>.clearList() {
     this.value?.clear()
+}
+
+fun <T> LiveData<T>.drop(number: Int): LiveData<T> {
+    val outputLiveData: MediatorLiveData<T> = MediatorLiveData<T>()
+    var remainingItemsToSkip: Int = number
+    outputLiveData.addSource(this) {
+        if (it == null) return@addSource
+        if (remainingItemsToSkip != 0) {
+            remainingItemsToSkip--
+            return@addSource
+        }
+        outputLiveData.value = it
+    }
+    return outputLiveData
+}
+
+fun <T : Any> LiveData<T?>.filterNotNull(): LiveData<T> {
+    val mediator = MediatorLiveData<T>()
+    mediator.addSource(this) {
+        if (it != null) {
+            mediator.value = it
+        }
+    }
+    return mediator
 }

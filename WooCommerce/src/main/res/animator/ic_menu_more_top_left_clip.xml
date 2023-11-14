@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <objectAnimator
+        android:duration="200"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:propertyName="pathData"
+        android:valueFrom="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 6.5 9.25 C 4.981 9.25 3.75 8.019 3.75 6.5 C 3.75 4.981 4.981 3.75 6.5 3.75 C 8.019 3.75 9.25 4.981 9.25 6.5 C 9.25 8.019 8.019 9.25 6.5 9.25 Z"
+        android:valueTo="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+    <objectAnimator
+        android:duration="300"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:propertyName="pathData"
+        android:startOffset="350"
+        android:valueFrom="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 C 6.5 6.5 6.5 6.5 6.5 6.5 Z"
+        android:valueTo="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+    <objectAnimator
+        android:duration="200"
+        android:interpolator="@android:interpolator/fast_out_slow_in"
+        android:propertyName="pathData"
+        android:startOffset="800"
+        android:valueFrom="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 C 17.5 6.5 17.5 6.5 17.5 6.5 Z"
+        android:valueTo="M 0 0 L 0 24 L 24 24 L 24 0 L 0 0 Z M 17.5 9.25 C 15.981 9.25 14.75 8.019 14.75 6.5 C 14.75 4.981 15.981 3.75 17.5 3.75 C 19.019 3.75 20.25 4.981 20.25 6.5 C 20.25 8.019 19.019 9.25 17.5 9.25 Z"
+        android:valueType="pathType">
+    </objectAnimator>
+
+</set>

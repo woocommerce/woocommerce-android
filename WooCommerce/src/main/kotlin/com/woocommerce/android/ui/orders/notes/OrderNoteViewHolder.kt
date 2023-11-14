@@ -14,7 +14,7 @@ class HeaderItemViewHolder(val viewBinding: OrderDetailNoteListHeaderBinding) : 
 }
 
 class NoteItemViewHolder(val viewBinding: OrderDetailNoteListNoteBinding) : OrderNoteViewHolder(viewBinding) {
-    fun bind(item: OrderNoteListItem.Note, isLast: Boolean) {
-        viewBinding.noteItemView.initView(item.note, isLast)
+    fun bind(item: OrderNoteListItem.Note) {
+        viewBinding.noteItemView.initView(item.note)
     }
 }

@@ -76,6 +76,7 @@ abstract class AppUpgradeActivity :
         appUpdateManager.unregisterListener(this)
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RequestCodes.IN_APP_UPDATE) {

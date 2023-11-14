@@ -45,9 +45,9 @@ class PropertyGroupViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(par
         }
 
         if (item.isHighlighted) {
-            itemView.setForegroundColor(ContextCompat.getColor(context, R.color.warning_banner_foreground_color))
+            propertyView.setForegroundColor(ContextCompat.getColor(context, R.color.warning_banner_foreground_color))
         } else {
-            itemView.resetColors()
+            propertyView.resetColors()
         }
 
         val divider = propertyView.findViewById<View>(R.id.divider)

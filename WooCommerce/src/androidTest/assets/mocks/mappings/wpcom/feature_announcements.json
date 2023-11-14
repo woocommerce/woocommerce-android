@@ -1,0 +1,13 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/wpcom/v2/mobile/feature-announcements/(.*)",
+        "queryParameters": { }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+            "announcements": []
+        }
+    }
+}

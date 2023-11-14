@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
 
     <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
         android:id="@+id/switchAddonsToggle"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:toggleOptionDesc="@string/settings_enable_product_addons_teaser_message"
         app:toggleOptionTitle="@string/settings_enable_product_addons_teaser_title" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <View style="@style/Woo.Divider" />
+
+</LinearLayout>

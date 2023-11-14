@@ -9,8 +9,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintLabelCustomsFormBinding
@@ -23,9 +24,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.PrintCustomsFormAdapter.PrintCustomsFormViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -68,7 +67,7 @@ class PrintShippingLabelCustomsFormFragment :
                 binding.printButton.isVisible = !it
             }
             new.commercialInvoices.takeIfNotEqualTo(old?.commercialInvoices) {
-                invoicesAdapter.invoices = it
+                invoicesAdapter.submitList(it)
             }
         }
 
@@ -128,13 +127,7 @@ class PrintShippingLabelCustomsFormFragment :
 
 class PrintCustomsFormAdapter(
     private val onPrintClicked: (String) -> Unit
-) : RecyclerView.Adapter<PrintCustomsFormViewHolder>() {
-    var invoices: List<String> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
+) : ListAdapter<String, PrintCustomsFormViewHolder>(PrintCustomsFormDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrintCustomsFormViewHolder {
         return PrintCustomsFormViewHolder(
             PrintCustomsFormListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -145,8 +138,6 @@ class PrintCustomsFormAdapter(
         holder.bind(position)
     }
 
-    override fun getItemCount(): Int = invoices.size
-
     inner class PrintCustomsFormViewHolder(val binding: PrintCustomsFormListItemBinding) : ViewHolder(binding.root) {
         fun bind(position: Int) {
             val context = binding.root.context
@@ -155,8 +146,20 @@ class PrintCustomsFormAdapter(
                 position + 1
             )
             binding.printButton.setOnClickListener {
-                onPrintClicked(invoices[position])
+                onPrintClicked(getItem(position))
             }
         }
+    }
+
+    object PrintCustomsFormDiffCallback : DiffUtil.ItemCallback<String>() {
+        override fun areItemsTheSame(
+            oldItem: String,
+            newItem: String
+        ): Boolean = oldItem == newItem
+
+        override fun areContentsTheSame(
+            oldItem: String,
+            newItem: String
+        ): Boolean = areItemsTheSame(oldItem, newItem)
     }
 }

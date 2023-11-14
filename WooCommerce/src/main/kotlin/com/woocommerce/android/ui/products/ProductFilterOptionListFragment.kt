@@ -3,24 +3,24 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductFilterOptionListBinding
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateToParentWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,13 +29,19 @@ class ProductFilterOptionListFragment :
     BaseFragment(R.layout.fragment_product_filter_option_list),
     OnLoadMoreListener,
     OnProductFilterOptionClickListener {
-    private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
+    private val viewModel: ProductFilterListViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
     private val arguments: ProductFilterOptionListFragmentArgs by navArgs()
 
     private lateinit var mProductFilterOptionListAdapter: ProductFilterOptionListAdapter
 
     private val skeletonView = SkeletonView()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            hasShadow = false,
+            hasDivider = true
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,9 +52,8 @@ class ProductFilterOptionListFragment :
         mProductFilterOptionListAdapter = ProductFilterOptionListAdapter(this, this)
         with(binding.filterOptionList) {
             addItemDecoration(
-                DividerItemDecoration(
-                    requireActivity(),
-                    DividerItemDecoration.VERTICAL
+                AlignedDividerDecoration(
+                    requireActivity(), DividerItemDecoration.VERTICAL, R.id.filterOptionItem_name, clipToMargin = false
                 )
             )
             layoutManager = LinearLayoutManager(activity)
@@ -62,7 +67,7 @@ class ProductFilterOptionListFragment :
 
         binding.filterOptionListBtnShowProducts.setOnClickListener {
             AnalyticsTracker.track(
-                Stat.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
+                AnalyticsEvent.PRODUCT_FILTER_LIST_SHOW_PRODUCTS_BUTTON_TAPPED,
                 mapOf(AnalyticsTracker.KEY_FILTERS to viewModel.getFilterString())
             )
             viewModel.onShowProductsClicked()
@@ -83,17 +88,18 @@ class ProductFilterOptionListFragment :
             }
         }
 
-        viewModel.filterOptionListItems.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductFilterList(it)
-            }
-        )
+        viewModel.filterOptionListItems.observe(viewLifecycleOwner) {
+            showProductFilterList(it)
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+                    navigateToParentWithResult(
+                        ProductListFragment.PRODUCT_FILTER_RESULT_KEY,
+                        event.data,
+                        R.id.productFilterListFragment
+                    )
                 }
                 else -> event.isHandled = false
             }

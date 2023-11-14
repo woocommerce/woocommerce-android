@@ -1,57 +1,66 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.main
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.RequestFetchProductEvent
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.action.WCOrderAction.*
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
-import org.wordpress.android.fluxc.store.*
-import org.wordpress.android.fluxc.store.AccountStore.*
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
-import org.wordpress.android.fluxc.store.WCOrderStore.*
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
+import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore,
-    private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val notificationStore: NotificationStore,
-    private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val appPrefs: AppPrefs
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val clearCardReaderDataAction: ClearCardReaderDataAction,
+    private val accountRepository: AccountRepository,
+    private val tracks: AnalyticsTrackerWrapper,
+    private val observeProcessingOrdersCount: ObserveProcessingOrdersCount
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
     private var isHandlingMagicLink: Boolean = false
-    private var pendingUnfilledOrderCountCheck: Boolean = false
-    private var isFetchingSitesAfterDowngrade = false
+    private val userLogoutMutex = Mutex()
+    private var isUserLoggingOut = false
 
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
         ConnectionChangeReceiver.getEventBus().register(this)
+
+        coroutineScope.launch {
+            observeProcessingOrdersCount.invoke().collect { count ->
+                if (count != null && count > 0) {
+                    mainView?.showOrderBadge(count)
+                } else {
+                    mainView?.hideOrderBadge()
+                }
+            }
+        }
     }
 
     override fun dropView() {
@@ -60,9 +69,7 @@ class MainPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun userIsLoggedIn(): Boolean {
-        return accountStore.hasAccessToken()
-    }
+    override fun userIsLoggedIn(): Boolean = accountRepository.isUserLoggedIn()
 
     override fun storeMagicLinkToken(token: String) {
         isHandlingMagicLink = true
@@ -80,33 +87,43 @@ class MainPresenter @Inject constructor(
             WCOrderActionBuilder
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
-    }
+        coroutineScope.launch { clearCardReaderDataAction() }
 
-    override fun fetchUnfilledOrderCount() {
-        if (selectedSite.exists()) {
-            pendingUnfilledOrderCountCheck = false
-            val payload = FetchOrdersCountPayload(selectedSite.get(), PROCESSING.value)
-            dispatcher.dispatch(WCOrderActionBuilder.newFetchOrdersCountAction(payload))
-        } else {
-            pendingUnfilledOrderCountCheck = true
-        }
+        updateStatsWidgets()
     }
 
     override fun fetchSitesAfterDowngrade() {
-        isFetchingSitesAfterDowngrade = true
         mainView?.showProgressDialog(R.string.loading_stores)
-        dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
+        coroutineScope.launch {
+            wooCommerceStore.fetchWooCommerceSites()
+            mainView?.hideProgressDialog()
+            mainView?.updateSelectedSite()
+        }
     }
 
-    override fun isUserEligible() = appPrefs.isUserEligible()
+    override fun isUserEligible() = appPrefsWrapper.isUserEligible()
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAuthenticationChanged(event: OnAuthenticationChanged) {
         if (event.isError) {
-            // TODO Handle AuthenticationErrorType.INVALID_TOKEN
-            isHandlingMagicLink = false
-            return
+            when (event.error.type) {
+                AuthenticationErrorType.INVALID_TOKEN -> {
+                    coroutineScope.launch {
+                        userLogoutMutex.withLock {
+                            if (!isUserLoggingOut) {
+                                isUserLoggingOut = true
+                                accountRepository.logout()
+                                mainView?.restart()
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    isHandlingMagicLink = false
+                    return
+                }
+            }
         }
 
         if (userIsLoggedIn()) {
@@ -115,8 +132,6 @@ class MainPresenter @Inject constructor(
             // In all other login cases, this logic is handled by the login library
             mainView?.notifyTokenUpdated()
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
-        } else {
-            mainView?.showLoginScreen()
         }
     }
 
@@ -135,64 +150,16 @@ class MainPresenter @Inject constructor(
                 dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
             } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
                 // The user's account settings have also been fetched and stored - now we can fetch the user's sites
-                dispatcher.dispatch(SiteActionBuilder.newFetchSitesAction(FetchSitesPayload()))
-            }
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSiteChanged(event: OnSiteChanged) {
-        // if we were fetching sites due to a db downgrade, tell the main activity to update
-        if (isFetchingSitesAfterDowngrade) {
-            isFetchingSitesAfterDowngrade = false
-            mainView?.hideProgressDialog()
-            mainView?.updateSelectedSite()
-            return
-        }
-
-        if (event.isError) {
-            // TODO: Notify the user of the problem
-            isHandlingMagicLink = false
-            return
-        }
-
-        if (isHandlingMagicLink) {
-            // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
-            mainView?.updateSelectedSite()
-            isHandlingMagicLink = false
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            FETCH_ORDERS_COUNT -> {
-                if (event.isError) {
-                    WooLog.e(
-                        WooLog.T.ORDERS,
-                        "Error fetching a count of orders waiting to be fulfilled: ${event.error.message}"
-                    )
-                    mainView?.hideOrderBadge()
-                    return
+                coroutineScope.launch {
+                    val result = wooCommerceStore.fetchWooCommerceSites()
+                    if (result.isError) {
+                        // TODO: Notify the user of the problem
+                    } else {
+                        // Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI
+                        mainView?.updateSelectedSite()
+                        isHandlingMagicLink = false
+                    }
                 }
-
-                AnalyticsTracker.track(
-                    Stat.UNFULFILLED_ORDERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to (event.rowsAffected > 0))
-                )
-
-                if (event.rowsAffected > 0) {
-                    mainView?.showOrderBadge(event.rowsAffected)
-                } else {
-                    mainView?.hideOrderBadge()
-                }
-            }
-            FETCH_ORDERS, UPDATE_ORDER_STATUS -> {
-                // we just fetched the order list or an order's status changed, so re-check the unfilled orders count
-                WooLog.d(WooLog.T.ORDERS, "Order status changed, re-checking unfilled orders count")
-                fetchUnfilledOrderCount()
             }
         }
     }
@@ -203,38 +170,26 @@ class MainPresenter @Inject constructor(
         mainView?.updateOfflineStatusBar(event.isConnected)
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationsUnseenReviewsEvent) {
-        if (event.hasUnseen) {
-            mainView?.showReviewsBadge()
-        } else {
-            mainView?.hideReviewsBadge()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReceivedEvent) {
-        // a new order notification came in so update the unfilled order count
-        if (event.channel == NEW_ORDER) {
-            fetchUnfilledOrderCount()
-        }
-    }
-
-    /**
-     * A request to fetch a product has been sent - dispatch the action to fetch it
-     */
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: RequestFetchProductEvent) {
-        val payload = WCProductStore.FetchSingleProductPayload(event.site, event.remoteProductId)
-        dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
-    }
-
+    @Suppress("unused", "UNUSED_PARAMETER", "DEPRECATION")
     fun onEventMainThread(event: SelectedSiteChangedEvent) {
-        if (pendingUnfilledOrderCountCheck) {
-            fetchUnfilledOrderCount()
-        }
+        updateStatsWidgets()
+    }
+
+    override fun updateStatsWidgets() {
+        mainView?.updateStatsWidgets()
+    }
+
+    override fun onPlanUpgraded() {
+        tracks.track(
+            AnalyticsEvent.PLAN_UPGRADE_SUCCESS,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
+        )
+    }
+
+    override fun onPlanUpgradeDismissed() {
+        tracks.track(
+            AnalyticsEvent.PLAN_UPGRADE_ABANDONED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
+        )
     }
 }

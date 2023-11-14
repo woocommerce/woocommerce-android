@@ -9,9 +9,9 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
-import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,58 +24,72 @@ import javax.inject.Singleton
  */
 @Singleton
 class VariationNavigator @Inject constructor() {
+    @Suppress("LongMethod")
     fun navigate(fragment: Fragment, target: VariationNavigationTarget) {
         when (target) {
             is ViewImageGallery -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToNavGraphImageGallery(
-                    target.remoteId,
-                    target.images.toTypedArray(),
-                    target.selectedImage,
-                    target.showChooser,
-                    RequestCodes.VARIATION_DETAIL_IMAGE
+                    remoteId = target.remoteId,
+                    images = target.images.toTypedArray(),
+                    selectedImage = target.selectedImage,
+                    showChooser = target.showChooser,
+                    requestCode = RequestCodes.VARIATION_DETAIL_IMAGE
                 )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewDescriptionEditor -> {
                 val action = VariationDetailFragmentDirections
                     .actionGlobalAztecEditorFragment(
-                        target.description,
-                        target.title,
-                        null
+                        aztecText = target.description,
+                        aztecTitle = target.title,
+                        aztecCaption = null
                     )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewPricing -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductPricingFragment(
-                    RequestCodes.VARIATION_DETAIL_PRICING,
-                    target.pricingData
+                    requestCode = RequestCodes.VARIATION_DETAIL_PRICING,
+                    pricingData = target.pricingData
                 )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewInventory -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductInventoryFragment(
-                    RequestCodes.VARIATION_DETAIL_INVENTORY,
-                    target.inventoryData,
-                    target.sku
+                    requestCode = RequestCodes.VARIATION_DETAIL_INVENTORY,
+                    inventoryData = target.inventoryData,
+                    sku = target.sku
                 )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewShipping -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductShippingFragment(
-                    RequestCodes.VARIATION_DETAIL_SHIPPING,
-                    target.shippingData
+                    requestCode = RequestCodes.VARIATION_DETAIL_SHIPPING,
+                    shippingData = target.shippingData
                 )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewAttributes -> {
                 VariationDetailFragmentDirections
                     .actionVariationDetailFragmentToEditVariationAttributesFragment(
-                        target.remoteProductId,
-                        target.remoteVariationId
+                        remoteProductId = target.remoteProductId,
+                        remoteVariationId = target.remoteVariationId
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is ViewMediaUploadErrors -> {
                 val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is VariationNavigationTarget.ViewSubscription -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductSubscriptionFragment(
+                        target.subscription,
+                        target.sale
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is VariationNavigationTarget.ViewProductQuantityRules -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductQuantityRulesFragment(target.quantityRules)
                 fragment.findNavController().navigateSafely(action)
             }
         }

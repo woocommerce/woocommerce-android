@@ -5,7 +5,6 @@
     android:id="@+id/shippingLabel_list"
     tools:itemCount="3"
     tools:listitem="@layout/order_detail_shipping_label_list_item"
-    tools:targetApi="lollipop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:nestedScrollingEnabled="false" />

@@ -1,0 +1,20 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snack_root"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment">
+
+    <EditText
+        android:id="@+id/customerOrderNote_editor"
+        style="@style/Woo.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|start"
+        android:hint="@string/orderdetail_customer_note_hint"
+        android:importantForAutofill="no"
+        android:inputType="textAutoComplete|textMultiLine|textCapSentences"
+        tools:text="This is a customer order note." />
+</com.google.android.material.card.MaterialCardView>

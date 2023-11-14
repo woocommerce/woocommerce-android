@@ -28,8 +28,7 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             tools:itemCount="3"
-            tools:listitem="@layout/order_detail_shipment_tracking_list_item"
-            tools:targetApi="lollipop" />
+            tools:listitem="@layout/order_detail_shipment_tracking_list_item" />
 
         <!-- Divider -->
         <View

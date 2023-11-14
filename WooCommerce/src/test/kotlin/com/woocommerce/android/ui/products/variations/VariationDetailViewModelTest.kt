@@ -1,29 +1,41 @@
 package com.woocommerce.android.ui.products.variations
 
 import androidx.lifecycle.SavedStateHandle
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
 
-@RunWith(RobolectricTestRunner::class)
+@ExperimentalCoroutinesApi
 class VariationDetailViewModelTest : BaseUnitTest() {
     companion object {
         private val SALE_START_DATE = Date.from(
@@ -32,9 +44,13 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         private val SALE_END_DATE = Date.from(
             LocalDateTime.of(2020, 4, 1, 8, 0).toInstant(ZoneOffset.UTC)
         )
+        private val DUMMY_REGULAR_PRICE = BigDecimal(99)
+        private val DUMMY_SALE_PRICE = BigDecimal(70)
         val TEST_VARIATION = generateVariation().copy(
             saleStartDateGmt = SALE_START_DATE,
-            saleEndDateGmt = SALE_END_DATE
+            saleEndDateGmt = SALE_END_DATE,
+            regularPrice = DUMMY_REGULAR_PRICE,
+            salePrice = DUMMY_SALE_PRICE,
         )
     }
 
@@ -43,7 +59,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val siteParams = SiteParameters(
         currencyCode = "USD",
         currencySymbol = "$",
-        currencyPosition = null,
+        currencyFormattingParameters = null,
         weightUnit = "kg",
         dimensionUnit = "cm",
         gmtOffset = 0f
@@ -52,14 +68,25 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         on { getParameters(any(), any<SavedStateHandle>()) } doReturn (siteParams)
     }
     private val variationRepository: VariationDetailRepository = mock {
-        on { getVariation(any(), any()) } doReturn (TEST_VARIATION)
+        onBlocking { getVariationByProductType(any(), any()) } doReturn TEST_VARIATION
+        onBlocking { fetchVariation(any(), any()) } doAnswer {
+            OnVariationChanged(it.arguments[0] as Long, it.arguments[1] as Long)
+        }
     }
 
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { answer -> answer.arguments[0].toString() }
     }
 
-    private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+    private val networkStatus: NetworkStatus = mock {
+        on { isConnected() } doReturn true
+    }
+
+    private val mediaFileUploadHandler: MediaFileUploadHandler = mock {
+        on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
+        on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
+        on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
+    }
 
     private val savedState = VariationDetailFragmentArgs(
         TEST_VARIATION.remoteProductId,
@@ -72,11 +99,12 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             savedState = savedState,
             variationRepository = variationRepository,
             productRepository = mock(),
-            networkStatus = mock(),
+            networkStatus = networkStatus,
             currencyFormatter = mock(),
             parameterRepository = parameterRepository,
             resources = resourceProvider,
-            mediaFileUploadHandler = mediaFileUploadHandler
+            mediaFileUploadHandler = mediaFileUploadHandler,
+            getProductVariationQuantityRules = mock()
         )
     }
 
@@ -108,6 +136,99 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         sut.variationViewStateData.observeForever { _, _ -> }
 
         assertThat(viewState!!.uploadingImageUri).isNull()
+    }
+
+    @Test
+    fun `when there image upload errors, then show a snackbar`() = testBlocking {
+        val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
+        doReturn(errorEvents).whenever(mediaFileUploadHandler)
+            .observeCurrentUploadErrors(TEST_VARIATION.remoteVariationId)
+        val errorMessage = "message"
+        doReturn(errorMessage).whenever(resourceProvider).getString(any(), anyVararg())
+
+        setup()
+        val errors = listOf(
+            ProductImageUploadData(
+                TEST_VARIATION.remoteVariationId,
+                "uri",
+                UploadStatus.Failed(
+                    mediaErrorType = GENERIC_ERROR,
+                    mediaErrorMessage = "error"
+                )
+            )
+        )
+        errorEvents.emit(errors)
+
+        assertThat(sut.event.value).matches {
+            it is ShowActionSnackbar &&
+                it.message == errorMessage
+        }
+    }
+
+    @Test
+    fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
+        val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
+        doReturn(errorEvents).whenever(mediaFileUploadHandler)
+            .observeCurrentUploadErrors(TEST_VARIATION.remoteVariationId)
+
+        setup()
+        errorEvents.emit(emptyList())
+
+        assertThat(sut.event.value).isEqualTo(HideImageUploadErrorSnackbar)
+    }
+
+    @Test
+    fun `given regular price set, when updating attributes, then price remains unchanged`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(attributes = emptyArray())
+
+        assertThat(variation!!.regularPrice).isEqualTo(DUMMY_REGULAR_PRICE)
+    }
+
+    @Test
+    fun `given sale price set, when updating attributes, then price remains unchanged`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(attributes = emptyArray())
+
+        assertThat(variation!!.salePrice).isEqualTo(DUMMY_SALE_PRICE)
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(regularPrice = BigDecimal(0))
+
+        assertThat(variation!!.regularPrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(salePrice = BigDecimal(0))
+
+        assertThat(variation!!.salePrice).isEqualTo(BigDecimal(0))
+    }
+
+    @Test
+    fun `given regular price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(regularPrice = null)
+
+        assertThat(variation!!.regularPrice).isNull()
+    }
+
+    @Test
+    fun `given sale price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
+        sut.variationViewStateData.observeForever { _, _ -> }
+
+        sut.onVariationChanged(salePrice = null)
+
+        assertThat(variation!!.salePrice).isNull()
     }
 
     private val variation: ProductVariation?

@@ -3,6 +3,8 @@ package com.woocommerce.android.di
 import android.content.Context
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.util.StringUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,4 +36,12 @@ class AppConfigModule {
         AppPrefs.init(appContext)
         return AppPrefs
     }
+
+    @Provides
+    @Singleton
+    fun provideFeedbackPrefs(appContext: Context) = FeedbackPrefs(appContext)
+
+    @Provides
+    @Singleton
+    fun provideStringUtils() = StringUtils
 }

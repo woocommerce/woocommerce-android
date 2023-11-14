@@ -2,18 +2,19 @@ package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Html
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentLoginDiscoveryErrorBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
@@ -22,7 +23,7 @@ import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_error) {
+class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_error), MenuProvider {
     companion object {
         const val TAG = "LoginDiscoveryErrorFragment"
         const val ARG_SITE_ADDRESS = "SITE-ARG_SITE_ADDRESS"
@@ -56,7 +57,8 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginNoJetpackListener? = null
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var errorMessage: Int? = null
 
@@ -81,10 +83,6 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setHasOptionsMenu(true)
-
         val binding = FragmentLoginDiscoveryErrorBinding.bind(view)
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -94,11 +92,13 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
             it.setDisplayShowTitleEnabled(false)
         }
 
-        errorMessage?.let { binding.discoveryErrorMessage.text = Html.fromHtml(getString(it)) }
+        errorMessage?.let {
+            binding.discoveryErrorMessage.text = HtmlCompat.fromHtml(getString(it), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        }
 
         with(binding.discoveryWordpressOptionView) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_SIGN_IN_WORDPRESS_BUTTON_TAPPED)
                 unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
                 jetpackLoginListener?.showEmailLoginScreen(siteAddress)
             }
@@ -106,7 +106,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
         with(binding.discoveryTroubleshootOptionView) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_TROUBLESHOOT_BUTTON_TAPPED)
                 unifiedLoginTracker.trackClick(Click.HELP_TROUBLESHOOTING_TIPS)
                 jetpackLoginListener?.showJetpackTroubleshootingTips()
             }
@@ -114,23 +114,23 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
         with(binding.discoveryTryOptionView) {
             setOnClickListener {
-                AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_TRY_AGAIN_TAPPED)
                 unifiedLoginTracker.trackClick(Click.TRY_AGAIN)
                 jetpackLoginListener?.showUsernamePasswordScreen(
                     siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
                 )
             }
         }
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_login, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(org.wordpress.android.login.R.menu.menu_login, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.help) {
-            AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        if (menuItem.itemId == org.wordpress.android.login.R.id.help) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true
         }
@@ -155,7 +155,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        AnalyticsTracker.track(Stat.LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_SCREEN_VIEWED)
         unifiedLoginTracker.track(step = Step.CONNECTION_ERROR)
     }
 }

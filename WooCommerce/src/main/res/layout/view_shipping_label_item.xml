@@ -32,7 +32,7 @@
         tools:text="Shipping Label header"
         tools:visibility="visible" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.woocommerce.android.widgets.WCSelectableTextView
         android:id="@+id/shippingLabelValue"
         style="@style/Woo.Card.Body"
         android:layout_width="0dp"

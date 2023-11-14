@@ -23,8 +23,8 @@ fun <T> LiveData<T>.getOrAwaitValue(
     var data: T? = null
     val latch = CountDownLatch(1)
     val observer = object : Observer<T> {
-        override fun onChanged(o: T?) {
-            data = o
+        override fun onChanged(value: T) {
+            data = value
             latch.countDown()
             this@getOrAwaitValue.removeObserver(this)
         }
@@ -57,4 +57,15 @@ fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
     } finally {
         removeObserver(observer)
     }
+}
+
+fun <T> LiveData<T>.captureValues(): List<T> = runAndCaptureValues(block = { })
+
+fun <T> LiveData<T>.runAndCaptureValues(block: () -> Unit): List<T> {
+    val list = mutableListOf<T>()
+    observeForever {
+        list.add(it)
+    }
+    block()
+    return list
 }

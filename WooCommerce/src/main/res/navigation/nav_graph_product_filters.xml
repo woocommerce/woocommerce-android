@@ -28,17 +28,15 @@
             android:name="selectedProductCategoryName"
             app:nullable="true"
             app:argType="string" />
-        <action
-            android:id="@+id/action_productFilterListFragment_to_productFilterOptionListFragment"
-            app:destination="@id/productFilterOptionListFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:popExitAnim="@anim/activity_slide_out_to_right">
-            <argument
-                android:name="selectedFilterItemPosition"
-                app:nullable="false"
-                app:argType="integer" />
-        </action>
     </fragment>
+    <action
+        android:id="@+id/action_productFilterListFragment_to_productFilterOptionListFragment"
+        app:destination="@id/productFilterOptionListFragment">
+        <argument
+            android:name="selectedFilterItemPosition"
+            app:nullable="false"
+            app:argType="integer" />
+    </action>
     <fragment
         android:id="@+id/productFilterOptionListFragment"
         android:name="com.woocommerce.android.ui.products.ProductFilterOptionListFragment"

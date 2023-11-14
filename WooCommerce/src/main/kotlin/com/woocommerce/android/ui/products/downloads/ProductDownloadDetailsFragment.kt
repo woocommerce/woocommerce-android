@@ -5,16 +5,15 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.DownloadableFileAction
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DOWNLOADABLE_FILE_ACTION
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductDownloadDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -27,17 +26,18 @@ import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewM
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDownloadDetailsFragment :
-    BaseFragment(R.layout.fragment_product_download_details), BackPressListener {
+    BaseFragment(R.layout.fragment_product_download_details), BackPressListener, MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductDownloadDetailsViewModel by viewModels()
-    private val parentViewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
+    private val parentViewModel: ProductDetailViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_products)
     private val navArgs by navArgs<ProductDownloadDetailsFragmentArgs>()
     private lateinit var doneOrUpdateMenuItem: MenuItem
 
@@ -49,7 +49,7 @@ class ProductDownloadDetailsFragment :
 
         _binding = FragmentProductDownloadDetailsBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
     }
 
@@ -58,7 +58,7 @@ class ProductDownloadDetailsFragment :
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         if (navArgs.isEditing) {
             inflater.inflate(R.menu.menu_product_download_details, menu)
@@ -70,14 +70,14 @@ class ProductDownloadDetailsFragment :
         doneOrUpdateMenuItem.isVisible = viewModel.showDoneButton
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneOrUpdateClicked()
 
                 val action = if (navArgs.isEditing) DownloadableFileAction.UPDATED else DownloadableFileAction.ADDED
                 AnalyticsTracker.track(
-                    Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                    AnalyticsEvent.PRODUCTS_DOWNLOADABLE_FILE,
                     mapOf(KEY_DOWNLOADABLE_FILE_ACTION to action.value)
                 )
 
@@ -87,28 +87,25 @@ class ProductDownloadDetailsFragment :
                 viewModel.onDeleteButtonClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
     private fun setupObservers(viewModel: ProductDownloadDetailsViewModel) {
-        viewModel.productDownloadDetailsViewStateData.observe(
-            owner = viewLifecycleOwner,
-            observer = { old, new ->
-                new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.getText()) {
-                    binding.productDownloadUrl.setText(it)
-                }
-                new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.getText()) {
-                    binding.productDownloadName.setText(it)
-                }
-                new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
-                    showDoneMenuItem(it)
-                }
-                if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
-                    updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
-                }
+        viewModel.productDownloadDetailsViewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.fileDraft.url.takeIfNotEqualTo(binding.productDownloadUrl.text) {
+                binding.productDownloadUrl.text = it
             }
-        )
+            new.fileDraft.name.takeIfNotEqualTo(binding.productDownloadName.text) {
+                binding.productDownloadName.text = it
+            }
+            new.showDoneButton.takeIfNotEqualTo(old?.showDoneButton) {
+                showDoneMenuItem(it)
+            }
+            if (new.urlErrorMessage != old?.urlErrorMessage || new.nameErrorMessage != old?.nameErrorMessage) {
+                updateErrorMessages(new.urlErrorMessage, new.nameErrorMessage)
+            }
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -132,7 +129,7 @@ class ProductDownloadDetailsFragment :
                     parentViewModel.deleteDownloadableFile(event.file)
 
                     AnalyticsTracker.track(
-                        Stat.PRODUCTS_DOWNLOADABLE_FILE,
+                        AnalyticsEvent.PRODUCTS_DOWNLOADABLE_FILE,
                         mapOf(KEY_DOWNLOADABLE_FILE_ACTION to DownloadableFileAction.DELETED.value)
                     )
 

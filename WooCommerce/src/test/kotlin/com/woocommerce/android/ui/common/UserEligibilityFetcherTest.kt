@@ -1,34 +1,28 @@
 package com.woocommerce.android.ui.common
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.whenever
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCUserStore
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class UserEligibilityFetcherTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val userStore: WCUserStore = mock()
@@ -49,59 +43,42 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     fun setup() {
         doReturn(SiteModel()).whenever(selectedSite).get()
 
-        fetcher = spy(
-            UserEligibilityFetcher(
-                appPrefsWrapper,
-                userStore,
-                selectedSite
-            )
-        )
-
-        clearInvocations(
+        fetcher = UserEligibilityFetcher(
             appPrefsWrapper,
-            selectedSite,
-            userStore
+            userStore,
+            selectedSite
         )
     }
 
     @Test
-    fun `Fetches user info correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(WooResult(expectedUser)).whenever(userStore).fetchUserRole(any())
-        doReturn(expectedUser.isUserEligible()).whenever(appPrefsWrapper).isUserEligible()
-        doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
+    fun `Fetches user info correctly`() = testBlocking {
+        whenever(userStore.fetchUserRole(any())).thenReturn(WooResult(expectedUser))
 
-        fetcher.fetchUserEligibility()
+        fetcher.fetchUserInfo()
 
-        assertThat(appPrefsWrapper.isUserEligible()).isEqualTo(expectedUser.isUserEligible())
-        assertThat(appPrefsWrapper.getUserEmail()).isEqualTo(expectedUser.email)
-        assertFalse(appPrefsWrapper.isUserEligible())
+        verify(appPrefsWrapper).setUserEmail(expectedUser.email)
+        verify(appPrefsWrapper).setIsUserEligible(expectedUser.isUserEligible())
     }
 
     @Test
     fun `Get user info from db correctly`() {
         doReturn(expectedUser).whenever(userStore).getUserByEmail(any(), any())
+        doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
-        val user = fetcher.getUserByEmail(expectedUser.email)
+        val user = fetcher.getUser()
 
-        assertThat(user).isEqualTo(expectedUser)
-        assertThat(user?.isUserEligible()).isEqualTo(expectedUser.isUserEligible())
+        assertThat(user).isEqualTo(expectedUser.toAppModel())
+        assertThat(user?.isEligible).isEqualTo(expectedUser.isUserEligible())
         assertThat(user?.email).isEqualTo(expectedUser.email)
     }
 
     @Test
-    fun `Do not update prefs when request failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        doReturn(
-            WooResult<WooError>(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN))
-        ).whenever(userStore).fetchUserRole(any())
-        doReturn(true).whenever(appPrefsWrapper).isUserEligible()
-        doReturn(null).whenever(appPrefsWrapper).getUserEmail()
+    fun `Do not update prefs when request failed`() = testBlocking {
+        whenever(userStore.fetchUserRole(any())).thenReturn(WooResult(WooError(GENERIC_ERROR, UNKNOWN, "")))
 
-        fetcher.fetchUserEligibility()
+        fetcher.fetchUserInfo()
 
-        // default value is set to true
-        assertTrue(appPrefsWrapper.isUserEligible())
-
-        // default value is null
-        assertNull(appPrefsWrapper.getUserEmail())
+        verify(appPrefsWrapper, never()).setUserEmail(any())
+        verify(appPrefsWrapper, never()).setIsUserEligible(any())
     }
 }

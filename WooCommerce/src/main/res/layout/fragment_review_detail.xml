@@ -147,7 +147,7 @@
                 app:flow_verticalGap="@dimen/minor_100"
                 app:flow_verticalAlign="top"
                 app:flow_wrapMode="chain"
-                app:constraint_referenced_ids="review_trash,review_spam,review_approve"/>
+                app:constraint_referenced_ids="review_trash,review_spam,review_approve,review_reply"/>
 
             <!-- Buttons below are using the above flow for layout. -->
             <ToggleButton
@@ -180,6 +180,15 @@
                 android:layout_marginBottom="@dimen/minor_100"
                 android:text="@string/wc_trash"
                 tools:ignore="MissingConstraints" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/review_reply"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/minor_100"
+                android:text="@string/wc_reply" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

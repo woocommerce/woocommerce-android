@@ -1,0 +1,36 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/major_100"
+        android:paddingVertical="@dimen/major_75">
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/minor_100"
+            android:lines="1"
+            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            app:autoSizeTextType="uniform"
+            app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
+            app:drawableTint="@color/color_primary"
+            tools:text="Fees &amp; Shipping details are incomplete" />
+
+        <TextView
+            android:id="@+id/explanation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_200"
+            tools:text="@string/lines_incomplete_explanation" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

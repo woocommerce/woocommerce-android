@@ -3,24 +3,35 @@ package com.woocommerce.android.ui.products.reviews
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
+import com.woocommerce.android.ui.reviews.ReviewModerationUi
+import com.woocommerce.android.ui.reviews.observeModerationStatus
+import com.woocommerce.android.ui.reviews.reviewList
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,12 +39,21 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductReviewsFragment :
     BaseFragment(R.layout.fragment_reviews_list),
-    ReviewListAdapter.OnReviewClickListener {
+    ReviewListAdapter.OnReviewClickListener,
+    ReviewModerationUi,
+    BackPressListener,
+    ItemDecorationListener {
+    companion object {
+        const val PRODUCT_REVIEWS_MODIFIED = "product-reviews-modified"
+    }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     val viewModel: ProductReviewsViewModel by viewModels()
 
-    private lateinit var reviewsAdapter: ReviewListAdapter
+    private var _reviewsAdapter: ReviewListAdapter? = null
+    private val reviewsAdapter: ReviewListAdapter
+        get() = _reviewsAdapter!!
 
     private val skeletonView = SkeletonView()
 
@@ -45,29 +65,29 @@ class ProductReviewsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentReviewsListBinding.bind(view)
+        setupViews()
         setupObservers()
     }
 
     override fun onDestroyView() {
         skeletonView.hide()
+        _reviewsAdapter = null
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val activity = requireActivity()
-        reviewsAdapter = ReviewListAdapter(activity, this)
+    private fun setupViews() {
+        _reviewsAdapter = ReviewListAdapter(this)
+        val unreadReviewItemDecoration = UnreadItemDecoration(requireContext(), this)
 
         binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
+            addItemDecoration(unreadReviewItemDecoration)
 
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) { }
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
 
@@ -82,10 +102,11 @@ class ProductReviewsFragment :
             // Set the scrolling view in the custom SwipeRefreshLayout
             scrollUpChild = binding.reviewsList
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
                 viewModel.refreshProductReviews()
             }
         }
+        setUnreadFilterChangedListener()
     }
 
     private fun setupObservers() {
@@ -96,21 +117,22 @@ class ProductReviewsFragment :
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithNotice(PRODUCT_REVIEWS_MODIFIED)
+                is Exit -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
 
-        viewModel.reviewList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showReviewList(it)
-            }
+        viewModel.reviewList.observe(viewLifecycleOwner) {
+            showReviewList(it)
+        }
+
+        observeModerationStatus(
+            reviewModerationConsumer = viewModel,
+            uiMessageResolver = uiMessageResolver
         )
     }
 
@@ -128,25 +150,45 @@ class ProductReviewsFragment :
                 skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
+
             false -> skeletonView.hide()
         }
     }
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
-                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+            if (binding.unreadFilterSwitch.isChecked) {
+                binding.unreadReviewsFilterLayout.show()
+                binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
+            } else {
+                binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+                }
+                binding.unreadReviewsFilterLayout.hide()
             }
         } else {
             binding.emptyView.hide()
         }
     }
 
-    override fun onReviewClick(review: ProductReview) {
+    private fun setUnreadFilterChangedListener() {
+        binding.unreadFilterSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onUnreadReviewsFilterChanged(isChecked)
+        }
+    }
+
+    override fun onReviewClick(review: ProductReview, sharedView: View?) {
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_OPEN)
         (activity as? MainNavigationRouter)?.showReviewDetail(
             review.remoteId,
-            launchedFromNotification = false,
-            enableModeration = false
+            launchedFromNotification = false
         )
     }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        viewModel.onBackButtonClicked()
+        return false
+    }
+
+    override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 }

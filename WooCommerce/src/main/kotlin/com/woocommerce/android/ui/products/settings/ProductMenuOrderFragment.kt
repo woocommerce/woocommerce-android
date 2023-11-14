@@ -26,7 +26,7 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
 
         _binding = FragmentProductMenuOrderBinding.bind(view)
 
-        binding.productMenuOrder.setText(navArgs.menuOrder.toString())
+        binding.productMenuOrder.text = navArgs.menuOrder.toString()
     }
 
     override fun onDestroyView() {
@@ -40,7 +40,7 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
 
     override fun getChangesResult(): Pair<String, Any> = ARG_MENU_ORDER to getMenuOrder()
 
-    private fun getMenuOrder() = StringUtils.stringToInt(binding.productMenuOrder.getText())
+    private fun getMenuOrder() = StringUtils.stringToInt(binding.productMenuOrder.text)
 
     override fun onResume() {
         super.onResume()

@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 6
     directory: "/"
     schedule:
       interval: "daily"
@@ -13,3 +13,19 @@ updates:
       # The Android Gradle Plugin is a dependency we'd like to have in sync with other
       # in-house libraries due to compatibility with composite build.
       - dependency-name: "com.android.tools.build:gradle"
+      - dependency-name: "com.android.application"
+      - dependency-name: "com.android.library"
+      # Bumping 2.26.3 to 2.27.2 will break the mocks. For more details, see
+      # https://github.com/wiremock/wiremock/issues/1345#issuecomment-656060968
+      - dependency-name: "com.github.tomakehurst:wiremock"
+      # Our libraries that are stored in S3 have a custom versioning scheme which doesn't work with Dependabot.
+      - dependency-name: "org.wordpress:utils"
+      - dependency-name: "org.wordpress:fluxc"
+      - dependency-name: "org.wordpress.fluxc.plugins:woocommerce"
+      - dependency-name: "org.wordpress:login"
+      - dependency-name: "com.automattic:Automattic-Tracks-Android"
+      - dependency-name: "com.automattic.tracks:experimentation"
+      # Assertj is a java first library only used for testing. It has caused troubles several times due to library
+      # updates with Kotlin breaking changes. For that it has been decided to update this library on a manual basis
+      - dependency-name: "org.assertj:assertj-core"
+

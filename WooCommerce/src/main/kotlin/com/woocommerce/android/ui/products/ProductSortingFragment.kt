@@ -5,17 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.databinding.DialogProductListSortingBinding
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductSortingFragment : BottomSheetDialogFragment() {
+class ProductSortingFragment : WCBottomSheetDialogFragment() {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: ProductSortingViewModel by viewModels()
@@ -41,17 +40,14 @@ class ProductSortingFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is Exit -> {
-                        dismiss()
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> {
+                    dismiss()
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showSortingOptions() {

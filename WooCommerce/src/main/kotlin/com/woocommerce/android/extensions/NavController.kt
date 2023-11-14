@@ -1,8 +1,13 @@
 package com.woocommerce.android.extensions
 
+import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.FragmentNavigator
+import com.woocommerce.android.util.WooLog
+import org.wordpress.android.util.BuildConfig
 
 /**
  * Prevents crashes caused by rapidly double-clicking views which navigate to the same
@@ -20,20 +25,41 @@ object CallThrottler {
     }
 }
 
-fun NavController.navigateSafely(directions: NavDirections, skipThrottling: Boolean = false) {
+fun NavController.navigateSafely(
+    directions: NavDirections,
+    skipThrottling: Boolean = false,
+    extras: FragmentNavigator.Extras? = null,
+    navOptions: NavOptions? = null
+) {
+    fun navigateSafelyInternal(
+        directions: NavDirections,
+        navOptions: NavOptions?,
+        extras: FragmentNavigator.Extras?
+    ) {
+        try {
+            navigate(directions.actionId, directions.arguments, navOptions, extras)
+        } catch (e: IllegalArgumentException) {
+            if (BuildConfig.DEBUG) {
+                throw e
+            } else {
+                WooLog.w(WooLog.T.UTILS, e.toString())
+            }
+        }
+    }
+
     if (skipThrottling) {
-        currentDestination?.getAction(directions.actionId)?.let { navigate(directions) }
+        navigateSafelyInternal(directions, navOptions, extras)
     } else {
         CallThrottler.throttle {
-            currentDestination?.getAction(directions.actionId)?.let { navigate(directions) }
+            navigateSafelyInternal(directions, navOptions, extras)
         }
     }
 }
 
-fun NavController.navigateSafely(@IdRes resId: Int) {
+fun NavController.navigateSafely(@IdRes resId: Int, bundle: Bundle? = null) {
     CallThrottler.throttle {
         if (currentDestination?.id != resId) {
-            navigate(resId, null)
+            navigate(resId, bundle)
         }
     }
 }

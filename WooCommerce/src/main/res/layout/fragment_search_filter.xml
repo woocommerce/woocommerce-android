@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/searchViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_surface"
+        android:layout_alignParentTop="true">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/searchEditText"
+            style="@style/Woo.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:inputType="textFilter"
+            android:drawableStart="@drawable/ic_search_24dp"
+            android:drawablePadding="@dimen/major_100"
+            android:imeOptions="flagNoExtractUi|actionSearch" />
+
+    </FrameLayout>
+
+    <com.woocommerce.android.widgets.WCEmptyView
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_below="@id/searchViewContainer"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchItemsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_surface"
+        android:layout_below="@id/searchViewContainer"/>
+
+</RelativeLayout>

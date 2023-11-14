@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -76,7 +75,6 @@ class OrderFulfillFragment :
 
         val binding = FragmentOrderFulfillBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(binding)
         setupResultHandlers(viewModel)
     }
@@ -104,32 +102,23 @@ class OrderFulfillFragment :
                 showAddShipmentTracking(it, binding)
             }
         }
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showOrderProducts(it, viewModel.order.currency, binding)
-            }
-        )
-        viewModel.shipmentTrackings.observe(
-            viewLifecycleOwner,
-            Observer {
-                showShipmentTrackings(it, binding)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showOrderProducts(it, viewModel.order.currency, binding)
+        }
+        viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
+            showShipmentTrackings(it, binding)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> findNavController().navigateUp()
-                    is ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
-                    is OrderNavigationTarget -> navigator.navigate(this, event)
-                    is ShowUndoSnackbar -> displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> findNavController().navigateUp()
+                is ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                is ShowUndoSnackbar -> displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers(viewModel: OrderFulfillViewModel) {
@@ -141,7 +130,8 @@ class OrderFulfillFragment :
     private fun showOrderDetail(order: Order, binding: FragmentOrderFulfillBinding) {
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly()
+            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isReadOnly = true
         )
         binding.buttonMarkOrderCompete.setOnClickListener {
             viewModel.onMarkOrderCompleteButtonClicked()

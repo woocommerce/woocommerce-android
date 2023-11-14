@@ -37,6 +37,10 @@
 }
 ###### Event Bus 2 - end
 
+##### WooCommerce (this is needed for Json deserializers, but generally, we should keep our own classes) - begin
+-keep class com.woocommerce.** { *; }
+##### WooCommerce - end
+
 ###### FluxC (was needed for Json deserializers) - begin
 -keep class org.wordpress.android.fluxc** { *; }
 ###### FluxC - end
@@ -73,3 +77,66 @@
 ###### Glide - begin
 -keep class com.bumptech.glide.GeneratedAppGlideModuleImpl { *; }
 ###### Glide - end
+
+###### SavedStateHandleExt - begin
+###### We use reflection so we have to keep this method
+-keepclassmembers class * extends androidx.navigation.NavArgs {
+    fromSavedStateHandle(androidx.lifecycle.SavedStateHandle);
+}
+###### SavedStateHandleExt - end
+
+# This is generated automatically by the Android Gradle plugin. (8.1.0)
+-dontwarn com.google.auto.service.AutoService
+-dontwarn com.squareup.kotlinpoet.FileSpec
+-dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder$Builder
+-dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
+-dontwarn javax.lang.model.SourceVersion
+-dontwarn javax.lang.model.element.AnnotationMirror
+-dontwarn javax.lang.model.element.AnnotationValue
+-dontwarn javax.lang.model.element.AnnotationValueVisitor
+-dontwarn javax.lang.model.element.Element
+-dontwarn javax.lang.model.element.ElementKind
+-dontwarn javax.lang.model.element.ElementVisitor
+-dontwarn javax.lang.model.element.ExecutableElement
+-dontwarn javax.lang.model.element.Modifier
+-dontwarn javax.lang.model.element.Name
+-dontwarn javax.lang.model.element.NestingKind
+-dontwarn javax.lang.model.element.PackageElement
+-dontwarn javax.lang.model.element.QualifiedNameable
+-dontwarn javax.lang.model.element.TypeElement
+-dontwarn javax.lang.model.element.TypeParameterElement
+-dontwarn javax.lang.model.element.VariableElement
+-dontwarn javax.lang.model.type.ArrayType
+-dontwarn javax.lang.model.type.DeclaredType
+-dontwarn javax.lang.model.type.ErrorType
+-dontwarn javax.lang.model.type.ExecutableType
+-dontwarn javax.lang.model.type.IntersectionType
+-dontwarn javax.lang.model.type.NoType
+-dontwarn javax.lang.model.type.NullType
+-dontwarn javax.lang.model.type.PrimitiveType
+-dontwarn javax.lang.model.type.TypeKind
+-dontwarn javax.lang.model.type.TypeMirror
+-dontwarn javax.lang.model.type.TypeVariable
+-dontwarn javax.lang.model.type.TypeVisitor
+-dontwarn javax.lang.model.type.UnionType
+-dontwarn javax.lang.model.type.WildcardType
+-dontwarn javax.lang.model.util.AbstractAnnotationValueVisitor8
+-dontwarn javax.lang.model.util.AbstractElementVisitor8
+-dontwarn javax.lang.model.util.AbstractTypeVisitor8
+-dontwarn javax.lang.model.util.ElementFilter
+-dontwarn javax.lang.model.util.Elements
+-dontwarn javax.lang.model.util.SimpleAnnotationValueVisitor6
+-dontwarn javax.lang.model.util.SimpleAnnotationValueVisitor7
+-dontwarn javax.lang.model.util.SimpleAnnotationValueVisitor8
+-dontwarn javax.lang.model.util.SimpleElementVisitor8
+-dontwarn javax.lang.model.util.SimpleTypeVisitor7
+-dontwarn javax.lang.model.util.SimpleTypeVisitor8
+-dontwarn javax.lang.model.util.Types
+-dontwarn javax.tools.Diagnostic$Kind
+-dontwarn javax.tools.JavaFileObject$Kind
+-dontwarn javax.tools.JavaFileObject
+-dontwarn javax.tools.SimpleJavaFileObject
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn org.slf4j.impl.StaticMDCBinder

@@ -1,4 +1,0 @@
-7.5:
-Di Ekstensi WooCommerce Product Add-Ons, kini pesanan bisa ditampilkan bersama produk. Buka pengaturan toko pada tab Toko saya di aplikasi, lalu nyalakan di bagian Fitur beta. Silakan berikan umpan balik terkait pengalaman penggunaan Anda.
-
-Kini daftar produk juga dapat disaring menurut kategori. Anda minta, kami sediakan!

@@ -10,12 +10,14 @@
     <color name="color_secondary_variant">@color/woo_pink_70</color>
     <color name="color_surface">@color/woo_white</color>
     <color name="color_surface_variant">@color/woo_gray_40</color>
+    <color name="color_surface_elevated">@color/woo_white</color>
     <color name="color_error">@color/woo_red_50</color>
     <color name="color_alert">@color/woo_yellow_50</color>
+    <color name="color_info">@color/woo_green_50</color>
 
     <color name="color_surface_elevated_04">@color/woo_white</color>
 
-    <color name="color_on_surface">@android:color/black</color>
+    <color name="color_on_surface">@color/woo_black</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
@@ -41,6 +43,7 @@
     <color name="color_default_image_background">@color/woo_gray_900</color>
 
     <color name="color_back_arrow">@color/color_on_surface</color>
+    <color name="color_text_link">@color/woo_pink_50</color>
 
     <!--
         Icon-related resources that use the surface color should be assigned
@@ -52,12 +55,12 @@
         Icon-related resources that use the secondary color should be assigned
         this resource.
     -->
-    <color name="color_icon_secondary">@color/color_secondary_selector</color>
+    <color name="color_icon_primary">@color/color_primary_selector</color>
 
     <!--
         Toolbar and bottom bar icons should be assigned this resource.
     -->
-    <color name="color_icon_menu">@color/color_secondary</color>
+    <color name="color_icon_menu">@color/color_primary</color>
 
     <!--
         Toolbar icons for login menus
@@ -79,6 +82,7 @@
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
     <color name="splash_background">@color/woo_purple_60</color>
+    <color name="color_toolbar">@color/woo_white</color>
 
     <!--
         Elevation colors
@@ -108,7 +112,13 @@
     <color name="tag_bg_processing">@color/woo_celadon_5</color>
     <color name="tag_bg_failed">@color/woo_red_5</color>
     <color name="tag_bg_on_hold">@color/woo_orange_5</color>
+    <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
+    <color name="tag_bg_main">@color/woo_purple_15</color>
+    <color name="tag_text_main">@color/color_primary</color>
+    <color name="tag_task_label">@color/woo_gray_6</color>
+    <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
+    <color name="tag_icon">@color/color_primary</color>
 
     <!--
         Nav bar color protection for behavior differences between Android P and Q. All sdk
@@ -124,6 +134,8 @@
     -->
     <color name="warning_banner_foreground_color">@color/woo_orange_30</color>
     <color name="warning_banner_background_color">@color/woo_orange_5</color>
+    <color name="error_banner_foreground_color">@color/woo_red_50</color>
+    <color name="error_banner_background_color">@color/woo_red_5</color>
     <color name="info_banner_foreground_color">@color/woo_celadon_40</color>
     <color name="info_banner_background_color">@color/woo_celadon_5</color>
     <!--
@@ -133,7 +145,11 @@
     <color name="product_status_fg_other">@color/woo_blue_50</color>
     <color name="product_status_fg_pending">@color/woo_orange_50</color>
     <color name="product_filer_bg_selected">@color/color_primary_surface</color>
-
+    <!--
+        Product Status Badge
+    -->
+    <color name="product_status_badge_draft">@color/woo_gray_5</color>
+    <color name="product_status_badge_pending">@color/woo_orange_10</color>
     <!--
         Aztec Editor
     -->
@@ -156,6 +172,7 @@
     -->
     <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
     <color name="skeleton_color_inverse">@color/color_surface</color>
+    <color name="skeleton_compose_background">@color/woo_gray_6</color>
 
     <!--
         Empty state view
@@ -166,4 +183,111 @@
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_gray_0</color>
+    <color name="select_payment_gateway_stroke">@color/woo_gray_5</color>
+
+    <!--
+        Jetpack plugin installation dialog
+    -->
+    <color name="jetpack_button_color">@color/color_secondary</color>
+    <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
+
+    <color name="reader_update_progress_color">@color/woo_purple_50</color>
+    <color name="reader_update_rest_color">@color/woo_purple_30</color>
+    <color name="reader_update_border_color">#533582</color>
+
+    <!--
+    Media picker colors
+    -->
+    <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
+    <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
+
+    <!--
+    More menu button
+    -->
+    <color name="more_menu_button_background">@color/color_surface</color>
+    <color name="more_menu_button_icon_background">@color/woo_gray_0</color>
+
+
+    <!-- Woo application log -->
+    <color name="log_text_verbose">@color/woo_gray_40</color>
+    <color name="log_text_debug">@color/woo_blue_50</color>
+    <color name="log_text_info">@color/woo_black</color>
+    <color name="log_text_warning">@color/woo_purple_50</color>
+    <color name="log_text_error">@color/woo_red_50</color>
+
+    <!-- Text colors -->
+    <color name="link_text">@color/woo_blue_40</color>
+
+    <!--
+    Button colors
+    -->
+    <color name="light_colored_button_text">@color/color_primary</color>
+    <color name="light_colored_button_background">@color/woo_gray_6</color>
+
+    <!--
+    Analytics
+    -->
+    <color name="analytics_background">@color/woo_white</color>
+    <color name="analytics_delta_positive_color">#69B56E</color>
+    <color name="analytics_delta_tag_negative_color">#C95854</color>
+    <color name="analytics_delta_text_color">@color/white</color>
+    <color name="analytics_calendar_bg_color">@color/woo_black_alpha_008</color>
+
+    <!--
+    "OR" divider in Login screens
+    -->
+    <color name="or_divider_line">#DADBDC</color>
+    <color name="or_divider_text">#898A8D</color>
+
+    <!--
+    Free Trial
+    -->
+    <color name="free_trial_component_background">@color/woo_purple_0</color>
+    <color name="free_trial_component_text">@color/woo_purple_60</color>
+    <color name="free_trial_banner_content">@color/color_on_surface</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="linear_progress_background">@color/woo_purple_0</color>
+    <color name="store_creation_summary_top_illustration_background">@color/woo_purple_0</color>
+
+    <!--
+    Highlight tooltip
+    -->
+    <color name="highlights_tooltip_background">@color/woo_gray_80</color>
+    <color name="highlights_tooltip_title">@color/woo_white</color>
+
+    <!--
+    Test order step number
+    -->
+    <color name="try_test_order_step">#F7F5FB</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="woo_payments_setup_bullet_background">@color/woo_purple_0</color>
+
+    <!--
+    AI
+    -->
+    <color name="ai_generated_text_background">@color/woo_gray_6</color>
+    <color name="ai_feedback_form_background">@color/woo_black_alpha_008</color>
+
+    <!--
+    Tap To Pay About
+    -->
+    <color name="tap_to_pay_about_important_info_background">@color/woo_purple_0</color>
+
+    <!--
+    Blaze
+    -->
+    <color name="blaze_campaign_status_in_moderation_background">@color/blaze_yellow_5</color>
+    <color name="blaze_campaign_status_in_moderation_text">@color/blaze_yellow_70</color>
+    <color name="blaze_campaign_status_active_background">@color/blaze_green_5</color>
+    <color name="blaze_campaign_status_active_text">@color/blaze_green_60</color>
+    <color name="blaze_campaign_status_completed_background">@color/blaze_blue_5</color>
+    <color name="blaze_campaign_status_completed_text">@color/blaze_blue_60</color>
+    <color name="blaze_campaign_status_rejected_background">@color/blaze_red_5</color>
+    <color name="blaze_campaign_status_rejected_text">@color/blaze_red_6</color>
 </resources>

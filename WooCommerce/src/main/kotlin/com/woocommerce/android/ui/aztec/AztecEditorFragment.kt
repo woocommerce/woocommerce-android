@@ -2,23 +2,34 @@ package com.woocommerce.android.ui.aztec
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentAztecEditorBinding
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
+import org.wordpress.android.util.ToastUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
 import org.wordpress.aztec.IHistoryListener
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AztecEditorFragment :
@@ -32,15 +43,21 @@ class AztecEditorFragment :
         const val ARG_AZTEC_REQUEST_CODE = "aztec-request-code"
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
         const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
+        const val ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION = "title-from-ai-description"
 
         private const val FIELD_IS_HTML_EDITOR_ENABLED = "is_html_editor_enabled"
     }
+
+    @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
+    @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var aztec: Aztec
 
     private val navArgs: AztecEditorFragmentArgs by navArgs()
 
     private var isHtmlEditorEnabled: Boolean = false
+
+    private var titleFromProductAIDescriptionDialog: String? = null
 
     override fun getFragmentTitle() = navArgs.aztecTitle
 
@@ -58,8 +75,26 @@ class AztecEditorFragment :
             binding.aztecCaption.text = navArgs.aztecCaption
         }
 
+        with(binding.aiButton) {
+            visibility = if (selectedSite.getOrNull()?.isEligibleForAI == true) View.VISIBLE else View.GONE
+            setOnClickListener {
+                onAIButtonClicked()
+            }
+
+            setOnLongClickListener {
+                ToastUtils.showToast(requireContext(), R.string.ai_product_toolbar_button_tooltip)
+                true
+            }
+        }
+
         aztec = Aztec.with(binding.visualEditor, binding.sourceEditor, binding.aztecToolbar, this)
             .setImageGetter(GlideImageLoader(requireContext()))
+
+        if (navArgs.productTitle.isBlank()) {
+            aztec.visualEditor.setHint(R.string.product_description_hint_no_title)
+        } else {
+            aztec.visualEditor.hint = getString(R.string.product_description_hint_with_title, navArgs.productTitle)
+        }
 
         aztec.initSourceEditorHistory()
 
@@ -74,6 +109,30 @@ class AztecEditorFragment :
         aztec.visualEditor.post {
             aztec.visualEditor.requestFocus()
             ActivityUtils.showKeyboard(aztec.visualEditor)
+        }
+
+        handleResults()
+    }
+
+    private fun onAIButtonClicked() {
+        analyticsTracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_AZTEC_EDITOR)
+        )
+
+        findNavController().navigateSafely(
+            AztecEditorFragmentDirections.actionAztecEditorFragmentToAIProductDescriptionBottomSheetFragment(
+                navArgs.productTitle,
+                getEditorText()?.fastStripHtml()
+            )
+        )
+    }
+
+    private fun handleResults() {
+        handleResult<Pair<String, String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { pairResult ->
+            aztec.visualEditor.setText(pairResult.first)
+
+            titleFromProductAIDescriptionDialog = pairResult.second
         }
     }
 
@@ -146,6 +205,9 @@ class AztecEditorFragment :
             it.putInt(ARG_AZTEC_REQUEST_CODE, navArgs.requestCode)
             it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
             it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+            titleFromProductAIDescriptionDialog?.let { title ->
+                it.putString(ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION, title)
+            }
         }
         navigateBackWithResult(AZTEC_EDITOR_RESULT, bundle)
     }

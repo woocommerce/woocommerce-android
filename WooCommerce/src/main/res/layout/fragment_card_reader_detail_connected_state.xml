@@ -15,7 +15,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
         android:background="@color/warning_banner_background_color"
-        android:drawableStart="@drawable/ic_info_outline_24dp"
+        android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
         android:padding="@dimen/major_100"
         android:text="@string/card_reader_detail_connected_enforced_update_software"
@@ -38,14 +38,19 @@
         android:layout_marginBottom="@dimen/minor_100"
         android:letterSpacing="0.15"
         android:text="@string/card_reader_detail_connected_header"
-        android:textColor="@color/color_on_surface_disabled"
+        android:textColor="@color/color_on_surface_medium"
         android:textSize="@dimen/text_minor_60" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/reader_name_tv"
         style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:paddingHorizontal="@dimen/major_100"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="@dimen/minor_50"
         android:layout_marginBottom="0dp"
         tools:text="CHB204909005931" />
 

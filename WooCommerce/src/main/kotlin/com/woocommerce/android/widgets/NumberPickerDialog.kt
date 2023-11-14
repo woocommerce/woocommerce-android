@@ -96,15 +96,12 @@ open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListene
         super.onDismiss(dialog)
     }
 
+    @Suppress("DEPRECATION")
     open fun returnResult(selectedValue: Int) {
         val target = targetFragment
         val resultIntent = Intent()
         arguments?.let { resultIntent.replaceExtras(it) }
         resultIntent.putExtra(CUR_VALUE_KEY, numberPicker.value)
         target?.onActivityResult(targetRequestCode, Activity.RESULT_OK, resultIntent)
-    }
-
-    fun setNumberFormat(format: Formatter) {
-        this.format = format
     }
 }

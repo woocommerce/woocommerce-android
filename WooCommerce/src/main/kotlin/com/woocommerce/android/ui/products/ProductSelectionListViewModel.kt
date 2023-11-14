@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -20,6 +21,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,10 +30,6 @@ class ProductSelectionListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val productRepository: ProductListRepository
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val SEARCH_TYPING_DELAY_MS = 500L
-    }
-
     private val navArgs: ProductSelectionListFragmentArgs by savedState.navArgs()
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -58,7 +56,8 @@ class ProductSelectionListViewModel @Inject constructor(
     private var loadJob: Job? = null
     private var searchJob: Job? = null
 
-    private val excludedProductIds = navArgs.excludedProductIds.toList()
+    private val excludedProductIds
+        get() = navArgs.excludedProductIds.toList().plus(navArgs.remoteProductId)
 
     init {
         if (_productList.value == null) {
@@ -129,7 +128,7 @@ class ProductSelectionListViewModel @Inject constructor(
             // the fetch until the user stops typing
             searchJob?.cancel()
             searchJob = launch {
-                delay(SEARCH_TYPING_DELAY_MS)
+                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
                 productSelectionListViewState = productSelectionListViewState.copy(
                     isLoading = true,
                     isLoadingMore = loadMore,
@@ -196,9 +195,10 @@ class ProductSelectionListViewModel @Inject constructor(
                 )
             } else {
                 productRepository.searchProductList(
-                    searchQuery,
-                    loadMore,
-                    excludedProductIds
+                    searchQuery = searchQuery,
+                    loadMore = loadMore,
+                    excludedProductIds = excludedProductIds,
+                    skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled
                 )?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
                     if (searchQuery == productRepository.lastSearchQuery) {

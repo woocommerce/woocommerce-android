@@ -12,7 +12,7 @@
         android:layout_gravity="center_vertical"
         android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
-        android:padding="1dp"
+        android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -22,7 +22,7 @@
             android:layout_height="@dimen/image_minor_100"
             android:layout_gravity="center"
             android:contentDescription="@string/orderdetail_product_image_contentdesc"
-            android:scaleType="centerCrop"
+            android:padding="@dimen/image_frame_stroke_width"
             app:srcCompat="@drawable/ic_product"
             tools:visibility="visible" />
     </FrameLayout>
@@ -79,11 +79,18 @@
         android:background="?attr/selectableItemBackground"
         android:drawableEnd="@drawable/ic_arrow_right"
         android:text="@string/orderdetail_product_lineitem_view_addons_action"
-        android:textColor="@color/woo_black"
+        android:textColor="@color/color_on_background"
         android:visibility="gone"
         app:drawableTint="@color/color_on_surface_medium"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_SKU"
         tools:text="View Add-ons"
         tools:visibility="visible" />
+    <android.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_100"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_addons"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

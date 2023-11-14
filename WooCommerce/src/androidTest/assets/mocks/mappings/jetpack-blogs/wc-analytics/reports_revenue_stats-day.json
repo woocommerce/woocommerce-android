@@ -1,13 +1,19 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "json": {
         "equalTo": "true"
       },
       "path": {
-        "matches": "\/wc-analytics\/reports\/revenue\/stats/(.*)&interval=day(.*)"
+        "matches": "/wc-analytics/reports/revenue/stats/(.*)"
+      },
+      "query": {
+        "matches": "(.*)interval\":\"day(.*)"
+      },
+      "locale": {
+          "matches": "(.*)"
       }
     }
   },
@@ -16,10 +22,10 @@
     "jsonBody": {
       "data": {
         "totals": {
-          "orders_count": 0,
+          "orders_count": 440,
           "num_items_sold": 0,
           "gross_sales": 0,
-          "total_sales": 0,
+          "total_sales": 6470,
           "coupons": 0,
           "coupons_count": 0,
           "refunds": 0,
@@ -32,7 +38,168 @@
           "num_new_customers": 0,
           "products": 0,
           "segments": []
-        }
+          },
+          "intervals": [{
+            // Here the first interval always starts today. This means that stats for weeks and days
+            // will always start today (imagine a month starting on 19 of Oct).
+            // It's not realistic, but it ensures that the data will look the same at any time.
+            //
+            // Alternatively, we would have to calculate the closest Sunday (week start) from the past/today
+            // with a helper (that does not exist) and use it as a first day of week (and offset it for the other six days).
+            "interval": "{{#assign 'customformat'}}yyyy-MM-dd{{/assign}}{{fnow format=customformat}}",
+            "date_start": "{{fnow format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow format=customformat}} 00:00:00",
+            "date_end": "{{fnow format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 2,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 500,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }, {
+            "interval": "{{fnow offset='1 days' format=customformat}}",
+            "date_start": "{{fnow offset='1 days' format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow offset='1 days' format=customformat}} 00:00:00",
+            "date_end": "{{fnow offset='1 days' format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow offset='1 days' format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 4,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 550,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }, {
+            "interval": "{{fnow offset='2 days' format=customformat}}",
+            "date_start": "{{fnow offset='2 days' format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow offset='2 days' format=customformat}} 00:00:00",
+            "date_end": "{{fnow offset='2 days' format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow offset='2 days' format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 3,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 661,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }, {
+            "interval": "{{fnow offset='3 days' format=customformat}}",
+            "date_start": "{{fnow offset='3 days' format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow offset='3 days' format=customformat}} 00:00:00",
+            "date_end": "{{fnow offset='3 days' format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow offset='3 days' format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 5,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 620,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }, {
+            "interval": "{{fnow offset='4 days' format=customformat}}",
+            "date_start": "{{fnow offset='4 days' format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow offset='4 days' format=customformat}} 00:00:00",
+            "date_end": "{{fnow offset='4 days' format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow offset='4 days' format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 6,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 773,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }, {
+            "interval": "{{fnow offset='5 days' format=customformat}}",
+            "date_start": "{{fnow offset='5 days' format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow offset='5 days' format=customformat}} 00:00:00",
+            "date_end": "{{fnow offset='5 days' format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow offset='5 days' format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 5,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 723,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }, {
+            "interval": "{{fnow offset='6 days' format=customformat}}",
+            "date_start": "{{fnow offset='6 days' format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow offset='6 days' format=customformat}} 00:00:00",
+            "date_end": "{{fnow offset='6 days' format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow offset='6 days' format=customformat}} 23:59:59",
+            "subtotals": {
+              "orders_count": 4,
+              "num_items_sold": 0,
+              "gross_sales": 0,
+              "total_sales": 889,
+              "coupons": 0,
+              "coupons_count": 0,
+              "refunds": 0,
+              "taxes": 0,
+              "shipping": 0,
+              "net_revenue": 0,
+              "avg_items_per_order": 0,
+              "avg_order_value": 0,
+              "total_customers": 0,
+              "segments": []
+            }
+          }]
       }
     },
     "headers": {

@@ -37,7 +37,6 @@ class ProductCatalogVisibilityFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductCatalogVisibilityBinding.bind(view)
-        setHasOptionsMenu(true)
 
         selectedCatalogVisibility = savedInstanceState?.getString(ARG_CATALOG_VISIBILITY) ?: navArgs.catalogVisibility
         binding.btnFeatured.isChecked = savedInstanceState?.getBoolean(ARG_IS_FEATURED) ?: navArgs.featured

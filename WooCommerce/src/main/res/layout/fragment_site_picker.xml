@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    android:orientation="vertical">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <!-- The FrameLayout is needed to display the skeleton view dynamically -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/site_picker_root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Login User Info -->
+                <com.woocommerce.android.ui.sitepicker.views.LoginUserInfoView
+                    android:id="@+id/login_user_info"
+                    style="@style/Woo.Card.WithoutPadding"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_goneMarginTop="@dimen/minor_100" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/sites_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/login_user_info"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/site_picker_item" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_store_button"
+                    style="@style/Woo.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/login_site_picker_add_a_store"
+                    app:icon="@drawable/ic_add"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/sites_recycler"
+                    app:layout_constraintVertical_bias="0" />
+
+                <!-- Login no stores view -->
+                <com.woocommerce.android.ui.sitepicker.views.LoginNoStoresView
+                    android:id="@+id/no_stores_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/login_user_info"
+                    tools:visibility="gone" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/login_epilogue_button_bar"
+        layout="@layout/view_login_epilogue_button_bar" />
+</LinearLayout>

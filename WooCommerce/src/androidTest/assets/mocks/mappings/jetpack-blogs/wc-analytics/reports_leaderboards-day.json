@@ -1,13 +1,19 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "json": {
         "equalTo": "true"
       },
       "path": {
-        "matches": "\/wc-analytics\/leaderboards\/(.*)&interval=day(.*)"
+        "matches": "/wc-analytics/leaderboards(.*)"
+      },
+      "query": {
+        "matches": "(.*)interval\":\"day(.*)"
+      },   
+      "locale": {
+        "matches": "(.*)"
       }
     }
   },
@@ -24,7 +30,38 @@
         }, {
           "label": "Total Spend"
         }],
-        "rows": []
+        "rows": [
+          [{
+            "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/customers&filter=single_customer&customers=36'>Mira Workman<\/a>",
+            "value": "Mira Workman"
+          }, {
+            "display": "1",
+            "value": 1
+          }, {
+            "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>1,310.00<\/bdi><\/span>",
+            "value": 1310
+          }],
+          [{
+            "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/customers&filter=single_customer&customers=35'>Jack Smith<\/a>",
+            "value": "Jack Smith"
+          }, {
+            "display": "1",
+            "value": 1
+          }, {
+            "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>700.00<\/bdi><\/span>",
+            "value": 700
+          }],
+          [{
+            "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/customers&filter=single_customer&customers=29'> <\/a>",
+            "value": " "
+          }, {
+            "display": "1",
+            "value": 1
+          }, {
+            "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>450.00<\/bdi><\/span>",
+            "value": 450
+          }]
+        ]
       }, {
         "id": "coupons",
         "label": "Top Coupons - Number of Orders",
@@ -57,7 +94,38 @@
         }, {
           "label": "Net Sales"
         }],
-        "rows": []
+        "rows": [
+          [{
+            "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2130'>Black Coral shades<\/a>",
+            "value": "Black Coral shades"
+          }, {
+            "display": "1",
+            "value": 1
+          }, {
+            "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>2,550.00<\/bdi><\/span>",
+            "value": 250
+          }],
+          [{
+            "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2123'>Malaya shades<\/a>",
+            "value": "Malaya shades"
+          }, {
+            "display": "2",
+            "value": 2
+          }, {
+            "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>1,540.00<\/bdi><\/span>",
+            "value": 540
+          }],
+          [{
+            "display": "<a href='https:\/\/automatticwidgets.com\/wp-admin\/admin.php?page=wc-admin&path=\/analytics\/products&filter=single_product&products=2131'>Colorado shades<\/a>",
+            "value": "Colorado shades"
+          }, {
+            "display": "1",
+            "value": 1
+          }, {
+            "display": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#36;<\/span>500.00<\/bdi><\/span>",
+            "value": 500
+          }]
+        ]
       }]
     },
     "headers": {

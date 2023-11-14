@@ -7,7 +7,7 @@
     <item
         android:state_checked="true"
         android:alpha="@dimen/alpha_emphasis_high"
-        android:color="@color/color_on_surface"/>
+        android:color="@color/color_primary"/>
     <item
         android:alpha="@dimen/alpha_emphasis_medium"
         android:color="@color/color_on_surface"/>

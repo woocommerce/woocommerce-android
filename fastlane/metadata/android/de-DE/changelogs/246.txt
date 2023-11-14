@@ -1,4 +1,0 @@
-7.5:
-Das Anzeigen von Bestellungen mit Produkten, die die Erweiterung Produkt-Add-ons von WooCommerce verwenden, ist ein neues Feature! Navigiere zu den Einstellungen deines Stores in der App auf dem Tab „Mein Store“ und aktiviere es unter den Betafunktionen. Sende bis bitte Feedback zu deinen Erfahrungen!
-
-Du wirst auch feststellen, dass du die Produktliste nach Kategorie filtern kannst. Dein Wunsch ist uns Befehl!

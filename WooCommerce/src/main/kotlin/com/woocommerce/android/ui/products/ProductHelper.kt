@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductTaxStatus.None
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
@@ -33,7 +32,7 @@ object ProductHelper {
     /**
      * Default Product for initial state of Product Add flow
      * */
-
+    @Suppress("LongMethod")
     fun getDefaultNewProduct(productType: ProductType, isVirtual: Boolean): Product {
         return Product(
             remoteId = 0L,
@@ -56,8 +55,9 @@ object ProductHelper {
             permalink = "",
             externalUrl = "",
             buttonText = "",
-            salePrice = BigDecimal.ZERO,
-            regularPrice = BigDecimal.ZERO,
+            price = BigDecimal.ZERO,
+            salePrice = null,
+            regularPrice = null,
             taxClass = Product.TAX_CLASS_DEFAULT,
             isStockManaged = false,
             stockQuantity = 0.0,
@@ -78,8 +78,8 @@ object ProductHelper {
             attributes = listOf(),
             saleEndDateGmt = null,
             saleStartDateGmt = null,
-            isSoldIndividually = true,
-            taxStatus = None,
+            isSoldIndividually = false,
+            taxStatus = ProductTaxStatus.Taxable,
             isSaleScheduled = false,
             menuOrder = 0,
             categories = listOf(),
@@ -87,8 +87,12 @@ object ProductHelper {
             groupedProductIds = listOf(),
             crossSellProductIds = listOf(),
             upsellProductIds = listOf(),
+            variationIds = listOf(),
             downloads = listOf(),
-            addons = listOf()
+            isPurchasable = false,
+            subscription = null,
+            isSampleProduct = false,
+            parentId = 0,
         )
     }
 }

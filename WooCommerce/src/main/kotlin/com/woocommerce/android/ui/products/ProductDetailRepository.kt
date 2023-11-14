@@ -1,11 +1,10 @@
 package com.woocommerce.android.ui.products
 
+import com.google.gson.Gson
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_ERROR
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_DETAIL_UPDATE_SUCCESS
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
@@ -16,9 +15,12 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -31,15 +33,14 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_SKU_AVAILABILITY
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCreated
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductPasswordChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductShippingClassesChanged
@@ -51,16 +52,17 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
-@OpenClassOnDebug
 class ProductDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
-    private val taxStore: WCTaxStore
+    private val taxStore: WCTaxStore,
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val quantityRulesMapper: QuantityRulesMapper,
+    private val gson: Gson
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
-    private var continuationFetchProduct = ContinuationWrapper<Boolean>(PRODUCTS)
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
     private var continuationUpdateProductPassword = ContinuationWrapper<Boolean>(PRODUCTS)
     private var continuationFetchProductShippingClass = ContinuationWrapper<Boolean>(PRODUCTS)
@@ -81,17 +83,19 @@ class ProductDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchProduct(remoteProductId: Long): Product? {
-        lastFetchProductErrorType = null
-        this.remoteProductId = remoteProductId
-        continuationFetchProduct.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
-            dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductAction(payload))
+    suspend fun fetchProductOrLoadFromCache(remoteProductId: Long): Product? {
+        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+        val result = productStore.fetchSingleProduct(payload)
+
+        if (result.isError) {
+            lastFetchProductErrorType = result.error.type
         }
+
         return getProduct(remoteProductId)
     }
 
     suspend fun fetchProductPassword(remoteProductId: Long): String? {
+        this.remoteProductId = remoteProductId
         val result = continuationFetchProductPassword.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCProductStore.FetchProductPasswordPayload(selectedSite.get(), remoteProductId)
             dispatcher.dispatch(WCProductActionBuilder.newFetchProductPasswordAction(payload))
@@ -148,6 +152,7 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun updateProductPassword(remoteProductId: Long, password: String?): Boolean {
+        this.remoteProductId = remoteProductId
         val result = continuationUpdateProductPassword.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCProductStore.UpdateProductPasswordPayload(
                 selectedSite.get(),
@@ -227,10 +232,16 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Fetches the list of terms for an attribute
      */
-    suspend fun fetchGlobalAttributeTerms(remoteAttributeId: Long): List<ProductAttributeTerm> {
+    suspend fun fetchGlobalAttributeTerms(
+        remoteAttributeId: Long,
+        page: Int,
+        pageSize: Int
+    ): List<ProductAttributeTerm> {
         val wooResult = globalAttributeStore.fetchAttributeTerms(
             selectedSite.get(),
-            remoteAttributeId
+            remoteAttributeId,
+            page,
+            pageSize
         )
         return wooResult?.model?.map { it.toAppModel() } ?: emptyList()
     }
@@ -260,6 +271,10 @@ class ProductDetailRepository @Inject constructor(
 
     fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
+    suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
+        getCachedWCProductModel(remoteProductId)?.toAppModel()
+    }
+
     fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
 
     fun getCachedVariationCount(remoteProductId: Long) =
@@ -274,20 +289,17 @@ class ProductDetailRepository @Inject constructor(
     fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_SINGLE_PRODUCT && event.remoteProductId == remoteProductId) {
-            if (continuationFetchProduct.isWaiting) {
-                if (event.isError) {
-                    lastFetchProductErrorType = event.error.type
-                    continuationFetchProduct.continueWith(false)
-                } else {
-                    AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
-                    continuationFetchProduct.continueWith(true)
-                }
-            }
-        }
+    fun getQuantityRules(remoteProductId: Long): QuantityRules? {
+        return getCachedWCProductModel(remoteProductId)?.metadata
+            ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
+    }
+
+    fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {
+        val metadata = getCachedWCProductModel(remoteProductId)?.metadata ?: return null
+        val metadataArray = gson.fromJson(metadata, Array<WCMetaData>::class.java)
+
+        return metadataArray?.filter { metadataItem -> metadataItem.key.isNullOrEmpty().not() }
+            ?.associate { metadataItem -> metadataItem.key!! to metadataItem.value }
     }
 
     @SuppressWarnings("unused")

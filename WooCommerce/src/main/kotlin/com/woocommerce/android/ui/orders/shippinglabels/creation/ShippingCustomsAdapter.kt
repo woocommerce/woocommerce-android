@@ -35,6 +35,7 @@ class ShippingCustomsAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
     private val countries: Array<Location>,
+    private val isShippingNoticeActive: Boolean,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     init {
@@ -54,7 +55,7 @@ class ShippingCustomsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageCustomsViewHolder {
         val binding = ShippingCustomsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PackageCustomsViewHolder(binding)
+        return PackageCustomsViewHolder(binding, isShippingNoticeActive)
     }
 
     override fun onBindViewHolder(holder: PackageCustomsViewHolder, position: Int) {
@@ -66,13 +67,17 @@ class ShippingCustomsAdapter(
     }
 
     @Suppress("MagicNumber")
-    inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
+    inner class PackageCustomsViewHolder(
+        val binding: ShippingCustomsListItemBinding,
+        isShippingNoticeActive: Boolean
+    ) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
                 weightUnit = weightUnit,
                 currencyUnit = currencyUnit,
                 countries = countries,
-                listener = listener
+                listener = listener,
+                isShippingNoticeActive = isShippingNoticeActive
             )
         }
         private val context
@@ -105,36 +110,36 @@ class ShippingCustomsAdapter(
 
             // Setup listeners
             binding.returnCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                listener.onReturnToSenderChanged(adapterPosition, isChecked)
+                listener.onReturnToSenderChanged(bindingAdapterPosition, isChecked)
             }
             binding.contentsTypeSpinner.setup(
                 values = ContentsType.values(),
-                onSelected = { listener.onContentsTypeChanged(adapterPosition, it) },
+                onSelected = { listener.onContentsTypeChanged(bindingAdapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
             binding.contentsTypeDescription.setOnTextChangedListener {
-                it?.let { listener.onContentsDescriptionChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onContentsDescriptionChanged(bindingAdapterPosition, it.toString()) }
             }
             binding.restrictionTypeSpinner.setup(
                 values = RestrictionType.values(),
-                onSelected = { listener.onRestrictionTypeChanged(adapterPosition, it) },
+                onSelected = { listener.onRestrictionTypeChanged(bindingAdapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
             binding.restrictionTypeDescription.setOnTextChangedListener {
-                it?.let { listener.onRestrictionDescriptionChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onRestrictionDescriptionChanged(bindingAdapterPosition, it.toString()) }
             }
             binding.itnEditText.setOnTextChangedListener {
-                it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onItnChanged(bindingAdapterPosition, it.toString()) }
             }
             binding.titleLayout.setOnClickListener {
                 if (isExpanded) {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
-                    listener.onPackageExpandedChanged(adapterPosition, false)
+                    listener.onPackageExpandedChanged(bindingAdapterPosition, false)
                 } else {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
-                    listener.onPackageExpandedChanged(adapterPosition, true)
+                    listener.onPackageExpandedChanged(bindingAdapterPosition, true)
                 }
             }
         }
@@ -166,7 +171,7 @@ class ShippingCustomsAdapter(
             binding.itnEditText.setTextIfDifferent(customsPackage.itn)
             binding.itnEditText.error = validationState.itnErrorMessage
 
-            linesAdapter.parentItemPosition = adapterPosition
+            linesAdapter.parentItemPosition = bindingAdapterPosition
             linesAdapter.customsLines = uiState.customsLinesUiState
 
             if (uiState.isExpanded) {
@@ -201,6 +206,7 @@ class ShippingCustomsLineAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
     private val countries: Array<Location>,
+    private val isShippingNoticeActive: Boolean,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<CustomsLineViewHolder>() {
     init {
@@ -228,9 +234,13 @@ class ShippingCustomsLineAdapter(
     }
 
     override fun onBindViewHolder(holder: CustomsLineViewHolder, position: Int) {
-        holder.bind(customsLines[position])
+        holder.bind(
+            uiState = customsLines[position],
+            shouldDisplayShippingNotice = isShippingNoticeActive && position == 0
+        )
     }
 
+    @Suppress("MagicNumber")
     inner class CustomsLineViewHolder(val binding: ShippingCustomsLineListItemBinding) : ViewHolder(binding.root) {
         private val context
             get() = binding.root.context
@@ -263,20 +273,20 @@ class ShippingCustomsLineAdapter(
             )
 
             binding.itemDescriptionEditText.setOnTextChangedListener {
-                it?.let { listener.onItemDescriptionChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onItemDescriptionChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.hsTariffNumberEditText.setOnTextChangedListener {
-                it?.let { listener.onHsTariffNumberChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onHsTariffNumberChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.weightEditText.setOnTextChangedListener {
-                it?.let { listener.onWeightChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onWeightChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.valueEditText.setOnTextChangedListener {
-                it?.let { listener.onItemValueChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onItemValueChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.countrySpinner.setup(
                 values = countries,
-                onSelected = { listener.onOriginCountryChanged(parentItemPosition, adapterPosition, it) },
+                onSelected = { listener.onOriginCountryChanged(parentItemPosition, bindingAdapterPosition, it) },
                 mapper = { it.name }
             )
         }
@@ -291,9 +301,12 @@ class ShippingCustomsLineAdapter(
                 }
         }
 
-        fun bind(uiState: CustomsLineUiState) {
+        fun bind(uiState: CustomsLineUiState, shouldDisplayShippingNotice: Boolean) {
             val (customsLine, validationState) = uiState
-            binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
+            binding.lineTitle.text = context.getString(
+                R.string.shipping_label_customs_line_item,
+                bindingAdapterPosition + 1
+            )
 
             binding.itemDescriptionEditText.setTextIfDifferent(customsLine.itemDescription)
             binding.itemDescriptionEditText.error = validationState.itemDescriptionErrorMessage
@@ -310,6 +323,9 @@ class ShippingCustomsLineAdapter(
             binding.countrySpinner.setText(customsLine.originCountry.name)
 
             binding.errorView.isVisible = !validationState.isValid
+
+            binding.shippingNoticeIcon.isVisible = shouldDisplayShippingNotice && validationState.isValid
+            binding.shippingNoticeIcon.setOnClickListener { listener.onShippingNoticeClicked() }
         }
     }
 
@@ -344,4 +360,5 @@ interface ShippingCustomsFormListener {
     fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String)
     fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String)
     fun onOriginCountryChanged(packagePosition: Int, linePosition: Int, country: Location)
+    fun onShippingNoticeClicked()
 }

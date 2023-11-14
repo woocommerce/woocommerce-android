@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Woo.Card.WithoutPadding"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/Woo.Card.WithoutPadding">
+    android:layout_height="wrap_content">
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -173,7 +173,7 @@
                     android:text="@string/shipping_label_package_details_individual_package_dimensions_error"
                     android:textAppearance="?attr/textAppearanceCaption"
                     android:textColor="@color/color_error"
-                    app:drawableStartCompat="@drawable/ic_info_outline_24dp"
+                    app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
                     app:drawableTint="@color/color_error" />
             </LinearLayout>
 
@@ -193,6 +193,113 @@
                 android:id="@+id/bottom_divider"
                 style="@style/Woo.Divider"
                 app:layout_constraintBottom_toBottomOf="parent" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/hazmat_toggle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_300"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_00"
+                android:minHeight="@dimen/minor_00"
+                android:text="@string/shipping_label_package_details_hazmat_content_checkbox_title"
+                tools:text="Contains Hazardous Materials" />
+
+            <LinearLayout
+                android:id="@+id/hazmat_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/hazmat_category_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="vertical">
+
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_marginStart="@dimen/major_100" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/minor_100"
+                        android:layout_marginStart="@dimen/major_100"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                style="@style/Woo.ListItem.Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:text="@string/shipping_label_package_details_hazmat_selection_title" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/hazmat_category"
+                                style="@style/Woo.ListItem.Body"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:text="@string/shipping_label_package_details_hazmat_select_category_action" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/major_75"
+                            android:contentDescription="@string/product_property_edit"
+                            android:src="@drawable/ic_arrow_right" />
+
+                    </LinearLayout>
+
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_marginStart="@dimen/major_100" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginVertical="@dimen/major_100"
+                    android:text="@string/shipping_label_package_details_hazmat_content_description" />
+
+                <TextView
+                    android:id="@+id/hazmat_usps_instructions_first_section"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100" />
+
+                <TextView
+                    android:id="@+id/hazmat_usps_instructions_second_section"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100" />
+
+                <TextView
+                    android:id="@+id/hazmat_dhl_instructions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100" />
+
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

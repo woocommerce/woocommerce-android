@@ -9,9 +9,9 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -38,14 +39,19 @@ class ProductSelectionListFragment :
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,
-    OnActionExpandListener {
+    OnActionExpandListener,
+    MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: ProductSelectionListViewModel by viewModels()
 
     private var tracker: SelectionTracker<Long>? = null
     private val productSelectionListAdapter: ProductListAdapter by lazy {
-        ProductListAdapter(loadMoreListener = this)
+        ProductListAdapter(
+            loadMoreListener = this,
+            currencyFormatter = currencyFormatter
+        )
     }
 
     private val skeletonView = SkeletonView()
@@ -78,7 +84,7 @@ class ProductSelectionListFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductListBinding.bind(view)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         setupObservers(viewModel)
 
@@ -92,7 +98,7 @@ class ProductSelectionListFragment :
             "mySelection", // a string to identity our selection in the context of this fragment
             binding.productsRecycler, // the RecyclerView where we will apply the tracker
             ProductSelectionItemKeyProvider(binding.productsRecycler), // the source of selection keys
-            ProductSelectionListItemLookup(binding.productsRecycler), // the source of information about recycler items
+            SelectableProductListItemLookup(binding.productsRecycler), // the source of information about recycler items
             StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
         ).withSelectionPredicate(
             SelectionPredicates.createSelectAnything() // allows multiple items to be selected without any restriction
@@ -138,23 +144,21 @@ class ProductSelectionListFragment :
             })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_product_list_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 enableSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -185,27 +189,21 @@ class ProductSelectionListFragment :
             }
         }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showProductList(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> {
-                        val key = viewModel.groupedProductListType.resultKey
-                        val productIds = (event.data as? List<Long>) ?: emptyList()
-                        navigateBackWithResult(key, productIds)
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> {
+                    val key = viewModel.groupedProductListType.resultKey
+                    val productIds = (event.data as? List<*>) ?: emptyList<Long>()
+                    navigateBackWithResult(key, productIds)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -217,7 +215,7 @@ class ProductSelectionListFragment :
     }
 
     private fun showProductList(productSelectionList: List<Product>) {
-        productSelectionListAdapter.setProductList(productSelectionList)
+        productSelectionListAdapter.submitList(productSelectionList)
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
@@ -251,12 +249,12 @@ class ProductSelectionListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.onSearchOpened()
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
         return true

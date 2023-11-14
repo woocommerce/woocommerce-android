@@ -1,15 +1,11 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -20,14 +16,17 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.ValidationResult
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.AddressValidated
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.OriginAddressValidationStarted
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.PurchaseSuccess
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect.NoOp
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.PurchaseLabels
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -37,8 +36,10 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
+import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -48,19 +49,28 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
 class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
@@ -72,6 +82,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val parameterRepository: ParameterRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
@@ -79,9 +90,17 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val shippingAddressValidated = shippingAddress.copy(city = "DONE")
     private val order = OrderTestUtils.generateOrder()
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
+    private val checkEUShippingScenario: CheckEUShippingScenario = mock {
+        on { invoke(any()) } doReturn flowOf(false)
+    }
 
     private val data = StateMachineData(
-        order = order.toAppModel(),
+        order = orderMapper.toAppModel(order),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(NOT_READY, shippingAddress),
@@ -97,7 +116,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     )
 
     private val doneData = StateMachineData(
-        order = order.toAppModel(),
+        order = orderMapper.toAppModel(order),
         stepsState = StepsState(
             originAddressStep = OriginAddressStep(READY, originAddress),
             shippingAddressStep = ShippingAddressStep(READY, shippingAddress),
@@ -170,7 +189,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.getIdentifier()).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.orderId).initSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
@@ -183,6 +202,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             CreateShippingLabelViewModel(
                 savedState,
                 parameterRepository,
+                checkEUShippingScenario,
                 orderDetailRepository,
                 shippingLabelRepository,
                 stateMachine,
@@ -191,7 +211,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 wooStore,
                 accountStore,
                 resourceProvider,
-                currencyFormatter
+                currencyFormatter,
+                mock(),
+                appPrefs
             )
         )
 
@@ -203,7 +225,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays create shipping label view correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays create shipping label view correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -211,7 +233,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays data-loaded state correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays data-loaded state correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -224,13 +246,13 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             paymentStep = otherNotDone
         )
 
-        stateFlow.value = Transition(State.WaitingForInput(data), null)
+        stateFlow.value = Transition(WaitingForInput(data), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
-    fun `Displays origin-address validated state correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays origin-address validated state correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -248,13 +270,13 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             shippingAddressStep = data.stepsState.shippingAddressStep.copy(status = READY)
         )
         val newData = data.copy(stepsState = newStepsState)
-        stateFlow.value = Transition(State.WaitingForInput(newData), null)
+        stateFlow.value = Transition(WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
-    fun `Displays shipping-address validated state correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays shipping-address validated state correctly`() = testBlocking {
         var viewState: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
@@ -277,14 +299,14 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         )
 
         val newData = data.copy(stepsState = newStepsState)
-        stateFlow.value = Transition(State.WaitingForInput(newData), null)
+        stateFlow.value = Transition(WaitingForInput(newData), null)
 
         assertThat(viewState).isEqualTo(expectedViewState)
     }
 
     @Test
-    fun `Continue click in origin address triggers validation`() = coroutinesTestRule.testDispatcher.runBlockingTest {
-        stateFlow.value = Transition(State.WaitingForInput(data), null)
+    fun `Continue click in origin address triggers validation`() = testBlocking {
+        stateFlow.value = Transition(WaitingForInput(data), null)
 
         viewModel.onContinueButtonTapped(FlowStep.ORIGIN_ADDRESS)
 
@@ -292,7 +314,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
         stateFlow.value = Transition(State.OriginAddressValidation(data), null)
 
-        verify(addressValidator).validateAddress(originAddress, ORIGIN, requiresPhoneNumber = false)
+        verify(addressValidator).validateAddress(originAddress, ORIGIN, isCustomsFormRequired = false)
     }
 
     @Test
@@ -319,11 +341,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Purchase a label successfully`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Purchase a label successfully`() = testBlocking {
         val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
-            )
+            OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
@@ -335,11 +355,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Show print screen after purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Show print screen after purchase`() = testBlocking {
         val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
-            )
+            OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
 
         var event: MultiLiveEvent.Event? = null
@@ -347,53 +365,56 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             event = it
         }
 
-        stateFlow.value = Transition(State.Idle, SideEffect.ShowLabelsPrint(doneData.order.remoteId, purchasedLabels))
+        stateFlow.value = Transition(Idle, SideEffect.ShowLabelsPrint(doneData.order.id, purchasedLabels))
 
-        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.remoteId, purchasedLabels))
+        assertThat(event).isEqualTo(ShowPrintShippingLabels(doneData.order.id, purchasedLabels))
     }
 
     @Test
-    fun `fulfill order after successful purchase`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `fulfill order after successful purchase`() = testBlocking {
         val purchasedLabels = listOf(
-            OrderTestUtils.generateShippingLabel(
-                remoteOrderId = order.remoteOrderId, shippingLabelId = 1
-            )
+            OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
         )
         whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(purchasedLabels))
-        whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-            .thenReturn(ContinuationWrapper.ContinuationResult.Success(true))
+        whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+            flow {
+                UpdateOrderResult.OptimisticUpdateResult(mock())
+                UpdateOrderResult.RemoteUpdateResult(mock())
+            }
+        )
 
         viewModel.onPurchaseButtonClicked(fulfillOrder = true)
         stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
 
         verify(orderDetailRepository).updateOrderStatus(
-            doneData.order.toDataModel(), CoreOrderStatus.COMPLETED.value
+            doneData.order.id, CoreOrderStatus.COMPLETED.value
         )
     }
 
     @Test
     fun `notify user if fulfilment fail after successful purchase`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val purchasedLabels = listOf(
-                OrderTestUtils.generateShippingLabel(
-                    remoteOrderId = order.remoteOrderId, shippingLabelId = 1
-                )
+                OrderTestUtils.generateShippingLabel(shippingLabelId = 1)
             )
             whenever(shippingLabelRepository.purchaseLabels(any(), any(), any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(purchasedLabels))
-            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-                .thenReturn(ContinuationWrapper.ContinuationResult.Success(false))
-
-            var event: MultiLiveEvent.Event? = null
-            viewModel.event.observeForever {
-                event = it
-            }
+            whenever(orderDetailRepository.updateOrderStatus(any(), any())).thenReturn(
+                flow {
+                    emit(UpdateOrderResult.OptimisticUpdateResult(mock()))
+                    val onOrderChangedWithError = mock<OnOrderChanged>()
+                        .apply { whenever(this.isError).thenReturn(true) }
+                    emit(UpdateOrderResult.RemoteUpdateResult(onOrderChangedWithError))
+                }
+            )
 
             viewModel.onPurchaseButtonClicked(fulfillOrder = true)
             stateFlow.value = Transition(PurchaseLabels(doneData, fulfillOrder = true), null)
+            advanceUntilIdle()
 
-            assertThat(event).isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
+            assertThat(viewModel.event.value)
+                .isEqualTo(ShowSnackbar(R.string.shipping_label_create_purchase_fulfill_error))
         }
 
     @Test

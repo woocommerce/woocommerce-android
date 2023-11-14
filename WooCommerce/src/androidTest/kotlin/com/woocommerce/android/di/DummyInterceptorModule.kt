@@ -10,7 +10,7 @@ import javax.inject.Named
 
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [InterceptorModule::class]
+    replaces = [DebugInterceptorModule::class]
 )
 @Module
 class DummyInterceptorModule {

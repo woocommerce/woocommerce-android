@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.lifecycle.observe
+import androidx.core.view.MenuProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
@@ -13,19 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDownloadsListBinding
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.wpmediapicker.WPMediaPickerFragment
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_downloads_list) {
+class ProductDownloadsFragment :
+    BaseProductFragment(R.layout.fragment_product_downloads_list),
+    MenuProvider {
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
             dragDirs = UP or DOWN,
@@ -58,9 +57,8 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
 
         _binding = FragmentProductDownloadsListBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
-        setupResultHandlers(viewModel)
 
         with(binding.productDownloadsRecycler) {
             adapter = productDownloadsAdapter
@@ -74,25 +72,18 @@ class ProductDownloadsFragment : BaseProductFragment(R.layout.fragment_product_d
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_downloads_list, menu)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_product_downloads_settings -> {
                 viewModel.onDownloadsSettingsClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
-        handleResult<List<Image>>(WPMediaPickerFragment.KEY_WP_IMAGE_PICKER_RESULT) {
-            viewModel.showAddProductDownload(it.first().source)
+            else -> false
         }
     }
 

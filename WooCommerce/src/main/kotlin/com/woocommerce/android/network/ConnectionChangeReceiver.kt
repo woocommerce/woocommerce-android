@@ -3,8 +3,12 @@ package com.woocommerce.android.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.tools.ConnectivityObserver
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.util.NetworkUtils
 import javax.inject.Inject
@@ -16,7 +20,10 @@ import javax.inject.Singleton
  * monitor connectivity.
  */
 @Singleton
-class ConnectionChangeReceiver @Inject constructor() : BroadcastReceiver() {
+class ConnectionChangeReceiver @Inject constructor(
+    @AppCoroutineScope private val appScope: CoroutineScope,
+    private val connectivityObserver: ConnectivityObserver
+) : BroadcastReceiver() {
     companion object {
         private var isFirstReceive = true
         private var wasConnected = true
@@ -35,6 +42,9 @@ class ConnectionChangeReceiver @Inject constructor() : BroadcastReceiver() {
      */
     override fun onReceive(context: Context, intent: Intent) {
         val isConnected = NetworkUtils.isNetworkAvailable(context)
+        appScope.launch {
+            connectivityObserver.update(isConnected)
+        }
         if (isFirstReceive || isConnected != wasConnected) {
             WooLog.i(T.DEVICE, "Connection Changed to $isConnected")
             wasConnected = isConnected
