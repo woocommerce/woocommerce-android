@@ -3,10 +3,13 @@ package com.woocommerce.android.ui.products
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
+import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.NavGraphProductsDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.id
+import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
@@ -23,6 +26,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithAI
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithMessage
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewBundleProducts
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewFirstProductCelebration
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
@@ -31,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAd
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAttributes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCatalogVisibility
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductComponents
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -42,6 +48,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductIn
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductMenuOrder
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSettings
@@ -49,6 +56,9 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSlug
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -80,7 +90,7 @@ class ProductNavigator @Inject constructor() {
                     putExtra(Intent.EXTRA_TEXT, target.url)
                     type = "text/plain"
                 }
-                val title = fragment.resources.getText(R.string.product_share_dialog_title)
+                val title = fragment.resources.getText(string.product_share_dialog_title)
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
             }
 
@@ -91,7 +101,7 @@ class ProductNavigator @Inject constructor() {
                     putExtra(Intent.EXTRA_TITLE, target.title)
                     type = "text/plain"
                 }
-                val title = fragment.resources.getText(R.string.product_share_dialog_title)
+                val title = fragment.resources.getText(string.product_share_dialog_title)
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
             }
 
@@ -314,8 +324,8 @@ class ProductNavigator @Inject constructor() {
                     directions = directions,
                     navOptions =
                     if (target.source == STORE_ONBOARDING)
-                        NavOptions.Builder()
-                            .setPopUpTo(R.id.dashboard, false)
+                        Builder()
+                            .setPopUpTo(id.dashboard, false)
                             .build()
                     else null
                 )
@@ -409,7 +419,7 @@ class ProductNavigator @Inject constructor() {
                 )
             }
 
-            is ProductNavigationTarget.ViewProductSubscription -> {
+            is ViewProductSubscription -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductSubscriptionFragment(
                     target.subscription,
                     target.sale
@@ -417,7 +427,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ProductNavigationTarget.ViewProductSubscriptionExpiration -> {
+            is ViewProductSubscriptionExpiration -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductSubscriptionExpirationFragment(
                         target.subscription
@@ -425,20 +435,22 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ProductNavigationTarget.ViewProductQuantityRules -> {
+            is ViewProductSubscriptionTrial -> TODO()
+
+            is ViewProductQuantityRules -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
                     target.quantityRules
                 )
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ProductNavigationTarget.ViewBundleProducts -> {
+            is ViewBundleProducts -> {
                 ProductDetailFragmentDirections.actionProductDetailFragmentToProductBundleFragment(
                     target.productId
                 ).let { fragment.findNavController().navigateSafely(it) }
             }
 
-            is ProductNavigationTarget.ViewProductComponents -> {
+            is ViewProductComponents -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCompositeProductFragment(
                     target.components.toTypedArray()
                 )
@@ -447,7 +459,7 @@ class ProductNavigator @Inject constructor() {
 
             is ExitProduct -> fragment.findNavController().navigateUp()
 
-            is ProductNavigationTarget.ViewFirstProductCelebration -> {
+            is ViewFirstProductCelebration -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToFirstProductCelebrationDialog(
                     productName = target.productName,
                     permalink = target.permalink

@@ -152,6 +152,10 @@ sealed class ProductNavigationTarget : Event() {
         val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 
+    data class ViewProductSubscriptionTrial(
+        val subscription: SubscriptionDetails
+    ) : ProductNavigationTarget()
+
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
 
     data class ViewBundleProducts(val productId: Long) : ProductNavigationTarget()
