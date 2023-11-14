@@ -424,7 +424,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
                 SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to it.trialLength,
                 SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to it.oneTimeShipping
             )
-            for ((key, value) in subscriptionValues) {
+            subscriptionValues.forEach { (key, value) ->
                 jsonArray.add(
                     JsonObject().also { json ->
                         json.addProperty(WCMetaData.KEY, key)
