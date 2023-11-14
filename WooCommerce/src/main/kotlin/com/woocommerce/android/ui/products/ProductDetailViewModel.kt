@@ -15,8 +15,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_MIN_MAX_QUANTITY_RULES
@@ -62,6 +68,23 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductRenameAttribute
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionFreeTrial
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptions
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -767,49 +790,50 @@ class ProductDetailViewModel @Inject constructor(
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
-            is ProductExitEvent.ExitSettings -> {
+            is ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
 
-            is ProductExitEvent.ExitExternalLink -> {
-                eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
+            is ExitExternalLink -> {
+                eventName = EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
 
-            is ProductExitEvent.ExitProductCategories -> {
-                eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
+            is ExitProductCategories -> {
+                eventName = PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
 
-            is ProductExitEvent.ExitProductTags -> {
-                eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
+            is ExitProductTags -> {
+                eventName = PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
 
-            is ProductExitEvent.ExitProductAttributeList -> {
-                eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
+            is ExitProductAttributeList -> {
+                eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ProductExitEvent.ExitProductAddAttribute -> {
-                eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
+            is ExitProductAddAttribute -> {
+                eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ProductExitEvent.ExitAttributesAdded -> {
-                eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
+            is ExitAttributesAdded -> {
+                eventName = PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
-            is ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
-            is ProductExitEvent.ExitProductAddons -> Unit // Do nothing
-            is ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
-            is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
-            is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
-            is ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
-            is ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
-            is ProductExitEvent.ExitProductSubscriptionExpiration -> Unit // Do nothing
+            is ExitLinkedProducts -> Unit // Do nothing
+            is ExitProductAddAttributeTerms -> Unit // Do nothing
+            is ExitProductAddons -> Unit // Do nothing
+            is ExitProductDownloads -> Unit // Do nothing
+            is ExitProductDownloadsSettings -> Unit // Do nothing
+            is ExitProductRenameAttribute -> Unit // Do nothing
+            is ExitProductSubscriptions -> Unit // Do nothing
+            is ExitProductQuantityRules -> Unit // Do nothing
+            is ExitProductSubscriptionExpiration -> Unit // Do nothing
+            ExitProductSubscriptionFreeTrial -> Unit
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -2413,6 +2437,8 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductQuantityRules : ProductExitEvent()
 
         object ExitProductSubscriptionExpiration : ProductExitEvent()
+
+        object ExitProductSubscriptionFreeTrial : ProductExitEvent()
     }
 
     object RefreshMenu : Event()
