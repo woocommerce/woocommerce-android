@@ -64,12 +64,11 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     }
 
     fun onSummaryDepositShown() {
-        val success = _viewState.value as? PaymentsHubDepositSummaryState.Success
+        val success = _viewState.value as? PaymentsHubDepositSummaryState.Success ?: return
         trackerWrapper.track(
             AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_SHOWN,
             properties = mapOf(
-                NUMBER_OF_CURRENCIES_TRACK_PROP_KEY to
-                    (success?.overview?.infoPerCurrency?.size ?: 0).toString(),
+                NUMBER_OF_CURRENCIES_TRACK_PROP_KEY to success.overview.infoPerCurrency.size.toString(),
             )
         )
     }

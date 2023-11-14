@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -376,7 +378,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given error state, when onSummaryDepositShown, then event is not tracked`() = testBlocking {
-// GIVEN
+        // GIVEN
         whenever(repository.retrieveDepositOverview()).thenAnswer {
             flow {
                 emit(
@@ -397,7 +399,10 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
         viewModel.onSummaryDepositShown()
 
         // THEN
-        verifyNoInteractions(trackerWrapper)
+        verify(trackerWrapper, never()).track(
+            eq(AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_SHOWN),
+            any()
+        )
     }
 
     private fun initViewModel() = PaymentsHubDepositSummaryViewModel(
