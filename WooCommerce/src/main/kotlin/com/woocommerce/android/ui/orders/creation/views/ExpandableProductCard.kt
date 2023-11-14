@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -283,6 +284,10 @@ fun ExtendedProductCardContent(
         val buttonBarrier = createTopBarrier(removeButton, configurationButton)
 
         val editableControlsEnabled = state.value?.isIdle == true
+        // The logic to update bundled products quantity is complex so we need to prevent any change while we are
+        // updating the bundle and inner products quantity
+        val isBundledProduct = product.productInfo.productType == ProductType.BUNDLE
+
         Divider(
             modifier = Modifier
                 .constrainAs(topDivider) {
@@ -316,6 +321,8 @@ fun ExtendedProductCardContent(
                 onIncreaseClicked = onIncreaseItemAmountClicked,
                 onDecreaseClicked = onDecreaseItemAmountClicked,
                 product = product,
+                isDecreaseButtonEnabled = editableControlsEnabled && isBundledProduct,
+                isIncreaseButtonEnabled = editableControlsEnabled && isBundledProduct
             )
         }
         Row(
@@ -487,7 +494,9 @@ private fun AmountPicker(
     modifier: Modifier = Modifier,
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit,
-    product: OrderCreationProduct
+    product: OrderCreationProduct,
+    isDecreaseButtonEnabled: Boolean = true,
+    isIncreaseButtonEnabled: Boolean = true
 ) {
     Row(
         modifier = modifier
@@ -499,22 +508,23 @@ private fun AmountPicker(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
-        val buttonTint = MaterialTheme.colors.primary
-        IconButton(onClick = onDecreaseClicked) {
+        val decreaseButtonTint = if(isDecreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
+        val increaseButtonTint = if(isIncreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
+        IconButton(onClick = onDecreaseClicked, enabled = isDecreaseButtonEnabled) {
             Icon(
                 imageVector = Icons.Filled.Remove,
                 contentDescription =
                 stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
-                tint = buttonTint
+                tint = decreaseButtonTint
             )
         }
         Text(text = product.item.quantity.toInt().toString(), color = MaterialTheme.colors.onSurface)
-        IconButton(onClick = onIncreaseClicked) {
+        IconButton(onClick = onIncreaseClicked , enabled = isIncreaseButtonEnabled) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription =
                 stringResource(id = R.string.order_creation_increase_item_amount_content_description),
-                tint = buttonTint
+                tint = increaseButtonTint
             )
         }
     }
