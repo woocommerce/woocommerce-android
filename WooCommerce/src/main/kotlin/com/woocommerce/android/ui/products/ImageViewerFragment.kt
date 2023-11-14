@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentImageViewerBinding
@@ -95,7 +96,7 @@ class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestLis
     override fun onLoadFailed(
         e: GlideException?,
         model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
+        target: Target<Drawable>,
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)
@@ -107,10 +108,10 @@ class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestLis
      * Glide has loaded the image, hide the progress bar
      */
     override fun onResourceReady(
-        resource: Drawable?,
-        model: Any?,
-        target: com.bumptech.glide.request.target.Target<Drawable>?,
-        dataSource: DataSource?,
+        resource: Drawable,
+        model: Any,
+        target: Target<Drawable>?,
+        dataSource: DataSource,
         isFirstResource: Boolean
     ): Boolean {
         showProgress(false)

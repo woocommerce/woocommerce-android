@@ -112,7 +112,7 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '3.5.0'
-    mediapickerVersion = '0.2'
+    mediapickerVersion = 'trunk-10f3b7d3aeb31bb0bacacde3d9fc2456c09105a9'
     wordPressLoginVersion = '1.8.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '3.2.0'
