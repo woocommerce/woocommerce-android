@@ -410,7 +410,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
     }
 
     // Add any other editable product metadata here.
-    // Currently now only subscription metadata is supported the rest is read only
+    // Currently, only subscription details metadata is editable from the app. The rest is read only
     fun SubscriptionDetails.toMetadataJson(): String {
         val jsonArray = JsonArray()
         val subscriptionValues = mapOf(
