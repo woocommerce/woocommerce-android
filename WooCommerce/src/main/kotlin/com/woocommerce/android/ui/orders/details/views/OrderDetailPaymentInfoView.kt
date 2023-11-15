@@ -51,7 +51,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         binding.paymentInfoShippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
         binding.paymentInfoTaxesTotal.text = formatCurrencyForDisplay(order.totalTax)
         binding.paymentInfoTotal.text = formatCurrencyForDisplay(order.total)
-        binding.paymentInfoLblTitle.text = context.getString(R.string.payment)
+        binding.paymentInfoLblTitle.text = context.getString(R.string.order_detail_payment_header)
 
         with(binding.paymentInfoRefunds) {
             layoutManager = LinearLayoutManager(context)
