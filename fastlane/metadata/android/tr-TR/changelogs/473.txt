@@ -1,0 +1,2 @@
+16.1:
+En yeni güncellememizle daha sorunsuz bir WooCommerce deneyimini keşfedin! Sipariş oluşturma sırasında özel tutar girebileceğiniz, böylece size daha fazla esneklik sağlayan yeni bir özelliği kullanıma sunduk. Ayrıca, özellikle özel yönetici URL'si kullanırken daha kolay Jetpack Bağlantısı için hata işlememizi geliştirdik. Size kolaylık olması için tasarlanan daha kolaylaştırılmış ve verimli bir uygulamanın keyfini çıkarın.

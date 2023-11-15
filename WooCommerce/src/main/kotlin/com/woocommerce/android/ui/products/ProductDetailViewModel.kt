@@ -46,6 +46,8 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionDetails
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -146,7 +148,7 @@ class ProductDetailViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
-    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted
+    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -807,6 +809,7 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
             is ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
             is ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
+            is ProductExitEvent.ExitProductSubscriptionExpiration -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -1219,6 +1222,34 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(productDraft = updatedProduct)
         }
     }
+
+    fun updateProductSubscription(
+        price: BigDecimal? = null,
+        period: SubscriptionPeriod? = null,
+        periodInterval: Int? = null,
+        length: Int? = null,
+    ) {
+        viewState.productDraft?.let { product ->
+            val subscription = product.subscription ?: return
+            val updatedLength = resetSubscriptionLengthIfThePeriodChanged(period, subscription, length)
+            val updatedSubscription = subscription.copy(
+                price = price ?: subscription.price,
+                period = period ?: subscription.period,
+                periodInterval = periodInterval ?: subscription.periodInterval,
+                length = updatedLength,
+            )
+            viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
+        }
+    }
+
+    // The length ranges depend on the subscription period (days,weeks,months,years) so if period changes we need
+    // need to reset the length to "Never expire". This replicates the behavior of the Woo subscription extension
+    private fun resetSubscriptionLengthIfThePeriodChanged(
+        period: SubscriptionPeriod?,
+        subscription: SubscriptionDetails,
+        length: Int?
+    ) = if (period != null && period != subscription.period) null
+    else length ?: subscription.length
 
     private fun productHasSale(
         isSaleScheduled: Boolean?,
@@ -2344,6 +2375,10 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
+    fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
+        updateProductSubscription(length = selectedExpirationValue)
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2376,6 +2411,8 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductSubscriptions : ProductExitEvent()
 
         object ExitProductQuantityRules : ProductExitEvent()
+
+        object ExitProductSubscriptionExpiration : ProductExitEvent()
     }
 
     object RefreshMenu : Event()

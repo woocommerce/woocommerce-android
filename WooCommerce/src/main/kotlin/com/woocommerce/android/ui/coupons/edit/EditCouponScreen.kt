@@ -302,7 +302,7 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
     WCOutlinedTypedTextField(
         value = amount ?: BigDecimal.ZERO,
         label = stringResource(id = R.string.coupon_edit_amount_hint, amountUnit),
-        valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = true),
+        valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
         onValueChange = onAmountChanged,
         helperText = stringResource(
             if (type is Percent) R.string.coupon_edit_amount_percentage_helper
