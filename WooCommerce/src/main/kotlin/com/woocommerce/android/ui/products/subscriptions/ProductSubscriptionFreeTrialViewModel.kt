@@ -1,0 +1,56 @@
+package com.woocommerce.android.ui.products.subscriptions
+
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import com.woocommerce.android.model.SubscriptionPeriod
+import com.woocommerce.android.model.SubscriptionPeriod.Day
+import com.woocommerce.android.model.SubscriptionPeriod.Month
+import com.woocommerce.android.model.SubscriptionPeriod.Week
+import com.woocommerce.android.model.SubscriptionPeriod.Year
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
+
+@HiltViewModel
+class ProductSubscriptionFreeTrialViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
+) : ScopedViewModel(savedStateHandle) {
+
+    private val navArgs: ProductSubscriptionFreeTrialFragmentArgs by savedState.navArgs()
+
+    private val _viewState = MutableStateFlow(
+        FreeTrialState(
+            length = navArgs.subscription.trialLength ?: 0,
+            period = navArgs.subscription.trialPeriod ?: Day,
+        )
+    )
+    val viewState = _viewState.asLiveData()
+
+    fun onLengthChanged(length: Int) {
+        _viewState.update { _viewState.value.copy(length = length) }
+    }
+
+    fun onPeriodChanged(period: SubscriptionPeriod) {
+        _viewState.update { _viewState.value.copy(period = period) }
+    }
+
+    fun onExitRequested() {
+        triggerEvent(ExitWithResult(_viewState.value))
+    }
+
+    @Parcelize
+    data class FreeTrialState(
+        val length: Int,
+        val period: SubscriptionPeriod
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val periods = listOf(Day, Week, Month, Year)
+    }
+}
