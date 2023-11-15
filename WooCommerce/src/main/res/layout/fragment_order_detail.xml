@@ -114,7 +114,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    app:contentPaddingTop="@dimen/minor_00"/>
 
                 <!-- Customer Info -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
