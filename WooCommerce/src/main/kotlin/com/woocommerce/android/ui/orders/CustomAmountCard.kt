@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -95,11 +96,27 @@ fun CustomAmountCard(
     }
 }
 
+@Composable
+fun Header() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "CUSTOM AMOUNTS",
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.CenterStart)
+        )
+    }
+}
+
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomAmountCardPreview() {
     WooThemeWithBackground {
+        Header()
         CustomAmountCard(
             Order.FeeLine(
                 id = 0L,
@@ -110,5 +127,14 @@ fun CustomAmountCardPreview() {
             ),
             true
         )
+    }
+}
+
+@Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HeaderPreview() {
+    WooThemeWithBackground {
+        Header()
     }
 }
