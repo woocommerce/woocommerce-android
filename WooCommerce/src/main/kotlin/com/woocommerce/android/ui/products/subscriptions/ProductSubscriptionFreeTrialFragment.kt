@@ -23,12 +23,17 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.SubscriptionPeriod
+import com.woocommerce.android.model.SubscriptionPeriod.Day
+import com.woocommerce.android.model.SubscriptionPeriod.Month
+import com.woocommerce.android.model.SubscriptionPeriod.Week
+import com.woocommerce.android.model.SubscriptionPeriod.Year
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -150,5 +155,16 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
             )
         }
     }
-}
 
+    @Preview
+    @Composable
+    private fun PreviewSubscriptionFreeTrial() {
+        SubscriptionFreeTrial(
+            length = 4,
+            items = listOf(Day, Week, Month, Year),
+            period = Day,
+            onTrialLengthUpdated = {},
+            onTrialPeriodUpdated = {}
+        )
+    }
+}
