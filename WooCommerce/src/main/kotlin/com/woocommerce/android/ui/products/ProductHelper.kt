@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.SubscriptionDetails
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
@@ -90,9 +92,22 @@ object ProductHelper {
             variationIds = listOf(),
             downloads = listOf(),
             isPurchasable = false,
-            subscription = null,
+            subscription = getDefaultSubscriptionDetails(),
             isSampleProduct = false,
             parentId = 0,
+        )
+    }
+
+    private fun getDefaultSubscriptionDetails(): SubscriptionDetails {
+        return SubscriptionDetails(
+            price = BigDecimal.ZERO,
+            period = SubscriptionPeriod.Month,
+            periodInterval = 1,
+            length = null,
+            signUpFee = null,
+            trialPeriod = null,
+            trialLength = null,
+            oneTimeShipping = false
         )
     }
 }
