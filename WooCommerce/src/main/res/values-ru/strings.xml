@@ -571,7 +571,6 @@ Language: ru
     <string name="subscription_status_cancelled">Отменено</string>
     <string name="subscription_status_on_hold">Отложен</string>
     <string name="subscription_status_active">Активно</string>
-    <string name="no_variable_subscription_warning">Вы можете только добавлять вариативные подписки в веб-консоли.</string>
     <string name="subscription_details_info_notice">Вы можете редактировать подписки на товары в веб-консоли.</string>
     <string name="subscription_no_trial">Без пробного периода</string>
     <string name="subscription_no_sign_up_fee">Бесплатная регистрация</string>

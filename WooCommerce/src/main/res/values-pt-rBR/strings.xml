@@ -571,7 +571,6 @@ Language: pt_BR
     <string name="subscription_status_cancelled">Cancelada</string>
     <string name="subscription_status_on_hold">Suspensa</string>
     <string name="subscription_status_active">Ativa</string>
-    <string name="no_variable_subscription_warning">Você só pode adicionar assinaturas variáveis no painel da Web.</string>
     <string name="subscription_details_info_notice">Você pode editar as assinaturas de produtos no painel da Web.</string>
     <string name="subscription_no_trial">Sem período de teste</string>
     <string name="subscription_no_sign_up_fee">Sem taxa de inscrição</string>

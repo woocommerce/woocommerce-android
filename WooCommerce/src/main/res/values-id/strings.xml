@@ -571,7 +571,6 @@ Language: id
     <string name="subscription_status_cancelled">Dibatalkan</string>
     <string name="subscription_status_on_hold">Ditangguhkan</string>
     <string name="subscription_status_active">Aktif</string>
-    <string name="no_variable_subscription_warning">Anda hanya dapat menambahkan langganan variabel di dasbor web.</string>
     <string name="subscription_details_info_notice">Anda dapat menyunting langganan produk di dasbor web.</string>
     <string name="subscription_no_trial">Tidak ada periode percobaan</string>
     <string name="subscription_no_sign_up_fee">Tidak ada biaya pendaftaran</string>
