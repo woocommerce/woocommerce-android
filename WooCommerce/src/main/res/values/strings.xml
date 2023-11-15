@@ -856,6 +856,7 @@
     <string name="orderdetail_empty_address">No address specified</string>
     <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
+    <string name="order_detail_payment_header">PAYMENT TOTALS</string>
 
     <!--
         Shipping label Refunds
