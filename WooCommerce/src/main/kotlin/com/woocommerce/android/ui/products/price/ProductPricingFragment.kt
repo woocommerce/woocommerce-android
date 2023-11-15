@@ -366,10 +366,7 @@ class ProductPricingFragment :
             binding.productSalePrice.helperText = null
             return
         }
-        binding.productSalePrice.helperText = getString(
-            R.string.subscription_period_interval_single,
-            period.getPeriodString(requireContext(), interval)
-        )
+        binding.productSalePrice.helperText = period.formatWithInterval(requireContext(), interval)
     }
 
     /**
