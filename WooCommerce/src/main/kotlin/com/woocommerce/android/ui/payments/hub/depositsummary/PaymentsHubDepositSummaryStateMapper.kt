@@ -48,7 +48,8 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                     pendingBalanceDepositsCount = pendingBalances.firstOrNull {
                         it.currency == currency
                     }?.depositsCount ?: 0,
-                    fundsAvailableInDays = overview.account.fundsAvailableIn(),
+                    fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
+                    fundsDepositInterval = overview.account.fundsAvailableIn(),
                     nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
                     lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
                 )
@@ -69,9 +70,21 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             currencyCode = currency,
         )
 
-    // Proper implementation in the following PRs
-    private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn() =
-        PaymentsHubDepositSummaryState.Info.Interval.Days(this?.depositsSchedule?.delayDays ?: 0)
+    @Suppress("ReturnCount")
+    private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn(): PaymentsHubDepositSummaryState.Info.Interval? {
+        return when (this?.depositsSchedule?.interval?.lowercase()) {
+            "daily" -> PaymentsHubDepositSummaryState.Info.Interval.Daily
+            "weekly" -> PaymentsHubDepositSummaryState.Info.Interval.Weekly(
+                this.depositsSchedule?.weeklyAnchor ?: return null
+            )
+
+            "monthly" -> PaymentsHubDepositSummaryState.Info.Interval.Monthly(
+                this.depositsSchedule?.monthlyAnchor ?: return null
+            )
+
+            else -> null
+        }
+    }
 
     private fun String?.toDepositStatus() =
         when (this?.uppercase()) {
