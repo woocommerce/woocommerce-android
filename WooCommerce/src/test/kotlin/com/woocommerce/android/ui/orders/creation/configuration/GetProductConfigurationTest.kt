@@ -63,7 +63,7 @@ class GetProductConfigurationTest : BaseUnitTest() {
             productType = ProductType.BUNDLE
             setChildVariableRules(
                 1L,
-                listOf(VariantOption(5L, "Variation","Option")),
+                listOf(VariantOption(5L, "Variation", "Option")),
                 variationIds = listOf(23L, 45L)
             )
         }.build()
@@ -82,7 +82,7 @@ class GetProductConfigurationTest : BaseUnitTest() {
             productType = ProductType.BUNDLE
             setChildVariableRules(
                 1L,
-                listOf(VariantOption(5L, "Variation","Option")),
+                listOf(VariantOption(5L, "Variation", "Option")),
                 variationIds = listOf(23L, 45L)
             )
         }.build()
@@ -101,7 +101,7 @@ class GetProductConfigurationTest : BaseUnitTest() {
             productType = ProductType.BUNDLE
             setChildVariableRules(
                 1L,
-                listOf(VariantOption(5L, "Variation","Option")),
+                listOf(VariantOption(5L, "Variation", "Option")),
                 variationIds = listOf(23L)
             )
         }.build()
