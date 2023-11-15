@@ -106,7 +106,7 @@ fun Header() {
         Text(
             text = "CUSTOM AMOUNTS",
             modifier = Modifier
-                .padding(8.dp)
+                .padding(16.dp)
                 .align(Alignment.CenterStart)
         )
     }
