@@ -111,10 +111,11 @@ class ProductDetailCardBuilder(
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
-            VARIABLE, VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableProductCard(product))
+            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableSubscriptionProductCard(product))
             BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
             COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(product))
             else -> cards.addIfNotEmpty(getOtherProductCard(product))
@@ -268,6 +269,26 @@ class ProductDetailCardBuilder(
                 product.shortDescription(),
                 product.linkedProducts(),
                 product.downloads(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getVariableSubscriptionProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.warning(),
+                product.variations(),
+                product.variationAttributes(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.inventory(VARIABLE),
+                product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
                 product.productType()
             ).filterNotEmpty()
         )

@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -83,6 +84,14 @@ class ProductDetailBottomSheetBuilder(
                     product.getShortDescription(),
                     product.getLinkedProducts(),
                     product.getDownloadableFiles()
+                )
+            }
+            VARIABLE_SUBSCRIPTION -> {
+                listOfNotNull(
+                    product.getCategories(),
+                    product.getTags(),
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
                 )
             }
             else -> {
