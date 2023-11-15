@@ -173,7 +173,8 @@ class VariationDetailFragment :
                 viewModel.onVariationSubscriptionChanged(
                     price = it.regularPrice,
                     period = it.subscriptionPeriod,
-                    periodInterval = it.subscriptionInterval
+                    periodInterval = it.subscriptionInterval,
+                    signUpFee = it.subscriptionSignUpFee,
                 )
             }
         }

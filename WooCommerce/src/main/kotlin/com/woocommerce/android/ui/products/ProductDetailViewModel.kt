@@ -1234,6 +1234,7 @@ class ProductDetailViewModel @Inject constructor(
         price: BigDecimal? = null,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
+        signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
         length: Int? = null,
         trialLength: Int? = null,
         trialPeriod: SubscriptionPeriod? = null,
@@ -1245,6 +1246,7 @@ class ProductDetailViewModel @Inject constructor(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
+                signUpFee = signUpFee,
                 length = updatedLength,
                 trialLength = trialLength ?: subscription.trialLength,
                 trialPeriod = trialPeriod ?: subscription.trialPeriod

@@ -6,6 +6,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -185,6 +186,85 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
                 "Invalid data"
             )
             verifyNoInteractions(repository)
+        }
+
+    @Test
+    fun `when learn more clicked, then openBrowserEvents emitted with correct url`() = testBlocking {
+        // GIVEN
+        val overview: WooPaymentsDepositsOverview = mock()
+        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
+            mappedOverview
+        )
+        whenever(repository.retrieveDepositOverview()).thenAnswer {
+            flow {
+                emit(
+                    RetrieveDepositOverviewResult.Cache(
+                        overview
+                    )
+                )
+            }
+        }
+        val viewModel = initViewModel()
+        val values = viewModel.viewState.captureValues()
+        val emittedValues = mutableListOf<String>()
+        val job = launch {
+            viewModel.openBrowserEvents.collect {
+                emittedValues.add(it)
+            }
+        }
+
+        // WHEN
+        (values[0] as PaymentsHubDepositSummaryState.Success).onLearnMoreClicked()
+
+        // THEN
+        assertThat(emittedValues).hasSize(1)
+        assertThat(emittedValues.last()).isEqualTo(
+            "https://woocommerce.com/document/woopayments/deposits/deposit-schedule/"
+        )
+
+        job.cancel()
+    }
+
+    @Test
+    fun `when learn more clicked 3 times, then openBrowserEvents emitted only once`() =
+        testBlocking {
+            // GIVEN
+            val overview: WooPaymentsDepositsOverview = mock()
+            val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+            whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
+                mappedOverview
+            )
+            whenever(repository.retrieveDepositOverview()).thenAnswer {
+                flow {
+                    emit(
+                        RetrieveDepositOverviewResult.Cache(
+                            overview
+                        )
+                    )
+                }
+            }
+            val viewModel = initViewModel()
+            val values = viewModel.viewState.captureValues()
+            val emittedValues = mutableListOf<String>()
+            val job = launch {
+                viewModel.openBrowserEvents.collect {
+                    emittedValues.add(it)
+                }
+            }
+
+            // WHEN
+            (values[0] as PaymentsHubDepositSummaryState.Success).onLearnMoreClicked()
+            (values[0] as PaymentsHubDepositSummaryState.Success).onLearnMoreClicked()
+            (values[0] as PaymentsHubDepositSummaryState.Success).onLearnMoreClicked()
+
+            // THEN
+            assertThat(emittedValues).hasSize(1)
+            assertThat(emittedValues.last()).isEqualTo(
+                "https://woocommerce.com/document/woopayments/deposits/deposit-schedule/"
+            )
+
+            job.cancel()
         }
 
     private fun initViewModel() = PaymentsHubDepositSummaryViewModel(
