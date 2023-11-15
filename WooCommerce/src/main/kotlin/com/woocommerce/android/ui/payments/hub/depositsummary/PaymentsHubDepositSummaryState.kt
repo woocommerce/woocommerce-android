@@ -3,7 +3,11 @@ package com.woocommerce.android.ui.payments.hub.depositsummary
 sealed class PaymentsHubDepositSummaryState {
     object Loading : PaymentsHubDepositSummaryState()
     data class Error(val errorMessage: String) : PaymentsHubDepositSummaryState()
-    data class Success(val overview: Overview) : PaymentsHubDepositSummaryState()
+    data class Success(
+        val overview: Overview,
+        val onLearnMoreClicked: () -> Unit,
+        val onExpandCollapseClicked: () -> Unit,
+    ) : PaymentsHubDepositSummaryState()
 
     data class Overview(
         val defaultCurrency: String,

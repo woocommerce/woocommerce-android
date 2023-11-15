@@ -36,6 +36,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -72,7 +74,12 @@ fun PaymentsHubDepositSummaryView(
     viewModel.viewState.observeAsState().let {
         WooThemeWithBackground {
             when (val value = it.value) {
-                is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(value.overview)
+                is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(
+                    value.overview,
+                    value.onLearnMoreClicked,
+                    value.onExpandCollapseClicked,
+                )
+
                 null,
                 PaymentsHubDepositSummaryState.Loading,
                 is PaymentsHubDepositSummaryState.Error -> {
@@ -81,11 +88,26 @@ fun PaymentsHubDepositSummaryView(
             }
         }
     }
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel
+            .openBrowserEvents
+            .collect { url ->
+                ChromeCustomTabUtils.launchUrl(
+                    context,
+                    url,
+                    ChromeCustomTabUtils.Height.Partial.ThreeQuarters,
+                )
+            }
+    }
 }
 
 @Composable
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview,
+    onLearnMoreClicked: () -> Unit,
+    onExpandCollapseClicked: () -> Unit,
     isPreview: Boolean = LocalInspectionMode.current,
     selectedPage: Int = 0,
 ) {
@@ -123,13 +145,19 @@ fun PaymentsHubDepositSummaryView(
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.color_surface))
             ) {
-                FundsOverview(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
+                FundsOverview(selectedCurrencyInfo, isExpanded) {
+                    isExpanded = !isExpanded
+                    onExpandCollapseClicked()
+                }
 
                 AnimatedVisibility(
                     visible = isExpanded || isPreview,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    DepositsInfo(selectedCurrencyInfo)
+                    DepositsInfo(
+                        selectedCurrencyInfo,
+                        onLearnMoreClicked
+                    )
                 }
             }
         }
@@ -206,7 +234,7 @@ private fun FundsOverview(
                     default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
                     one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
                 ),
-                color = colorResource(id = R.color.color_surface_variant)
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
         }
 
@@ -248,6 +276,7 @@ private fun FundsOverview(
 @Composable
 private fun DepositsInfo(
     currencyInfo: PaymentsHubDepositSummaryState.Info,
+    onLearnMoreClicked: () -> Unit
 ) {
     Column {
         Column(
@@ -256,7 +285,7 @@ private fun DepositsInfo(
                     start = dimensionResource(id = R.dimen.major_100),
                     end = dimensionResource(id = R.dimen.major_100),
                     top = 10.dp,
-                    bottom = dimensionResource(id = R.dimen.major_150)
+                    bottom = dimensionResource(id = R.dimen.major_125)
                 )
         ) {
             currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
@@ -274,40 +303,18 @@ private fun DepositsInfo(
                             default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
                             one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
                         ),
-                        color = colorResource(id = R.color.color_surface_variant),
+                        color = colorResource(id = R.color.color_on_surface_medium),
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
-
-            Text(
-                style = MaterialTheme.typography.body2,
-                text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
-                color = colorResource(id = R.color.color_on_surface_medium),
-            )
-
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-
-            currencyInfo.nextDeposit?.let {
-                Deposit(
-                    depositType = R.string.card_reader_hub_deposit_summary_next,
-                    deposit = it,
-                    textColor = R.color.color_on_surface
+            if (currencyInfo.nextDeposit != null || currencyInfo.lastDeposit != null) {
+                NextAndLastDeposit(
+                    currencyInfo.nextDeposit,
+                    currencyInfo.lastDeposit
                 )
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+                Divider(modifier = Modifier.fillMaxWidth())
             }
-
-            currencyInfo.lastDeposit?.let {
-                Deposit(
-                    depositType = R.string.card_reader_hub_deposit_summary_last,
-                    deposit = it,
-                    textColor = R.color.color_on_surface_medium
-                )
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
-            }
-
-            Divider(modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
@@ -326,10 +333,13 @@ private fun DepositsInfo(
                 }
             }
 
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_75)))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onLearnMoreClicked)
+                    .padding(vertical = dimensionResource(id = R.dimen.minor_50)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -350,6 +360,40 @@ private fun DepositsInfo(
         }
 
         Divider(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun NextAndLastDeposit(
+    nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
+    lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
+) {
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
+
+    Text(
+        style = MaterialTheme.typography.body2,
+        text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
+        color = colorResource(id = R.color.color_on_surface_medium),
+    )
+
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
+    nextDeposit?.let {
+        Deposit(
+            depositType = R.string.card_reader_hub_deposit_summary_next,
+            deposit = it,
+            textColor = R.color.color_on_surface
+        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+    }
+
+    lastDeposit?.let {
+        Deposit(
+            depositType = R.string.card_reader_hub_deposit_summary_last,
+            deposit = it,
+            textColor = R.color.color_on_surface_medium
+        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
@@ -619,6 +663,8 @@ fun PaymentsHubDepositSummaryViewUsdPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState,
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 0
         )
     }
@@ -634,6 +680,8 @@ fun PaymentsHubDepositSummaryViewEurPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 1
         )
     }
@@ -649,6 +697,8 @@ fun PaymentsHubDepositSummaryViewRubPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 2
         )
     }
@@ -664,7 +714,36 @@ fun PaymentsHubDepositSummaryViewGbpPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
             selectedPage = 3
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
+    WooThemeWithBackground {
+        PaymentsHubDepositSummaryView(
+            PaymentsHubDepositSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = mapOf(
+                    "USD" to PaymentsHubDepositSummaryState.Info(
+                        availableFunds = "100$",
+                        pendingFunds = "200$",
+                        pendingBalanceDepositsCount = 1,
+                        fundsAvailableInDays = 5,
+                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
+                        nextDeposit = null,
+                        lastDeposit = null,
+                    )
+                )
+            ),
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            selectedPage = 0
         )
     }
 }
