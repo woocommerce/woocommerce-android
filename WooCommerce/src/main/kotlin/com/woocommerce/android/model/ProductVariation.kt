@@ -154,6 +154,10 @@ open class ProductVariation(
             it.width = if (width == 0f) "" else width.formatToString()
             it.weight = if (weight == 0f) "" else weight.formatToString()
             it.height = if (height == 0f) "" else height.formatToString()
+            if (this is SubscriptionProductVariation) {
+                // Subscription details are currently the only editable metadata fields from the app.
+                it.metadata = subscriptionDetails?.toMetadataJson().toString()
+            }
         }
     }
 
