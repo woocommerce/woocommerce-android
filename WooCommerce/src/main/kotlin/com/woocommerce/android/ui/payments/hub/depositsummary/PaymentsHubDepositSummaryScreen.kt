@@ -1,9 +1,13 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import android.content.res.Configuration
+import android.icu.text.MessageFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,11 +20,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -50,6 +61,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun PaymentsHubDepositSummaryView(
@@ -75,128 +89,162 @@ fun PaymentsHubDepositSummaryView(
     isPreview: Boolean = LocalInspectionMode.current,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-    val chevronRotation by animateFloatAsState(
-        if (isExpanded) 180f else 0f, label = "chevronRotation"
-    )
 
-    val topRowIS = remember { MutableInteractionSource() }
-    val topRowCoroutineScope = rememberCoroutineScope()
+    val pageCount = overview.infoPerCurrency.size
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colorResource(id = R.color.color_surface))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    interactionSource = topRowIS,
-                    indication = null
-                ) {
-                    val press = PressInteraction.Press(Offset.Zero)
-                    topRowCoroutineScope.launch {
-                        topRowIS.emit(press)
-                        topRowIS.emit(PressInteraction.Release(press))
-                    }
-                    isExpanded = !isExpanded
-                }
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.major_150),
-                    bottom = dimensionResource(id = R.dimen.major_100)
-                )
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    style = MaterialTheme.typography.body2,
-                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_funds),
-                    color = colorResource(id = R.color.color_on_surface)
-                )
-                Text(
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight(700),
-                    text = overview.infoPerCurrency[overview.defaultCurrency]?.availableFunds.toString(),
-                    color = colorResource(id = R.color.color_on_surface)
-                )
-            }
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    style = MaterialTheme.typography.body2,
-                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_pending_funds),
-                    color = colorResource(id = R.color.color_on_surface)
-                )
-                Text(
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight(700),
-                    text = overview.infoPerCurrency[overview.defaultCurrency]?.pendingFunds.toString(),
-                    color = colorResource(id = R.color.color_on_surface)
-                )
-                Text(
-                    style = MaterialTheme.typography.caption,
-                    text = StringUtils.getQuantityString(
-                        context = LocalContext.current,
-                        quantity = overview.infoPerCurrency[overview.defaultCurrency]?.pendingBalanceDepositsCount ?: 0,
-                        default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
-                        one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
-                    ),
-                    color = colorResource(id = R.color.color_surface_variant)
-                )
-            }
-
-            Column(
-                modifier = Modifier.weight(.3f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                IconButton(
-                    onClick = { isExpanded = !isExpanded },
-                    interactionSource = topRowIS,
-                ) {
-                    Icon(
-                        modifier = Modifier.rotate(chevronRotation),
-                        imageVector = Icons.Filled.KeyboardArrowDown,
-                        contentDescription =
-                        stringResource(R.string.card_reader_hub_deposit_summary_collapse_expand_content_description),
-                        tint = MaterialTheme.colors.primary,
-                    )
-                }
-            }
-        }
-
-        val dividerPaddingAnimation by animateDpAsState(
-            if (isExpanded) dimensionResource(id = R.dimen.major_100) else dimensionResource(id = R.dimen.minor_00),
-            label = "dividerPaddingAnimation"
-        )
-
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dividerPaddingAnimation)
-        )
+        val pagerState = rememberPagerState()
+        val currencies = overview.infoPerCurrency.keys.toList()
+        val selectedCurrencyInfo = overview.infoPerCurrency[currencies[pagerState.currentPage]] ?: return@Column
 
         AnimatedVisibility(
-            visible = isExpanded || isPreview,
+            visible = (isExpanded || isPreview) && pageCount > 1,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            AdditionInfo(
-                nextDeposit = overview.infoPerCurrency[overview.defaultCurrency]?.nextDeposit,
-                lastDeposit = overview.infoPerCurrency[overview.defaultCurrency]?.lastDeposit,
+            CurrenciesTabs(
+                currencies = currencies.map { it.uppercase() }.toList(),
+                pagerState = pagerState
             )
+        }
+
+        HorizontalPager(
+            pageCount = pageCount,
+            state = pagerState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(id = R.color.color_surface))
+            ) {
+                FundsOverview(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
+
+                AnimatedVisibility(
+                    visible = isExpanded || isPreview,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    DepositsInfo(selectedCurrencyInfo)
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun AdditionInfo(
-    nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
-    lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
+private fun FundsOverview(
+    currencyInfo: PaymentsHubDepositSummaryState.Info,
+    isExpanded: Boolean,
+    onExpandCollapseClick: () -> Unit,
+) {
+    val chevronRotation by animateFloatAsState(
+        if (isExpanded) 180f else 0f, label = "chevronRotation"
+    )
+    val topRowIS = remember { MutableInteractionSource() }
+    val topRowCoroutineScope = rememberCoroutineScope()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = topRowIS,
+                indication = null
+            ) {
+                val press = PressInteraction.Press(Offset.Zero)
+                topRowCoroutineScope.launch {
+                    topRowIS.emit(press)
+                    topRowIS.emit(PressInteraction.Release(press))
+                }
+                onExpandCollapseClick()
+            }
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_150),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            )
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                style = MaterialTheme.typography.body2,
+                text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_funds),
+                color = colorResource(id = R.color.color_on_surface)
+            )
+            Text(
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                text = currencyInfo.availableFunds,
+                color = colorResource(id = R.color.color_on_surface)
+            )
+        }
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                style = MaterialTheme.typography.body2,
+                text = stringResource(id = R.string.card_reader_hub_deposit_summary_pending_funds),
+                color = colorResource(id = R.color.color_on_surface)
+            )
+            Text(
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                text = currencyInfo.pendingFunds,
+                color = colorResource(id = R.color.color_on_surface)
+            )
+            Text(
+                style = MaterialTheme.typography.caption,
+                text = StringUtils.getQuantityString(
+                    context = LocalContext.current,
+                    quantity = currencyInfo.pendingBalanceDepositsCount,
+                    default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
+                    one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
+                ),
+                color = colorResource(id = R.color.color_surface_variant)
+            )
+        }
+
+        Column(
+            modifier = Modifier.weight(.3f),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            IconButton(
+                onClick = { onExpandCollapseClick() },
+                interactionSource = topRowIS,
+            ) {
+                Icon(
+                    modifier = Modifier.rotate(chevronRotation),
+                    imageVector = Icons.Filled.KeyboardArrowDown,
+                    contentDescription =
+                    stringResource(R.string.card_reader_hub_deposit_summary_collapse_expand_content_description),
+                    tint = MaterialTheme.colors.primary,
+                )
+            }
+        }
+    }
+    val dividerPaddingAnimation by animateDpAsState(
+        targetValue = if (isExpanded) {
+            dimensionResource(id = R.dimen.major_100)
+        } else {
+            dimensionResource(id = R.dimen.minor_00)
+        },
+        label = "dividerPaddingAnimation"
+    )
+
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dividerPaddingAnimation)
+    )
+}
+
+@Composable
+private fun DepositsInfo(
+    currencyInfo: PaymentsHubDepositSummaryState.Info,
 ) {
     Column {
         Column(
@@ -208,17 +256,24 @@ private fun AdditionInfo(
                     bottom = dimensionResource(id = R.dimen.major_150)
                 )
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                Text(
-                    style = MaterialTheme.typography.caption,
-                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_funds_available_after),
-                    color = colorResource(id = R.color.color_surface_variant),
-                )
+            currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
+                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+                    Text(
+                        style = MaterialTheme.typography.caption,
+                        text = StringUtils.getQuantityString(
+                            context = LocalContext.current,
+                            quantity = fundsAvailableInDays,
+                            default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
+                            one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
+                        ),
+                        color = colorResource(id = R.color.color_surface_variant),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
@@ -231,7 +286,7 @@ private fun AdditionInfo(
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
-            nextDeposit?.let {
+            currencyInfo.nextDeposit?.let {
                 Deposit(
                     depositType = R.string.card_reader_hub_deposit_summary_next,
                     deposit = it,
@@ -240,7 +295,7 @@ private fun AdditionInfo(
                 Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
             }
 
-            lastDeposit?.let {
+            currencyInfo.lastDeposit?.let {
                 Deposit(
                     depositType = R.string.card_reader_hub_deposit_summary_last,
                     deposit = it,
@@ -253,17 +308,19 @@ private fun AdditionInfo(
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                Text(
-                    style = MaterialTheme.typography.caption,
-                    text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_deposited_time),
-                    color = colorResource(id = R.color.color_surface_variant),
-                )
+            currencyInfo.fundsDepositInterval?.let { interval ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
+                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+                    Text(
+                        style = MaterialTheme.typography.caption,
+                        text = interval.buildText(),
+                        color = colorResource(id = R.color.color_surface_variant),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
@@ -384,6 +441,52 @@ private fun Deposit(
 }
 
 @Composable
+private fun CurrenciesTabs(
+    currencies: List<String>,
+    pagerState: PagerState,
+) {
+    val scope = rememberCoroutineScope()
+    TabRow(
+        modifier = Modifier.fillMaxWidth(),
+        selectedTabIndex = pagerState.currentPage,
+        backgroundColor = colorResource(id = R.color.color_surface),
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                    .padding(horizontal = 16.dp),
+                height = 4.dp,
+                color = colorResource(id = R.color.color_primary)
+            )
+        }
+    ) {
+        currencies.forEachIndexed { index, title ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                text = {
+                    val isSelected = pagerState.currentPage == index
+                    Text(
+                        style = MaterialTheme.typography.body1,
+                        text = title,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            colorResource(id = R.color.color_primary)
+                        } else {
+                            colorResource(id = R.color.color_on_surface_disabled)
+                        }
+                    )
+                },
+            )
+        }
+    }
+}
+
+@Composable
 private fun DepositStatus(
     text: Int,
     backgroundColor: Int,
@@ -408,8 +511,33 @@ private fun DepositStatus(
     }
 }
 
+@Composable
+private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
+    when (this) {
+        PaymentsHubDepositSummaryState.Info.Interval.Daily -> stringResource(
+            id = R.string.card_reader_hub_deposit_summary_available_deposit_time_daily
+        )
+
+        is PaymentsHubDepositSummaryState.Info.Interval.Weekly -> {
+            val dayOfWeek = DayOfWeek.valueOf(weekDay.uppercase(Locale.getDefault()))
+            stringResource(
+                id = R.string.card_reader_hub_deposit_summary_available_deposit_time_weekly,
+                dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+            )
+        }
+
+        is PaymentsHubDepositSummaryState.Info.Interval.Monthly -> {
+            val formatter = MessageFormat("{0,ordinal}", Locale.getDefault())
+            stringResource(
+                id = R.string.card_reader_hub_deposit_summary_available_deposit_time_monthly,
+                formatter.format(arrayOf(day))
+            )
+        }
+    }
+
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Ru locale", locale = "ru_RU")
 @Composable
 fun PaymentsHubDepositSummaryViewPreview() {
     WooThemeWithBackground {
@@ -421,7 +549,8 @@ fun PaymentsHubDepositSummaryViewPreview() {
                         availableFunds = "100$",
                         pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
+                        fundsAvailableInDays = 5,
+                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Monthly(20),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(
                             amount = "100$",
                             status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
@@ -437,7 +566,25 @@ fun PaymentsHubDepositSummaryViewPreview() {
                         availableFunds = "100$",
                         pendingFunds = "200$",
                         pendingBalanceDepositsCount = 1,
-                        fundsAvailableInDays = PaymentsHubDepositSummaryState.Info.Interval.Days(1),
+                        fundsAvailableInDays = 2,
+                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Friday"),
+                        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
+                            amount = "100$",
+                            status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
+                            date = "13 Oct 2023"
+                        ),
+                        lastDeposit = PaymentsHubDepositSummaryState.Deposit(
+                            amount = "100$",
+                            status = PaymentsHubDepositSummaryState.Deposit.Status.PAID,
+                            date = "13 Oct 2023"
+                        )
+                    ),
+                    "RUB" to PaymentsHubDepositSummaryState.Info(
+                        availableFunds = "100$",
+                        pendingFunds = "200$",
+                        pendingBalanceDepositsCount = 1,
+                        fundsAvailableInDays = 4,
+                        fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Monthly(3),
                         nextDeposit = PaymentsHubDepositSummaryState.Deposit(
                             amount = "100$",
                             status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
