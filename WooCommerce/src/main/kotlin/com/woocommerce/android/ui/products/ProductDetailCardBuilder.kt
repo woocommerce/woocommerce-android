@@ -188,8 +188,8 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
-                product.productType(),
-                product.downloads()
+                product.downloads(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -267,6 +267,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.downloads(),
                 product.productType()
             ).filterNotEmpty()
         )
