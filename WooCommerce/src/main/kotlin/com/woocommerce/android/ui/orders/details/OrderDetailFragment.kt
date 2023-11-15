@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.CustomAmountCard
+import com.woocommerce.android.ui.orders.Header
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -548,6 +549,7 @@ class OrderDetailFragment :
                     Column(
                         modifier = Modifier.padding(vertical = 8.dp)
                     ) {
+                        Header()
                         feeLineState.value.forEachIndexed { index, feeLine ->
                             CustomAmountCard(feeLine, index < feeLineState.value.size - 1)
                         }
