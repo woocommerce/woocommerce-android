@@ -94,25 +94,25 @@ object ProductHelper {
             variationIds = listOf(),
             downloads = listOf(),
             isPurchasable = false,
-            subscription = getDefaultSubscriptionDetails(productType),
+            subscription =
+            if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) getDefaultSubscriptionDetails()
+            else null,
             isSampleProduct = false,
             parentId = 0,
         )
     }
 
-    private fun getDefaultSubscriptionDetails(productType: ProductType): SubscriptionDetails? =
-        if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) {
-            SubscriptionDetails(
-                price = BigDecimal.ZERO,
-                period = SubscriptionPeriod.Month,
-                periodInterval = 1,
-                length = null,
-                signUpFee = null,
-                trialPeriod = null,
-                trialLength = null,
-                oneTimeShipping = false
-            )
-        } else null
+    fun getDefaultSubscriptionDetails(): SubscriptionDetails =
+        SubscriptionDetails(
+            price = BigDecimal.ZERO,
+            period = SubscriptionPeriod.Month,
+            periodInterval = 1,
+            length = null,
+            signUpFee = null,
+            trialPeriod = null,
+            trialLength = null,
+            oneTimeShipping = false
+        )
 }
 
 
