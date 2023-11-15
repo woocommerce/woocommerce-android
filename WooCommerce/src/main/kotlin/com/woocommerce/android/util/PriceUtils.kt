@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
@@ -44,7 +45,7 @@ object PriceUtils {
             pricingGroup[resources.getString(R.string.product_regular_price)] = priceFormatted
         }
 
-        if (isSubscription && subscriptionSignUpFee.isSet()) {
+        if (isSubscription && subscriptionSignUpFee.isSet() && subscriptionSignUpFee.isNotEqualTo(BigDecimal.ZERO)) {
             // display subscription sign up fee if it's set
             pricingGroup[resources.getString(R.string.subscription_sign_up_fee)] = formatCurrency(
                 subscriptionSignUpFee,
