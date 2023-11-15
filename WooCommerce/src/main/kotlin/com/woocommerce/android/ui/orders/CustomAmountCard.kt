@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,57 +24,74 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import java.math.BigDecimal
 
 @Composable
-fun CustomAmountCard() {
-    Column(
+fun CustomAmountCard(
+    feeLine: Order.FeeLine,
+    shouldShowDivider: Boolean,
+) {
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_custom_amount),
-                contentDescription = "Custom Amount",
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_custom_amount),
+                    contentDescription = "Custom Amount",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = feeLine.name ?: "",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 18.sp
+                        ),
+                        color = colorResource(id = R.color.color_on_surface)
+                    )
+                    Text(
+                        text = "Custom amount",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        ),
+                        color = colorResource(id = R.color.color_on_surface_medium)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Services Rendered",
+                    text = feeLine.total.toString(),
                     style = TextStyle(
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                         fontSize = 18.sp
                     ),
                     color = colorResource(id = R.color.color_on_surface)
                 )
-                Text(
-                    text = "Custom amount",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    ),
-                    color = colorResource(id = R.color.color_on_surface)
+            }
+            if (shouldShowDivider) {
+                Divider(
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(
+                        vertical = 8.dp,
+                        horizontal = 8.dp
+                    )
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "$20.00",
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                ),
-                color = colorResource(id = R.color.color_on_surface)
-            )
         }
-        Divider(
-            color = Color.Gray,
-            thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
     }
 }
 
@@ -81,5 +99,16 @@ fun CustomAmountCard() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomAmountCardPreview() {
-    CustomAmountCard()
+    WooThemeWithBackground {
+        CustomAmountCard(
+            Order.FeeLine(
+                id = 0L,
+                name = "Services Rendered",
+                total = BigDecimal.TEN,
+                totalTax = BigDecimal.ZERO,
+                taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE
+            ),
+            true
+        )
+    }
 }
