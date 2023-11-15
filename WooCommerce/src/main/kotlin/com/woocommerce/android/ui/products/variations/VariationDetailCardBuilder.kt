@@ -18,7 +18,6 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionTrial
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.SaleDetails

@@ -261,7 +261,9 @@ class VariationDetailViewModel @Inject constructor(
         price: BigDecimal? = null,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        length: Int? = null
+        length: Int? = null,
+        trialLength: Int? = null,
+        trialPeriod: SubscriptionPeriod? = null,
     ) {
         viewState.variation?.let { variation ->
             val subscription = (variation as? SubscriptionProductVariation)?.subscriptionDetails ?: return
@@ -270,7 +272,9 @@ class VariationDetailViewModel @Inject constructor(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
-                length = updatedLength
+                length = updatedLength,
+                trialLength = trialLength ?: subscription.trialLength,
+                trialPeriod = trialPeriod ?: subscription.trialPeriod
             )
             viewState = viewState.copy(variation = variation.copy(subscriptionDetails = updatedSubscription))
         }

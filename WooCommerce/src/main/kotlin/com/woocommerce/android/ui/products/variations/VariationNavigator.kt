@@ -104,7 +104,11 @@ class VariationNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewVariationSubscriptionTrial -> TODO()
+            is ViewVariationSubscriptionTrial -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductSubscriptionFreeTrialFragment(target.subscription)
+                fragment.findNavController().navigateSafely(action)
+            }
         }
     }
 }
