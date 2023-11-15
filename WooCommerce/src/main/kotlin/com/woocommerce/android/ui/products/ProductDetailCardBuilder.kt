@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionTrial
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionFreeTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -862,7 +862,7 @@ class ProductDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditProductCardClicked(ViewProductSubscriptionTrial(subscription))
+                    viewModel.onEditProductCardClicked(ViewProductSubscriptionFreeTrial(subscription))
                 }
             )
         }

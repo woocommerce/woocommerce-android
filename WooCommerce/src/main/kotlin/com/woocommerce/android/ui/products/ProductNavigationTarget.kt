@@ -152,7 +152,7 @@ sealed class ProductNavigationTarget : Event() {
         val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscriptionTrial(
+    data class ViewProductSubscriptionFreeTrial(
         val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 

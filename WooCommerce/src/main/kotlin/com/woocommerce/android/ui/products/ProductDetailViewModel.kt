@@ -833,7 +833,6 @@ class ProductDetailViewModel @Inject constructor(
             ExitProductSubscriptions -> Unit // Do nothing
             ExitProductQuantityRules -> Unit // Do nothing
             ExitProductSubscriptionExpiration -> Unit // Do nothing
-            ExitProductSubscriptionFreeTrial -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -1252,6 +1251,8 @@ class ProductDetailViewModel @Inject constructor(
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
         length: Int? = null,
+        trialLength: Int? = null,
+        trialPeriod: SubscriptionPeriod? = null,
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
@@ -1261,6 +1262,8 @@ class ProductDetailViewModel @Inject constructor(
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 length = updatedLength,
+                trialLength = trialLength ?: subscription.trialLength,
+                trialPeriod = trialPeriod ?: subscription.trialPeriod
             )
             viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }
@@ -2427,7 +2430,10 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductSubscriptions : ProductExitEvent()
         object ExitProductQuantityRules : ProductExitEvent()
         object ExitProductSubscriptionExpiration : ProductExitEvent()
-        object ExitProductSubscriptionFreeTrial : ProductExitEvent()
+        data class ExitProductSubscriptionFreeTrial(
+            val length: Int?,
+            val period: SubscriptionPeriod
+        ) : ProductExitEvent()
     }
 
     object RefreshMenu : Event()

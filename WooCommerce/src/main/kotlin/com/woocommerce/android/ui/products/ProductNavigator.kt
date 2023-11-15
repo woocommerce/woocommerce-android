@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.products
 
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.NavGraphProductsDirections
-import com.woocommerce.android.R
 import com.woocommerce.android.R.id
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
@@ -58,7 +56,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSl
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductStatus
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionTrial
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionFreeTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -435,7 +433,13 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ViewProductSubscriptionTrial -> TODO()
+            is ViewProductSubscriptionFreeTrial -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductSubscriptionFreeTrialFragment(
+                        target.subscription
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
 
             is ViewProductQuantityRules -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
