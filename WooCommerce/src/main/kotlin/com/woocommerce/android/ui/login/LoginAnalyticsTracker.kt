@@ -324,4 +324,20 @@ class LoginAnalyticsTracker(
     override fun usernamePasswordScreenResumed() {
         unifiedLoginTracker.setStep(Step.USERNAME_PASSWORD)
     }
+
+    override fun trackLogin2faNeeded() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_2FA_NEEDED)
+    }
+
+    override fun trackLoginSecurityKeyFailure() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SECURITY_KEY_FAILURE)
+    }
+
+    override fun trackLoginSecurityKeySuccess() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SECURITY_KEY_SUCCESS)
+    }
+
+    override fun trackUseSecurityKeyClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_USE_SECURITY_KEY_CLICKED)
+    }
 }

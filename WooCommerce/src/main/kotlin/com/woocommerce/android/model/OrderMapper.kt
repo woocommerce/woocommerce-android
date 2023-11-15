@@ -127,7 +127,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
                     },
                     it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull(),
-                    configurationKey = it.getConfigurationKey()
+                    configurationKey = it.configurationKey
                 )
             }
 

@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_162"
+msgid ""
+"16.2:\n"
+"Welcome to the latest update of our WooCommerce mobile app! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!\n"
+msgstr ""
+
 msgctxt "release_note_161"
 msgid ""
 "16.1:\n"
 "Discover a more seamless WooCommerce experience with our latest update! We've introduced a new feature allowing you to input custom amounts during order creation, providing you with greater flexibility. Also, we've enhanced our error handling for a smoother Jetpack Connection, especially when using a custom admin URL. Enjoy a more streamlined and efficient app, designed for your convenience.\n"
-msgstr ""
-
-msgctxt "release_note_160"
-msgid ""
-"16.0:\n"
-"Welcome to the latest update of WooCommerce! We've redesigned the order's item list for a more intuitive flow. Blaze experience is now more efficient with improved campaign creation. Also, introducing the Product Creation via AI using package photos for getting automatic title and descriptions. Enjoy a seamless shopping experience!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

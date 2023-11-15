@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 09:54:04+0000
+Translation-Revision-Date: 2023-11-08 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="email_or_username">이메일 주소 또는 사용자명</string>
+    <string name="custom_amounts_creation_error">사용자 정의 금액 주문 생성 불가</string>
+    <string name="custom_amounts_add_custom_name_hint">사용자 정의 이름 입력</string>
+    <string name="custom_amounts_add_custom_amount">사용자 정의 금액 추가</string>
+    <string name="custom_amounts_name">이름</string>
+    <string name="custom_amounts_enter_amount">금액</string>
+    <string name="custom_amounts_dialog_title">사용자 정의 금액</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">브라우저에서 관리자 페이지를 통해 젯팩을 연결하거나 지원을 문의하세요.</string>
+    <string name="login_jetpack_installation_error_connection_message">사이트와 통신 중에 오류가 발생했습니다.</string>
+    <string name="custom_amounts">사용자 정의 금액</string>
     <string name="product_details_blaze_card">Blaze로 홍보</string>
     <string name="blaze_campaign_ceation_celebration_button">알겠습니다.</string>
     <string name="blaze_campaign_ceation_celebration_message">승인용 광고가 제출되었습니다. 승인되고 실행되면 확인 이메일을 보내드리겠습니다.</string>
@@ -3004,7 +3014,7 @@ Language: ko_KR
     <string name="login_text_otp_another">대신 다른 코드를 문자로 받습니다.</string>
     <string name="login_text_otp">대신 코드를 문자로 받습니다.</string>
     <string name="enter_verification_code_sms">%s(으)로 끝나는 전화 번호로 문자 메시지를 보냈습니다. SMS의 확인 코드를 입력하세요.</string>
-    <string name="enter_verification_code">마지막 부분입니다! 인증 앱의 확인 코드를 입력하세요.</string>
+    <string name="enter_verification_code">마무리 단계입니다! 인증 앱의 워드프레스닷컴 확인 코드를 입력하세요.</string>
     <string name="enter_username_instead">사용자명으로 로그인하세요.</string>
     <string name="enter_site_address_instead">사이트 주소를 입력하여 로그인하세요.</string>
     <string name="alternatively">또는:</string>
