@@ -321,8 +321,8 @@ fun ExtendedProductCardContent(
                 onIncreaseClicked = onIncreaseItemAmountClicked,
                 onDecreaseClicked = onDecreaseItemAmountClicked,
                 product = product,
-                isDecreaseButtonEnabled = editableControlsEnabled && isBundledProduct,
-                isIncreaseButtonEnabled = editableControlsEnabled && isBundledProduct
+                isDecreaseButtonEnabled = (editableControlsEnabled && isBundledProduct) || isBundledProduct.not(),
+                isIncreaseButtonEnabled = (editableControlsEnabled && isBundledProduct) || isBundledProduct.not()
             )
         }
         Row(
