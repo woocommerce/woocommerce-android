@@ -16,7 +16,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     private val bottomSheetBuilder: ProductTypeBottomSheetBuilder = mock()
 
     @Test
-    fun `given is Add Product flow, when loading product types, then product types not filtered`() {
+    fun `given is Add Product flow, when loading product types, then product types not filtered`() = testBlocking {
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(isAddProduct = true).initSavedStateHandle(),
             appPrefs, bottomSheetBuilder
@@ -29,7 +29,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given is not Add Product flow, when loading product types, then product types is filtered`() {
+    fun `given is not Add Product flow, when loading product types, then product types is filtered`() = testBlocking {
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(
                 isAddProduct = false,
@@ -46,7 +46,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current type is virtual, when loading product types, then only virtual type is filtered out`() {
+    fun `given current type is virtual, when loading product types, then only virtual type is filtered out`() = testBlocking {
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(
                 isAddProduct = false,

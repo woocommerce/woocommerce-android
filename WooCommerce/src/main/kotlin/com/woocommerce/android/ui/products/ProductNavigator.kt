@@ -417,6 +417,14 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
+            is ProductNavigationTarget.ViewProductSubscriptionExpiration -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductSubscriptionExpirationFragment(
+                        target.subscription
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ProductNavigationTarget.ViewProductQuantityRules -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
                     target.quantityRules

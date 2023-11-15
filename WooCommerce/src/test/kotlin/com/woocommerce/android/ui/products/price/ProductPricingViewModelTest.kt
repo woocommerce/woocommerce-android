@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.price
 
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
@@ -8,11 +8,13 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.ViewState
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult

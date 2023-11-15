@@ -1,0 +1,2 @@
+16.1 :
+Découvrez et profitez d’une expérience WooCommerce encore plus fluide avec notre dernière mise à jour ! Nous avons introduit une nouvelle fonctionnalité qui vous permet de saisir des montants personnalisés lors de la création de commande, pour une plus grande flexibilité. Par ailleurs, nous avons amélioré la gestion des erreurs pour une connexion à Jetpack plus fluide, en particulier lorsque vous utilisez une URL administrateur personnalisée. Profitez d’une application plus rationalisée et efficace, conçue pour votre confort.
