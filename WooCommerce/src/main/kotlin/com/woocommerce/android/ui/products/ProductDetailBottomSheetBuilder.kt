@@ -81,6 +81,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
+                    product.getLinkedProducts(),
                     product.getDownloadableFiles()
                 )
             }

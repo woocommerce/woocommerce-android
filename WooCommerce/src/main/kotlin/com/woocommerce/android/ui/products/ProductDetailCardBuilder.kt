@@ -256,9 +256,9 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
