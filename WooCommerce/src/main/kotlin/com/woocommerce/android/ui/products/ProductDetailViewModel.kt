@@ -2429,10 +2429,6 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductSubscriptions : ProductExitEvent()
         object ExitProductQuantityRules : ProductExitEvent()
         object ExitProductSubscriptionExpiration : ProductExitEvent()
-        data class ExitProductSubscriptionFreeTrial(
-            val length: Int?,
-            val period: SubscriptionPeriod
-        ) : ProductExitEvent()
     }
 
     object RefreshMenu : Event()
