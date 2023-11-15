@@ -1943,6 +1943,7 @@
     <string name="product_subscription_title">Subscription</string>
     <string name="product_subscription_expiration_title">Subscription expiration</string>
     <string name="product_subscription_free_trial_title">Subscription free trial</string>
+    <string name="product_subscription_free_trial_info">An optional period of time to wait before charging the first recurring payment. Any sign up fee will still be charged at the outset of the subscription. The trial period can not exceed: 90 days, 52 weeks, 24 months or 5 years.</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
