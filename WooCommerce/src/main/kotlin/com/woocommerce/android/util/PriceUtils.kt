@@ -46,7 +46,7 @@ object PriceUtils {
 
         if (isSubscription && subscriptionSignUpFee.isSet()) {
             // display subscription sign up fee if it's set
-            pricingGroup[resources.getString(R.string.subscription_no_sign_up_fee)] = formatCurrency(
+            pricingGroup[resources.getString(R.string.subscription_sign_up_fee)] = formatCurrency(
                 subscriptionSignUpFee,
                 parameters.currencyCode,
                 currencyFormatter
