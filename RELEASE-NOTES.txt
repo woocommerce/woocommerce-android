@@ -1,4 +1,11 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.4
+-----
+- [***][Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]
+
+16.3
+-----
+
 16.2
 -----
 - [*] [Internal] Improve handling of Jetpack Connection for Jetpack CP sites when using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/10083]
