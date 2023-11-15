@@ -68,22 +68,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductRenameAttribute
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptions
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -789,49 +774,49 @@ class ProductDetailViewModel @Inject constructor(
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
-            ExitSettings -> {
+            ProductExitEvent.ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
 
-            ExitExternalLink -> {
+            ProductExitEvent.ExitExternalLink -> {
                 eventName = EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
 
-            ExitProductCategories -> {
+            ProductExitEvent.ExitProductCategories -> {
                 eventName = PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
 
-            ExitProductTags -> {
+            ProductExitEvent.ExitProductTags -> {
                 eventName = PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
 
-            ExitProductAttributeList -> {
+            ProductExitEvent.ExitProductAttributeList -> {
                 eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            ExitProductAddAttribute -> {
+            ProductExitEvent.ExitProductAddAttribute -> {
                 eventName = PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            ExitAttributesAdded -> {
+            ProductExitEvent.ExitAttributesAdded -> {
                 eventName = PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            ExitLinkedProducts -> Unit // Do nothing
-            ExitProductAddAttributeTerms -> Unit // Do nothing
-            ExitProductAddons -> Unit // Do nothing
-            ExitProductDownloads -> Unit // Do nothing
-            ExitProductDownloadsSettings -> Unit // Do nothing
-            ExitProductRenameAttribute -> Unit // Do nothing
-            ExitProductSubscriptions -> Unit // Do nothing
-            ExitProductQuantityRules -> Unit // Do nothing
-            ExitProductSubscriptionExpiration -> Unit // Do nothing
+            ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
+            ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
+            ProductExitEvent.ExitProductAddons -> Unit // Do nothing
+            ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
+            ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
+            ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
+            ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
+            ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
+            ProductExitEvent.ExitProductSubscriptionExpiration -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
