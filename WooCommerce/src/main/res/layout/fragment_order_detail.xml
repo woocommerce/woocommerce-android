@@ -59,6 +59,14 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
+                <!-- Custom Amounts List -->
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/orderDetail_customAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:contentDescription="@string/custom_amounts"/>
+
                 <!-- Custom fields button -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
                     android:id="@+id/customFieldsCard"
