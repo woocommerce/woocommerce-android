@@ -120,6 +120,9 @@ class OrderDetailViewModel @Inject constructor(
     private val _productList = MutableLiveData<List<OrderProduct>>()
     val productList: LiveData<List<OrderProduct>> = _productList
 
+    private val _feeLineList = MutableLiveData<List<Order.FeeLine>>()
+    val feeLineList: LiveData<List<Order.FeeLine>> = _feeLineList
+
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
 
@@ -173,6 +176,7 @@ class OrderDetailViewModel @Inject constructor(
         updateOrderState()
         loadOrderNotes()
         displayProductAndShippingDetails()
+        displayCustomAmounts()
         checkOrderMetaData()
     }
 
@@ -746,6 +750,10 @@ class OrderDetailViewModel @Inject constructor(
                 orderEligibleForInPersonPayments
             )
         )
+    }
+
+    private fun displayCustomAmounts() {
+        _feeLineList.value = order.feesLines
     }
 
     override fun onProductFetched(remoteProductId: Long) {
