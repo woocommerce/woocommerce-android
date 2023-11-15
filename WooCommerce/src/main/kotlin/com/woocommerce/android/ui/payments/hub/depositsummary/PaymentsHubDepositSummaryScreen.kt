@@ -120,13 +120,13 @@ fun PaymentsHubDepositSummaryView(
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.color_surface))
             ) {
-                AlwaysVisiblePart(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
+                FundsOverview(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
 
                 AnimatedVisibility(
                     visible = isExpanded || isPreview,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    AdditionInfo(selectedCurrencyInfo)
+                    DepositsInfo(selectedCurrencyInfo)
                 }
             }
         }
@@ -134,7 +134,7 @@ fun PaymentsHubDepositSummaryView(
 }
 
 @Composable
-private fun AlwaysVisiblePart(
+private fun FundsOverview(
     currencyInfo: PaymentsHubDepositSummaryState.Info,
     isExpanded: Boolean,
     onExpandCollapseClick: () -> Unit,
@@ -175,7 +175,7 @@ private fun AlwaysVisiblePart(
             )
             Text(
                 style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight(700),
+                fontWeight = FontWeight.Bold,
                 text = currencyInfo.availableFunds,
                 color = colorResource(id = R.color.color_on_surface)
             )
@@ -191,7 +191,7 @@ private fun AlwaysVisiblePart(
             )
             Text(
                 style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight(700),
+                fontWeight = FontWeight.Bold,
                 text = currencyInfo.pendingFunds,
                 color = colorResource(id = R.color.color_on_surface)
             )
@@ -243,7 +243,7 @@ private fun AlwaysVisiblePart(
 }
 
 @Composable
-private fun AdditionInfo(
+private fun DepositsInfo(
     currencyInfo: PaymentsHubDepositSummaryState.Info,
 ) {
     Column {
@@ -473,7 +473,7 @@ private fun CurrenciesTabs(
                     Text(
                         style = MaterialTheme.typography.body1,
                         text = title,
-                        fontWeight = if (isSelected) FontWeight(600) else FontWeight(400),
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         color = if (isSelected) {
                             colorResource(id = R.color.color_primary)
                         } else {

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 09:54:03+0000
+Translation-Revision-Date: 2023-11-06 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="email_or_username">E-postadress eller användarnamn</string>
+    <string name="custom_amounts_creation_error">Det går inte att skapa en order med anpassat belopp</string>
+    <string name="custom_amounts_add_custom_name_hint">Ange anpassat namn</string>
+    <string name="custom_amounts_add_custom_amount">Lägg till anpassat belopp</string>
+    <string name="custom_amounts_name">Namn</string>
+    <string name="custom_amounts_enter_amount">Belopp</string>
+    <string name="custom_amounts_dialog_title">Anpassat belopp</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Anslut Jetpack via din adminsida i en webbläsare eller kontakta supporten.</string>
+    <string name="login_jetpack_installation_error_connection_message">Ett fel uppstod vid kommunikationen med din webbplats.</string>
+    <string name="custom_amounts">Anpassade belopp</string>
     <string name="product_details_blaze_card">Marknadsför med Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">Jag förstår</string>
     <string name="blaze_campaign_ceation_celebration_message">Annonsen har skickats in för godkännande. Vi skickar en bekräftelse via e-post när den är godkänd och aktiverad.</string>
@@ -3004,7 +3014,7 @@ Language: sv_SE
     <string name="login_text_otp_another">Skicka ett nytt SMS med en kod till mig istället.</string>
     <string name="login_text_otp">Skicka mig en kod via SMS istället.</string>
     <string name="enter_verification_code_sms">Vi har skickat ett SMS till telefonnumret som slutar på %s. Skriv in bekräftelsekoden from SMS;et.</string>
-    <string name="enter_verification_code">Nästan klart! Skriv in verifieringskoden från din Authenticator-app.</string>
+    <string name="enter_verification_code">Nästan där! Ange verifieringskoden för WordPress.com från din autentiseringsapp.</string>
     <string name="enter_username_instead">Logga in med ditt användarnamn.</string>
     <string name="enter_site_address_instead">Logga in genom att skriva din webbplatsadress.</string>
     <string name="alternatively">Alternativt:</string>

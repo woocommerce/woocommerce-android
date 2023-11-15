@@ -1,2 +1,0 @@
-16.0:
-WooCommerce'in en yeni güncellemesine hoş geldiniz! Siparişlerin öğe listesi, daha sezgisel bir akış için yeniden tasarlandı. Blaze deneyimi artık iyileştirilmiş kampanya oluşturma özelliği sayesinde daha da verimli. Ayrıca, ambalaj fotoğrafı kullanarak otomatik olarak başlık ve açıklamalar elde etmek üzere işte karşınızda Yapay Zeka Üzerinden Ürün Oluşturma Sorunsuz bir alışveriş deneyiminin keyfini çıkarın!

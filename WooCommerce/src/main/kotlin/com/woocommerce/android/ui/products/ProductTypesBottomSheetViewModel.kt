@@ -31,7 +31,7 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    fun loadProductTypes() {
+    suspend fun loadProductTypes() {
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
             productTypeBottomSheetBuilder.buildBottomSheetList()
         } else {
@@ -78,6 +78,7 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         @StringRes val titleResource: Int,
         @StringRes val descResource: Int,
         @DrawableRes val iconResource: Int,
-        val isVirtual: Boolean = false
+        val isVirtual: Boolean = false,
+        val isVisible: Boolean = true
     ) : Parcelable
 }

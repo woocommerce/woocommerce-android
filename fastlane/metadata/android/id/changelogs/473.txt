@@ -1,0 +1,2 @@
+16.1:
+Nikmati kemudahan pengalaman WooCommerce dengan pembaruan terkini kami! Kami memperkenalkan fitur baru yang membuat Anda makin bebas memasukkan jumlah khusus saat membuat pesanan. Penanganan error kami juga makin sempurna agar Jetpack Connection makin lancar, terutama saat URL admin khusus digunakan. Nikmati aplikasi yang makin praktis dan efisien yang didesain untuk kenyamanan Anda.

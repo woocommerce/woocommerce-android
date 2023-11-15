@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 17:54:04+0000
+Translation-Revision-Date: 2023-11-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="email_or_username">Dirección de correo electrónico o nombre de usuario</string>
+    <string name="custom_amounts_creation_error">No se puede crear un pedido de cantidad personalizada</string>
+    <string name="custom_amounts_add_custom_name_hint">Introducir nombre personalizado</string>
+    <string name="custom_amounts_add_custom_amount">Añadir cantidad personalizada</string>
+    <string name="custom_amounts_name">Nombre</string>
+    <string name="custom_amounts_enter_amount">Cantidad</string>
+    <string name="custom_amounts_dialog_title">Cantidad personalizada</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Conecta Jetpack a través de la página de administración en un navegador o ponte en contacto con el soporte técnico.</string>
+    <string name="login_jetpack_installation_error_connection_message">Se ha producido un error al comunicarse con el sitio.</string>
+    <string name="custom_amounts">Cantidades personalizadas</string>
     <string name="product_details_blaze_card">Promocionar con Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">De acuerdo</string>
     <string name="blaze_campaign_ceation_celebration_message">Se ha enviado el anuncio para su aprobación. Te enviaremos un correo electrónico de confirmación en cuanto esté listo.</string>
@@ -3004,7 +3014,7 @@ Language: es
     <string name="login_text_otp_another">Mándame otro código.</string>
     <string name="login_text_otp">Envíame un código en texto en su lugar.</string>
     <string name="enter_verification_code_sms">Hemos enviado un mensaje de texto al número de teléfono terminado en %s. Por favor, introduce el código de verificación del SMS.</string>
-    <string name="enter_verification_code">¡Casi lo tenemos! Por favor, introduce un código de verificación desde tu aplicación Authenticator.</string>
+    <string name="enter_verification_code">¡Ya casi estamos! Introduce el código de verificación de WordPress.com desde tu aplicación de Autenticación.</string>
     <string name="enter_username_instead">Accede con tu nombre de usuario.</string>
     <string name="enter_site_address_instead">Accede introduciendo la dirección de tu sitio.</string>
     <string name="alternatively">Alternativamente:</string>
