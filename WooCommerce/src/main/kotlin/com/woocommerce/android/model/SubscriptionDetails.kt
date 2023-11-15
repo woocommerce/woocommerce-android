@@ -20,10 +20,7 @@ data class SubscriptionDetails(
     val oneTimeShipping: Boolean
 ) : Parcelable
 
-// Currently, only subscription details metadata is editable from the app. The rest is read only and thus
-// not included in the persisted metadata.
-fun SubscriptionDetails.toMetadataJson(): String {
-    val jsonArray = JsonArray()
+fun SubscriptionDetails.toMetadataJson(): JsonArray {
     val subscriptionValues = mapOf(
         SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to price,
         SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD to period.value,
@@ -34,6 +31,7 @@ fun SubscriptionDetails.toMetadataJson(): String {
         SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to trialLength,
         SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to oneTimeShipping
     )
+    val jsonArray = JsonArray()
     subscriptionValues.forEach { (key, value) ->
         jsonArray.add(
             JsonObject().also { json ->
@@ -42,5 +40,5 @@ fun SubscriptionDetails.toMetadataJson(): String {
             }
         )
     }
-    return jsonArray.toString()
+    return jsonArray
 }
