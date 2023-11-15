@@ -519,7 +519,7 @@ private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
         )
 
         is PaymentsHubDepositSummaryState.Info.Interval.Weekly -> {
-            val dayOfWeek = DayOfWeek.valueOf(nameOfWeekDay.uppercase(Locale.getDefault()))
+            val dayOfWeek = DayOfWeek.valueOf(weekDay.uppercase(Locale.getDefault()))
             stringResource(
                 id = R.string.card_reader_hub_deposit_summary_available_deposit_time_weekly,
                 dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
