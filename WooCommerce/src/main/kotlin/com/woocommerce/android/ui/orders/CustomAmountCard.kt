@@ -116,7 +116,6 @@ fun Header() {
 @Composable
 fun CustomAmountCardPreview() {
     WooThemeWithBackground {
-        Header()
         CustomAmountCard(
             Order.FeeLine(
                 id = 0L,
@@ -136,5 +135,26 @@ fun CustomAmountCardPreview() {
 fun HeaderPreview() {
     WooThemeWithBackground {
         Header()
+    }
+}
+
+@Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun CustomAmountCardWithHeaderPreview() {
+    WooThemeWithBackground {
+        Column {
+            Header()
+            CustomAmountCard(
+                Order.FeeLine(
+                    id = 0L,
+                    name = "Services Rendered",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO,
+                    taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE
+                ),
+                true
+            )
+        }
     }
 }
