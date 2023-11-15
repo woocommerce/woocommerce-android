@@ -1,0 +1,2 @@
+16.1:
+Descubra uma experiência WooCommerce mais uniforme com nossa atualização mais recente. Introduzimos um nova funcionalidade, que permite inserir valores personalizados durante a criação do pedido, proporcionando maior flexibilidade. Além disso, aprimoramos nosso tratamento de erros para permitir uma conexão mais suave com o Jetpack, especialmente ao usar uma URL de administrador personalizada. Desfrute de um aplicativo mais simples e eficiente, projetado para sua conveniência.

@@ -21,7 +21,7 @@ sealed class PaymentsHubDepositSummaryState {
     ) {
         sealed class Interval {
             object Daily : Interval()
-            data class Weekly(val nameOfWeekDay: String) : Interval()
+            data class Weekly(val weekDay: String) : Interval()
             data class Monthly(val day: Int) : Interval()
         }
     }

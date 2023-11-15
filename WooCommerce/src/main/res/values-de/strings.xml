@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 13:54:04+0000
+Translation-Revision-Date: 2023-11-06 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="email_or_username">E-Mail-Adresse oder Benutzername</string>
+    <string name="custom_amounts_creation_error">Bestellung mit individuellem Betrag konnte nicht erstellt werden</string>
+    <string name="custom_amounts_add_custom_name_hint">Individuellen Namen eingeben</string>
+    <string name="custom_amounts_add_custom_amount">Individuellen Betrag hinzufügen</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_enter_amount">Betrag</string>
+    <string name="custom_amounts_dialog_title">Individueller Betrag</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Bitte stelle eine Verbindung zu Jetpack über deine Admin-Seite in einem Browser her oder wende dich an den Support.</string>
+    <string name="login_jetpack_installation_error_connection_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
+    <string name="custom_amounts">Individuelle Beträge</string>
     <string name="product_details_blaze_card">Mit Blaze bewerben</string>
     <string name="blaze_campaign_ceation_celebration_button">Verstanden</string>
     <string name="blaze_campaign_ceation_celebration_message">Die Werbung wurde zur Genehmigung eingereicht. Wir senden dir eine Bestätigung per E-Mail, sobald sie genehmigt und gestartet wurde.</string>
@@ -829,7 +839,7 @@ Language: de
     <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>
     <string name="login_jetpack_installation_retry_installing">Installation erneut versuchen</string>
     <string name="login_jetpack_installation_get_support">Unterstützung erhalten</string>
-    <string name="login_jetpack_installation_error_generic_suggestion">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Bitte versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
     <string name="login_jetpack_installation_error_generic_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Du bist nicht berechtigt, Plugins in diesem Shop zu verwalten</string>
     <string name="login_jetpack_installation_error_authorizing">Fehler beim Autorisieren der Verbindung mit Jetpack</string>
@@ -3004,7 +3014,7 @@ Language: de
     <string name="login_text_otp_another">Sende mir stattdessen einen anderen Code per SMS.</string>
     <string name="login_text_otp">Stattdessen Code per SMS senden.</string>
     <string name="enter_verification_code_sms">Wir haben eine Textnachricht an die Telefonnummer mit den Endziffern %s gesendet. Gib bitte den Verifizierungscode aus der SMS ein.</string>
-    <string name="enter_verification_code">Fast geschafft! Gib bitte den Verifizierungscode aus deiner Authenticator-App ein.</string>
+    <string name="enter_verification_code">Fast geschafft! Bitte gib den Verifizierungscode für WordPress.com aus deiner Authenticator-App ein.</string>
     <string name="enter_username_instead">Melde dich mit deinem Benutzernamen an.</string>
     <string name="enter_site_address_instead">Melde dich an, indem du deine Website-Adresse eingibst.</string>
     <string name="alternatively">Alternativ:</string>
