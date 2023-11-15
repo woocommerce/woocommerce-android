@@ -116,13 +116,13 @@ fun PaymentsHubDepositSummaryView(
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.color_surface))
             ) {
-                AlwaysVisiblePart(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
+                FundsOverview(selectedCurrencyInfo, isExpanded) { isExpanded = !isExpanded }
 
                 AnimatedVisibility(
                     visible = isExpanded || isPreview,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    AdditionInfo(
+                    DepositsInfo(
                         nextDeposit = selectedCurrencyInfo.nextDeposit,
                         lastDeposit = selectedCurrencyInfo.lastDeposit,
                     )
@@ -133,7 +133,7 @@ fun PaymentsHubDepositSummaryView(
 }
 
 @Composable
-private fun AlwaysVisiblePart(
+private fun FundsOverview(
     currencyInfo: PaymentsHubDepositSummaryState.Info,
     isExpanded: Boolean,
     onExpandCollapseClick: () -> Unit,
@@ -242,7 +242,7 @@ private fun AlwaysVisiblePart(
 }
 
 @Composable
-private fun AdditionInfo(
+private fun DepositsInfo(
     nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
     lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
 ) {
