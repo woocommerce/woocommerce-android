@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.model.SubscriptionPeriod
-import com.woocommerce.android.model.SubscriptionPeriod.Custom
 import com.woocommerce.android.model.SubscriptionPeriod.Day
 import com.woocommerce.android.model.SubscriptionPeriod.Month
 import com.woocommerce.android.model.SubscriptionPeriod.Week
