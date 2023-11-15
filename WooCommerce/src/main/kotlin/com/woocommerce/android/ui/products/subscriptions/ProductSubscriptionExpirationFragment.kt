@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -84,11 +84,12 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
         items: List<String>,
         currentValue: String
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize(),
         ) {
-            Box(
+            Card(
+                shape = RectangleShape,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -109,10 +110,6 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
                     )
                 }
             }
-            Divider(
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
-            )
         }
     }
 

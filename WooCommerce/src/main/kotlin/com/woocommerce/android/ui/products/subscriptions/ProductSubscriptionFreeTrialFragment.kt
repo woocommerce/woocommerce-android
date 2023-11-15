@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -21,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -123,7 +123,8 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
             modifier = Modifier
                 .fillMaxSize(),
         ) {
-            Box(
+            Card(
+                shape = RectangleShape,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -160,10 +161,6 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
                     )
                 }
             }
-            Divider(
-                color = colorResource(id = color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
-            )
 
             Row(
                 modifier = Modifier
