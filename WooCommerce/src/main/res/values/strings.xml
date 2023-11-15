@@ -3531,22 +3531,13 @@
     <string name="subscription_period_multiple_weeks">weeks</string>
     <string name="subscription_period_multiple_months">months</string>
     <string name="subscription_period_multiple_years">years</string>
-
-    <string-array name="subscription_interval_options">
-        <item>Every</item>
-        <item>Every 2nd</item>
-        <item>Every 3rd</item>
-        <item>Every 4th</item>
-        <item>Every 5th</item>
-        <item>Every 6th</item>
-    </string-array>
-
     <!--
     Subscription details
     -->
     <string name="subscription_price">Subscription price</string>
     <string name="subscription_expire">Expire after</string>
     <string name="subscription_sign_up_fee">Sign up fee</string>
+    <string name="subscription_sign_up_fee_explanation">Optional, the sign-up fee will be charged immediately, even if the product has a free trial or the payment dates are synced.</string>
     <string name="subscription_free_trial">Free trial</string>
 
 
