@@ -744,6 +744,8 @@
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
+    <string name="orderdetail_product_uppercase">PRODUCT</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUCTS</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
