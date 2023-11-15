@@ -99,6 +99,12 @@ sealed class SubscriptionPeriod(val value: String) : Parcelable {
         }
     }
 
+    fun formatWithInterval(context: Context, interval: Int): String {
+        val periodText = getPeriodString(context, interval)
+        return if (interval == 1) context.getString(R.string.subscription_period_interval_single, periodText)
+        else context.getString(R.string.subscription_period_interval_multiple, interval, periodText)
+    }
+
     @Suppress("MagicNumber")
     fun getRangeForPeriod(): IntRange {
         return when (this) {
