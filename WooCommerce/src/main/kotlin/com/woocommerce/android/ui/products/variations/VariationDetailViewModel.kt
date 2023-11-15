@@ -261,7 +261,7 @@ class VariationDetailViewModel @Inject constructor(
         price: BigDecimal? = null,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        signUpFee: BigDecimal? = null,
+        signUpFee: BigDecimal? = (viewState.variation as SubscriptionProductVariation).subscriptionDetails?.signUpFee,
         length: Int? = null
     ) {
         viewState.variation?.let { variation ->
@@ -271,7 +271,7 @@ class VariationDetailViewModel @Inject constructor(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
-                signUpFee = signUpFee ?: subscription.signUpFee,
+                signUpFee = signUpFee,
                 length = updatedLength
             )
             viewState = viewState.copy(variation = variation.copy(subscriptionDetails = updatedSubscription))
