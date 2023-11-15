@@ -14,14 +14,15 @@ sealed class PaymentsHubDepositSummaryState {
         val availableFunds: String,
         val pendingFunds: String,
         val pendingBalanceDepositsCount: Int,
-        val fundsAvailableInDays: Interval,
+        val fundsAvailableInDays: Int?,
+        val fundsDepositInterval: Interval?,
         val nextDeposit: Deposit?,
         val lastDeposit: Deposit?,
     ) {
         sealed class Interval {
-            data class Days(val days: Int) : Interval()
-            data class Weekly(val days: Int) : Interval()
-            data class Monthly(val nameOfTheDay: String) : Interval()
+            object Daily : Interval()
+            data class Weekly(val weekDay: String) : Interval()
+            data class Monthly(val day: Int) : Interval()
         }
     }
 
