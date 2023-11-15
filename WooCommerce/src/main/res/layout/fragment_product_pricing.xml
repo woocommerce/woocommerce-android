@@ -57,10 +57,30 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:hint="@string/product_subscription_period"
+                app:layout_constraintBottom_toBottomOf="@id/subscription_interval"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/subscription_interval"
-                app:layout_constraintTop_toTopOf="@id/subscription_interval"
-                app:layout_constraintBottom_toBottomOf="@id/subscription_interval"/>
+                app:layout_constraintTop_toTopOf="@id/subscription_interval" />
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/subscription_signup_fee"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/subscription_sign_up_fee"
+                android:inputType="numberDecimal|numberSigned"
+                app:helperText="@string/subscription_sign_up_fee_explanation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subscription_period" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/subscription_group"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:constraint_referenced_ids="subscription_period, subscription_interval, subscription_signup_fee" />
 
             <View
                 android:id="@+id/divider_1"
@@ -68,7 +88,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintTop_toBottomOf="@+id/subscription_interval" />
+                app:layout_constraintTop_toBottomOf="@+id/subscription_signup_fee" />
 
             <!-- Product Sale Heading -->
             <com.google.android.material.textview.MaterialTextView

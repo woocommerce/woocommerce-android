@@ -261,6 +261,7 @@ class VariationDetailViewModel @Inject constructor(
         price: BigDecimal? = null,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
+        signUpFee: BigDecimal? = (viewState.variation as SubscriptionProductVariation).subscriptionDetails?.signUpFee,
         length: Int? = null
     ) {
         viewState.variation?.let { variation ->
@@ -270,9 +271,14 @@ class VariationDetailViewModel @Inject constructor(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
+                signUpFee = signUpFee,
                 length = updatedLength
             )
-            viewState = viewState.copy(variation = variation.copy(subscriptionDetails = updatedSubscription))
+            val updatedVariation = variation.copy(subscriptionDetails = updatedSubscription)
+            viewState = viewState.copy(
+                variation = updatedVariation,
+                isDoneButtonVisible = updatedVariation != variation
+            )
         }
     }
 
@@ -445,8 +451,7 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
-        val newLength = if (selectedExpirationValue == 0) -1 else selectedExpirationValue
-        onVariationSubscriptionChanged(length = newLength)
+        onVariationSubscriptionChanged(length = selectedExpirationValue)
     }
 
     object HideImageUploadErrorSnackbar : Event()

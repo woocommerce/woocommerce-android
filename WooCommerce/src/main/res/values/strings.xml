@@ -1310,11 +1310,14 @@
     <string name="card_reader_hub_deposit_summary_pending_funds">Pending funds</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d deposits</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d deposit</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">Funds become available after pending for 7 days.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">Funds become available after pending for %d day.</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">Deposits</string>
     <string name="card_reader_hub_deposit_summary_next">Next</string>
     <string name="card_reader_hub_deposit_summary_last">Last</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">Available funds are deposited automatically, every week.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Available funds are deposited automatically, every day.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Available funds are deposited automatically, every %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Available funds are deposited automatically, every month on the %s.</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Learn more about when you\'ll receive your funds</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Collapse/expand deposit summary</string>
     <string name="card_reader_hub_deposit_summary_status_estimated">Estimated</string>
@@ -3528,22 +3531,13 @@
     <string name="subscription_period_multiple_weeks">weeks</string>
     <string name="subscription_period_multiple_months">months</string>
     <string name="subscription_period_multiple_years">years</string>
-
-    <string-array name="subscription_interval_options">
-        <item>Every</item>
-        <item>Every 2nd</item>
-        <item>Every 3rd</item>
-        <item>Every 4th</item>
-        <item>Every 5th</item>
-        <item>Every 6th</item>
-    </string-array>
-
     <!--
     Subscription details
     -->
     <string name="subscription_price">Subscription price</string>
     <string name="subscription_expire">Expire after</string>
     <string name="subscription_sign_up_fee">Sign up fee</string>
+    <string name="subscription_sign_up_fee_explanation">Optional, the sign-up fee will be charged immediately, even if the product has a free trial or the payment dates are synced.</string>
     <string name="subscription_free_trial">Free trial</string>
 
 

@@ -102,6 +102,7 @@ class ProductPricingViewModel @Inject constructor(
         taxClass: String? = pricingData.taxClass,
         subscriptionPeriod: SubscriptionPeriod? = pricingData.subscriptionPeriod,
         subscriptionInterval: Int? = pricingData.subscriptionInterval,
+        subscriptionSignupFee: BigDecimal? = pricingData.subscriptionSignUpFee,
     ) {
         viewState = viewState.copy(
             pricingData = pricingData.copy(
@@ -114,6 +115,7 @@ class ProductPricingViewModel @Inject constructor(
                 taxClass = taxClass,
                 subscriptionPeriod = subscriptionPeriod,
                 subscriptionInterval = subscriptionInterval,
+                subscriptionSignUpFee = subscriptionSignupFee
             )
         )
     }
@@ -219,6 +221,7 @@ class ProductPricingViewModel @Inject constructor(
         val isSubscription: Boolean = false,
         val subscriptionPeriod: SubscriptionPeriod? = null,
         val subscriptionInterval: Int? = null,
+        val subscriptionSignUpFee: BigDecimal? = null,
     ) : Parcelable {
         override fun equals(other: Any?): Boolean {
             val data = other as? PricingData
@@ -232,7 +235,8 @@ class ProductPricingViewModel @Inject constructor(
                     salePrice isEquivalentTo it.salePrice &&
                     isSubscription == it.isSubscription &&
                     subscriptionPeriod == it.subscriptionPeriod &&
-                    subscriptionInterval == it.subscriptionInterval
+                    subscriptionInterval == it.subscriptionInterval &&
+                    subscriptionSignUpFee isEquivalentTo it.subscriptionSignUpFee
             } ?: false
         }
 

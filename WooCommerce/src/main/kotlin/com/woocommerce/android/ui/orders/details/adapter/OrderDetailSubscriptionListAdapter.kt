@@ -68,16 +68,10 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
 
             viewBinding.subscriptionStatusTag.tag = SubscriptionStatusTag(subscription.status)
             with(viewBinding.subscriptionTotal) {
-                val periodText = subscription.billingPeriod.getPeriodString(context, subscription.billingInterval)
-                val periodDescription = if (subscription.billingInterval > 1) {
-                    context.getString(
-                        R.string.subscription_period_interval_multiple,
-                        subscription.billingInterval,
-                        periodText
-                    )
-                } else {
-                    context.getString(R.string.subscription_period_interval_single, periodText)
-                }
+                val periodDescription = subscription.billingPeriod.formatWithInterval(
+                    context = context,
+                    interval = subscription.billingInterval
+                )
 
                 text = context.getString(
                     R.string.subscription_total,
