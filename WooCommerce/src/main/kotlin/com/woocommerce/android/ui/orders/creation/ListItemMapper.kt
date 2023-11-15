@@ -54,7 +54,8 @@ class ListItemMapper @Inject constructor(
                             childConfiguration.value.forEach { rule ->
                                 when (rule.key) {
                                     QuantityRule.KEY -> putIfNotNull("quantity" to rule.value)
-                                    OptionalRule.KEY -> putIfNotNull("optional_selected" to rule.value?.toBooleanStrictOrNull())
+                                    OptionalRule.KEY ->
+                                        putIfNotNull("optional_selected" to rule.value?.toBooleanStrictOrNull())
                                     VariableProductRule.KEY -> {
                                         if (rule.value != null) {
                                             gson.fromJson<Map<String, JsonElement>>(rule.value, mapType).forEach {
