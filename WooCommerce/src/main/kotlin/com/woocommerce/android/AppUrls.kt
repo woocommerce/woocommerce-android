@@ -19,7 +19,7 @@ object AppUrls {
     const val WOOCOMMERCE_WEB_OPTIONS = "https://woo.com/tracking-and-opt-outs/"
     const val WOOCOMMERCE_USAGE_TRACKER = "https://woo.com/usage-tracking/"
 
-    const val URL_LEARN_MORE_REVIEWS = "https://woo.com/blog/"
+    const val URL_LEARN_MORE_REVIEWS = "https://woo.com/document/ratings-and-reviews/"
     const val URL_LEARN_MORE_ORDERS = "https://woo.com/blog/"
 
     const val JETPACK_INSTRUCTIONS =
