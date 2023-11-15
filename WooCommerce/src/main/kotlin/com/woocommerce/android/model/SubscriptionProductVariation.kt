@@ -1,7 +1,9 @@
 package com.woocommerce.android.model
 
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -115,6 +117,73 @@ class SubscriptionProductVariation(
             weight = model.weight.toFloatOrNull() ?: 0f
         )
 
+    @Suppress("ComplexMethod")
+    override fun equals(other: Any?): Boolean {
+        val variation = other as? SubscriptionProductVariation
+        return variation?.let {
+            subscriptionDetails == variation.subscriptionDetails &&
+                remoteVariationId == variation.remoteVariationId &&
+                remoteProductId == variation.remoteProductId &&
+                sku == variation.sku &&
+                image?.id == variation.image?.id &&
+                regularPrice isEquivalentTo variation.regularPrice &&
+                salePrice isEquivalentTo variation.salePrice &&
+                isSaleScheduled == variation.isSaleScheduled &&
+                saleEndDateGmt == variation.saleEndDateGmt &&
+                saleStartDateGmt == variation.saleStartDateGmt &&
+                stockQuantity == variation.stockQuantity &&
+                stockStatus == variation.stockStatus &&
+                backorderStatus == variation.backorderStatus &&
+                isPurchasable == variation.isPurchasable &&
+                isVirtual == variation.isVirtual &&
+                isDownloadable == variation.isDownloadable &&
+                isStockManaged == variation.isStockManaged &&
+                description.fastStripHtml() == variation.description.fastStripHtml() &&
+                isVisible == variation.isVisible &&
+                shippingClass == variation.shippingClass &&
+                shippingClassId == variation.shippingClassId &&
+                attributes.contentEquals(variation.attributes) &&
+                weight == variation.weight &&
+                length == variation.length &&
+                height == variation.height &&
+                width == variation.width
+        } ?: false
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + (subscriptionDetails?.hashCode() ?: 0)
+        result = 31 * result + remoteProductId.hashCode()
+        result = 31 * result + remoteVariationId.hashCode()
+        result = 31 * result + sku.hashCode()
+        result = 31 * result + (image?.hashCode() ?: 0)
+        result = 31 * result + (price?.hashCode() ?: 0)
+        result = 31 * result + (regularPrice?.hashCode() ?: 0)
+        result = 31 * result + (salePrice?.hashCode() ?: 0)
+        result = 31 * result + (saleEndDateGmt?.hashCode() ?: 0)
+        result = 31 * result + (saleStartDateGmt?.hashCode() ?: 0)
+        result = 31 * result + isSaleScheduled.hashCode()
+        result = 31 * result + stockStatus.hashCode()
+        result = 31 * result + backorderStatus.hashCode()
+        result = 31 * result + stockQuantity.hashCode()
+        result = 31 * result + (priceWithCurrency?.hashCode() ?: 0)
+        result = 31 * result + isPurchasable.hashCode()
+        result = 31 * result + isVirtual.hashCode()
+        result = 31 * result + isDownloadable.hashCode()
+        result = 31 * result + isStockManaged.hashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + isVisible.hashCode()
+        result = 31 * result + shippingClass.hashCode()
+        result = 31 * result + shippingClassId.hashCode()
+        result = 31 * result + menuOrder
+        result = 31 * result + attributes.contentHashCode()
+        result = 31 * result + length.hashCode()
+        result = 31 * result + width.hashCode()
+        result = 31 * result + height.hashCode()
+        result = 31 * result + weight.hashCode()
+        return result
+    }
+
     override fun copy(
         remoteProductId: Long,
         remoteVariationId: Long,
@@ -175,6 +244,70 @@ class SubscriptionProductVariation(
             height = height,
             weight = weight,
             subscriptionDetails = subscriptionDetails
+        )
+    }
+
+    fun copy(
+        subscriptionDetails: SubscriptionDetails? = this.subscriptionDetails,
+        remoteProductId: Long = this.remoteProductId,
+        remoteVariationId: Long = this.remoteVariationId,
+        sku: String = this.sku,
+        image: Image? = this.image,
+        price: BigDecimal? = this.price,
+        regularPrice: BigDecimal? = this.regularPrice,
+        salePrice: BigDecimal? = this.salePrice,
+        saleEndDateGmt: Date? = this.saleEndDateGmt,
+        saleStartDateGmt: Date? = this.saleStartDateGmt,
+        isSaleScheduled: Boolean = this.isSaleScheduled,
+        stockStatus: ProductStockStatus = this.stockStatus,
+        backorderStatus: ProductBackorderStatus = this.backorderStatus,
+        stockQuantity: Double = this.stockQuantity,
+        priceWithCurrency: String? = this.priceWithCurrency,
+        isPurchasable: Boolean = this.isPurchasable,
+        isVirtual: Boolean = this.isVirtual,
+        isDownloadable: Boolean = this.isDownloadable,
+        isStockManaged: Boolean = this.isStockManaged,
+        description: String = this.description,
+        isVisible: Boolean = this.isVisible,
+        shippingClass: String = this.shippingClass,
+        shippingClassId: Long = this.shippingClassId,
+        menuOrder: Int = this.menuOrder,
+        attributes: Array<VariantOption> = this.attributes,
+        length: Float = this.length,
+        width: Float = this.width,
+        height: Float = this.height,
+        weight: Float = this.weight
+    ): SubscriptionProductVariation {
+        return SubscriptionProductVariation(
+            subscriptionDetails = subscriptionDetails,
+            remoteProductId = remoteProductId,
+            remoteVariationId = remoteVariationId,
+            sku = sku,
+            image = image,
+            price = price,
+            regularPrice = regularPrice,
+            salePrice = salePrice,
+            saleEndDateGmt = saleEndDateGmt,
+            saleStartDateGmt = saleStartDateGmt,
+            isSaleScheduled = isSaleScheduled,
+            stockStatus = stockStatus,
+            backorderStatus = backorderStatus,
+            stockQuantity = stockQuantity,
+            priceWithCurrency = priceWithCurrency,
+            isPurchasable = isPurchasable,
+            isVirtual = isVirtual,
+            isDownloadable = isDownloadable,
+            isStockManaged = isStockManaged,
+            description = description,
+            isVisible = isVisible,
+            shippingClass = shippingClass,
+            shippingClassId = shippingClassId,
+            menuOrder = menuOrder,
+            attributes = attributes,
+            length = length,
+            width = width,
+            height = height,
+            weight = weight
         )
     }
 }

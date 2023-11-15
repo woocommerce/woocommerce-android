@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-01 13:54:04+0000
+Translation-Revision-Date: 2023-11-07 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="email_or_username">عنوان البريد الإلكتروني أو اسم المستخدم</string>
+    <string name="custom_amounts_creation_error">يتعذر إنشاء طلب الكمية المخصص</string>
+    <string name="custom_amounts_add_custom_name_hint">إدخال اسم مخصص</string>
+    <string name="custom_amounts_add_custom_amount">إضافة مبلغ مخصص</string>
+    <string name="custom_amounts_name">الاسم</string>
+    <string name="custom_amounts_enter_amount">الكمية</string>
+    <string name="custom_amounts_dialog_title">مبلغ مخصص</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">يرجى الاتصال بـ Jetpack من خلال صفحة المسؤول لديك على متصفح أو دعم الاتصال.</string>
+    <string name="login_jetpack_installation_error_connection_message">حدث خطأ في أثناء الاتصال بموقعك.</string>
+    <string name="custom_amounts">مبالغ مخصصة</string>
     <string name="product_details_blaze_card">الترويج باستخدام Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">فهمت</string>
     <string name="blaze_campaign_ceation_celebration_message">تم إرسال الإعلان للموافقة. سنرسل إليك رسالة تأكيد عبر البريد الإلكتروني بمجرد الموافقة والتشغيل.</string>
@@ -3004,7 +3014,7 @@ Language: ar
     <string name="login_text_otp_another">أرسل إليّ رمزًا آخر بدلاً من ذلك.</string>
     <string name="login_text_otp">اكتب رمزًا لي بدلاً من ذلك</string>
     <string name="enter_verification_code_sms">أرسلنا رسالة نصية إلى رقم الهاتف الذي ينتهي بـ %s. يرجى إرسال رمز التحقق في رسالة نصية قصيرة.</string>
-    <string name="enter_verification_code">تقريبًا هناك! يرجى إدخال رمز التحقق من تطبيق الموثق الخاص بك.</string>
+    <string name="enter_verification_code">تقريبًا هناك! يرجى إدخال كود التحقق الخاص بووردبريس.كوم من تطبيق الموثق الخاص بك.</string>
     <string name="enter_username_instead">قم بتسجيل الدخول باستخدام اسم المستخدم الخاص بك.</string>
     <string name="enter_site_address_instead">قم بتسجيل الدخول عن طريق إدخال عنوان الموقع.</string>
     <string name="alternatively">بدلاً من ذلك:</string>

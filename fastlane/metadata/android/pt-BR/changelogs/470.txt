@@ -1,2 +1,0 @@
-16.0:
-Esta é a atualização mais recente do WooCommerce! Repaginamos a lista de itens do pedido, deixando o fluxo mais intuitivo. A experiência no Blaze agora está mais eficiente, com melhorias na criação de campanhas. Além disso, apresentamos a criação de produtos com IA, que usa fotos de embalagens para gerar um título e uma descrição automaticamente. Aproveite uma experiência incrível de vendas!
