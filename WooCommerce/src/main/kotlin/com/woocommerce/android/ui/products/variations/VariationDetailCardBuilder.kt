@@ -370,7 +370,10 @@ class VariationDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditVariationCardClicked(ViewProductSubscriptionExpiration(subscription))
+                    viewModel.onEditVariationCardClicked(
+                        ViewProductSubscriptionExpiration(subscription),
+                        AnalyticsEvent.PRODUCT_VARIATION_VIEW_SUBSCRIPTION_EXPIRATION_TAPPED
+                    )
                 }
             )
         }
@@ -385,7 +388,10 @@ class VariationDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditVariationCardClicked(ViewVariationSubscriptionTrial(subscription))
+                    viewModel.onEditVariationCardClicked(
+                        ViewVariationSubscriptionTrial(subscription),
+                        AnalyticsEvent.PRODUCT_VARIATION_VIEW_SUBSCRIPTION_FREE_TRIAL_TAPPED
+                    )
                 }
             )
         }
