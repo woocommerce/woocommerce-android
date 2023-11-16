@@ -550,8 +550,8 @@ class OrderDetailFragment :
                         Column(
                             modifier = Modifier.padding(vertical = 8.dp)
                         ) {
+                            Header()
                             feeLineState.value.forEachIndexed { index, feeLine ->
-                                Header()
                                 CustomAmountCard(feeLine, index < feeLineState.value.size - 1)
                             }
                         }
