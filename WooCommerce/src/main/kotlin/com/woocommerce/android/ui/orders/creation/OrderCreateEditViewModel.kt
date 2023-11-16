@@ -1395,13 +1395,15 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onEditConfiguration(product: OrderCreationProduct) {
         (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
-            tracker.track(
-                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
-                mapOf(
-                    KEY_FLOW to flow,
-                    KEY_SOURCE to VALUE_PRODUCT_CARD
+            if (product.productInfo.productType == ProductType.BUNDLE) {
+                tracker.track(
+                    AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                    mapOf(
+                        KEY_FLOW to flow,
+                        KEY_SOURCE to VALUE_PRODUCT_CARD
+                    )
                 )
-            )
+            }
             triggerEvent(
                 OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration(
                     productId = product.item.productId,
