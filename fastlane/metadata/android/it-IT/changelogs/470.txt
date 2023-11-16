@@ -1,2 +1,0 @@
-16.0:
-Ti diamo il benvenuto all'ultimo aggiornamento di WooCommerce. Abbiamo riprogettato l'elenco degli elementi dell'ordine per ottenere un flusso più intuitivo. L'esperienza Blaze è ora più efficace grazie alla creazione di campagne migliorata. Inoltre, ti presentiamo la creazione del prodotto tramite IA utilizzando le foto del pacchetto per ottenere titoli e descrizioni automatici. Goditi un'esperienza di acquisto senza interruzioni.

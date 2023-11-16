@@ -111,6 +111,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SIGNUP_ERROR(siteless = true),
     LOGIN_SITE_CREDENTIALS_LOGIN_FAILED(siteless = true),
     LOGIN_INSUFFICIENT_ROLE(siteless = false),
+    LOGIN_2FA_NEEDED(siteless = true),
+    LOGIN_USE_SECURITY_KEY_CLICKED(siteless = true),
+    LOGIN_SECURITY_KEY_FAILURE(siteless = true),
+    LOGIN_SECURITY_KEY_SUCCESS(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),

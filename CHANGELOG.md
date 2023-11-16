@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.2
+Welcome to the latest update of our WooCommerce mobile app! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!
+
 ## 16.1
 Discover a more seamless WooCommerce experience with our latest update! We've introduced a new feature allowing you to input custom amounts during order creation, providing you with greater flexibility. Also, we've enhanced our error handling for a smoother Jetpack Connection, especially when using a custom admin URL. Enjoy a more streamlined and efficient app, designed for your convenience.
 

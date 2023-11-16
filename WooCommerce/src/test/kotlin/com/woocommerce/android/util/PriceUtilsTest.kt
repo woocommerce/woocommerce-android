@@ -2,6 +2,7 @@ package com.woocommerce.android.util
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -74,10 +75,12 @@ class PriceUtilsTest {
         ),
         resourcesProviderMock,
         mock(),
-        regularPrice = BigDecimal(100),
-        salePrice = BigDecimal(75),
-        isSaleScheduled = true,
-        saleStartDateGmt = saleStartDateGmt,
-        saleEndDateGmt = saleEndDateGmt,
+        PricingData(
+            regularPrice = BigDecimal(100),
+            salePrice = BigDecimal(75),
+            isSaleScheduled = true,
+            saleStartDate = saleStartDateGmt,
+            saleEndDate = saleEndDateGmt
+        )
     )[SALE_DATES_PRICING_GROUP_KEY]
 }

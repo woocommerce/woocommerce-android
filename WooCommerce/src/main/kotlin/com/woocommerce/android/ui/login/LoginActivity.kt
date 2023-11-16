@@ -496,6 +496,23 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
+    override fun needs2fa(
+        email: String?,
+        password: String?,
+        userId: String?,
+        webauthnNonce: String?,
+        nonceAuthenticator: String?,
+        nonceBackup: String?,
+        noncePush: String?,
+        supportedAuthTypes: MutableList<String>?
+    ) {
+        val login2FaFragment = Login2FaFragment.newInstance(
+            email, password, userId,
+            webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes
+        )
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
+    }
+
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
         showMainActivityAndFinish()
     }
