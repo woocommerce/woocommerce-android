@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-01 13:54:04+0000
+Translation-Revision-Date: 2023-11-07 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="email_or_username">כתובת אימייל או שם משתמש</string>
+    <string name="custom_amounts_creation_error">אין אפשרות ליצור סכום בהתאמה אישית בהזמנה</string>
+    <string name="custom_amounts_add_custom_name_hint">להזין שם בהתאמה אישית</string>
+    <string name="custom_amounts_add_custom_amount">להוסיף סכום בהתאמה אישית</string>
+    <string name="custom_amounts_name">שם</string>
+    <string name="custom_amounts_enter_amount">סכום</string>
+    <string name="custom_amounts_dialog_title">סכום בהתאמה אישית</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">נא לחבר את Jetpack דרך עמוד מנהל המערכת שלך בדפדפן או לפנות לתמיכה.</string>
+    <string name="login_jetpack_installation_error_connection_message">שגיאה בתקשורת עם האתר שלך.</string>
+    <string name="custom_amounts">סכומים בהתאמה אישית</string>
     <string name="product_details_blaze_card">לקדם עם Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">הבנתי</string>
     <string name="blaze_campaign_ceation_celebration_message">הפרסומת נשלחה לאישור. נשלח לך אישור באימייל כשהיא תאושר ותוצג.</string>
@@ -829,7 +839,7 @@ Language: he_IL
     <string name="login_jetpack_installation_retry_activating">יש לנסות להפעיל שוב</string>
     <string name="login_jetpack_installation_retry_installing">יש לנסות להתקין שוב</string>
     <string name="login_jetpack_installation_get_support">לקבלת תמיכה</string>
-    <string name="login_jetpack_installation_error_generic_suggestion">יש לנסות שוב ולפנות לתמיכה אם השגיאה ממשיכה להופיע.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">יש לנסות שוב ולפנות לתמיכה אם השגיאה נמשכת.</string>
     <string name="login_jetpack_installation_error_generic_message">אירעה שגיאה בתקשורת עם האתר שלך.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">אין לך הרשאה לניהול התוספים בחנות הזאת</string>
     <string name="login_jetpack_installation_error_authorizing">אירעה שגיאה באישור החיבור אל Jetpack</string>
@@ -3004,7 +3014,7 @@ Language: he_IL
     <string name="login_text_otp_another">שליחת קוד נוסף בהודעת טקסט במקום.</string>
     <string name="login_text_otp">שלחו לי הודעת טקסט עם קוד במקום.</string>
     <string name="enter_verification_code_sms">שלחנו לך הודעת טקסט למספר הטלפון שמסתיים בספרות %s. יש להזין את קוד האימות שהתקבל בהודעת הטקסט.</string>
-    <string name="enter_verification_code">כמעט סיימת! יש להזין את קוד האימות מאפליקציית האימות.</string>
+    <string name="enter_verification_code">כמעט סיימת! יש להזין את קוד האימות עבור WordPress.com מאפליקציית האימות.</string>
     <string name="enter_username_instead">התחברות באמצעות שם המשתמש שלך.</string>
     <string name="enter_site_address_instead">התחברות באמצעות הזנת כתובת האתר.</string>
     <string name="alternatively">לחלופין:</string>

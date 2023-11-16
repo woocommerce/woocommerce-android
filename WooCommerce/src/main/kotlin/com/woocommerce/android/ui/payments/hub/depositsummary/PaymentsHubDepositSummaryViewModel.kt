@@ -8,10 +8,13 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -30,7 +33,13 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     val viewState: LiveData<PaymentsHubDepositSummaryState> = _viewState.asLiveData()
 
     private val _openBrowserEvents = MutableSharedFlow<String>()
-    val openBrowserEvents = _openBrowserEvents.asSharedFlow()
+    val openBrowserEvents = _openBrowserEvents
+        .asSharedFlow()
+        .conflate()
+        .transform {
+            emit(it)
+            delay(LEARN_MORE_CLICKS_THROTTLING_DELAY)
+        }
 
     init {
         if (!isFeatureEnabled()) {
@@ -114,6 +123,7 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
             "https://woocommerce.com/document/woopayments/deposits/deposit-schedule/"
 
         private const val NUMBER_OF_CURRENCIES_TRACK_PROP_KEY = "number_of_currencies"
+        private const val LEARN_MORE_CLICKS_THROTTLING_DELAY = 500L
     }
 }
 

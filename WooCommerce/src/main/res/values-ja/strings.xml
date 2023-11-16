@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 11:54:04+0000
+Translation-Revision-Date: 2023-11-07 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="email_or_username">メールアドレスまたはユーザー名</string>
+    <string name="custom_amounts_creation_error">カスタム金額の注文を作成できません</string>
+    <string name="custom_amounts_add_custom_name_hint">カスタム名を入力</string>
+    <string name="custom_amounts_add_custom_amount">カスタム金額を追加</string>
+    <string name="custom_amounts_name">名前</string>
+    <string name="custom_amounts_enter_amount">合計</string>
+    <string name="custom_amounts_dialog_title">カスタム金額</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">ブラウザーの管理画面から Jetpack を接続するか、サポートにお問い合わせください。</string>
+    <string name="login_jetpack_installation_error_connection_message">サイトとの通信でエラーが発生しました。</string>
+    <string name="custom_amounts">カスタム金額</string>
     <string name="product_details_blaze_card">Blaze を使って宣伝する</string>
     <string name="blaze_campaign_ceation_celebration_button">OK</string>
     <string name="blaze_campaign_ceation_celebration_message">広告は承認を得るために送信されました。 承認されて掲載されると、確認メールが送信されます。</string>
@@ -3004,7 +3014,7 @@ Language: ja_JP
     <string name="login_text_otp_another">代わりに別のコードを送信する。</string>
     <string name="login_text_otp">代わりに SMS でコードを送信する。</string>
     <string name="enter_verification_code_sms">末尾が%sで終わる電話番号にテキストメッセージを送信しました。SMS の認証コードを入力してください。</string>
-    <string name="enter_verification_code">もう少しで完了です。認証アプリから認証コードを入力してください。</string>
+    <string name="enter_verification_code">もう少しです ! 認証アプリから WordPress.com の認証コードを入力してください。</string>
     <string name="enter_username_instead">ユーザー名でログインします。</string>
     <string name="enter_site_address_instead">サイトのアドレスを入力してログインする。</string>
     <string name="alternatively">もしくは、</string>

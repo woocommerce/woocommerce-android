@@ -1,2 +1,0 @@
-16.0:
-Selamat datang di pembaruan terkini WooCommerce! Kami telah mendesain ulang daftar item pesanan untuk menciptakan alur yang lebih intuitif. Pengalaman Blaze kini lebih efisien dengan penyempurnaan pembuatan kampanye. Kami juga memperkenalkan Pembuatan Produk melalui AI menggunakan foto kemasan untuk mendapatkan judul dan deskripsi secara otomatis. Nikmati pengalaman berbelanja dengan mudah!
