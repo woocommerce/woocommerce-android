@@ -105,6 +105,7 @@ class ProductConfigurationViewModel @Inject constructor(
 
     fun onSaveConfiguration() {
         configuration.value?.let {
+            tracker.track(AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURATION_SAVE_TAPPED)
             when (flow) {
                 is Flow.Selection -> triggerEvent(
                     MultiLiveEvent.Event.ExitWithResult(
