@@ -1114,6 +1114,25 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onProductTypeChanged(
+        productType: ProductType,
+        isVirtual: Boolean
+    ) {
+        updateProductDraft(type = productType.value, isVirtual = isVirtual)
+
+        viewState.productDraft?.let { productDraft ->
+            if (productType == ProductType.SUBSCRIPTION && productDraft.subscription == null) {
+                viewState = viewState.copy(
+                    productDraft = productDraft.copy(
+                        subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
+                            price = productDraft.regularPrice
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     /**
      * Update all product fields that are edited by the user
      */

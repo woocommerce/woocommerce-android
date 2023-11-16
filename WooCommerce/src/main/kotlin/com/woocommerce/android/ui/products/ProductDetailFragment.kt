@@ -195,7 +195,7 @@ class ProductDetailFragment :
     @Suppress("LongMethod")
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
-            viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
+            viewModel.onProductTypeChanged(productType = it.type, isVirtual = it.isVirtual)
         }
         handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
             viewModel.updateProductDraft(groupedProductIds = it)
