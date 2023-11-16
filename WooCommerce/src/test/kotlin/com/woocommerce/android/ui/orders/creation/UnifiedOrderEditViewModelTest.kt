@@ -2277,7 +2277,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             val productInfo: ProductInfo = mock()
             val configuration: ProductConfiguration = mock()
 
-            whenever(productInfo.isConfigurable) doReturn true
             whenever(productInfo.productType) doReturn ProductType.BUNDLE
 
             val product = OrderCreationProduct.GroupedProductItemWithRules(
@@ -2309,7 +2308,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             val productInfo: ProductInfo = mock()
             val configuration: ProductConfiguration = mock()
 
-            whenever(productInfo.isConfigurable) doReturn true
             whenever(productInfo.productType) doReturn ProductType.COMPOSITE
 
             val product = OrderCreationProduct.GroupedProductItemWithRules(
