@@ -397,9 +397,12 @@ class VariationDetailViewModel @Inject constructor(
                 viewState = viewState.copy(isSkeletonShown = true)
             }
             if (variation is SubscriptionProductVariation && variation.subscriptionDetails == null) {
+                // If this is a newly created subscription variation either from scratch or after changing the product
+                // type, then we need to set the default subscription details
                 viewState = viewState.copy(
                     variation = variation.copy(
                         subscriptionDetails = ProductHelper.getDefaultSubscriptionDetails()
+                            .copy(price = variation.regularPrice)
                     )
                 )
             } else {
