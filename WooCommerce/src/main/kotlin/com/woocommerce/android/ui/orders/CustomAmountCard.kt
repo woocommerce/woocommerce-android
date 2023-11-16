@@ -28,14 +28,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.details.OrderDetailFragment.CurrencyFormattedAmount
+import com.woocommerce.android.ui.orders.details.OrderDetailFragment.CustomAmountUI
 import java.math.BigDecimal
 
 @Composable
 fun CustomAmountCard(
-    feeLine: Order.FeeLine,
-    shouldShowDivider: Boolean,
+    customAmountUI: CustomAmountUI
 ) {
 
     Card(
@@ -54,7 +54,7 @@ fun CustomAmountCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = feeLine.name ?: "",
+                        text = customAmountUI.name,
                         style = TextStyle(
                             fontWeight = FontWeight.Normal,
                             fontSize = 18.sp
@@ -73,7 +73,7 @@ fun CustomAmountCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = feeLine.total.toString(),
+                    text = customAmountUI.amount.amount,
                     style = TextStyle(
                         fontWeight = FontWeight.Normal,
                         fontSize = 18.sp
@@ -81,7 +81,7 @@ fun CustomAmountCard(
                     color = colorResource(id = R.color.color_on_surface)
                 )
             }
-            if (shouldShowDivider) {
+            if (customAmountUI.shouldShowDivider) {
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = 1.dp,
@@ -133,14 +133,11 @@ fun Header() {
 fun CustomAmountCardPreview() {
     WooThemeWithBackground {
         CustomAmountCard(
-            Order.FeeLine(
-                id = 0L,
+            CustomAmountUI(
                 name = "Services Rendered",
-                total = BigDecimal.TEN,
-                totalTax = BigDecimal.ZERO,
-                taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE
-            ),
-            true
+                amount = CurrencyFormattedAmount(BigDecimal.TEN.toString()),
+                shouldShowDivider = false
+            )
         )
     }
 }
@@ -162,14 +159,11 @@ fun CustomAmountCardWithHeaderPreview() {
         Column {
             Header()
             CustomAmountCard(
-                Order.FeeLine(
-                    id = 0L,
+                CustomAmountUI(
                     name = "Services Rendered",
-                    total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO,
-                    taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE
-                ),
-                true
+                    amount = CurrencyFormattedAmount(BigDecimal.TEN.toString()),
+                    shouldShowDivider = false
+                )
             )
         }
     }

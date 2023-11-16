@@ -552,7 +552,15 @@ class OrderDetailFragment :
                         ) {
                             Header()
                             feeLineState.value.forEachIndexed { index, feeLine ->
-                                CustomAmountCard(feeLine, index < feeLineState.value.size - 1)
+                                CustomAmountCard(
+                                    CustomAmountUI(
+                                        name = feeLine.name ?: "",
+                                        amount = CurrencyFormattedAmount(
+                                            currencyFormatter.formatCurrency(feeLine.total)
+                                        ),
+                                        shouldShowDivider = index < feeLineState.value.size - 1,
+                                    )
+                                )
                             }
                         }
                     }
@@ -672,4 +680,13 @@ class OrderDetailFragment :
             it.show()
         }
     }
+
+    data class CustomAmountUI(
+        val name: String,
+        val amount: CurrencyFormattedAmount,
+        val shouldShowDivider: Boolean,
+    )
+
+    @JvmInline
+    value class CurrencyFormattedAmount(val amount: String)
 }
