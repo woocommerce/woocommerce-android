@@ -100,10 +100,10 @@ class VariationDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                variation.warning(),
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionExpirationDate() else null,
                 variation.subscription(),
-                variation.warning(),
                 variation.attributes(),
                 variation.quantityRules(),
                 variation.visibility(),
