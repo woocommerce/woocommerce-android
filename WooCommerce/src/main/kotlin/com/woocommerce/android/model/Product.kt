@@ -472,6 +472,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
         it.purchasable = isPurchasable
+        // Subscription details are currently the only editable metadata fields from the app.
+        it.metadata = subscription?.toMetadataJson().toString()
     }
 }
 

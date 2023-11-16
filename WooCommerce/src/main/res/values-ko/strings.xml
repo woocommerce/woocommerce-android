@@ -571,7 +571,6 @@ Language: ko_KR
     <string name="subscription_status_cancelled">취소됨</string>
     <string name="subscription_status_on_hold">보류 중</string>
     <string name="subscription_status_active">활성</string>
-    <string name="no_variable_subscription_warning">가변 구독은 웹 알림판에서만 추가하실 수 있습니다.</string>
     <string name="subscription_details_info_notice">웹 알림판에서 상품 구독을 편집하실 수 있습니다.</string>
     <string name="subscription_no_trial">평가판 기간 없음</string>
     <string name="subscription_no_sign_up_fee">등록 수수료 없음</string>

@@ -571,7 +571,6 @@ Language: zh_CN
     <string name="subscription_status_cancelled">已取消</string>
     <string name="subscription_status_on_hold">保留</string>
     <string name="subscription_status_active">启用</string>
-    <string name="no_variable_subscription_warning">您只能在 Web 仪表盘中添加可变订阅。</string>
     <string name="subscription_details_info_notice">您可以在 Web 仪表盘中编辑订阅。</string>
     <string name="subscription_no_trial">无免费试用期</string>
     <string name="subscription_no_sign_up_fee">无注册费用</string>

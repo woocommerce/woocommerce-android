@@ -571,7 +571,6 @@ Language: tr
     <string name="subscription_status_cancelled">İptal edildi</string>
     <string name="subscription_status_on_hold">Beklemede</string>
     <string name="subscription_status_active">Aktif</string>
-    <string name="no_variable_subscription_warning">Web panosunda yalnızca değişken abonelikler ekleyebilirsiniz.</string>
     <string name="subscription_details_info_notice">Ürün aboneliklerini web panosunda düzenleyebilirsiniz.</string>
     <string name="subscription_no_trial">Deneme sürümü süresi yok</string>
     <string name="subscription_no_sign_up_fee">Kayıt ücreti yok</string>

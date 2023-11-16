@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionFreeTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
+import com.woocommerce.android.ui.products.subscriptions.trialDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -111,10 +113,11 @@ class ProductDetailCardBuilder(
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
-            VARIABLE, VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableProductCard(product))
+            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableSubscriptionProductCard(product))
             BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
             COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(product))
             else -> cards.addIfNotEmpty(getOtherProductCard(product))
@@ -188,8 +191,8 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
-                product.productType(),
-                product.downloads()
+                product.downloads(),
+                product.productType()
             ).filterNotEmpty()
         )
     }
@@ -256,11 +259,33 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionTrial() else null,
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.subscription(),
                 product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.downloads(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getVariableSubscriptionProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.warning(),
+                product.variations(),
+                product.variationAttributes(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.inventory(VARIABLE),
                 product.addons(),
                 product.quantityRules(),
                 product.categories(),
@@ -483,17 +508,25 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.price(): ProductProperty {
-        // If we have pricing info, show price & sales price as a group,
-        // otherwise provide option to add pricing info for the product
+        val pricingData = PricingData(
+            taxClass = taxClass,
+            taxStatus = taxStatus,
+            isSaleScheduled = isSaleScheduled,
+            saleStartDate = saleStartDateGmt,
+            saleEndDate = saleEndDateGmt,
+            regularPrice = regularPrice,
+            salePrice = salePrice,
+            isSubscription = this.productType == SUBSCRIPTION,
+            subscriptionPeriod = subscription?.period,
+            subscriptionInterval = subscription?.periodInterval,
+            subscriptionSignUpFee = subscription?.signUpFee,
+        )
+
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
             currencyFormatter,
-            regularPrice,
-            salePrice,
-            isSaleScheduled,
-            saleStartDateGmt,
-            saleEndDateGmt
+            pricingData
         )
 
         return PropertyGroup(
@@ -503,20 +536,7 @@ class ProductDetailCardBuilder(
             showTitle = this.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
-                ViewProductPricing(
-                    PricingData(
-                        taxClass = taxClass,
-                        taxStatus = taxStatus,
-                        isSaleScheduled = isSaleScheduled,
-                        saleStartDate = saleStartDateGmt,
-                        saleEndDate = saleEndDateGmt,
-                        regularPrice = regularPrice,
-                        salePrice = salePrice,
-                        isSubscription = this.productType == SUBSCRIPTION,
-                        subscriptionPeriod = subscription?.period,
-                        subscriptionInterval = subscription?.periodInterval,
-                    )
-                ),
+                ViewProductPricing(pricingData),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
@@ -711,7 +731,6 @@ class ProductDetailCardBuilder(
 
     // show product variations only if product type is variable and if there are variations for the product
     private fun Product.variations(): ProductProperty? {
-        val isVariableSubscription = this.productType == VARIABLE_SUBSCRIPTION
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
@@ -726,16 +745,13 @@ class ProductDetailCardBuilder(
                 drawable.ic_gridicons_types
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductVariations(
-                        remoteId = this.remoteId,
-                        isReadOnlyMode = isVariableSubscription
-                    ),
+                    ViewProductVariations(remoteId = this.remoteId),
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
-        } else if (isVariableSubscription.not()) {
+        } else {
             emptyVariations()
-        } else null
+        }
     }
 
     private fun Product.emptyVariations() =
@@ -849,6 +865,21 @@ class ProductDetailCardBuilder(
             )
         }
 
+    private fun Product.subscriptionTrial(): ProductProperty? =
+        this.subscription?.let { subscription ->
+            PropertyGroup(
+                title = string.product_subscription_free_trial_title,
+                icon = drawable.ic_gridicons_hourglass_empty,
+                properties = mapOf(
+                    resources.getString(string.subscription_free_trial) to subscription.trialDisplayValue(resources)
+                ),
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(ViewProductSubscriptionFreeTrial(subscription))
+                }
+            )
+        }
+
     private fun Product.subscription(): ProductProperty? =
         this.subscription?.let { subscription ->
 
@@ -905,10 +936,6 @@ class ProductDetailCardBuilder(
         }
 
     private fun Product.warning(): ProductProperty? {
-        if (this.variationIds.isEmpty() && productType == VARIABLE_SUBSCRIPTION) {
-            return ProductProperty.Warning(resources.getString(string.no_variable_subscription_warning))
-        }
-
         val variations = variationRepository.getProductVariationList(this.remoteId)
 
         val missingPriceVariation = variations

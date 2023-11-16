@@ -111,7 +111,7 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitLinkedProducts())
+        viewModel.onBackButtonClicked(ExitLinkedProducts)
         return false
     }
 
