@@ -42,6 +42,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
@@ -75,6 +76,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -482,6 +484,10 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        val hasBundleConfiguration = selectedItems.any { item ->
+            (item as? SelectedItem.ConfigurableProduct)
+                ?.configuration?.configurationType == ConfigurationType.BUNDLE
+        }
         source?.let {
             tracker.track(
                 ORDER_PRODUCT_ADD,
@@ -490,6 +496,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_SCANNING_SOURCE to source.source,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration
                 )
             )
         } ?: run {
@@ -499,6 +506,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_FLOW to flow,
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration
                 )
             )
         }
