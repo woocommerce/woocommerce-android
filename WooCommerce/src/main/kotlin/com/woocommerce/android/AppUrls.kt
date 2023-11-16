@@ -82,7 +82,7 @@ object AppUrls {
     const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
 
     const val LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT =
-        "https://woo.com/woocommerce-features/"
+        "https://woo.com/document/what-is-a-wordpress-com-account/"
 
     const val NEW_TO_WOO_DOC = "https://woo.com/woocommerce-features/"
 
