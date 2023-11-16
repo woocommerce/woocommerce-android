@@ -57,6 +57,11 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
+        if (order.total.compareTo(BigDecimal.ZERO) == 0) {
+            hidePaymentSubDetails()
+        } else {
+            showPaymentSubDetails()
+        }
 
         if (order.datePaid == null) {
             binding.paymentInfoAmountPaidSection.hide()
@@ -88,6 +93,24 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         updateCollectPaymentSection(order, onCollectCardPresentPaymentClickListener)
         updateSeeReceiptSection(isReceiptAvailable, onSeeReceiptClickListener)
         updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
+    }
+
+    private fun showPaymentSubDetails() {
+        binding.paymentInfoProductsTotalSection.show()
+        binding.paymentInfoDiscountSection.show()
+        binding.paymentInfoGiftCardSection.show()
+        binding.paymentInfoFeesSection.show()
+        binding.paymentInfoShippingSection.show()
+        binding.paymentInfoTaxesSection.show()
+    }
+
+    private fun hidePaymentSubDetails() {
+        binding.paymentInfoProductsTotalSection.hide()
+        binding.paymentInfoDiscountSection.hide()
+        binding.paymentInfoGiftCardSection.hide()
+        binding.paymentInfoFeesSection.hide()
+        binding.paymentInfoShippingSection.hide()
+        binding.paymentInfoTaxesSection.hide()
     }
 
     private fun updateDiscountsSection(

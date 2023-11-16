@@ -31,6 +31,7 @@
 
             <!-- Subtotal -->
             <LinearLayout
+                android:id="@+id/paymentInfo_productsTotalSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
@@ -155,6 +156,7 @@
 
             <!-- Shipping -->
             <LinearLayout
+                android:id="@+id/paymentInfo_shippingSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_50"
@@ -179,6 +181,7 @@
 
             <!-- Taxes -->
             <LinearLayout
+                android:id="@+id/paymentInfo_taxesSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_50"
