@@ -40,6 +40,7 @@ class ProductDetailBottomSheetBuilder(
         val stat: AnalyticsEvent? = null
     )
 
+    @Suppress("LongMethod")
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
             SIMPLE -> {
