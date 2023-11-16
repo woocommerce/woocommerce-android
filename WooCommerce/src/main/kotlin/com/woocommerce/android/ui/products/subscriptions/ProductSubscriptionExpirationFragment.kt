@@ -117,7 +117,7 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
     @Composable
     private fun PreviewSubscriptionExpirationPicker() {
         SubscriptionExpirationPicker(
-            items = listOf("Never", "1 month", "2 months", "3 months", "4 months", "5 months", "6 months"),
+            items = mapOf("Never" to 0, "1 month" to 1, "2 months" to 2, "3 months" to 3, "4 months" to 4),
             currentValue = "Never"
         )
     }
