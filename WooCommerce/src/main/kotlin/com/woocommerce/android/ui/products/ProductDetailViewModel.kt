@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SUBSCRIPTION_EXPIRATION_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
@@ -807,6 +808,10 @@ class ProductDetailViewModel @Inject constructor(
                 eventName = PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+            ProductExitEvent.ExitProductSubscriptionExpiration -> {
+                eventName = PRODUCT_SUBSCRIPTION_EXPIRATION_DONE_BUTTON_TAPPED
+                hasChanges = hasSubscriptionExpirationChanges()
+            }
 
             ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
             ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
@@ -816,7 +821,6 @@ class ProductDetailViewModel @Inject constructor(
             ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
             ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
             ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
-            ProductExitEvent.ExitProductSubscriptionExpiration -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -2390,6 +2394,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
         updateProductSubscription(length = selectedExpirationValue)
+    }
+
+    private fun hasSubscriptionExpirationChanges(): Boolean {
+        return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
     }
 
     /**
