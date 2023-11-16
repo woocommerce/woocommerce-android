@@ -116,4 +116,15 @@ class VariationDetailRepository @Inject constructor(
                 ?.let { quantityRulesMapper.toAppModelFromVariationMetadata(it) }
         }
     }
+
+    suspend fun getVariationOrNull(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
+        return getVariation(remoteProductId, remoteVariationId) ?: run {
+            val fetchResult = fetchVariation(remoteProductId, remoteVariationId)
+            if (fetchResult.isError) {
+                null
+            } else {
+                getVariation(remoteProductId, remoteVariationId)
+            }
+        }
+    }
 }

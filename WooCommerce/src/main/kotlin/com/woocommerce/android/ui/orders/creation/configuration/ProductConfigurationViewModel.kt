@@ -25,12 +25,15 @@ class ProductConfigurationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val getProductRules: GetProductRules,
     private val resourceProvider: ResourceProvider,
+    private val getProductConfiguration: GetProductConfiguration,
     getChildrenProductInfo: GetChildrenProductInfo
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductConfigurationFragmentArgs by savedState.navArgs()
 
-    private val productId = navArgs.productId
+    private val flow = navArgs.flow
+
+    private val productId = flow.productId
 
     private val rules = MutableStateFlow<ProductRules?>(null)
 
@@ -53,9 +56,12 @@ class ProductConfigurationViewModel @Inject constructor(
 
     init {
         launch {
-            getProductRules.getRules(navArgs.productId)?.let {
+            getProductRules.getRules(navArgs.flow.productId)?.let {
                 rules.value = it
-                configuration.value = ProductConfiguration.getConfiguration(it)
+                configuration.value = when (flow) {
+                    is Flow.Selection -> getProductConfiguration(it)
+                    is Flow.Edit -> flow.configuration
+                }
             }
         }
     }
@@ -79,7 +85,26 @@ class ProductConfigurationViewModel @Inject constructor(
 
     fun onSaveConfiguration() {
         configuration.value?.let {
-            triggerEvent(MultiLiveEvent.Event.ExitWithResult(ProductConfigurationResult(productId, it)))
+            when (flow) {
+                is Flow.Selection -> triggerEvent(
+                    MultiLiveEvent.Event.ExitWithResult(
+                        SelectProductConfigurationResult(
+                            productId = flow.productID,
+                            productConfiguration = it
+                        )
+                    )
+                )
+
+                is Flow.Edit -> triggerEvent(
+                    MultiLiveEvent.Event.ExitWithResult(
+                        EditProductConfigurationResult(
+                            productId = flow.productID,
+                            itemId = flow.itemId,
+                            productConfiguration = it
+                        )
+                    )
+                )
+            }
         } ?: triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
@@ -125,8 +150,27 @@ data class ProductInfo(
     val imageUrl: String?
 )
 
+sealed class Flow(val productId: Long) : Parcelable {
+    @Parcelize
+    data class Selection(val productID: Long) : Flow(productID)
+
+    @Parcelize
+    data class Edit(
+        val productID: Long,
+        val itemId: Long,
+        val configuration: ProductConfiguration
+    ) : Flow(productID)
+}
+
 @Parcelize
-data class ProductConfigurationResult(
+data class SelectProductConfigurationResult(
+    val productId: Long,
+    val productConfiguration: ProductConfiguration
+) : Parcelable
+
+@Parcelize
+data class EditProductConfigurationResult(
+    val itemId: Long,
     val productId: Long,
     val productConfiguration: ProductConfiguration
 ) : Parcelable

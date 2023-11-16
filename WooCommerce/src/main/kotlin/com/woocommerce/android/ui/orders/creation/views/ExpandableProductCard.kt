@@ -79,7 +79,8 @@ fun ExpandableProductCard(
     onRemoveProductClicked: () -> Unit,
     onDiscountButtonClicked: () -> Unit,
     onIncreaseItemAmountClicked: () -> Unit,
-    onDecreaseItemAmountClicked: () -> Unit
+    onDecreaseItemAmountClicked: () -> Unit,
+    onEditConfigurationClicked: () -> Unit
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val transitionState = remember {
@@ -245,7 +246,8 @@ fun ExpandableProductCard(
                 onRemoveProductClicked,
                 onDiscountButtonClicked,
                 onIncreaseItemAmountClicked,
-                onDecreaseItemAmountClicked
+                onDecreaseItemAmountClicked,
+                onEditConfigurationClicked
             )
         }
     }
@@ -259,6 +261,7 @@ fun ExtendedProductCardContent(
     onDiscountButtonClicked: () -> Unit,
     onIncreaseItemAmountClicked: () -> Unit,
     onDecreaseItemAmountClicked: () -> Unit,
+    onEditConfigurationClicked: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.minor_100))
@@ -272,8 +275,13 @@ fun ExtendedProductCardContent(
             discountAmount,
             priceAfterDiscountLabel,
             priceAfterDiscountValue,
-            removeButton
+            removeButton,
+            configurationButton,
+            configurationDivider
         ) = createRefs()
+
+        val buttonBarrier = createTopBarrier(removeButton, configurationButton)
+
         val editableControlsEnabled = state.value?.isIdle == true
         Divider(
             modifier = Modifier
@@ -418,12 +426,41 @@ fun ExtendedProductCardContent(
         Divider(
             modifier = Modifier
                 .constrainAs(bottomDivider) {
-                    bottom.linkTo(removeButton.top)
+                    bottom.linkTo(buttonBarrier)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
                 .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
         )
+        if (product.productInfo.isConfigurable) {
+            WCTextButton(
+                modifier = Modifier.constrainAs(configurationButton) {
+                    top.linkTo(bottomDivider.bottom)
+                    bottom.linkTo(configurationDivider.top)
+                },
+                onClick = onEditConfigurationClicked,
+                enabled = editableControlsEnabled
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_configuration),
+                    contentDescription = null
+                )
+                Text(
+                    text = stringResource(id = R.string.extension_configure_button),
+                    style = MaterialTheme.typography.body1
+                )
+            }
+
+            Divider(
+                modifier = Modifier
+                    .constrainAs(configurationDivider) {
+                        bottom.linkTo(removeButton.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
+            )
+        }
         WCTextButton(
             modifier = Modifier.constrainAs(removeButton) {
                 bottom.linkTo(parent.bottom)
@@ -542,7 +579,7 @@ fun ExpandableProductCardPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExpandableProductCard(state, product, {}, {}, {}, {})
+        ExpandableProductCard(state, product, {}, {}, {}, {}, {})
     }
 }
 
@@ -576,6 +613,40 @@ fun ExtendedProductCardContentPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExtendedProductCardContent(state, product, {}, {}, {}) {}
+        ExtendedProductCardContent(state, product, {}, {}, {}, {}) {}
+    }
+}
+
+@Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ExtendedConfigurableProductCardContentPreview() {
+    val item = Order.Item.EMPTY.copy(
+        name = "Test Product",
+        quantity = 3.0f,
+        total = 23.toBigDecimal(),
+        subtotal = 30.toBigDecimal(),
+        sku = "SKU123"
+    )
+    val product = OrderCreationProduct.ProductItem(
+        item = item,
+        productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = true,
+            stockQuantity = 3.0,
+            stockStatus = ProductStockStatus.InStock,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$25",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            isConfigurable = true,
+            productType = ProductType.SIMPLE,
+            hasDiscount = true
+        )
+    )
+    val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
+    WooThemeWithBackground {
+        ExtendedProductCardContent(state, product, {}, {}, {}, {}) {}
     }
 }

@@ -6,7 +6,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.VariantOption
-import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -146,31 +145,7 @@ class ProductConfiguration(
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
-        fun getConfiguration(
-            rules: ProductRules,
-            children: List<OrderCreationProduct.ProductItem>? = null,
-            parentQuantity: Float = 1f
-        ): ProductConfiguration {
-            val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }.toMutableMap()
-            val childrenConfiguration = rules.childrenRules?.mapValues { childrenRules ->
-                childrenRules.value.mapValues { it.value.getInitialValue() }.toMutableMap()
-            }?.toMutableMap()
-            if (children != null && rules.itemRules.containsKey(QuantityRule.KEY)) {
-                val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
-                itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
-            }
-            children?.filter { child -> child.item.configurationKey != null }?.forEach { child ->
-                childrenConfiguration?.get(child.item.configurationKey)?.let { configuration ->
-                    if (configuration.containsKey(QuantityRule.KEY)) {
-                        configuration[QuantityRule.KEY] = (child.item.quantity / parentQuantity).toString()
-                    }
-                }
-            }
-            val configurationType = rules.productType.getConfigurationType()
-            return ProductConfiguration(rules, configurationType, itemConfiguration, childrenConfiguration)
-        }
     }
-
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
         val result = mutableMapOf<Long, String>()
 

@@ -68,8 +68,8 @@
         android:name="com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment"
         android:label="ProductConfigurationFragment">
         <argument
-            android:name="productId"
-            app:argType="long" />
+            android:name="flow"
+            app:argType="com.woocommerce.android.ui.orders.creation.configuration.Flow" />
         <action
             android:id="@+id/action_productConfigurationFragment_to_variationPickerFragment"
             app:destination="@id/variationPickerFragment" />

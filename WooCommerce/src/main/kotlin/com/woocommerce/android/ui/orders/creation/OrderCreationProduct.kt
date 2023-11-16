@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.creation.configuration.GetProductConfiguration
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -20,8 +21,6 @@ sealed class OrderCreationProduct(
     open val item: Order.Item,
     open val productInfo: ProductInfo
 ) : Parcelable {
-    abstract fun isConfigurable(): Boolean
-
     abstract fun copyProduct(
         item: Order.Item = this.item,
         productInfo: ProductInfo = this.productInfo
@@ -31,7 +30,6 @@ sealed class OrderCreationProduct(
         override val item: Order.Item,
         override val productInfo: ProductInfo
     ) : OrderCreationProduct(item, productInfo) {
-        override fun isConfigurable(): Boolean = false
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -43,7 +41,6 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo,
         val children: List<ProductItem>
     ) : OrderCreationProduct(item, productInfo) {
-        override fun isConfigurable(): Boolean = false
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -54,9 +51,8 @@ sealed class OrderCreationProduct(
         override val item: Order.Item,
         override val productInfo: ProductInfo,
         val rules: ProductRules,
-        var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules)
+        var configuration: ProductConfiguration
     ) : OrderCreationProduct(item, productInfo) {
-        override fun isConfigurable(): Boolean = productInfo.isConfigurable
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -68,9 +64,8 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo,
         val children: List<ProductItem>,
         val rules: ProductRules,
-        var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules, children, item.quantity)
+        var configuration: ProductConfiguration
     ) : OrderCreationProduct(item, productInfo) {
-        override fun isConfigurable(): Boolean = productInfo.isConfigurable
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -100,6 +95,7 @@ class OrderCreationProductMapper @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     private val getProductRules: GetProductRules,
     private val currencyFormatter: CurrencyFormatter,
+    private val getProductConfiguration: GetProductConfiguration
 ) {
     suspend fun toOrderProducts(items: List<Order.Item>, currencySymbol: String? = null): List<OrderCreationProduct> {
         if (items.isEmpty()) return emptyList()
@@ -111,7 +107,8 @@ class OrderCreationProductMapper @Inject constructor(
 
             val result = items.mapNotNull { item ->
                 if ((item.productId in rulesMap.keys).not()) {
-                    rulesMap[item.productId] = getProductRules.getRules(item)
+                    val rules = getProductRules.getRules(item)
+                    rulesMap[item.productId] = rules
                 }
                 if (item.parent == null) {
                     item
@@ -141,22 +138,33 @@ class OrderCreationProductMapper @Inject constructor(
         }
     }
 
-    private fun createOrderCreationProduct(
+    private suspend fun createOrderCreationProduct(
         item: Order.Item,
         productInfo: ProductInfo,
         rules: ProductRules? = null,
         children: List<OrderCreationProduct.ProductItem>? = null
     ): OrderCreationProduct {
         return when {
-            rules != null && children != null -> OrderCreationProduct.GroupedProductItemWithRules(
-                item,
-                productInfo,
-                children,
-                rules
-            )
+            rules != null && children != null -> {
+                val configuration = getProductConfiguration(
+                    rules = rules,
+                    children = children,
+                    parentQuantity = item.quantity
+                )
+                OrderCreationProduct.GroupedProductItemWithRules(
+                    item,
+                    productInfo,
+                    children,
+                    rules,
+                    configuration
+                )
+            }
 
             children != null -> OrderCreationProduct.GroupedProductItem(item, productInfo, children)
-            rules != null -> OrderCreationProduct.ProductItemWithRules(item, productInfo, rules)
+            rules != null -> {
+                val configuration = getProductConfiguration(rules = rules)
+                OrderCreationProduct.ProductItemWithRules(item, productInfo, rules, configuration)
+            }
             else -> OrderCreationProduct.ProductItem(item, productInfo)
         }
     }
