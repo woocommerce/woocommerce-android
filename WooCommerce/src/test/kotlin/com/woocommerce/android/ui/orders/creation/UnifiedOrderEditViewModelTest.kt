@@ -194,6 +194,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
             ),
         )
     }
@@ -215,6 +216,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
             ),
         )
     }
@@ -1633,6 +1635,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1665,6 +1668,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
