@@ -915,7 +915,7 @@ class ProductDetailViewModel @Inject constructor(
         viewState.productDraft
             ?.takeIf {
                 isProductStoredAtSite.not() and
-                    (it.type == ProductType.VARIABLE.value) and
+                    it.productType.isVariableProduct() and
                     (it.status == DRAFT)
             }
             ?.takeIf { addProduct(it).first }
