@@ -81,7 +81,7 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
 
     @Composable
     private fun SubscriptionExpirationPicker(
-        items: List<String>,
+        items: Map<String, Int>,
         currentValue: String
     ) {
         Box(
@@ -101,8 +101,8 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
                 ) {
                     Text(stringResource(id = string.subscription_expire))
                     WcExposedDropDown(
-                        items = items.toTypedArray(),
-                        onSelected = { selectedExpiration = items.indexOf(it) },
+                        items = items.keys.toTypedArray(),
+                        onSelected = { selectedExpiration = items[it] },
                         currentValue = currentValue,
                         modifier = Modifier
                             .background(colorResource(id = color.color_surface))

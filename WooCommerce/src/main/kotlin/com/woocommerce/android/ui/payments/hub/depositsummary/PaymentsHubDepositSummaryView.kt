@@ -78,6 +78,7 @@ fun PaymentsHubDepositSummaryView(
                     value.overview,
                     value.onLearnMoreClicked,
                     value.onExpandCollapseClicked,
+                    viewModel::onSummaryDepositShown,
                 )
 
                 null,
@@ -107,10 +108,12 @@ fun PaymentsHubDepositSummaryView(
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview,
     onLearnMoreClicked: () -> Unit,
-    onExpandCollapseClicked: () -> Unit,
+    onExpandCollapseClicked: (Boolean) -> Unit,
+    onSummaryDepositShown: () -> Unit,
     isPreview: Boolean = LocalInspectionMode.current,
     selectedPage: Int = 0,
 ) {
+    LaunchedEffect(key1 = overview) { onSummaryDepositShown() }
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
     val pageCount = overview.infoPerCurrency.size
@@ -147,7 +150,7 @@ fun PaymentsHubDepositSummaryView(
             ) {
                 FundsOverview(selectedCurrencyInfo, isExpanded) {
                     isExpanded = !isExpanded
-                    onExpandCollapseClicked()
+                    onExpandCollapseClicked(isExpanded)
                 }
 
                 AnimatedVisibility(
@@ -665,6 +668,7 @@ fun PaymentsHubDepositSummaryViewUsdPreview() {
             ),
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
+            onSummaryDepositShown = {},
             selectedPage = 0
         )
     }
@@ -682,6 +686,7 @@ fun PaymentsHubDepositSummaryViewEurPreview() {
             ),
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
+            onSummaryDepositShown = {},
             selectedPage = 1
         )
     }
@@ -699,6 +704,7 @@ fun PaymentsHubDepositSummaryViewRubPreview() {
             ),
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
+            onSummaryDepositShown = {},
             selectedPage = 2
         )
     }
@@ -716,6 +722,7 @@ fun PaymentsHubDepositSummaryViewGbpPreview() {
             ),
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
+            onSummaryDepositShown = {},
             selectedPage = 3
         )
     }
@@ -743,6 +750,7 @@ fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
             ),
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
+            onSummaryDepositShown = {},
             selectedPage = 0
         )
     }
