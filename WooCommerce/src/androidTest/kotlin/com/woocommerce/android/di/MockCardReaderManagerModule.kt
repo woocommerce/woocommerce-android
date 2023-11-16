@@ -15,6 +15,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import dagger.Module
 import dagger.Provides
@@ -83,7 +84,7 @@ class MockCardReaderManagerModule {
         override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
             flowOf(CardPaymentStatus.CollectingPayment)
 
-        override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
+        override suspend fun refundInteracPayment(refundParams: RefundParams, refundConfig: RefundConfig): Flow<CardInteracRefundStatus> {
             return emptyFlow()
         }
 
