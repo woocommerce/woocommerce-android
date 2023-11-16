@@ -84,7 +84,10 @@ class MockCardReaderManagerModule {
         override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> =
             flowOf(CardPaymentStatus.CollectingPayment)
 
-        override suspend fun refundInteracPayment(refundParams: RefundParams, refundConfig: RefundConfig): Flow<CardInteracRefundStatus> {
+        override suspend fun refundInteracPayment(
+            refundParams: RefundParams,
+            refundConfig: RefundConfig
+        ): Flow<CardInteracRefundStatus> {
             return emptyFlow()
         }
 
