@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,11 +50,7 @@ fun CustomAmountCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_custom_amount),
-                    contentDescription = "Custom Amount",
-                    modifier = Modifier.size(24.dp)
-                )
+                ImageWithBorder()
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
@@ -98,6 +96,21 @@ fun CustomAmountCard(
 }
 
 @Composable
+fun ImageWithBorder() {
+    Box(
+        modifier = Modifier
+            .border(width = 1.dp, color = colorResource(id = R.color.divider_color))
+            .padding(8.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_custom_amount),
+            contentDescription = "Custom Amount",
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Composable
 fun Header() {
     Box(
         modifier = Modifier
@@ -107,7 +120,9 @@ fun Header() {
             text = "CUSTOM AMOUNTS",
             modifier = Modifier
                 .padding(16.dp)
-                .align(Alignment.CenterStart)
+                .align(Alignment.CenterStart),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Medium
         )
     }
 }
