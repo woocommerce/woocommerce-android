@@ -390,7 +390,7 @@ class CardReaderPaymentViewModel
                     currency = order.currency
                 ),
                 RefundConfig(
-                    enableCustomerCancellation = true
+                    enableCustomerCancellation = false
                 )
             ).collect { refundStatus ->
                 onRefundStatusChanged(
