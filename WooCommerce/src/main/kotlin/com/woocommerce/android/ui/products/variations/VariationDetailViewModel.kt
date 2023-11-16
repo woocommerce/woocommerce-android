@@ -410,7 +410,6 @@ class VariationDetailViewModel @Inject constructor(
                 )
                 viewState = viewState.copy(isSkeletonShown = false)
             }
-
         }
     }
 
