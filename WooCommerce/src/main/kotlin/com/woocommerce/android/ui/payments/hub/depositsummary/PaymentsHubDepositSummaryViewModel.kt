@@ -75,6 +75,12 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
     }
 
     private fun onCurrencySelected(currency: String) {
+        trackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_CURRENCY_SELECTED,
+            properties = mapOf(
+                "currency" to currency.lowercase()
+            )
+        )
     }
 
     fun onSummaryDepositShown() {
