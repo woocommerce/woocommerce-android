@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,14 +53,16 @@ fun CustomAmountCard(
             ) {
                 ImageWithBorder()
                 Spacer(modifier = Modifier.width(8.dp))
-                Column {
+                Column(modifier = Modifier.weight(2f)) {
                     Text(
                         text = customAmountUI.name,
                         style = TextStyle(
                             fontWeight = FontWeight.Normal,
                             fontSize = 18.sp
                         ),
-                        color = colorResource(id = R.color.color_on_surface)
+                        color = colorResource(id = R.color.color_on_surface),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = stringResource(id = R.string.custom_amounts),
@@ -78,7 +81,7 @@ fun CustomAmountCard(
                         fontWeight = FontWeight.Normal,
                         fontSize = 18.sp
                     ),
-                    color = colorResource(id = R.color.color_on_surface)
+                    color = colorResource(id = R.color.color_on_surface),
                 )
             }
             if (customAmountUI.shouldShowDivider) {
@@ -117,7 +120,7 @@ fun Header() {
             .fillMaxWidth()
     ) {
         Text(
-            text = "CUSTOM AMOUNTS",
+            text = stringResource(id = R.string.order_detail_custom_amounts_header),
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.CenterStart),
@@ -135,6 +138,21 @@ fun CustomAmountCardPreview() {
         CustomAmountCard(
             CustomAmountUI(
                 name = "Services Rendered",
+                amount = CurrencyFormattedAmount(BigDecimal.TEN.toString()),
+                shouldShowDivider = false
+            )
+        )
+    }
+}
+
+@Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun CustomAmountCardWithLongNamePreview() {
+    WooThemeWithBackground {
+        CustomAmountCard(
+            CustomAmountUI(
+                name = "Very long name for testing very long name",
                 amount = CurrencyFormattedAmount(BigDecimal.TEN.toString()),
                 shouldShowDivider = false
             )
