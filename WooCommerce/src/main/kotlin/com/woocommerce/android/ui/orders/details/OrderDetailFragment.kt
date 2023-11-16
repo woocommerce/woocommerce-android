@@ -545,13 +545,15 @@ class OrderDetailFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val feeLineState = feeLine.observeAsState(emptyList())
-                WooThemeWithBackground {
-                    Column(
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        Header()
-                        feeLineState.value.forEachIndexed { index, feeLine ->
-                            CustomAmountCard(feeLine, index < feeLineState.value.size - 1)
+                if(!feeLineState.value.isNullOrEmpty()) {
+                    WooThemeWithBackground {
+                        Column(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            feeLineState.value.forEachIndexed { index, feeLine ->
+                                Header()
+                                CustomAmountCard(feeLine, index < feeLineState.value.size - 1)
+                            }
                         }
                     }
                 }
