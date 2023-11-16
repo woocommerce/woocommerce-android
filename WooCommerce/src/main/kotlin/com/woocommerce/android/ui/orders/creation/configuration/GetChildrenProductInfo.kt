@@ -20,6 +20,7 @@ class GetChildrenProductInfo @Inject constructor(
                 products.map { bundledProduct ->
                     ProductInfo(
                         id = bundledProduct.id,
+                        productId = bundledProduct.bundledProductId,
                         title = bundledProduct.title,
                         imageUrl = bundledProduct.imageUrl
                     )

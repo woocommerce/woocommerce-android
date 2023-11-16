@@ -3830,4 +3830,8 @@
     <string name="configuration_quantity_rule_issue"> Please select %1$s </string>
     <string name="configuration_quantity_items_selected"> %1$s item selected </string>
     <string name="configuration_quantity_items_selected_plural"> %1$s items selected </string>
+    <string name="configuration_variable_selection"> please select a variation </string>
+    <string name="configuration_children_issue"> " %1$s " -> %2$s </string>
+
+    <string name="product_variation_picker_title">Select a variation</string>
 </resources>

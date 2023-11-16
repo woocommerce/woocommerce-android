@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.GetProductRules
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -34,19 +36,18 @@ class ProductConfigurationViewModel @Inject constructor(
 
     private val configuration = MutableStateFlow<ProductConfiguration?>(null)
 
-    private val productsInformation = getChildrenProductInfo(productId)
+    private val productsInformation = getChildrenProductInfo(productId).toStateFlow(null)
 
     val viewState = combine(
         flow = rules.drop(1),
         flow2 = configuration.drop(1),
-        flow3 = productsInformation
+        flow3 = productsInformation.drop(1)
     ) { rules, configuration, productsInfo ->
-        if (rules == null || configuration == null) {
-            ViewState.Error("rules not found")
+        if (rules == null || configuration == null || productsInfo == null) {
+            ViewState.Error("Information not found")
         } else {
-            ViewState.DisplayConfiguration(
-                configuration, productsInfo, configuration.getConfigurationIssues(resourceProvider)
-            )
+            val issues = getConfigurationIssues(productsInfo, configuration)
+            ViewState.DisplayConfiguration(configuration, productsInfo, issues)
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ViewState.Loading)
 
@@ -82,6 +83,29 @@ class ProductConfigurationViewModel @Inject constructor(
         } ?: triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    private fun getConfigurationIssues(
+        productsInfo: Map<Long, ProductInfo>,
+        productConfiguration: ProductConfiguration
+    ): List<String> {
+        val issues = mutableListOf<String>()
+        productConfiguration.getConfigurationIssues(resourceProvider).forEach { entry ->
+            if (entry.key == ProductConfiguration.PARENT_KEY) {
+                issues.add(entry.value)
+            } else {
+                val productName = productsInfo[entry.key]?.title ?: StringUtils.EMPTY
+                issues.add(resourceProvider.getString(R.string.configuration_children_issue, productName, entry.value))
+            }
+        }
+        return issues
+    }
+
+    fun onSelectChildrenAttributes(itemId: Long) {
+        val productId = productsInformation.value?.get(itemId)?.productId ?: return
+        val rules = rules.value ?: return
+        val rule = rules.childrenRules?.get(itemId)?.get(VariableProductRule.KEY) as VariableProductRule
+        triggerEvent(ProductConfigurationNavigationTarget.NavigateToVariationSelector(itemId, productId, rule))
+    }
+
     sealed class ViewState {
         object Loading : ViewState()
 
@@ -96,6 +120,7 @@ class ProductConfigurationViewModel @Inject constructor(
 
 data class ProductInfo(
     val id: Long,
+    val productId: Long,
     val title: String,
     val imageUrl: String?
 )

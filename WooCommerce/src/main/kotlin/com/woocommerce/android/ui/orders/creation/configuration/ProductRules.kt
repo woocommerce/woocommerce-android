@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.creation.configuration
 
 import android.os.Parcelable
+import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.StringUtils
@@ -39,6 +41,13 @@ class ProductRules private constructor(
             childRules[OptionalRule.KEY] = OptionalRule()
         }
 
+        fun setChildVariableRules(itemId: Long, attributesDefault: List<VariantOption>?, variationIds: List<Long>?) {
+            val childRules = childrenRules.getOrPut(itemId) { mutableMapOf() }
+            val defaultAttributes = if (attributesDefault.isNullOrEmpty()) null else attributesDefault
+            val allowedVariations = if (variationIds.isNullOrEmpty()) null else variationIds
+            childRules[VariableProductRule.KEY] = VariableProductRule(defaultAttributes, allowedVariations)
+        }
+
         fun build(): ProductRules {
             val itemChildrenRules = if (childrenRules.isEmpty()) null else childrenRules
             return ProductRules(productType, rules, itemChildrenRules)
@@ -69,6 +78,7 @@ class QuantityRule(val quantityMin: Float?, val quantityMax: Float?, val quantit
                     one = R.string.configuration_quantity_item
                 )
             }
+
             quantityMin != null && quantityMax != null && quantityMin != quantityMax -> resourceProvider.getString(
                 R.string.configuration_quantity_between,
                 quantityMin.formatToString(),
@@ -106,6 +116,28 @@ class OptionalRule : ItemRules {
 }
 
 @Parcelize
+class VariableProductRule(
+    val attributesDefault: List<VariantOption>?,
+    val variationIds: List<Long>?
+) : ItemRules {
+    companion object {
+        const val KEY = "variable_product_rule"
+        const val VARIATION_ID = "variation_id"
+        const val VARIATION_ATTRIBUTES = "attributes"
+    }
+
+    override fun getInitialValue(): String? {
+        return if (variationIds != null && variationIds.size == 1 && attributesDefault != null) {
+            val value = mapOf<String, Any?>(
+                VARIATION_ID to variationIds.first(),
+                VARIATION_ATTRIBUTES to attributesDefault
+            )
+            Gson().toJson(value)
+        } else null
+    }
+}
+
+@Parcelize
 class ProductConfiguration(
     val rules: ProductRules,
     val configurationType: ConfigurationType,
@@ -113,6 +145,7 @@ class ProductConfiguration(
     val childrenConfiguration: MutableMap<Long, MutableMap<String, String?>>? = null
 ) : Parcelable {
     companion object {
+        const val PARENT_KEY = -1L
         fun getConfiguration(
             rules: ProductRules,
             children: List<OrderCreationProduct.ProductItem>? = null,
@@ -138,8 +171,8 @@ class ProductConfiguration(
         }
     }
 
-    fun getConfigurationIssues(resourceProvider: ResourceProvider): List<String> {
-        val result = mutableListOf<String>()
+    fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
+        val result = mutableMapOf<Long, String>()
 
         if (rules.itemRules.containsKey(QuantityRule.KEY)) {
             val itemQuantityRule = rules.itemRules[QuantityRule.KEY] as QuantityRule
@@ -151,7 +184,16 @@ class ProductConfiguration(
             val isMaximumOutOfBounds = childrenQuantity > (itemQuantityRule.quantityMax ?: Float.MAX_VALUE)
             if (isMinimumOutOfBounds || isMaximumOutOfBounds) {
                 val ruleBounds = itemQuantityRule.getRuleBounds(resourceProvider)
-                result.add(resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds))
+                result[PARENT_KEY] = resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds)
+            }
+        }
+        childrenConfiguration?.forEach { entry ->
+            val itemQuantity = entry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+            val isVariable = entry.value.containsKey(VariableProductRule.KEY)
+            val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
+
+            if (itemQuantity > 0f && isVariable && attributesAreNullOrEmpty) {
+                result[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
         }
         return result

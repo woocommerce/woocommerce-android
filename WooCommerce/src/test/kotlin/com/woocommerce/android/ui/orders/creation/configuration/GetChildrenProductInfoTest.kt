@@ -48,7 +48,8 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
             title = "Child product 1",
             stockStatus = ProductStockStatus.InStock,
             rules = BundleProductRules(),
-            imageUrl = "image2.jpg"
+            imageUrl = "image2.jpg",
+            isVariable = false
         )
         val childProduct2 = BundledProduct(
             id = 3L,
@@ -56,7 +57,8 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
             bundledProductId = 3L,
             title = "Child product 2",
             stockStatus = ProductStockStatus.InStock,
-            rules = BundleProductRules()
+            rules = BundleProductRules(),
+            isVariable = false
         )
         val bundledProducts = listOf(childProduct1, childProduct2)
 
