@@ -767,6 +767,7 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
+    <string name="orderdetail_order_notes_uppercase">ORDER NOTES</string>
     <string name="orderdetail_customer_note_hint">Edit a customer order note</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
