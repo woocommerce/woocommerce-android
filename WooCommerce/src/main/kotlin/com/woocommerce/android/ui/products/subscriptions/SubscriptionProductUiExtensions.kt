@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.subscriptions
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.SubscriptionDetails
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 fun SubscriptionDetails.expirationDisplayValue(resProvider: ResourceProvider): String {
@@ -25,3 +26,13 @@ fun SubscriptionDetails.expirationDisplayOptions(resources: ResourceProvider): L
     }
     return options
 }
+
+fun SubscriptionDetails.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
+    newPeriod: SubscriptionPeriod?,
+    newInterval: Int?,
+    newLength: Int?
+) = if (
+    (newPeriod != null && newPeriod != period)
+    || (newInterval != null && newInterval != periodInterval)
+) null
+else newLength ?: length
