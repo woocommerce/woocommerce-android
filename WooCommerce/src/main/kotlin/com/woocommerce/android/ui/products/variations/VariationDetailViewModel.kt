@@ -259,10 +259,10 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     fun onVariationSubscriptionChanged(
-        price: BigDecimal? = null,
+        price: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        signUpFee: BigDecimal? = (viewState.variation as SubscriptionProductVariation).subscriptionDetails?.signUpFee,
+        signUpFee: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.signUpFee,
         length: Int? = null
     ) {
         viewState.variation?.let { variation ->

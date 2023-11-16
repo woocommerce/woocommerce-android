@@ -846,7 +846,7 @@ class ProductDetailCardBuilder(
             val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
             val price = resources.getString(
                 string.product_subscription_description,
-                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
+                currencyFormatter.formatCurrency(subscription.price ?: BigDecimal.ZERO, viewModel.currencyCode, true),
                 subscription.periodInterval.toString(),
                 period
             )

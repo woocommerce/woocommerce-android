@@ -1224,7 +1224,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun updateProductSubscription(
-        price: BigDecimal? = null,
+        price: BigDecimal? = viewState.productDraft?.subscription?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
         signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
@@ -1234,7 +1234,7 @@ class ProductDetailViewModel @Inject constructor(
             val subscription = product.subscription ?: return
             val updatedLength = resetSubscriptionLengthIfThePeriodChanged(period, subscription, length)
             val updatedSubscription = subscription.copy(
-                price = price ?: subscription.price,
+                price = price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 signUpFee = signUpFee,
