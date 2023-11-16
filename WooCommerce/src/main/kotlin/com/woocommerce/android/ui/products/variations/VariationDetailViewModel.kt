@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.QuantityRules
@@ -392,12 +393,20 @@ class VariationDetailViewModel @Inject constructor(
             if (_variationDetailCards.value == null) {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            _variationDetailCards.value = cardBuilder.buildPropertyCards(
-                variation,
-                variation.sku,
-                viewState.parentProduct
-            )
-            viewState = viewState.copy(isSkeletonShown = false)
+            if (variation is SubscriptionProductVariation && variation.subscriptionDetails == null) {
+                viewState = viewState.copy(
+                    variation = variation.copy(
+                        subscriptionDetails = ProductHelper.getDefaultSubscriptionDetails()
+                    )
+                )
+            } else {
+                _variationDetailCards.value = cardBuilder.buildPropertyCards(
+                    variation,
+                    variation.sku,
+                    viewState.parentProduct
+                )
+                viewState = viewState.copy(isSkeletonShown = false)
+            }
         }
     }
 

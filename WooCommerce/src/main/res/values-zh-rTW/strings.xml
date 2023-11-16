@@ -571,7 +571,6 @@ Language: zh_TW
     <string name="subscription_status_cancelled">已取消</string>
     <string name="subscription_status_on_hold">保留</string>
     <string name="subscription_status_active">已啟用</string>
-    <string name="no_variable_subscription_warning">你只能在網頁儀表板中新增多款式訂閱項目。</string>
     <string name="subscription_details_info_notice">你可以在網頁儀表板中編輯產品訂閱項目。</string>
     <string name="subscription_no_trial">無試用期</string>
     <string name="subscription_no_sign_up_fee">無註冊費</string>
