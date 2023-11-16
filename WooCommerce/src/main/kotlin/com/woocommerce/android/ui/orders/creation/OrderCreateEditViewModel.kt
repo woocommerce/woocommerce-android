@@ -931,7 +931,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 listOf(
                     ProductRestriction.NonPublishedProducts,
                     ProductRestriction.VariableProductsWithNoVariations
-                )
+                ),
+                args.mode
             )
         )
     }

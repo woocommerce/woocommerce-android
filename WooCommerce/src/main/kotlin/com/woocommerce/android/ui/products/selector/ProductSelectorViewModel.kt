@@ -360,6 +360,7 @@ class ProductSelectorViewModel @Inject constructor(
             selectedItemsSource.remove(item.id)
             selectedItems.update { items -> items.filter { it.id != item.id } }
         } else {
+            tracker.trackConfigurableTapped(productSelectorFlow)
             triggerEvent(
                 ProductNavigationTarget.NavigateToProductConfiguration(item.id)
             )
@@ -558,11 +559,14 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onConfigurationChanged(productId: Long, productConfiguration: ProductConfiguration) {
         launch {
+            tracker.trackItemSelected(productSelectorFlow)
             selectedItems.update { items ->
                 items + SelectedItem.ConfigurableProduct(productId, productConfiguration)
             }
         }
     }
+
+    fun trackConfigurableProduct() { tracker.trackConfigurableItem(productSelectorFlow) }
 
     data class ViewState(
         val loadingState: LoadingState,
@@ -688,7 +692,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     enum class ProductSelectorFlow {
-        OrderCreation, CouponEdition, Undefined
+        OrderCreation, OrderEditing, CouponEdition, Undefined
     }
 }
 

@@ -19,7 +19,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     object EditCustomerNote : OrderCreateEditNavigationTarget()
     data class SelectItems(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        val restrictions: List<ProductRestriction>
+        val restrictions: List<ProductRestriction>,
+        val mode: OrderCreateEditViewModel.Mode
     ) : OrderCreateEditNavigationTarget()
 
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
