@@ -571,7 +571,6 @@ Language: sv_SE
     <string name="subscription_status_cancelled">Avslutat</string>
     <string name="subscription_status_on_hold">Pausad</string>
     <string name="subscription_status_active">Aktiv</string>
-    <string name="no_variable_subscription_warning">Du kan endast lägga till variabla prenumerationer i webbadminpanelen.</string>
     <string name="subscription_details_info_notice">Du kan redigera produktprenumerationer i webbadminpanelen.</string>
     <string name="subscription_no_trial">Ingen gratis provperiod</string>
     <string name="subscription_no_sign_up_fee">Ingen registreringsavgift</string>

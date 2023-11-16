@@ -571,7 +571,6 @@ Language: fr
     <string name="subscription_status_cancelled">Annulée</string>
     <string name="subscription_status_on_hold">En attente</string>
     <string name="subscription_status_active">Actif</string>
-    <string name="no_variable_subscription_warning">L’ajout de plans variables n’est possible que dans le tableau de bord Web.</string>
     <string name="subscription_details_info_notice">Vous pouvez modifier les plans de produits dans le tableau de bord Web.</string>
     <string name="subscription_no_trial">Pas de période d’essai</string>
     <string name="subscription_no_sign_up_fee">Pas de frais d’inscription</string>
