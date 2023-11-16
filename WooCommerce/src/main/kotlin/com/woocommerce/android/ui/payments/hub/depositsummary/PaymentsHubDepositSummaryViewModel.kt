@@ -48,7 +48,8 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                             mapper.mapDepositOverviewToViewModelOverviews(it.overview)
                                 ?: return@map constructApiError(),
                             onLearnMoreClicked = { onLearnMoreClicked() },
-                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
+                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
+                            onCurrencySelected = { currency -> onCurrencySelected(currency) }
                         )
 
                     is RetrieveDepositOverviewResult.Remote ->
@@ -56,7 +57,8 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                             mapper.mapDepositOverviewToViewModelOverviews(it.overview)
                                 ?: return@map constructApiError(),
                             onLearnMoreClicked = { onLearnMoreClicked() },
-                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
+                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
+                            onCurrencySelected = { currency -> onCurrencySelected(currency) }
                         )
 
                     is RetrieveDepositOverviewResult.Error -> {
@@ -70,6 +72,9 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                 _viewState.value = it
             }
         }
+    }
+
+    private fun onCurrencySelected(currency: String) {
     }
 
     fun onSummaryDepositShown() {
