@@ -131,7 +131,7 @@ class ProductDownloadsFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductDownloads())
+        viewModel.onBackButtonClicked(ExitProductDownloads)
         return false
     }
 }

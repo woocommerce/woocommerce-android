@@ -131,7 +131,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitSettings())
+        viewModel.onBackButtonClicked(ExitSettings)
         return false
     }
 

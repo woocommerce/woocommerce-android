@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSh
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionFreeTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
+import com.woocommerce.android.ui.products.subscriptions.trialDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -259,6 +261,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionTrial() else null,
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.subscription(),
                 product.inventory(SIMPLE),
@@ -858,6 +861,21 @@ class ProductDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditProductCardClicked(ViewProductSubscriptionExpiration(subscription))
+                }
+            )
+        }
+
+    private fun Product.subscriptionTrial(): ProductProperty? =
+        this.subscription?.let { subscription ->
+            PropertyGroup(
+                title = string.product_subscription_free_trial_title,
+                icon = drawable.ic_gridicons_hourglass_empty,
+                properties = mapOf(
+                    resources.getString(string.subscription_free_trial) to subscription.trialDisplayValue(resources)
+                ),
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(ViewProductSubscriptionFreeTrial(subscription))
                 }
             )
         }
