@@ -1,0 +1,2 @@
+16.1:
+Upptäck en smidigare WooCommerce-upplevelse med vår senaste uppdatering! Vi har infört en ny funktion som gör det möjligt för dig att ange anpassade belopp när du skapar en order, vilket ger dig större flexibilitet. Vi har också förbättrat vår felhantering för en smidigare Jetpack-anslutning, särskilt när du använder en anpassad admin-URL. Upplev en mer strömlinjeformad och effektiv app, utformad för att underlätta för dig.

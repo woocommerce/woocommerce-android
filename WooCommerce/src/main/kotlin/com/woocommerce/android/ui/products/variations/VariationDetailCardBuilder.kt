@@ -18,7 +18,6 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.SaleDetails
@@ -32,14 +31,18 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewAttributes
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -49,7 +52,7 @@ class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val parameters: SiteParameters
+    private val parameters: SiteParameters,
 ) {
     private lateinit var originalSku: String
     private var parentProduct: Product? = null
@@ -97,6 +100,8 @@ class VariationDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
+                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionExpirationDate() else null,
                 variation.subscription(),
                 variation.warning(),
                 variation.attributes(),
@@ -196,6 +201,7 @@ class VariationDetailCardBuilder(
             isHighlighted = isWarningVisible,
             isDividerVisible = !isWarningVisible
         ) {
+            val subscriptionDetails = (this as? SubscriptionProductVariation)?.subscriptionDetails
             viewModel.onEditVariationCardClicked(
                 ViewPricing(
                     PricingData(
@@ -203,7 +209,10 @@ class VariationDetailCardBuilder(
                         saleStartDate = saleStartDateGmt,
                         saleEndDate = saleEndDateGmt,
                         regularPrice = regularPrice,
-                        salePrice = salePrice
+                        salePrice = salePrice,
+                        isSubscription = this is SubscriptionProductVariation,
+                        subscriptionPeriod = subscriptionDetails?.period,
+                        subscriptionInterval = subscriptionDetails?.periodInterval
                     )
                 ),
                 PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
@@ -293,6 +302,7 @@ class VariationDetailCardBuilder(
                 ),
                 Pair(resources.getString(R.string.product_sku), this.sku)
             )
+
             this.sku.isNotEmpty() -> mapOf(
                 Pair(resources.getString(R.string.product_sku), this.sku),
                 Pair(
@@ -300,6 +310,7 @@ class VariationDetailCardBuilder(
                     ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)
                 )
             )
+
             else -> mapOf(
                 Pair("", ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus))
             )
@@ -350,6 +361,23 @@ class VariationDetailCardBuilder(
         )
     }
 
+    private fun SubscriptionProductVariation.subscriptionExpirationDate(): ProductProperty? =
+        this.subscriptionDetails?.let { subscription ->
+            PropertyGroup(
+                title = string.product_subscription_expiration_title,
+                icon = drawable.ic_gridicons_calendar_expiration,
+                properties = mapOf(
+                    resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
+                        resources
+                    )
+                ),
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditVariationCardClicked(ViewProductSubscriptionExpiration(subscription))
+                }
+            )
+        }
+
     private fun SubscriptionProductVariation.subscription(): ProductProperty? =
         this.subscriptionDetails?.let { subscription ->
 
@@ -378,7 +406,7 @@ class VariationDetailCardBuilder(
                 )
             }
 
-            val expire = if (subscription.length != null) {
+            val expire = if (subscription.length != null && subscription.length > 0) {
                 resources.getString(string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
