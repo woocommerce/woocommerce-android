@@ -31,5 +31,8 @@ fun SubscriptionDetails.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
     newPeriod: SubscriptionPeriod?,
     newInterval: Int?,
     newLength: Int?
-) = if (newPeriod != period || newInterval != periodInterval) null
-else newLength ?: length
+) = when {
+    newPeriod != null && newPeriod != period -> null
+    newInterval != null && newInterval != periodInterval -> null
+    else -> newLength ?: length
+}
