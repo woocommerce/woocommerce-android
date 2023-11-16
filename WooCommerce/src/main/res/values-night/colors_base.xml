@@ -211,4 +211,21 @@
     -->
     <color name="tap_to_pay_about_important_info_background">@color/woo_purple_90</color>
 
+    <!--
+    Deposit summary
+    -->
+    <color name="deposit_summary_status_estimated_background">@color/woo_gray_80</color>
+    <color name="deposit_summary_status_estimated_text">@color/woo_gray_5</color>
+    <color name="deposit_summary_status_pending_background">@color/woo_yellow_70</color>
+    <color name="deposit_summary_status_pending_text">@color/woo_yellow_10</color>
+    <color name="deposit_summary_status_in_transit_background">@color/woo_orange_70</color>
+    <color name="deposit_summary_status_in_transit_text">@color/woo_orange_5</color>
+    <color name="deposit_summary_status_paid_background">@color/woo_green_50</color>
+    <color name="deposit_summary_status_paid_text">@color/woo_green_0</color>
+    <color name="deposit_summary_status_canceled_background">@color/woo_purple_80</color>
+    <color name="deposit_summary_status_canceled_text">@color/woo_purple_15</color>
+    <color name="deposit_summary_status_failed_background">@color/woo_red_70</color>
+    <color name="deposit_summary_status_failed_text">@color/woo_red_5</color>
+    <color name="deposit_summary_status_unknown_background">@color/woo_gray_80</color>
+    <color name="deposit_summary_status_unknown_text">@color/woo_gray_6</color>
 </resources>

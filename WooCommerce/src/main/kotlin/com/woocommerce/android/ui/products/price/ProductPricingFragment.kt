@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.databinding.FragmentProductPricingBinding
+import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
@@ -118,15 +119,19 @@ class ProductPricingFragment :
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
             new.pricingData.isSubscription.takeIfNotEqualTo(old?.pricingData?.isSubscription) {
-                binding.subscriptionPeriod.isVisible = it
-                binding.subscriptionInterval.isVisible = it
+                binding.subscriptionGroup.isVisible = it
             }
-            new.pricingData.subscriptionInterval?.takeIfNotEqualTo(old?.pricingData?.subscriptionInterval) {
-                binding.subscriptionInterval.setText(it.formatSubscriptionInterval())
+            new.pricingData.subscriptionInterval?.takeIfNotEqualTo(old?.pricingData?.subscriptionInterval) { interval ->
+                binding.subscriptionInterval.setText(interval.formatSubscriptionInterval())
                 updateSubscriptionSaleHelperText()
+                // Refresh the period spinner to fix localization if needed
+                new.pricingData.subscriptionPeriod?.let {
+                    binding.subscriptionPeriod.setText(it.format(interval))
+                }
+                setupSubscriptionPeriodSpinner()
             }
             new.pricingData.subscriptionPeriod?.takeIfNotEqualTo(old?.pricingData?.subscriptionPeriod) {
-                binding.subscriptionPeriod.setText(it.format())
+                binding.subscriptionPeriod.setText(it.format(new.pricingData.subscriptionInterval))
                 updateSubscriptionSaleHelperText()
             }
         }
@@ -153,6 +158,18 @@ class ProductPricingFragment :
             setOnTextChangedListener {
                 val price = it.toString().toBigDecimalOrNull()
                 viewModel.onRegularPriceEntered(price)
+            }
+        }
+
+        with(binding.subscriptionSignupFee) {
+            if (isCurrencyPrefix) {
+                prefixText = currency
+            } else suffixText = currency
+
+            pricingData.subscriptionSignUpFee?.let { text = it.toString() }
+            setOnTextChangedListener {
+                val signupFee = it.toString().toBigDecimalOrNull()
+                viewModel.onDataChanged(subscriptionSignupFee = signupFee)
             }
         }
 
@@ -316,11 +333,19 @@ class ProductPricingFragment :
     }
 
     private fun initSubscriptionViews() {
+        setupSubscriptionIntervalSpinner()
+        setupSubscriptionPeriodSpinner()
+    }
+
+    private fun setupSubscriptionIntervalSpinner() {
         binding.subscriptionInterval.setup(
             values = Array(SUBSCRIPTION_INTERVAL_ITEMS_COUNT) { it + 1 },
             onSelected = { viewModel.onDataChanged(subscriptionInterval = it) },
             mapper = { entry -> entry.formatSubscriptionInterval() }
         )
+    }
+
+    private fun setupSubscriptionPeriodSpinner() {
         binding.subscriptionPeriod.setup(
             arrayOf(
                 SubscriptionPeriod.Day,
@@ -329,7 +354,7 @@ class ProductPricingFragment :
                 SubscriptionPeriod.Year
             ),
             onSelected = { viewModel.onDataChanged(subscriptionPeriod = it) },
-            mapper = { it.format() }
+            mapper = { it.format(viewModel.pricingData.subscriptionInterval) }
         )
     }
 
@@ -341,7 +366,7 @@ class ProductPricingFragment :
             binding.productSalePrice.helperText = null
             return
         }
-        binding.productSalePrice.helperText = "${interval.formatSubscriptionInterval()} ${period.format()}"
+        binding.productSalePrice.helperText = period.formatWithInterval(requireContext(), interval)
     }
 
     /**
@@ -353,15 +378,10 @@ class ProductPricingFragment :
     }
 
     private fun Int.formatSubscriptionInterval() =
-        resources.getStringArray(R.array.subscription_interval_options)[this - 1]
+        getString(R.string.subscription_period_interval_single, this.toString())
 
-    private fun SubscriptionPeriod.format() = when (this) {
-        SubscriptionPeriod.Day -> getString(R.string.subscription_period_day)
-        SubscriptionPeriod.Week -> getString(R.string.subscription_period_week)
-        SubscriptionPeriod.Month -> getString(R.string.subscription_period_month)
-        SubscriptionPeriod.Year -> getString(R.string.subscription_period_year)
-        else -> error("Invalid subscription period")
-    }
+    private fun SubscriptionPeriod.format(interval: Int?) =
+        interval?.let { getPeriodString(requireContext(), interval) }.orEmpty().capitalize()
 
     override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
         when (resultCode) {
