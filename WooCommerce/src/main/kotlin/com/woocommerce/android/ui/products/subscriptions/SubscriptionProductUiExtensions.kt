@@ -17,9 +17,11 @@ fun SubscriptionDetails.expirationDisplayOptions(resources: ResourceProvider): L
     val options = mutableListOf(
         resources.getString(R.string.subscription_never_expire)
     )
-    period.getRangeForPeriod().forEach { index ->
-        val periodString = period.getPeriodString(resources, index)
-        options.add(resources.getString(R.string.subscription_period, index, periodString))
+    for (index in period.getRangeForPeriod() step periodInterval) {
+        if (index >= periodInterval) {
+            val periodString = period.getPeriodString(resources, index)
+            options.add(resources.getString(R.string.subscription_period, index, periodString))
+        }
     }
     return options
 }
