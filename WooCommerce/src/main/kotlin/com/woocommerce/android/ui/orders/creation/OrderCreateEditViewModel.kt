@@ -53,6 +53,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
@@ -60,6 +61,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PRODUCT_TYPES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
@@ -459,6 +461,18 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(isEditable = false)
         _orderDraft.update {
             it.removeItem(item)
+        }
+    }
+
+    fun onProductExpanded(isExpanded: Boolean, product: OrderCreationProduct) {
+        if (product.productInfo.isConfigurable && isExpanded) {
+            tracker.track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_SOURCE to VALUE_PRODUCT_CARD
+                )
+            )
         }
     }
 
