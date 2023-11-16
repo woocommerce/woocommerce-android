@@ -14,14 +14,14 @@ fun SubscriptionDetails.expirationDisplayValue(resProvider: ResourceProvider): S
     }
 }
 
-fun SubscriptionDetails.expirationDisplayOptions(resources: ResourceProvider): List<String> {
-    val options = mutableListOf(
-        resources.getString(R.string.subscription_never_expire)
+fun SubscriptionDetails.expirationDisplayOptions(resources: ResourceProvider): Map<String, Int> {
+    val options = mutableMapOf(
+        resources.getString(R.string.subscription_never_expire) to 0
     )
     for (index in period.getRangeForPeriod() step periodInterval) {
         if (index >= periodInterval) {
             val periodString = period.getPeriodString(resources, index)
-            options.add(resources.getString(R.string.subscription_period, index, periodString))
+            options[resources.getString(R.string.subscription_period, index, periodString)] = index
         }
     }
     return options
