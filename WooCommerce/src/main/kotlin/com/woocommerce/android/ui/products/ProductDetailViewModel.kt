@@ -46,7 +46,6 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -72,6 +71,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
+import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
@@ -1232,7 +1232,13 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
-            val updatedLength = resetSubscriptionLengthIfThePeriodChanged(period, subscription, length)
+            // The length ranges depend on the subscription period (days,weeks,months,years) and interval. If these
+            // change we need to reset the length to "Never expire". This replicates web behavior
+            val updatedLength = subscription.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
+                period,
+                periodInterval,
+                length
+            )
             val updatedSubscription = subscription.copy(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
@@ -1243,15 +1249,6 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }
     }
-
-    // The length ranges depend on the subscription period (days,weeks,months,years) so if period changes we need
-    // need to reset the length to "Never expire". This replicates the behavior of the Woo subscription extension
-    private fun resetSubscriptionLengthIfThePeriodChanged(
-        period: SubscriptionPeriod?,
-        subscription: SubscriptionDetails,
-        length: Int?
-    ) = if (period != null && period != subscription.period) null
-    else length ?: subscription.length
 
     private fun productHasSale(
         isSaleScheduled: Boolean?,
