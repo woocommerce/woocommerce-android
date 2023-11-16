@@ -38,7 +38,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingP
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
-import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
