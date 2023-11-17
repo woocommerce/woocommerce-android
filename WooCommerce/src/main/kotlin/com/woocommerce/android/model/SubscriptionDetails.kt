@@ -36,7 +36,7 @@ fun SubscriptionDetails.toMetadataJson(): JsonArray {
         SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to signUpFee?.toString().orEmpty(),
         SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to trialPeriod?.value,
         SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to (trialLength ?: 0),
-        SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to oneTimeShipping
+        SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to if (oneTimeShipping) "yes" else "no",
     )
     val jsonArray = JsonArray()
     subscriptionValues.forEach { (key, value) ->
