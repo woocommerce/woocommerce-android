@@ -630,6 +630,9 @@ class AnalyticsTracker private constructor(
 
         const val KEY_IS_AI_CONTENT = "is_ai_content"
 
+        // -- Product subscriptions
+        const val KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS = "is_eligible_for_subscriptions"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

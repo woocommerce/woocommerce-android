@@ -9,6 +9,7 @@ sealed class PaymentsHubDepositSummaryState {
         val overview: Overview,
         val onLearnMoreClicked: () -> Unit,
         val onExpandCollapseClicked: (Boolean) -> Unit,
+        val onCurrencySelected: (String) -> Unit,
     ) : PaymentsHubDepositSummaryState()
 
     data class Overview(

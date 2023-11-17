@@ -10,7 +10,7 @@ import java.math.BigDecimal
 
 @Parcelize
 data class SubscriptionDetails(
-    val price: BigDecimal,
+    val price: BigDecimal?,
     val period: SubscriptionPeriod,
     val periodInterval: Int,
     val length: Int?,

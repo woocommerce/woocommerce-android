@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQu
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionFreeTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
@@ -72,7 +71,6 @@ import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.subscriptions.trialDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -259,11 +257,10 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionTrial() else null,
+                product.price(),
+                product.subscriptionExpirationDate(),
+                product.subscriptionTrial(),
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),
@@ -852,7 +849,7 @@ class ProductDetailCardBuilder(
         this.subscription?.let { subscription ->
             PropertyGroup(
                 title = string.product_subscription_expiration_title,
-                icon = drawable.ic_gridicons_calendar_expiration,
+                icon = drawable.ic_calendar_expiration,
                 properties = mapOf(
                     resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
                         resources
@@ -860,7 +857,10 @@ class ProductDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditProductCardClicked(ViewProductSubscriptionExpiration(subscription))
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscriptionExpiration(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_EXPIRATION_TAPPED
+                    )
                 }
             )
         }
@@ -869,67 +869,15 @@ class ProductDetailCardBuilder(
         this.subscription?.let { subscription ->
             PropertyGroup(
                 title = string.product_subscription_free_trial_title,
-                icon = drawable.ic_gridicons_hourglass_empty,
+                icon = drawable.ic_hourglass_empty,
                 properties = mapOf(
                     resources.getString(string.subscription_free_trial) to subscription.trialDisplayValue(resources)
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditProductCardClicked(ViewProductSubscriptionFreeTrial(subscription))
-                }
-            )
-        }
-
-    private fun Product.subscription(): ProductProperty? =
-        this.subscription?.let { subscription ->
-
-            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
-            val price = resources.getString(
-                string.product_subscription_description,
-                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
-                subscription.periodInterval.toString(),
-                period
-            )
-
-            val salePriceString = salePrice?.let {
-                resources.getString(
-                    string.product_subscription_description,
-                    currencyFormatter.formatCurrency(salePrice, viewModel.currencyCode, true),
-                    subscription.periodInterval.toString(),
-                    period
-                )
-            }
-
-            val expire = if (subscription.length != null && subscription.length > 0) {
-                resources.getString(R.string.subscription_period, subscription.length.toString(), period)
-            } else {
-                resources.getString(string.subscription_never_expire)
-            }
-
-            val properties: Map<String, String> = buildMap {
-                put(resources.getString(string.product_regular_price), price)
-                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
-                put(resources.getString(string.subscription_expire), expire)
-            }
-
-            val salesDetails = if (isSaleScheduled || salePrice != null) {
-                SaleDetails(
-                    isSaleScheduled = isSaleScheduled,
-                    salePrice = salePrice,
-                    saleStartDateGmt = saleStartDateGmt,
-                    saleEndDateGmt = saleEndDateGmt
-                )
-            } else null
-
-            PropertyGroup(
-                title = string.product_subscription_title,
-                icon = drawable.ic_gridicons_money,
-                properties = properties,
-                showTitle = true,
-                onClick = {
                     viewModel.onEditProductCardClicked(
-                        ViewProductSubscription(subscription, salesDetails),
-                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
+                        ViewProductSubscriptionFreeTrial(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_FREE_TRIAL_TAPPED
                     )
                 }
             )

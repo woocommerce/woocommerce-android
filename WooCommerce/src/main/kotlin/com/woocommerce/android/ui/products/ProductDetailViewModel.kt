@@ -789,6 +789,10 @@ class ProductDetailViewModel @Inject constructor(
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+            ProductExitEvent.ExitProductSubscriptionExpiration -> {
+                eventName = AnalyticsEvent.PRODUCT_SUBSCRIPTION_EXPIRATION_DONE_BUTTON_TAPPED
+                hasChanges = hasSubscriptionExpirationChanges()
+            }
 
             ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
             ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
@@ -798,7 +802,6 @@ class ProductDetailViewModel @Inject constructor(
             ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
             ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
             ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
-            ProductExitEvent.ExitProductSubscriptionExpiration -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -1103,6 +1106,25 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onProductTypeChanged(
+        productType: ProductType,
+        isVirtual: Boolean
+    ) {
+        updateProductDraft(type = productType.value, isVirtual = isVirtual)
+
+        viewState.productDraft?.let { productDraft ->
+            if (productType == ProductType.SUBSCRIPTION && productDraft.subscription == null) {
+                viewState = viewState.copy(
+                    productDraft = productDraft.copy(
+                        subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
+                            price = productDraft.regularPrice
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     /**
      * Update all product fields that are edited by the user
      */
@@ -1213,7 +1235,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun updateProductSubscription(
-        price: BigDecimal? = null,
+        price: BigDecimal? = viewState.productDraft?.subscription?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
         signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
@@ -1231,7 +1253,7 @@ class ProductDetailViewModel @Inject constructor(
                 length
             )
             val updatedSubscription = subscription.copy(
-                price = price ?: subscription.price,
+                price = price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 signUpFee = signUpFee,
@@ -2369,6 +2391,10 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
         updateProductSubscription(length = selectedExpirationValue)
+    }
+
+    private fun hasSubscriptionExpirationChanges(): Boolean {
+        return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
     }
 
     /**
