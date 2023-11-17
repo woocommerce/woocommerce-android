@@ -47,9 +47,9 @@ enum class FeatureFlag {
             ORDER_CREATION_TAX_RATE_SELECTOR,
             PRODUCT_CREATION_AI,
             PACKAGE_PHOTO_SCANNING,
-            CUSTOM_AMOUNTS_M1 -> true
+            CUSTOM_AMOUNTS_M1,
+            PRODUCT_SUBSCRIPTIONS -> true
 
-            PRODUCT_SUBSCRIPTIONS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
