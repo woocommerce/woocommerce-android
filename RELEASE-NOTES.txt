@@ -1,4 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.3
+-----
+- [**] WooCommerce Payments users can see information about their balances and deposits on the Payments screen [https://github.com/woocommerce/woocommerce-android/pull/10169]
+
+
 16.2
 -----
 - [*] [Internal] Improve handling of Jetpack Connection for Jetpack CP sites when using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/10083]

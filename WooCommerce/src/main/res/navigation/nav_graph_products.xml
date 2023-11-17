@@ -129,6 +129,9 @@
 
             android:id="@+id/action_productDetailFragment_to_AIProductDescriptionBottomSheetFragment"
             app:destination="@id/AIProductDescriptionBottomSheetFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSubscriptionFreeTrialFragment"
+            app:destination="@id/productSubscriptionFreeTrialFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -630,6 +633,9 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productQuantityRulesFragment"
             app:destination="@id/productQuantityRulesFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productSubscriptionFreeTrialFragment"
+            app:destination="@id/productSubscriptionFreeTrialFragment" />
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"
@@ -778,4 +784,12 @@
             app:argType="string"
             app:nullable="true" />
     </dialog>
+    <fragment
+        android:id="@+id/productSubscriptionFreeTrialFragment"
+        android:name="com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragment"
+        android:label="ProductSubscriptionFreeTrialFragment" >
+        <argument
+            android:name="subscription"
+            app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+    </fragment>
 </navigation>

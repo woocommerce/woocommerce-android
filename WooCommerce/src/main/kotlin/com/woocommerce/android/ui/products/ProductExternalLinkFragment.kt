@@ -69,7 +69,7 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
 
     override fun onRequestAllowBackPress(): Boolean {
         ActivityUtils.hideKeyboard(activity)
-        viewModel.onBackButtonClicked(ExitExternalLink())
+        viewModel.onBackButtonClicked(ExitExternalLink)
         return false
     }
 }

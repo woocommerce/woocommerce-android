@@ -21,7 +21,7 @@ class GenerateVariationCandidates @Inject constructor(
     }
 
     suspend operator fun invoke(product: Product): List<VariationCandidate> {
-        if (product.type != ProductType.VARIABLE.value && product.type != ProductType.VARIABLE_SUBSCRIPTION.value) {
+        if (!ProductType.fromString(product.type).isVariableProduct()) {
             return emptyList()
         }
 

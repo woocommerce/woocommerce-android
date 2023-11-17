@@ -60,7 +60,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductAddAttribute())
+        viewModel.onBackButtonClicked(ExitProductAddAttribute)
         return false
     }
 

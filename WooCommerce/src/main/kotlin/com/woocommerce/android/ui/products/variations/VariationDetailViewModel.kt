@@ -16,7 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.model.VariantOption
@@ -32,6 +31,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
@@ -265,17 +265,27 @@ class VariationDetailViewModel @Inject constructor(
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
         signUpFee: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.signUpFee,
-        length: Int? = null
+        length: Int? = null,
+        trialLength: Int? = null,
+        trialPeriod: SubscriptionPeriod? = null,
     ) {
         viewState.variation?.let { variation ->
             val subscription = (variation as? SubscriptionProductVariation)?.subscriptionDetails ?: return
-            val updatedLength = resetSubscriptionLengthIfThePeriodChanged(period, subscription, length)
+            // The length ranges depend on the subscription period (days,weeks,months,years) and interval. If these
+            // change we need to reset the length to "Never expire". This replicates web behavior
+            val updatedLength = subscription.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
+                period,
+                periodInterval,
+                length
+            )
             val updatedSubscription = subscription.copy(
                 price = price ?: subscription.price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 signUpFee = signUpFee,
-                length = updatedLength
+                length = updatedLength,
+                trialLength = trialLength ?: subscription.trialLength,
+                trialPeriod = trialPeriod ?: subscription.trialPeriod
             )
             val updatedVariation = variation.copy(subscriptionDetails = updatedSubscription)
             showVariation(updatedVariation)
@@ -290,15 +300,6 @@ class VariationDetailViewModel @Inject constructor(
             }
         }
     }
-
-    // The length ranges depend on the subscription period (days,weeks,months,years) so if period changes we need
-    // need to reset the length to "Never expire". This replicates the behavior of the Woo subscription extension
-    private fun resetSubscriptionLengthIfThePeriodChanged(
-        period: SubscriptionPeriod?,
-        subscription: SubscriptionDetails,
-        length: Int?
-    ) = if (period != null && period != subscription.period) -1
-    else length ?: subscription.length
 
     private suspend fun updateVariation(variation: ProductVariation) {
         if (networkStatus.isConnected()) {

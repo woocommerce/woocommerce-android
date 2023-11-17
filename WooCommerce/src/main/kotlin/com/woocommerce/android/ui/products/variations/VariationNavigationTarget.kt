@@ -30,6 +30,10 @@ sealed class VariationNavigationTarget : Event() {
         val subscription: SubscriptionDetails
     ) : VariationNavigationTarget()
 
+    data class ViewVariationSubscriptionTrial(
+        val subscription: SubscriptionDetails
+    ) : VariationNavigationTarget()
+
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : VariationNavigationTarget()
     data class ViewAttributes(
         val remoteProductId: Long,
