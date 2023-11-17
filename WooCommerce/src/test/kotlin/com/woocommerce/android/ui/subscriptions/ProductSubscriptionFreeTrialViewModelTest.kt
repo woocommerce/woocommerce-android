@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.subscriptions
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
@@ -13,6 +14,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -30,10 +32,12 @@ class ProductSubscriptionFreeTrialViewModelTest : BaseUnitTest() {
             oneTimeShipping = false
         )
     ).initSavedStateHandle()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() {
         viewModel = ProductSubscriptionFreeTrialViewModel(
+            analyticsTrackerWrapper,
             savedStateHandle
         ).apply {
             viewState.observeForever { _ -> }
