@@ -571,7 +571,6 @@ Language: nl
     <string name="subscription_status_cancelled">Geannuleerd</string>
     <string name="subscription_status_on_hold">In de wacht</string>
     <string name="subscription_status_active">Actief</string>
-    <string name="no_variable_subscription_warning">Je kunt alleen variabele abonnementen toevoegen in het online dashboard.</string>
     <string name="subscription_details_info_notice">Je kunt productabonnementen bewerken in het online dashboard.</string>
     <string name="subscription_no_trial">Geen proefperiode</string>
     <string name="subscription_no_sign_up_fee">Geen aanmeldkosten</string>

@@ -45,6 +45,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
+import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
@@ -136,7 +138,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleProductDetailsEditResult() {
-        handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
+        handleResult<OrderCreationProduct>(KEY_PRODUCT_DISCOUNT_RESULT) {
             viewModel.onProductDiscountEditResult(it)
         }
     }
@@ -699,7 +701,7 @@ class OrderCreateEditFormFragment :
 
     private fun bindProductsSection(
         productsSection: OrderCreateEditSectionView,
-        products: LiveData<List<ProductUIModel>>
+        products: LiveData<List<OrderCreationProduct>>
     ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.value.isNullOrEmpty() && isCustomAmountsFeatureFlagEnabled()) {
@@ -755,7 +757,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<ProductUIModel>>) {
+    private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<OrderCreationProduct>>) {
         setContent {
             val state = items.observeAsState(emptyList())
             WooTheme {
@@ -764,10 +766,12 @@ class OrderCreateEditFormFragment :
                         ExpandableProductCard(
                             viewModel.viewStateData.liveData.observeAsState(),
                             item,
-                            onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
-                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item.item) },
-                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item.item.itemId) },
-                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item.item.itemId) },
+                            onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
+                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
+                            onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                            onProductExpanded = viewModel::onProductExpanded
                         )
                     }
                 }
@@ -928,6 +932,11 @@ class OrderCreateEditFormFragment :
         }
         handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
+        }
+        handleResult<EditProductConfigurationResult>(
+            ProductConfigurationFragment.PRODUCT_CONFIGURATION_RESULT
+        ) { result ->
+            viewModel.onConfigurationChanged(result.itemId, result.productConfiguration)
         }
     }
 

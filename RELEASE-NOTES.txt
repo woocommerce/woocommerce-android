@@ -3,6 +3,8 @@
 -----
 - [**] WooCommerce Payments users can see information about their balances and deposits on the Payments screen [https://github.com/woocommerce/woocommerce-android/pull/10169]
 - [***] Custom Amounts M3: Redesign order detail screen [https://github.com/woocommerce/woocommerce-android/pull/10184]
+- [***] Users can now create or edit subscription products. [https://github.com/woocommerce/woocommerce-android/issues/10107]
+- [***] Support bundle products in the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/9646]
 
 16.2
 -----

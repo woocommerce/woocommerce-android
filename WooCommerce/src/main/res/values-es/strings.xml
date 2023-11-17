@@ -571,7 +571,6 @@ Language: es
     <string name="subscription_status_cancelled">Cancelado</string>
     <string name="subscription_status_on_hold">Suspendido</string>
     <string name="subscription_status_active">Activa</string>
-    <string name="no_variable_subscription_warning">Solo puedes añadir suscripciones variables en el escritorio del sitio web.</string>
     <string name="subscription_details_info_notice">Puedes editar las suscripciones de productos en el escritorio del sitio web.</string>
     <string name="subscription_no_trial">Sin período de prueba gratuito</string>
     <string name="subscription_no_sign_up_fee">Sin cuota de registro</string>

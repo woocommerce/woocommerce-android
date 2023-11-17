@@ -79,6 +79,7 @@ fun PaymentsHubDepositSummaryView(
                     value.onLearnMoreClicked,
                     value.onExpandCollapseClicked,
                     viewModel::onSummaryDepositShown,
+                    value.onCurrencySelected,
                 )
 
                 null,
@@ -110,6 +111,7 @@ fun PaymentsHubDepositSummaryView(
     onLearnMoreClicked: () -> Unit,
     onExpandCollapseClicked: (Boolean) -> Unit,
     onSummaryDepositShown: () -> Unit,
+    onCurrencySelected: (String) -> Unit,
     isPreview: Boolean = LocalInspectionMode.current,
     selectedPage: Int = 0,
 ) {
@@ -123,11 +125,20 @@ fun PaymentsHubDepositSummaryView(
             .fillMaxWidth()
             .background(colorResource(id = R.color.color_surface))
     ) {
-        val pagerState = rememberPagerState(
-            initialPage = selectedPage
-        )
+        val pagerState = rememberPagerState(initialPage = selectedPage)
+        val isInitialLoad = remember { mutableStateOf(true) }
+
         val currencies = overview.infoPerCurrency.keys.toList()
-        val selectedCurrencyInfo = overview.infoPerCurrency[currencies[pagerState.currentPage]] ?: return@Column
+        val selectedCurrency = currencies[pagerState.currentPage]
+
+        LaunchedEffect(pagerState.currentPage) {
+            if (isInitialLoad.value) {
+                isInitialLoad.value = false
+            } else {
+                onCurrencySelected(selectedCurrency)
+            }
+        }
+        val selectedCurrencyInfo = overview.infoPerCurrency[selectedCurrency] ?: return@Column
 
         AnimatedVisibility(
             visible = (isExpanded || isPreview) && pageCount > 1,
@@ -669,6 +680,7 @@ fun PaymentsHubDepositSummaryViewUsdPreview() {
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
+            onCurrencySelected = {},
             selectedPage = 0
         )
     }
@@ -687,6 +699,7 @@ fun PaymentsHubDepositSummaryViewEurPreview() {
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
+            onCurrencySelected = {},
             selectedPage = 1
         )
     }
@@ -705,6 +718,7 @@ fun PaymentsHubDepositSummaryViewRubPreview() {
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
+            onCurrencySelected = {},
             selectedPage = 2
         )
     }
@@ -723,6 +737,7 @@ fun PaymentsHubDepositSummaryViewGbpPreview() {
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
+            onCurrencySelected = {},
             selectedPage = 3
         )
     }
@@ -751,6 +766,7 @@ fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
+            onCurrencySelected = {},
             selectedPage = 0
         )
     }

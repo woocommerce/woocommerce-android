@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,6 +31,8 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         _binding = FragmentProductSettingsBinding.bind(view)
 
         setupObservers()
+
+        val productDraft = viewModel.getProduct().productDraft
 
         binding.productStatus.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_STATUS_TAPPED)
@@ -61,7 +63,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             activity?.invalidateOptionsMenu()
         }
 
-        if (viewModel.getProduct().productDraft?.productType == SIMPLE) {
+        if (productDraft?.productType == ProductType.SIMPLE || productDraft?.productType == ProductType.SUBSCRIPTION) {
             binding.productIsDownloadable.visibility = View.VISIBLE
             binding.productIsDownloadableDivider.visibility = View.VISIBLE
             binding.productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
@@ -129,7 +131,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitSettings())
+        viewModel.onBackButtonClicked(ExitSettings)
         return false
     }
 

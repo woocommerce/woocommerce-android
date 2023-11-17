@@ -36,7 +36,6 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
-        val isReadOnlyMode: Boolean = false
     ) : ProductNavigationTarget()
 
     data class ViewProductInventory(
@@ -134,6 +133,8 @@ sealed class ProductNavigationTarget : Event() {
         val productSourceForTracking: ProductSourceForTracking,
     ) : ProductNavigationTarget()
 
+    data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()
+
     data class NavigateToProductFilter(
         val stockStatus: String?,
         val productType: String?,
@@ -143,12 +144,11 @@ sealed class ProductNavigationTarget : Event() {
         val restrictions: List<ProductRestriction>
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscription(
-        val subscription: SubscriptionDetails,
-        val sale: SaleDetails? = null
+    data class ViewProductSubscriptionExpiration(
+        val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscriptionExpiration(
+    data class ViewProductSubscriptionFreeTrial(
         val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 

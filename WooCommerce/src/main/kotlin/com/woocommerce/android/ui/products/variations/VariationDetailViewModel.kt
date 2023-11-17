@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.QuantityRules
@@ -92,7 +93,9 @@ class VariationDetailViewModel @Inject constructor(
     // view state for the variation detail screen
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
         new.variation?.takeIf { it != old?.variation }
-            ?.let { updateCards(it) }
+            ?.let {
+                updateCards(it)
+            }
     }
     private var viewState by variationViewStateData
 
@@ -258,11 +261,13 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     fun onVariationSubscriptionChanged(
-        price: BigDecimal? = null,
+        price: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        signUpFee: BigDecimal? = (viewState.variation as SubscriptionProductVariation).subscriptionDetails?.signUpFee,
-        length: Int? = null
+        signUpFee: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.signUpFee,
+        length: Int? = null,
+        trialLength: Int? = null,
+        trialPeriod: SubscriptionPeriod? = null,
     ) {
         viewState.variation?.let { variation ->
             val subscription = (variation as? SubscriptionProductVariation)?.subscriptionDetails ?: return
@@ -278,13 +283,12 @@ class VariationDetailViewModel @Inject constructor(
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 signUpFee = signUpFee,
-                length = updatedLength
+                length = updatedLength,
+                trialLength = trialLength ?: subscription.trialLength,
+                trialPeriod = trialPeriod ?: subscription.trialPeriod
             )
             val updatedVariation = variation.copy(subscriptionDetails = updatedSubscription)
-            viewState = viewState.copy(
-                variation = updatedVariation,
-                isDoneButtonVisible = updatedVariation != variation
-            )
+            showVariation(updatedVariation)
         }
     }
 
@@ -392,12 +396,23 @@ class VariationDetailViewModel @Inject constructor(
             if (_variationDetailCards.value == null) {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            _variationDetailCards.value = cardBuilder.buildPropertyCards(
-                variation,
-                variation.sku,
-                viewState.parentProduct
-            )
-            viewState = viewState.copy(isSkeletonShown = false)
+            if (variation is SubscriptionProductVariation && variation.subscriptionDetails == null) {
+                // If this is a newly created subscription variation either from scratch or after changing the product
+                // type, then we need to set the default subscription details
+                showVariation(
+                    variation = variation.copy(
+                        subscriptionDetails = ProductHelper.getDefaultSubscriptionDetails()
+                            .copy(price = variation.regularPrice)
+                    )
+                )
+            } else {
+                _variationDetailCards.value = cardBuilder.buildPropertyCards(
+                    variation,
+                    variation.sku,
+                    viewState.parentProduct
+                )
+                viewState = viewState.copy(isSkeletonShown = false)
+            }
         }
     }
 
