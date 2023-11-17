@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CURRENCY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,7 +79,7 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
         trackerWrapper.track(
             AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_CURRENCY_SELECTED,
             properties = mapOf(
-                "currency" to currency.lowercase()
+                KEY_CURRENCY to currency.lowercase()
             )
         )
     }
