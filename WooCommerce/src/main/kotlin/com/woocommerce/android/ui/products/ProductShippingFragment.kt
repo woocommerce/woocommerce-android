@@ -74,6 +74,16 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
             new.shippingData.shippingClassId?.takeIfNotEqualTo(old?.shippingData?.shippingClassId) { classId ->
                 binding.productShippingClassSpinner.setText(viewModel.getShippingClassByRemoteShippingClassId(classId))
             }
+            new.isOneTimeShippingSectionVisible.takeIfNotEqualTo(old?.isOneTimeShippingSectionVisible) { isVisible ->
+                binding.productOneTimeShipping.isVisible = isVisible
+                binding.productOneTimeShippingNote.isVisible = isVisible
+            }
+            new.shippingData.subscriptionShippingData?.takeIfNotEqualTo(
+                old?.shippingData?.subscriptionShippingData
+            ) { subscriptionShippingData ->
+                binding.productOneTimeShipping.isEnabled = subscriptionShippingData.canEnableOneTimeShipping
+                binding.productOneTimeShipping.isChecked = subscriptionShippingData.oneTimeShipping
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -111,9 +121,12 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         binding.productShippingClassSpinner.setClickListener {
             showShippingClassFragment()
         }
+        binding.productOneTimeShipping.setOnCheckedChangeListener { _, value ->
+            viewModel.onDataChanged(oneTimeShipping = value)
+        }
     }
 
-    private fun editableToFloat(editable: Editable?): Float? {
+    private fun editableToFloat(editable: Editable?): Float {
         val str = editable?.toString() ?: ""
         return if (str.isFloat()) {
             str.toFloat()
