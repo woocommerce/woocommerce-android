@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CURRENCY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,7 +49,8 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                             mapper.mapDepositOverviewToViewModelOverviews(it.overview)
                                 ?: return@map constructApiError(),
                             onLearnMoreClicked = { onLearnMoreClicked() },
-                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
+                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
+                            onCurrencySelected = { currency -> onCurrencySelected(currency) }
                         )
 
                     is RetrieveDepositOverviewResult.Remote ->
@@ -56,7 +58,8 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                             mapper.mapDepositOverviewToViewModelOverviews(it.overview)
                                 ?: return@map constructApiError(),
                             onLearnMoreClicked = { onLearnMoreClicked() },
-                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) }
+                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
+                            onCurrencySelected = { currency -> onCurrencySelected(currency) }
                         )
 
                     is RetrieveDepositOverviewResult.Error -> {
@@ -70,6 +73,15 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
                 _viewState.value = it
             }
         }
+    }
+
+    private fun onCurrencySelected(currency: String) {
+        trackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_CURRENCY_SELECTED,
+            properties = mapOf(
+                KEY_CURRENCY to currency.lowercase()
+            )
+        )
     }
 
     fun onSummaryDepositShown() {

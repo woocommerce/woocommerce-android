@@ -36,7 +36,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = SUBSCRIPTION,
                 titleResource = string.product_type_simple_subscription_title,
                 descResource = string.product_type_simple_subscription_desc,
-                iconResource = drawable.ic_gridicons_money, // TODO: update icon
+                iconResource = drawable.ic_event_repeat,
                 isVisible = areSubscriptionsSupported
             ),
             ProductTypesBottomSheetUiItem(
@@ -50,7 +50,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = VARIABLE_SUBSCRIPTION,
                 titleResource = string.product_type_variable_subscription_title,
                 descResource = string.product_type_variable_subscription_desc,
-                iconResource = drawable.ic_gridicons_money, // TODO: update icon
+                iconResource = drawable.ic_event_repeat,
                 isVisible = areSubscriptionsSupported
             ),
             ProductTypesBottomSheetUiItem(

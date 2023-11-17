@@ -571,7 +571,6 @@ Language: ar
     <string name="subscription_status_cancelled">تم الإلغاء</string>
     <string name="subscription_status_on_hold">موقوف</string>
     <string name="subscription_status_active">نشط</string>
-    <string name="no_variable_subscription_warning">يمكن فقط إضافة اشتراكات متغيرة في لوحة تحكم الويب.</string>
     <string name="subscription_details_info_notice">يمكنك تحرير اشتراكات المنتجات في لوحة تحكم الويب.</string>
     <string name="subscription_no_trial">لا توجد فترة تشغيل تجريبي</string>
     <string name="subscription_no_sign_up_fee">لا توجد رسوم تسجيل</string>
