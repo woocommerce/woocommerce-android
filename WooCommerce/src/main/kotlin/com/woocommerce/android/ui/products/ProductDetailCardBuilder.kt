@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQu
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscriptionFreeTrial
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
@@ -263,7 +262,6 @@ class ProductDetailCardBuilder(
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
                 if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionTrial() else null,
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),
@@ -876,60 +874,6 @@ class ProductDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditProductCardClicked(ViewProductSubscriptionFreeTrial(subscription))
-                }
-            )
-        }
-
-    private fun Product.subscription(): ProductProperty? =
-        this.subscription?.let { subscription ->
-
-            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
-            val price = resources.getString(
-                string.product_subscription_description,
-                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
-                subscription.periodInterval.toString(),
-                period
-            )
-
-            val salePriceString = salePrice?.let {
-                resources.getString(
-                    string.product_subscription_description,
-                    currencyFormatter.formatCurrency(salePrice, viewModel.currencyCode, true),
-                    subscription.periodInterval.toString(),
-                    period
-                )
-            }
-
-            val expire = if (subscription.length != null && subscription.length > 0) {
-                resources.getString(R.string.subscription_period, subscription.length.toString(), period)
-            } else {
-                resources.getString(string.subscription_never_expire)
-            }
-
-            val properties: Map<String, String> = buildMap {
-                put(resources.getString(string.product_regular_price), price)
-                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
-                put(resources.getString(string.subscription_expire), expire)
-            }
-
-            val salesDetails = if (isSaleScheduled || salePrice != null) {
-                SaleDetails(
-                    isSaleScheduled = isSaleScheduled,
-                    salePrice = salePrice,
-                    saleStartDateGmt = saleStartDateGmt,
-                    saleEndDateGmt = saleEndDateGmt
-                )
-            } else null
-
-            PropertyGroup(
-                title = string.product_subscription_title,
-                icon = drawable.ic_gridicons_money,
-                properties = properties,
-                showTitle = true,
-                onClick = {
-                    viewModel.onEditProductCardClicked(
-                        ViewProductSubscription(subscription, salesDetails),
-                    )
                 }
             )
         }
