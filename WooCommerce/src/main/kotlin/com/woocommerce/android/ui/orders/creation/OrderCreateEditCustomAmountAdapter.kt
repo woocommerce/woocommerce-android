@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderCreationCustomAmountItemBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomAmountAdapter.CustomAmountViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
 

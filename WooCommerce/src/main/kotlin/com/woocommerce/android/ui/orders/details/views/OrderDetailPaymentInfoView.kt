@@ -51,11 +51,16 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         binding.paymentInfoShippingTotal.text = formatCurrencyForDisplay(order.shippingTotal)
         binding.paymentInfoTaxesTotal.text = formatCurrencyForDisplay(order.totalTax)
         binding.paymentInfoTotal.text = formatCurrencyForDisplay(order.total)
-        binding.paymentInfoLblTitle.text = context.getString(R.string.payment)
+        binding.paymentInfoLblTitle.text = context.getString(R.string.order_detail_payment_header)
 
         with(binding.paymentInfoRefunds) {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
+        }
+        if (order.total.compareTo(BigDecimal.ZERO) == 0) {
+            hidePaymentSubDetails()
+        } else {
+            showPaymentSubDetails()
         }
 
         if (order.datePaid == null) {
@@ -88,6 +93,24 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         updateCollectPaymentSection(order, onCollectCardPresentPaymentClickListener)
         updateSeeReceiptSection(isReceiptAvailable, onSeeReceiptClickListener)
         updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
+    }
+
+    private fun showPaymentSubDetails() {
+        binding.paymentInfoProductsTotalSection.show()
+        binding.paymentInfoDiscountSection.show()
+        binding.paymentInfoGiftCardSection.show()
+        binding.paymentInfoFeesSection.show()
+        binding.paymentInfoShippingSection.show()
+        binding.paymentInfoTaxesSection.show()
+    }
+
+    private fun hidePaymentSubDetails() {
+        binding.paymentInfoProductsTotalSection.hide()
+        binding.paymentInfoDiscountSection.hide()
+        binding.paymentInfoGiftCardSection.hide()
+        binding.paymentInfoFeesSection.hide()
+        binding.paymentInfoShippingSection.hide()
+        binding.paymentInfoTaxesSection.hide()
     }
 
     private fun updateDiscountsSection(
