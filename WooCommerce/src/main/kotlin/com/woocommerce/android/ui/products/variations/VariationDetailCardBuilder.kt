@@ -49,6 +49,7 @@ import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.utils.putIfNotNull
+import java.math.BigDecimal
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -395,7 +396,7 @@ class VariationDetailCardBuilder(
 
             val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
             val formattedPrice = parameters.currencyCode?.let {
-                currencyFormatter.formatCurrency(subscription.price, it, true)
+                currencyFormatter.formatCurrency(subscription.price ?: BigDecimal.ZERO, it, true)
             } ?: subscription.price.toString()
 
             val price = resources.getString(

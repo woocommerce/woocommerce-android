@@ -5,7 +5,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductVariationModel.SubscriptionMetadataKeys
-import java.math.BigDecimal
 
 object SubscriptionDetailsMapper {
     private val gson by lazy { Gson() }
@@ -21,7 +20,6 @@ object SubscriptionDetailsMapper {
 
         return if (subscriptionInformation.isNotEmpty()) {
             val price = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_PRICE]?.toBigDecimalOrNull()
-                ?: BigDecimal.ZERO
 
             val periodString = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD] ?: ""
             val period = SubscriptionPeriod.fromValue(periodString)

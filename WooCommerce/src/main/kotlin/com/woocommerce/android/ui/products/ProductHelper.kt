@@ -104,7 +104,7 @@ object ProductHelper {
 
     fun getDefaultSubscriptionDetails(): SubscriptionDetails =
         SubscriptionDetails(
-            price = BigDecimal.ZERO,
+            price = null,
             period = SubscriptionPeriod.Month,
             periodInterval = 1,
             length = null,
