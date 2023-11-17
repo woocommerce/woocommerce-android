@@ -133,6 +133,8 @@ sealed class ProductNavigationTarget : Event() {
         val productSourceForTracking: ProductSourceForTracking,
     ) : ProductNavigationTarget()
 
+    data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()
+
     data class NavigateToProductFilter(
         val stockStatus: String?,
         val productType: String?,
