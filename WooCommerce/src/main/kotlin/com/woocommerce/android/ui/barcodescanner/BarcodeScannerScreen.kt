@@ -26,6 +26,7 @@ fun BarcodeScannerScreen(
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
     onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
+    isContinuousScanningEnabled: Boolean = false,
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -40,7 +41,8 @@ fun BarcodeScannerScreen(
         BarcodeScanningViewModel.PermissionState.Granted -> {
             BarcodeScanner(
                 codeScanner = codeScanner,
-                onScannedResult = onScannedResult
+                onScannedResult = onScannedResult,
+                isContinuousScanningEnabled = isContinuousScanningEnabled,
             )
         }
         is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {

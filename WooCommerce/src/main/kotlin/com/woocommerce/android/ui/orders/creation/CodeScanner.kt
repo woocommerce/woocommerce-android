@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 interface CodeScanner {
-    fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus>
+    fun startScan(imageProxy: ImageProxy, continuousScanningEnabled: Boolean = false): Flow<CodeScannerStatus>
 }
 
 sealed class CodeScannerStatus : Parcelable {

@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.barcodescanner
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -31,9 +33,13 @@ open class BarcodeScanningFragment : BaseFragment() {
     @Inject
     lateinit var codeScanner: GoogleMLKitCodeScanner
 
+    open val isContinuousScanningEnabled: Boolean = false
+
+    @CallSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext())
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view as ComposeView
         view.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -58,11 +64,13 @@ open class BarcodeScanningFragment : BaseFragment() {
                             viewLifecycleOwner.lifecycleScope.launch {
                                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                                     codeScannerStatus.collect { status ->
+                                        Log.d("BarcodeScanningFragment", "onScannedResult: $status")
                                         onScannedResult(status)
                                     }
                                 }
                             }
                         },
+                        isContinuousScanningEnabled = isContinuousScanningEnabled
                     )
                 }
             }
