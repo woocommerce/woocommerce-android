@@ -36,7 +36,6 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
-        val isReadOnlyMode: Boolean = false
     ) : ProductNavigationTarget()
 
     data class ViewProductInventory(

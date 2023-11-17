@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+
 sealed class PaymentsHubDepositSummaryState {
     object Loading : PaymentsHubDepositSummaryState()
-    data class Error(val errorMessage: String) : PaymentsHubDepositSummaryState()
+    data class Error(val error: WooError) : PaymentsHubDepositSummaryState()
     data class Success(
         val overview: Overview,
         val onLearnMoreClicked: () -> Unit,
-        val onExpandCollapseClicked: () -> Unit,
+        val onExpandCollapseClicked: (Boolean) -> Unit,
+        val onCurrencySelected: (String) -> Unit,
     ) : PaymentsHubDepositSummaryState()
 
     data class Overview(
