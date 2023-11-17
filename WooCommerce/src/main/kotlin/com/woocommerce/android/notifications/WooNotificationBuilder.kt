@@ -175,7 +175,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             builder.setDeleteIntent(pendingDeleteIntent)
 
             val flags = if (SystemVersionUtils.isAtLeastS()) {
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             } else {
                 PendingIntent.FLAG_UPDATE_CURRENT
             }
