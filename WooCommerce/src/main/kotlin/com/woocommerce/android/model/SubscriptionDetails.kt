@@ -17,8 +17,9 @@ data class SubscriptionDetails(
     val signUpFee: BigDecimal?,
     val trialPeriod: SubscriptionPeriod?,
     val trialLength: Int?,
-    val oneTimeShipping: Boolean
-) : Parcelable
+    val oneTimeShipping: Boolean,
+    val paymentsSyncDate: Int?
+) : Parcelable 
 
 fun SubscriptionDetails.toMetadataJson(): JsonArray {
     val subscriptionValues = mapOf(

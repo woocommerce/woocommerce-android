@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import org.wordpress.android.fluxc.model.WCMetaData
-import org.wordpress.android.fluxc.model.WCProductVariationModel.SubscriptionMetadataKeys
+import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
 
 object SubscriptionDetailsMapper {
     private val gson by lazy { Gson() }
@@ -45,6 +45,12 @@ object SubscriptionDetailsMapper {
             val oneTimeShipping =
                 subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING] == "yes"
 
+            val paymentsSyncDate = if (
+                subscriptionInformation.containsKey(SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE)
+            ) {
+                subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE]!!.toIntOrNull()
+            } else null
+
             SubscriptionDetails(
                 price = price,
                 period = period,
@@ -53,7 +59,8 @@ object SubscriptionDetailsMapper {
                 signUpFee = signUpFee,
                 trialPeriod = trialPeriod,
                 trialLength = trialLength,
-                oneTimeShipping = oneTimeShipping
+                oneTimeShipping = oneTimeShipping,
+                paymentsSyncDate = paymentsSyncDate
             )
         } else null
     }
