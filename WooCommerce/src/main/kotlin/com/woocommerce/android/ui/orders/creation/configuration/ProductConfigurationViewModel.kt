@@ -4,6 +4,13 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CHANGED_FIELD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_OPTIONAL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_QUANTITY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_VARIATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_OTHER
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.GetProductRules
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,6 +33,7 @@ class ProductConfigurationViewModel @Inject constructor(
     private val getProductRules: GetProductRules,
     private val resourceProvider: ResourceProvider,
     private val getProductConfiguration: GetProductConfiguration,
+    private val tracker: AnalyticsTrackerWrapper,
     getChildrenProductInfo: GetChildrenProductInfo
 ) : ScopedViewModel(savedState) {
 
@@ -76,6 +84,18 @@ class ProductConfigurationViewModel @Inject constructor(
                     currentConfiguration.configuration,
                     currentConfiguration.childrenConfiguration
                 )
+
+            val ruleChanged = when (ruleKey) {
+                OptionalRule.KEY -> VALUE_CHANGED_FIELD_OPTIONAL
+                VariableProductRule.KEY -> VALUE_CHANGED_FIELD_VARIATION
+                QuantityRule.KEY -> VALUE_CHANGED_FIELD_QUANTITY
+                else -> VALUE_OTHER
+            }
+
+            tracker.track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURATION_CHANGED,
+                mapOf(KEY_CHANGED_FIELD to ruleChanged)
+            )
         }
     }
 
@@ -85,6 +105,7 @@ class ProductConfigurationViewModel @Inject constructor(
 
     fun onSaveConfiguration() {
         configuration.value?.let {
+            tracker.track(AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURATION_SAVE_TAPPED)
             when (flow) {
                 is Flow.Selection -> triggerEvent(
                     MultiLiveEvent.Event.ExitWithResult(

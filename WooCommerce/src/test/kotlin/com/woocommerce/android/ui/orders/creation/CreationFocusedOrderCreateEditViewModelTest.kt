@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_T
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
@@ -1458,6 +1459,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1501,6 +1503,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }

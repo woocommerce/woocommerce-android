@@ -22,6 +22,9 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -194,6 +197,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
             ),
         )
     }
@@ -215,6 +219,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
             ),
         )
     }
@@ -1633,6 +1638,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1665,6 +1671,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -2192,6 +2199,183 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         assertThat(productsIds).isEqualTo(expectedOrder)
     }
+
+    @Test
+    fun `given configurable item expanded, then track configuration CTA shown`() {
+        testBlocking {
+            createSut()
+            val product = OrderCreationProduct.ProductItem(
+                item = Order.Item.EMPTY,
+                productInfo = ProductInfo(
+                    imageUrl = "",
+                    isStockManaged = true,
+                    stockQuantity = 5.0,
+                    stockStatus = ProductStockStatus.InStock,
+                    productType = ProductType.BUNDLE,
+                    isConfigurable = true,
+                    pricePreDiscount = "5",
+                    priceTotal = "5",
+                    priceSubtotal = "5",
+                    discountAmount = "0",
+                    priceAfterDiscount = "5",
+                    hasDiscount = false,
+                )
+            )
+
+            sut.onProductExpanded(true, product)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given configurable item NOT expanded, then DON'T track configuration CTA shown`() {
+        testBlocking {
+            createSut()
+            val product = OrderCreationProduct.ProductItem(
+                item = Order.Item.EMPTY,
+                productInfo = ProductInfo(
+                    imageUrl = "",
+                    isStockManaged = true,
+                    stockQuantity = 5.0,
+                    stockStatus = ProductStockStatus.InStock,
+                    productType = ProductType.BUNDLE,
+                    isConfigurable = true,
+                    pricePreDiscount = "5",
+                    priceTotal = "5",
+                    priceSubtotal = "5",
+                    discountAmount = "0",
+                    priceAfterDiscount = "5",
+                    hasDiscount = false,
+                )
+            )
+
+            sut.onProductExpanded(false, product)
+
+            verify(tracker, never()).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `on edit configuration, then track configuration CTA tapped`() {
+        testBlocking {
+            createSut()
+            val rules: ProductRules = mock()
+            val item: Order.Item = mock()
+            val productInfo: ProductInfo = mock()
+            val configuration: ProductConfiguration = mock()
+
+            whenever(productInfo.productType) doReturn ProductType.BUNDLE
+
+            val product = OrderCreationProduct.GroupedProductItemWithRules(
+                item = item,
+                productInfo = productInfo,
+                configuration = configuration,
+                rules = rules,
+                children = emptyList()
+            )
+
+            sut.onEditConfiguration(product)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `on edit configuration, then DON'T  track configuration CTA tapped if product is not BUNDLE`() {
+        testBlocking {
+            createSut()
+            val rules: ProductRules = mock()
+            val item: Order.Item = mock()
+            val productInfo: ProductInfo = mock()
+            val configuration: ProductConfiguration = mock()
+
+            whenever(productInfo.productType) doReturn ProductType.COMPOSITE
+
+            val product = OrderCreationProduct.GroupedProductItemWithRules(
+                item = item,
+                productInfo = productInfo,
+                configuration = configuration,
+                rules = rules,
+                children = emptyList()
+            )
+
+            sut.onEditConfiguration(product)
+
+            verify(tracker, never()).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `check that when products selected contains a bundle configuration hasBundleConfiguration is true`() {
+        val configuration: ProductConfiguration = mock()
+        whenever(configuration.configurationType) doReturn ConfigurationType.BUNDLE
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(456),
+            ProductSelectorViewModel.SelectedItem.Product(789),
+            ProductSelectorViewModel.SelectedItem.Product(123),
+            ProductSelectorViewModel.SelectedItem.ConfigurableProduct(183, configuration)
+        )
+        sut.onProductsSelected(selectedItems)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to true
+            )
+        )
+    }
+
+    @Test
+    fun `check that when products selected DON'T contains a bundle configuration hasBundleConfiguration is false`() {
+        val configuration: ProductConfiguration = mock()
+        whenever(configuration.configurationType) doReturn ConfigurationType.UNKNOWN
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(456),
+            ProductSelectorViewModel.SelectedItem.Product(789),
+            ProductSelectorViewModel.SelectedItem.Product(123),
+            ProductSelectorViewModel.SelectedItem.ConfigurableProduct(183, configuration)
+        )
+        sut.onProductsSelected(selectedItems)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+            )
+        )
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

@@ -607,6 +607,12 @@ class AnalyticsTracker private constructor(
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
+        const val KEY_HAS_BUNDLE_CONFIGURATION = "has_bundle_configuration"
+        const val VALUE_PRODUCT_CARD = "product_card"
+        const val KEY_CHANGED_FIELD = "changed_field"
+        const val VALUE_CHANGED_FIELD_QUANTITY = "quantity"
+        const val VALUE_CHANGED_FIELD_VARIATION = "variation"
+        const val VALUE_CHANGED_FIELD_OPTIONAL = "optional"
 
         // -- AI product name
         const val KEY_HAS_INPUT_NAME = "has_input_name"

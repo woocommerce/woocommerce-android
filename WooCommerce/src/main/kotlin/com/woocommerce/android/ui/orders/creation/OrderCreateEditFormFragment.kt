@@ -769,7 +769,8 @@ class OrderCreateEditFormFragment :
                             onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
                             onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
                             onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
-                            onEditConfigurationClicked = { viewModel.onEditConfiguration(item) }
+                            onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                            onProductExpanded = viewModel::onProductExpanded
                         )
                     }
                 }

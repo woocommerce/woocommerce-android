@@ -81,7 +81,8 @@ fun ExpandableProductCard(
     onDiscountButtonClicked: () -> Unit,
     onIncreaseItemAmountClicked: () -> Unit,
     onDecreaseItemAmountClicked: () -> Unit,
-    onEditConfigurationClicked: () -> Unit
+    onEditConfigurationClicked: () -> Unit,
+    onProductExpanded: (isExpanded: Boolean, product: OrderCreationProduct) -> Unit
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val transitionState = remember {
@@ -110,6 +111,7 @@ fun ExpandableProductCard(
                 indication = null
             ) {
                 isExpanded = !isExpanded
+                onProductExpanded(isExpanded, product)
             }
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
@@ -215,7 +217,10 @@ fun ExpandableProductCard(
             )
         }
         IconButton(
-            onClick = { isExpanded = !isExpanded },
+            onClick = {
+                isExpanded = !isExpanded
+                onProductExpanded(isExpanded, product)
+            },
             modifier = Modifier.constrainAs(chevron) {
                 top.linkTo(parent.top)
                 end.linkTo(parent.end)
@@ -589,7 +594,7 @@ fun ExpandableProductCardPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExpandableProductCard(state, product, {}, {}, {}, {}, {})
+        ExpandableProductCard(state, product, {}, {}, {}, {}, {}, { _, _ -> })
     }
 }
 

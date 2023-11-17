@@ -42,6 +42,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
@@ -53,6 +54,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
@@ -60,6 +62,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PRODUCT_TYPES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
@@ -73,6 +76,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -462,12 +466,28 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onProductExpanded(isExpanded: Boolean, product: OrderCreationProduct) {
+        if (product.productInfo.isConfigurable && isExpanded) {
+            tracker.track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_SOURCE to VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
     @Suppress("LongMethod", "ComplexMethod")
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        val hasBundleConfiguration = selectedItems.any { item ->
+            (item as? SelectedItem.ConfigurableProduct)
+                ?.configuration?.configurationType == ConfigurationType.BUNDLE
+        }
         source?.let {
             tracker.track(
                 ORDER_PRODUCT_ADD,
@@ -476,6 +496,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_SCANNING_SOURCE to source.source,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration
                 )
             )
         } ?: run {
@@ -485,6 +506,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_FLOW to flow,
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration
                 )
             )
         }
@@ -909,7 +931,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 listOf(
                     ProductRestriction.NonPublishedProducts,
                     ProductRestriction.VariableProductsWithNoVariations
-                )
+                ),
+                args.mode
             )
         )
     }
@@ -1372,6 +1395,15 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onEditConfiguration(product: OrderCreationProduct) {
         (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
+            if (product.productInfo.productType == ProductType.BUNDLE) {
+                tracker.track(
+                    AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                    mapOf(
+                        KEY_FLOW to flow,
+                        KEY_SOURCE to VALUE_PRODUCT_CARD
+                    )
+                )
+            }
             triggerEvent(
                 OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration(
                     productId = product.item.productId,
