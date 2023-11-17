@@ -11,7 +11,9 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
+import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
@@ -165,6 +167,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
         return productsList.map { it.toUiModel(selectedIds) }
     }
+
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
@@ -236,29 +239,47 @@ class ProductSelectorViewModel @Inject constructor(
 
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
-        return if (isVariation) {
-            ListItem.VariationListItem(
-                parentId = parentId,
-                variationId = remoteId,
-                title = name,
-                type = productType,
-                imageUrl = firstImageUrl,
-                sku = sku.takeIf { it.isNotBlank() },
-                stockAndPrice = stockAndPrice,
-                selectionState = getProductSelection()
-            )
-        } else {
-            ProductListItem(
-                productId = remoteId,
-                title = name,
-                type = productType,
-                imageUrl = firstImageUrl,
-                sku = sku.takeIf { it.isNotBlank() },
-                stockAndPrice = stockAndPrice,
-                numVariations = numVariations,
-                selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
-                selectionState = getProductSelection()
-            )
+        val isConfigurable = isConfigurable
+
+        return when {
+            isVariation -> {
+                ListItem.VariationListItem(
+                    parentId = parentId,
+                    variationId = remoteId,
+                    title = name,
+                    type = productType,
+                    imageUrl = firstImageUrl,
+                    sku = sku.takeIf { it.isNotBlank() },
+                    stockAndPrice = stockAndPrice,
+                    selectionState = getProductSelection()
+                )
+            }
+
+            isConfigurable -> {
+                ListItem.ConfigurableListItem(
+                    productId = remoteId,
+                    title = name,
+                    type = productType,
+                    imageUrl = firstImageUrl,
+                    sku = sku.takeIf { it.isNotBlank() },
+                    stockAndPrice = stockAndPrice,
+                    selectionState = getProductSelection()
+                )
+            }
+
+            else -> {
+                ProductListItem(
+                    productId = remoteId,
+                    title = name,
+                    type = productType,
+                    imageUrl = firstImageUrl,
+                    sku = sku.takeIf { it.isNotBlank() },
+                    stockAndPrice = stockAndPrice,
+                    numVariations = numVariations,
+                    selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
+                    selectionState = getProductSelection()
+                )
+            }
         }
     }
 
@@ -307,6 +328,10 @@ class ProductSelectorViewModel @Inject constructor(
             is ListItem.VariationListItem -> {
                 handleVariationItemTap(item, productSource)
             }
+
+            is ListItem.ConfigurableListItem -> {
+                handleConfigurableItemTap(item)
+            }
         }
     }
 
@@ -326,6 +351,19 @@ class ProductSelectorViewModel @Inject constructor(
             selectedItems.update { items ->
                 items + SelectedItem.ProductVariation(item.parentId, item.id)
             }
+        }
+    }
+
+    private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
+        if (selectedItems.value.containsItemWith(item.id)) {
+            tracker.trackItemUnselected(productSelectorFlow)
+            selectedItemsSource.remove(item.id)
+            selectedItems.update { items -> items.filter { it.id != item.id } }
+        } else {
+            tracker.trackConfigurableTapped(productSelectorFlow)
+            triggerEvent(
+                ProductNavigationTarget.NavigateToProductConfiguration(item.id)
+            )
         }
     }
 
@@ -359,6 +397,7 @@ class ProductSelectorViewModel @Inject constructor(
             searchState.value.searchQuery.isNotNullOrEmpty() -> {
                 ProductSourceForTracking.SEARCH
             }
+
             else -> {
                 productSource
             }
@@ -518,6 +557,17 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    fun onConfigurationChanged(productId: Long, productConfiguration: ProductConfiguration) {
+        launch {
+            tracker.trackItemSelected(productSelectorFlow)
+            selectedItems.update { items ->
+                items + SelectedItem.ConfigurableProduct(productId, productConfiguration)
+            }
+        }
+    }
+
+    fun trackConfigurableProduct() { tracker.trackConfigurableItem(productSelectorFlow) }
+
     data class ViewState(
         val loadingState: LoadingState,
         val products: List<ListItem>,
@@ -586,6 +636,24 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku,
             selectionState = selectionState
         )
+
+        data class ConfigurableListItem(
+            val productId: Long,
+            override val title: String,
+            override val type: ProductType,
+            override val imageUrl: String? = null,
+            override val stockAndPrice: String? = null,
+            override val sku: String? = null,
+            override val selectionState: SelectionState = UNSELECTED
+        ) : ListItem(
+            id = productId,
+            title = title,
+            type = type,
+            imageUrl = imageUrl,
+            stockAndPrice = stockAndPrice,
+            sku = sku,
+            selectionState = selectionState
+        )
     }
 
     @Parcelize
@@ -615,9 +683,16 @@ class ProductSelectorViewModel @Inject constructor(
             val productId: Long,
             val variationId: Long,
         ) : SelectedItem(variationId)
+
+        @Parcelize
+        data class ConfigurableProduct(
+            val productId: Long,
+            val configuration: ProductConfiguration,
+        ) : SelectedItem(productId)
     }
+
     enum class ProductSelectorFlow {
-        OrderCreation, CouponEdition, Undefined
+        OrderCreation, OrderEditing, CouponEdition, Undefined
     }
 }
 

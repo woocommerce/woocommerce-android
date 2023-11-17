@@ -571,7 +571,6 @@ Language: ja_JP
     <string name="subscription_status_cancelled">キャンセル</string>
     <string name="subscription_status_on_hold">保留中</string>
     <string name="subscription_status_active">有効</string>
-    <string name="no_variable_subscription_warning">ウェブダッシュボードではバリエーションのあるサブスクリプションのみを追加できます。</string>
     <string name="subscription_details_info_notice">ウェブダッシュボードで商品のサブスクリプションを編集できます。</string>
     <string name="subscription_no_trial">無料お試しなし</string>
     <string name="subscription_no_sign_up_fee">登録手数料なし</string>

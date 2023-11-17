@@ -17,6 +17,8 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     VARIATION(R.string.product_type_variation, "variation"),
     OTHER;
 
+    fun isVariableProduct() = this == VARIABLE || this == VARIABLE_SUBSCRIPTION
+
     companion object {
         fun fromString(type: String): ProductType {
             return when (type.lowercase(Locale.US)) {
