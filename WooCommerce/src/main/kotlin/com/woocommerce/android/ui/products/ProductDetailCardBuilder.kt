@@ -857,7 +857,10 @@ class ProductDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditProductCardClicked(ViewProductSubscriptionExpiration(subscription))
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscriptionExpiration(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_EXPIRATION_TAPPED
+                    )
                 }
             )
         }
@@ -872,7 +875,10 @@ class ProductDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditProductCardClicked(ViewProductSubscriptionFreeTrial(subscription))
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscriptionFreeTrial(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_FREE_TRIAL_TAPPED
+                    )
                 }
             )
         }
