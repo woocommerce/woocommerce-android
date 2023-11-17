@@ -63,7 +63,7 @@ class PlansViewModel @Inject constructor(
         const val NEW_SITE_THEME = "premium/tsubaki"
         const val CART_URL = "https://wordpress.com/checkout"
         const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
-        const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
+        const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woo.com/"
         const val ECOMMERCE_PLAN_NAME = "eCommerce"
         const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
     }
