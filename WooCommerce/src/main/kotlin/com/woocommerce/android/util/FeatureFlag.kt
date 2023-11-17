@@ -25,8 +25,7 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     CUSTOM_AMOUNTS_M1,
     PRODUCT_CREATION_AI,
-    PACKAGE_PHOTO_SCANNING,
-    PRODUCT_SUBSCRIPTIONS;
+    PACKAGE_PHOTO_SCANNING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -47,8 +46,7 @@ enum class FeatureFlag {
             ORDER_CREATION_TAX_RATE_SELECTOR,
             PRODUCT_CREATION_AI,
             PACKAGE_PHOTO_SCANNING,
-            CUSTOM_AMOUNTS_M1,
-            PRODUCT_SUBSCRIPTIONS -> true
+            CUSTOM_AMOUNTS_M1 -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,

@@ -71,7 +71,6 @@ import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.subscriptions.trialDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -258,9 +257,9 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.price() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionExpirationDate() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) product.subscriptionTrial() else null,
+                product.price(),
+                product.subscriptionExpirationDate(),
+                product.subscriptionTrial(),
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),

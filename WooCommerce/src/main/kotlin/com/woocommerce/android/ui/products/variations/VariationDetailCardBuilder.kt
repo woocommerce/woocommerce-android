@@ -42,12 +42,10 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewVariationSubscriptionTrial
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.utils.putIfNotNull
-import java.math.BigDecimal
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -102,9 +100,9 @@ class VariationDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 variation.warning(),
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionExpirationDate() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionTrial() else null,
+                variation.price(),
+                variation.subscriptionExpirationDate(),
+                variation.subscriptionTrial(),
                 variation.attributes(),
                 variation.quantityRules(),
                 variation.visibility(),
