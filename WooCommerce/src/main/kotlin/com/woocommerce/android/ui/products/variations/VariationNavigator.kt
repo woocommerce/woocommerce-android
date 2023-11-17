@@ -11,7 +11,11 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewVariationSubscriptionTrial
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -79,7 +83,7 @@ class VariationNavigator @Inject constructor() {
                 val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
-            is VariationNavigationTarget.ViewSubscription -> {
+            is ViewSubscription -> {
                 val action = VariationDetailFragmentDirections
                     .actionVariationDetailFragmentToProductSubscriptionFragment(
                         target.subscription,
@@ -88,15 +92,21 @@ class VariationNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is VariationNavigationTarget.ViewProductQuantityRules -> {
+            is ViewProductQuantityRules -> {
                 val action = VariationDetailFragmentDirections
                     .actionVariationDetailFragmentToProductQuantityRulesFragment(target.quantityRules)
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is VariationNavigationTarget.ViewProductSubscriptionExpiration -> {
+            is ViewProductSubscriptionExpiration -> {
                 val action = VariationDetailFragmentDirections
                     .actionVariationDetailFragmentToProductSubscriptionExpirationFragment(target.subscription)
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ViewVariationSubscriptionTrial -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductSubscriptionFreeTrialFragment(target.subscription)
                 fragment.findNavController().navigateSafely(action)
             }
         }

@@ -571,7 +571,6 @@ Language: it
     <string name="subscription_status_cancelled">Annullato</string>
     <string name="subscription_status_on_hold">In sospeso</string>
     <string name="subscription_status_active">Attivo</string>
-    <string name="no_variable_subscription_warning">Puoi aggiungere abbonamenti variabili solo nella bacheca web.</string>
     <string name="subscription_details_info_notice">Puoi modificare gli abbonamenti ai prodotti nella bacheca web.</string>
     <string name="subscription_no_trial">Nessun periodo di prova</string>
     <string name="subscription_no_sign_up_fee">Nessuna commissione di iscrizione</string>

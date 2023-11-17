@@ -58,7 +58,7 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
         with(binding.priceValue) {
             text = getString(
                 R.string.product_subscription_description,
-                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
+                currencyFormatter.formatCurrency(subscription.price ?: BigDecimal.ZERO, viewModel.currencyCode, true),
                 subscription.periodInterval.toString(),
                 period
             )

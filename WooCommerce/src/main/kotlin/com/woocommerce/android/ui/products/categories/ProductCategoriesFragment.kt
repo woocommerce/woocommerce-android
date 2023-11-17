@@ -156,7 +156,7 @@ class ProductCategoriesFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductCategories())
+        viewModel.onBackButtonClicked(ExitProductCategories)
         return false
     }
 
