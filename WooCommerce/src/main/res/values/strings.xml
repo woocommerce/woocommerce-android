@@ -723,7 +723,6 @@
         Order Detail Views
     -->
     <string name="customer_information">Customer information</string>
-    <string name="orderdetail_customer_header">CUSTOMER</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
@@ -745,8 +744,6 @@
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
-    <string name="orderdetail_product_uppercase">PRODUCT</string>
-    <string name="orderdetail_product_multiple_uppercase">PRODUCTS</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
@@ -767,7 +764,6 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
-    <string name="orderdetail_order_notes_uppercase">ORDER NOTES</string>
     <string name="orderdetail_customer_note_hint">Edit a customer order note</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
@@ -858,8 +854,6 @@
     <string name="orderdetail_empty_address">No address specified</string>
     <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
-    <string name="order_detail_payment_header">PAYMENT TOTALS</string>
-    <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
 
     <!--
         Shipping label Refunds

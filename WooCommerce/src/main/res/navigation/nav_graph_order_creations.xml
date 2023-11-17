@@ -172,7 +172,7 @@
         android:label="CustomAmountsDialog">
         <argument
             android:name="customAmountUIModel"
-            app:argType="com.woocommerce.android.ui.orders.CustomAmountUIModel"
+            app:argType="com.woocommerce.android.ui.orders.creation.CustomAmountUIModel"
             android:defaultValue="@null"
             app:nullable="true"/>
     </dialog>
