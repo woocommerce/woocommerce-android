@@ -1103,6 +1103,25 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onProductTypeChanged(
+        productType: ProductType,
+        isVirtual: Boolean
+    ) {
+        updateProductDraft(type = productType.value, isVirtual = isVirtual)
+
+        viewState.productDraft?.let { productDraft ->
+            if (productType == ProductType.SUBSCRIPTION && productDraft.subscription == null) {
+                viewState = viewState.copy(
+                    productDraft = productDraft.copy(
+                        subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
+                            price = productDraft.regularPrice
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     /**
      * Update all product fields that are edited by the user
      */
@@ -1213,7 +1232,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun updateProductSubscription(
-        price: BigDecimal? = null,
+        price: BigDecimal? = viewState.productDraft?.subscription?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
         signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
@@ -1231,7 +1250,7 @@ class ProductDetailViewModel @Inject constructor(
                 length
             )
             val updatedSubscription = subscription.copy(
-                price = price ?: subscription.price,
+                price = price,
                 period = period ?: subscription.period,
                 periodInterval = periodInterval ?: subscription.periodInterval,
                 signUpFee = signUpFee,

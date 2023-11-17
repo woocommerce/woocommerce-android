@@ -93,7 +93,9 @@ class VariationDetailViewModel @Inject constructor(
     // view state for the variation detail screen
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
         new.variation?.takeIf { it != old?.variation }
-            ?.let { updateCards(it) }
+            ?.let {
+                updateCards(it)
+            }
     }
     private var viewState by variationViewStateData
 
@@ -259,10 +261,10 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     fun onVariationSubscriptionChanged(
-        price: BigDecimal? = null,
+        price: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        signUpFee: BigDecimal? = (viewState.variation as SubscriptionProductVariation).subscriptionDetails?.signUpFee,
+        signUpFee: BigDecimal? = (viewState.variation as? SubscriptionProductVariation)?.subscriptionDetails?.signUpFee,
         length: Int? = null,
         trialLength: Int? = null,
         trialPeriod: SubscriptionPeriod? = null,
@@ -286,10 +288,7 @@ class VariationDetailViewModel @Inject constructor(
                 trialPeriod = trialPeriod ?: subscription.trialPeriod
             )
             val updatedVariation = variation.copy(subscriptionDetails = updatedSubscription)
-            viewState = viewState.copy(
-                variation = updatedVariation,
-                isDoneButtonVisible = updatedVariation != variation
-            )
+            showVariation(updatedVariation)
         }
     }
 
@@ -398,9 +397,12 @@ class VariationDetailViewModel @Inject constructor(
                 viewState = viewState.copy(isSkeletonShown = true)
             }
             if (variation is SubscriptionProductVariation && variation.subscriptionDetails == null) {
-                viewState = viewState.copy(
+                // If this is a newly created subscription variation either from scratch or after changing the product
+                // type, then we need to set the default subscription details
+                showVariation(
                     variation = variation.copy(
                         subscriptionDetails = ProductHelper.getDefaultSubscriptionDetails()
+                            .copy(price = variation.regularPrice)
                     )
                 )
             } else {
