@@ -2,7 +2,7 @@
 16.3
 -----
 - [**] WooCommerce Payments users can see information about their balances and deposits on the Payments screen [https://github.com/woocommerce/woocommerce-android/pull/10169]
-
+- [***] Users can now create or edit subscription products. [https://github.com/woocommerce/woocommerce-android/issues/10107]
 
 16.2
 -----
