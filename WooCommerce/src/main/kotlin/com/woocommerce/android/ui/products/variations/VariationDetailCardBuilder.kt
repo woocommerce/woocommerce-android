@@ -363,7 +363,7 @@ class VariationDetailCardBuilder(
         this.subscriptionDetails?.let { subscription ->
             PropertyGroup(
                 title = string.product_subscription_expiration_title,
-                icon = drawable.ic_gridicons_calendar_expiration,
+                icon = drawable.ic_calendar_expiration,
                 properties = mapOf(
                     resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
                         resources
@@ -383,7 +383,7 @@ class VariationDetailCardBuilder(
         this.subscriptionDetails?.let { subscription ->
             PropertyGroup(
                 title = string.product_subscription_free_trial_title,
-                icon = drawable.ic_gridicons_hourglass_empty,
+                icon = drawable.ic_hourglass_empty,
                 properties = mapOf(
                     resources.getString(string.subscription_free_trial) to subscription.trialDisplayValue(resources)
                 ),
