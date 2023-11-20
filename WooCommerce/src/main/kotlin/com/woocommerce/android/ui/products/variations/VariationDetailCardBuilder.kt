@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
-import com.woocommerce.android.ui.products.SaleDetails
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -33,6 +32,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECON
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
+import com.woocommerce.android.ui.products.subscriptions.trialDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewAttributes
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
@@ -40,9 +40,8 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
-import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewVariationSubscriptionTrial
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -100,10 +99,10 @@ class VariationDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.price() else null,
-                if (FeatureFlag.PRODUCT_SUBSCRIPTIONS.isEnabled()) variation.subscriptionExpirationDate() else null,
-                variation.subscription(),
                 variation.warning(),
+                variation.price(),
+                variation.subscriptionExpirationDate(),
+                variation.subscriptionTrial(),
                 variation.attributes(),
                 variation.quantityRules(),
                 variation.visibility(),
@@ -177,18 +176,24 @@ class VariationDetailCardBuilder(
         }
     }
 
-    // If we have pricing info, show price & sales price as a group,
-    // otherwise provide option to add pricing info for the variation
     private fun ProductVariation.price(): ProductProperty {
+        val subscriptionDetails = (this as? SubscriptionProductVariation)?.subscriptionDetails
+        val pricingData = PricingData(
+            isSaleScheduled = isSaleScheduled,
+            saleStartDate = saleStartDateGmt,
+            saleEndDate = saleEndDateGmt,
+            regularPrice = regularPrice,
+            salePrice = salePrice,
+            isSubscription = this is SubscriptionProductVariation,
+            subscriptionPeriod = subscriptionDetails?.period,
+            subscriptionInterval = subscriptionDetails?.periodInterval,
+            subscriptionSignUpFee = subscriptionDetails?.signUpFee
+        )
         val pricingGroup = PriceUtils.getPriceGroup(
             parameters,
             resources,
             currencyFormatter,
-            regularPrice,
-            salePrice,
-            isSaleScheduled,
-            saleStartDateGmt,
-            saleEndDateGmt
+            pricingData
         )
 
         val isWarningVisible = regularPrice.isNotSet() && this.isVisible
@@ -201,20 +206,8 @@ class VariationDetailCardBuilder(
             isHighlighted = isWarningVisible,
             isDividerVisible = !isWarningVisible
         ) {
-            val subscriptionDetails = (this as? SubscriptionProductVariation)?.subscriptionDetails
             viewModel.onEditVariationCardClicked(
-                ViewPricing(
-                    PricingData(
-                        isSaleScheduled = isSaleScheduled,
-                        saleStartDate = saleStartDateGmt,
-                        saleEndDate = saleEndDateGmt,
-                        regularPrice = regularPrice,
-                        salePrice = salePrice,
-                        isSubscription = this is SubscriptionProductVariation,
-                        subscriptionPeriod = subscriptionDetails?.period,
-                        subscriptionInterval = subscriptionDetails?.periodInterval
-                    )
-                ),
+                ViewPricing(pricingData),
                 PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
             )
         }
@@ -365,7 +358,7 @@ class VariationDetailCardBuilder(
         this.subscriptionDetails?.let { subscription ->
             PropertyGroup(
                 title = string.product_subscription_expiration_title,
-                icon = drawable.ic_gridicons_calendar_expiration,
+                icon = drawable.ic_calendar_expiration,
                 properties = mapOf(
                     resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
                         resources
@@ -373,69 +366,27 @@ class VariationDetailCardBuilder(
                 ),
                 showTitle = true,
                 onClick = {
-                    viewModel.onEditVariationCardClicked(ViewProductSubscriptionExpiration(subscription))
+                    viewModel.onEditVariationCardClicked(
+                        ViewProductSubscriptionExpiration(subscription),
+                        AnalyticsEvent.PRODUCT_VARIATION_VIEW_SUBSCRIPTION_EXPIRATION_TAPPED
+                    )
                 }
             )
         }
 
-    private fun SubscriptionProductVariation.subscription(): ProductProperty? =
+    private fun SubscriptionProductVariation.subscriptionTrial(): ProductProperty? =
         this.subscriptionDetails?.let { subscription ->
-
-            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
-            val formattedPrice = parameters.currencyCode?.let {
-                currencyFormatter.formatCurrency(subscription.price, it, true)
-            } ?: subscription.price.toString()
-
-            val price = resources.getString(
-                string.product_subscription_description,
-                formattedPrice,
-                subscription.periodInterval.toString(),
-                period
-            )
-
-            val salePriceString = salePrice?.let {
-                val formattedSalePrice = parameters.currencyCode?.let {
-                    currencyFormatter.formatCurrency(salePrice, it, true)
-                } ?: subscription.price.toString()
-
-                resources.getString(
-                    string.product_subscription_description,
-                    formattedSalePrice,
-                    subscription.periodInterval.toString(),
-                    period
-                )
-            }
-
-            val expire = if (subscription.length != null && subscription.length > 0) {
-                resources.getString(string.subscription_period, subscription.length.toString(), period)
-            } else {
-                resources.getString(string.subscription_never_expire)
-            }
-
-            val properties = buildMap {
-                put(resources.getString(string.product_regular_price), price)
-                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
-                put(resources.getString(string.subscription_expire), expire)
-            }
-
-            val salesDetails = if (isSaleScheduled || salePrice != null) {
-                SaleDetails(
-                    isSaleScheduled = isSaleScheduled,
-                    salePrice = salePrice,
-                    saleStartDateGmt = saleStartDateGmt,
-                    saleEndDateGmt = saleEndDateGmt
-                )
-            } else null
-
             PropertyGroup(
-                title = string.product_subscription_title,
-                icon = drawable.ic_gridicons_money,
-                properties = properties,
+                title = string.product_subscription_free_trial_title,
+                icon = drawable.ic_hourglass_empty,
+                properties = mapOf(
+                    resources.getString(string.subscription_free_trial) to subscription.trialDisplayValue(resources)
+                ),
                 showTitle = true,
                 onClick = {
                     viewModel.onEditVariationCardClicked(
-                        ViewSubscription(subscription, salesDetails),
-                        AnalyticsEvent.PRODUCT_VARIATION_VIEW_SUBSCRIPTIONS_TAPPED
+                        ViewVariationSubscriptionTrial(subscription),
+                        AnalyticsEvent.PRODUCT_VARIATION_VIEW_SUBSCRIPTION_FREE_TRIAL_TAPPED
                     )
                 }
             )

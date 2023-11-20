@@ -201,7 +201,7 @@ dependencies {
     // Support library
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
-    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "androidx.recyclerview:recyclerview:1.3.2"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
@@ -362,7 +362,7 @@ dependencies {
     implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:$mediapickerVersion")
     implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion") {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"

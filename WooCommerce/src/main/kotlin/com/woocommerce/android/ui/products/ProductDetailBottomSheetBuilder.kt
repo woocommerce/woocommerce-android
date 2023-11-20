@@ -14,7 +14,9 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -38,6 +40,7 @@ class ProductDetailBottomSheetBuilder(
         val stat: AnalyticsEvent? = null
     )
 
+    @Suppress("LongMethod")
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
             SIMPLE -> {
@@ -69,6 +72,23 @@ class ProductDetailBottomSheetBuilder(
             VARIABLE -> {
                 listOfNotNull(
                     product.getShipping(),
+                    product.getCategories(),
+                    product.getTags(),
+                    product.getShortDescription(),
+                    product.getLinkedProducts()
+                )
+            }
+            SUBSCRIPTION -> {
+                listOfNotNull(
+                    product.getCategories(),
+                    product.getTags(),
+                    product.getShortDescription(),
+                    product.getLinkedProducts(),
+                    product.getDownloadableFiles()
+                )
+            }
+            VARIABLE_SUBSCRIPTION -> {
+                listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),

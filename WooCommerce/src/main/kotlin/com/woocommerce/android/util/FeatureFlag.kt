@@ -6,7 +6,6 @@ import android.content.Context
  * "Feature flags" are used to hide in-progress features from release versions
  */
 enum class FeatureFlag {
-    DEPOSIT_SUMMARY,
     DB_DOWNGRADE,
     JETPACK_CP,
     MORE_MENU_INBOX,
@@ -26,8 +25,7 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     CUSTOM_AMOUNTS_M1,
     PRODUCT_CREATION_AI,
-    PACKAGE_PHOTO_SCANNING,
-    PRODUCT_SUBSCRIPTIONS;
+    PACKAGE_PHOTO_SCANNING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -50,8 +48,6 @@ enum class FeatureFlag {
             PACKAGE_PHOTO_SCANNING,
             CUSTOM_AMOUNTS_M1 -> true
 
-            PRODUCT_SUBSCRIPTIONS,
-            DEPOSIT_SUMMARY,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,

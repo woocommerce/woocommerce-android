@@ -39,7 +39,8 @@ class ProductSelectorScreenTest {
                 onLoadMore = {},
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
-                onClearFiltersButtonClick = {}
+                onClearFiltersButtonClick = {},
+                trackConfigurableProduct = {}
             )
         }
 
@@ -66,7 +67,8 @@ class ProductSelectorScreenTest {
                 onLoadMore = {},
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
-                onClearFiltersButtonClick = {}
+                onClearFiltersButtonClick = {},
+                trackConfigurableProduct = {}
             )
         }
 

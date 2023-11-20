@@ -571,7 +571,6 @@ Language: he_IL
     <string name="subscription_status_cancelled">בוטלו</string>
     <string name="subscription_status_on_hold">בהמתנה</string>
     <string name="subscription_status_active">פעיל</string>
-    <string name="no_variable_subscription_warning">ניתן להוסיף מינויים עם סוגים דרך לוח הבקרה באתר האינטרנט בלבד.</string>
     <string name="subscription_details_info_notice">ניתן לערוך את המינויים של המוצר בלוח הבקרה באינטרנט.</string>
     <string name="subscription_no_trial">ללא תקופת ניסיון בחינם</string>
     <string name="subscription_no_sign_up_fee">לאל דמי הרשמה</string>

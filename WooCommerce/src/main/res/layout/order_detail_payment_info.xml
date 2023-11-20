@@ -19,18 +19,19 @@
             <!-- Title -->
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/paymentInfo_lblTitle"
-                style="@style/Woo.Card.Header"
-                android:layout_width="wrap_content"
+                style="@style/Woo.Card.Title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/payment"/>
-
-            <View
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_75"/>
+                android:layout_marginStart="@dimen/minor_00"
+                android:layout_marginEnd="@dimen/minor_00"
+                android:layout_marginTop="@dimen/minor_00"
+                android:padding="@dimen/major_100"
+                android:text="@string/order_detail_payment_header"
+                android:background="@color/default_window_background"/>
 
             <!-- Subtotal -->
             <LinearLayout
+                android:id="@+id/paymentInfo_productsTotalSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
@@ -155,6 +156,7 @@
 
             <!-- Shipping -->
             <LinearLayout
+                android:id="@+id/paymentInfo_shippingSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_50"
@@ -179,6 +181,7 @@
 
             <!-- Taxes -->
             <LinearLayout
+                android:id="@+id/paymentInfo_taxesSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_50"

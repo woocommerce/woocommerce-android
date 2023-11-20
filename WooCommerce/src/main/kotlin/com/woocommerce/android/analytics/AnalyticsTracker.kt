@@ -607,6 +607,12 @@ class AnalyticsTracker private constructor(
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
+        const val KEY_HAS_BUNDLE_CONFIGURATION = "has_bundle_configuration"
+        const val VALUE_PRODUCT_CARD = "product_card"
+        const val KEY_CHANGED_FIELD = "changed_field"
+        const val VALUE_CHANGED_FIELD_QUANTITY = "quantity"
+        const val VALUE_CHANGED_FIELD_VARIATION = "variation"
+        const val VALUE_CHANGED_FIELD_OPTIONAL = "optional"
 
         // -- AI product name
         const val KEY_HAS_INPUT_NAME = "has_input_name"
@@ -623,6 +629,9 @@ class AnalyticsTracker private constructor(
         const val VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO = "product_creation_from_package_photo"
 
         const val KEY_IS_AI_CONTENT = "is_ai_content"
+
+        // -- Product subscriptions
+        const val KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS = "is_eligible_for_subscriptions"
 
         var sendUsageStats: Boolean = true
             set(value) {

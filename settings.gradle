@@ -7,7 +7,7 @@ pluginManagement {
     gradle.ext.navigationVersion = '2.5.3'
     gradle.ext.sentryVersion = '3.5.0'
     gradle.ext.violationCommentsVersion = '1.69.0'
-    gradle.ext.wziebaTracksVersion = '1.0.0'
+    gradle.ext.wziebaTracksVersion = '1.2.1'
 
     repositories {
         google()
@@ -57,7 +57,7 @@ gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:wooco
 gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
 gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
-gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
+gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source-camera"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
