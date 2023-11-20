@@ -3,6 +3,7 @@
 16.4
 -----
 - [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
+- [*] Add ability to set the option "one-time shipping" for subscription products [https://github.com/woocommerce/woocommerce-android/issues/10199]
 
 16.3
 -----
