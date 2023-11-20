@@ -32,7 +32,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
             account = WooPaymentsDepositsOverview.Account(
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 0,
-                    interval = "",
+                    interval = "weekly",
                     monthlyAnchor = null,
                     weeklyAnchor = null
                 ),
@@ -62,9 +62,9 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 1,
-                    interval = "DAILY",
+                    interval = "weekly",
                     monthlyAnchor = null,
-                    weeklyAnchor = null
+                    weeklyAnchor = "monday"
                 )
             ),
             balance = WooPaymentsDepositsOverview.Balance(
@@ -117,10 +117,9 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("300$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(2)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(
-                1
-            )
+        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(1)
+        assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
+            PaymentsHubDepositSummaryState.Info.Interval.Weekly("monday")
         )
     }
 
@@ -136,8 +135,8 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 30,
-                    interval = "MONTHLY",
-                    monthlyAnchor = null,
+                    interval = "monthly",
+                    monthlyAnchor = 15,
                     weeklyAnchor = null
                 )
             ),
@@ -223,14 +222,16 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(30)
+        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(30)
+        assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
+            PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
         )
         assertThat(result?.infoPerCurrency?.get("EUR")?.availableFunds).isEqualTo("150€")
         assertThat(result?.infoPerCurrency?.get("EUR")?.pendingFunds).isEqualTo("0€")
         assertThat(result?.infoPerCurrency?.get("EUR")?.pendingBalanceDepositsCount).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("EUR")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(30)
+        assertThat(result?.infoPerCurrency?.get("EUR")?.fundsAvailableInDays).isEqualTo(30)
+        assertThat(result?.infoPerCurrency?.get("EUR")?.fundsDepositInterval).isEqualTo(
+            PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
         )
     }
 
@@ -245,7 +246,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 depositsEnabled = true,
                 depositsSchedule = WooPaymentsDepositsOverview.Account.DepositsSchedule(
                     delayDays = 5,
-                    interval = "DAILY",
+                    interval = "daily",
                     monthlyAnchor = null,
                     weeklyAnchor = null
                 )
@@ -288,8 +289,9 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("0$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(
-            PaymentsHubDepositSummaryState.Info.Interval.Days(5)
+        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(5)
+        assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
+            PaymentsHubDepositSummaryState.Info.Interval.Daily
         )
     }
 }

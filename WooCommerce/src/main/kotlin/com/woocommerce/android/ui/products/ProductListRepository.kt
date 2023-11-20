@@ -5,15 +5,20 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -37,6 +42,8 @@ class ProductListRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers,
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
+    @AppCoroutineScope private val scope: CoroutineScope
 ) {
     companion object {
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
@@ -201,8 +208,13 @@ class ProductListRepository @Inject constructor(
                 )
             } else {
                 canLoadMoreProducts = event.canLoadMore
-                AnalyticsTracker.track(PRODUCT_LIST_LOADED)
-                loadContinuation.continueWith(true)
+                scope.launch {
+                    AnalyticsTracker.track(
+                        PRODUCT_LIST_LOADED,
+                        mapOf(KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS to isEligibleForSubscriptions())
+                    )
+                    loadContinuation.continueWith(true)
+                }
             }
         } else if (event.causeOfChange == DELETED_PRODUCT) {
             if (event.isError) {

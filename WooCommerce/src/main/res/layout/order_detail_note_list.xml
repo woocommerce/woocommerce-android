@@ -12,21 +12,17 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/notesList_lblNotes"
-            style="@style/Woo.Card.Header"
-            android:layout_width="wrap_content"
+            style="@style/Woo.Card.Title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/orderdetail_order_notes"
+            android:text="@string/orderdetail_order_notes_uppercase"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/minor_00"
+            android:layout_marginTop="@dimen/minor_00"
+            android:padding="@dimen/major_100"
+            android:background="@color/default_window_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/divider"
-            style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_75"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes"/>
 
         <!-- Add a note -->
         <LinearLayout
@@ -40,7 +36,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider">
+            app:layout_constraintTop_toBottomOf="@+id/notesList_lblNotes">
 
             <ImageView
                 android:layout_width="@dimen/image_minor_60"

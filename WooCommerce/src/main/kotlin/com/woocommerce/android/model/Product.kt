@@ -85,7 +85,8 @@ data class Product(
     override val weight: Float,
     val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
-    val specialStockStatus: ProductStockStatus? = null
+    val specialStockStatus: ProductStockStatus? = null,
+    val isConfigurable: Boolean = false
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -471,6 +472,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
         it.purchasable = isPurchasable
+        // Subscription details are currently the only editable metadata fields from the app.
+        it.metadata = subscription?.toMetadataJson().toString()
     }
 }
 
@@ -571,7 +574,8 @@ fun WCProductModel.toAppModel(): Product {
             ProductStockStatus.fromString(this.specialStockStatus)
         } else {
             null
-        }
+        },
+        isConfigurable = isConfigurable
     )
 }
 

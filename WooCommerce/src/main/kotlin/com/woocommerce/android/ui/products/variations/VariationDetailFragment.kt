@@ -38,6 +38,9 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment.Companion.KEY_SUBSCRIPTION_EXPIRATION_RESULT
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragment.Companion.KEY_SUBSCRIPTION_FREE_TRIAL_RESULT
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialViewModel.FreeTrialState
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.util.Optional
@@ -130,10 +133,12 @@ class VariationDetailFragment :
                 viewModel.onUpdateButtonClicked()
                 true
             }
+
             R.id.menu_delete -> {
                 viewModel.onDeleteVariationClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -168,7 +173,8 @@ class VariationDetailFragment :
                 viewModel.onVariationSubscriptionChanged(
                     price = it.regularPrice,
                     period = it.subscriptionPeriod,
-                    periodInterval = it.subscriptionInterval
+                    periodInterval = it.subscriptionInterval,
+                    signUpFee = it.subscriptionSignUpFee,
                 )
             }
         }
@@ -203,6 +209,12 @@ class VariationDetailFragment :
         }
         handleResult<Array<VariantOption>>(KEY_VARIATION_ATTRIBUTES_RESULT) {
             viewModel.onVariationChanged(attributes = it)
+        }
+        handleResult<Int>(KEY_SUBSCRIPTION_EXPIRATION_RESULT) { newExpiration ->
+            viewModel.onSubscriptionExpirationChanged(newExpiration)
+        }
+        handleResult<FreeTrialState>(KEY_SUBSCRIPTION_FREE_TRIAL_RESULT) { freeTrial ->
+            viewModel.onVariationSubscriptionChanged(trialLength = freeTrial.length, trialPeriod = freeTrial.period)
         }
     }
 
@@ -254,6 +266,7 @@ class VariationDetailFragment :
                 is VariationNavigationTarget -> {
                     navigator.navigate(this, event)
                 }
+
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()

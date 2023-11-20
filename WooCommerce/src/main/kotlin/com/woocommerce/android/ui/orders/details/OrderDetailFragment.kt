@@ -6,11 +6,18 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
@@ -49,8 +56,11 @@ import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.CustomAmountCard
+import com.woocommerce.android.ui.orders.Header
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -285,6 +295,7 @@ class OrderDetailFragment :
         viewModel.productList.observe(viewLifecycleOwner) {
             showOrderProducts(it, viewModel.order.currency)
         }
+        showCustomAmounts(viewModel.feeLineList)
         viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
             showShipmentTrackings(it)
         }
@@ -529,6 +540,35 @@ class OrderDetailFragment :
         }.otherwise { binding.orderDetailProductList.hide() }
     }
 
+    private fun showCustomAmounts(feeLine: LiveData<List<Order.FeeLine>>) {
+        binding.orderDetailCustomAmount.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val feeLineState = feeLine.observeAsState(emptyList())
+                if (!feeLineState.value.isNullOrEmpty()) {
+                    WooThemeWithBackground {
+                        Column(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Header()
+                            feeLineState.value.forEachIndexed { index, feeLine ->
+                                CustomAmountCard(
+                                    CustomAmountUI(
+                                        name = feeLine.name ?: "",
+                                        amount = CurrencyFormattedAmount(
+                                            currencyFormatter.formatCurrency(feeLine.total)
+                                        ),
+                                        shouldShowDivider = index < feeLineState.value.size - 1,
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun showAddShipmentTracking(show: Boolean) {
         with(binding.orderDetailShipmentList) {
             isVisible = show
@@ -640,4 +680,13 @@ class OrderDetailFragment :
             it.show()
         }
     }
+
+    data class CustomAmountUI(
+        val name: String,
+        val amount: CurrencyFormattedAmount,
+        val shouldShowDivider: Boolean,
+    )
+
+    @JvmInline
+    value class CurrencyFormattedAmount(val amount: String)
 }

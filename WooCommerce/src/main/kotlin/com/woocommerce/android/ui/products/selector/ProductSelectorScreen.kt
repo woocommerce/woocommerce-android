@@ -103,7 +103,8 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                 onLoadMore = viewModel::onLoadMore,
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
-                onSearchTypeChanged = viewModel::onSearchTypeChanged
+                onSearchTypeChanged = viewModel::onSearchTypeChanged,
+                trackConfigurableProduct = viewModel::trackConfigurableProduct
             )
         }
     }
@@ -120,7 +121,8 @@ fun ProductSelectorScreen(
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
-    onClearFiltersButtonClick: () -> Unit
+    onClearFiltersButtonClick: () -> Unit,
+    trackConfigurableProduct: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -158,7 +160,8 @@ fun ProductSelectorScreen(
                 onClearButtonClick = onClearButtonClick,
                 onFilterButtonClick = onFilterButtonClick,
                 onProductClick = onProductClick,
-                onLoadMore = onLoadMore
+                onLoadMore = onLoadMore,
+                trackConfigurableProduct = trackConfigurableProduct
             )
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
@@ -286,7 +289,7 @@ private fun displayProductsSection(
                     stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
-                isArrowVisible = product.hasVariations(),
+                isArrowVisible = product.hasVariations() || product is ListItem.ConfigurableListItem,
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description)
             ) {
@@ -316,6 +319,7 @@ private fun ProductList(
     onFilterButtonClick: () -> Unit,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
+    trackConfigurableProduct: () -> Unit
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -385,6 +389,7 @@ private fun ProductList(
                 }
             }
             itemsIndexed(state.products) { _, product ->
+                if (product is ListItem.ConfigurableListItem) { trackConfigurableProduct() }
                 SelectorListItem(
                     title = product.title,
                     imageUrl = product.imageUrl,
@@ -393,7 +398,7 @@ private fun ProductList(
                         stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.hasVariations(),
+                    isArrowVisible = product.hasVariations() || product is ListItem.ConfigurableListItem,
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
@@ -547,6 +552,7 @@ fun PopularProductsListPreview() {
         {},
         {},
         { _, _ -> },
+        {},
         {}
     )
 }
@@ -614,6 +620,7 @@ fun RecentProductsListPreview() {
         {},
         {},
         { _, _ -> },
+        {},
         {}
     )
 }
@@ -680,6 +687,7 @@ fun ProductListPreview() {
         {},
         {},
         { _, _ -> },
+        {},
         {}
     )
 }

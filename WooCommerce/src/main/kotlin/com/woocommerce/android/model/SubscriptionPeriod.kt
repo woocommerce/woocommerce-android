@@ -87,13 +87,32 @@ sealed class SubscriptionPeriod(val value: String) : Parcelable {
                 default = R.string.subscription_period_multiple_months,
                 one = R.string.subscription_period_month
             )
+
             Year -> StringUtils.getQuantityString(
                 resourceProvider = resources,
                 quantity = billingInterval,
                 default = R.string.subscription_period_multiple_years,
                 one = R.string.subscription_period_year
             )
+
             is Custom -> this.value
+        }
+    }
+
+    fun formatWithInterval(context: Context, interval: Int): String {
+        val periodText = getPeriodString(context, interval)
+        return if (interval == 1) context.getString(R.string.subscription_period_interval_single, periodText)
+        else context.getString(R.string.subscription_period_interval_multiple, interval, periodText)
+    }
+
+    @Suppress("MagicNumber")
+    fun getRangeForPeriod(): IntRange {
+        return when (this) {
+            Day -> 0..90
+            Week -> 0..52
+            Month -> 0..24
+            Year -> 0..5
+            is Custom -> 0..1
         }
     }
 }

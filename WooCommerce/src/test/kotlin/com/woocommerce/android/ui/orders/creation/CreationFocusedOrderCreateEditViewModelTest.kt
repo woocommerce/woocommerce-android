@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_T
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
@@ -14,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
@@ -368,7 +370,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when adding products, then update product liveData when quantity is one or more`() = testBlocking {
-        var products: List<ProductUIModel> = emptyList()
+        var products: List<OrderCreationProduct> = emptyList()
         sut.products.observeForever {
             products = it
         }
@@ -392,19 +394,23 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = testBlocking {
         var orderDraft: Order? = null
-        var addedProductItem: Order.Item? = null
+        var addedProduct: OrderCreationProduct? = null
         sut.orderDraft.observeForever { order ->
             orderDraft = order
-            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
+        sut.products.observeForever { productList ->
+            addedProduct = productList.find { it.item.productId == 123L }
         }
 
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
-        assertThat(addedProductItem).isNotNull
-        val addedProductItemId = addedProductItem!!.itemId
+        assertThat(addedProduct).isNotNull
 
-        sut.onIncreaseProductsQuantity(addedProductItemId)
-        sut.onRemoveProduct(addedProductItem!!)
+        val addedProductItemId = addedProduct!!.item.itemId
+
+        sut.onIncreaseProductsQuantity(addedProduct!!)
+        sut.onRemoveProduct(addedProduct!!)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
@@ -498,6 +504,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -510,15 +521,17 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
     fun `when removing product, should make view not editable`() = testBlocking {
         // given
-        val orderItemToRemove: Order.Item = mock()
+        val orderProductToRemove: OrderCreationProduct = mock()
 
         // when
-        sut.onRemoveProduct(orderItemToRemove)
+        sut.onRemoveProduct(orderProductToRemove)
 
         // then
         sut.viewStateData.liveData.value?.let { viewState ->
@@ -556,6 +569,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -568,6 +586,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
@@ -1440,6 +1460,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1483,6 +1504,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }

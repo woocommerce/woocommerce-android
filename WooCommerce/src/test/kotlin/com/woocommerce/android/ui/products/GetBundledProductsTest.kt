@@ -128,7 +128,9 @@ class GetBundledProductsTest : BaseUnitTest() {
             quantityMin = null,
             quantityMax = null,
             quantityDefault = null,
-            isOptional = false
+            isOptional = false,
+            attributesDefault = null,
+            variationIds = null
         ),
         WCBundledProduct(
             id = 2,
@@ -139,7 +141,9 @@ class GetBundledProductsTest : BaseUnitTest() {
             quantityMin = null,
             quantityMax = null,
             quantityDefault = null,
-            isOptional = false
+            isOptional = false,
+            attributesDefault = null,
+            variationIds = null
         ),
         WCBundledProduct(
             id = 3,
@@ -150,7 +154,9 @@ class GetBundledProductsTest : BaseUnitTest() {
             quantityMin = null,
             quantityMax = null,
             quantityDefault = null,
-            isOptional = false
+            isOptional = false,
+            attributesDefault = null,
+            variationIds = null
         )
     )
 }

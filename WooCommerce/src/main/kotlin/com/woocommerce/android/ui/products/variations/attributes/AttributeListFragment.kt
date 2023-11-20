@@ -127,7 +127,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductAttributeList())
+        viewModel.onBackButtonClicked(ExitProductAttributeList)
         return false
     }
 
