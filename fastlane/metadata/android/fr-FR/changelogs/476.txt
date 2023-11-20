@@ -1,0 +1,2 @@
+16.2 :
+Bienvenue dans la dernière mise à jour de notre application mobile WooCommerce ! Nous sommes ravis de vous dévoiler la nouvelle section Paiements et Clients qui a subi une refonte, votre flux de création de commande s’en trouve amélioré. Cette mise à jour correspond à nos spécifications en matière de design, il est donc plus facile de saisir des montants personnalisés. Profitez d’une expérience plus intuitive et plus conviviale. Mettez à jour dès maintenant !
