@@ -16,18 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 abstract class BaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) {
 
-    @Rule @JvmField
-    val rule = InstantTaskExecutorRule()
-
-    @Rule @JvmField
-    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
-
-    protected fun testBlocking(block: suspend TestScope.() -> Unit) =
-        runTest(coroutinesTestRule.testDispatcher) {
-            block()
-        }
-
-/**
+    /**
      * DO NOT USE THIS METHOD: This is a temporary workaround  to fix existing tests that were broken by
      * the change on kotlinx.coroutines 1.7.0 that causes tests that
      * throw exceptions to fail. Previously test methods that threw exceptions would not prevent
@@ -38,10 +27,21 @@ abstract class BaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispa
      * The workaround below is taken from the related PR: https://github.com/Kotlin/kotlinx.coroutines/pull/3736
      * and is a solution suggested by JetBrains to disable the new behavior using non-public API
      * until we fix our tests. This should not be considered a long-term solution, rather a temporary hack.
-*/
+     */
     fun disableCatchingOfNonTestRelatedExceptions() {
         Class.forName("kotlinx.coroutines.test.TestScopeKt")
             .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
             .invoke(null, false)
     }
+
+    @Rule @JvmField
+    val rule = InstantTaskExecutorRule()
+
+    @Rule @JvmField
+    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+
+    protected fun testBlocking(block: suspend TestScope.() -> Unit) =
+        runTest(coroutinesTestRule.testDispatcher) {
+            block()
+        }
 }
