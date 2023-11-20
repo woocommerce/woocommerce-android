@@ -223,7 +223,7 @@ private fun FundsOverview(
                 text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_funds),
                 color = colorResource(id = R.color.color_on_surface)
             )
-            AnimatedFundsNumber(currencyInfo.availableFunds)
+            FundsNumber(currencyInfo.availableFunds)
         }
 
         Column(
@@ -235,7 +235,7 @@ private fun FundsOverview(
                 color = colorResource(id = R.color.color_on_surface)
             )
 
-            AnimatedFundsNumber(currencyInfo.pendingFunds)
+            FundsNumber(currencyInfo.pendingFunds)
 
             Text(
                 style = MaterialTheme.typography.caption,
@@ -570,22 +570,33 @@ private fun DepositStatus(
 }
 
 @Composable
-private fun AnimatedFundsNumber(newValue: String) {
-    AnimatedContent(
-        targetState = newValue,
-        transitionSpec = {
-            if (targetState > initialState) {
-                slideInVertically { -it } with slideOutVertically { it }
-            } else {
-                slideInVertically { it } with slideOutVertically { -it }
-            }
-        },
-        label = "AnimatedFundsNumber"
-    ) { value ->
+private fun FundsNumber(newValue: String) {
+    var wasAnimated by remember { mutableStateOf(false) }
+    if (!wasAnimated) {
+        wasAnimated = true
+        AnimatedContent(
+            targetState = newValue,
+            transitionSpec = {
+                if (targetState > initialState) {
+                    slideInVertically { -it } with slideOutVertically { it }
+                } else {
+                    slideInVertically { it } with slideOutVertically { -it }
+                }
+            },
+            label = "AnimatedFundsNumber"
+        ) { value ->
+            Text(
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                text = value,
+                color = colorResource(id = R.color.color_on_surface)
+            )
+        }
+    } else {
         Text(
             style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.Bold,
-            text = value,
+            text = newValue,
             color = colorResource(id = R.color.color_on_surface)
         )
     }
