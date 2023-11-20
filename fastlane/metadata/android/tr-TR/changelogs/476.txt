@@ -1,0 +1,2 @@
+16.2:
+WooCommerce mobil uygulamamızın en yeni güncellemesine hoş geldiniz! Sipariş oluşturma iş akışınızı geliştiren, yeniden tasarlanmış bir Ödemeler ve Müşteriler bölümünü tanıtmaktan heyecan duyuyoruz. Bu güncelleme tasarım özelliklerimizle uyumlu olduğundan özel tutarlar girmenizi kolaylaştırır. Daha sezgisel ve kullanıcı dostu bir deneyimin keyfini çıkarın. Hemen güncelleyin!

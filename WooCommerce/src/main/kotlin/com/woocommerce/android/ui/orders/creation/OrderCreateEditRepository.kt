@@ -21,7 +21,6 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -41,21 +40,14 @@ class OrderCreateEditRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val dispatchers: CoroutineDispatchers,
     private val wooCommerceStore: WooCommerceStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val listItemMapper: ListItemMapper
 ) {
     suspend fun placeOrder(order: Order): Result<Order> {
         val request = UpdateOrderRequest(
             customerId = order.customer?.customerId,
             status = order.status.toDataModel(),
-            lineItems = order.items.map { item ->
-                LineItem(
-                    id = item.itemId.takeIf { it != 0L },
-                    name = item.name,
-                    productId = item.productId,
-                    variationId = item.variationId,
-                    quantity = item.quantity
-                )
-            },
+            lineItems = order.items.map { item -> listItemMapper.toRawListItem(item) },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
@@ -112,17 +104,7 @@ class OrderCreateEditRepository @Inject constructor(
         val request = UpdateOrderRequest(
             customerId = order.customer?.customerId,
             status = order.status.toDataModel(),
-            lineItems = order.items.map { item ->
-                LineItem(
-                    id = item.itemId.takeIf { it != 0L },
-                    name = item.name,
-                    productId = item.productId,
-                    variationId = item.variationId,
-                    quantity = item.quantity,
-                    subtotal = item.subtotal.takeIf { item.itemId != 0L }?.toPlainString(),
-                    total = item.total.takeIf { item.itemId != 0L }?.toPlainString()
-                )
-            },
+            lineItems = order.items.map { item -> listItemMapper.toRawListItem(item) },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }
                 ?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }

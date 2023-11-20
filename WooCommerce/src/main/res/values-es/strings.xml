@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-07 11:54:04+0000
+Translation-Revision-Date: 2023-11-16 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="notification_security_key_needed">Introduce tu clave de seguridad para continuar.</string>
+    <string name="login_error_security_key">Hubo algunos problemas con el inicio de sesión de la clave de seguridad</string>
+    <string name="login_text_security_key">Usa una clave de seguridad</string>
+    <string name="product_subscription_period">Periodo</string>
+    <string name="product_subscription_interval">Intervalo de facturación</string>
+    <string name="product_sale">Oferta</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Desconocido</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Fallido</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Cancelado</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">En tránsito</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Pendiente</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">De pago</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Estimado</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Contraer/ampliar resumen de depósitos</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Obtén más información acerca de cuándo recibirás tus fondos.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Los fondos disponibles se depositan automáticamente, cada semana.</string>
+    <string name="card_reader_hub_deposit_summary_last">Más reciente</string>
+    <string name="card_reader_hub_deposit_summary_next">Siguiente</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Depósitos</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Los fondos estarán disponibles después de estar pendientes durante 7 días.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depósito</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depósitos</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Fondos pendientes</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Fondos disponibles</string>
+    <string name="order_creation_payment_tax_label">Impuestos</string>
+    <string name="order_creation_payment_products">Productos</string>
+    <string name="order_creation_payment_header">Cantidad total del pago</string>
     <string name="email_or_username">Dirección de correo electrónico o nombre de usuario</string>
     <string name="custom_amounts_creation_error">No se puede crear un pedido de cantidad personalizada</string>
     <string name="custom_amounts_add_custom_name_hint">Introducir nombre personalizado</string>
@@ -3179,5 +3206,13 @@ Language: es
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Paquete personalizado</item>
         <item>Paquete de servicios</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Cada hora</item>
+        <item>Cada 2 horas</item>
+        <item>Cada 3 horas</item>
+        <item>Cada 4 horas</item>
+        <item>Cada 5 horas</item>
+        <item>Cada 6 horas</item>
     </string-array>
 </resources>

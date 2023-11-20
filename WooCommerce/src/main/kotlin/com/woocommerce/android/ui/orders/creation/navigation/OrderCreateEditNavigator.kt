@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.configuration.Flow
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -29,11 +31,16 @@ object OrderCreateEditNavigator {
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
 
-            is SelectItems ->
+            is SelectItems -> {
+                val flow = when (target.mode) {
+                    OrderCreateEditViewModel.Mode.Creation -> ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+                    is OrderCreateEditViewModel.Mode.Edit -> ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
+                }
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
                     selectedItems = target.selectedItems.toTypedArray(),
-                    productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+                    productSelectorFlow = flow
                 )
+            }
 
             is EditFee ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
@@ -95,6 +102,14 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
                     target.customAmountUIModel
                 )
+            }
+            is OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration -> {
+                val flow = Flow.Edit(
+                    itemId = target.itemId,
+                    productID = target.productId,
+                    configuration = target.configuration
+                )
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToEditConfiguration(flow)
             }
         }
         navController.navigate(action)

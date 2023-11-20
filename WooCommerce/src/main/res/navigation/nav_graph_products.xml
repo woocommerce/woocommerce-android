@@ -94,9 +94,6 @@
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
             app:destination="@id/productAddonsFragment" />
         <action
-            android:id="@+id/action_productDetailFragment_to_productSubscriptionFragment"
-            app:destination="@id/productSubscriptionFragment"></action>
-        <action
             android:id="@+id/action_productDetailFragment_to_productSubscriptionExpirationFragment"
             app:destination="@id/productSubscriptionExpirationFragment">
             <argument
@@ -129,6 +126,9 @@
 
             android:id="@+id/action_productDetailFragment_to_AIProductDescriptionBottomSheetFragment"
             app:destination="@id/AIProductDescriptionBottomSheetFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSubscriptionFreeTrialFragment"
+            app:destination="@id/productSubscriptionFreeTrialFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -618,9 +618,6 @@
         </action>
         <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
         <action
-            android:id="@+id/action_variationDetailFragment_to_productSubscriptionFragment"
-            app:destination="@id/productSubscriptionFragment" />
-        <action
             android:id="@+id/action_variationDetailFragment_to_productSubscriptionExpirationFragment"
             app:destination="@id/productSubscriptionExpirationFragment">
             <argument
@@ -630,6 +627,9 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productQuantityRulesFragment"
             app:destination="@id/productQuantityRulesFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productSubscriptionFreeTrialFragment"
+            app:destination="@id/productSubscriptionFreeTrialFragment" />
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"
@@ -679,19 +679,6 @@
         android:id="@+id/action_global_addVariationAttributeTermsFragment"
         app:destination="@id/addAttributeTermsFragment" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
-    <fragment
-        android:id="@+id/productSubscriptionFragment"
-        android:name="com.woocommerce.android.ui.products.ProductSubscriptionFragment"
-        android:label="ProductSubscriptionFragment">
-        <argument
-            android:name="subscription"
-            app:argType="com.woocommerce.android.model.SubscriptionDetails" />
-        <argument
-            android:name="saleDetails"
-            android:defaultValue="@null"
-            app:argType="com.woocommerce.android.ui.products.SaleDetails"
-            app:nullable="true" />
-    </fragment>
     <fragment
         android:id="@+id/productSubscriptionExpirationFragment"
         android:name="com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment"
@@ -778,4 +765,12 @@
             app:argType="string"
             app:nullable="true" />
     </dialog>
+    <fragment
+        android:id="@+id/productSubscriptionFreeTrialFragment"
+        android:name="com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragment"
+        android:label="ProductSubscriptionFreeTrialFragment" >
+        <argument
+            android:name="subscription"
+            app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+    </fragment>
 </navigation>

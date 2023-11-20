@@ -1,0 +1,2 @@
+16.2:
+Välkommen till den senaste uppdateringen av vår WooCommerce-mobilapp. Vi är glada över att kunna presentera omdesignade versioner av sektionerna Betalningar och Kunder, vilka kommer att förbättra ditt arbetsflöde vid beställningsskapande. Den här uppdateringen är i linje med våra designspecifikationer, vilket gör det lättare att mata in anpassade belopp. Ta del av en mer intuitiv, användarvänlig upplevelse. Uppdatera nu.

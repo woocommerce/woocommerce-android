@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.3
+In this update, we've made managing your WooCommerce store even easier! You can now view your balances and deposits directly on the Payments screen if you're a WooCommerce Payments user. Additionally, we've added the ability to create or edit subscription products. And, to make order creation smoother, we now support bundle products. Enjoy the improved functionality and keep your feedback coming!
+
 ## 16.2
 Welcome to the latest update of our WooCommerce mobile app! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!
 

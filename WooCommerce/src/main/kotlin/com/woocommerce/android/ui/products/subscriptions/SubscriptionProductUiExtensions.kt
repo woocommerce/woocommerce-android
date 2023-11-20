@@ -27,6 +27,15 @@ fun SubscriptionDetails.expirationDisplayOptions(resources: ResourceProvider): M
     return options
 }
 
+fun SubscriptionDetails.trialDisplayValue(resources: ResourceProvider): String {
+    return if (trialPeriod != null && trialLength != null && trialLength > 0) {
+        val periodString = trialPeriod.getPeriodString(resources, trialLength)
+        resources.getString(R.string.subscription_period, trialLength.toString(), periodString)
+    } else {
+        resources.getString(R.string.subscription_no_trial)
+    }
+}
+
 fun SubscriptionDetails.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
     newPeriod: SubscriptionPeriod?,
     newInterval: Int?,

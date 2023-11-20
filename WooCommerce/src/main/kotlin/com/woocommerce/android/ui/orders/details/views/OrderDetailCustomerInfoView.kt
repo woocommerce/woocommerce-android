@@ -81,6 +81,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val shippingAddress = order.formatShippingInformationForDisplay()
 
         if (isReadOnly && billingAddress.isEmpty()) {
+            binding.customerInfoBillingLabel.hide()
             // if the address is empty but we have details like email or phone, show "No address specified"
             if (order.billingAddress.hasInfo()) {
                 binding.customerInfoBillingAddr.setText(resources.getString(R.string.orderdetail_empty_address), 0)
@@ -96,8 +97,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             // a customer makes an order, but it will be empty once we offer order creation
             if (billingAddress.isEmpty() && !isReadOnly) {
                 expandCustomerInfoView()
+                binding.customerInfoBillingLabel.hide()
                 binding.customerInfoViewMore.hide()
             } else {
+                binding.customerInfoBillingLabel.show()
                 binding.customerInfoViewMore.show()
             }
         }
@@ -200,6 +203,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showCustomerNote(order: Order, isReadOnly: Boolean) {
         val isEmpty = order.customerNote.isEmpty()
+        if (isEmpty) {
+            binding.customerInfoCustomerNoteTitle.hide()
+        } else {
+            binding.customerInfoCustomerNoteTitle.show()
+        }
         if (isEmpty && isReadOnly) {
             binding.customerInfoCustomerNoteSection.hide()
             return
@@ -234,6 +242,11 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
     private fun showShippingAddress(order: Order, isVirtualOrder: Boolean, isReadOnly: Boolean) {
         val shippingAddress = order.formatShippingInformationForDisplay()
+        if (shippingAddress.isEmpty()) {
+            binding.customerInfoShippingLabel.hide()
+        } else {
+            binding.customerInfoShippingLabel.show()
+        }
         if (shippingAddress.isEmpty() && isReadOnly) {
             binding.customerInfoShippingSection.hide()
             return

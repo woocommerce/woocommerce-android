@@ -1,2 +1,0 @@
-16.1:
-Mit unserem neuesten Update profitierst du von einem nahtloseren WooCommerce-Erlebnis! Wir haben eine neue Funktion eingeführt, durch die du während der Bestellerstellung individuelle Beträge eingeben kannst. Damit bist du flexibler. Außerdem haben wir die Fehlerbehandlung verbessert, um dir eine reibungslosere Jetpack-Verbindung bereitzustellen, besonders bei der Verwendung einer individuellen Admin-URL. Profitiere von einer optimierten und effizienteren App, die dir das Leben leichter machen wird.

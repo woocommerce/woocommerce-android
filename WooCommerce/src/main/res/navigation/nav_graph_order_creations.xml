@@ -146,6 +146,9 @@
             android:id="@+id/action_orderCreation_to_orderCreationProductDiscountFragment"
             app:destination="@id/orderCreationProductDiscountFragment"
             />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_editConfiguration"
+            app:destination="@id/productConfigurationFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -169,7 +172,7 @@
         android:label="CustomAmountsDialog">
         <argument
             android:name="customAmountUIModel"
-            app:argType="com.woocommerce.android.ui.orders.creation.CustomAmountUIModel"
+            app:argType="com.woocommerce.android.ui.orders.CustomAmountUIModel"
             android:defaultValue="@null"
             app:nullable="true"/>
     </dialog>
@@ -216,7 +219,7 @@
         android:label="OrderCreateEditProductDiscountFragment">
         <argument
             android:name="item"
-            app:argType="com.woocommerce.android.model.Order$Item" />
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationProduct" />
         <argument
             android:name="currency"
             app:argType="string" />
@@ -338,4 +341,32 @@
             android:name="autoTaxRateSettingState"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$AutoTaxRateSettingState"/>
     </dialog>
+    <fragment
+        android:id="@+id/productConfigurationFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment"
+        android:label="ProductConfigurationFragment" >
+        <argument
+            android:name="flow"
+            app:argType="com.woocommerce.android.ui.orders.creation.configuration.Flow" />
+        <action
+            android:id="@+id/action_productConfigurationFragment_to_variationPickerFragment"
+            app:destination="@id/variationPickerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/variationPickerFragment"
+        android:name="com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment"
+        android:label="VariationPickerFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="allowedVatiations"
+            app:argType="long[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="itemId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
 </navigation>

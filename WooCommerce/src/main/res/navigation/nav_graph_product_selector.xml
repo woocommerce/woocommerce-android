@@ -58,6 +58,37 @@
                 app:argType="string"
                 app:nullable="true" />
         </action>
+        <action
+            android:id="@+id/action_productSelectorFragment_to_productConfigurationFragment"
+            app:destination="@id/productConfigurationFragment" />
     </fragment>
     <include app:graph="@navigation/nav_graph_product_filters" />
+    <fragment
+        android:id="@+id/productConfigurationFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment"
+        android:label="ProductConfigurationFragment">
+        <argument
+            android:name="flow"
+            app:argType="com.woocommerce.android.ui.orders.creation.configuration.Flow" />
+        <action
+            android:id="@+id/action_productConfigurationFragment_to_variationPickerFragment"
+            app:destination="@id/variationPickerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/variationPickerFragment"
+        android:name="com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment"
+        android:label="VariationPickerFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="allowedVatiations"
+            app:argType="long[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="itemId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
 </navigation>

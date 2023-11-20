@@ -1,0 +1,2 @@
+16.2:
+Esta é a atualização mais recente do aplicativo móvel do WooCommerce! Temos o prazer de revelar a repaginação das seções Pagamentos e Clientes, aprimorando seu fluxo de criação do pedido. Esta atualização está alinhada às nossas especificações de design, o que facilita inserir valores personalizados. Desfrute de uma experiência mais intuitiva e fácil de usar. Atualize agora mesmo!
