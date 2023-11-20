@@ -84,8 +84,8 @@ class OrderDetailProductListView @JvmOverloads constructor(
         binding.productListLblProduct.text = StringUtils.getQuantityString(
             context = context,
             quantity = size,
-            default = R.string.orderdetail_product_multiple,
-            one = R.string.orderdetail_product
+            default = R.string.orderdetail_product_multiple_uppercase,
+            one = R.string.orderdetail_product_uppercase
         )
 
         binding.productListProducts.apply {

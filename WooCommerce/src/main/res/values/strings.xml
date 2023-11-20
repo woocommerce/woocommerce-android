@@ -723,6 +723,7 @@
         Order Detail Views
     -->
     <string name="customer_information">Customer information</string>
+    <string name="orderdetail_customer_header">CUSTOMER</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
@@ -744,6 +745,8 @@
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
+    <string name="orderdetail_product_uppercase">PRODUCT</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUCTS</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
@@ -764,6 +767,7 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
+    <string name="orderdetail_order_notes_uppercase">ORDER NOTES</string>
     <string name="orderdetail_customer_note_hint">Edit a customer order note</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
@@ -854,6 +858,8 @@
     <string name="orderdetail_empty_address">No address specified</string>
     <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
+    <string name="order_detail_payment_header">PAYMENT TOTALS</string>
+    <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
 
     <!--
         Shipping label Refunds
@@ -1945,6 +1951,8 @@
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
     <string name="product_subscription_title">Subscription</string>
     <string name="product_subscription_expiration_title">Subscription expiration</string>
+    <string name="product_subscription_free_trial_title">Subscription free trial</string>
+    <string name="product_subscription_free_trial_info">An optional period of time to wait before charging the first recurring payment. Any sign up fee will still be charged at the outset of the subscription. The trial period can not exceed: 90 days, 52 weeks, 24 months or 5 years.</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
@@ -3509,7 +3517,6 @@
     <string name="subscription_no_sign_up_fee">No sign up fee</string>
     <string name="subscription_no_trial">No trial period</string>
     <string name="subscription_details_info_notice">You can edit product subscriptions in the web dashboard.</string>
-    <string name="no_variable_subscription_warning">You can only add variable subscriptions in the web dashboard.</string>
     <!--
     Subscription status
     -->
@@ -3804,4 +3811,25 @@
     <string name="login_text_security_key">Use a security key</string>
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
+
+
+    <string name="extension_configure_button">Configure</string>
+    <string name="default_product_title">Product %s</string>
+    <string name="product_configuration_title">Configuration</string>
+    <string name="save_configuration">Save configuration</string>
+    <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
+    <string name="configuration_issues">Configuration issues</string>
+    <string name="configuration_quantity_item">%d item</string>
+    <string name="configuration_quantity_item_plural">%d items</string>
+    <string name="configuration_quantity_between"> between %1$s and %2$s items </string>
+    <string name="configuration_quantity_less_than"> less than %1$s items </string>
+    <string name="configuration_quantity_more_than"> more than %1$s item </string>
+    <string name="configuration_quantity_more_than_plural"> more than %1$s items </string>
+    <string name="configuration_quantity_rule_issue"> Please select %1$s </string>
+    <string name="configuration_quantity_items_selected"> %1$s item selected </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s items selected </string>
+    <string name="configuration_variable_selection"> please select a variation </string>
+    <string name="configuration_children_issue"> " %1$s " -> %2$s </string>
+    <string name="configuration_variable_update">Update variation</string>
+    <string name="product_variation_picker_title">Select a variation</string>
 </resources>

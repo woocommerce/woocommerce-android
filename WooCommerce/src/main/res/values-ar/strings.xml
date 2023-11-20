@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-07 13:54:04+0000
+Translation-Revision-Date: 2023-11-15 20:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="notification_security_key_needed">يرجى إدخال مفتاح الأمان الخاص بك للاستمرار.</string>
+    <string name="login_error_security_key">كانت هناك بعض المشكلات عند تسجيل الدخول باستخدام مفتاح الأمان</string>
+    <string name="login_text_security_key">استخدام مفتاح الأمان</string>
+    <string name="product_subscription_period">الفترة</string>
+    <string name="product_subscription_interval">الفاصل الزمني للفوترة</string>
+    <string name="product_sale">تخفيض</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">غير معروف</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">فشل</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">تم الإلغاء</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">قيد النقل</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">معلق</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">مدفوع</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">المقدَّر</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">طي/توسيع ملخص الإيداع</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">معرفة المزيد حول موعد الحصول على أموالك</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">يتم إيداع الأموال المتوافرة تلقائيًا عند الطلب في كل أسبوع</string>
+    <string name="card_reader_hub_deposit_summary_last">الأخير</string>
+    <string name="card_reader_hub_deposit_summary_next">التالي</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">الودائع</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">تصبح الأموال متوافرة بعد تعليقها لمدة 7 أيام.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d من الودائع</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d من الودائع</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">الأموال المعلّقة</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">الأموال المتوافرة</string>
+    <string name="order_creation_payment_tax_label">الضرائب</string>
+    <string name="order_creation_payment_products">المنتجات</string>
+    <string name="order_creation_payment_header">إجماليات المدفوعات</string>
     <string name="email_or_username">عنوان البريد الإلكتروني أو اسم المستخدم</string>
     <string name="custom_amounts_creation_error">يتعذر إنشاء طلب الكمية المخصص</string>
     <string name="custom_amounts_add_custom_name_hint">إدخال اسم مخصص</string>
@@ -571,7 +598,6 @@ Language: ar
     <string name="subscription_status_cancelled">تم الإلغاء</string>
     <string name="subscription_status_on_hold">موقوف</string>
     <string name="subscription_status_active">نشط</string>
-    <string name="no_variable_subscription_warning">يمكن فقط إضافة اشتراكات متغيرة في لوحة تحكم الويب.</string>
     <string name="subscription_details_info_notice">يمكنك تحرير اشتراكات المنتجات في لوحة تحكم الويب.</string>
     <string name="subscription_no_trial">لا توجد فترة تشغيل تجريبي</string>
     <string name="subscription_no_sign_up_fee">لا توجد رسوم تسجيل</string>
@@ -3180,5 +3206,13 @@ Language: ar
     <string-array name="shipping_label_create_new_package_tabs">
         <item>حزمة مخصصة</item>
         <item>حزمة الخدمة</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>كل </item>
+        <item>كل يوم الثاني</item>
+        <item>كل يوم الثالث</item>
+        <item>كل يوم الرابع</item>
+        <item>كل يوم الخامس</item>
+        <item>كل يوم السادس</item>
     </string-array>
 </resources>

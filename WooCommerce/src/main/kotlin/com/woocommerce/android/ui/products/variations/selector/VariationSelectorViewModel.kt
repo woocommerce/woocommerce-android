@@ -138,7 +138,8 @@ class VariationSelectorViewModel @Inject constructor(
 
     private fun trackClearSelectionButtonClicked() {
         when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ProductSelectorViewModel.ProductSelectorFlow.OrderEditing -> {
                 tracker.trackClearSelectionButtonClicked(
                     productSelectorFlow,
                     ProductSelectorTracker.ProductSelectorSource.VariationSelector
@@ -161,7 +162,8 @@ class VariationSelectorViewModel @Inject constructor(
 
     private fun trackVariationSelected() {
         when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ProductSelectorViewModel.ProductSelectorFlow.OrderEditing -> {
                 tracker.trackItemSelected(productSelectorFlow)
             }
             ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
@@ -171,7 +173,8 @@ class VariationSelectorViewModel @Inject constructor(
 
     private fun trackVariationUnselected() {
         when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ProductSelectorViewModel.ProductSelectorFlow.OrderEditing -> {
                 tracker.trackItemUnselected(productSelectorFlow)
             }
             ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}

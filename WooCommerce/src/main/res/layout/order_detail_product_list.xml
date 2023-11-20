@@ -9,32 +9,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/productList_lblProduct"
-            style="@style/Woo.Card.Title"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/productList_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/orderdetail_product"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/productList_btnMenu"
-            style="@style/Woo.ImageButton.More"
-            android:contentDescription="@string/orderdetail_products_recreate_shipping_label_menu"
-            android:scaleType="centerInside"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="visible"
-            tools:visibility="visible" />
+            android:paddingBottom="@dimen/minor_100"
+            android:background="@color/default_window_background">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/productList_lblProduct"
+                style="@style/Woo.Card.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/orderdetail_product"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/productList_barrier"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:constraint_referenced_ids="productList_lblProduct,productList_btnMenu"
-            app:barrierDirection="bottom"
-            />
+            <ImageButton
+                android:id="@+id/productList_btnMenu"
+                style="@style/Woo.ImageButton.More"
+                android:contentDescription="@string/orderdetail_products_recreate_shipping_label_menu"
+                android:scaleType="centerInside"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="visible"
+                tools:visibility="visible" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/productList_barrier"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:constraint_referenced_ids="productList_lblProduct,productList_btnMenu"
+                app:barrierDirection="bottom"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- List: Products -->
         <androidx.recyclerview.widget.RecyclerView
@@ -45,7 +54,7 @@
             android:layout_marginBottom="@dimen/major_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productList_barrier"
+            app:layout_constraintTop_toBottomOf="@+id/productList_header"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_product_list_item" />
 

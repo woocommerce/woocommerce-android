@@ -13,7 +13,6 @@ plugins {
 tracks {
     automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
     enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
-    username.set(findProperty('tracksUsername'))
 }
 
 allprojects {
@@ -112,8 +111,8 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '3.5.0'
-    mediapickerVersion = '0.2'
-    wordPressLoginVersion = '128-a81084f5da26c34c079b4ad727531c9eef18e671'
+    mediapickerVersion = '0.3.0'
+    wordPressLoginVersion = '123-74f39081145a26c253b81aee021d40d3cfc0d13f'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '3.2.0'
     workManagerVersion = '2.7.1'
