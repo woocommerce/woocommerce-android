@@ -23,6 +23,8 @@ object ProductTestUtils {
         variationIds: String = if (isVariable) "[123]" else "[]",
         productType: String? = null,
         amount: String = "20.00",
+        productName: String = "product $productId",
+        imageUrl: String? = null
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -36,9 +38,9 @@ object ProductTestUtils {
             salePrice = "10.00"
             regularPrice = "30.00"
             averageRating = "3.0"
-            name = "product 1"
+            name = productName
             description = "product 1 description"
-            images = "[]"
+            images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]"
             downloadable = true
             downloads = """[
                                 {

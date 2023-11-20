@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.products.subscriptions
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.SubscriptionPeriod.Day
 import com.woocommerce.android.model.SubscriptionPeriod.Month
@@ -21,6 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductSubscriptionFreeTrialViewModel @Inject constructor(
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -61,10 +65,21 @@ class ProductSubscriptionFreeTrialViewModel @Inject constructor(
     }
 
     fun onExitRequested() {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_SUBSCRIPTION_FREE_TRIAL_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges())
+        )
+
         if (_viewState.value.isError) {
             triggerEvent(Exit)
         } else {
             triggerEvent(ExitWithResult(_viewState.value))
+        }
+    }
+
+    private fun hasChanges(): Boolean {
+        return _viewState.value.run {
+            !isError && (length != navArgs.subscription.trialLength || period != navArgs.subscription.trialPeriod)
         }
     }
 

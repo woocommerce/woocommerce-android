@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductSubscriptionExpiration
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
-import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewVariationSubscriptionTrial
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -81,14 +80,6 @@ class VariationNavigator @Inject constructor() {
             }
             is ViewMediaUploadErrors -> {
                 val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
-                fragment.findNavController().navigateSafely(action)
-            }
-            is ViewSubscription -> {
-                val action = VariationDetailFragmentDirections
-                    .actionVariationDetailFragmentToProductSubscriptionFragment(
-                        target.subscription,
-                        target.sale
-                    )
                 fragment.findNavController().navigateSafely(action)
             }
 
