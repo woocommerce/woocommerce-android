@@ -15,7 +15,6 @@ import org.mockito.junit.MockitoJUnitRunner
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 abstract class BaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) {
-
     @Rule @JvmField
     val rule = InstantTaskExecutorRule()
 
