@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -16,9 +14,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 
-
-@OptIn(ExperimentalCoroutinesApi::class)
-class CashOnDeliverySettingsRepositoryTest: BaseUnitTest () {
+class CashOnDeliverySettingsRepositoryTest {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
@@ -26,10 +22,6 @@ class CashOnDeliverySettingsRepositoryTest: BaseUnitTest () {
     private val cashOnDeliverySettingsRepository = CashOnDeliverySettingsRepository(
         gatewayStore, selectedSite
     )
-
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
 
     @Test
     fun `when cod enabled, then return true when queried for cod status`() {
