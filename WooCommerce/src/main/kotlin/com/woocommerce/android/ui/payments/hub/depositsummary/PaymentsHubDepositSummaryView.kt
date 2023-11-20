@@ -1,12 +1,17 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import android.content.res.Configuration
 import android.icu.text.MessageFormat
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -218,12 +223,7 @@ private fun FundsOverview(
                 text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_funds),
                 color = colorResource(id = R.color.color_on_surface)
             )
-            Text(
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                text = currencyInfo.availableFunds,
-                color = colorResource(id = R.color.color_on_surface)
-            )
+            AnimatedFundsNumber(currencyInfo.availableFunds)
         }
 
         Column(
@@ -234,12 +234,9 @@ private fun FundsOverview(
                 text = stringResource(id = R.string.card_reader_hub_deposit_summary_pending_funds),
                 color = colorResource(id = R.color.color_on_surface)
             )
-            Text(
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                text = currencyInfo.pendingFunds,
-                color = colorResource(id = R.color.color_on_surface)
-            )
+
+            AnimatedFundsNumber(currencyInfo.pendingFunds)
+
             Text(
                 style = MaterialTheme.typography.caption,
                 text = StringUtils.getQuantityString(
@@ -568,6 +565,28 @@ private fun DepositStatus(
             text = stringResource(id = text),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = textColor),
+        )
+    }
+}
+
+@Composable
+private fun AnimatedFundsNumber(newValue: String) {
+    AnimatedContent(
+        targetState = newValue,
+        transitionSpec = {
+            if (targetState > initialState) {
+                slideInVertically { -it } with slideOutVertically { it }
+            } else {
+                slideInVertically { it } with slideOutVertically { -it }
+            }
+        },
+        label = "AnimatedFundsNumber"
+    ) { value ->
+        Text(
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            text = value,
+            color = colorResource(id = R.color.color_on_surface)
         )
     }
 }
