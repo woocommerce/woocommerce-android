@@ -231,7 +231,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
 
     private val productDetailBottomSheetBuilder by lazy {
-        ProductDetailBottomSheetBuilder(resources)
+        ProductDetailBottomSheetBuilder(resources, variationRepository)
     }
 
     private val _hasChanges = storedProduct
