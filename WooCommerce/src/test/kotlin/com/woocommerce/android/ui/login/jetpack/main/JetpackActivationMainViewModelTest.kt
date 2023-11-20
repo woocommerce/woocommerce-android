@@ -22,6 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -48,6 +49,10 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         url = siteUrl
         username = "username"
         password = "password"
+    }
+
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
     }
 
     suspend fun setup(

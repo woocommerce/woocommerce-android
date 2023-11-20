@@ -45,6 +45,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -103,6 +104,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
+
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {

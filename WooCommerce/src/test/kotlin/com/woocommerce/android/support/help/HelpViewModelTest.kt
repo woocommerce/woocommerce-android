@@ -30,6 +30,10 @@ class HelpViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: HelpViewModel
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun initViewModel() {
         viewModel = HelpViewModel(

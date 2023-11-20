@@ -95,6 +95,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setUp() {
         initMocks()

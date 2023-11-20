@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
@@ -38,6 +39,10 @@ class JitmViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
 
     private lateinit var sut: JitmViewModel
+
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
 
     @Test
     fun `given jitm success response, when viewmodel init, then proper banner state event is triggered`() {

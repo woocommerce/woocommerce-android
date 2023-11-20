@@ -117,6 +117,10 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         cardReaderOnboardingChecker
     )
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setUp() {
         initViewModel()

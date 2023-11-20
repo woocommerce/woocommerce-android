@@ -69,6 +69,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: MyStoreViewModel
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setup() = testBlocking {
         givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)

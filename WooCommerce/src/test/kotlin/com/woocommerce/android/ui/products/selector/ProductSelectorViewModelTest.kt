@@ -92,6 +92,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private val siteSettings: WCSettingsModel = mock()
     private val productRestriction: OrderCreationProductRestrictions = mock()
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setup() {
         val site: SiteModel = mock()

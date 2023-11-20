@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -38,6 +39,10 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private lateinit var accountStore: AccountStore
     private val savedState = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
+
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
 
     @Test
     fun `when onTryForFreeButtonPressed is called, then start the store creation`() = testBlocking {

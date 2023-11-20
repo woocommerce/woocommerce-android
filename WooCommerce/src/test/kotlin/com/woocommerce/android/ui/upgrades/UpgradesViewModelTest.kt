@@ -46,6 +46,10 @@ class UpgradesViewModelTest : BaseUnitTest() {
     var resourceProvider: ResourceProvider = mock()
     var tracks: AnalyticsTrackerWrapper = mock()
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setup() {
         val siteModel = SiteModel().apply { planId = FREE_TRIAL_PLAN_ID }

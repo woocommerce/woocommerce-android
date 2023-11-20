@@ -28,6 +28,10 @@ class PrintShippingLabelCustomsFormViewModelTest : BaseUnitTest() {
     private val storageDirectory: File = File(".")
     private var urls = mutableListOf("test_url")
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setup() {
         whenever(fileUtils.createTempTimeStampedFile(any(), any(), any())).thenReturn(File("./test"))
