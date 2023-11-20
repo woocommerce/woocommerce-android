@@ -69,17 +69,9 @@ class ProductDetailBottomSheetBuilder(
                     product.getLinkedProducts()
                 )
             }
-            VARIABLE -> {
+            VARIABLE, VARIABLE_SUBSCRIPTION -> {
                 listOfNotNull(
                     product.getShipping(),
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts()
-                )
-            }
-            VARIABLE_SUBSCRIPTION -> {
-                listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
