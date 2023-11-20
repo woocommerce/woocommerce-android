@@ -359,9 +359,14 @@ dependencies {
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
-    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+    }
     implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:$mediapickerVersion")
-    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion") {
+        exclude group: "org.wordpress", module: "utils"
+        exclude group: "org.wordpress", module: "fluxc"
+    }
 
     // Jetpack Compose
     implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
