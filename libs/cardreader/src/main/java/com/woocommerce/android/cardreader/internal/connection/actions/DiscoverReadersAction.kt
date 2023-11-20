@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection.actions
 
+import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
@@ -29,14 +30,35 @@ internal class DiscoverReadersAction(
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
     }
 
+    @RequiresPermission(
+        allOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.BLUETOOTH_CONNECT",
+            "android.permission.BLUETOOTH_SCAN"
+        ]
+    )
     fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(isSimulated))
 
+    @RequiresPermission(
+        allOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.BLUETOOTH_CONNECT",
+            "android.permission.BLUETOOTH_SCAN"
+        ]
+    )
     fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(
             DiscoveryConfiguration.BluetoothDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated)
         )
 
+    @RequiresPermission(
+        allOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.BLUETOOTH_CONNECT",
+            "android.permission.BLUETOOTH_SCAN"
+        ]
+    )
     private fun discoverReaders(config: DiscoveryConfiguration): Flow<DiscoverReadersStatus> {
         return callbackFlow {
             sendAndLog(Started, logWrapper)
@@ -64,7 +86,7 @@ internal class DiscoverReadersAction(
                 }
             )
             awaitClose {
-                cancelable.takeIf { !it!!.isCompleted }?.cancel(noopCallback)
+                cancelable.takeIf { !it.isCompleted }?.cancel(noopCallback)
             }
         }
     }
