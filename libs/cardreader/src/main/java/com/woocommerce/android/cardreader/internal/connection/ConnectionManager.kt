@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
@@ -39,6 +40,13 @@ internal class ConnectionManager(
     val batteryStatus = bluetoothReaderListener.batteryStatusEvents
     val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvents
 
+    @RequiresPermission(
+        allOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.BLUETOOTH_CONNECT",
+            "android.permission.BLUETOOTH_SCAN"
+        ]
+    )
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         when (cardReaderTypesToDiscover) {
             is SpecificReaders -> {

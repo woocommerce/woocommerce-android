@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader.internal.wrappers
 
 import android.app.Application
-import android.util.Log
+import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.Terminal
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
@@ -41,18 +41,18 @@ internal class TerminalWrapper {
         listener: TerminalListener
     ) = Terminal.initTerminal(application, logLevel, tokenProvider, listener)
 
+    @RequiresPermission(
+        allOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.BLUETOOTH_CONNECT",
+            "android.permission.BLUETOOTH_SCAN"
+        ]
+    )
     fun discoverReaders(
         config: DiscoveryConfiguration,
         discoveryListener: DiscoveryListener,
         callback: Callback
-    ): Cancelable? {
-        return try {
-            Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
-        } catch (e: SecurityException) {
-            Log.e("Error", "Permission denied: ${e.message}")
-            null
-        }
-    }
+    ): Cancelable = Terminal.getInstance().discoverReaders(config, discoveryListener, callback)
 
     fun connectToReader(
         reader: Reader,
