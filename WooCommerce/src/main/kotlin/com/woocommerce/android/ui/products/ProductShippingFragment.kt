@@ -82,7 +82,8 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
                 old?.shippingData?.subscriptionShippingData
             ) { subscriptionShippingData ->
                 binding.productOneTimeShipping.isEnabled = subscriptionShippingData.canEnableOneTimeShipping
-                binding.productOneTimeShipping.isChecked = subscriptionShippingData.oneTimeShipping
+                binding.productOneTimeShipping.isChecked = subscriptionShippingData.oneTimeShipping &&
+                    subscriptionShippingData.canEnableOneTimeShipping
             }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
