@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
@@ -286,6 +287,7 @@ class ProductDetailCardBuilder(
                 product.inventory(VARIABLE),
                 product.addons(),
                 product.quantityRules(),
+                product.shipping(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -469,10 +471,20 @@ class ProductDetailCardBuilder(
                             height = height,
                             shippingClassSlug = shippingClass,
                             shippingClassId = shippingClassId,
-                            subscriptionShippingData = if (this.productType == SUBSCRIPTION) {
+                            subscriptionShippingData = if (productType == SUBSCRIPTION ||
+                                this.productType == VARIABLE_SUBSCRIPTION
+                            ) {
                                 ShippingData.SubscriptionShippingData(
-                                    oneTimeShipping = this.subscription?.oneTimeShipping ?: false,
-                                    canEnableOneTimeShipping = this.subscription?.supportsOneTimeShipping ?: false
+                                    oneTimeShipping = subscription?.oneTimeShipping ?: false,
+                                    canEnableOneTimeShipping = if (productType == SUBSCRIPTION) {
+                                        subscription?.supportsOneTimeShipping ?: false
+                                    } else {
+                                        // For variable subscription products, we need to check against the variations
+                                        variationRepository.getProductVariationList(remoteId).all {
+                                            (it as? SubscriptionProductVariation)?.subscriptionDetails
+                                                ?.supportsOneTimeShipping ?: false
+                                        }
+                                    }
                                 )
                             } else null
                         )
