@@ -114,6 +114,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
     private val useInterac = false
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()

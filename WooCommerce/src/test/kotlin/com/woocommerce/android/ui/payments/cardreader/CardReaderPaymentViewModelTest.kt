@@ -182,6 +182,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderConfig: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Suppress("LongMethod")
     @Before
     fun setUp() = testBlocking {

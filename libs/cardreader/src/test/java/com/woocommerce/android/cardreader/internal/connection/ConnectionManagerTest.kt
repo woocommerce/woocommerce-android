@@ -40,7 +40,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     private val terminalWrapper: TerminalWrapper = mock()
     private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
-    private val terminalListenerImpl: TerminalListenerImpl = mock()
+    private val terminalListenerImpl: TerminalListenerImpl = mock {
+        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+    }
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(

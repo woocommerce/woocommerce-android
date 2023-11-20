@@ -39,6 +39,10 @@ class JitmViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: JitmViewModel
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Test
     fun `given jitm success response, when viewmodel init, then proper banner state event is triggered`() {
         testBlocking {

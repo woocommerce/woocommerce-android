@@ -69,6 +69,10 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         on { formatCurrency("0.5", "USD") }.thenReturn("$0.50")
     }
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Test
     fun `given us cardconfig, when viewmodel init, then message with usd minim amount constructed`() {
         // GIVEN

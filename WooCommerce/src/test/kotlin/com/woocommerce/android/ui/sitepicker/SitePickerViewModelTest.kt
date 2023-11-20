@@ -150,6 +150,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
         hasConnectedStores = defaultExpectedSiteList.isNotEmpty()
     )
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Before
     fun setup() {
         whenever(accountRepository.getUserAccount()).thenReturn(SitePickerTestUtils.account)

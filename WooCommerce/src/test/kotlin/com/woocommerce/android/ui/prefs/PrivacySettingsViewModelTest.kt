@@ -49,6 +49,10 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
     lateinit var sut: PrivacySettingsViewModel
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     fun init() {
         sut = PrivacySettingsViewModel(
             mock(),

@@ -80,6 +80,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Test
     fun `when screen initialized, then loading state shown`() {
         val viewModel = createVM()

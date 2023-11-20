@@ -39,6 +39,10 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
 
+    init {
+        disableCatchingOfNonTestRelatedExceptions()
+    }
+
     @Test
     fun `when onTryForFreeButtonPressed is called, then start the store creation`() = testBlocking {
         // Given
