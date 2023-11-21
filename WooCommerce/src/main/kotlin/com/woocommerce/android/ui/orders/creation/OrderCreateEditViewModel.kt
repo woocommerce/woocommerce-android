@@ -1238,7 +1238,11 @@ class OrderCreateEditViewModel @Inject constructor(
         add(
             Order.FeeLine.EMPTY.copy(
                 name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
-                total = customAmountUIModel.amount
+                total = customAmountUIModel.amount,
+                taxStatus = when (customAmountUIModel.taxStatus.isTaxable) {
+                    true -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                    false -> Order.FeeLine.FeeLineTaxStatus.NONE
+                }
             )
         )
     }
@@ -1250,7 +1254,11 @@ class OrderCreateEditViewModel @Inject constructor(
         if (feeLine.id == customAmountUIModel.id) {
             feeLine.copy(
                 name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
-                total = customAmountUIModel.amount
+                total = customAmountUIModel.amount,
+                taxStatus = when (customAmountUIModel.taxStatus.isTaxable) {
+                    true -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                    false -> Order.FeeLine.FeeLineTaxStatus.NONE
+                }
             )
         } else {
             feeLine
