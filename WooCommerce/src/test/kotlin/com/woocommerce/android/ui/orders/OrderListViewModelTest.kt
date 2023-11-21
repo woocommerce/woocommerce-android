@@ -109,9 +109,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val feedbackPrefs = mock<FeedbackPrefs>()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
     @Before
     fun setup() = testBlocking {
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(WCOrderListDescriptor(site = mock()))

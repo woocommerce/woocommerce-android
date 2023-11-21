@@ -52,10 +52,6 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()

@@ -48,10 +48,6 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: EditShippingLabelPaymentViewModel
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     fun setup(accountSettings: WooResult<ShippingAccountSettings> = WooResult(shippingAccountSettings)) {
         testBlocking {
             whenever(shippingLabelRepository.getAccountSettings()).thenReturn(accountSettings)

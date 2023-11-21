@@ -50,10 +50,6 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         password = "password"
     }
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     suspend fun setup(
         isJetpackInstalled: Boolean = false,
         prepareMocks: suspend () -> Unit = { }

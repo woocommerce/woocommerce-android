@@ -81,10 +81,6 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         )
     }
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Before
     fun setup() {
         whenever(storeInstallationLoadingTimer.observe()).thenReturn(flowOf(INITIAL_LOADING_STATE))

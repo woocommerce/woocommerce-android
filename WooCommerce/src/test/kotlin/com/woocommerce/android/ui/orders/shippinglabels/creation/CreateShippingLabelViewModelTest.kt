@@ -193,10 +193,6 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Before
     fun setup() {
         stateFlow = MutableStateFlow(Transition(Idle, NoOp))
