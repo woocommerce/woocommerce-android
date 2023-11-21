@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
 import java.util.Date
@@ -93,9 +94,7 @@ object ProductHelper {
             downloads = listOf(),
             isPurchasable = false,
             subscription =
-            // Adding data only for subscription not variable subscription.
-            // Variable subscription will have its details for each of the variations
-            if (productType == SUBSCRIPTION) getDefaultSubscriptionDetails()
+            if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) getDefaultSubscriptionDetails()
             else null,
             isSampleProduct = false,
             parentId = 0,
@@ -111,6 +110,7 @@ object ProductHelper {
             signUpFee = null,
             trialPeriod = null,
             trialLength = null,
-            oneTimeShipping = false
+            oneTimeShipping = false,
+            paymentsSyncDate = null
         )
 }

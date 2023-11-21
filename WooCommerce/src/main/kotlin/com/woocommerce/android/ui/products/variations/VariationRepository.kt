@@ -10,9 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
@@ -73,8 +75,15 @@ class VariationRepository @Inject constructor(
      * Returns all product variations for a product and current site that are in the database
      */
     fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
+        val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
-            .map { it.toAppModel() }
+            .map {
+                if (product?.type == ProductType.VARIABLE_SUBSCRIPTION.value) {
+                    SubscriptionProductVariation(it)
+                } else {
+                    it.toAppModel()
+                }
+            }
             .sorted()
     }
 

@@ -1,2 +1,0 @@
-16.1:
-Ontdek een meer vloeiende WooCommerce-ervaring met onze laatste update! We hebben een nieuwe functie geïntroduceerd waarmee je aangepaste bedragen kunt invoeren tijdens het aanmaken van bestellingen, wat zorgt voor meer flexibiliteit. We hebben ook onze foutverwerking verbeterd voor een vloeiendere Jetpack-verbinding, met name wanneer er een aangepaste beheerders-URL wordt gebruikt. Geniet van een meer gestroomlijnde en efficiënte app, ontworpen voor jouw gemak.

@@ -1,8 +1,17 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 16.4
 -----
+
+
+16.3
+-----
+
+
+16.4
+-----
 - [***][Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]
 - [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
+- [*] Add ability to set the option "one-time shipping" for subscription products [https://github.com/woocommerce/woocommerce-android/issues/10199]
 
 16.3
 -----
@@ -15,6 +24,7 @@
 -----
 - [*] [Internal] Improve handling of Jetpack Connection for Jetpack CP sites when using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/10083]
 - [***] Custom Amounts M2: Redesign Payments and Customers section [https://github.com/woocommerce/woocommerce-android/pull/10122]
+- [**] Replaced the custom device image picker with Android photo picker, which doesn't require special image & video permissions [https://github.com/woocommerce/woocommerce-android/pull/10141]
 
 16.1
 -----
