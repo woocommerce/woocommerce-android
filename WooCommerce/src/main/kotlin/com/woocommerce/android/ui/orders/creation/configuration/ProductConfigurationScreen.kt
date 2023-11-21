@@ -59,17 +59,22 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 internal const val OUTLINED_BORDER_OPACITY = 0.14f
@@ -153,13 +158,13 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
-                            val info = childMapEntry.value[VariableProductRule.KEY]
-                                .getAttributeOptionsFromJsonStringOrNull()
+                            val attributes = childMapEntry.value[VariableProductRule.KEY]
+                                .toAttributesFromConfigurationStringOrNull()
 
                             OptionalVariableQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
-                                info = info,
+                                info = null,
                                 quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
@@ -170,7 +175,8 @@ fun ProductConfigurationScreen(
                                 isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                                 onSwitchChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                                }
+                                },
+                                attributes = attributes
                             )
                         }
 
@@ -179,20 +185,21 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
-                            val info = childMapEntry.value[VariableProductRule.KEY]
-                                .getAttributeOptionsFromJsonStringOrNull()
+                            val attributes = childMapEntry.value[VariableProductRule.KEY]
+                                .toAttributesFromConfigurationStringOrNull()
 
                             VariableQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
-                                info = info,
+                                info = null,
                                 quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                                 },
                                 minValue = quantityRule?.quantityMin,
                                 maxValue = quantityRule?.quantityMax,
-                                onSelectAttributes = { onSelectChildrenAttributes(item.id) }
+                                onSelectAttributes = { onSelectChildrenAttributes(item.id) },
+                                attributes = attributes
                             )
                         }
 
@@ -734,9 +741,20 @@ fun VariableQuantityProductItem(
     onSelectAttributes: () -> Unit,
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
-    minValue: Float? = null
+    minValue: Float? = null,
+    attributes: List<VariantOption>? = null
 ) {
-    Column(modifier = modifier.clickable { onSelectAttributes() }) {
+    Column(
+        modifier = modifier
+            .clickable {
+                if (quantity > 0f) {
+                    onSelectAttributes()
+                } else {
+                    onQuantityChanged(1f)
+                }
+            }
+            .animateContentSize()
+    ) {
         ConfigurableListItem(
             title = title,
             imageUrl = imageUrl,
@@ -751,7 +769,7 @@ fun VariableQuantityProductItem(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
                 )
             },
-            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 8.dp, end = 0.dp)
+            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 0.dp)
         ) {
             AnimatedVisibility(
                 visible = quantity > 0f,
@@ -769,12 +787,17 @@ fun VariableQuantityProductItem(
             }
         }
 
-        WCTextButton(
-            onClick = { onSelectAttributes() },
-            text = stringResource(id = R.string.configuration_variable_update),
-            allCaps = false,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-        )
+        AnimatedVisibility(
+            visible = quantity > 0f,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            VariableSelection(
+                attributes = attributes,
+                onSelectAttributes = onSelectAttributes,
+                modifier = Modifier.padding(start = 56.dp, end = 8.dp)
+            )
+        }
     }
 }
 
@@ -790,9 +813,20 @@ fun OptionalVariableQuantityProductItem(
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
-    minValue: Float? = null
+    minValue: Float? = null,
+    attributes: List<VariantOption>? = null
 ) {
-    Column(modifier = modifier.clickable { onSelectAttributes() }) {
+    Column(
+        modifier = modifier
+            .clickable {
+                if (isIncluded) {
+                    onSelectAttributes()
+                } else {
+                    onSwitchChanged(true)
+                }
+            }
+            .animateContentSize()
+    ) {
         ConfigurableListItem(
             title = title,
             imageUrl = imageUrl,
@@ -804,7 +838,7 @@ fun OptionalVariableQuantityProductItem(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
                 )
             },
-            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 8.dp, end = 0.dp)
+            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 0.dp)
         ) {
             AnimatedVisibility(
                 visible = isIncluded,
@@ -822,12 +856,68 @@ fun OptionalVariableQuantityProductItem(
             }
         }
 
-        WCTextButton(
-            onClick = { onSelectAttributes() },
-            text = stringResource(id = R.string.configuration_variable_update),
-            allCaps = false,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+        AnimatedVisibility(
+            visible = isIncluded,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            VariableSelection(
+                attributes = attributes,
+                onSelectAttributes = onSelectAttributes,
+                modifier = Modifier.padding(start = 56.dp, end = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun VariableSelection(
+    attributes: List<VariantOption>?,
+    onSelectAttributes: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
         )
+
+        if (attributes?.isNotEmpty() == true) {
+            Column(modifier = Modifier.padding(top = 8.dp)) {
+                attributes.forEach { attribute ->
+                    val annotatedString = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(attribute.name)
+                        }
+                        append(" ${attribute.option}")
+                    }
+                    Text(text = annotatedString, modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .clickable { onSelectAttributes() }
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically),
+                text = stringResource(id = R.string.configuration_variable_update),
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.primary,
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_right),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .size(dimensionResource(id = R.dimen.major_200))
+                    .align(Alignment.CenterVertically)
+            )
+        }
     }
 }
 
@@ -846,12 +936,18 @@ fun VariableQuantityProductItemPreview() {
     }
 }
 
-fun String?.getAttributeOptionsFromJsonStringOrNull(): String? {
-    return this?.let { attributes ->
-        val regexPattern = "\"option\"\\s*:\\s*\"([^\"]+)\""
-        val regex = Regex(regexPattern)
-        val matches = regex.findAll(attributes)
-        val optionsList = matches.map { it.groupValues[1] }
-        optionsList.joinToString(" • ")
-    }
+@Suppress("UNCHECKED_CAST")
+private fun String?.toAttributesFromConfigurationStringOrNull(): List<VariantOption>? {
+    return this?.runCatching {
+        val gson = Gson()
+        val mapType = object : TypeToken<Map<String, Any>>() {}.type
+        val map = gson.fromJson<Map<String, Any>>(this, mapType)
+        (map[VariableProductRule.VARIATION_ATTRIBUTES] as? List<Map<String, Any>>)?.mapNotNull { attribute ->
+            VariantOption(
+                id = attribute["id"] as? Long,
+                name = attribute["name"]?.toString(),
+                option = attribute["option"]?.toString()
+            ).takeIf { variantOption -> variantOption != VariantOption.empty }
+        }
+    }?.getOrNull()
 }
