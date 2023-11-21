@@ -18,13 +18,14 @@ data class SubscriptionDetails(
     val trialPeriod: SubscriptionPeriod?,
     val trialLength: Int?,
     val oneTimeShipping: Boolean,
-    val paymentsSyncDate: Int?
+    val paymentsSyncDate: SubscriptionPaymentSyncDate?
 ) : Parcelable {
     /**
      * Returns true when free trial is disabled and renewal payments are not synced
      */
     val supportsOneTimeShipping: Boolean
-        get() = (trialLength == null || trialLength == 0) && (paymentsSyncDate == null || paymentsSyncDate == 0)
+        get() = (trialLength == null || trialLength == 0) &&
+            (paymentsSyncDate == null || paymentsSyncDate == SubscriptionPaymentSyncDate.None)
 }
 
 fun SubscriptionDetails.toMetadataJson(): JsonArray {
