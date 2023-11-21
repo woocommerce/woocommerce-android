@@ -64,7 +64,8 @@ class CustomAmountsDialogViewModel @Inject constructor(
         val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
-        val createdOrder: Order? = null
+        val createdOrder: Order? = null,
+        val isTaxable: Boolean = false,
     ) : Parcelable
 
     @Parcelize
