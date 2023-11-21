@@ -454,6 +454,12 @@ class ProductDetailCardBuilder(
                 Pair(
                     resources.getString(string.product_shipping_class),
                     viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
+                ),
+                Pair(
+                    resources.getString(string.subscription_one_time_shipping),
+                    if (subscription?.oneTimeShipping == true) {
+                        resources.getString(string.subscription_one_time_shipping_enabled)
+                    } else ""
                 )
             )
 
