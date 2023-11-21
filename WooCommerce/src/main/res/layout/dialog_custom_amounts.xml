@@ -81,6 +81,15 @@
                 app:usesFullFormatting="true"
                 tools:hint="0.00" />
 
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/taxToggleComposeView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editPrice"/>
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customAmountNameCaptionText"
                 style="@style/Woo.TextView.Caption"
@@ -92,7 +101,7 @@
                 android:textSize="@dimen/text_major_25"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editPrice" />
+                app:layout_constraintTop_toBottomOf="@id/taxToggleComposeView" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/customAmountNameText"
