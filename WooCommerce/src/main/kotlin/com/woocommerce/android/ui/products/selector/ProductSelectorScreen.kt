@@ -286,7 +286,7 @@ private fun displayProductsSection(
             SelectorListItem(
                 title = product.title,
                 imageUrl = product.imageUrl,
-                infoLine1 = product.stockAndPrice,
+                infoLine1 = product.getInformation(),
                 infoLine2 = product.sku?.let {
                     stringResource(string.product_selector_sku_value, it)
                 },
@@ -396,7 +396,7 @@ private fun ProductList(
                 SelectorListItem(
                     title = product.title,
                     imageUrl = product.imageUrl,
-                    infoLine1 = product.stockAndPrice,
+                    infoLine1 = product.getInformation(),
                     infoLine2 = product.sku?.let {
                         stringResource(string.product_selector_sku_value, it)
                     },
@@ -716,4 +716,14 @@ fun ProductListEmptyPreview() {
 @Composable
 fun ProductListSkeletonPreview() {
     ProductListSkeleton()
+}
+
+@Composable
+fun ListItem.getInformation(): String? {
+    return if (type == com.woocommerce.android.ui.products.ProductType.BUNDLE) {
+        listOfNotNull(stringResource(id = string.product_type_bundle), stockAndPrice)
+            .joinToString(" \u2022 ")
+    } else {
+        stockAndPrice
+    }
 }
