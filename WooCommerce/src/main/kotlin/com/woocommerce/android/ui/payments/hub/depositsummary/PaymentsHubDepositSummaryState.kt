@@ -7,6 +7,7 @@ sealed class PaymentsHubDepositSummaryState {
     data class Error(val error: WooError) : PaymentsHubDepositSummaryState()
     data class Success(
         val overview: Overview,
+        val fromCache: Boolean,
         val onLearnMoreClicked: () -> Unit,
         val onExpandCollapseClicked: (Boolean) -> Unit,
         val onCurrencySelected: (String) -> Unit,
@@ -18,8 +19,10 @@ sealed class PaymentsHubDepositSummaryState {
     )
 
     data class Info(
-        val availableFunds: String,
-        val pendingFunds: String,
+        val availableFundsFormatted: String,
+        val pendingFundsFormatted: String,
+        val availableFundsAmount: Long,
+        val pendingFundsAmount: Long,
         val pendingBalanceDepositsCount: Int,
         val fundsAvailableInDays: Int?,
         val fundsDepositInterval: Interval?,

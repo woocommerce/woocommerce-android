@@ -37,14 +37,16 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             defaultCurrency = defaultCurrency,
             infoPerCurrency = currencies.associateWith { currency ->
                 PaymentsHubDepositSummaryState.Info(
-                    availableFunds = formatMoney(
+                    availableFundsFormatted = formatMoney(
                         amount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
                         currency = currency
                     ),
-                    pendingFunds = formatMoney(
+                    pendingFundsFormatted = formatMoney(
                         amount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
                         currency = currency
                     ),
+                    availableFundsAmount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                    pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
                     pendingBalanceDepositsCount = pendingBalances.firstOrNull {
                         it.currency == currency
                     }?.depositsCount ?: 0,
