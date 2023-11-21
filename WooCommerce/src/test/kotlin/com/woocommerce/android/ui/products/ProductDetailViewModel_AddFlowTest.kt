@@ -160,10 +160,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         )
     )
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()

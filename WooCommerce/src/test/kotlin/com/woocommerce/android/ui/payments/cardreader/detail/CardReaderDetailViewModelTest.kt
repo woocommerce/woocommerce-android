@@ -55,10 +55,6 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         on(it.get()).thenReturn(SiteModel())
     }
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Test
     fun `when view model init with connected state should emit loading view state`() {
         // GIVEN

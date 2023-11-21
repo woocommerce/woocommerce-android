@@ -104,10 +104,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
         // GIVEN & WHEN

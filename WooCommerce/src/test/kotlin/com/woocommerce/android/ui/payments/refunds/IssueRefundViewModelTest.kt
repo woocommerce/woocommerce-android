@@ -99,10 +99,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         )
     }
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
-
     @Test
     fun `when order has no shipping, then refund notice is not visible`() {
         testBlocking {

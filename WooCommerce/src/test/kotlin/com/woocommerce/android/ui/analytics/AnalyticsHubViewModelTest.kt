@@ -94,9 +94,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: AnalyticsHubViewModel
 
-    init {
-        disableCatchingOfNonTestRelatedExceptions()
-    }
     @Before
     fun setUp() {
         testLocale = Locale.UK
