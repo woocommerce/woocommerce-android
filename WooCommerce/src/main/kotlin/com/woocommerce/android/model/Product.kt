@@ -157,7 +157,8 @@ data class Product(
         get() {
             return weight > 0 ||
                 length > 0 || width > 0 || height > 0 ||
-                shippingClass.isNotEmpty()
+                shippingClass.isNotEmpty() ||
+                subscription?.oneTimeShipping == true
         }
     val productType get() = ProductType.fromString(type)
     val variationEnabledAttributes
@@ -479,7 +480,9 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
 
 fun WCProductModel.toAppModel(): Product {
     val productType = ProductType.fromString(type)
-    val subscription = if (productType == ProductType.SUBSCRIPTION) {
+    val subscription = if (
+        productType == ProductType.SUBSCRIPTION || productType == ProductType.VARIABLE_SUBSCRIPTION
+    ) {
         SubscriptionDetailsMapper.toAppModel(this.metadata)
     } else {
         null

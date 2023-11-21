@@ -10,7 +10,7 @@ import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
 object SubscriptionDetailsMapper {
     private val gson by lazy { Gson() }
     fun toAppModel(metadata: String): SubscriptionDetails? {
-        val jsonArray = gson.fromJson(metadata, JsonArray::class.java)
+        val jsonArray = gson.fromJson(metadata, JsonArray::class.java) ?: return null
 
         val subscriptionInformation = jsonArray
             .mapNotNull { it as? JsonObject }
