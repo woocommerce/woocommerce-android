@@ -163,6 +163,7 @@ fun ProductSelectorScreen(
                 onLoadMore = onLoadMore,
                 trackConfigurableProduct = trackConfigurableProduct
             )
+
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
         }
@@ -256,6 +257,7 @@ private fun displayProductsSection(
             stringResource(id = string.product_selector_popular_products_heading),
             ProductSourceForTracking.POPULAR
         )
+
         ProductType.RECENT -> Triple(
             state.recentProducts,
             stringResource(id = string.product_selector_recent_products_heading),
@@ -289,9 +291,10 @@ private fun displayProductsSection(
                     stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
-                isArrowVisible = product.hasVariations() || product is ListItem.ConfigurableListItem,
+                isArrowVisible = product.hasVariations(),
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
-                imageContentDescription = stringResource(string.product_image_content_description)
+                imageContentDescription = stringResource(string.product_image_content_description),
+                isCogwheelVisible = product is ListItem.ConfigurableListItem
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -398,9 +401,10 @@ private fun ProductList(
                         stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.hasVariations() || product is ListItem.ConfigurableListItem,
+                    isArrowVisible = product.hasVariations(),
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
-                    imageContentDescription = stringResource(string.product_image_content_description)
+                    imageContentDescription = stringResource(string.product_image_content_description),
+                    isCogwheelVisible = product is ListItem.ConfigurableListItem
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
