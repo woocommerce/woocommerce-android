@@ -30,8 +30,8 @@ object SubscriptionDetailsMapper {
                 ?.asString ?: ""
             val periodInterval = periodIntervalString.toIntOrNull() ?: 0
 
-            val lengthString = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH]?.asString ?: ""
-            val lengthInt = lengthString.toIntOrNull()
+            val lengthInt = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH]?.asString
+                ?.toIntOrNull()
             val length = if (lengthInt != null && lengthInt > 0) lengthInt else null
 
             val signUpFee = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE]?.asString
@@ -41,9 +41,8 @@ object SubscriptionDetailsMapper {
                 ?.asString
             val trialPeriod = trialPeriodString?.let { SubscriptionPeriod.fromValue(trialPeriodString) }
 
-            val trialLengthString = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH]
-                ?.asString ?: ""
-            val trialLengthInt = trialLengthString.toIntOrNull()
+            val trialLengthInt = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH]
+                ?.asString?.toIntOrNull()
             val trialLength = if (trialLengthInt != null && trialLengthInt > 0) trialLengthInt else null
 
             val oneTimeShipping = subscriptionInformation[SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING]
