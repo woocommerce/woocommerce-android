@@ -3,6 +3,7 @@
 16.4
 -----
 - [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
+- [*] [Internal] Animation to indicate change in the balances on the payments screen [https://github.com/woocommerce/woocommerce-android/pull/10209]
 
 16.3
 -----
