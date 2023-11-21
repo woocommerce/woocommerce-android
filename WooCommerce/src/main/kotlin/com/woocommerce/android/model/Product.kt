@@ -95,9 +95,9 @@ data class Product(
     @Parcelize
     data class Image(
         val id: Long,
-        val name: String,
+        val name: String?,
         val source: String,
-        val dateCreated: Date
+        val dateCreated: Date?
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {

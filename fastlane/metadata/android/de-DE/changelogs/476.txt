@@ -1,0 +1,2 @@
+16.2:
+Es gibt ein neues Update an unserer WooCommerce-Mobil-App! Wir freuen uns, dich über die Umgestaltung des Zahlungs- und Kundenabschnitts zu informieren, wodurch der Workflow bei der Bestellerstellung optimiert wird. Dieses Update wurde im Einklang mit unseren Designspezifikationen vorgenommen und erleichtert die Eingabe individueller Beträge. Profitiere von einem intuitiveren, benutzerfreundlichen Erlebnis. Führe jetzt ein Update durch!

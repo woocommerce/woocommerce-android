@@ -88,8 +88,9 @@
 # This is generated automatically by the Android Gradle plugin. (8.1.0)
 -dontwarn com.google.auto.service.AutoService
 -dontwarn com.squareup.kotlinpoet.FileSpec
--dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder$Builder
 -dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder
+-dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder$Builder
+-dontwarn com.squareup.kotlinpoet.javapoet.J2kInteropKt
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
 -dontwarn javax.lang.model.SourceVersion
@@ -135,8 +136,11 @@
 -dontwarn javax.lang.model.util.SimpleTypeVisitor8
 -dontwarn javax.lang.model.util.Types
 -dontwarn javax.tools.Diagnostic$Kind
--dontwarn javax.tools.JavaFileObject$Kind
+-dontwarn javax.tools.FileObject
+-dontwarn javax.tools.JavaFileManager$Location
 -dontwarn javax.tools.JavaFileObject
+-dontwarn javax.tools.JavaFileObject$Kind
 -dontwarn javax.tools.SimpleJavaFileObject
+-dontwarn javax.tools.StandardLocation
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 -dontwarn org.slf4j.impl.StaticMDCBinder

@@ -362,7 +362,7 @@ dependencies {
     implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("${gradle.ext.mediaPickerSourceDeviceBinaryPath}:$mediapickerVersion")
+    implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:$mediapickerVersion")
     implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion") {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
