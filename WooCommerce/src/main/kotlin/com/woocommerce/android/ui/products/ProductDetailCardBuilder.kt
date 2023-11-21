@@ -264,6 +264,7 @@ class ProductDetailCardBuilder(
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),
+                product.shipping(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -462,12 +463,18 @@ class ProductDetailCardBuilder(
                 viewModel.onEditProductCardClicked(
                     ViewProductShipping(
                         ShippingData(
-                            weight,
-                            length,
-                            width,
-                            height,
-                            shippingClass,
-                            shippingClassId
+                            weight = weight,
+                            length = length,
+                            width = width,
+                            height = height,
+                            shippingClassSlug = shippingClass,
+                            shippingClassId = shippingClassId,
+                            subscriptionShippingData = if (this.productType == SUBSCRIPTION) {
+                                ShippingData.SubscriptionShippingData(
+                                    oneTimeShipping = this.subscription?.oneTimeShipping ?: false,
+                                    canEnableOneTimeShipping = this.subscription?.supportsOneTimeShipping ?: false
+                                )
+                            } else null
                         )
                     ),
                     AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED

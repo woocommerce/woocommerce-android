@@ -1242,6 +1242,7 @@ class ProductDetailViewModel @Inject constructor(
         length: Int? = null,
         trialLength: Int? = null,
         trialPeriod: SubscriptionPeriod? = null,
+        oneTimeShipping: Boolean? = null
     ) {
         viewState.productDraft?.let { product ->
             val subscription = product.subscription ?: return
@@ -1259,7 +1260,8 @@ class ProductDetailViewModel @Inject constructor(
                 signUpFee = signUpFee,
                 length = updatedLength,
                 trialLength = trialLength ?: subscription.trialLength,
-                trialPeriod = trialPeriod ?: subscription.trialPeriod
+                trialPeriod = trialPeriod ?: subscription.trialPeriod,
+                oneTimeShipping = oneTimeShipping ?: subscription.oneTimeShipping
             )
             viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
         }

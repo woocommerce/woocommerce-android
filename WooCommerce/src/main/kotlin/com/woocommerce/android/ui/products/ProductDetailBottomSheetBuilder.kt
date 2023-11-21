@@ -43,7 +43,7 @@ class ProductDetailBottomSheetBuilder(
     @Suppress("LongMethod")
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
-            SIMPLE -> {
+            SIMPLE, SUBSCRIPTION -> {
                 listOfNotNull(
                     product.getShipping(),
                     product.getCategories(),
@@ -76,15 +76,6 @@ class ProductDetailBottomSheetBuilder(
                     product.getTags(),
                     product.getShortDescription(),
                     product.getLinkedProducts()
-                )
-            }
-            SUBSCRIPTION -> {
-                listOfNotNull(
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts(),
-                    product.getDownloadableFiles()
                 )
             }
             VARIABLE_SUBSCRIPTION -> {

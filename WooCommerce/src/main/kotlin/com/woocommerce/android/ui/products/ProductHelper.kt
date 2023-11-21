@@ -111,6 +111,7 @@ object ProductHelper {
             signUpFee = null,
             trialPeriod = null,
             trialLength = null,
-            oneTimeShipping = false
+            oneTimeShipping = false,
+            paymentsSyncDate = null
         )
 }

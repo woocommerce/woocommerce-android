@@ -3,9 +3,7 @@ package com.woocommerce.android.ui.subscriptions
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
-import com.woocommerce.android.model.SubscriptionPeriod.Month
 import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragmentArgs
 import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -15,21 +13,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductSubscriptionFreeTrialViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductSubscriptionFreeTrialViewModel
     private val savedStateHandle: SavedStateHandle = ProductSubscriptionFreeTrialFragmentArgs(
-        SubscriptionDetails(
-            price = BigDecimal(10),
-            period = Month,
-            periodInterval = 1,
-            length = 10,
-            signUpFee = null,
-            trialPeriod = null,
-            trialLength = null,
-            oneTimeShipping = false
+        com.woocommerce.android.ui.products.ProductHelper.getDefaultSubscriptionDetails().copy(
+            length = 10
         )
     ).initSavedStateHandle()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()

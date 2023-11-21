@@ -240,6 +240,11 @@ class ProductDetailFragment :
                 shippingClass = it.shippingClassSlug,
                 shippingClassId = it.shippingClassId
             )
+            if (it.subscriptionShippingData != null) {
+                viewModel.updateProductSubscription(
+                    oneTimeShipping = it.subscriptionShippingData.oneTimeShipping
+                )
+            }
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(images = it)
