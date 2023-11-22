@@ -965,6 +965,14 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddCoupon)
     }
 
+    fun onGiftCardButtonClicked() {
+        triggerEvent(OrderCreateEditNavigationTarget.GiftCardView)
+    }
+
+    fun onAddGiftCardButtonClicked() {
+        triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }

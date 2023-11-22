@@ -67,4 +67,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val productId: Long,
         val configuration: ProductConfiguration
     ) : OrderCreateEditNavigationTarget()
+
+    object GiftCardView: OrderCreateEditNavigationTarget()
+    object AddGiftCard : OrderCreateEditNavigationTarget()
 }
