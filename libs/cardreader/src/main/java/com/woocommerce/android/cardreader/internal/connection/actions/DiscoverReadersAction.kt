@@ -31,11 +31,7 @@ internal class DiscoverReadersAction(
     }
 
     @RequiresPermission(
-        allOf = [
-            "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.BLUETOOTH_CONNECT",
-            "android.permission.BLUETOOTH_SCAN"
-        ]
+        value = "android.permission.ACCESS_FINE_LOCATION",
     )
     fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(isSimulated))
