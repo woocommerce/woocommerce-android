@@ -10,6 +10,7 @@
 16.4
 -----
 - [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
+- [**] Custom Amounts M4.1: Add the ability to charge tax for custom amounts [https://github.com/woocommerce/woocommerce-android/pull/10222]
 
 16.3
 -----
