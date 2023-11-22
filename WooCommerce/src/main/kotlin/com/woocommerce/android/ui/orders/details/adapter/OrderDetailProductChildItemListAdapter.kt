@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductChildItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
@@ -49,6 +50,12 @@ class OrderDetailProductChildItemListAdapter(
         private val binding: OrderDetailProductChildItemBinding
     ) :
         RecyclerView.ViewHolder(binding.root) {
+
+        private val context = binding.root.context
+
+        private val emptyTotalColor = context.getColorCompat(R.color.color_on_surface_disabled)
+        private val defaultTotalColor = context.getColorCompat(R.color.color_on_surface_high)
+
         fun bind(
             productItem: OrderProduct.ProductItem,
             productImageMap: ProductImageMap,
@@ -61,7 +68,12 @@ class OrderDetailProductChildItemListAdapter(
 
             binding.productInfoName.text = item.name
             val orderTotal = formatCurrencyForDisplay(item.total)
-            binding.productInfoTotal.text = orderTotal
+            val totalColor = if(item.total.compareTo(BigDecimal.ZERO) == 0) emptyTotalColor else defaultTotalColor
+
+            binding.productInfoTotal.apply {
+                text = orderTotal
+                setTextColor(totalColor)
+            }
 
             val productPrice = formatCurrencyForDisplay(item.price)
             val attributes = item.attributesDescription
