@@ -47,10 +47,10 @@ class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: Cr
                 this.name == newLine.name &&
                     this.total isEqualTo newLine.total &&
                     this.taxStatus == newLine.taxStatus
-            // Verify the tax status for custom amounts to ensure accuracy.
-            // The final total amount may vary as users have the option to modify custom amounts
-            // by altering the tax status. This check is crucial to prevent discrepancies
-            // in tax calculations and maintain consistency in the user's entries.
+                // Verify the tax status for custom amounts to ensure accuracy.
+                // The final total amount may vary as users have the option to modify custom amounts
+                // by altering the tax status. This check is crucial to prevent discrepancies
+                // in tax calculations and maintain consistency in the user's entries.
             }
 
         val hasSameCouponLines = old.couponLines.areSameAs(new.couponLines) { newLine ->
