@@ -601,6 +601,7 @@ class OrderCreateEditFormFragment :
                 newOrderData
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
+            paymentSection.bindGiftCardSubSection(newOrderData)
         }
     }
 
@@ -682,6 +683,10 @@ class OrderCreateEditFormFragment :
             couponValue.isVisible = false
             addCouponButton.isVisible = true
         }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
+
     }
 
     private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
