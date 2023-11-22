@@ -40,6 +40,16 @@
                 app:optionTitle="@string/product_catalog_visibility"
                 tools:optionValue="Shop only" />
 
+            <View android:id="@+id/productIsVirtualDivider" style="@style/Woo.Divider.TitleAligned" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/productIsVirtual"
+                style="@style/Widget.Woo.Settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/major_100"
+                android:text="@string/product_is_virtual" />
+
             <View android:id="@+id/productIsDownloadableDivider" style="@style/Woo.Divider.TitleAligned" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial

@@ -4,6 +4,7 @@
 - [***] [Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]
 - [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
 - [*] Add ability to set the option "one-time shipping" for subscription products [https://github.com/woocommerce/woocommerce-android/issues/10199]
+- [*] Add ability to set subscription products as "virtual products" [https://github.com/woocommerce/woocommerce-android/pull/10219]
 
 16.3
 -----
