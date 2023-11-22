@@ -79,36 +79,21 @@ class VariationDetailRepository @Inject constructor(
             .model?.let { true }
             ?: false
 
-    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
-        productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
-
     suspend fun getVariation(remoteProductId: Long, remoteVariationId: Long): ProductVariation? =
         withContext(coroutineDispatchers.io) {
-            getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
-        }
-
-    private suspend fun getSubscriptionProductVariation(
-        remoteProductId: Long,
-        remoteVariationId: Long
-    ): SubscriptionProductVariation? {
-        return withContext(coroutineDispatchers.io) {
-            productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)?.let { model ->
-                SubscriptionProductVariation(model)
-            }
-        }
-    }
-
-    suspend fun getVariationByProductType(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
-        return withContext(coroutineDispatchers.io) {
             val productType = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId).let { model ->
                 ProductType.fromString(model?.type ?: "")
             }
-            when (productType) {
-                ProductType.VARIABLE_SUBSCRIPTION -> getSubscriptionProductVariation(remoteProductId, remoteVariationId)
-                else -> getVariation(remoteProductId, remoteVariationId)
+            getCachedWCVariation(remoteProductId, remoteVariationId)?.let { model ->
+                when (productType) {
+                    ProductType.VARIABLE_SUBSCRIPTION -> SubscriptionProductVariation(model)
+                    else -> model.toAppModel()
+                }
             }
         }
-    }
+
+    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+        productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
     suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
         return withContext(coroutineDispatchers.io) {

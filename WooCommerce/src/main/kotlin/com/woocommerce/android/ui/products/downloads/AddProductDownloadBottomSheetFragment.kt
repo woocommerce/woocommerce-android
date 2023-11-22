@@ -23,11 +23,11 @@ import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
-import org.wordpress.android.mediapicker.model.MediaTypes.DOCUMENTS
 import org.wordpress.android.mediapicker.model.MediaTypes.EVERYTHING
-import org.wordpress.android.mediapicker.model.MediaTypes.MEDIA
+import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES_AND_VIDEOS
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,12 +72,12 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment(), Med
                     mediaTypes = EVERYTHING
                 )
                 is PickMediaFileFromDevice -> mediaPickerHelper.showMediaPicker(
-                    source = SYSTEM_PICKER,
-                    mediaTypes = MEDIA
+                    source = DEVICE,
+                    mediaTypes = IMAGES_AND_VIDEOS
                 )
                 is PickDocumentFromDevice -> mediaPickerHelper.showMediaPicker(
                     source = SYSTEM_PICKER,
-                    mediaTypes = DOCUMENTS
+                    mediaTypes = EVERYTHING
                 )
                 is AddFile -> {
                     findNavController().navigateUp()

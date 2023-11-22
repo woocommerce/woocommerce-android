@@ -17,8 +17,16 @@ data class SubscriptionDetails(
     val signUpFee: BigDecimal?,
     val trialPeriod: SubscriptionPeriod?,
     val trialLength: Int?,
-    val oneTimeShipping: Boolean
-) : Parcelable
+    val oneTimeShipping: Boolean,
+    val paymentsSyncDate: SubscriptionPaymentSyncDate?
+) : Parcelable {
+    /**
+     * Returns true when free trial is disabled and renewal payments are not synced
+     */
+    val supportsOneTimeShipping: Boolean
+        get() = (trialLength == null || trialLength == 0) &&
+            (paymentsSyncDate == null || paymentsSyncDate == SubscriptionPaymentSyncDate.None)
+}
 
 fun SubscriptionDetails.toMetadataJson(): JsonArray {
     val subscriptionValues = mapOf(
@@ -29,7 +37,7 @@ fun SubscriptionDetails.toMetadataJson(): JsonArray {
         SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to signUpFee?.toString().orEmpty(),
         SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to trialPeriod?.value,
         SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to (trialLength ?: 0),
-        SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to oneTimeShipping
+        SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to if (oneTimeShipping) "yes" else "no",
     )
     val jsonArray = JsonArray()
     subscriptionValues.forEach { (key, value) ->

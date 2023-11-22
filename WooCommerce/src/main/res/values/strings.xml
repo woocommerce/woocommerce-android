@@ -3180,8 +3180,8 @@
     <string name="product_downloadable_files_upload_dialog_title">Uploading files</string>
     <string name="product_downloadable_files_upload_dialog_message">Please wait…</string>
     <string name="product_downloadable_files_url_invalid">Check that the url entered is valid</string>
-    <string name="product_downloadable_files_add_media_from_device">Media files on device</string>
-    <string name="product_downloadable_files_add_documents_from_device">Documents on device</string>
+    <string name="product_downloadable_files_add_media_from_device">Images and videos on device</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documents and other files on device</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Media Library</string>
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
@@ -3547,6 +3547,10 @@
     <string name="subscription_sign_up_fee">Sign up fee</string>
     <string name="subscription_sign_up_fee_explanation">Optional, the sign-up fee will be charged immediately, even if the product has a free trial or the payment dates are synced.</string>
     <string name="subscription_free_trial">Free trial</string>
+    <string name="subscription_one_time_shipping">One time shipping</string>
+    <string name="subscription_one_time_shipping_enabled">Enabled</string>
+    <string name="subscription_one_time_shipping_description">Enable this to only charge shipping once on the initial order.</string>
+    <string name="subscription_one_time_shipping_note">Note: for this setting to be enabled the subscription must not have a free trial or a synced renewal date.</string>
 
 
     <!--
