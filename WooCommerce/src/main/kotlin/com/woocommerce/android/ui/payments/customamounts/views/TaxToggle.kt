@@ -52,8 +52,6 @@ fun TaxTogglePreview() {
     WooThemeWithBackground {
         TaxToggle(
             CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
-        ) {
-
-        }
+        ) {}
     }
 }
