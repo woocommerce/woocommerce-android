@@ -1,0 +1,2 @@
+16,2:
+Te damos la bienvenida a la última actualización de nuestra aplicación móvil de WooCommerce. Nos complace presentar una sección de pagos y clientes rediseñada, que mejora el flujo de trabajo de creación de pedidos. Esta actualización se ajusta a nuestras especificaciones de diseño, lo que facilita la introducción de importes personalizados. Disfruta de una experiencia más intuitiva y fácil de usar. ¡Mejora tu plan ahora!

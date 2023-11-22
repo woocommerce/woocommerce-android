@@ -60,25 +60,15 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data
-                    android:host="woocommerce.com"
-                    android:path="/mobile/orders/details"
-                    android:scheme="https" />
+                <data android:scheme="https"/>
 
-                <data
-                    android:host="woocommerce.com"
-                    android:path="/mobile/payments"
-                    android:scheme="https" />
+                <data android:host="woocommerce.com"/>
+                <data android:host="woo.com"/>
 
-                <data
-                    android:host="woocommerce.com"
-                    android:path="/mobile/payments/tap-to-pay"
-                    android:scheme="https" />
-
-                <data
-                    android:host="woocommerce.com"
-                    android:pathPrefix="/products/hardware/"
-                    android:scheme="https" />
+                <data android:path="/mobile/orders/details"/>
+                <data android:path="/mobile/payments"/>
+                <data android:path="/mobile/payments/tap-to-pay"/>
+                <data android:pathPrefix="/products/hardware/"/>
             </intent-filter>
         </activity>
         <activity
@@ -228,6 +218,18 @@
             android:value="barcode_ui,ocr" />
 
         <meta-data android:name="io.sentry.traces.activity.enable" android:value="false" />
+
+        <!-- Trigger Google Play services to install the backported photo picker module. -->
+        <service android:name="com.google.android.gms.metadata.ModuleDependencies"
+            android:enabled="false"
+            android:exported="false"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+            </intent-filter>
+            <meta-data android:name="photopicker_activity:0:required" android:value="" />
+        </service>
+
     </application>
 
 </manifest>

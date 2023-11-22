@@ -1,2 +1,0 @@
-16.1:
-Descubre una experiencia de WooCommerce más fluida con nuestra última actualización. Hemos añadido una nueva función que te permite introducir cantidades personalizadas durante la creación del pedido, lo que te proporciona una mayor flexibilidad. También hemos mejorado nuestra gestión de errores para una conexión de Jetpack más fluida, especialmente cuando se utiliza una URL de administración personalizada. Disfruta de una aplicación más ágil y eficaz, diseñada para tu comodidad.
