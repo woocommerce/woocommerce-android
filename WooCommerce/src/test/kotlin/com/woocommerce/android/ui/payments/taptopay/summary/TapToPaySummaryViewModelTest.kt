@@ -503,7 +503,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
             TapToPaySummaryViewModel.NavigateToUrlInGenericWebView(
-                "https://woocommerce.com/document/woocommerce-payments/in-person-payments/tap-to-pay-android/"
+                "https://woo.com/document/woopayments/in-person-payments/tap-to-pay-android/"
             )
         )
     }
