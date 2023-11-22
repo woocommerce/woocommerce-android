@@ -13,6 +13,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -55,10 +56,11 @@ class ProductShippingViewModel @Inject constructor(
         width: Float? = shippingData.width,
         height: Float? = shippingData.height,
         shippingClassSlug: String? = shippingData.shippingClassSlug,
-        shippingClassId: Long? = shippingData.shippingClassId
+        shippingClassId: Long? = shippingData.shippingClassId,
+        oneTimeShipping: Boolean? = shippingData.subscriptionShippingData?.oneTimeShipping
     ) {
         viewState = viewState.copy(
-            shippingData = ShippingData(
+            shippingData = shippingData.copy(
                 weight = weight,
                 length = length,
                 width = width,
@@ -67,6 +69,15 @@ class ProductShippingViewModel @Inject constructor(
                 shippingClassId = shippingClassId
             )
         )
+        oneTimeShipping?.let {
+            viewState = viewState.copy(
+                shippingData = shippingData.copy(
+                    subscriptionShippingData = shippingData.subscriptionShippingData?.copy(
+                        oneTimeShipping = it
+                    )
+                )
+            )
+        }
     }
 
     fun onExit() {
@@ -94,7 +105,10 @@ class ProductShippingViewModel @Inject constructor(
     data class ViewState(
         val shippingData: ShippingData = ShippingData(),
         val isShippingClassSectionVisible: Boolean? = null
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isOneTimeShippingSectionVisible = shippingData.subscriptionShippingData != null
+    }
 
     @Parcelize
     data class ShippingData(
@@ -103,6 +117,14 @@ class ProductShippingViewModel @Inject constructor(
         val width: Float? = null,
         val height: Float? = null,
         val shippingClassSlug: String? = null,
-        val shippingClassId: Long? = null
-    ) : Parcelable
+        val shippingClassId: Long? = null,
+        val subscriptionShippingData: SubscriptionShippingData? = null
+    ) : Parcelable {
+
+        @Parcelize
+        data class SubscriptionShippingData(
+            val oneTimeShipping: Boolean,
+            val canEnableOneTimeShipping: Boolean
+        ) : Parcelable
+    }
 }

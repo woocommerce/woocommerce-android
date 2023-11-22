@@ -355,7 +355,7 @@ class VariationDetailViewModel @Inject constructor(
 
     private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
         launch {
-            val variationInDb = variationRepository.getVariationByProductType(remoteProductId, remoteVariationId)
+            val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
             if (variationInDb != null) {
                 originalVariation = variationInDb
                 showVariation(variationInDb)
@@ -379,7 +379,7 @@ class VariationDetailViewModel @Inject constructor(
     private suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long) {
         if (networkStatus.isConnected()) {
             variationRepository.fetchVariation(remoteProductId, remoteVariationId)
-            originalVariation = variationRepository.getVariationByProductType(remoteProductId, remoteVariationId)
+            originalVariation = variationRepository.getVariation(remoteProductId, remoteVariationId)
         } else {
             triggerEvent(Event.ShowSnackbar(string.offline_error))
         }
