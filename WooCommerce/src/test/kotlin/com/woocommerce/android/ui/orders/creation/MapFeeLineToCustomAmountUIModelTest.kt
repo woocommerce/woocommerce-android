@@ -53,4 +53,25 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
 
         assertThat(mapperResult).isEqualTo(expectedResult)
     }
+
+    @Test
+    fun `given fee line with tax status as TAXABLE, when mapper called, then map to custom amount UI model`() {
+        val feeLine = Order.FeeLine(
+            id = 1,
+            name = "Test Amount",
+            total = BigDecimal.TEN,
+            totalTax = BigDecimal.ZERO,
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE
+        )
+        val expectedResult = CustomAmountUIModel(
+            id = 1,
+            amount = BigDecimal.TEN,
+            name = "Test Amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+
+        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
+
+        assertThat(mapperResult).isEqualTo(expectedResult)
+    }
 }
