@@ -1680,6 +1680,32 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when custom amount is updated with tax status, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
+    }
+
+    @Test
     fun `when custom amount is updated with name, then fee line gets updated`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
