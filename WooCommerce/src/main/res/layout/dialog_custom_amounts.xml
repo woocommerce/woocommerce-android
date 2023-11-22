@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:imeOptions="flagNoFullscreen"
-                android:textSize="@dimen/line_height_major_150"
+                android:textSize="@dimen/line_height_major_100"
                 app:boxBackgroundMode="none"
                 app:editTextLayoutMode="wrap"
                 app:layout_constraintEnd_toEndOf="parent"
