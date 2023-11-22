@@ -68,7 +68,7 @@ class OrderDetailProductChildItemListAdapter(
 
             binding.productInfoName.text = item.name
             val orderTotal = formatCurrencyForDisplay(item.total)
-            val totalColor = if(item.total.compareTo(BigDecimal.ZERO) == 0) emptyTotalColor else defaultTotalColor
+            val totalColor = if (item.total.compareTo(BigDecimal.ZERO) == 0) emptyTotalColor else defaultTotalColor
 
             binding.productInfoTotal.apply {
                 text = orderTotal
