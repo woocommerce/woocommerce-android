@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,10 @@ fun TaxToggle(
             .background(colorResource(id = R.color.color_surface))
             .padding(start = 8.dp, end = 8.dp)
     ) {
-        Text(text = stringResource(id = taxStatus.text))
+        Text(
+            text = stringResource(id = taxStatus.text),
+            style = MaterialTheme.typography.subtitle1
+        )
         Spacer(modifier = Modifier.width(8.dp).weight(1f))
         Switch(
             checked = taxStatus.isTaxable,
