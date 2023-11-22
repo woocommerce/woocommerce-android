@@ -89,7 +89,7 @@ fun BarcodeScanner(
 }
 
 class DummyCodeScanner : CodeScanner {
-    override fun startScan(imageProxy: ImageProxy, continuous: Boolean): Flow<CodeScannerStatus> {
+    override fun startScan(imageProxy: ImageProxy, continuousScanningEnabled: Boolean): Flow<CodeScannerStatus> {
         return flowOf(CodeScannerStatus.Success("", BarcodeFormat.FormatUPCA))
     }
 }
