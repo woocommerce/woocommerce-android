@@ -67,8 +67,11 @@ class OrderDetailProductItemListAdapter(
                     productItemListener.openOrderProductDetail(item.productId)
                 }
             }
+            binding.productInfoGroupedProduct.hideProductTotal()
+            val orderTotal = formatCurrencyForDisplay(item.total)
+            binding.groupedProductTotal.text = orderTotal
 
-            binding.expandIcon.setOnClickListener {
+            binding.root.setOnClickListener {
                 groupedItem.isExpanded = groupedItem.isExpanded.not()
                 notifyItemChanged(bindingAdapterPosition)
             }
