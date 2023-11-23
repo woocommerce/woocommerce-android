@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.products.inventory
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +21,7 @@ import javax.inject.Inject
 class ScanToUpdateInventoryViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val fetchProductBySKU: FetchProductBySKU,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
     private val _viewState: MutableStateFlow<ViewState> = savedState.getStateFlow(this, ViewState.Scanning, "viewState")
     val viewState: StateFlow<ViewState> = _viewState
@@ -37,8 +41,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
         _viewState.value = ViewState.Loading
 
-        val productResult: Result<Product> =
-            fetchProductBySKU(status.code, status.format)
+        val productResult: Result<Product> = fetchProductBySKU(status.code, status.format)
         if (productResult.isSuccess) {
             val product = productResult.getOrNull()
             if (product != null) {
@@ -50,13 +53,21 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 )
                 _viewState.value = ViewState.Result(productInfo)
             } else {
-                Log.d("ScanToUpdateInventory", "Product is null ${productResult.getOrNull()}")
-                // TODO: show product not found snack bar
+                handleProductNotFound(status.code)
             }
         } else {
-            Log.d("ScanToUpdateInventory", "Product not found ${productResult.getOrNull()}")
-            // TODO: show product not found snack bar
+            handleProductNotFound(status.code)
         }
+    }
+
+    private fun handleProductNotFound(barcode: String) {
+        triggerProductNotFoundSnackBar(barcode)
+        _viewState.value = ViewState.Scanning
+    }
+
+    private fun triggerProductNotFoundSnackBar(barcode: String) {
+        val message = resourceProvider.getString(R.string.scan_to_update_inventory_unable_to_find_product, barcode)
+        triggerEvent(MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(message)))
     }
 
     @Parcelize
@@ -66,7 +77,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val sku: String,
         val quantity: Int,
     ): Parcelable
-
 
     @Parcelize
     sealed class ViewState: Parcelable {

@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.products.inventory
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -32,6 +34,8 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BarcodeScanningFragment() {
                     ).let {
                         findNavController().navigate(it)
                     }
+                } else if (it is ScanToUpdateInventoryViewModel.ViewState.Loading) {
+                    Toast.makeText(requireContext(), "Loading a product", Toast.LENGTH_SHORT).show() // TODO extract to res
                 }
             }
         }
