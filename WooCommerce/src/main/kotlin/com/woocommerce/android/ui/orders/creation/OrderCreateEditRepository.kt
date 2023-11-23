@@ -21,6 +21,7 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -207,6 +208,11 @@ class OrderCreateEditRepository @Inject constructor(
         it.id = id
         it.name = name
         it.total = total.toPlainString()
+        it.taxStatus = when (taxStatus) {
+            Order.FeeLine.FeeLineTaxStatus.TAXABLE -> FeeLineTaxStatus.Taxable
+            Order.FeeLine.FeeLineTaxStatus.NONE -> FeeLineTaxStatus.None
+            else -> FeeLineTaxStatus.None
+        }
     }
 
     private fun Order.CouponLine.toDataModel() =

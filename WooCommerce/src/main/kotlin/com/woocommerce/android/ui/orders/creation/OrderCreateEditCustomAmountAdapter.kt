@@ -76,7 +76,8 @@ class OrderCreateEditCustomAmountAdapter(
         ): Boolean = (oldItem.id == newItem.id) &&
             (oldItem.name == newItem.name) &&
             (oldItem.amount == newItem.amount) &&
-            (oldItem.isLocked == newItem.isLocked)
+            (oldItem.isLocked == newItem.isLocked) &&
+            (oldItem.taxStatus.isTaxable == newItem.taxStatus.isTaxable)
 
         override fun areContentsTheSame(
             oldItem: CustomAmountUIModel,
@@ -84,6 +85,7 @@ class OrderCreateEditCustomAmountAdapter(
         ): Boolean = (oldItem.id == newItem.id) &&
             (oldItem.name == newItem.name) &&
             (oldItem.amount == newItem.amount) &&
-            (oldItem.isLocked == newItem.isLocked)
+            (oldItem.isLocked == newItem.isLocked) &&
+            (oldItem.taxStatus.isTaxable == newItem.taxStatus.isTaxable)
     }
 }

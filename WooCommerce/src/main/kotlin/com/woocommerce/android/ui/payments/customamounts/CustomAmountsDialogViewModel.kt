@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.customamounts
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -42,6 +43,18 @@ class CustomAmountsDialogViewModel @Inject constructor(
             )
         }
 
+    var taxToggleState: TaxStatus
+        get() = viewState.customAmountUIModel.taxStatus
+        set(value) {
+            viewState = viewState.copy(
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    taxStatus = viewState.customAmountUIModel.taxStatus.copy(
+                        isTaxable = value.isTaxable
+                    )
+                )
+            )
+        }
+
     private val args: CustomAmountsDialogArgs by savedState.navArgs()
 
     init {
@@ -51,7 +64,8 @@ class CustomAmountsDialogViewModel @Inject constructor(
             viewState = viewState.copy(
                 customAmountUIModel = viewState.customAmountUIModel.copy(
                     id = it.id,
-                    name = it.name
+                    name = it.name,
+                    taxStatus = it.taxStatus
                 )
             )
             tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
@@ -64,13 +78,20 @@ class CustomAmountsDialogViewModel @Inject constructor(
         val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
-        val createdOrder: Order? = null
+        val createdOrder: Order? = null,
     ) : Parcelable
 
     @Parcelize
     data class CustomAmountUIState(
         val id: Long = 0,
         val currentPrice: BigDecimal = BigDecimal.ZERO,
-        val name: String = ""
+        val name: String = "",
+        val taxStatus: TaxStatus = TaxStatus()
+    ) : Parcelable
+
+    @Parcelize
+    data class TaxStatus(
+        val isTaxable: Boolean = false,
+        val text: Int = R.string.custom_amounts_tax_label,
     ) : Parcelable
 }
