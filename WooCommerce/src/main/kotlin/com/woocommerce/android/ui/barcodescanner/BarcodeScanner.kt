@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.barcodescanner
 
-import androidx.camera.core.Preview as CameraPreview
 import android.content.res.Configuration
 import android.util.Size
 import androidx.camera.core.CameraSelector
@@ -26,6 +25,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import androidx.camera.core.Preview as CameraPreview
 
 @Composable
 fun BarcodeScanner(

@@ -6,7 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -41,7 +41,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
         _viewState.value = ViewState.Loading
-        triggerEvent(MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_loading_product)))
+        triggerEvent(ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_loading_product)))
 
         val productResult: Result<Product> = fetchProductBySKU(status.code, status.format)
         if (productResult.isSuccess) {
@@ -70,7 +70,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     private fun triggerProductNotFoundSnackBar(barcode: String) {
         val message = resourceProvider.getString(R.string.scan_to_update_inventory_unable_to_find_product, barcode)
-        triggerEvent(MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(message)))
+        triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
     }
 
     @Parcelize
@@ -79,12 +79,12 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val imageUrl: String,
         val sku: String,
         val quantity: Int,
-    ): Parcelable
+    ) : Parcelable
 
     @Parcelize
-    sealed class ViewState: Parcelable {
+    sealed class ViewState : Parcelable {
         object Scanning : ViewState()
         object Loading : ViewState()
-        data class Result(val product: ProductInfo): ViewState()
+        data class Result(val product: ProductInfo) : ViewState()
     }
 }

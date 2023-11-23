@@ -2,10 +2,8 @@ package com.woocommerce.android.ui.products.inventory
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.UIMessageResolver

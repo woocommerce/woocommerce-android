@@ -37,8 +37,10 @@ class FetchProductBySKU @Inject constructor(
     }
 
     private fun GoogleBarcodeFormatMapper.BarcodeFormat.isUPC() =
-        this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatUPCA || this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatUPCE
+        this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatUPCA ||
+                this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatUPCE
 
     private fun GoogleBarcodeFormatMapper.BarcodeFormat.isEAN() =
-        this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13 || this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+        this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13 ||
+                this == GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
 }
