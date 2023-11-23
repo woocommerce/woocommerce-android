@@ -51,7 +51,8 @@ class OrderCreateEditRepository @Inject constructor(
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
-            shippingLines = order.shippingLines.map { it.toDataModel() }
+            shippingLines = order.shippingLines.map { it.toDataModel() },
+            giftCard = order.giftCard,
         )
         val result = if (order.id == 0L) {
             orderUpdateStore.createOrder(selectedSite.get(), request)
