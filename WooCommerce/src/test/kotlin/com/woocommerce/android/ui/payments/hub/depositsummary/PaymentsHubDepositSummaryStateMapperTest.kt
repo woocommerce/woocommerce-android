@@ -114,8 +114,10 @@ class PaymentsHubDepositSummaryStateMapperTest {
         // THEN
         assertThat(result).isNotNull
         assertThat(result?.defaultCurrency).isEqualTo("USD")
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("300$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFundsFormatted).isEqualTo("100$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFundsAmount).isEqualTo(100)
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFundsFormatted).isEqualTo("300$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFundsAmount).isEqualTo(300)
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(2)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(1)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
@@ -219,15 +221,19 @@ class PaymentsHubDepositSummaryStateMapperTest {
         )
         assertThat(result?.infoPerCurrency?.get("EUR")?.nextDeposit?.amount).isEqualTo("250€")
         assertThat(result?.infoPerCurrency?.get("EUR")?.nextDeposit?.date).isEqualTo(date)
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFundsFormatted).isEqualTo("100$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFundsAmount).isEqualTo(100)
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFundsFormatted).isEqualTo("0$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFundsAmount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(30)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
         )
-        assertThat(result?.infoPerCurrency?.get("EUR")?.availableFunds).isEqualTo("150€")
-        assertThat(result?.infoPerCurrency?.get("EUR")?.pendingFunds).isEqualTo("0€")
+        assertThat(result?.infoPerCurrency?.get("EUR")?.availableFundsFormatted).isEqualTo("150€")
+        assertThat(result?.infoPerCurrency?.get("EUR")?.availableFundsAmount).isEqualTo(150)
+        assertThat(result?.infoPerCurrency?.get("EUR")?.pendingFundsFormatted).isEqualTo("0€")
+        assertThat(result?.infoPerCurrency?.get("EUR")?.pendingFundsAmount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("EUR")?.pendingBalanceDepositsCount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("EUR")?.fundsAvailableInDays).isEqualTo(30)
         assertThat(result?.infoPerCurrency?.get("EUR")?.fundsDepositInterval).isEqualTo(
@@ -286,8 +292,10 @@ class PaymentsHubDepositSummaryStateMapperTest {
             PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED
         )
         assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.date).isEqualTo(date)
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("0$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFundsFormatted).isEqualTo("0$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.availableFundsAmount).isEqualTo(0)
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFundsFormatted).isEqualTo("0$")
+        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFundsAmount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(5)
         assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(

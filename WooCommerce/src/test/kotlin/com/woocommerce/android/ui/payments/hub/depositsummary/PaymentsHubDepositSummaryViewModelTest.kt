@@ -92,6 +92,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
         assertThat((values[0] as PaymentsHubDepositSummaryState.Success).overview).isEqualTo(
             mappedOverview
         )
+        assertThat((values[0] as PaymentsHubDepositSummaryState.Success).fromCache).isTrue()
     }
 
     @Test
@@ -121,6 +122,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
         assertThat((values[0] as PaymentsHubDepositSummaryState.Success).overview).isEqualTo(
             mappedOverview
         )
+        assertThat((values[0] as PaymentsHubDepositSummaryState.Success).fromCache).isFalse()
     }
 
     @Test

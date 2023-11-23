@@ -1,12 +1,19 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import android.content.res.Configuration
 import android.icu.text.MessageFormat
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -76,6 +83,7 @@ fun PaymentsHubDepositSummaryView(
             when (val value = it.value) {
                 is PaymentsHubDepositSummaryState.Success -> PaymentsHubDepositSummaryView(
                     value.overview,
+                    value.fromCache,
                     value.onLearnMoreClicked,
                     value.onExpandCollapseClicked,
                     viewModel::onSummaryDepositShown,
@@ -108,6 +116,7 @@ fun PaymentsHubDepositSummaryView(
 @Composable
 fun PaymentsHubDepositSummaryView(
     overview: PaymentsHubDepositSummaryState.Overview,
+    fromCache: Boolean,
     onLearnMoreClicked: () -> Unit,
     onExpandCollapseClicked: (Boolean) -> Unit,
     onSummaryDepositShown: () -> Unit,
@@ -153,13 +162,13 @@ fun PaymentsHubDepositSummaryView(
         HorizontalPager(
             pageCount = pageCount,
             state = pagerState
-        ) {
+        ) { pageIndex ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.color_surface))
             ) {
-                FundsOverview(selectedCurrencyInfo, isExpanded) {
+                FundsOverview(selectedCurrencyInfo, isExpanded, fromCache, pageIndex) {
                     isExpanded = !isExpanded
                     onExpandCollapseClicked(isExpanded)
                 }
@@ -182,6 +191,8 @@ fun PaymentsHubDepositSummaryView(
 private fun FundsOverview(
     currencyInfo: PaymentsHubDepositSummaryState.Info,
     isExpanded: Boolean,
+    fromCache: Boolean,
+    pageIndex: Int,
     onExpandCollapseClick: () -> Unit,
 ) {
     val chevronRotation by animateFloatAsState(
@@ -218,11 +229,11 @@ private fun FundsOverview(
                 text = stringResource(id = R.string.card_reader_hub_deposit_summary_available_funds),
                 color = colorResource(id = R.color.color_on_surface)
             )
-            Text(
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                text = currencyInfo.availableFunds,
-                color = colorResource(id = R.color.color_on_surface)
+            FundsNumber(
+                currencyInfo.availableFundsFormatted,
+                currencyInfo.availableFundsAmount,
+                fromCache,
+                pageIndex
             )
         }
 
@@ -234,12 +245,14 @@ private fun FundsOverview(
                 text = stringResource(id = R.string.card_reader_hub_deposit_summary_pending_funds),
                 color = colorResource(id = R.color.color_on_surface)
             )
-            Text(
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                text = currencyInfo.pendingFunds,
-                color = colorResource(id = R.color.color_on_surface)
+
+            FundsNumber(
+                currencyInfo.pendingFundsFormatted,
+                currencyInfo.pendingFundsAmount,
+                fromCache,
+                pageIndex
             )
+
             Text(
                 style = MaterialTheme.typography.caption,
                 text = StringUtils.getQuantityString(
@@ -573,6 +586,48 @@ private fun DepositStatus(
 }
 
 @Composable
+private fun FundsNumber(
+    valueToDisplay: String,
+    valueAmount: Long,
+    fromCache: Boolean,
+    pageIndex: Int,
+) {
+    var animationPlayed by remember { mutableStateOf(false) }
+    if (pageIndex == 0) {
+        AnimatedContent(
+            targetState = valueToDisplay to valueAmount,
+            transitionSpec = {
+                if (animationPlayed) {
+                    EnterTransition.None with ExitTransition.None
+                } else if (targetState.second > initialState.second) {
+                    slideInVertically { -it } with slideOutVertically { it }
+                } else {
+                    slideInVertically { it } with slideOutVertically { -it }
+                }
+            },
+            label = "AnimatedFundsNumber"
+        ) { value ->
+            Text(
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                text = value.first,
+                color = colorResource(id = R.color.color_on_surface)
+            )
+            if (!fromCache && value.second == valueAmount) {
+                animationPlayed = true
+            }
+        }
+    } else {
+        Text(
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            text = valueToDisplay,
+            color = colorResource(id = R.color.color_on_surface)
+        )
+    }
+}
+
+@Composable
 private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
     when (this) {
         PaymentsHubDepositSummaryState.Info.Interval.Daily -> stringResource(
@@ -598,8 +653,10 @@ private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
 
 private val previewState = mapOf(
     "USD" to PaymentsHubDepositSummaryState.Info(
-        availableFunds = "100$",
-        pendingFunds = "200$",
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
         pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 5,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
@@ -615,8 +672,10 @@ private val previewState = mapOf(
         )
     ),
     "EUR" to PaymentsHubDepositSummaryState.Info(
-        availableFunds = "100$",
-        pendingFunds = "200$",
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
         pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 2,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Friday"),
@@ -632,8 +691,10 @@ private val previewState = mapOf(
         )
     ),
     "RUB" to PaymentsHubDepositSummaryState.Info(
-        availableFunds = "100$",
-        pendingFunds = "200$",
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
         pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 4,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Monday"),
@@ -649,8 +710,10 @@ private val previewState = mapOf(
         )
     ),
     "GBP" to PaymentsHubDepositSummaryState.Info(
-        availableFunds = "100$",
-        pendingFunds = "200$",
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
         pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 3,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Tuesday"),
@@ -677,6 +740,7 @@ fun PaymentsHubDepositSummaryViewUsdPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState,
             ),
+            fromCache = false,
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
@@ -696,6 +760,7 @@ fun PaymentsHubDepositSummaryViewEurPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            fromCache = false,
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
@@ -715,6 +780,7 @@ fun PaymentsHubDepositSummaryViewRubPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            fromCache = false,
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
@@ -734,6 +800,7 @@ fun PaymentsHubDepositSummaryViewGbpPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = previewState
             ),
+            fromCache = false,
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
@@ -753,8 +820,10 @@ fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
                 defaultCurrency = "USD",
                 infoPerCurrency = mapOf(
                     "USD" to PaymentsHubDepositSummaryState.Info(
-                        availableFunds = "100$",
-                        pendingFunds = "200$",
+                        availableFundsFormatted = "100$",
+                        pendingFundsFormatted = "200$",
+                        availableFundsAmount = 10000,
+                        pendingFundsAmount = 20000,
                         pendingBalanceDepositsCount = 1,
                         fundsAvailableInDays = 5,
                         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
@@ -763,6 +832,7 @@ fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
                     )
                 )
             ),
+            fromCache = false,
             onLearnMoreClicked = {},
             onExpandCollapseClicked = {},
             onSummaryDepositShown = {},
