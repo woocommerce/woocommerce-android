@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,6 +18,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -37,7 +40,7 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val blazeCampaignState = flow {
+    private val blazeCampaignState = flow {
         if (!isBlazeEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
         else {
             analyticsTrackerWrapper.track(
@@ -55,6 +58,15 @@ class MyStoreBlazeViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    private val isBlazeDismissed = MutableStateFlow(false)
+
+    val blazeViewState = combine(
+        blazeCampaignState,
+        isBlazeDismissed
+    ) { blazeViewState, isBlazeDismissed ->
+        if (isBlazeDismissed) Hidden else blazeViewState
     }.asLiveData()
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
@@ -155,6 +167,11 @@ class MyStoreBlazeViewModel @Inject constructor(
             )
             emit(getCachedProducts())
         }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onBlazeViewDismissed(menuItem: String) {
+        isBlazeDismissed.value = true
     }
 
     sealed interface MyStoreBlazeCampaignState {

@@ -55,7 +55,8 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun MyStoreBlazeView(
-    state: MyStoreBlazeCampaignState
+    state: MyStoreBlazeCampaignState,
+    onDismissBlazeView: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -114,8 +115,8 @@ fun MyStoreBlazeView(
                 }
             }
             WcOverflowMenu(
-                items = arrayOf("Dismiss"),
-                onSelected = { /*TODO*/ },
+                items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
+                onSelected = onDismissBlazeView,
             )
         }
     }
@@ -295,7 +296,8 @@ fun MyStoreBlazeViewCampaignPreview() {
             onCampaignClicked = {},
             onViewAllCampaignsClicked = {},
             onCreateCampaignClicked = {}
-        )
+        ),
+        onDismissBlazeView = {}
     )
 }
 
@@ -315,6 +317,7 @@ fun MyStoreBlazeViewNoCampaignPreview() {
             ),
             onProductClicked = {},
             onCreateCampaignClicked = {}
-        )
+        ),
+        onDismissBlazeView = {}
     )
 }
