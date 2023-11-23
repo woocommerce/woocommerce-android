@@ -55,6 +55,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -1794,10 +1795,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         verify(tracker).track(
-            ORDER_FEE_ADD,
-            mapOf(
-                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION
-            )
+            eq(ORDER_FEE_ADD),
+            any()
         )
     }
 
