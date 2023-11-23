@@ -1200,6 +1200,7 @@
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
     <string name="order_refunds_fees_refund">Fees refund</string>
+    <string name="order_refunds_custom_amount_refund">Custom amount refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_fees">Refund fees</string>
