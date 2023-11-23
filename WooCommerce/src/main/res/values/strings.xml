@@ -3821,7 +3821,7 @@
     Scan to update inventory
     -->
     <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU %s not found. Please try again.</string>
-
+    <string name="scan_to_update_inventory_loading_product">Searching for product</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>

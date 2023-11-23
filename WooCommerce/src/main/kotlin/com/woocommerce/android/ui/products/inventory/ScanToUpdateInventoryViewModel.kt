@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
         _viewState.value = ViewState.Loading
+        triggerEvent(MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_loading_product)))
 
         val productResult: Result<Product> = fetchProductBySKU(status.code, status.format)
         if (productResult.isSuccess) {
@@ -60,8 +62,9 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    private fun handleProductNotFound(barcode: String) {
+    private suspend fun handleProductNotFound(barcode: String) {
         triggerProductNotFoundSnackBar(barcode)
+        delay(1000)
         _viewState.value = ViewState.Scanning
     }
 
