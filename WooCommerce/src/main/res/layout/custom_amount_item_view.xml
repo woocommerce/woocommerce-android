@@ -3,36 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
-    android:outlineProvider="bounds"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:layout_width="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/customAmountName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    android:layout_height="wrap_content"
+    android:background="@drawable/custom_amount_card_border">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/customAmountName"
         style="@style/Woo.ListItem.Title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
         android:layout_weight="1"
         android:ellipsize="end"
         android:includeFontPadding="false"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/customAmountAmount"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Services rendered" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -42,6 +30,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/customAmountName"
         app:layout_constraintEnd_toStartOf="@+id/customAmountEdit"
+        app:layout_constraintStart_toEndOf="@+id/customAmountName"
+        app:layout_constraintTop_toTopOf="@+id/customAmountName"
         tools:text="$20.00" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -52,7 +42,8 @@
         android:padding="@dimen/minor_25"
         android:src="@drawable/ic_edit_pencil"
         app:layout_constraintBottom_toBottomOf="@+id/customAmountAmount"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/customAmountAmount" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
