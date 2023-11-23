@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.NewStore.ProfilerData
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -89,8 +90,13 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_profiler_features_description)
 
-    override fun getMainButtonText(): String =
-        resourceProvider.getString(R.string.store_profiler_features_main_button)
+    override fun getMainButtonText(): String {
+        return if (FeatureFlag.THEME_PICKER.isEnabled()) {
+            resourceProvider.getString(R.string.continue_button)
+        } else {
+            resourceProvider.getString(R.string.store_profiler_features_main_button)
+        }
+    }
 
     override fun saveStepAnswer() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
@@ -98,11 +104,10 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(featuresKey = selectedOption?.key)
         )
-        triggerEvent(NavigateToNextStep)
     }
 
     override fun moveForward() {
-        // TODO("Navigate to store creation loading")
+        triggerEvent(NavigateToNextStep)
     }
 
     override fun onSkipPressed() {
