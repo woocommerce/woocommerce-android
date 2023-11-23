@@ -1791,8 +1791,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         verify(tracker).track(
-            ORDER_FEE_ADD, mapOf(
-            AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION
             )
         )
     }
