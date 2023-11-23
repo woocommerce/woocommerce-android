@@ -740,9 +740,6 @@ class OrderCreateEditFormFragment :
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
                         onCustomAmountClick = { navigateToCustomAmountsDialog(it) },
-                        onCustomAmountDeleteClick = {
-                            viewModel.onCustomAmountRemoved(it)
-                        }
                     )
                     itemAnimator = animator
                     isNestedScrollingEnabled = false
