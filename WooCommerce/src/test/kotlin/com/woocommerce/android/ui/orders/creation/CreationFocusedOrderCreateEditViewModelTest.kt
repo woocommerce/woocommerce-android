@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUND
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.initSavedStateHandle
@@ -1801,7 +1802,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when custom amount name is added with tax, then fee add event is tracked with property taxable`() {
+    fun `when custom amount name is added with tax, then fee add event is tracked with tax_status value taxable`() {
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
@@ -1816,6 +1817,26 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             mapOf(
                 AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
                 KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+            )
+        )
+    }
+
+    @Test
+    fun `when custom amount name is added with no tax, then fee add event is tracked with tax_status value none`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
             )
         )
     }
