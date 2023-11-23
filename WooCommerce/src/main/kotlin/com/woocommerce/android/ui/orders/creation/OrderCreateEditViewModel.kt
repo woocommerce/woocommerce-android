@@ -1208,6 +1208,12 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
+        tracker.track(
+            ORDER_FEE_ADD,
+            mapOf(
+                KEY_FLOW to flow
+            )
+        )
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
