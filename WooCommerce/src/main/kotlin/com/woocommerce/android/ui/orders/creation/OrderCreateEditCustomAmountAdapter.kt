@@ -57,15 +57,6 @@ class OrderCreateEditCustomAmountAdapter(
             } else {
                 binding.customAmountLayout.divider.show()
             }
-            if (customAmountUIModel.isLocked) {
-                binding.customAmountLayout.customAmountEdit.hide()
-                binding.customAmountLayout.customAmountDeleteBtn.hide()
-            }
-            binding.customAmountLayout.customAmountDeleteBtn.setOnClickListener {
-                safePosition?.let {
-                    onCustomAmountDeleteClick(getItem(it))
-                }
-            }
         }
     }
 
