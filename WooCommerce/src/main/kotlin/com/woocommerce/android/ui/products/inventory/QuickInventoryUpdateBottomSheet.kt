@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,7 +35,8 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 
 @Composable
 fun QuickInventoryUpdateBottomSheet(
-    product: ScanToUpdateInventoryViewModel.ProductInfo
+    product: ScanToUpdateInventoryViewModel.ProductInfo,
+    onIncrementQuantityClicked: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -92,8 +94,8 @@ fun QuickInventoryUpdateBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_100)),
-                onClick = { /*TODO*/ },
-                text = "Quantity + 1"
+                onClick = onIncrementQuantityClicked,
+                text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
             )
         }
     }
@@ -110,6 +112,6 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         quantity = 10,
     )
     WooTheme {
-        QuickInventoryUpdateBottomSheet(product)
+        QuickInventoryUpdateBottomSheet(product, {})
     }
 }

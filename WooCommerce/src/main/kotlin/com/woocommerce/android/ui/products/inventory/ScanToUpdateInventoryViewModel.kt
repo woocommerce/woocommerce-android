@@ -64,7 +64,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     private suspend fun handleProductNotFound(barcode: String) {
         triggerProductNotFoundSnackBar(barcode)
-        delay(1000)
+        delay(SCANNER_RESTART_DEBOUNCE_MS)
         _viewState.value = ViewState.Scanning
     }
 
@@ -86,5 +86,9 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         object Scanning : ViewState()
         object Loading : ViewState()
         data class Result(val product: ProductInfo) : ViewState()
+    }
+
+    companion object {
+        private const val SCANNER_RESTART_DEBOUNCE_MS = 1000L
     }
 }
