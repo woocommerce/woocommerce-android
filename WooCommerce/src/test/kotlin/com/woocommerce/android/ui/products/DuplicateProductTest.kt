@@ -75,7 +75,9 @@ class DuplicateProductTest : BaseUnitTest() {
                 ProductTestUtils.generateProductVariationList(productToDuplicate.remoteId)
                     .map { it.copy(sku = "not an empty value") }
             variationRepository.stub {
-                onBlocking { getAllVariations(productToDuplicate.remoteId) } doReturn variationsOfProductToDuplicate
+                onBlocking {
+                    fetchProductVariations(eq(productToDuplicate.remoteId), any())
+                } doReturn variationsOfProductToDuplicate
                 onBlocking { createVariations(any(), any()) } doReturn Result.success(Unit)
             }
 
