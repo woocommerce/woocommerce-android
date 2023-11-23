@@ -46,6 +46,7 @@ class DuplicateProduct @Inject constructor(
         }
     }
 
+    @Suppress("MagicNumber")
     private suspend fun duplicateVariations(
         product: Product,
         duplicatedProductRemoteId: Long
@@ -62,8 +63,8 @@ class DuplicateProduct @Inject constructor(
             if (it.size > 100) {
                 // The API doesn't allow to create more than 100 variations at once
                 WooLog.w(
-                    WooLog.T.PRODUCTS, "Variations list is too big: ${it.size}, " +
-                        "the duplicate will have only the first 100 variations"
+                    WooLog.T.PRODUCTS,
+                    "Variations list is too big: ${it.size}, the duplicate will have only the first 100 variations"
                 )
             }
         }.take(100)
