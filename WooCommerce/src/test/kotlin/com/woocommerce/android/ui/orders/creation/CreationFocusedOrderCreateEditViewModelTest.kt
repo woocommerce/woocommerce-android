@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
@@ -1777,6 +1778,23 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         verify(tracker).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount name is added, then fee add event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            ORDER_FEE_ADD, mapOf(
+            AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION
+            )
+        )
     }
 
     @Test
