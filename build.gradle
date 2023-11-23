@@ -13,7 +13,6 @@ plugins {
 tracks {
     automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
     enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
-    username.set(findProperty('tracksUsername'))
 }
 
 allprojects {
@@ -95,7 +94,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2.54.0'
+    fluxCVersion = '2.56.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -111,9 +110,9 @@ ext {
     appCompatVersion = '1.4.2'
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
-    wordPressUtilsVersion = '2.6.0'
-    mediapickerVersion = '0.2'
-    wordPressLoginVersion = '1.7.0'
+    wordPressUtilsVersion = '3.5.0'
+    mediapickerVersion = '0.3.0'
+    wordPressLoginVersion = '1.8.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '3.2.0'
     workManagerVersion = '2.7.1'
@@ -130,7 +129,7 @@ ext {
     httpClientAndroidVersion = '4.3.5.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
-    composeBOMVersion = "2022.12.00"
+    composeBOMVersion = "2023.06.01"
     composeCompilerVersion = "1.4.7"
     composeAccompanistVersion = "0.23.1"
 

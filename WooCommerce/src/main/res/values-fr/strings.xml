@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 17:54:04+0000
+Translation-Revision-Date: 2023-11-14 17:54:22+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="notification_security_key_needed">Veuillez fournir votre clé de sécurité pour continuer.</string>
+    <string name="login_error_security_key">La connexion via la clé de sécurité rencontre des soucis</string>
+    <string name="login_text_security_key">Utiliser une clé de sécurité</string>
+    <string name="product_subscription_period">Période</string>
+    <string name="product_subscription_interval">Intervalle de facturation</string>
+    <string name="product_sale">Promo</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Inconnu</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Échec</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Annulé</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">En transit</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">En attente</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Payé</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Estimé</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Réduire/développer le récapitulatif du dépôt</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">En savoir plus sur le moment où vous recevrez vos fonds</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Les fonds disponibles sont versés automatiquement, chaque semaine.</string>
+    <string name="card_reader_hub_deposit_summary_last">Dernier</string>
+    <string name="card_reader_hub_deposit_summary_next">Prochain</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Dépôts</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Les fonds sont disponibles après avoir passé 7 jours en attente.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d dépôt</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d dépôts</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Fonds en attente</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Fonds disponibles</string>
+    <string name="order_creation_payment_tax_label">Taxes</string>
+    <string name="order_creation_payment_products">Produits</string>
+    <string name="order_creation_payment_header">Totaux des paiements</string>
+    <string name="email_or_username">Adresse e-mail ou identifiant</string>
+    <string name="custom_amounts_creation_error">Impossible de créer un montant personnalisé de commande</string>
+    <string name="custom_amounts_add_custom_name_hint">Saisir un nom personnalisé</string>
+    <string name="custom_amounts_add_custom_amount">Ajouter un montant personnalisé</string>
+    <string name="custom_amounts_name">Nom</string>
+    <string name="custom_amounts_enter_amount">Montant</string>
+    <string name="custom_amounts_dialog_title">Montant personnalisé</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Connectez Jetpack par le biais de votre page d’administration sur un navigateur ou contactez l’assistance.</string>
+    <string name="login_jetpack_installation_error_connection_message">Une erreur est survenue lors de la communication avec votre site.</string>
+    <string name="custom_amounts">Montants personnalisés</string>
     <string name="product_details_blaze_card">Promouvoir avec Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">J’ai compris</string>
     <string name="blaze_campaign_ceation_celebration_message">La publicité a été soumise pour approbation. Nous vous enverrons un e-mail de confirmation dès qu’elle sera approuvée et opérationnelle.</string>
@@ -561,7 +598,6 @@ Language: fr
     <string name="subscription_status_cancelled">Annulée</string>
     <string name="subscription_status_on_hold">En attente</string>
     <string name="subscription_status_active">Actif</string>
-    <string name="no_variable_subscription_warning">L’ajout de plans variables n’est possible que dans le tableau de bord Web.</string>
     <string name="subscription_details_info_notice">Vous pouvez modifier les plans de produits dans le tableau de bord Web.</string>
     <string name="subscription_no_trial">Pas de période d’essai</string>
     <string name="subscription_no_sign_up_fee">Pas de frais d’inscription</string>
@@ -3004,7 +3040,7 @@ Language: fr
     <string name="login_text_otp_another">Envoyez moi un autre code à la place.</string>
     <string name="login_text_otp">Envoyez-moi un code à la place.</string>
     <string name="enter_verification_code_sms">Nous envoyons un message texte au numéro de téléphone se terminant par %s. Veuillez saisir le code de vérification dans le SMS.</string>
-    <string name="enter_verification_code">On y est presque ! Veuillez saisir le code de vérification de votre app d’authentification.</string>
+    <string name="enter_verification_code">Vous y êtes presque ! Veuillez saisir le code de vérification WordPress.com de votre application d’authentification.</string>
     <string name="enter_username_instead">Connectez-vous avec votre nom d\'utilisateur.</string>
     <string name="enter_site_address_instead">Connectez-vous en saisissant l\'adresse de votre site.</string>
     <string name="alternatively">Alternativement :</string>
@@ -3170,5 +3206,13 @@ Language: fr
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Colis personnalisé</item>
         <item>Ensemble de services</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Chaque</item>
+        <item>Tous les 2</item>
+        <item>Tous les 3</item>
+        <item>Tous les 4</item>
+        <item>Tous les 5</item>
+        <item>Tous les 6</item>
     </string-array>
 </resources>

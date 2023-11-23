@@ -56,10 +56,14 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSelectableChip
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
+import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.math.BigDecimal
@@ -75,7 +79,7 @@ fun OrderCreateEditProductDiscountScreen(
     onPercentageDiscountSelected: () -> Unit,
     onAmountDiscountSelected: () -> Unit,
     discountInputFieldConfig: DiscountInputFieldConfig,
-    productItem: MutableStateFlow<Order.Item>,
+    productItem: MutableStateFlow<OrderCreationProduct>,
 ) {
     val state = viewState.collectAsState()
     Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
@@ -94,10 +98,10 @@ fun OrderCreateEditProductDiscountScreen(
 
                 ProductCard(
                     imageUrl = viewState.value.productDetailsState?.imageUrl,
-                    productName = productItem.value.name,
-                    productPrice = productItem.value.pricePreDiscount,
-                    productQuantity = productItem.value.quantity,
-                    subTotalPerProduct = productItem.value.subtotal,
+                    productName = productItem.value.item.name,
+                    productPrice = productItem.value.item.pricePreDiscount,
+                    productQuantity = productItem.value.item.quantity,
+                    subTotalPerProduct = productItem.value.item.subtotal,
                     state = state.value
                 )
 
@@ -114,7 +118,7 @@ fun OrderCreateEditProductDiscountScreen(
                             .focusRequester(focusRequester)
                             .weight(1f),
                         value = state.value.discountAmount,
-                        valueMapper = NullableCurrencyTextFieldValueMapper(
+                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
                             discountInputFieldConfig.decimalSeparator,
                             discountInputFieldConfig.numberOfDecimals
                         ),
@@ -419,18 +423,34 @@ fun OrderCreateEditProductDiscountScreenPreview() =
             numberOfDecimals = 2
         ),
         productItem = MutableStateFlow(
-            Order.Item(
-                name = "Product Name",
-                quantity = 1f,
-                price = BigDecimal.ZERO,
-                total = BigDecimal.ZERO,
-                productId = 1,
-                variationId = 1,
-                subtotal = BigDecimal.ZERO,
-                totalTax = BigDecimal.ZERO,
-                sku = "",
-                itemId = 1L,
-                attributesList = emptyList(),
+            OrderCreationProduct.ProductItem(
+                Order.Item(
+                    name = "Product Name",
+                    quantity = 1f,
+                    price = BigDecimal.ZERO,
+                    total = BigDecimal.ZERO,
+                    productId = 1,
+                    variationId = 1,
+                    subtotal = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO,
+                    sku = "",
+                    itemId = 1L,
+                    attributesList = emptyList(),
+                ),
+                ProductInfo(
+                    imageUrl = "",
+                    isStockManaged = false,
+                    stockQuantity = 0.0,
+                    stockStatus = ProductStockStatus.InStock,
+                    productType = ProductType.SIMPLE,
+                    isConfigurable = false,
+                    pricePreDiscount = "$10",
+                    priceTotal = "$30",
+                    priceSubtotal = "$30",
+                    discountAmount = "$5",
+                    priceAfterDiscount = "$25",
+                    hasDiscount = false
+                )
             )
         )
     )

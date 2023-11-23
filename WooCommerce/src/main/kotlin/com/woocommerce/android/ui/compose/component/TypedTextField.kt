@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -144,7 +145,7 @@ interface TextFieldValueMapper<T> {
     }
 }
 
-class BigDecimalTextFieldValueMapper(
+class BigDecimalTextFieldValueMapper private constructor(
     private val supportsNegativeValue: Boolean = true
 ) : TextFieldValueMapper<BigDecimal> {
     override fun parseText(text: String): BigDecimal = text.toBigDecimal()
@@ -160,9 +161,16 @@ class BigDecimalTextFieldValueMapper(
             else -> oldText
         }
     }
+
+    companion object {
+        @Composable
+        fun create(supportsNegativeValue: Boolean) = remember(supportsNegativeValue) {
+            BigDecimalTextFieldValueMapper(supportsNegativeValue)
+        }
+    }
 }
 
-class NullableBigDecimalTextFieldValueMapper(
+class NullableBigDecimalTextFieldValueMapper private constructor(
     private val supportsNegativeValue: Boolean = true
 ) : TextFieldValueMapper<BigDecimal?> {
     override fun parseText(text: String): BigDecimal? = text.toBigDecimalOrNull()
@@ -176,9 +184,16 @@ class NullableBigDecimalTextFieldValueMapper(
             else -> oldText
         }
     }
+
+    companion object {
+        @Composable
+        fun create(supportsNegativeValue: Boolean) = remember(supportsNegativeValue) {
+            NullableBigDecimalTextFieldValueMapper(supportsNegativeValue)
+        }
+    }
 }
 
-class NullableCurrencyTextFieldValueMapper(
+class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
     private val decimalSeparator: String,
     private val numberOfDecimals: Int
 ) : TextFieldValueMapper<BigDecimal?> {
@@ -204,6 +219,13 @@ class NullableCurrencyTextFieldValueMapper(
     }
 
     private fun String.hasAllowedNumberOfDecimals() = substringAfter(decimalSeparator, "").length <= numberOfDecimals
+
+    companion object {
+        @Composable
+        fun create(decimalSeparator: String, numberOfDecimals: Int) = remember(decimalSeparator, numberOfDecimals) {
+            NullableCurrencyTextFieldValueMapper(decimalSeparator, numberOfDecimals)
+        }
+    }
 }
 
 class NullableIntTextFieldValueMapper(
@@ -238,7 +260,7 @@ private fun PreviewTypedTextFields() {
                 value = signedDecimal,
                 onValueChange = { signedDecimal = it },
                 label = "Signed BigDecimal",
-                valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = true),
+                valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
@@ -249,7 +271,7 @@ private fun PreviewTypedTextFields() {
                 value = nonSignedDecimal,
                 onValueChange = { nonSignedDecimal = it },
                 label = "Non-signed BigDecimal",
-                valueMapper = BigDecimalTextFieldValueMapper(supportsNegativeValue = false),
+                valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
@@ -260,7 +282,7 @@ private fun PreviewTypedTextFields() {
                 value = optionalDecimal,
                 onValueChange = { optionalDecimal = it },
                 label = "Optional BigDecimal",
-                valueMapper = NullableBigDecimalTextFieldValueMapper(supportsNegativeValue = true),
+                valueMapper = NullableBigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         }

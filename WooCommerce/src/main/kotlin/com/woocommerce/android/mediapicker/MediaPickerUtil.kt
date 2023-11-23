@@ -3,6 +3,8 @@ package com.woocommerce.android.mediapicker
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VisualMediaType
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.extensions.parcelableArrayList
 import com.woocommerce.android.model.Product
@@ -10,6 +12,9 @@ import com.woocommerce.android.util.WooLog
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.model.MediaItem
+import org.wordpress.android.mediapicker.model.MediaType
+import org.wordpress.android.mediapicker.model.MediaType.IMAGE
+import org.wordpress.android.mediapicker.model.MediaType.VIDEO
 import org.wordpress.android.util.DateTimeUtils
 import java.security.InvalidParameterException
 
@@ -60,5 +65,23 @@ object MediaPickerUtil {
         return data.parcelableArrayList<MediaItem.Identifier.RemoteMedia>(MediaPickerConstants.EXTRA_REMOTE_MEDIA)
             ?.map { Product.Image(it.id, it.name, it.url, DateTimeUtils.dateFromIso8601(it.date)) }
             ?: emptyList()
+    }
+}
+
+fun Set<MediaType>.toPhotoPickerTypes(): VisualMediaType {
+    return when {
+        contains(IMAGE) && contains(VIDEO) -> {
+            PickVisualMedia.ImageAndVideo
+        }
+        contains(IMAGE) -> {
+            PickVisualMedia.ImageOnly
+        }
+        contains(VIDEO) -> {
+            PickVisualMedia.VideoOnly
+        } else -> {
+            throw IllegalArgumentException(
+                "Missing or unsupported photo picker media types: $this"
+            )
+        }
     }
 }

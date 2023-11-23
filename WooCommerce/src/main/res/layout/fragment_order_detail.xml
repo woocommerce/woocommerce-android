@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,14 +36,14 @@
                 <!-- Order Status -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
                     android:id="@+id/orderDetail_orderStatus"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
                 <!-- Order Shipping method warning card -->
                 <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
                     android:id="@+id/orderDetail_shippingMethodNotice"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
@@ -51,18 +52,27 @@
                 <!-- Product List -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                     android:id="@+id/orderDetail_productList"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
                     android:contentDescription="@string/products"
                     android:visibility="gone"
-                    tools:visibility="visible" />
+                    tools:visibility="visible"
+                    app:contentPaddingTop="@dimen/minor_00"/>
+
+                <!-- Custom Amounts List -->
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/orderDetail_customAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:contentDescription="@string/custom_amounts"/>
 
                 <!-- Custom fields button -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
                     android:id="@+id/customFieldsCard"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
@@ -71,7 +81,7 @@
                 <!-- Refunds Info -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
                     android:id="@+id/orderDetail_refundsInfo"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
@@ -100,29 +110,30 @@
                 <!-- Payments -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView
                     android:id="@+id/orderDetail_paymentInfo"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    app:contentPaddingTop="@dimen/minor_00"/>
 
                 <!-- Customer Info -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
                     android:id="@+id/orderDetail_customerInfo"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailSubscriptionListView
                     android:id="@+id/orderDetail_subscriptionList"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
 
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailGiftCardListView
                     android:id="@+id/orderDetail_giftCardList"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
@@ -130,7 +141,7 @@
                 <!-- Shipment Tracking -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailShipmentTrackingListView
                     android:id="@+id/orderDetail_shipmentList"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
@@ -141,7 +152,7 @@
                 <!-- Order Notes -->
                 <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
                     android:id="@+id/orderDetail_noteList"
-                    style="@style/Woo.Card"
+                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>

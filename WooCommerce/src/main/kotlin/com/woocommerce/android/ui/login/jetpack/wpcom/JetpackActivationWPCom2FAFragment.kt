@@ -8,11 +8,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphJetpackInstallDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackCPInstallationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -48,9 +52,8 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowJetpackActivationScreen -> {
-                    navigateToJetpackActivationScreen(event)
-                }
+                is ShowJetpackActivationScreen -> navigateToJetpackActivationScreen(event)
+                is ShowJetpackCPInstallationScreen -> navigateToJetpackCPInstallationScreen()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> findNavController().navigateUp()
             }
@@ -64,6 +67,15 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
                     isJetpackInstalled = event.isJetpackInstalled,
                     siteUrl = event.siteUrl
                 )
+        )
+    }
+
+    private fun navigateToJetpackCPInstallationScreen() {
+        findNavController().navigateSafely(
+            NavGraphJetpackInstallDirections.actionGlobalJetpackCPInstallProgressDialog(),
+            navOptions = navOptions {
+                popUpTo(R.id.jetpackActivationDispatcherFragment) { inclusive = true }
+            }
         )
     }
 }

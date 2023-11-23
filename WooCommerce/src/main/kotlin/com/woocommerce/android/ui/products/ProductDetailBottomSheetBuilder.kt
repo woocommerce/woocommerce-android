@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories
@@ -14,11 +15,15 @@ import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
-    private val resources: ResourceProvider
+    private val resources: ResourceProvider,
+    private val variationRepository: VariationRepository
 ) {
     enum class ProductDetailBottomSheetType(
         @StringRes val titleResource: Int,
@@ -38,9 +43,10 @@ class ProductDetailBottomSheetBuilder(
         val stat: AnalyticsEvent? = null
     )
 
+    @Suppress("LongMethod")
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
-            SIMPLE -> {
+            SIMPLE, SUBSCRIPTION -> {
                 listOfNotNull(
                     product.getShipping(),
                     product.getCategories(),
@@ -66,7 +72,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getLinkedProducts()
                 )
             }
-            VARIABLE -> {
+            VARIABLE, VARIABLE_SUBSCRIPTION -> {
                 listOfNotNull(
                     product.getShipping(),
                     product.getCategories(),
@@ -91,12 +97,28 @@ class ProductDetailBottomSheetBuilder(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,
                 ViewProductShipping(
                     ShippingData(
-                        weight,
-                        length,
-                        width,
-                        height,
-                        shippingClass,
-                        shippingClassId
+                        weight = weight,
+                        length = length,
+                        width = width,
+                        height = height,
+                        shippingClassSlug = shippingClass,
+                        shippingClassId = shippingClassId,
+                        subscriptionShippingData = if (productType == SUBSCRIPTION ||
+                            this.productType == VARIABLE_SUBSCRIPTION
+                        ) {
+                            ShippingData.SubscriptionShippingData(
+                                oneTimeShipping = subscription?.oneTimeShipping ?: false,
+                                canEnableOneTimeShipping = if (productType == SUBSCRIPTION) {
+                                    subscription?.supportsOneTimeShipping ?: false
+                                } else {
+                                    // For variable subscription products, we need to check against the variations
+                                    variationRepository.getProductVariationList(remoteId).all {
+                                        (it as? SubscriptionProductVariation)?.subscriptionDetails
+                                            ?.supportsOneTimeShipping ?: false
+                                    }
+                                }
+                            )
+                        } else null
                     )
                 ),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED

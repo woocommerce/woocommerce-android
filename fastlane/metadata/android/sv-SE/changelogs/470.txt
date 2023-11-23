@@ -1,2 +1,0 @@
-16.0:
-Välkommen till den senaste uppdateringen av WooCommerce! Vi har gjort om beställningens artikelförteckning för ett mer intuitivt flöde. Blaze-upplevelsen är nu mer effektiv med förbättrat kampanjskapande. Dessutom introduceras produktskapande via AI med hjälp av paketfoton för att få automatiska rubriker och beskrivningar. Njut av en smidig inköpsupplevelse!

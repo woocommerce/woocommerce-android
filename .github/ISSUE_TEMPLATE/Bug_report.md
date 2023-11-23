@@ -1,7 +1,6 @@
 ---
 name: "\U0001F41E Bug report"
-about: Report a bug if something isn't working as expected in the WooCommerce Android
-  app.
+about: Report a bug if something isn't working as expected in the WooCommerce Android app.
 title: ''
 labels: 'type: bug'
 assignees: ''
@@ -26,14 +25,14 @@ A clear and concise description of what you expected to happen.
 
 **Isolating the problem (mark completed items with an [x]):**
 - [ ] I have deactivated other plugins and confirmed this bug occurs when only WooCommerce plugin is active.
-- [ ] This bug happens with a default WordPress theme active, or [Storefront](https://woocommerce.com/storefront/).
+- [ ] This bug happens with a default WordPress theme active, or [Storefront](https://woo.com/products/storefront/).
 - [ ] I can reproduce this bug consistently using the steps above.
 
 **Mobile Environment**
 Please include:
-- Device: 
-- Android version: 
-- WooCommerce Android version: 
+- Device:
+- Android version:
+- WooCommerce Android version:
 
 **WordPress Environment**
 <details>

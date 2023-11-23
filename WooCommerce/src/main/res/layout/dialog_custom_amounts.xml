@@ -56,7 +56,7 @@
                 style="@style/Woo.TextView.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_150"
+                android:layout_marginTop="@dimen/major_100"
                 android:gravity="center"
                 android:text="@string/custom_amounts_enter_amount"
                 android:textSize="@dimen/text_major_25"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:imeOptions="flagNoFullscreen"
-                android:textSize="@dimen/line_height_major_150"
+                android:textSize="@dimen/line_height_major_100"
                 app:boxBackgroundMode="none"
                 app:editTextLayoutMode="wrap"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,6 +80,15 @@
                 app:supportsNegativeValues="false"
                 app:usesFullFormatting="true"
                 tools:hint="0.00" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/taxToggleComposeView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editPrice"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customAmountNameCaptionText"
@@ -92,7 +101,7 @@
                 android:textSize="@dimen/text_major_25"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editPrice" />
+                app:layout_constraintTop_toBottomOf="@id/taxToggleComposeView" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/customAmountNameText"

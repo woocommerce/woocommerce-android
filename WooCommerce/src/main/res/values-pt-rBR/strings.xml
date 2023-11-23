@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-01 20:54:28+0000
+Translation-Revision-Date: 2023-11-14 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="notification_security_key_needed">Forneça sua chave de segurança para continuar.</string>
+    <string name="login_error_security_key">Ocorreu um erro no login com a chave de segurança</string>
+    <string name="login_text_security_key">Usar uma chave de segurança</string>
+    <string name="product_subscription_period">Período</string>
+    <string name="product_subscription_interval">Intervalo de cobrança</string>
+    <string name="product_sale">Promoção</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Desconhecido</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Com falha</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Cancelado</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">Em trânsito</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Pendente</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Pago</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Estimado</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Recolher/expandir resumo de depósito</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Saiba mais sobre quando você receberá seu dinheiro</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">O dinheiro disponível é depositado automaticamente toda semana.</string>
+    <string name="card_reader_hub_deposit_summary_last">Último</string>
+    <string name="card_reader_hub_deposit_summary_next">Próximo</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Depósitos</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">O dinheiro fica disponível após sete dias pendente.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depósito</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depósitos</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Dinheiro pendente</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Dinheiro disponível</string>
+    <string name="order_creation_payment_tax_label">Impostos</string>
+    <string name="order_creation_payment_products">Produtos</string>
+    <string name="order_creation_payment_header">Totais de pagamentos</string>
+    <string name="email_or_username">Endereço de e-mail ou nome de usuário</string>
+    <string name="custom_amounts_creation_error">Não é possível criar um pedido de valor personalizado</string>
+    <string name="custom_amounts_add_custom_name_hint">Inserir nome personalizado</string>
+    <string name="custom_amounts_add_custom_amount">Adicionar valor personalizado</string>
+    <string name="custom_amounts_name">Nome</string>
+    <string name="custom_amounts_enter_amount">Valor</string>
+    <string name="custom_amounts_dialog_title">Valor personalizado</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Conecte o Jetpack pela sua página de administração em um navegador ou entre em contato com o suporte.</string>
+    <string name="login_jetpack_installation_error_connection_message">Ocorreu um erro na comunicação com seu site.</string>
+    <string name="custom_amounts">Valores personalizados</string>
     <string name="product_details_blaze_card">Promover com o Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">Entendi</string>
     <string name="blaze_campaign_ceation_celebration_message">O anúncio foi enviado para aprovação. Enviaremos um e-mail de confirmação assim que for aprovado e estiver no ar.</string>
@@ -561,7 +598,6 @@ Language: pt_BR
     <string name="subscription_status_cancelled">Cancelada</string>
     <string name="subscription_status_on_hold">Suspensa</string>
     <string name="subscription_status_active">Ativa</string>
-    <string name="no_variable_subscription_warning">Você só pode adicionar assinaturas variáveis no painel da Web.</string>
     <string name="subscription_details_info_notice">Você pode editar as assinaturas de produtos no painel da Web.</string>
     <string name="subscription_no_trial">Sem período de teste</string>
     <string name="subscription_no_sign_up_fee">Sem taxa de inscrição</string>
@@ -3004,7 +3040,7 @@ Language: pt_BR
     <string name="login_text_otp_another">Ao invés disso, enviar por mensagem de texto um outro código para mim.</string>
     <string name="login_text_otp">Envie-me uma mensagem de texto com o código em vez disso.</string>
     <string name="enter_verification_code_sms">Enviamos uma mensagem de texto para o número de telefone com final %s. Digite o código de verificação do SMS.</string>
-    <string name="enter_verification_code">Quase lá! Digite o código de verificação do seu aplicativo de autenticação.</string>
+    <string name="enter_verification_code">Quase lá! Digite o código de verificação para o WordPress.com do seu aplicativo de autenticação.</string>
     <string name="enter_username_instead">Acesse com seu nome de usuário.</string>
     <string name="enter_site_address_instead">Acesse digitando o endereço do seu site.</string>
     <string name="alternatively">Alternativamente:</string>
@@ -3170,5 +3206,13 @@ Language: pt_BR
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Pacote personalizado</item>
         <item>Pacote de serviço</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>A cada</item>
+        <item>A cada 2º</item>
+        <item>A cada 3º</item>
+        <item>A cada 4º</item>
+        <item>A cada 5º</item>
+        <item>A cada 6º</item>
     </string-array>
 </resources>

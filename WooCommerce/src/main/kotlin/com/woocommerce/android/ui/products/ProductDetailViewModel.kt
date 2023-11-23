@@ -13,16 +13,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_MIN_MAX_QUANTITY_RULES
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_FORM
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -35,9 +26,7 @@ import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.MediaFilesRepository
-import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
-import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
-import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
+import com.woocommerce.android.media.MediaFilesRepository.UploadResult
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
@@ -46,6 +35,7 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -70,6 +60,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
+import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
@@ -146,7 +137,7 @@ class ProductDetailViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
-    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted
+    private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -240,7 +231,7 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
 
     private val productDetailBottomSheetBuilder by lazy {
-        ProductDetailBottomSheetBuilder(resources)
+        ProductDetailBottomSheetBuilder(resources, variationRepository)
     }
 
     private val _hasChanges = storedProduct
@@ -407,7 +398,7 @@ class ProductDetailViewModel @Inject constructor(
             tracker.track(
                 AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
                 mapOf(
-                    KEY_SOURCE to source
+                    AnalyticsTracker.KEY_SOURCE to source
                 )
             )
 
@@ -440,8 +431,8 @@ class ProductDetailViewModel @Inject constructor(
         )
 
         tracker.track(
-            stat = PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED,
-            properties = mapOf(KEY_SOURCE to VALUE_PRODUCT_FORM)
+            stat = AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_FORM)
         )
     }
 
@@ -678,7 +669,7 @@ class ProductDetailViewModel @Inject constructor(
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
             if (updatedDownloads.isEmpty()) triggerEvent(
-                ProductExitEvent.ExitProductDownloads()
+                ProductExitEvent.ExitProductDownloads
             )
         }
     }
@@ -730,15 +721,15 @@ class ProductDetailViewModel @Inject constructor(
                     }
                     .collect {
                         when (it) {
-                            is UploadFailure -> triggerEvent(
+                            is UploadResult.UploadFailure -> triggerEvent(
                                 ShowSnackbar(R.string.product_downloadable_files_upload_failed)
                             )
 
-                            is UploadProgress -> {
+                            is UploadResult.UploadProgress -> {
                                 // TODO
                             }
 
-                            is UploadSuccess -> showAddProductDownload(it.media.url)
+                            is UploadResult.UploadSuccess -> showAddProductDownload(it.media.url)
                         }
                     }
             }
@@ -765,48 +756,52 @@ class ProductDetailViewModel @Inject constructor(
         var eventName: AnalyticsEvent? = null
         var hasChanges = false
         when (event) {
-            is ProductExitEvent.ExitSettings -> {
+            ProductExitEvent.ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
 
-            is ProductExitEvent.ExitExternalLink -> {
+            ProductExitEvent.ExitExternalLink -> {
                 eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
 
-            is ProductExitEvent.ExitProductCategories -> {
+            ProductExitEvent.ExitProductCategories -> {
                 eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
 
-            is ProductExitEvent.ExitProductTags -> {
+            ProductExitEvent.ExitProductTags -> {
                 eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
 
-            is ProductExitEvent.ExitProductAttributeList -> {
+            ProductExitEvent.ExitProductAttributeList -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ProductExitEvent.ExitProductAddAttribute -> {
+            ProductExitEvent.ExitProductAddAttribute -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
 
-            is ProductExitEvent.ExitAttributesAdded -> {
+            ProductExitEvent.ExitAttributesAdded -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+            ProductExitEvent.ExitProductSubscriptionExpiration -> {
+                eventName = AnalyticsEvent.PRODUCT_SUBSCRIPTION_EXPIRATION_DONE_BUTTON_TAPPED
+                hasChanges = hasSubscriptionExpirationChanges()
+            }
 
-            is ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
-            is ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
-            is ProductExitEvent.ExitProductAddons -> Unit // Do nothing
-            is ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
-            is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
-            is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
-            is ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
-            is ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
+            ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
+            ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
+            ProductExitEvent.ExitProductAddons -> Unit // Do nothing
+            ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
+            ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
+            ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
+            ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
+            ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -912,7 +907,7 @@ class ProductDetailViewModel @Inject constructor(
         viewState.productDraft
             ?.takeIf {
                 isProductStoredAtSite.not() and
-                    (it.type == ProductType.VARIABLE.value) and
+                    it.productType.isVariableProduct() and
                     (it.status == DRAFT)
             }
             ?.takeIf { addProduct(it).first }
@@ -958,7 +953,7 @@ class ProductDetailViewModel @Inject constructor(
                     if (navArgs.source == STORE_ONBOARDING) {
                         tracker.track(
                             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
-                            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to VALUE_PRODUCTS)
+                            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to AnalyticsTracker.VALUE_PRODUCTS)
                         )
                     }
                     tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
@@ -1111,6 +1106,25 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onProductTypeChanged(
+        productType: ProductType,
+        isVirtual: Boolean
+    ) {
+        updateProductDraft(type = productType.value, isVirtual = isVirtual)
+
+        viewState.productDraft?.let { productDraft ->
+            if (productType == ProductType.SUBSCRIPTION && productDraft.subscription == null) {
+                viewState = viewState.copy(
+                    productDraft = productDraft.copy(
+                        subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
+                            price = productDraft.regularPrice
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     /**
      * Update all product fields that are edited by the user
      */
@@ -1220,6 +1234,39 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun updateProductSubscription(
+        price: BigDecimal? = viewState.productDraft?.subscription?.price,
+        period: SubscriptionPeriod? = null,
+        periodInterval: Int? = null,
+        signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
+        length: Int? = null,
+        trialLength: Int? = null,
+        trialPeriod: SubscriptionPeriod? = null,
+        oneTimeShipping: Boolean? = null
+    ) {
+        viewState.productDraft?.let { product ->
+            val subscription = product.subscription ?: return
+            // The length ranges depend on the subscription period (days,weeks,months,years) and interval. If these
+            // change we need to reset the length to "Never expire". This replicates web behavior
+            val updatedLength = subscription.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
+                period,
+                periodInterval,
+                length
+            )
+            val updatedSubscription = subscription.copy(
+                price = price,
+                period = period ?: subscription.period,
+                periodInterval = periodInterval ?: subscription.periodInterval,
+                signUpFee = signUpFee,
+                length = updatedLength,
+                trialLength = trialLength ?: subscription.trialLength,
+                trialPeriod = trialPeriod ?: subscription.trialPeriod,
+                oneTimeShipping = oneTimeShipping ?: subscription.oneTimeShipping
+            )
+            viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
+        }
+    }
+
     private fun productHasSale(
         isSaleScheduled: Boolean?,
         product: Product
@@ -1316,8 +1363,8 @@ class ProductDetailViewModel @Inject constructor(
                 launch {
                     val hasQuantityRules = getProductQuantityRules(product.remoteId) != null
                     val properties = mapOf(
-                        KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
-                        KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules
+                        AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
+                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -2123,11 +2170,11 @@ class ProductDetailViewModel @Inject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onBackButtonClicked(ProductExitEvent.ExitProductTags())
+                onBackButtonClicked(ProductExitEvent.ExitProductTags)
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onBackButtonClicked(ProductExitEvent.ExitProductTags())
+            onBackButtonClicked(ProductExitEvent.ExitProductTags)
         }
     }
 
@@ -2270,17 +2317,17 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onDuplicateProduct() {
         launch {
-            tracker.track(PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
             viewState.productDraft?.let { product ->
 
                 triggerEvent(ShowDuplicateProductInProgress)
                 val result = duplicateProduct(product)
 
                 if (result.isSuccess) {
-                    tracker.track(DUPLICATE_PRODUCT_SUCCESS)
+                    tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
                     triggerEvent(OpenProductDetails(result.getOrThrow()))
                 } else {
-                    tracker.track(DUPLICATE_PRODUCT_FAILED)
+                    tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
                     triggerEvent(ShowDuplicateProductError)
                 }
             }
@@ -2344,6 +2391,14 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
+    fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
+        updateProductSubscription(length = selectedExpirationValue)
+    }
+
+    private fun hasSubscriptionExpirationChanges(): Boolean {
+        return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2352,30 +2407,22 @@ class ProductDetailViewModel @Inject constructor(
      * Add a new class here for each new product sub detail screen to handle back navigation.
      */
     sealed class ProductExitEvent : Event() {
-        class ExitExternalLink : ProductExitEvent()
-        class ExitSettings : ProductExitEvent()
-        class ExitProductCategories : ProductExitEvent()
-        class ExitProductTags : ProductExitEvent()
-        class ExitLinkedProducts : ProductExitEvent()
-        class ExitProductDownloads : ProductExitEvent()
-        class ExitProductDownloadsSettings :
-            ProductExitEvent()
-
-        class ExitProductAttributeList : ProductExitEvent()
-
-        class ExitProductAddAttribute : ProductExitEvent()
-
-        class ExitProductAddAttributeTerms : ProductExitEvent()
-
-        class ExitProductRenameAttribute : ProductExitEvent()
-
+        object ExitExternalLink : ProductExitEvent()
+        object ExitSettings : ProductExitEvent()
+        object ExitProductCategories : ProductExitEvent()
+        object ExitProductTags : ProductExitEvent()
+        object ExitLinkedProducts : ProductExitEvent()
+        object ExitProductDownloads : ProductExitEvent()
+        object ExitProductDownloadsSettings : ProductExitEvent()
+        object ExitProductAttributeList : ProductExitEvent()
+        object ExitProductAddAttribute : ProductExitEvent()
+        object ExitProductAddAttributeTerms : ProductExitEvent()
+        object ExitProductRenameAttribute : ProductExitEvent()
         object ExitAttributesAdded : ProductExitEvent()
-
         object ExitProductAddons : ProductExitEvent()
-
         object ExitProductSubscriptions : ProductExitEvent()
-
         object ExitProductQuantityRules : ProductExitEvent()
+        object ExitProductSubscriptionExpiration : ProductExitEvent()
     }
 
     object RefreshMenu : Event()

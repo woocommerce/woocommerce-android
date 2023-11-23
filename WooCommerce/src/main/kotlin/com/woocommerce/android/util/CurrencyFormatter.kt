@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.util.Currency
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -113,6 +114,17 @@ class CurrencyFormatter @Inject constructor(
         currencyCode: String = defaultCurrencyCode,
         applyDecimalFormatting: Boolean = true
     ) = formatCurrency(amount.toString(), currencyCode, applyDecimalFormatting)
+
+    fun formatCurrencyGivenInTheSmallestCurrencyUnit(
+        amount: Long,
+        currencyCode: String,
+        applyDecimalFormatting: Boolean = true
+    ): String {
+        val currencyObj = Currency.getInstance(currencyCode)
+        val smallestCurrencyUnit = BigDecimal.TEN.pow(currencyObj.defaultFractionDigits)
+        val value = BigDecimal.valueOf(amount).divide(smallestCurrencyUnit)
+        return formatCurrency(value, currencyCode, applyDecimalFormatting)
+    }
 
     /**
      * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.

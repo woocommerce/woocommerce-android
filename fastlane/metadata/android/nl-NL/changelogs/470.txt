@@ -1,2 +1,0 @@
-16.0:
-Welkom bij de nieuwste update van WooCommerce! We hebben de artikelenlijst van bestellingen opnieuw vormgegeven voor een intuïtievere flow. De Blaze-ervaring is nu efficiënter en we hebben het aanmaken van campagnes verbeterd. Daarnaast introduceren we ook Product aanmaken met AI met behulp van verpakkingsfoto's voor geautomatiseerde titels en beschrijvingen. Geniet van een naadloze winkelervaring!

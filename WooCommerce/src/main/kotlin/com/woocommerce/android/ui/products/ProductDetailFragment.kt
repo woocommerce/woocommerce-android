@@ -59,12 +59,15 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateP
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment.Companion.KEY_SUBSCRIPTION_EXPIRATION_RESULT
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragment.Companion.KEY_SUBSCRIPTION_FREE_TRIAL_RESULT
+import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialViewModel.FreeTrialState
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.ui.promobanner.PromoBanner
@@ -194,7 +197,7 @@ class ProductDetailFragment :
     @Suppress("LongMethod")
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
-            viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
+            viewModel.onProductTypeChanged(productType = it.type, isVirtual = it.isVirtual)
         }
         handleResult<List<Long>>(GroupedProductListType.GROUPED.resultKey) {
             viewModel.updateProductDraft(groupedProductIds = it)
@@ -209,6 +212,14 @@ class ProductDetailFragment :
                 taxClass = it.taxClass,
                 taxStatus = it.taxStatus
             )
+            if (it.isSubscription) {
+                viewModel.updateProductSubscription(
+                    price = it.regularPrice,
+                    period = it.subscriptionPeriod,
+                    periodInterval = it.subscriptionInterval,
+                    signUpFee = it.subscriptionSignUpFee,
+                )
+            }
         }
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
@@ -229,6 +240,11 @@ class ProductDetailFragment :
                 shippingClass = it.shippingClassSlug,
                 shippingClassId = it.shippingClassId
             )
+            if (it.subscriptionShippingData != null) {
+                viewModel.updateProductSubscription(
+                    oneTimeShipping = it.subscriptionShippingData.oneTimeShipping
+                )
+            }
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(images = it)
@@ -263,6 +279,14 @@ class ProductDetailFragment :
 
         handleResult<Pair<String, String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { resultPair ->
             viewModel.updateProductDraft(description = resultPair.first, title = resultPair.second)
+        }
+
+        handleResult<Int>(KEY_SUBSCRIPTION_EXPIRATION_RESULT) { newExpiration ->
+            viewModel.onSubscriptionExpirationChanged(newExpiration)
+        }
+
+        handleResult<FreeTrialState>(KEY_SUBSCRIPTION_FREE_TRIAL_RESULT) { freeTrial ->
+            viewModel.updateProductSubscription(trialLength = freeTrial.length, trialPeriod = freeTrial.period)
         }
     }
 
@@ -331,6 +355,7 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
+
                 is ShowAIProductDescriptionBottomSheet -> showAIProductDescriptionBottomSheet(
                     event.productTitle,
                     event.productDescription

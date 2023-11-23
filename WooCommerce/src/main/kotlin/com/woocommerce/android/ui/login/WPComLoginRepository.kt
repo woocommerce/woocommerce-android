@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticateTwoFactorPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.FetchAuthOptionsPayload
@@ -111,12 +111,14 @@ class WPComLoginRepository @Inject constructor(
         twoStepCode: String?,
         shouldRequestTwoStepCode: Boolean
     ): Result<Unit> {
-        val payload = AuthenticatePayload(emailOrUsername, password).apply {
-            this.twoStepCode = twoStepCode
-            this.shouldSendTwoStepSms = shouldRequestTwoStepCode
-        }
+        val payload = AuthenticateTwoFactorPayload(
+            emailOrUsername,
+            password,
+            twoStepCode.orEmpty(),
+            shouldRequestTwoStepCode
+        )
         val event: OnAuthenticationChanged =
-            dispatcher.dispatchAndAwait(AuthenticationActionBuilder.newAuthenticateAction(payload))
+            dispatcher.dispatchAndAwait(AuthenticationActionBuilder.newAuthenticateTwoFactorAction(payload))
 
         return if (event.isError) {
             WooLog.w(

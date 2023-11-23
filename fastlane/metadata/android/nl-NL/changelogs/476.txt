@@ -1,0 +1,2 @@
+16.2:
+Welkom bij de nieuwste update van WooCommerce! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!

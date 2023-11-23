@@ -16,3 +16,6 @@ Layout/LineLength:
 Naming/VariableNumber:
   Exclude:
     - fastlane/Fastfile
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never

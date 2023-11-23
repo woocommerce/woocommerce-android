@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-01 20:54:27+0000
+Translation-Revision-Date: 2023-11-15 23:54:21+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="notification_security_key_needed">Пожалуйста предоставьте ключ безопасности для продолжения.</string>
+    <string name="login_error_security_key">Возникла проблема со входом в систему с помощью ключа безопасности</string>
+    <string name="login_text_security_key">Использовать ключ безопасности</string>
+    <string name="product_subscription_period">Период</string>
+    <string name="product_subscription_interval">Расчётный интервал</string>
+    <string name="product_sale">Распродажа</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Неизвестно</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Сбой</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Отменено</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">В процессе перехода</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">На утверждении</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Оплачено</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Ожидается</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Свернуть/развернуть выписку по счёту</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Узнайте, когда вы сможете получить ваши средства</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Доступные средства вносятся на счёт автоматически раз в неделю.</string>
+    <string name="card_reader_hub_deposit_summary_last">Последний</string>
+    <string name="card_reader_hub_deposit_summary_next">Следующий</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Предоплата</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Денежные средства станут доступны после утверждения в течение 7 дн.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">Внесено на счёт: %d</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">Внесено на счёт: %d</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Средства на утверждении</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Доступные средства</string>
+    <string name="order_creation_payment_tax_label">Налоги</string>
+    <string name="order_creation_payment_products">Товары</string>
+    <string name="order_creation_payment_header">Итоговые суммы платежей</string>
+    <string name="email_or_username">Адрес электронной почты или имя пользователя</string>
+    <string name="custom_amounts_creation_error">Не удалось создать заказ с индивидуальной суммой</string>
+    <string name="custom_amounts_add_custom_name_hint">Введите индивидуальное имя</string>
+    <string name="custom_amounts_add_custom_amount">Добавить индивидуальную сумму</string>
+    <string name="custom_amounts_name">Имя</string>
+    <string name="custom_amounts_enter_amount">Сумма</string>
+    <string name="custom_amounts_dialog_title">Индивидуальная сумма</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Подключите Jetpack на странице администратора в браузере или обратитесь в службу поддержки.</string>
+    <string name="login_jetpack_installation_error_connection_message">Во время обмена данными с вашим веб-сайтом произошла ошибка.</string>
+    <string name="custom_amounts">Индивидуальные суммы</string>
     <string name="product_details_blaze_card">Рекламируйте при помощи Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">Понятно</string>
     <string name="blaze_campaign_ceation_celebration_message">Реклама отправлена на утверждение. Когда она будет одобрена и запущена, вы получите сообщение с подтверждением по электронной почте.</string>
@@ -561,7 +598,6 @@ Language: ru
     <string name="subscription_status_cancelled">Отменено</string>
     <string name="subscription_status_on_hold">Отложен</string>
     <string name="subscription_status_active">Активно</string>
-    <string name="no_variable_subscription_warning">Вы можете только добавлять вариативные подписки в веб-консоли.</string>
     <string name="subscription_details_info_notice">Вы можете редактировать подписки на товары в веб-консоли.</string>
     <string name="subscription_no_trial">Без пробного периода</string>
     <string name="subscription_no_sign_up_fee">Бесплатная регистрация</string>
@@ -3004,7 +3040,7 @@ Language: ru
     <string name="login_text_otp_another">Пришлите мне другой код.</string>
     <string name="login_text_otp">Пришлите мне сообщение с кодом.</string>
     <string name="enter_verification_code_sms">Мы послали текстовое сообщение на телефонный номер оканчивающийся на %s. Пожалуйста введите проверочный код из SMS.</string>
-    <string name="enter_verification_code">Почти готово! Введите проверочный код из приложения Authenticator.</string>
+    <string name="enter_verification_code">Почти готово! Введите проверочный код для WordPress.com из приложения Authenticator.</string>
     <string name="enter_username_instead">Войти с именем пользователя.</string>
     <string name="enter_site_address_instead">Войти с адресом вашего сайта.</string>
     <string name="alternatively">Альтернативно:</string>
@@ -3170,5 +3206,13 @@ Language: ru
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Индивидуальный пакет</item>
         <item>Пакет услуг</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Кажд.</item>
+        <item>1 из 2</item>
+        <item>1 из 3</item>
+        <item>1 из 4</item>
+        <item>1 из 5</item>
+        <item>1 из 6</item>
     </string-array>
 </resources>

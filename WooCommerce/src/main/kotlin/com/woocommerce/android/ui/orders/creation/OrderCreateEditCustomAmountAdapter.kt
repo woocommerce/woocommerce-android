@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderCreationCustomAmountItemBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomAmountAdapter.CustomAmountViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
 
@@ -38,7 +39,10 @@ class OrderCreateEditCustomAmountAdapter(
         init {
             binding.root.setOnClickListener {
                 safePosition?.let {
-                    onCustomAmountClick(getItem(it))
+                    val customAmountUIModel = getItem(it)
+                    if (!customAmountUIModel.isLocked) {
+                        onCustomAmountClick(customAmountUIModel)
+                    }
                 }
             }
         }
@@ -53,6 +57,10 @@ class OrderCreateEditCustomAmountAdapter(
             } else {
                 binding.customAmountLayout.divider.show()
             }
+            if (customAmountUIModel.isLocked) {
+                binding.customAmountLayout.customAmountEdit.hide()
+                binding.customAmountLayout.customAmountDeleteBtn.hide()
+            }
             binding.customAmountLayout.customAmountDeleteBtn.setOnClickListener {
                 safePosition?.let {
                     onCustomAmountDeleteClick(getItem(it))
@@ -65,11 +73,19 @@ class OrderCreateEditCustomAmountAdapter(
         override fun areItemsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = (oldItem.id == newItem.id) && (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
+        ): Boolean = (oldItem.id == newItem.id) &&
+            (oldItem.name == newItem.name) &&
+            (oldItem.amount == newItem.amount) &&
+            (oldItem.isLocked == newItem.isLocked) &&
+            (oldItem.taxStatus.isTaxable == newItem.taxStatus.isTaxable)
 
         override fun areContentsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = (oldItem.id == newItem.id) && (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
+        ): Boolean = (oldItem.id == newItem.id) &&
+            (oldItem.name == newItem.name) &&
+            (oldItem.amount == newItem.amount) &&
+            (oldItem.isLocked == newItem.isLocked) &&
+            (oldItem.taxStatus.isTaxable == newItem.taxStatus.isTaxable)
     }
 }

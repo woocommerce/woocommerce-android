@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_T
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
@@ -14,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
@@ -32,6 +34,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -368,7 +371,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when adding products, then update product liveData when quantity is one or more`() = testBlocking {
-        var products: List<ProductUIModel> = emptyList()
+        var products: List<OrderCreationProduct> = emptyList()
         sut.products.observeForever {
             products = it
         }
@@ -392,19 +395,23 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = testBlocking {
         var orderDraft: Order? = null
-        var addedProductItem: Order.Item? = null
+        var addedProduct: OrderCreationProduct? = null
         sut.orderDraft.observeForever { order ->
             orderDraft = order
-            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
+        sut.products.observeForever { productList ->
+            addedProduct = productList.find { it.item.productId == 123L }
         }
 
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
-        assertThat(addedProductItem).isNotNull
-        val addedProductItemId = addedProductItem!!.itemId
+        assertThat(addedProduct).isNotNull
 
-        sut.onIncreaseProductsQuantity(addedProductItemId)
-        sut.onRemoveProduct(addedProductItem!!)
+        val addedProductItemId = addedProduct!!.item.itemId
+
+        sut.onIncreaseProductsQuantity(addedProduct!!)
+        sut.onRemoveProduct(addedProduct!!)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
@@ -498,6 +505,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -510,15 +522,17 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
     fun `when removing product, should make view not editable`() = testBlocking {
         // given
-        val orderItemToRemove: Order.Item = mock()
+        val orderProductToRemove: OrderCreationProduct = mock()
 
         // when
-        sut.onRemoveProduct(orderItemToRemove)
+        sut.onRemoveProduct(orderProductToRemove)
 
         // then
         sut.viewStateData.liveData.value?.let { viewState ->
@@ -556,6 +570,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -568,6 +587,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
@@ -1440,6 +1461,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1483,6 +1505,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1505,6 +1528,44 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when custom amount added with tax status as taxable, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.first()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
+    }
+
+    @Test
+    fun `when custom amount added with tax status as false, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.first()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.NONE)
     }
 
     @Test
@@ -1616,6 +1677,32 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.ONE)
+    }
+
+    @Test
+    fun `when custom amount is updated with tax status, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
     }
 
     @Test

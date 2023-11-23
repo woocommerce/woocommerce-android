@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants.SEARCH_TYPING_DELAY_MS
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_FILTER_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
@@ -1179,6 +1180,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         }
     }
+
     @Test
     fun `given product variation selected from popular section, then track correct source`() {
         testBlocking {
@@ -1273,6 +1275,56 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                         ProductSourceForTracking.ALPHABETICAL.name
                     ),
                     KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given a configurable product is displayed on the UI then send the track event`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val sut = createViewModel(navArgs)
+            sut.trackConfigurableProduct()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given a configurable product is tapped then send the track event`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val sut = createViewModel(navArgs)
+            val item = ProductSelectorViewModel.ListItem.ConfigurableListItem(
+                productId = 1L,
+                title = "",
+                type = ProductType.SIMPLE,
+                imageUrl = null,
+                stockAndPrice = null,
+                sku = null,
+                selectionState = SelectionState.UNSELECTED
+            )
+
+            sut.onProductClick(item, ProductSourceForTracking.ALPHABETICAL)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
                 )
             )
         }

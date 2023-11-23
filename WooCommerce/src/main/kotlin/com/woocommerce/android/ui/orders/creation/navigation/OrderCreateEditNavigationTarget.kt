@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.orders.creation.navigation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.ui.orders.creation.CustomAmountUIModel
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.AutoTaxRateSettingState
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -17,7 +19,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     object EditCustomerNote : OrderCreateEditNavigationTarget()
     data class SelectItems(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        val restrictions: List<ProductRestriction>
+        val restrictions: List<ProductRestriction>,
+        val mode: OrderCreateEditViewModel.Mode
     ) : OrderCreateEditNavigationTarget()
 
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
@@ -51,11 +54,17 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         OrderCreateEditNavigationTarget()
 
     data class EditDiscount(
-        val item: Order.Item,
+        val item: OrderCreationProduct,
         val currency: String,
     ) : OrderCreateEditNavigationTarget()
 
     data class CustomAmountDialog(
         val customAmountUIModel: CustomAmountUIModel? = null
+    ) : OrderCreateEditNavigationTarget()
+
+    data class EditOrderCreationProductConfiguration(
+        val itemId: Long,
+        val productId: Long,
+        val configuration: ProductConfiguration
     ) : OrderCreateEditNavigationTarget()
 }

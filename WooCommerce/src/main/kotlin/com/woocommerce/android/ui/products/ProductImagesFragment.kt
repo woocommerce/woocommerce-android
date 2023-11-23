@@ -8,8 +8,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
@@ -26,8 +24,8 @@ import com.woocommerce.android.databinding.FragmentProductImagesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
-import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
+import com.woocommerce.android.mediapicker.MediaPickerHelper
+import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
@@ -48,17 +46,17 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerUtils
-import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
-import org.wordpress.android.mediapicker.model.MediaTypes
-import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductImagesFragment :
-    BaseProductEditorFragment(R.layout.fragment_product_images), OnGalleryImageInteractionListener, MenuProvider {
+    BaseProductEditorFragment(R.layout.fragment_product_images),
+    OnGalleryImageInteractionListener,
+    MenuProvider,
+    MediaPickerResultHandler {
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
@@ -69,7 +67,7 @@ class ProductImagesFragment :
     lateinit var mediaPickerUtils: MediaPickerUtils
 
     @Inject
-    lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
+    lateinit var mediaPickerHelper: MediaPickerHelper
 
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
@@ -197,9 +195,9 @@ class ProductImagesFragment :
                 is ShowDialog -> event.showDialog()
                 ShowImageSourceDialog -> showImageSourceDialog()
                 is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
-                ShowStorageChooser -> showLocalDeviceMediaPicker()
-                ShowCamera -> captureProductImage()
-                ShowWPMediaPicker -> showMediaLibraryPicker()
+                ShowStorageChooser -> mediaPickerHelper.showMediaPicker(DEVICE, allowMultiSelect = true)
+                ShowCamera -> mediaPickerHelper.showMediaPicker(CAMERA)
+                ShowWPMediaPicker -> mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY, allowMultiSelect = true)
                 is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
                 else -> event.isHandled = false
             }
@@ -285,78 +283,25 @@ class ProductImagesFragment :
             .show()
     }
 
-    private fun showMediaLibraryPicker() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(
-                source = WP_MEDIA_LIBRARY,
-                mediaTypes = MediaTypes.IMAGES,
-                isMultiSelectAllowed = viewModel.isMultiSelectionAllowed
-            )
-        )
-
-        mediaLibraryLauncher.launch(intent)
-    }
-
-    private fun showLocalDeviceMediaPicker() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(
-                source = DEVICE,
-                mediaTypes = MediaTypes.IMAGES,
-                isMultiSelectAllowed = viewModel.isMultiSelectionAllowed
-            )
-        )
-
-        mediaDeviceMediaPickerLauncher.launch(intent)
-    }
-
-    private fun captureProductImage() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(CAMERA)
-        )
-
-        cameraLauncher.launch(intent)
-    }
-
-    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_DEVICE)
-    }
-
-    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        handleDeviceMediaResult(it, AnalyticsTracker.IMAGE_SOURCE_CAMERA)
-    }
-
-    private val mediaLibraryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        handleMediaLibraryPickerResult(it)
-    }
-
-    private fun handleDeviceMediaResult(result: ActivityResult, source: String) {
-        result.processDeviceMediaResult()?.let { mediaUris ->
-            if (mediaUris.isNotEmpty()) {
-                AnalyticsTracker.track(
-                    AnalyticsEvent.PRODUCT_IMAGE_ADDED,
-                    mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
-                )
-                viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
-            }
-        }
-    }
-
-    private fun handleMediaLibraryPickerResult(result: ActivityResult) {
-        result.processMediaLibraryResult()?.let {
-            AnalyticsTracker.track(
-                AnalyticsEvent.PRODUCT_IMAGE_ADDED,
-                mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
-            )
-            viewModel.onMediaLibraryImagesAdded(it)
-        }
-    }
-
     override fun onExit() {
         viewModel.onNavigateBackButtonClicked()
+    }
+
+    override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
+        if (imageUris.isNotEmpty()) {
+            AnalyticsTracker.track(
+                AnalyticsEvent.PRODUCT_IMAGE_ADDED,
+                mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
+            )
+            viewModel.uploadProductImages(navArgs.remoteId, imageUris)
+        }
+    }
+
+    override fun onWPMediaSelected(images: List<Image>) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PRODUCT_IMAGE_ADDED,
+            mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
+        )
+        viewModel.onMediaLibraryImagesAdded(images)
     }
 }

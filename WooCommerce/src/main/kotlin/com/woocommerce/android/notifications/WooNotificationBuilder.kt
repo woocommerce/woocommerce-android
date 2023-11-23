@@ -59,7 +59,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
         pushId: Int,
         notification: Notification
     ) = Intent(context, MainActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         putExtra(MainActivity.FIELD_OPENED_FROM_PUSH, true)
         putExtra(MainActivity.FIELD_PUSH_ID, pushId)
         if (notification.remoteNoteId != 0L) {

@@ -5,14 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductAddDownloadableFileBinding
-import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
-import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
+import com.woocommerce.android.mediapicker.MediaPickerHelper
+import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
@@ -24,19 +23,21 @@ import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.model.MediaTypes
-import org.wordpress.android.mediapicker.ui.MediaPickerActivity
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.SYSTEM_PICKER
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.model.MediaTypes.EVERYTHING
+import org.wordpress.android.mediapicker.model.MediaTypes.IMAGES_AND_VIDEOS
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
+class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment(), MediaPickerResultHandler {
     @Inject
     lateinit var navigator: ProductNavigator
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
     @Inject
-    lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
+    lateinit var mediaPickerHelper: MediaPickerHelper
 
     private val viewModel: AddProductDownloadViewModel by viewModels()
     private val parentViewModel: ProductDetailViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_products)
@@ -66,9 +67,18 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
     private fun setupObservers(viewModel: AddProductDownloadViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is PickFileFromMedialLibrary -> showMediaLibraryPicker()
-                is PickMediaFileFromDevice -> showLocalDeviceMediaPicker()
-                is PickDocumentFromDevice -> showLocalDeviceDocumentPicker()
+                is PickFileFromMedialLibrary -> mediaPickerHelper.showMediaPicker(
+                    source = WP_MEDIA_LIBRARY,
+                    mediaTypes = EVERYTHING
+                )
+                is PickMediaFileFromDevice -> mediaPickerHelper.showMediaPicker(
+                    source = DEVICE,
+                    mediaTypes = IMAGES_AND_VIDEOS
+                )
+                is PickDocumentFromDevice -> mediaPickerHelper.showMediaPicker(
+                    source = SYSTEM_PICKER,
+                    mediaTypes = EVERYTHING
+                )
                 is AddFile -> {
                     findNavController().navigateUp()
                     parentViewModel.handleSelectedDownloadableFile(event.uri.toString())
@@ -80,65 +90,15 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
         }
     }
 
-    private val mediaLibraryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        handleMediaLibraryPickerResult(it)
-    }
-
-    private val mediaDeviceMediaPickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        handleDeviceMediaResult(it)
-    }
-
-    private fun handleMediaLibraryPickerResult(result: ActivityResult) {
-        result.processMediaLibraryResult()?.let { images ->
-            images.forEach {
-                viewModel.launchFileUpload(Uri.parse(it.source))
-            }
+    override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
+        if (imageUris.isNotEmpty()) {
+            viewModel.launchFileUpload(imageUris.first())
         }
     }
 
-    private fun showMediaLibraryPicker() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(
-                source = MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY,
-                mediaTypes = MediaTypes.EVERYTHING
-            )
-        )
-
-        mediaLibraryLauncher.launch(intent)
-    }
-
-    private fun handleDeviceMediaResult(result: ActivityResult) {
-        result.processDeviceMediaResult()?.let { mediaUris ->
-            if (mediaUris.isNotEmpty()) {
-                viewModel.launchFileUpload(mediaUris.first())
-            }
+    override fun onWPMediaSelected(images: List<Image>) {
+        images.forEach {
+            viewModel.launchFileUpload(Uri.parse(it.source))
         }
-    }
-
-    private fun showLocalDeviceMediaPicker() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(
-                source = MediaPickerSetup.DataSource.DEVICE,
-                mediaTypes = MediaTypes.MEDIA
-            )
-        )
-
-        mediaDeviceMediaPickerLauncher.launch(intent)
-    }
-
-    private fun showLocalDeviceDocumentPicker() {
-        val intent = MediaPickerActivity.buildIntent(
-            requireContext(),
-            mediaPickerSetupFactory.build(
-                source = MediaPickerSetup.DataSource.SYSTEM_PICKER,
-                mediaTypes = MediaTypes.DOCUMENTS
-            )
-        )
-
-        mediaDeviceMediaPickerLauncher.launch(intent)
     }
 }

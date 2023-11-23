@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibraryDialog
@@ -40,10 +42,6 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment(), MediaPick
         }
     }
 
-    override fun onMediaSelected(mediaUri: String) {
-        viewModel.onImageChanged(mediaUri)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,5 +61,20 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment(), MediaPick
                 is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
             }
         }
+    }
+    override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
+        if (imageUris.isNotEmpty()) {
+            onImageSelected(imageUris.first().toString())
+        }
+    }
+
+    override fun onWPMediaSelected(images: List<Image>) {
+        if (images.isNotEmpty()) {
+            onImageSelected(images.first().source)
+        }
+    }
+
+    private fun onImageSelected(mediaUri: String) {
+        viewModel.onImageChanged(mediaUri)
     }
 }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -42,6 +43,21 @@ class AutoSyncOrderStrategyTest : SyncStrategyTest() {
         orderDraftChanges.value = change
         advanceUntilIdle()
         verify(orderCreateEditRepository, times(0)).createOrUpdateDraft(change)
+        job.cancel()
+    }
+
+    @Test
+    fun `WHEN the user commits a change in fee line tax THEN the change is submitted to the API`() = testBlocking {
+        val job = sut.syncOrderChanges(orderDraftChanges, retryTrigger)
+            .launchIn(this)
+        val updatedFeeLines = order.feesLines.map {
+            it.taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE
+            it
+        }
+        val change = order.copy(feesLines = updatedFeeLines)
+        orderDraftChanges.value = change
+        advanceUntilIdle()
+        verify(orderCreateEditRepository, times(1)).createOrUpdateDraft(change)
         job.cancel()
     }
 }

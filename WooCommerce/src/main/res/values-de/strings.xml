@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 13:54:04+0000
+Translation-Revision-Date: 2023-11-15 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="notification_security_key_needed">Bitte gib deinen Sicherheitsschlüssel an, um fortzufahren.</string>
+    <string name="login_error_security_key">Es gab einige Probleme mit der Anmeldung per Sicherheitsschlüssel</string>
+    <string name="login_text_security_key">Sicherheitsschlüssel verwenden</string>
+    <string name="product_subscription_period">Periode</string>
+    <string name="product_subscription_interval">Zahlungsintervall</string>
+    <string name="product_sale">Angebot</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Unbekannt</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Fehlgeschlagen</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Abgebrochen</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">Unterwegs</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Ausstehend</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Bezahlt</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Geschätzt</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Zusammenfassung der Auszahlungen aus-/einblenden</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Weitere Informationen zum Erhalt deiner Zahlungen</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Verfügbares Guthaben wird automatisch jede Woche ausgezahlt.</string>
+    <string name="card_reader_hub_deposit_summary_last">Zuletzt</string>
+    <string name="card_reader_hub_deposit_summary_next">Als Nächstes</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Auszahlungen</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Guthaben, das seit 7 Tagen aussteht, wird zur Verfügung gestellt.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d Auszahlung</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d Auszahlungen</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Ausstehendes Guthaben</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Verfügbares Guthaben</string>
+    <string name="order_creation_payment_tax_label">Steuern</string>
+    <string name="order_creation_payment_products">Produkte</string>
+    <string name="order_creation_payment_header">Zahlungsübersicht</string>
+    <string name="email_or_username">E-Mail-Adresse oder Benutzername</string>
+    <string name="custom_amounts_creation_error">Bestellung mit individuellem Betrag konnte nicht erstellt werden</string>
+    <string name="custom_amounts_add_custom_name_hint">Individuellen Namen eingeben</string>
+    <string name="custom_amounts_add_custom_amount">Individuellen Betrag hinzufügen</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_enter_amount">Betrag</string>
+    <string name="custom_amounts_dialog_title">Individueller Betrag</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Bitte stelle eine Verbindung zu Jetpack über deine Admin-Seite in einem Browser her oder wende dich an den Support.</string>
+    <string name="login_jetpack_installation_error_connection_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
+    <string name="custom_amounts">Individuelle Beträge</string>
     <string name="product_details_blaze_card">Mit Blaze bewerben</string>
     <string name="blaze_campaign_ceation_celebration_button">Verstanden</string>
     <string name="blaze_campaign_ceation_celebration_message">Die Werbung wurde zur Genehmigung eingereicht. Wir senden dir eine Bestätigung per E-Mail, sobald sie genehmigt und gestartet wurde.</string>
@@ -561,7 +598,6 @@ Language: de
     <string name="subscription_status_cancelled">Storniert</string>
     <string name="subscription_status_on_hold">Wartend</string>
     <string name="subscription_status_active">Aktiv</string>
-    <string name="no_variable_subscription_warning">Du kannst nur variable Abonnements im Web-Dashboard hinzufügen.</string>
     <string name="subscription_details_info_notice">Du kannst Produkt-Abonnements im Web-Dashboard bearbeiten.</string>
     <string name="subscription_no_trial">Kein Testzeitraum</string>
     <string name="subscription_no_sign_up_fee">Keine Registrierungsgebühr</string>
@@ -829,7 +865,7 @@ Language: de
     <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>
     <string name="login_jetpack_installation_retry_installing">Installation erneut versuchen</string>
     <string name="login_jetpack_installation_get_support">Unterstützung erhalten</string>
-    <string name="login_jetpack_installation_error_generic_suggestion">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Bitte versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
     <string name="login_jetpack_installation_error_generic_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Du bist nicht berechtigt, Plugins in diesem Shop zu verwalten</string>
     <string name="login_jetpack_installation_error_authorizing">Fehler beim Autorisieren der Verbindung mit Jetpack</string>
@@ -3004,7 +3040,7 @@ Language: de
     <string name="login_text_otp_another">Sende mir stattdessen einen anderen Code per SMS.</string>
     <string name="login_text_otp">Stattdessen Code per SMS senden.</string>
     <string name="enter_verification_code_sms">Wir haben eine Textnachricht an die Telefonnummer mit den Endziffern %s gesendet. Gib bitte den Verifizierungscode aus der SMS ein.</string>
-    <string name="enter_verification_code">Fast geschafft! Gib bitte den Verifizierungscode aus deiner Authenticator-App ein.</string>
+    <string name="enter_verification_code">Fast geschafft! Bitte gib den Verifizierungscode für WordPress.com aus deiner Authenticator-App ein.</string>
     <string name="enter_username_instead">Melde dich mit deinem Benutzernamen an.</string>
     <string name="enter_site_address_instead">Melde dich an, indem du deine Website-Adresse eingibst.</string>
     <string name="alternatively">Alternativ:</string>
@@ -3170,5 +3206,13 @@ Language: de
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Individuelles Paket</item>
         <item>Service-Paket</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Jede/n</item>
+        <item>An jedem 2.</item>
+        <item>An jedem 3.</item>
+        <item>An jedem 4.</item>
+        <item>An jedem 5.</item>
+        <item>An jedem 6.</item>
     </string-array>
 </resources>

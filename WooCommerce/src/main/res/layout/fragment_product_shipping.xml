@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.card.MaterialCardView
         style="@style/Woo.Card"
@@ -67,8 +67,24 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
                 android:inputType="text"
-                tools:visibility="gone"
                 android:hint="@string/product_shipping_class" />
+
+            <com.woocommerce.android.widgets.WCToggleSingleOptionView
+                android:id="@+id/product_one_time_shipping"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:switchSummary="@string/subscription_one_time_shipping_description"
+                app:switchTitle="@string/subscription_one_time_shipping" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/product_one_time_shipping_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/subscription_one_time_shipping_note"
+                android:textAppearance="?attr/textAppearanceCaption" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

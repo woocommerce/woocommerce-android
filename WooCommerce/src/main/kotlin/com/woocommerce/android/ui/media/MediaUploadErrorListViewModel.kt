@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus.Failed
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,7 +31,7 @@ class MediaUploadErrorListViewModel @Inject constructor(
         val errorList = navArgs.errorList
         if (errorList != null) {
             val currentErrors = errorList.map<ProductImageUploadData, ErrorUiModel> {
-                ErrorUiModel(it.uploadStatus as Failed)
+                ErrorUiModel(it.uploadStatus as UploadStatus.Failed)
             }
             viewState = viewState.copy(
                 uploadErrorList = currentErrors,
@@ -47,7 +46,7 @@ class MediaUploadErrorListViewModel @Inject constructor(
                 .filter { it.isNotEmpty() }
                 .onEach { errors ->
                     val currentErrors =
-                        viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as Failed) }
+                        viewState.uploadErrorList + errors.map { ErrorUiModel(it.uploadStatus as UploadStatus.Failed) }
                     viewState = viewState.copy(
                         uploadErrorList = currentErrors,
                         toolBarTitle = resourceProvider.getString(
@@ -75,9 +74,9 @@ class MediaUploadErrorListViewModel @Inject constructor(
         val filePath: String
     ) : Parcelable {
         constructor(state: UploadStatus.Failed) : this(
-            fileName = state.media.fileName.orEmpty(),
+            fileName = state.media?.fileName.orEmpty(),
             errorMessage = state.mediaErrorMessage,
-            filePath = state.media.filePath.orEmpty()
+            filePath = state.media?.filePath.orEmpty()
         )
     }
 }

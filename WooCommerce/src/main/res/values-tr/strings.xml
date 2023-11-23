@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-01 17:54:04+0000
+Translation-Revision-Date: 2023-11-15 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="notification_security_key_needed">Lütfen devam etmek için güvenlik anahtarınızı girin.</string>
+    <string name="login_error_security_key">Güvenlik anahtarıyla oturum açarken bir sorunla karşılaştık</string>
+    <string name="login_text_security_key">Bir güvenlik anahtarı kullanın</string>
+    <string name="product_subscription_period">Dönem</string>
+    <string name="product_subscription_interval">Fatura aralığı</string>
+    <string name="product_sale">İndirim</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Bilinmiyor</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Başarısız</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">İptal edildi</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">Geçiş yapılıyor</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Bekliyor</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Ödendi</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Tahmini</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Depozito özetini daralt/genişlet</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Fonlarınızı ne zaman alacağınız hakkında daha fazla bilgi edinin</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Mevcut fonlar otomatik olarak her hafta yatırılır.</string>
+    <string name="card_reader_hub_deposit_summary_last">Son</string>
+    <string name="card_reader_hub_deposit_summary_next">Sonraki</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Depozito</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Fonlar 7 gün beklemenin ardından kullanılabilir hale gelir.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depozito</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depozito</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Bekleyen fonlar</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Mevcut fonlar</string>
+    <string name="order_creation_payment_tax_label">Vergiler</string>
+    <string name="order_creation_payment_products">Ürünler</string>
+    <string name="order_creation_payment_header">Ödeme toplamı</string>
+    <string name="email_or_username">E-posta adresi veya Kullanıcı Adı</string>
+    <string name="custom_amounts_creation_error">Özel tutarlı sipariş oluşturulamadı</string>
+    <string name="custom_amounts_add_custom_name_hint">Özel ad girin</string>
+    <string name="custom_amounts_add_custom_amount">Özel Tutar Ekle</string>
+    <string name="custom_amounts_name">Ad</string>
+    <string name="custom_amounts_enter_amount">Tutar</string>
+    <string name="custom_amounts_dialog_title">Özel Tutar</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Lütfen bir tarayıcıdan yönetici sayfanız aracılığıyla Jetpack\'i bağlayın veya destek ile iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_connection_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
+    <string name="custom_amounts">Özel Tutarlar</string>
     <string name="product_details_blaze_card">Blaze ile tanıt</string>
     <string name="blaze_campaign_ceation_celebration_button">Anladım</string>
     <string name="blaze_campaign_ceation_celebration_message">Reklam onaya gönderildi. Reklam onaylanıp yayınlandığında size bir onay e-postası göndereceğiz.</string>
@@ -561,7 +598,6 @@ Language: tr
     <string name="subscription_status_cancelled">İptal edildi</string>
     <string name="subscription_status_on_hold">Beklemede</string>
     <string name="subscription_status_active">Aktif</string>
-    <string name="no_variable_subscription_warning">Web panosunda yalnızca değişken abonelikler ekleyebilirsiniz.</string>
     <string name="subscription_details_info_notice">Ürün aboneliklerini web panosunda düzenleyebilirsiniz.</string>
     <string name="subscription_no_trial">Deneme sürümü süresi yok</string>
     <string name="subscription_no_sign_up_fee">Kayıt ücreti yok</string>
@@ -3004,7 +3040,7 @@ Language: tr
     <string name="login_text_otp_another">Bana SMS ile başka bir kod gönder.</string>
     <string name="login_text_otp">Bunun yerine bana SMS ile bir kod gönder.</string>
     <string name="enter_verification_code_sms">%s ile biten telefon numaranıza mesaj gönderdik. Lütfen SMS ile aldığınız doğrulama kodunu giriniz.</string>
-    <string name="enter_verification_code">Neredeyse tamam. Lütfen kimlik doğrulayıcı uygulamanızdan doğrulama kodunu girin.</string>
+    <string name="enter_verification_code">Çok az kaldı! Lütfen WordPress.com için kimlik doğrulayıcı uygulamanızdaki doğrulama kodunu girin.</string>
     <string name="enter_username_instead">Kullanıcı adınızla oturum açın.</string>
     <string name="enter_site_address_instead">Site adresinizi girerek oturum açın.</string>
     <string name="alternatively">Alternatif olarak:</string>
@@ -3170,5 +3206,13 @@ Language: tr
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Özelleştirilmiş paket</item>
         <item>Hizmet paketi</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Her</item>
+        <item>Her 2.</item>
+        <item>Her 3.</item>
+        <item>Her 4.</item>
+        <item>Her 5.</item>
+        <item>Her 6.</item>
     </string-array>
 </resources>

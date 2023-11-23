@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-02 13:54:04+0000
+Translation-Revision-Date: 2023-11-07 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="email_or_username">E-mailadres of gebruikersnaam</string>
+    <string name="custom_amounts_creation_error">Kan bestelling voor aangepast bedrag niet aanmaken</string>
+    <string name="custom_amounts_add_custom_name_hint">Aangepaste productnaam invoeren</string>
+    <string name="custom_amounts_add_custom_amount">Aangepast bedrag toevoegen</string>
+    <string name="custom_amounts_name">Naam</string>
+    <string name="custom_amounts_enter_amount">Bedrag</string>
+    <string name="custom_amounts_dialog_title">Aangepast bedrag</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Maak verbinding met Jetpack via je beheerderspagina in een browser of neem contact op met de klantenservice.</string>
+    <string name="login_jetpack_installation_error_connection_message">Er is een fout opgetreden tijdens het communiceren met je site.</string>
+    <string name="custom_amounts">Aangepaste bedragen</string>
     <string name="product_details_blaze_card">Promoten met Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">Duidelijk</string>
     <string name="blaze_campaign_ceation_celebration_message">De advertentie is ingediend voor goedkeuring. We sturen je een bevestigingse-mail als de advertentie is goedgekeurd en actief is.</string>
@@ -561,7 +571,6 @@ Language: nl
     <string name="subscription_status_cancelled">Geannuleerd</string>
     <string name="subscription_status_on_hold">In de wacht</string>
     <string name="subscription_status_active">Actief</string>
-    <string name="no_variable_subscription_warning">Je kunt alleen variabele abonnementen toevoegen in het online dashboard.</string>
     <string name="subscription_details_info_notice">Je kunt productabonnementen bewerken in het online dashboard.</string>
     <string name="subscription_no_trial">Geen proefperiode</string>
     <string name="subscription_no_sign_up_fee">Geen aanmeldkosten</string>
@@ -3004,7 +3013,7 @@ Language: nl
     <string name="login_text_otp_another">Stuur me via SMS een andere code.</string>
     <string name="login_text_otp">Sms de code in plaats daarvan naar me.</string>
     <string name="enter_verification_code_sms">We hebben een sms gestuurd naar het telefoonnummer dat eindigt op %s. Voer de verificatiecode in de sms in.</string>
-    <string name="enter_verification_code">Bijna klaar! Voer de verificatiecode uit je Authenticator-app in.</string>
+    <string name="enter_verification_code">Bijna klaar! Voer de verificatiecode voor WordPress.com uit je Authenticator-app in.</string>
     <string name="enter_username_instead">Log in met je gebruikersnaam.</string>
     <string name="enter_site_address_instead">Log in door je siteadres in te vullen.</string>
     <string name="alternatively">Of:</string>
