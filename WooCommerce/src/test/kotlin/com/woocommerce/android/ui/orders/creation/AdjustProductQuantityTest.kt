@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.math.BigDecimal
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class AdjustProductQuantityTest : BaseUnitTest() {
     private val adjustProductQuantity = AdjustProductQuantity()
