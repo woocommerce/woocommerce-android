@@ -23,6 +23,7 @@ class AIRepository @Inject constructor(
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
         const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
         const val PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE = "woo_android_product_details_from_scanned_texts"
+        const val ORDER_DETAIL_THANK_YOU_NOTE = "woo_android_order_detail_thank_you_note"
     }
 
     suspend fun generateProductSharingText(
@@ -106,6 +107,21 @@ class AIRepository @Inject constructor(
             ),
             feature = PRODUCT_CREATION_FEATURE
         )
+    }
+
+    suspend fun generateOrderThankYouNote(
+        customerName: String,
+        productName: String,
+        productDescription: String?,
+        languageISOCode: String = "en"
+    ): Result<String> {
+        val prompt = AIPrompts.generateThankYouNotePrompt(
+            customerName = customerName,
+            productName = productName,
+            productDescription = productDescription.orEmpty(),
+            languageISOCode = languageISOCode
+        )
+        return fetchJetpackAICompletionsForSite(prompt, ORDER_DETAIL_THANK_YOU_NOTE)
     }
 
     suspend fun identifyISOLanguageCode(text: String, feature: String): Result<String> {

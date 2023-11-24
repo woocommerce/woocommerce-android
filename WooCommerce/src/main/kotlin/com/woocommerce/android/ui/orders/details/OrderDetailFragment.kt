@@ -176,6 +176,10 @@ class OrderDetailFragment :
             viewModel.onCustomFieldsButtonClicked()
         }
 
+        binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
+            viewModel.onAIThankYouNoteButtonClicked()
+        }
+
         ViewCompat.setTransitionName(
             binding.scrollView,
             getString(R.string.order_card_detail_transition_name)
@@ -283,6 +287,9 @@ class OrderDetailFragment :
             }
             new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
                 binding.customFieldsCard.isVisible = it
+            }
+            new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
+                binding.orderDetailsAICard.isVisible = it
             }
         }
 
