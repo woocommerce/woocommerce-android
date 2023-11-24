@@ -810,6 +810,5 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

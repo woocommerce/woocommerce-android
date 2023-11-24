@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_THANK_YOU_NOTE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +24,6 @@ import javax.inject.Inject
 @Suppress("TooManyFunctions")
 @HiltViewModel
 class AIThankYouNoteViewModel @Inject constructor(
-    private val site: SelectedSite,
     private val aiRepository: AIRepository,
     private val tracker: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
