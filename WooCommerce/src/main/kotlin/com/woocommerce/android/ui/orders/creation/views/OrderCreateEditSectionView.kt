@@ -20,7 +20,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationSectionBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
-import com.woocommerce.android.util.getDensityPixel
 
 class OrderCreateEditSectionView @JvmOverloads constructor(
     ctx: Context,
