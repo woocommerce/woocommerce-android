@@ -18,7 +18,7 @@ class GoogleMLKitCodeScanner @Inject constructor(
 ) : CodeScanner {
     private var barcodeFound = false
     @androidx.camera.core.ExperimentalGetImage
-    override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
+    override fun startScan(imageProxy: ImageProxy, continuousScanningEnabled: Boolean): Flow<CodeScannerStatus> {
         return callbackFlow {
             val barcodeTask = barcodeScanner.process(inputImageProvider.provideImage(imageProxy))
             barcodeTask.addOnCompleteListener {
@@ -27,14 +27,12 @@ class GoogleMLKitCodeScanner @Inject constructor(
                 imageProxy.close()
             }
             barcodeTask.addOnSuccessListener { barcodeList ->
-                // The check for barcodeFound is done because the startScan method will be called
-                // continuously by the library as long as we are in the scanning screen.
-                // There will be a good chance that the same barcode gets identified multiple times and as a result
-                // success callback will be called multiple times.
-                if (!barcodeList.isNullOrEmpty() && !barcodeFound) {
+                if (!barcodeList.isNullOrEmpty() && !barcodeFound && !continuousScanningEnabled) {
                     barcodeFound = true
                     handleScanSuccess(barcodeList.firstOrNull())
                     this@callbackFlow.close()
+                } else if (continuousScanningEnabled) {
+                    handleScanSuccess(barcodeList.firstOrNull())
                 }
             }
             barcodeTask.addOnFailureListener { exception ->
@@ -44,7 +42,9 @@ class GoogleMLKitCodeScanner @Inject constructor(
                         type = errorMapper.mapGoogleMLKitScanningErrors(exception)
                     )
                 )
-                this@callbackFlow.close()
+                if (!continuousScanningEnabled) {
+                    this@callbackFlow.close()
+                }
             }
 
             awaitClose()

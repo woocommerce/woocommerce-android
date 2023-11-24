@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -16,6 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,15 +26,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BarcodeScanningFragment : BaseFragment() {
+open class BarcodeScanningFragment : BaseFragment() {
     private val viewModel: BarcodeScanningViewModel by viewModels()
 
     @Inject
     lateinit var codeScanner: GoogleMLKitCodeScanner
 
+    open val isContinuousScanningEnabled: Boolean = false
+
+    @CallSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext())
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view as ComposeView
         view.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -57,16 +63,22 @@ class BarcodeScanningFragment : BaseFragment() {
                             viewLifecycleOwner.lifecycleScope.launch {
                                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                                     codeScannerStatus.collect { status ->
-                                        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
+                                        onScannedResult(status)
                                     }
                                 }
                             }
                         },
+                        isContinuousScanningEnabled = isContinuousScanningEnabled
                     )
                 }
             }
         }
     }
+
+    open fun onScannedResult(status: CodeScannerStatus) {
+        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
+    }
+
     private fun observeViewModelEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

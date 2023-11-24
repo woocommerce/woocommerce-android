@@ -30,7 +30,8 @@ import androidx.camera.core.Preview as CameraPreview
 @Composable
 fun BarcodeScanner(
     codeScanner: CodeScanner,
-    onScannedResult: (Flow<CodeScannerStatus>) -> Unit
+    onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
+    isContinuousScanningEnabled: Boolean = false,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -55,7 +56,7 @@ fun BarcodeScanner(
                     .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                 imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                    onScannedResult(codeScanner.startScan(imageProxy))
+                    onScannedResult(codeScanner.startScan(imageProxy, isContinuousScanningEnabled))
                 }
                 try {
                     cameraProviderFuture.get().bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
@@ -88,7 +89,7 @@ fun BarcodeScanner(
 }
 
 class DummyCodeScanner : CodeScanner {
-    override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
+    override fun startScan(imageProxy: ImageProxy, continuousScanningEnabled: Boolean): Flow<CodeScannerStatus> {
         return flowOf(CodeScannerStatus.Success("", BarcodeFormat.FormatUPCA))
     }
 }
