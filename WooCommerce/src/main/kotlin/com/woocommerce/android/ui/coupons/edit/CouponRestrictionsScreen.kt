@@ -158,7 +158,7 @@ private fun SpendingRestrictionField(
         value = value,
         onValueChange = onValueChange,
         label = label,
-        valueMapper = NullableBigDecimalTextFieldValueMapper(supportsNegativeValue = false),
+        valueMapper = NullableBigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
         modifier = modifier,
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)

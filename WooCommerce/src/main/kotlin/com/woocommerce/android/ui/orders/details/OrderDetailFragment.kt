@@ -6,12 +6,18 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
@@ -50,8 +56,11 @@ import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.CustomAmountCard
+import com.woocommerce.android.ui.orders.Header
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -72,6 +81,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -86,7 +96,7 @@ class OrderDetailFragment :
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
-    private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
     @Inject
     lateinit var navigator: OrderNavigator
@@ -191,12 +201,38 @@ class OrderDetailFragment :
         menu.findItem(R.id.menu_edit_order)?.let {
             it.isEnabled = viewModel.hasOrder()
         }
+
+        menu.findItem(R.id.menu_arrow_up)?.let {
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.previousOrderNavigationIsEnabled()
+            }
+        }
+
+        menu.findItem(R.id.menu_arrow_down)?.let {
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.nextOrderNavigationIsEnabled()
+            }
+        }
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
+                true
+            }
+
+            R.id.menu_arrow_up -> {
+                viewModel.onPreviousOrderClicked()
+                true
+            }
+
+            R.id.menu_arrow_down -> {
+                viewModel.onNextOrderClicked()
                 true
             }
             else -> {
@@ -266,6 +302,7 @@ class OrderDetailFragment :
         viewModel.productList.observe(viewLifecycleOwner) {
             showOrderProducts(it, viewModel.order.currency)
         }
+        showCustomAmounts(viewModel.feeLineList)
         viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
             showShipmentTrackings(it)
         }
@@ -510,6 +547,35 @@ class OrderDetailFragment :
         }.otherwise { binding.orderDetailProductList.hide() }
     }
 
+    private fun showCustomAmounts(feeLine: LiveData<List<Order.FeeLine>>) {
+        binding.orderDetailCustomAmount.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val feeLineState = feeLine.observeAsState(emptyList())
+                if (!feeLineState.value.isNullOrEmpty()) {
+                    WooThemeWithBackground {
+                        Column(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Header()
+                            feeLineState.value.forEachIndexed { index, feeLine ->
+                                CustomAmountCard(
+                                    CustomAmountUI(
+                                        name = feeLine.name ?: "",
+                                        amount = CurrencyFormattedAmount(
+                                            currencyFormatter.formatCurrency(feeLine.total)
+                                        ),
+                                        shouldShowDivider = index < feeLineState.value.size - 1,
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun showAddShipmentTracking(show: Boolean) {
         with(binding.orderDetailShipmentList) {
             isVisible = show
@@ -621,4 +687,13 @@ class OrderDetailFragment :
             it.show()
         }
     }
+
+    data class CustomAmountUI(
+        val name: String,
+        val amount: CurrencyFormattedAmount,
+        val shouldShowDivider: Boolean,
+    )
+
+    @JvmInline
+    value class CurrencyFormattedAmount(val amount: String)
 }

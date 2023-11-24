@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -23,6 +24,9 @@ import org.wordpress.android.fluxc.model.SiteModel
 class ProductDetailCardBuilderTest : BaseUnitTest() {
     private lateinit var sut: ProductDetailCardBuilder
     private lateinit var productStub: Product
+    private val isBlazeEnabled: IsBlazeEnabled = mock {
+        onBlocking { invoke() } doReturn false
+    }
 
     @Before
     fun setUp() {
@@ -48,6 +52,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             addonRepository = addonRepo,
             variationRepository = mock(),
             appPrefsWrapper = mock(),
+            isBlazeEnabled = isBlazeEnabled,
+            isProductCurrentlyPromoted = mock(),
+            analyticsTrackerWrapper = mock()
         )
     }
 

@@ -103,7 +103,8 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                 onLoadMore = viewModel::onLoadMore,
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
-                onSearchTypeChanged = viewModel::onSearchTypeChanged
+                onSearchTypeChanged = viewModel::onSearchTypeChanged,
+                trackConfigurableProduct = viewModel::trackConfigurableProduct
             )
         }
     }
@@ -120,7 +121,8 @@ fun ProductSelectorScreen(
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
-    onClearFiltersButtonClick: () -> Unit
+    onClearFiltersButtonClick: () -> Unit,
+    trackConfigurableProduct: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -158,8 +160,10 @@ fun ProductSelectorScreen(
                 onClearButtonClick = onClearButtonClick,
                 onFilterButtonClick = onFilterButtonClick,
                 onProductClick = onProductClick,
-                onLoadMore = onLoadMore
+                onLoadMore = onLoadMore,
+                trackConfigurableProduct = trackConfigurableProduct
             )
+
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
         }
@@ -253,6 +257,7 @@ private fun displayProductsSection(
             stringResource(id = string.product_selector_popular_products_heading),
             ProductSourceForTracking.POPULAR
         )
+
         ProductType.RECENT -> Triple(
             state.recentProducts,
             stringResource(id = string.product_selector_recent_products_heading),
@@ -281,14 +286,15 @@ private fun displayProductsSection(
             SelectorListItem(
                 title = product.title,
                 imageUrl = product.imageUrl,
-                infoLine1 = product.stockAndPrice,
+                infoLine1 = product.getInformation(),
                 infoLine2 = product.sku?.let {
                     stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
                 isArrowVisible = product.hasVariations(),
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
-                imageContentDescription = stringResource(string.product_image_content_description)
+                imageContentDescription = stringResource(string.product_image_content_description),
+                isCogwheelVisible = product is ListItem.ConfigurableListItem
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -316,6 +322,7 @@ private fun ProductList(
     onFilterButtonClick: () -> Unit,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
+    trackConfigurableProduct: () -> Unit
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -385,17 +392,19 @@ private fun ProductList(
                 }
             }
             itemsIndexed(state.products) { _, product ->
+                if (product is ListItem.ConfigurableListItem) { trackConfigurableProduct() }
                 SelectorListItem(
                     title = product.title,
                     imageUrl = product.imageUrl,
-                    infoLine1 = product.stockAndPrice,
+                    infoLine1 = product.getInformation(),
                     infoLine2 = product.sku?.let {
                         stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
                     isArrowVisible = product.hasVariations(),
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
-                    imageContentDescription = stringResource(string.product_image_content_description)
+                    imageContentDescription = stringResource(string.product_image_content_description),
+                    isCogwheelVisible = product is ListItem.ConfigurableListItem
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
@@ -547,6 +556,7 @@ fun PopularProductsListPreview() {
         {},
         {},
         { _, _ -> },
+        {},
         {}
     )
 }
@@ -614,6 +624,7 @@ fun RecentProductsListPreview() {
         {},
         {},
         { _, _ -> },
+        {},
         {}
     )
 }
@@ -680,6 +691,7 @@ fun ProductListPreview() {
         {},
         {},
         { _, _ -> },
+        {},
         {}
     )
 }
@@ -704,4 +716,14 @@ fun ProductListEmptyPreview() {
 @Composable
 fun ProductListSkeletonPreview() {
     ProductListSkeleton()
+}
+
+@Composable
+fun ListItem.getInformation(): String? {
+    return if (type == com.woocommerce.android.ui.products.ProductType.BUNDLE) {
+        listOfNotNull(stringResource(id = string.product_type_bundle), stockAndPrice)
+            .joinToString(" \u2022 ")
+    } else {
+        stockAndPrice
+    }
 }

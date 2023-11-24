@@ -77,7 +77,7 @@ fun VariationSelectorScreen(
 }
 
 @Composable
-private fun EmptyVariationList() {
+fun EmptyVariationList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -145,7 +145,8 @@ private fun VariationList(
                     selectionState = variation.selectionState,
                     isArrowVisible = false,
                     onClickLabel = stringResource(id = string.product_selector_select_variation_label, variation.title),
-                    imageContentDescription = stringResource(string.product_image_content_description)
+                    imageContentDescription = stringResource(string.product_image_content_description),
+                    isCogwheelVisible = false
                 ) {
                     onVariationClick(variation)
                 }
@@ -175,7 +176,7 @@ private fun VariationList(
 
 @Composable
 @Suppress("MagicNumber")
-private fun VariationListSkeleton() {
+fun VariationListSkeleton() {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
         repeat(numberOfInboxSkeletonRows) {

@@ -1,11 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 23:54:03+0000
+Translation-Revision-Date: 2023-11-15 23:54:21+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="notification_security_key_needed">Пожалуйста предоставьте ключ безопасности для продолжения.</string>
+    <string name="login_error_security_key">Возникла проблема со входом в систему с помощью ключа безопасности</string>
+    <string name="login_text_security_key">Использовать ключ безопасности</string>
+    <string name="product_subscription_period">Период</string>
+    <string name="product_subscription_interval">Расчётный интервал</string>
+    <string name="product_sale">Распродажа</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Неизвестно</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Сбой</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Отменено</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">В процессе перехода</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">На утверждении</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Оплачено</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Ожидается</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Свернуть/развернуть выписку по счёту</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Узнайте, когда вы сможете получить ваши средства</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Доступные средства вносятся на счёт автоматически раз в неделю.</string>
+    <string name="card_reader_hub_deposit_summary_last">Последний</string>
+    <string name="card_reader_hub_deposit_summary_next">Следующий</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Предоплата</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Денежные средства станут доступны после утверждения в течение 7 дн.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">Внесено на счёт: %d</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">Внесено на счёт: %d</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Средства на утверждении</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Доступные средства</string>
+    <string name="order_creation_payment_tax_label">Налоги</string>
+    <string name="order_creation_payment_products">Товары</string>
+    <string name="order_creation_payment_header">Итоговые суммы платежей</string>
+    <string name="email_or_username">Адрес электронной почты или имя пользователя</string>
+    <string name="custom_amounts_creation_error">Не удалось создать заказ с индивидуальной суммой</string>
+    <string name="custom_amounts_add_custom_name_hint">Введите индивидуальное имя</string>
+    <string name="custom_amounts_add_custom_amount">Добавить индивидуальную сумму</string>
+    <string name="custom_amounts_name">Имя</string>
+    <string name="custom_amounts_enter_amount">Сумма</string>
+    <string name="custom_amounts_dialog_title">Индивидуальная сумма</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Подключите Jetpack на странице администратора в браузере или обратитесь в службу поддержки.</string>
+    <string name="login_jetpack_installation_error_connection_message">Во время обмена данными с вашим веб-сайтом произошла ошибка.</string>
+    <string name="custom_amounts">Индивидуальные суммы</string>
+    <string name="product_details_blaze_card">Рекламируйте при помощи Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Понятно</string>
+    <string name="blaze_campaign_ceation_celebration_message">Реклама отправлена на утверждение. Когда она будет одобрена и запущена, вы получите сообщение с подтверждением по электронной почте.</string>
+    <string name="blaze_campaign_creation_celebration_header">Всё готово!</string>
+    <string name="blaze_campaign_creation_intro_button">Запустите кампанию Blaze прямо сейчас</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Отслеживайте производительность, запускайте и останавливайте кампании Blaze в любое время.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Взаимодействуйте с миллионами посетителей сайтов WordPress и Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Полный контроль всего за несколько долларов в день. Это очень выгодно.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Прорекламируйте свой товар всего за несколько минут.</string>
+    <string name="blaze_campaign_creation_intro_title">Повышайте продажи в своём магазине с помощью Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">При обновлении списка кампаний произошла ошибка. Повторите попытку позже.</string>
+    <string name="media_picker_dialog_title">Выберите источник медиафайлов</string>
+    <string name="product_creation_package_photo_error">При создании названия и описания товара произошла ошибка.</string>
+    <string name="product_creation_package_photo_no_text_detected">Текст не обнаружен. Выберите другую фотографию упаковки или введите сведения о товаре вручную.</string>
+    <string name="order_editing_add_content_description">Добавить товар</string>
+    <string name="order_editing_barcode_content_description">Сканировать штрихкод</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Свернуть/развернуть карточку товара</string>
+    <string name="order_creation_decrease_item_amount_content_description">Уменьшить количество товара</string>
+    <string name="order_creation_increase_item_amount_content_description">Увеличить количество товара</string>
+    <string name="order_creation_add_custom_amounts">Добавить индивидуальную сумму</string>
+    <string name="order_creation_price_after_discount">Цена со скидкой</string>
+    <string name="previous_order">Предыдущий заказ</string>
+    <string name="next_order">Следующий заказ</string>
+    <string name="blaze_campaign_details_title">Сведения о кампании</string>
+    <string name="blaze_campaign_list_title">Кампании Blaze</string>
+    <string name="blaze_campaign_status_canceled">Отменено</string>
+    <string name="blaze_campaign_status_scheduled">Запланировано</string>
+    <string name="product_creation_package_photo_keywords_info">Меняйте текст: отмените выбор ненужных отсканированных страниц или нажмите, чтобы отредактировать текст</string>
+    <string name="product_creation_package_photo_keywords_section">Ключевые слова</string>
+    <string name="ai_product_creation_photo_button">Использовать фото упаковки (по желанию)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Выберите «Оплата в касание» в опциях получения платежей в\nсведениях о заказе или разделе «Меню &gt; Платежи».</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Попробуйте оплатить %s банковской картой.\nПосле этого средства будут возвращены.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Просто, безопасно и конфиденциально.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Принимайте все виды очных платежей прямо\nна вашем телефоне. Дополнительное оборудование не требуется.</string>
+    <string name="blaze_campaign_status_budget">Бюджет</string>
+    <string name="blaze_campaign_status_clicks">Нажатий</string>
+    <string name="blaze_campaign_status_impressions">Показов</string>
+    <string name="blaze_campaign_status_rejected">Отклонено</string>
+    <string name="blaze_campaign_status_completed">Завершено</string>
+    <string name="blaze_campaign_status_active">Активно</string>
+    <string name="blaze_campaign_status_in_moderation">На модерации</string>
+    <string name="blaze_campaign_show_all_button">Показать всё</string>
+    <string name="blaze_campaign_create_campaign_button">Создать кампанию</string>
+    <string name="blaze_campaign_subtitle">Станьте заметнее и быстрее продавайте товары.</string>
+    <string name="blaze_campaign_title">Кампания Blaze</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. Если вы видите значок «Выполнено» в виде галочки, значит, магазин обрабатывает ваш платёж, а транзакция завершена.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Покупатель прикладывает свою карту горизонтально к верхней части вашего смартфона, к символу бесконтактной оплаты.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Покажите покупателю ваш смартфон.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Нажмите «Принять платёж» и выберите Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">получение платежа</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Создать заказ</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s или %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Как это работает</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Подробнее об устройствах чтения карт</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Чтобы принимать платежи сверх лимита, вам может потребоваться устройство чтения карт, в котором можно вводить PIN-коды.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Мы не поддерживаем ввод PIN-кодов при использовании функции Tap to Pay на устройствах на базе Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">В %1$s некоторые карты требуют ввода PIN-кода при бесконтактных транзакциях на сумму свыше %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Важная информация</string>
+    <string name="card_reader_tap_to_pay_about_description">Функция Tap to Pay (Оплата в касание) позволяет принимать все виды бесконтактных платежей: от банковских карт до цифровых кошельков — без необходимости приобретать устройство чтения карт.</string>
+    <string name="card_reader_tap_to_pay_about_header">Что такое Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_title">О функции Tap to Pay (Оплата в касание)</string>
+    <string name="ai_feedback_form_negative_button">Отрицательный отзыв</string>
+    <string name="ai_feedback_form_positive_button">Положительный отзыв</string>
+    <string name="ai_feedback_form_message">Был ли результат полезен?</string>
+    <string name="product_creation_ai_preview_short_description_section">Краткое описание товара</string>
+    <string name="card_reader_payment_update_available">Доступно обновление устройства чтения карт</string>
+    <string name="card_reader_about_tap_to_pay">О функции Tap to Pay (Оплата в касание)</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">НАСТРОЙКИ</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Добавить сведения вручную, используя электронный адрес</string>
+    <string name="login_app_login_malformed_link">Не удалось обработать запрос на вход в приложение</string>
+    <string name="ai_product_name_copy_error">Ошибка при копировании названия товара в буфер обмена</string>
+    <string name="ai_product_name_copy_success">Название товара скопировано в буфер обмена.</string>
+    <string name="ai_product_name_copy_label">Название товара создано при помощи ИИ</string>
+    <string name="ai_product_description_copy_error">Ошибка при копировании описания товара в буфер обмена.</string>
+    <string name="ai_product_description_copy_success">Описание товара скопировано в буфер обмена.</string>
+    <string name="product_creation_ai_generation_failure_message">При создании товара возникла ошибка. Повторите попытку</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Очистить адрес и больше не использовать эту ставку</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Установить другую налоговую ставку для этого заказа</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Автоматическое добавление налоговой ставки</string>
+    <string name="ai_product_name_sheet_error_message">Возникла проблема при создании названия товара. Повторите попытку.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Создать повторно</string>
+    <string name="ai_product_name_sheet_generate_button">Напишите это за меня</string>
+    <string name="ai_product_name_sheet_input_description">Расскажите о своём товаре и его отличительных качествах!</string>
+    <string name="ai_product_name_sheet_subtitle">С помощью ИИ вы можете создавать привлекательные заголовки</string>
+    <string name="ai_product_name_sheet_title">Название товара</string>
+    <string name="empty_review_filtered_list_message">Попробуйте отключить фильтр «Непрочитанные», чтобы просмотреть все отзывы о товарах</string>
+    <string name="empty_review_filtered_list_title">Нет непрочитанных отзывов о товарах</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Выбранный тон</string>
+    <string name="product_creation_ai_tone_convincing">Убедительный</string>
+    <string name="product_creation_ai_tone_flowery">Цветистый</string>
+    <string name="product_creation_ai_tone_formal">Строгий</string>
+    <string name="product_creation_ai_tone_casual">Непринужденный</string>
+    <string name="product_creation_ai_tone_description">Задайте тон и стиль презентации, чтобы она соответствовала характеру вашего бренда.</string>
+    <string name="product_creation_ai_tone_title">Тон и стиль</string>
+    <string name="product_creation_ai_preview_details_section">Сведения</string>
+    <string name="product_creation_ai_preview_description_section">Описание товара</string>
+    <string name="product_creation_ai_preview_name_section">Название товара</string>
+    <string name="product_creation_ai_preview_subtitle">Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
+    <string name="product_creation_ai_preview_title">Предварительный просмотр</string>
+    <string name="product_creation_ai_about_product_continue_button">Создание сведений о товаре</string>
+    <string name="product_creation_ai_about_product_set_tone">Задайте тон и стиль</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Добавьте ключевые характеристики, преимущества и подробные сведения, чтобы покупателям проще было найти ваш товар в Интернете.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Например: мягкая ткань, прочные швы, уникальный дизайн</string>
+    <string name="product_creation_ai_about_product_subtitle">Укажите отличительные качества вашего товара, и ИИ сделает за вас всё остальное.</string>
+    <string name="product_creation_ai_about_product_title">Информация о товаре</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Предложите название товара</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Например: мягкая ткань, прочные швы, уникальный дизайн</string>
+    <string name="ai_product_creation_add_name_keywords_label">Название товара</string>
+    <string name="ai_product_creation_add_name_subtitle">Можно также расширить выбор: нажмите, чтобы увидеть больше вариантов.</string>
+    <string name="ai_product_creation_add_name_title">Добавить название товара</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">На основе ИИ. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Добавьте товар и сведения вручную</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Добавить вручную</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Быстро сгенерировать подробную информацию для вас</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Создать товар с помощью ИИ</string>
+    <string name="product_creation_ai_entry_sheet_header">Добавить товар</string>
+    <string name="product_review_list_unread_reviews_filter">Только непрочитанные отзывы</string>
+    <string name="order_creation_edit_tax_rate">Редактировать настройки налоговой ставки</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">Это не затронет онлайн-заказы</string>
+    <string name="tax_rate_selector_auto_rate_label">Добавить эту ставку ко всем созданным заказам</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Изменить налоговые ставки</string>
+    <string name="tax_rate_selector_empty_list_button">Изменить налоговые ставки в консоли</string>
+    <string name="tax_rate_selector_empty_list_message">Добавьте налоговые ставки в консоли. Будут показаны только налоговые ставки с информацией о местоположении.</string>
+    <string name="tax_rate_selector_empty_list_title">Налоговые ставки не найдены</string>
+    <string name="store_onboarding_payments_setup_description">Посмотрите другие платёжные системы и \nвыберите одну из них.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Способы оплаты</string>
+    <string name="product_downloadable_files_add_documents_from_device">Документы на устройстве</string>
+    <string name="product_downloadable_files_add_media_from_device">Медиафайлы на устройстве</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Исправить</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Завершить настройку</string>
+    <string name="tax_rate_selector_title">Установить налоговую ставку</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Активировать</string>
+    <string name="order_creation_set_tax_rate">Установить новую налоговую ставку</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Настроить</string>
     <string name="tax_rate_selector_edit_rates_button_label">Изменить налоговые ставки в консоли</string>
     <string name="tax_rate_selector_header_label">Адрес клиента будет изменён на адрес, где действует выбранная вами налоговая ставка.</string>
     <string name="tax_rate_selector_info_icon_content_description">Кнопка открытия диалогового окна с информацией о налоговых ставках</string>
@@ -21,8 +195,6 @@ Language: ru
     <string name="tax_rates_info_dialog_primary_text">Налоги рассчитываются на основе сопоставления платёжного адреса, адреса доставки или адреса магазина с адресом, где действует налоговая ставка.</string>
     <string name="tax_rates_information_content_description">Сведения о налоговых ставках</string>
     <string name="store_onboarding_wcpay_setup_description">Используя WooCommerce Payments, вы принимаете наши &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Условия предоставления услуг&lt;/u&gt;&lt;/a&gt; и подтверждаете, что ознакомились с &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Политикой конфиденциальности&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">Настроить</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt; о подтверждении вашей информации на WooPayments.</string>
     <string name="store_onboarding_wcpay_instructions_content_button">Начать настройку</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Партнёр WooPayments — платёжная система Stripe. Вы будете перенаправлены на сайт Stripe для регистрации. Мы попросим вас подтвердить сведения о вашем бизнесе и платёжные данные.</string>
@@ -167,7 +339,6 @@ Language: ru
     <string name="empty_order_test_order_message">Создайте тестовый заказ, чтобы убедиться, что магазин WooCommerce работает как часы</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Добавить сведения вручную</string>
     <string name="order_creation_customer_search_old_wc_hint">Поиск клиентов по</string>
-    <string name="shipping_classes_zones">Классы и области доставки</string>
     <string name="free_trial_survey_free_text">Другая причина (укажите)</string>
     <string name="free_trial_survey_option4">Я работаю в команде, и нам необходимо принимать решение совместно.</string>
     <string name="free_trial_survey_option3">Стоимость услуги является важным фактором при принятии решения.</string>
@@ -212,13 +383,6 @@ Language: ru
     <string name="highlights_tooltip_button_hint">Текст кнопки</string>
     <string name="highlights_tooltip_message_hint">Текст всплывающей подсказки. \n Может занимать несколько строк.</string>
     <string name="highlights_tooltip_title_hint">Заголовок всплывающей подсказки</string>
-    <string name="blaze_banner_dismiss_dialog_button">Понятно</string>
-    <string name="blaze_banner_dismiss_dialog_description">Не волнуйтесь! Для удобства пользователей Blaze отображается в меню и разделе сведений о товаре.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Реклама в Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Кнопка закрытия баннера Blaze</string>
-    <string name="blaze_banner_button">Попробовать Blaze</string>
-    <string name="blaze_banner_description">Демонстрируйте товары в рекламных объявлениях на миллионах сайтов WordPress.com и Tumblr.</string>
-    <string name="blaze_banner_title">Продвигайте товары с помощью Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Понятно</string>
     <string name="ai_product_description_tooltip_message">Наши инструменты на базе ИИ помогут вам быстро составлять описания товаров. Введите ключевые слова, а мы сделаем остальное.</string>
     <string name="ai_product_description_tooltip_title">✨ Пишите тексты с помощью ИИ</string>
@@ -242,7 +406,6 @@ Language: ru
     <string name="ai_product_description_note_dialog_heading">Превосходное начало!</string>
     <string name="ai_product_description_feedback">Оказалось ли созданное\nописание полезным?</string>
     <string name="ai_product_description_regenerate_button">Повторно создать</string>
-    <string name="ai_product_description_survey">Оказалось ли созданное описание полезным?</string>
     <string name="ai_product_description_hint">С помощью ключевых слов опишите уникальные характеристики и покупателей товара, чтобы создать его описание.</string>
     <string name="ai_product_description_example">Пример: комнатный, кактус, растение, декоративный, простой уход</string>
     <string name="ai_product_description_product_name">Введите название товара</string>
@@ -279,8 +442,6 @@ Language: ru
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Развивайте бизнес с нашим планом!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Пробный период использования Woo Express завершается завтра (%1$s). Пришло время стать хозяином своего будущего — выберите тарифный план и приготовьтесь к росту.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Срок действия вашей бесплатной пробной версии истекает!</string>
-    <string name="local_notification_without_free_trial_description">Здравствуйте, %1$s! %2$s ждёт вас! Начните свой интернет-бизнес с бесплатной 14-дневной пробной версией Woo Express всего одним щелчком мыши.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Магазин уже ждёт вас!</string>
     <string name="local_notification_store_creation_complete_description">Здравствуйте, %1$s! Начался 14-дневный пробный период использования Woo Express — здесь есть всё, что нужно для создания и развития успешного интернет-бизнеса. Готовы узнать больше?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Ваш магазин готов!</string>
     <string name="product_type_variation">Товар с вариациями</string>
@@ -418,8 +579,7 @@ Language: ru
     <string name="product_selector_popular_products_heading">Хит продаж</string>
     <string name="jetpack_install_role_eligibility_learn_more">Подробно о ролях и разрешениях</string>
     <string name="jetpack_install_role_eligibility_error_message">Кажется, ваша роль не позволяет вам установить Jetpack. \nОбратитесь к администратору за помощью.</string>
-    <string name="card_reader_tap_to_pay_description">Проверьте «Оплату в касание», перечислив небольшую\nсумму.</string>
-    <string name="card_reader_test_tap_to_pay">Проверить «Оплату в касание»</string>
+    <string name="card_reader_test_tap_to_pay">Испытайте функцию Tap To Pay</string>
     <string name="subscription_free_trial">Бесплатная проба</string>
     <string name="subscription_sign_up_fee">Стоимость регистрации</string>
     <string name="subscription_expire">Прекратить после</string>
@@ -438,7 +598,6 @@ Language: ru
     <string name="subscription_status_cancelled">Отменено</string>
     <string name="subscription_status_on_hold">Отложен</string>
     <string name="subscription_status_active">Активно</string>
-    <string name="no_variable_subscription_warning">Вы можете только добавлять вариативные подписки в веб-консоли.</string>
     <string name="subscription_details_info_notice">Вы можете редактировать подписки на товары в веб-консоли.</string>
     <string name="subscription_no_trial">Без пробного периода</string>
     <string name="subscription_no_sign_up_fee">Бесплатная регистрация</string>
@@ -456,7 +615,8 @@ Language: ru
     <string name="product_subscription_title">Подписка</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Устройство чтения карт принимает платежи дебетовыми и кредитными картами. Их можно прикладывать, проводить или вставлять.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Принимайте бесконтактные платежи прямо в телефоне.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Поделитесь отзывом о функции «Оплата в касание»</string>
+    <string name="card_reader_tap_to_pay_description">Для получения платежей по карте используйте\nсвой телефон. Попробуйте прямо сейчас.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Отправить отзыв</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Не удалось войти, поскольку не разрешается создавать пароль приложения.</string>
     <string name="login_site_credentials_fetching_site">Получение сайта…</string>
     <string name="login_site_credentials_fetching_site_failed">Произошла ошибка при получении веб-сайта</string>
@@ -550,9 +710,6 @@ Language: ru
     <string name="jetpack_benefits_fetching_status">Получение статуса Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Что-то пошло не так. Повторите попытку позже.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Попробуйте выполнить платёж</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> В Android функцию «Оплата в касание» можно найти в разделе\nМеню &gt; Платежи, либо откройте «Получение платежей» и\nвыберите «Оплата в касание».</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Попробуйте выполнить платёж, используя свою карту, и\nпосле этого средства будут возвращены.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Ваш телефон готов выполнить операцию «Оплата в касание».\nВаш клиент может задействовать свою карту\nна вашем телефоне, чтобы выполнить платёж.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Получение платежей по карте\nна вашем телефоне</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Оплата в касание</string>
     <string name="card_reader_hub_actions_category_header">ДЕЙСТВИЯ</string>
@@ -708,7 +865,7 @@ Language: ru
     <string name="login_jetpack_installation_retry_activating">Повторить активацию</string>
     <string name="login_jetpack_installation_retry_installing">Повторить установку</string>
     <string name="login_jetpack_installation_get_support">Получить поддержку</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Повторите попытку и обратитесь в службу поддержки, если эта ошибка произойдёт снова.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Повторите попытку и обратитесь в службу поддержки, если эта ошибка произойдёт снова.</string>
     <string name="login_jetpack_installation_error_generic_message">Во время обмена данными с вашим веб-сайтом произошла ошибка.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">У вас нет разрешения на управление плагинами в этом магазине</string>
     <string name="login_jetpack_installation_error_authorizing">Ошибка при авторизации подключения к Jetpack</string>
@@ -1312,7 +1469,6 @@ Language: ru
     <string name="order_creation_customer_note">Примечание для клиента</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Перезагрузите после обновления</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Stripe Gateway. Обновите его, чтобы принимать очные платежи.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Обновить</string>
     <string name="card_reader_payment_failed_unknown">Платёж отклонён по неизвестной причине</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Действующая карта была использована на сайте в тестовом режиме</string>
     <string name="card_reader_payment_failed_test_card">Карты для тестирования системы нельзя использовать для платежа</string>
@@ -1532,7 +1688,6 @@ Language: ru
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Перезагрузите после обновления</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Payments. Обновите его, чтобы получать очные платежи.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Обновить WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Обновить</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Почти готово. Завершите настройку WooCommerce Payments, чтобы начать принимать очные платежи.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Закончите настройку WooCommerce Payments в учётной записи администратора магазина.</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Обновите после активации</string>
@@ -1896,14 +2051,13 @@ Language: ru
     <string name="product_downloadable_files_download_settings">Настройки загрузки</string>
     <string name="product_downloadable_files_name_invalid">Введите правильное имя</string>
     <string name="product_downloadable_files_add_manually">Введите URL-адрес файла</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Из библиотеки файлов WordPress</string>
-    <string name="product_downloadable_files_add_media_from_device">С устройства</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Библиотека файлов WordPress</string>
     <string name="product_downloadable_files_url_invalid">Убедитесь, что введен допустимый URL-адрес</string>
     <string name="product_downloadable_files_upload_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_downloadable_files_upload_dialog_title">Загрузка файлов</string>
     <string name="product_downloadable_files_upload_failed">Ошибка загрузки файлов</string>
     <string name="product_downloadable_files_add_title">Добавьте скачиваемый файл</string>
-    <string name="product_downloadable_add_bottomsheet_header">Добавьте скачиваемый файл</string>
+    <string name="product_downloadable_add_bottomsheet_header">Добавьте скачиваемый файл из</string>
     <string name="bottom_sheet_downloadable_files_desc">Добавлять к покупкам скачиваемый файл</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Отмена</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Да, изменить</string>
@@ -2886,7 +3040,7 @@ Language: ru
     <string name="login_text_otp_another">Пришлите мне другой код.</string>
     <string name="login_text_otp">Пришлите мне сообщение с кодом.</string>
     <string name="enter_verification_code_sms">Мы послали текстовое сообщение на телефонный номер оканчивающийся на %s. Пожалуйста введите проверочный код из SMS.</string>
-    <string name="enter_verification_code">Почти готово! Введите проверочный код из приложения Authenticator.</string>
+    <string name="enter_verification_code">Почти готово! Введите проверочный код для WordPress.com из приложения Authenticator.</string>
     <string name="enter_username_instead">Войти с именем пользователя.</string>
     <string name="enter_site_address_instead">Войти с адресом вашего сайта.</string>
     <string name="alternatively">Альтернативно:</string>
@@ -3052,5 +3206,13 @@ Language: ru
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Индивидуальный пакет</item>
         <item>Пакет услуг</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Кажд.</item>
+        <item>1 из 2</item>
+        <item>1 из 3</item>
+        <item>1 из 4</item>
+        <item>1 из 5</item>
+        <item>1 из 6</item>
     </string-array>
 </resources>

@@ -44,8 +44,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_PRODUCT_ID = 1L
         private const val TEST_URI = "test"
-        private val FETCHED_MEDIA = MediaModel()
-        private val UPLOADED_MEDIA = MediaModel().apply {
+        private val FETCHED_MEDIA = MediaModel(0, 0)
+        private val UPLOADED_MEDIA = MediaModel(0, 0).apply {
             fileName = ""
             filePath = ""
             url = ""
@@ -121,7 +121,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
 
         advanceUntilIdle()
         verify(mediaFilesRepository).uploadMedia(any(), any())
@@ -132,9 +132,9 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when media upload progress changes, then update notification`() = testBlocking {
         whenever(mediaFilesRepository.uploadMedia(any(), any()))
-            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel())))
+            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel(0, 0))))
 
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
         advanceUntilIdle()
 
         verify(notificationHandler).setProgress(0.5f)
@@ -143,9 +143,8 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when media upload fails for an image, then send an event`() = testBlocking {
         val error = MediaUploadException(
-            MediaModel(),
-            GENERIC_ERROR,
-            ""
+            errorType = GENERIC_ERROR,
+            errorMessage = ""
         )
         whenever(mediaFilesRepository.uploadMedia(any(), any())).thenReturn(flowOf(UploadResult.UploadFailure(error)))
 
@@ -153,7 +152,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
 
         advanceUntilIdle()
         assertThat(eventsList).contains(UploadFailed(REMOTE_PRODUCT_ID, TEST_URI, error))
@@ -166,7 +165,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel()))
+        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
 
         advanceUntilIdle()
         assertThat(eventsList).contains(ProductUploadsCompleted(REMOTE_PRODUCT_ID))

@@ -33,6 +33,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_TA
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_MISSING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_ALERT_SHOWN
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_SUCCESS
@@ -64,12 +66,12 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaReasonTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
 
@@ -297,6 +299,14 @@ class CardReaderTracker @Inject constructor(
 
     fun trackSoftwareUpdateStarted(requiredUpdate: Boolean) {
         trackSoftwareUpdateEvent(CARD_READER_SOFTWARE_UPDATE_STARTED, requiredUpdate)
+    }
+
+    fun trackSoftwareUpdateAlertShown() {
+        track(CARD_READER_SOFTWARE_UPDATE_ALERT_SHOWN)
+    }
+
+    fun trackSoftwareUpdateAlertInstallClicked() {
+        track(CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED)
     }
 
     fun trackSoftwareUpdateUnknownStatus() {

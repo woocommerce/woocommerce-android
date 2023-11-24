@@ -34,7 +34,6 @@ class AccountRepository @Inject constructor(
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
-
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
     suspend fun fetchUserAccount(): Result<Unit> {
@@ -116,6 +115,7 @@ class AccountRepository @Inject constructor(
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
+
         selectedSite.reset()
 
         // Delete sites

@@ -1,11 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-07 09:54:26+0000
+Translation-Revision-Date: 2023-11-16 10:54:24+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="notification_security_key_needed">続行するにはセキュリティキーを入力してください。</string>
+    <string name="login_error_security_key">セキュリティキーログインで問題が発生しました</string>
+    <string name="login_text_security_key">セキュリティキーを使用</string>
+    <string name="product_subscription_period">期間</string>
+    <string name="product_subscription_interval">請求の間隔</string>
+    <string name="product_sale">セール</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">不明</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">失敗</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">キャンセル済み</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">輸送中</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">承認待ち</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">有料</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">予定</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">デポジットの概要を折りたたむ / 展開する</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">資金の受け取りタイミングについて詳しくはこちら</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">利用可能な資金は毎週自動で入金されます。</string>
+    <string name="card_reader_hub_deposit_summary_last">最後</string>
+    <string name="card_reader_hub_deposit_summary_next">次</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">デポジット</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">資金は7日間保留された後に利用可能になります。</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d件のデポジット</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d件のデポジット</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">保留中の資金</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">利用可能な資金</string>
+    <string name="order_creation_payment_tax_label">税</string>
+    <string name="order_creation_payment_products">商品</string>
+    <string name="order_creation_payment_header">支払総額</string>
+    <string name="email_or_username">メールアドレスまたはユーザー名</string>
+    <string name="custom_amounts_creation_error">カスタム金額の注文を作成できません</string>
+    <string name="custom_amounts_add_custom_name_hint">カスタム名を入力</string>
+    <string name="custom_amounts_add_custom_amount">カスタム金額を追加</string>
+    <string name="custom_amounts_name">名前</string>
+    <string name="custom_amounts_enter_amount">合計</string>
+    <string name="custom_amounts_dialog_title">カスタム金額</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">ブラウザーの管理画面から Jetpack を接続するか、サポートにお問い合わせください。</string>
+    <string name="login_jetpack_installation_error_connection_message">サイトとの通信でエラーが発生しました。</string>
+    <string name="custom_amounts">カスタム金額</string>
+    <string name="product_details_blaze_card">Blaze を使って宣伝する</string>
+    <string name="blaze_campaign_ceation_celebration_button">OK</string>
+    <string name="blaze_campaign_ceation_celebration_message">広告は承認を得るために送信されました。 承認されて掲載されると、確認メールが送信されます。</string>
+    <string name="blaze_campaign_creation_celebration_header">準備完了 ! </string>
+    <string name="blaze_campaign_creation_intro_button">今すぐ Blaze キャンペーンを開始</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">パフォーマンスの追跡、Blaze キャンペーンの開始と停止をいつでも実行できます。</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">WordPress と Tumblr のサイトで数百万人のユーザーにリーチしましょう。</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">1日わずか数ドルでコントロールできます。 リーズナブル。</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">わずか数分で商品を宣伝できます。</string>
+    <string name="blaze_campaign_creation_intro_title">Blaze でストアの売上を増やす</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">キャンペーンのリストを更新中にエラーが発生しました。 後でもう一度お試しください。</string>
+    <string name="media_picker_dialog_title">メディアソースを選択する</string>
+    <string name="product_creation_package_photo_error">商品名と説明文の生成中にエラーが発生しました。</string>
+    <string name="product_creation_package_photo_no_text_detected">テキストが検出されませんでした。 別のパッケージ写真を選択するか、商品の詳細を手動で入力してください。</string>
+    <string name="order_editing_add_content_description">商品を追加する</string>
+    <string name="order_editing_barcode_content_description">バーコードをスキャンする</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">商品カードを折りたたむ / 展開する</string>
+    <string name="order_creation_decrease_item_amount_content_description">商品数量を減らす</string>
+    <string name="order_creation_increase_item_amount_content_description">商品数量を増やす</string>
+    <string name="order_creation_add_custom_amounts">カスタム金額を追加</string>
+    <string name="order_creation_price_after_discount">割引後の価格</string>
+    <string name="previous_order">前の注文</string>
+    <string name="next_order">次の注文</string>
+    <string name="blaze_campaign_details_title">キャンペーン詳細</string>
+    <string name="blaze_campaign_list_title">Blaze キャンペーン</string>
+    <string name="blaze_campaign_status_canceled">キャンセル済み</string>
+    <string name="blaze_campaign_status_scheduled">予約済み</string>
+    <string name="product_creation_package_photo_keywords_info">テキストを微調整: 不要なスキャンの選択を解除するか編集をタップ</string>
+    <string name="product_creation_package_photo_keywords_section">キーワード</string>
+    <string name="ai_product_creation_photo_button">パッケージ写真を使用 (オプション)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">「支払いを受け取る」オプションから「Tap to Pay」を選択するには、\n「注文の詳細」または「メニュー」&gt;「支払い」の順に移動します。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の支払いを試します。\n完了したら返金されます。</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">簡単、安全でプライバシーは保護されます。</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">あらゆる種類のオフラインでの支払いを\nスマートフォンで受け取れます。 追加のハードウェアは不要です。</string>
+    <string name="blaze_campaign_status_budget">予算</string>
+    <string name="blaze_campaign_status_clicks">クリック数</string>
+    <string name="blaze_campaign_status_impressions">インプレッション</string>
+    <string name="blaze_campaign_status_rejected">却下</string>
+    <string name="blaze_campaign_status_completed">完了</string>
+    <string name="blaze_campaign_status_active">有効</string>
+    <string name="blaze_campaign_status_in_moderation">モデレーション中</string>
+    <string name="blaze_campaign_show_all_button">すべて表示</string>
+    <string name="blaze_campaign_create_campaign_button">キャンペーンを作成</string>
+    <string name="blaze_campaign_subtitle">認知度を高め、商品を迅速に販売します。</string>
+    <string name="blaze_campaign_title">Blaze キャンペーン</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol は EMVCo, LLC が所有し、EMVCo, LLC の許可を得て使用している商標です。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. 「完了」チェックマークが表示されると、ストアにより支払いが処理され、取引が完了します。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様がカードをあなたのスマートフォンの上部、コンタクトレス記号に水平にかざします。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. お客様にスマートフォンを提示します。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. 「支払いを受け取る」をタップし「Tap to Pay」を選択します。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">支払いを受け取る</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">注文を作成する</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s または %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">仕組み</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">カードリーダーについて詳しくはこちら</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">この制限を超えて支払いを受け入れるには、PIN 入力を受け入れるカードリーダーの購入をご検討ください。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Tap to Pay on Android での PIN 入力には対応していません。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s においては、一部のカードでは %2$s以上のコンタクトレスによる取引に PIN が必要です。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">重要情報</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay を使用すると、物理的なデビットカードやクレジットカードからデジタルウォレットまで、あらゆる種類のコンタクトレス決済を受け取ることができ、物理的なカードリーダーを購入する必要はありません。</string>
+    <string name="card_reader_tap_to_pay_about_header">Tap to Pay とは</string>
+    <string name="card_reader_tap_to_pay_about_title">Tap to Pay について</string>
+    <string name="ai_feedback_form_negative_button">フィードバックを操作</string>
+    <string name="ai_feedback_form_positive_button">好意的なフィードバック</string>
+    <string name="ai_feedback_form_message">この結果は役に立ちましたか ?</string>
+    <string name="product_creation_ai_preview_short_description_section">商品の簡単な説明</string>
+    <string name="card_reader_payment_update_available">カードリーダーのアップデートが可能です</string>
+    <string name="card_reader_about_tap_to_pay">Tap to Pay について</string>
+    <string name="card_reader_tap_to_pay_header">Tap To Pay</string>
+    <string name="card_reader_settings_header">設定</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">メールアドレスを使用して手動で詳細を追加</string>
+    <string name="login_app_login_malformed_link">アプリログインのリクエストを処理できませんでした</string>
+    <string name="ai_product_name_copy_error">商品名をクリップボードにコピーする際にエラーが発生しました。</string>
+    <string name="ai_product_name_copy_success">商品名がクリップボードにコピーされました。</string>
+    <string name="ai_product_name_copy_label">AI によって生成された商品名</string>
+    <string name="ai_product_description_copy_error">商品説明をクリップボードにコピーする際にエラーが発生しました。</string>
+    <string name="ai_product_description_copy_success">商品説明がクリップボードにコピーされました。</string>
+    <string name="product_creation_ai_generation_failure_message">商品の生成に失敗しました。 もう一度お試しください</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">住所をクリアしてこのレートの使用を停止する</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">この注文に新しい税率を設定する</string>
+    <string name="tax_rate_selector_auto_rate_details_title">税率の自動加算</string>
+    <string name="ai_product_name_sheet_error_message">商品名の生成中に問題が発生しました。 もう一度お試しください。</string>
+    <string name="ai_product_name_sheet_regenerate_button">再生成</string>
+    <string name="ai_product_name_sheet_generate_button">ご記入ください</string>
+    <string name="ai_product_name_sheet_input_description">商品の概要とその特徴的な点を教えてください。</string>
+    <string name="ai_product_name_sheet_subtitle">AI が魅力的なタイトルを生成します</string>
+    <string name="ai_product_name_sheet_title">商品名</string>
+    <string name="empty_review_filtered_list_message">すべての商品レビューを表示するには、未読フィルターを無効にしてみてください</string>
+    <string name="empty_review_filtered_list_title">未読の商品レビューはありません</string>
+    <string name="product_creation_ai_tone_selected_content_desc">トーンが選択されました</string>
+    <string name="product_creation_ai_tone_convincing">説得力がある</string>
+    <string name="product_creation_ai_tone_flowery">花</string>
+    <string name="product_creation_ai_tone_formal">フォーマル</string>
+    <string name="product_creation_ai_tone_casual">カジュアル</string>
+    <string name="product_creation_ai_tone_description">トーンと声を設定してブランドに合わせた商品のプレゼンテーションを形成します。</string>
+    <string name="product_creation_ai_tone_title">トーンと声</string>
+    <string name="product_creation_ai_preview_details_section">詳細</string>
+    <string name="product_creation_ai_preview_description_section">商品説明</string>
+    <string name="product_creation_ai_preview_name_section">商品名</string>
+    <string name="product_creation_ai_preview_subtitle">以下の情報は後からいつでも変更できます。</string>
+    <string name="product_creation_ai_preview_title">プレビュー</string>
+    <string name="product_creation_ai_about_product_continue_button">商品情報を作成</string>
+    <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">主要な機能や利点、詳細を追加して商品をオンラインで見つけられるようにします。</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど</string>
+    <string name="product_creation_ai_about_product_subtitle">商品のユニークな点を強調し、AI に魔法をかけてもらいましょう。</string>
+    <string name="product_creation_ai_about_product_title">商品について</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">名前を提案</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど。</string>
+    <string name="ai_product_creation_add_name_keywords_label">商品名</string>
+    <string name="ai_product_creation_add_name_subtitle">または、タップして選択肢を拡張し、さらに名前の候補を表示します。</string>
+    <string name="ai_product_creation_add_name_title">商品名を追加する</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">AI を活用しています。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手動で商品と詳細を追加します</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">手動で追加する</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">詳細をすぐに生成できます</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">AI で商品を登録する</string>
+    <string name="product_creation_ai_entry_sheet_header">商品を追加する</string>
+    <string name="product_review_list_unread_reviews_filter">未読レビューのみ</string>
+    <string name="order_creation_edit_tax_rate">税率設定を編集</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">オンラインの注文には影響しません</string>
+    <string name="tax_rate_selector_auto_rate_label">作成されたすべての注文にこのレートを追加します</string>
+    <string name="tax_rate_selector_empty_list_button_alt">税率を編集</string>
+    <string name="tax_rate_selector_empty_list_button">管理画面で税率を編集</string>
+    <string name="tax_rate_selector_empty_list_message">管理画面で税率を追加します。 ここには位置情報を含む税率のみが表示されます。</string>
+    <string name="tax_rate_selector_empty_list_title">税率が見つかりませんでした</string>
+    <string name="store_onboarding_payments_setup_description">その他の決済サービス業者を探し\n決済サービス業者を選択します。</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">お支払い方法</string>
+    <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメント</string>
+    <string name="product_downloadable_files_add_media_from_device">端末上のメディアファイル</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">今すぐ解決</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">設定完了</string>
+    <string name="tax_rate_selector_title">税率を設定する</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">有効化</string>
+    <string name="order_creation_set_tax_rate">新しい税率を設定</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">セットアップ</string>
     <string name="tax_rate_selector_edit_rates_button_label">管理画面で税率を編集</string>
     <string name="tax_rate_selector_header_label">これにより顧客の住所が選択した税率の場所に変更されます。</string>
     <string name="tax_rate_selector_info_icon_content_description">税率情報ダイアログを開くボタン</string>
@@ -21,8 +195,6 @@ Language: ja_JP
     <string name="tax_rates_info_dialog_primary_text">税金は、顧客の請求先住所、配送先住所、または店舗の住所を税率の場所と一致させて計算されます。</string>
     <string name="tax_rates_information_content_description">税率に関する情報</string>
     <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments を使用することで、お客様は弊社の&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;に拘束されることに同意し、弊社&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;プライバシーポリシー&lt;/u&gt;&lt;/a&gt;を読んだものとみなされます。</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">セットアップ</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">WooPayments での情報の確認について&lt;a href=\'learnMore\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
     <string name="store_onboarding_wcpay_instructions_content_button">セットアップを開始</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">WooPayments では Stripe と提携しています。 サインアップでは Stripe のサイトに移動します。 ビジネス情報と支払い情報の確認が求められます。</string>
@@ -167,7 +339,6 @@ Language: ja_JP
     <string name="empty_order_test_order_message">テスト注文を実行して、WooCommerce のプロセスがシームレスなカスタマーエクスペリエンスを提供していることを確認します</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動で詳細を追加します</string>
     <string name="order_creation_customer_search_old_wc_hint">顧客を検索する</string>
-    <string name="shipping_classes_zones">配送クラス &amp; 配送地域</string>
     <string name="free_trial_survey_free_text">その他の理由 (具体的にご記入ください)</string>
     <string name="free_trial_survey_option4">自分はチームの一員であり、全体で決定を下す必要がある。</string>
     <string name="free_trial_survey_option3">サービスの価格が自分の決定における重要な要素であると感じている。</string>
@@ -212,13 +383,6 @@ Language: ja_JP
     <string name="highlights_tooltip_button_hint">ボタンのテキスト</string>
     <string name="highlights_tooltip_message_hint">ツールチップのメッセージ。 \n 複数行にわたる可能性があります。</string>
     <string name="highlights_tooltip_title_hint">ツールチップのタイトル</string>
-    <string name="blaze_banner_dismiss_dialog_button">OK</string>
-    <string name="blaze_banner_dismiss_dialog_description">心配はご無用です。 Blaze はご都合に合わせて、メニューと商品詳細メニューから利用できるようになっています。</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze 広告</string>
-    <string name="blaze_banner_close_button_content_description">Blaze バナーボタンを閉じる</string>
-    <string name="blaze_banner_button">今すぐ Blaze を試す</string>
-    <string name="blaze_banner_description">商品を広告に変えると WordPress.com や Tumblr にある何百万件ものサイトに掲載されます。</string>
-    <string name="blaze_banner_title">Blaze を使って商品を宣伝する</string>
     <string name="ai_product_description_tooltip_dismiss">OK</string>
     <string name="ai_product_description_tooltip_message">AI 搭載ツールを使用すると商品説明をすぐに生成できます。 キーワードを入力するだけで、あとはこちらで完了します。</string>
     <string name="ai_product_description_tooltip_title">✨ AI で執筆</string>
@@ -242,7 +406,6 @@ Language: ja_JP
     <string name="ai_product_description_note_dialog_heading">良い出だしです !</string>
     <string name="ai_product_description_feedback">が生成されました\n説明は役立つものですか ?</string>
     <string name="ai_product_description_regenerate_button">再生成</string>
-    <string name="ai_product_description_survey">生成された説明は役立つものですか ?</string>
     <string name="ai_product_description_hint">カスタマイズされた説明のキーワードを使用して商品の独自の機能と対象ユーザーを強調します。</string>
     <string name="ai_product_description_example">例: 鉢植え、サボテン、植物、観賞用、お手入れ簡単</string>
     <string name="ai_product_description_product_name">商品名を入力</string>
@@ -279,8 +442,6 @@ Language: ja_JP
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 プランを利用してビジネスを順調に進めましょう !</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express の無料お試し期間は明日 (%1$s) までです。 今こそ、未来を自分で創るときです。プランを選び、大きく成長する第一歩を踏み出しましょう。</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 無料お試し期間はまもなく終了です !</string>
-    <string name="local_notification_without_free_trial_description">こんにちは、%1$s さん。%2$s の準備ができました。 Woo Express の14日間の無料お試しを開始して、ワンクリックでオンラインビジネスを立ち上げましょう。  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ ストアを利用できます。</string>
     <string name="local_notification_store_creation_complete_description">%1$s さん、こんにちは ! Woo Express の14日間のお試し期間にようこそ。Woo Express は、成功するオンラインビジネスを立ち上げ、大きく育てるために必要なものがすべて1か所にそろっています。 Woo Express を使う準備はできましたか ?</string>
     <string name="local_notification_store_creation_complete_title">🎉 ストアの準備ができました。</string>
     <string name="product_type_variation">バリエーション商品</string>
@@ -418,8 +579,7 @@ Language: ja_JP
     <string name="product_selector_popular_products_heading">人気</string>
     <string name="jetpack_install_role_eligibility_learn_more">権限グループと権限の詳細</string>
     <string name="jetpack_install_role_eligibility_error_message">権限グループでは Jetpack のインストールが許可されていないようです。 \nサポートをご希望の場合は管理者にお問い合わせください。</string>
-    <string name="card_reader_tap_to_pay_description">こちらで Tap To Pay を少額で\nテストできます。</string>
-    <string name="card_reader_test_tap_to_pay">Tap To Pay をテスト</string>
+    <string name="card_reader_test_tap_to_pay">Tap to Pay を試す</string>
     <string name="subscription_free_trial">無料お試し</string>
     <string name="subscription_sign_up_fee">登録手数料</string>
     <string name="subscription_expire">期限切れ後</string>
@@ -438,7 +598,6 @@ Language: ja_JP
     <string name="subscription_status_cancelled">キャンセル</string>
     <string name="subscription_status_on_hold">保留中</string>
     <string name="subscription_status_active">有効</string>
-    <string name="no_variable_subscription_warning">ウェブダッシュボードではバリエーションのあるサブスクリプションのみを追加できます。</string>
     <string name="subscription_details_info_notice">ウェブダッシュボードで商品のサブスクリプションを編集できます。</string>
     <string name="subscription_no_trial">無料お試しなし</string>
     <string name="subscription_no_sign_up_fee">登録手数料なし</string>
@@ -456,7 +615,8 @@ Language: ja_JP
     <string name="product_subscription_title">サブスクリプション</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">カードリーダーは、デビットカードとクレジットカードのタップ決済、チップ決済、スワイプ決済に対応しています。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay についてのフィードバックを共有する</string>
+    <string name="card_reader_tap_to_pay_description">スマートフォンを使用してカードによる支払いを\n受け付けることができます。 今すぐお試しください。</string>
+    <string name="card_reader_tap_to_pay_share_feedback">フィードバックを共有</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
     <string name="login_site_credentials_fetching_site_failed">ウェブサイトの取得中にエラーが発生しました</string>
@@ -550,9 +710,6 @@ Language: ja_JP
     <string name="jetpack_benefits_fetching_status">Jetpack ステータスを取得しています</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">エラーが発生しました。 後でもう一度お試しください。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">支払いを試す</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Android では Tap to Pay は\n「メニュー」&gt;「支払い」または「支払いを受け取る」の順に移動し\n「Tap to Pay」を選択します。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">お持ちのカードを使って支払いを試し、\n完了したら返金されます。</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">お使いのスマートフォンでは今すぐ Tap to Pay を使用できます。\nお客様はスマートフォンで\nカードをタップして支払うことができます。</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">アクション</string>
@@ -708,7 +865,7 @@ Language: ja_JP
     <string name="login_jetpack_installation_retry_activating">有効化を再試行</string>
     <string name="login_jetpack_installation_retry_installing">インストールを再試行</string>
     <string name="login_jetpack_installation_get_support">サポートを受ける</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">もう一度やり直してみてください。エラーが続く場合は、サポートにお問い合わせください。</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">もう一度やり直してみてください。エラーが続く場合は、サポートにお問い合わせください。</string>
     <string name="login_jetpack_installation_error_generic_message">サイトとの通信でエラーが発生しました。</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">このストアのプラグインを管理する権限がありません</string>
     <string name="login_jetpack_installation_error_authorizing">Jetpack との連携を認証する際にエラーが発生しました</string>
@@ -1312,7 +1469,6 @@ Language: ja_JP
     <string name="order_creation_customer_note">注文メモ</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">更新後に再読み込みする</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Stripe Gateway 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">再読み込み</string>
     <string name="card_reader_payment_failed_unknown">不明な理由により支払いが拒否されました</string>
     <string name="card_reader_payment_failed_test_mode_live_card">本番用カードがテストモードのサイトで使用されました</string>
     <string name="card_reader_payment_failed_test_card">システムテストカードは支払いが許可されていません</string>
@@ -1532,7 +1688,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 オフラインでの支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
@@ -1896,14 +2051,13 @@ Language: ja_JP
     <string name="product_downloadable_files_download_settings">ダウンロード設定</string>
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress メディアライブラリから</string>
-    <string name="product_downloadable_files_add_media_from_device">端末から</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress メディアライブラリ</string>
     <string name="product_downloadable_files_url_invalid">入力した URL が正しいかどうかを確認してください</string>
     <string name="product_downloadable_files_upload_dialog_message">しばらくお待ちください…</string>
     <string name="product_downloadable_files_upload_dialog_title">ファイルをアップロードしています</string>
     <string name="product_downloadable_files_upload_failed">ファイルのアップロードの際にエラーが発生しました</string>
     <string name="product_downloadable_files_add_title">ダウンロード可能なファイルを追加</string>
-    <string name="product_downloadable_add_bottomsheet_header">ダウンロード可能なファイルを追加</string>
+    <string name="product_downloadable_add_bottomsheet_header">ダウンロード可能なファイルを追加する</string>
     <string name="bottom_sheet_downloadable_files_desc">ダウンロード可能なファイルを購入に含める</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">キャンセル</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">変更する</string>
@@ -2886,7 +3040,7 @@ Language: ja_JP
     <string name="login_text_otp_another">代わりに別のコードを送信する。</string>
     <string name="login_text_otp">代わりに SMS でコードを送信する。</string>
     <string name="enter_verification_code_sms">末尾が%sで終わる電話番号にテキストメッセージを送信しました。SMS の認証コードを入力してください。</string>
-    <string name="enter_verification_code">もう少しで完了です。認証アプリから認証コードを入力してください。</string>
+    <string name="enter_verification_code">もう少しです ! 認証アプリから WordPress.com の認証コードを入力してください。</string>
     <string name="enter_username_instead">ユーザー名でログインします。</string>
     <string name="enter_site_address_instead">サイトのアドレスを入力してログインする。</string>
     <string name="alternatively">もしくは、</string>
@@ -3052,5 +3206,13 @@ Language: ja_JP
     <string-array name="shipping_label_create_new_package_tabs">
         <item>カスタムパッケージ</item>
         <item>サービスパッケージ</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>日ごと</item>
+        <item>2日ごと</item>
+        <item>3日ごと</item>
+        <item>4日ごと</item>
+        <item>5日ごと</item>
+        <item>6日ごと</item>
     </string-array>
 </resources>

@@ -98,11 +98,11 @@ If you happen to find a security vulnerability, we would appreciate you letting 
 
 ## 🦮 Need Help?
 
-You can find the WooCommerce usage docs here: [docs.woocommerce.com](https://docs.woocommerce.com/)
+You can find the WooCommerce usage docs here: [woo.com/documentation/woocommerce/](https://woo.com/documentation/woocommerce/)
 
 General usage and development questions:
 
-* [WooCommerce Slack Community](https://woocommerce.com/community-slack/)
+* [WooCommerce Slack Community](https://woo.com/community-slack/)
 * [WordPress.org Forums](https://wordpress.org/support/plugin/woocommerce)
 * [The WooCommerce Help and Share Facebook group](https://www.facebook.com/groups/woohelp/)
 
@@ -115,9 +115,14 @@ General usage and development questions:
 
 WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/trunk/LICENSE.md).
 
+## 📚 Proprietary Libraries
+
+In order to offer a great experience to our users, we use some proprietary libraries that are not open source. These libraries are:
+
+- [ML Kit](https://developers.google.com/ml-kit) for barcode scanning and text recognition. You can find its Terms of Service [here](https://developers.google.com/ml-kit/terms).
 
 <p align="center">
     <br/><br/>
-    Made with 💜 by <a href="https://woocommerce.com/">WooCommerce</a>.<br/>
-    <a href="https://woocommerce.com/careers/">We're hiring</a>! Come work with us!
+    Made with 💜 by <a href="https://woo.com/">WooCommerce</a>.<br/>
+    <a href="https://woo.com/careers/">We're hiring</a>! Come work with us!
 </p>

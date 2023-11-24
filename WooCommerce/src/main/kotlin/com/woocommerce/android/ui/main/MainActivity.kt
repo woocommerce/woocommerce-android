@@ -12,6 +12,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.text.method.LinkMovementMethod
 import android.view.Menu
@@ -103,7 +104,6 @@ import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -200,6 +200,11 @@ class MainActivity :
             to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
             duration = 200L
         )
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val notificationPermissionBarRunnable = Runnable {
+        animateBottomBar(binding.notificationsPermissionBar, show = true)
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
@@ -373,6 +378,7 @@ class MainActivity :
 
     public override fun onDestroy() {
         presenter.dropView()
+        handler.removeCallbacks(notificationPermissionBarRunnable)
         super.onDestroy()
     }
 
@@ -415,12 +421,6 @@ class MainActivity :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
-        val currentFragment = getActiveChildFragment()
-        if (currentFragment is ProductDetailFragment) currentFragment.trackBlazeDisplayedIfVisible()
-        return true
     }
 
     /**
@@ -656,7 +656,7 @@ class MainActivity :
     /**
      * Called when the user switches sites - restarts the activity so all fragments and child fragments are reset
      */
-    private fun restart() {
+    override fun restart() {
         val intent = intent
         intent.addFlags(
             Intent.FLAG_ACTIVITY_CLEAR_TOP or
@@ -814,10 +814,8 @@ class MainActivity :
                         }
                     }
                 }
-                Handler().postDelayed(
-                    {
-                        animateBottomBar(binding.notificationsPermissionBar, show = true)
-                    },
+                handler.postDelayed(
+                    notificationPermissionBarRunnable,
                     NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
                 )
             } else {
@@ -1089,20 +1087,29 @@ class MainActivity :
             navController.popBackStack(R.id.orders, false)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            arrayOf(orderId).toLongArray(),
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
+        allOrderIds: List<Long>,
         remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            allOrderIds.toLongArray(),
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
     }

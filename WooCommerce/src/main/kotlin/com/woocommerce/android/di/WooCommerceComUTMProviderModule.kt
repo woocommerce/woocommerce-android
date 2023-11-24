@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
 import com.woocommerce.android.util.UtmProvider
 import dagger.Module
@@ -32,8 +32,8 @@ class WooCommerceComUTMProviderModule {
     fun providePaymentMenuUtm(
         selectedSite: SelectedSite
     ) = UtmProvider(
-        campaign = CardReaderHubViewModel.UTM_CAMPAIGN,
-        source = CardReaderHubViewModel.UTM_SOURCE,
+        campaign = PaymentsHubViewModel.UTM_CAMPAIGN,
+        source = PaymentsHubViewModel.UTM_SOURCE,
         content = null,
         siteId = selectedSite.getIfExists()?.siteId
     )

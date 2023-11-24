@@ -4,17 +4,22 @@ import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_DELETE
@@ -31,11 +36,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_F
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPONS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNTS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNT_TAX_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
@@ -47,12 +55,17 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteType.CUSTOMER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PRODUCT_TYPES
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
@@ -63,12 +76,16 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AutoTaxRateSettingDetails
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -77,28 +94,29 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
+import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -110,6 +128,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -122,6 +141,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
@@ -133,7 +153,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreateEditRepository: OrderCreateEditRepository,
-    private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
@@ -144,9 +164,16 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     private val getAddressFromTaxRate: GetAddressFromTaxRate,
+    private val getAutoTaxRateSetting: GetAutoTaxRateSetting,
+    private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
+    private val getTaxRateLabel: GetTaxRateLabel,
+    private val prefs: AppPrefs,
+    private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
+    private val adjustProductQuantity: AdjustProductQuantity,
+    private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
-    parameterRepository: ParameterRepository
+    parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
@@ -177,12 +204,52 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    val products: LiveData<List<ProductUIModel>> = _orderDraft
+    val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
         .distinctUntilChanged()
         .map { items ->
-            items.map { item -> mapItemToProductUiModel(item) }
-        }.asLiveData()
+            orderCreationProductMapper.toOrderProducts(items)
+                .sortedBy { creationProduct -> creationProduct.item.productId }
+        }
+        .asLiveData()
+
+    val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
+        .map { order -> order.feesLines }
+        .map { feeLines ->
+            feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
+        }
+        .map { customAmountUIModels ->
+            customAmountUIModels.map {
+                it.copy(
+                    isLocked = !viewState.isEditable ||
+                        (
+                            _orderDraft.value.status.value != Order.Status.Pending.value &&
+                                _orderDraft.value.status.value != Order.Status.OnHold.value
+                            )
+                )
+            }
+        }
+        .asLiveData()
+
+    val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {
+        addSource(products) { products ->
+            val customAmounts = customAmounts.value
+            val isProductsEmpty = products?.isEmpty() == true
+            viewState = viewState.copy(
+                productsSectionState = ProductsSectionState(isEmpty = isProductsEmpty),
+                customAmountSectionState = CustomAmountSectionState(customAmounts?.isEmpty() == true)
+            )
+        }
+
+        addSource(customAmounts) { customAmounts ->
+            val products = products.value
+            val isCustomAmountsEmpty = customAmounts?.isEmpty() == true
+            viewState = viewState.copy(
+                productsSectionState = ProductsSectionState(isEmpty = products?.isEmpty() == true),
+                customAmountSectionState = CustomAmountSectionState(isCustomAmountsEmpty)
+            )
+        }
+    }
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -219,7 +286,15 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 handleCouponEditResult()
+                launch {
+                    updateAutoTaxRateSettingState()
+                    updateTaxRateSelectorButtonState()
+                    getAutoTaxRateSetting()?.let {
+                        onTaxRateSelected(it)
+                    }
+                }
             }
+
             is Mode.Edit -> {
                 viewModelScope.launch {
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
@@ -232,22 +307,51 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
+                        updateAddShippingButtonVisibility(order)
                         handleCouponEditResult()
+                        updateTaxRateSelectorButtonState()
                     }
                 }
             }
         }
-        launch {
-            orderCreateEditRepository.fetchTaxBasedOnSetting().also {
-                val isSetNewTaxRateButtonVisible: Boolean = when (it) {
-                    BillingAddress, ShippingAddress -> true
-                    else -> false
-                } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
-                viewState = viewState.copy(
-                    taxBasedOnSettingLabel = it?.label ?: "",
-                    isSetNewTaxRateButtonVisible = isSetNewTaxRateButtonVisible
+    }
+
+    private suspend fun updateAutoTaxRateSettingState() {
+        val rate = getAutoTaxRateSetting()
+        viewState = if (rate != null) {
+            viewState.copy(
+                autoTaxRateSetting = AutoTaxRateSettingState(
+                    isActive = true,
+                    taxRateTitle = getTaxRateLabel(rate),
+                    taxRateValue = getTaxRatePercentageValueText(rate)
                 )
-            }
+            )
+        } else {
+            viewState.copy(
+                autoTaxRateSetting = AutoTaxRateSettingState(
+                    isActive = false,
+                )
+            )
+        }
+    }
+
+    private suspend fun updateTaxRateSelectorButtonState() {
+        orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+            val isSetNewTaxRateButtonVisible: Boolean = when (it) {
+                BillingAddress, ShippingAddress -> true
+                else -> false
+            } && isTaxRateSelectorEnabled() && !_orderDraft.value.isOrderPaid
+            viewState = viewState.copy(
+                taxBasedOnSettingLabel = it?.label ?: "",
+                taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
+                    isShown = isSetNewTaxRateButtonVisible,
+                    label = if (viewState.autoTaxRateSetting.isActive) {
+                        resourceProvider.getString(string.order_creation_edit_tax_rate)
+                    } else {
+                        resourceProvider.getString(string.order_creation_set_tax_rate)
+                    }
+                )
+            )
         }
     }
 
@@ -296,7 +400,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(KEY_FLOW to flow)
         )
-        _orderDraft.update { it.adjustProductQuantity(id, +1) }
+        _orderDraft.update { adjustProductQuantity(it, id, +1) }
     }
 
     fun onDecreaseProductsQuantity(id: Long) {
@@ -316,7 +420,30 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
 
-        _orderDraft.update { it.adjustProductQuantity(id, -1) }
+        _orderDraft.update { adjustProductQuantity(it, id, -1) }
+    }
+
+    fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
+        tracker.track(
+            ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(KEY_FLOW to flow)
+        )
+        _orderDraft.update { adjustProductQuantity(it, product, +1) }
+    }
+
+    fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
+        if (product.item.quantity == 1F) {
+            tracker.track(
+                ORDER_PRODUCT_REMOVE,
+                mapOf(KEY_FLOW to flow)
+            )
+        } else {
+            tracker.track(
+                ORDER_PRODUCT_QUANTITY_CHANGE,
+                mapOf(KEY_FLOW to flow)
+            )
+        }
+        _orderDraft.update { adjustProductQuantity(it, product, -1) }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
@@ -332,7 +459,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { it.copy(status = status) }
     }
 
-    fun onRemoveProduct(item: Order.Item) = viewModelScope.launch {
+    fun onRemoveProduct(item: OrderCreationProduct) = viewModelScope.launch {
         tracker.track(
             ORDER_PRODUCT_REMOVE,
             mapOf(KEY_FLOW to flow)
@@ -343,11 +470,28 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onProductExpanded(isExpanded: Boolean, product: OrderCreationProduct) {
+        if (product.productInfo.isConfigurable && isExpanded) {
+            tracker.track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_SOURCE to VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Suppress("LongMethod", "ComplexMethod")
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        val hasBundleConfiguration = selectedItems.any { item ->
+            (item as? SelectedItem.ConfigurableProduct)
+                ?.configuration?.configurationType == ConfigurationType.BUNDLE
+        }
         source?.let {
             tracker.track(
                 ORDER_PRODUCT_ADD,
@@ -356,6 +500,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_SCANNING_SOURCE to source.source,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration
                 )
             )
         } ?: run {
@@ -365,6 +510,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_FLOW to flow,
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration
                 )
             )
         }
@@ -372,7 +518,11 @@ class OrderCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             _orderDraft.value.items.apply {
                 val productsToRemove = filter { item ->
-                    !item.isVariation && selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
+                    item.parent == null &&
+                        !item.isVariation &&
+                        selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
+                }.mapNotNull { item ->
+                    products.value?.find { product -> item.itemId == product.item.itemId }
                 }
                 productsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
@@ -380,7 +530,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
                 val variationsToRemove = filter { item ->
                     item.isVariation && selectedItems.variationIds.none { item.variationId == it }
+                }.mapNotNull { item ->
+                    products.value?.find { product -> item.itemId == product.item.itemId }
                 }
+
                 variationsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
                 }
@@ -389,16 +542,26 @@ class OrderCreateEditViewModel @Inject constructor(
                     if (selectedItem is SelectedItem.ProductVariation) {
                         none { it.variationId == selectedItem.variationId }
                     } else {
-                        none { it.productId == selectedItem.id }
+                        none { it.parent == null && it.productId == selectedItem.id }
                     }
                 }.map {
-                    if (it is SelectedItem.ProductVariation) {
-                        createOrderItem(it.productId, it.variationId)
-                    } else {
-                        createOrderItem(it.id)
+                    when (it) {
+                        is SelectedItem.ProductVariation -> {
+                            createOrderItem(it.productId, it.variationId)
+                        }
+
+                        is SelectedItem.ConfigurableProduct -> {
+                            createOrderItem(
+                                remoteProductId = it.productId,
+                                productConfiguration = it.configuration
+                            )
+                        }
+
+                        else -> {
+                            createOrderItem(it.id)
+                        }
                     }
                 }
-
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
             }
         }
@@ -406,6 +569,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun updateCouponButtonVisibility(order: Order) {
         viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
+    }
+
+    private fun updateAddShippingButtonVisibility(order: Order) {
+        viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -430,6 +597,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     resourceProvider.getString(string.order_creation_barcode_scanning_scanning_failed)
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
                 viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -556,6 +724,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     source = source,
                     addedVia = ProductAddedVia.SCANNING,
                 )
+
                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
             trackProductSearchViaSKUSuccessEvent(source)
@@ -615,6 +784,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Failed to add a product that is not published"
                 )
             }
+
             product.hasNoPrice() -> {
                 sendAddingProductsViaScanningFailedEvent(
                     message = resourceProvider.getString(
@@ -676,9 +846,13 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
+    private fun Order.removeItem(product: OrderCreationProduct) = adjustProductQuantity(
+        this,
+        product,
+        -product.item.quantity.toInt()
+    )
 
-    fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
+    fun onCustomerEdited(customer: Order.Customer) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
             ORDER_CUSTOMER_ADD,
@@ -689,26 +863,25 @@ class OrderCreateEditViewModel @Inject constructor(
         )
 
         _orderDraft.update { order ->
-            order.copy(
-                customerId = customerId,
-                billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
+            val adjustedCustomer = customer.copy(
+                shippingAddress = customer.shippingAddress.takeIf { it != EMPTY } ?: customer.billingAddress
             )
+            order.copy(customer = adjustedCustomer)
         }
     }
 
-    fun onCustomerAddressDeleted() {
+    fun onCustomerDeleted() {
         tracker.track(
             ORDER_CUSTOMER_DELETE,
             mapOf(KEY_FLOW to flow)
         )
 
+        clearCustomerAddresses()
+    }
+
+    private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
-            order.copy(
-                customerId = null,
-                billingAddress = EMPTY,
-                shippingAddress = EMPTY
-            )
+            order.copy(customer = null)
         }
     }
 
@@ -740,11 +913,20 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddProductClicked() {
-        val selectedItems = orderDraft.value?.items?.map { item ->
-            if (item.isVariation) {
-                SelectedItem.ProductVariation(item.productId, item.variationId)
-            } else {
-                Product(item.productId)
+        val selectedItems = products.value?.map { product ->
+            val configuration = product.item.configuration
+            when {
+                configuration != null -> {
+                    SelectedItem.ConfigurableProduct(product.item.productId, configuration)
+                }
+
+                product.item.isVariation -> {
+                    SelectedItem.ProductVariation(product.item.productId, product.item.variationId)
+                }
+
+                else -> {
+                    Product(product.item.productId)
+                }
             }
         }.orEmpty()
         triggerEvent(
@@ -753,15 +935,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 listOf(
                     ProductRestriction.NonPublishedProducts,
                     ProductRestriction.VariableProductsWithNoVariations
-                )
+                ),
+                args.mode
             )
         )
-    }
-
-    fun onProductClicked(item: Order.Item) {
-        // Don't show details if the product is not synced yet
-        if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
     }
 
     fun onRetryPaymentsClicked() {
@@ -813,6 +990,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 )
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -851,6 +1029,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -876,8 +1055,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     when (updateStatus) {
                         OrderUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
+
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
@@ -887,6 +1068,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
+
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
@@ -904,6 +1086,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 }
                             }.also {
                                 updateCouponButtonVisibility(it)
+                                updateAddShippingButtonVisibility(it)
                             }
                         }
                     }
@@ -929,16 +1112,26 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackCreateOrderButtonClick() {
-        tracker.track(
-            ORDER_CREATE_BUTTON_TAPPED,
-            mapOf(
-                KEY_STATUS to _orderDraft.value.status,
-                KEY_PRODUCT_COUNT to products.value?.count(),
-                KEY_HAS_CUSTOMER_DETAILS to _orderDraft.value.billingAddress.hasInfo(),
-                KEY_HAS_FEES to _orderDraft.value.feesLines.isNotEmpty(),
-                KEY_HAS_SHIPPING_METHOD to _orderDraft.value.shippingLines.isNotEmpty()
+        launch {
+            val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
+            val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
+            val productCount = products.value?.count() ?: 0
+            tracker.track(
+                ORDER_CREATE_BUTTON_TAPPED,
+                buildMap {
+                    put(KEY_STATUS, _orderDraft.value.status)
+                    putIfNotNull(PRODUCT_TYPES to productTypes)
+                    put(KEY_PRODUCT_COUNT, productCount)
+                    put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
+                    put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
+                    put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
+                    if (_orderDraft.value.feesLines.isNotEmpty()) {
+                        put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
+                    }
+                }
+
             )
-        )
+        }
     }
 
     private fun trackOrderSyncFailed(throwable: Throwable) {
@@ -1017,6 +1210,88 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
+        tracker.track(
+            ORDER_FEE_ADD,
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to when (customAmountUIModel.taxStatus.isTaxable) {
+                    true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+                    false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+                }
+            )
+        )
+        _orderDraft.update { draft ->
+            val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
+
+            val feesList = if (existingFeeLine != null) {
+                // If the FeeLine with the given ID exists, we update its values.
+                updateCustomAmount(draft, customAmountUIModel)
+            } else {
+                // If no FeeLine with the given ID exists, we add a new one.
+                tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+                addCustomAmount(draft, customAmountUIModel)
+            }
+            draft.copy(feesLines = feesList)
+        }
+        trackIfNameAdded(customAmountUIModel)
+        triggerEvent(Exit)
+    }
+
+    private fun trackIfNameAdded(customAmountUIModel: CustomAmountUIModel) {
+        if (customAmountUIModel.name.isNotEmpty() && customAmountUIModel.name != CUSTOM_AMOUNT) {
+            tracker.track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+        }
+    }
+
+    private fun addCustomAmount(
+        draft: Order,
+        customAmountUIModel: CustomAmountUIModel
+    ) = draft.feesLines.toMutableList().apply {
+        add(
+            Order.FeeLine.EMPTY.copy(
+                name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
+                total = customAmountUIModel.amount,
+                taxStatus = when (customAmountUIModel.taxStatus.isTaxable) {
+                    true -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                    false -> Order.FeeLine.FeeLineTaxStatus.NONE
+                }
+            )
+        )
+    }
+
+    private fun updateCustomAmount(
+        draft: Order,
+        customAmountUIModel: CustomAmountUIModel
+    ) = draft.feesLines.map { feeLine ->
+        if (feeLine.id == customAmountUIModel.id) {
+            feeLine.copy(
+                name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
+                total = customAmountUIModel.amount,
+                taxStatus = when (customAmountUIModel.taxStatus.isTaxable) {
+                    true -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                    false -> Order.FeeLine.FeeLineTaxStatus.NONE
+                }
+            )
+        } else {
+            feeLine
+        }
+    }
+
+    fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
+        _orderDraft.update { draft ->
+            val feesList = draft.feesLines.map {
+                if (customAmountUIModel.id == it.id) {
+                    it.copy(name = null)
+                } else {
+                    it
+                }
+            }
+            draft.copy(feesLines = feesList)
+        }
+        tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
+    }
+
     fun onFeeRemoved() {
         tracker.track(
             ORDER_FEE_REMOVE,
@@ -1061,16 +1336,8 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
     }
 
-    fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
-        when (result) {
-            is ProductDetailsEditResult.ProductRemoved -> {
-                onRemoveProduct(result.item)
-            }
-        }
-    }
-
-    fun onProductDiscountEditResult(modifiedItem: Order.Item) {
-        _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
+    fun onProductDiscountEditResult(modifiedProduct: OrderCreationProduct) {
+        _orderDraft.value = _orderDraft.value.updateItem(modifiedProduct.item)
     }
 
     fun onTaxHelpButtonClicked() = launch {
@@ -1080,8 +1347,13 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onSetTaxRateClicked() = launch {
-        val state = getTaxRatesInfoDialogState(_orderDraft.value.taxLines)
-        triggerEvent(OrderCreateEditNavigationTarget.TaxRateSelector(state))
+        val state = viewState.autoTaxRateSetting
+        if (state.isActive) {
+            triggerEvent(AutoTaxRateSettingDetails(state))
+            tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_BOTTOM_SHEET_DISPLAYED)
+        } else {
+            triggerEvent(TaxRateSelector(getTaxRatesInfoDialogState(_orderDraft.value.taxLines)))
+        }
         tracker.track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
     }
 
@@ -1095,12 +1367,84 @@ class OrderCreateEditViewModel @Inject constructor(
         val updatedAddress: Address = with(getAddressFromTaxRate) {
             baseAddress(taxRate)
         }
-        _orderDraft.update { order ->
-            when (taxBasedOnSetting) {
-                BillingAddress -> order.copy(billingAddress = updatedAddress)
-                ShippingAddress -> order.copy(shippingAddress = updatedAddress)
-                else -> order
+        withContext(Main) {
+            _orderDraft.update { order ->
+                when (taxBasedOnSetting) {
+                    BillingAddress -> order.copy(
+                        customer = order.customer?.copy(billingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = updatedAddress,
+                            shippingAddress = EMPTY
+                        )
+                    )
+
+                    ShippingAddress -> order.copy(
+                        customer = order.customer?.copy(shippingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = EMPTY,
+                            shippingAddress = updatedAddress
+                        )
+                    )
+
+                    else -> order
+                }
             }
+            updateAutoTaxRateSettingState()
+            updateTaxRateSelectorButtonState()
+        }
+    }
+
+    fun onSetNewTaxRateClicked() = launch {
+        triggerEvent(TaxRateSelector(getTaxRatesInfoDialogState(_orderDraft.value.taxLines)))
+        tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
+    }
+
+    fun onStopUsingTaxRateClicked() = launch {
+        prefs.disableAutoTaxRate()
+        updateAutoTaxRateSettingState()
+        updateTaxRateSelectorButtonState()
+        clearCustomerAddresses()
+        tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED)
+    }
+
+    fun onDiscountButtonClicked(product: OrderCreationProduct) {
+        triggerEvent(OrderCreateEditNavigationTarget.EditDiscount(product, _orderDraft.value.currency))
+        val analyticsEvent = if (product.item.discount > BigDecimal.ZERO) {
+            AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED
+        }
+        tracker.track(analyticsEvent)
+    }
+
+    fun onEditConfiguration(product: OrderCreationProduct) {
+        (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
+            if (product.productInfo.productType == ProductType.BUNDLE) {
+                tracker.track(
+                    AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                    mapOf(
+                        KEY_FLOW to flow,
+                        KEY_SOURCE to VALUE_PRODUCT_CARD
+                    )
+                )
+            }
+            triggerEvent(
+                OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration(
+                    productId = product.item.productId,
+                    itemId = product.item.itemId,
+                    configuration = it
+                )
+            )
+        }
+    }
+
+    fun onConfigurationChanged(itemId: Long, productConfiguration: ProductConfiguration) {
+        val product = products.value?.find { product -> product.item.itemId == itemId } ?: return
+        _orderDraft.update { order ->
+            val recreatedItem = product.item.copy(
+                itemId = 0L,
+                configuration = productConfiguration
+            )
+            val orderWithOutOldConfiguration = order.removeItem(product)
+            orderWithOutOldConfiguration.copy(items = orderWithOutOldConfiguration.items + recreatedItem)
         }
     }
 
@@ -1111,10 +1455,14 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
-        val isSetNewTaxRateButtonVisible: Boolean = false,
+        val isAddShippingButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
+        val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
+        val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
+        val productsSectionState: ProductsSectionState = ProductsSectionState(),
+        val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1123,6 +1471,29 @@ class OrderCreateEditViewModel @Inject constructor(
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
+
+    @Parcelize
+    data class ProductsSectionState(
+        val isEmpty: Boolean = true,
+    ) : Parcelable
+
+    @Parcelize
+    data class CustomAmountSectionState(
+        val isEmpty: Boolean = true,
+    ) : Parcelable
+
+    @Parcelize
+    data class AutoTaxRateSettingState(
+        val isActive: Boolean = false,
+        val taxRateTitle: String = "",
+        val taxRateValue: String = "",
+    ) : Parcelable
+
+    @Parcelize
+    data class TaxRateSelectorButtonState(
+        val isShown: Boolean = false,
+        val label: String = "",
+    ) : Parcelable
 
     sealed class Mode : Parcelable {
         @Parcelize
@@ -1160,13 +1531,13 @@ object OnCouponRejectedByBackend : Event() {
     val message: Int = string.order_sync_coupon_removed
 }
 
-data class ProductUIModel(
-    val item: Order.Item,
-    val imageUrl: String,
-    val isStockManaged: Boolean,
-    val stockQuantity: Double,
-    val stockStatus: ProductStockStatus
-)
+@Parcelize
+data class CustomAmountUIModel(
+    val id: Long,
+    val amount: BigDecimal,
+    val name: String,
+    val isLocked: Boolean = false
+) : Parcelable
 
 enum class ScanningSource(val source: String) {
     ORDER_CREATION("order_creation"),

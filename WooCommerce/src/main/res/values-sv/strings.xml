@@ -1,12 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-15 09:37:42+0000
+Translation-Revision-Date: 2023-11-15 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="store_onboarding_payments_pre_setup_title_two">WooPayments</string>
+    <string name="notification_security_key_needed">Ange din säkerhetsnyckel för att fortsätta.</string>
+    <string name="login_error_security_key">Det uppstod vissa problem med säkerhetsnyckelsinloggningen</string>
+    <string name="login_text_security_key">Använd en säkerhetsnyckel</string>
+    <string name="product_subscription_period">Period</string>
+    <string name="product_subscription_interval">Faktureringsintervall</string>
+    <string name="product_sale">Rea</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Okänd</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Misslyckades</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Avbruten</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">På väg</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Väntande</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Betald</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Beräknad</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Minimera/maximera insättningssammanfattningen</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Läs mer om när du får dina medel</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Tillgängliga medel sätts in automatiskt, varje vecka.</string>
+    <string name="card_reader_hub_deposit_summary_last">Sista</string>
+    <string name="card_reader_hub_deposit_summary_next">Nästa</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Insättningar</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Medlen blir tillgängliga efter att ha inväntat granskning i 7 dagar.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d insättning</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d insättningar</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Väntande medel</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Tillgängliga medel</string>
+    <string name="order_creation_payment_tax_label">Momser</string>
+    <string name="order_creation_payment_products">Produkter</string>
+    <string name="order_creation_payment_header">Betalning totalt</string>
+    <string name="email_or_username">E-postadress eller användarnamn</string>
+    <string name="custom_amounts_creation_error">Det går inte att skapa en order med anpassat belopp</string>
+    <string name="custom_amounts_add_custom_name_hint">Ange anpassat namn</string>
+    <string name="custom_amounts_add_custom_amount">Lägg till anpassat belopp</string>
+    <string name="custom_amounts_name">Namn</string>
+    <string name="custom_amounts_enter_amount">Belopp</string>
+    <string name="custom_amounts_dialog_title">Anpassat belopp</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Anslut Jetpack via din adminsida i en webbläsare eller kontakta supporten.</string>
+    <string name="login_jetpack_installation_error_connection_message">Ett fel uppstod vid kommunikationen med din webbplats.</string>
+    <string name="custom_amounts">Anpassade belopp</string>
+    <string name="product_details_blaze_card">Marknadsför med Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Jag förstår</string>
+    <string name="blaze_campaign_ceation_celebration_message">Annonsen har skickats in för godkännande. Vi skickar en bekräftelse via e-post när den är godkänd och aktiverad.</string>
+    <string name="blaze_campaign_creation_celebration_header">Klart!</string>
+    <string name="blaze_campaign_creation_intro_button">Starta Blaze-kampanj nu</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Följ upp resultat samt starta och stoppa din Blaze-kampanj när som helst.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Nå miljoner på WordPress- och Tumblr-webbplatser.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Ta kontrollen för bara några dollar om dagen. Det är budgetvänligt.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Marknadsför din produkt på bara några minuter.</string>
+    <string name="blaze_campaign_creation_intro_title">Få mer försäljning i din butik med Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Det uppstod ett fel vid uppdateringen av listan över kampanjer. Försök igen senare.</string>
+    <string name="media_picker_dialog_title">Välj mediekälla</string>
+    <string name="product_creation_package_photo_error">Ett fel uppstod vid generering av produktnamn och beskrivning.</string>
+    <string name="product_creation_package_photo_no_text_detected">Ingen text upptäckt. Välj ett annat förpackningsfoto eller ange produktinformation manuellt.</string>
+    <string name="order_editing_add_content_description">Lägg till produkt</string>
+    <string name="order_editing_barcode_content_description">Skanna streckkod</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Minimera/expandera produktkort</string>
+    <string name="order_creation_decrease_item_amount_content_description">Minska produktantal</string>
+    <string name="order_creation_increase_item_amount_content_description">Öka produkantal</string>
+    <string name="order_creation_add_custom_amounts">Lägg till anpassat belopp</string>
+    <string name="order_creation_price_after_discount">Pris efter rabatt</string>
+    <string name="previous_order">Föregående beställning</string>
+    <string name="next_order">Nästa beställning</string>
+    <string name="blaze_campaign_details_title">Kampanjinformation</string>
+    <string name="blaze_campaign_list_title">Blaze-kampanjer</string>
+    <string name="blaze_campaign_status_canceled">Avbruten</string>
+    <string name="blaze_campaign_status_scheduled">Tidsinställd</string>
+    <string name="product_creation_package_photo_keywords_info">Justera din text: Avmarkera de skanningar som du inte behöver eller tryck för att redigera</string>
+    <string name="product_creation_package_photo_keywords_section">Nyckelord</string>
+    <string name="ai_product_creation_photo_button">Använd förpackningsfoto (valfritt)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Välj Tryck för att betala från alternativen för Ta emot betalning i\nBeställningsinformation eller Meny &gt; Betalningar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova att genomföra en %s-betalning med ditt betal- eller kreditkort.\nBetalningen kommer att återbetalas när du är klar.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Det är enkelt, säkert och privat.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Ta emot alla typer av personliga betalningar, direkt\ni din telefon. Ingen extra hårdvara behövs.</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_campaign_status_clicks">Klick</string>
+    <string name="blaze_campaign_status_impressions">Visningar</string>
+    <string name="blaze_campaign_status_rejected">Avvisad</string>
+    <string name="blaze_campaign_status_completed">Har slutförts</string>
+    <string name="blaze_campaign_status_active">Aktiv</string>
+    <string name="blaze_campaign_status_in_moderation">Under granskning</string>
+    <string name="blaze_campaign_show_all_button">Visa alla</string>
+    <string name="blaze_campaign_create_campaign_button">Skapa kampanj</string>
+    <string name="blaze_campaign_subtitle">Öka synligheten och få dina produkter sålda snabbt.</string>
+    <string name="blaze_campaign_title">Blaze-kampanj</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol är ett varumärke som ägs av och används med tillåtelse av EMVCo, LLC.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. När du ser \"Klar\"-markeringen kommer din butik att behandla betalningen och transaktionen är slutförd.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Din kund håller sitt kort horisontellt högst upp på din telefon, över symbolen för kontaktlös betalning.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Håll fram din telefon mot kunden.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tryck på \"Ta emot betalning\" och välj \"Tryck för att betala\".</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ta emot en betalning</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Skapa en beställning</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s eller %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Hur det fungerar</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Lär dig mer om kortläsare</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">För att ta emot betalningar över denna gräns, överväg att köpa en kortläsare som accepterar PIN-inmatning.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Vi stöder inte PIN-inmatning med Tryck för att betala på Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">I %1$s kräver vissa kort en PIN för kontaktlösa transaktioner över %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Viktig information</string>
+    <string name="card_reader_tap_to_pay_about_description">Med Tryck för att betala kan du ta emot alla typer av kontaktlösa betalningar, från fysiska betal- och kreditkort till digitala plånböcker, utan att behöva köpa en fysisk kortläsare.</string>
+    <string name="card_reader_tap_to_pay_about_header">Vad är Tryck för att betala?</string>
+    <string name="card_reader_tap_to_pay_about_title">Om Tryck för att betala</string>
+    <string name="ai_feedback_form_negative_button">Negativ feedback</string>
+    <string name="ai_feedback_form_positive_button">Positiv feedback</string>
+    <string name="ai_feedback_form_message">Är resultatet användbart?</string>
+    <string name="product_creation_ai_preview_short_description_section">Kort beskrivning av produkt</string>
+    <string name="card_reader_payment_update_available">En uppdatering för kortläsaren är tillgänglig</string>
+    <string name="card_reader_about_tap_to_pay">Om Tryck för att betala</string>
+    <string name="card_reader_tap_to_pay_header">TRYCK FÖR ATT BETALA</string>
+    <string name="card_reader_settings_header">INSTÄLLNINGAR</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Lägg till uppgifter manuellt via e-post</string>
+    <string name="login_app_login_malformed_link">Vi kunde inte behandla din begäran om inloggning i appen</string>
+    <string name="ai_product_name_copy_error">Det gick inte att kopiera produktnamnet till urklipp.</string>
+    <string name="ai_product_name_copy_success">Produktnamn kopierat till urklipp.</string>
+    <string name="ai_product_name_copy_label">Produktnamn genererat av AI</string>
+    <string name="ai_product_description_copy_error">Det gick inte att kopiera produktbeskrivningen till urklipp.</string>
+    <string name="ai_product_description_copy_success">Produktbeskrivning kopierad till urklipp.</string>
+    <string name="product_creation_ai_generation_failure_message">Produktgenereringen misslyckades Försök igen</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Rensa adressen och sluta använda den här momssatsen</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Ange en ny momssats för den här beställningen</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Lägg till momssats automatiskt</string>
+    <string name="ai_product_name_sheet_error_message">Det uppstod ett problem när produktnamnet skulle genereras. Försök igen.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Återskapa</string>
+    <string name="ai_product_name_sheet_generate_button">Skriv det åt mig</string>
+    <string name="ai_product_name_sheet_input_description">Berätta vad din produkt är och vad som gör den unik!</string>
+    <string name="ai_product_name_sheet_subtitle">Låt AI generera fängslande rubriker åt dig</string>
+    <string name="ai_product_name_sheet_title">Produktnamn</string>
+    <string name="empty_review_filtered_list_message">Prova att inaktivera filtret för olästa produktrecensioner för att se alla dina produktrecensioner</string>
+    <string name="empty_review_filtered_list_title">Inga olästa produktrecensioner</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Ton vald</string>
+    <string name="product_creation_ai_tone_convincing">Övertygande</string>
+    <string name="product_creation_ai_tone_flowery">Blommig</string>
+    <string name="product_creation_ai_tone_formal">Formell</string>
+    <string name="product_creation_ai_tone_casual">Avslappnad</string>
+    <string name="product_creation_ai_tone_description">Ställ in ton och röst för att forma presentationen av din produkt så att den passar ditt varumärke.</string>
+    <string name="product_creation_ai_tone_title">Ton och röst</string>
+    <string name="product_creation_ai_preview_details_section">Detaljer</string>
+    <string name="product_creation_ai_preview_description_section">Produktbeskrivning</string>
+    <string name="product_creation_ai_preview_name_section">Produktnamn</string>
+    <string name="product_creation_ai_preview_subtitle">Du kan alltid ändra detaljerna nedan senare.</string>
+    <string name="product_creation_ai_preview_title">Förhandsgranska</string>
+    <string name="product_creation_ai_about_product_continue_button">Skapa produktdetaljer</string>
+    <string name="product_creation_ai_about_product_set_tone">Ställ in ton och röst</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Lägg till viktiga funktioner, fördelar eller information som hjälper kunder att hitta din produkt online.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Exempelvis mjukt tyg, slitstarka sömmar, unik design</string>
+    <string name="product_creation_ai_about_product_subtitle">Framhäv vad som gör din produkt unik och låt AI utöva sin magi.</string>
+    <string name="product_creation_ai_about_product_title">Om din produkt</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Föreslå ett namn</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Exempelvis mjukt tyg, slitstarka sömmar, unik design.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Produktnamn</string>
+    <string name="ai_product_creation_add_name_subtitle">Alternativt kan du utöka dina alternativ genom att trycka för fler namnförslag.</string>
+    <string name="ai_product_creation_add_name_title">Lägg till ditt produktnamn</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Drivs med AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Lägg till en produkt och detaljerna manuellt</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Lägg till manuellt</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Snabbgenerera information åt dig</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Skapa en produkt med AI</string>
+    <string name="product_creation_ai_entry_sheet_header">Lägg till en produkt</string>
+    <string name="product_review_list_unread_reviews_filter">Endast olästa recensioner</string>
+    <string name="order_creation_edit_tax_rate">Redigera momssatsinställning</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">Detta kommer inte att påverka onlinebeställningar</string>
+    <string name="tax_rate_selector_auto_rate_label">Lägg till den här momssatsen till alla skapade beställningar</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Redigera momssatser</string>
+    <string name="tax_rate_selector_empty_list_button">Redigera momssatser i adminpanelen</string>
+    <string name="tax_rate_selector_empty_list_message">Lägg till momssatser i adminpanelen. Endast momssatser med platsinformation kommer att visas här.</string>
+    <string name="tax_rate_selector_empty_list_title">Vi kunde inte hitta några momssatser</string>
+    <string name="store_onboarding_payments_setup_description">Upptäck andra betalningsleverantörer och \nvälj en betalningsleverantör.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Betalningsmetoder</string>
+    <string name="product_downloadable_files_add_documents_from_device">Dokument på enheten</string>
+    <string name="product_downloadable_files_add_media_from_device">Mediafiler på enheten</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Lös nu</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Slutför inställning</string>
+    <string name="tax_rate_selector_title">Ange momssats</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Aktivera</string>
+    <string name="order_creation_set_tax_rate">Ange ny momssats</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
     <string name="store_onboarding_payments_pre_setup_title_one">Ställ in</string>
     <string name="tax_rate_selector_edit_rates_button_label">Redigera momssatser i adminpanelen</string>
     <string name="tax_rate_selector_header_label">Detta kommer att ändra kundens adress till platsen för den momssats du väljer.</string>
@@ -24,13 +196,12 @@ Language: sv_SE
     <string name="tax_rates_information_content_description">Information om momssatser</string>
     <string name="store_onboarding_wcpay_setup_description">Genom att använda WooCommerce Payments samtycker du till våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och intygar att du har läst vår &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;integritetspolicy&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om att verifiera din information med WooPayments.</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_wcpay_instructions_content_button">Starta konfiguration</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Börja installationen</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Vi har slagit oss ihop med Stripe för WooPayments. Du kommer att bli omdirigerad till Stripes webbplats för registrering. Vi kommer att be dig att kontrollera dina företagsuppgifter och din betalningsinformation.</string>
-    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooCommerce-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooPayments-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_content_title">Innan du startar konfigurationen</string>
     <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minuter</string>
-    <string name="store_onboarding_wcpay_instructions_estimate_title">Beräknad tid</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Beräknad installationstid</string>
     <string name="store_onboarding_wcpay_instructions_title">Hantera betalningar utan ansträngning med WooPayments, allt på en och samma plats. Ta emot kortbetalningar, Apple Pay-betalningar, personliga betalningar och över 135 olika valutor, helt utan installationskostnader eller månadsavgifter.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Det gick inte att spara butiksnamnet. Försök igen.</string>
     <string name="settings_name_your_store_dialog_loading">Sparar nytt butiksnamn…</string>
@@ -168,7 +339,6 @@ Language: sv_SE
     <string name="empty_order_test_order_message">Kör en testbeställning för att kontrollera att din WooCommerce-process levererar en sömlös kundupplevelse</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Lägg till detaljer manuellt</string>
     <string name="order_creation_customer_search_old_wc_hint">Sök efter kunder efter</string>
-    <string name="shipping_classes_zones">Fraktklasser och -zoner</string>
     <string name="free_trial_survey_free_text">Annat skäl (vänligen specificera)</string>
     <string name="free_trial_survey_option4">Jag är en del av ett team och vi måste fatta beslutet kollektivt.</string>
     <string name="free_trial_survey_option3">Jag anser att priset på tjänsten är en viktig faktor i mitt beslut.</string>
@@ -213,13 +383,6 @@ Language: sv_SE
     <string name="highlights_tooltip_button_hint">Knapptext</string>
     <string name="highlights_tooltip_message_hint">Verktygstipsmeddelande. \n Detta kan innehålla flera rader.</string>
     <string name="highlights_tooltip_title_hint">Verktygstipsrubrik</string>
-    <string name="blaze_banner_dismiss_dialog_button">Jag förstår</string>
-    <string name="blaze_banner_dismiss_dialog_description">Inga problem. Blaze är tillgängligt via menyn och produktinformationsmenyn för din bekvämlighet.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze-annonser</string>
-    <string name="blaze_banner_close_button_content_description">Stäng Blaze-bannerknapp</string>
-    <string name="blaze_banner_button">Prova Blaze nu</string>
-    <string name="blaze_banner_description">Förvandla dina produkter till annonser som körs på miljontals WordPress.com- och Tumblr-webbplatser.</string>
-    <string name="blaze_banner_title">Marknadsför produkter med Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Jag förstår</string>
     <string name="ai_product_description_tooltip_message">Använd vårt AI-drivna verktyg för att snabbt generera produktbeskrivningar. Det är bara att ange nyckelord så gör vi resten.</string>
     <string name="ai_product_description_tooltip_title">✨ Skriv med AI</string>
@@ -243,7 +406,6 @@ Language: sv_SE
     <string name="ai_product_description_note_dialog_heading">Bra start!</string>
     <string name="ai_product_description_feedback">Är den genererade\nbeskrivningen beskrivning användbar?</string>
     <string name="ai_product_description_regenerate_button">Generera igen</string>
-    <string name="ai_product_description_survey">Är den genererade beskrivningen användbar?</string>
     <string name="ai_product_description_hint">Framhäv din produkts unika funktioner och målgrupp med nyckelord för en skräddarsydd beskrivning.</string>
     <string name="ai_product_description_example">Exempel: krukväxt, kaktus, växt, dekorativ, lättskött</string>
     <string name="ai_product_description_product_name">Ange ditt produktnamn</string>
@@ -280,8 +442,6 @@ Language: sv_SE
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Din kostnadsfria Woo Express-provperiod löper ut imorgon (%1$s). Det är dags att ta kontroll över din framtid – välj ett paket och gör dig redo att börja växa.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Tiden med din kostnadsfria provperiod håller på att löpa ut.</string>
-    <string name="local_notification_without_free_trial_description">Hej %1$s, %2$s är redo för dig. Inled din kostnadsfria Woo Express-provperiod på 14 dagar med bara ett klick för att starta din onlineverksamhet.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Din butik väntar!</string>
     <string name="local_notification_store_creation_complete_description">Hej %1$s. Välkommen till din kostnadsfria Woo Express-provperiod på 14 dagar – allt du behöver för att starta en framgångsrik onlineverksamhet, på en och samma plats. Är du redo att utforska?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Din butik är redo!</string>
     <string name="product_type_variation">Variationsprodukt</string>
@@ -419,8 +579,7 @@ Language: sv_SE
     <string name="product_selector_popular_products_heading">Populär</string>
     <string name="jetpack_install_role_eligibility_learn_more">Lär dig mer om roller och behörighet</string>
     <string name="jetpack_install_role_eligibility_error_message">Det verkar som att din roll inte tillåter dig att installera Jetpack.\nKontakta din administratör för hjälp.</string>
-    <string name="card_reader_tap_to_pay_description">Du kan testa att använda Tryck för att betala med ett litet\nbelopp här.</string>
-    <string name="card_reader_test_tap_to_pay">Testa Tryck för att betala</string>
+    <string name="card_reader_test_tap_to_pay">Prova Tryck för att betala</string>
     <string name="subscription_free_trial">Gratis provperiod</string>
     <string name="subscription_sign_up_fee">Registreringsavgift</string>
     <string name="subscription_expire">Löper ut efter</string>
@@ -439,7 +598,6 @@ Language: sv_SE
     <string name="subscription_status_cancelled">Avslutat</string>
     <string name="subscription_status_on_hold">Pausad</string>
     <string name="subscription_status_active">Aktiv</string>
-    <string name="no_variable_subscription_warning">Du kan endast lägga till variabla prenumerationer i webbadminpanelen.</string>
     <string name="subscription_details_info_notice">Du kan redigera produktprenumerationer i webbadminpanelen.</string>
     <string name="subscription_no_trial">Ingen gratis provperiod</string>
     <string name="subscription_no_sign_up_fee">Ingen registreringsavgift</string>
@@ -457,7 +615,8 @@ Language: sv_SE
     <string name="product_subscription_title">Prenumeration</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kortläsaren accepterar blipp, chipp och magnetremsa vid betalning med betal- och kreditkort.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Dela feedback om Tryck för att betala</string>
+    <string name="card_reader_tap_to_pay_description">Använd din telefon för att ta emot kort\nbetalningar Prova nu.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Dela feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
     <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
     <string name="login_site_credentials_fetching_site_failed">Ett fel inträffade när webbsidan skulle hämtas</string>
@@ -551,9 +710,6 @@ Language: sv_SE
     <string name="jetpack_benefits_fetching_status">Hämtar Jetpack-status</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Något blev fel. Försök igen senare.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Du hittar Tryck för att betala på Android via\nMeny &gt; Betalningar, eller genom att gå till Ta emot betalning och\nvälja Tryck för att betala.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova en betalning med ditt kort och\ndet kommer att återbetalas när du är klar.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
     <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>
@@ -709,7 +865,7 @@ Language: sv_SE
     <string name="login_jetpack_installation_retry_activating">Försök att aktivera igen</string>
     <string name="login_jetpack_installation_retry_installing">Försök installera igen</string>
     <string name="login_jetpack_installation_get_support">Skaffa support</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Försök igen och kontakta supporten om detta fel fortsätter.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Försök igen och kontakta supporten om detta fel fortsätter.</string>
     <string name="login_jetpack_installation_error_generic_message">Ett fel uppstod vid kommunikationen med din webbplats.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Du har inte behörighet att hantera tillägg på denna butik</string>
     <string name="login_jetpack_installation_error_authorizing">Det gick inte att auktorisera anslutningen till Jetpack</string>
@@ -1313,7 +1469,6 @@ Language: sv_SE
     <string name="order_creation_customer_note">Kundmeddelande</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Stripe Gateway är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Uppdatera</string>
     <string name="card_reader_payment_failed_unknown">Betalningen avvisades av okänd anledning</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Ett live-kort användes på en webbplats i testläge</string>
     <string name="card_reader_payment_failed_test_card">Systemtestkort är inte tillåtna för betalning</string>
@@ -1533,7 +1688,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Payments är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Uppdatera WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Uppdatera</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Payments för att börja ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Slutför konfigurationen av WooCommerce Payments i adminpanelen för din butik</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Uppdatera efter aktivering</string>
@@ -1897,14 +2051,13 @@ Language: sv_SE
     <string name="product_downloadable_files_download_settings">Inställningar för nedladdning</string>
     <string name="product_downloadable_files_name_invalid">Ange ett giltigt namn</string>
     <string name="product_downloadable_files_add_manually">Ange fil-URL</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Från WordPress-mediabiblioteket</string>
-    <string name="product_downloadable_files_add_media_from_device">Från enhet</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress mediabibliotek</string>
     <string name="product_downloadable_files_url_invalid">Kontrollera att den angivna URL:en är giltig</string>
     <string name="product_downloadable_files_upload_dialog_message">Vänta …</string>
     <string name="product_downloadable_files_upload_dialog_title">Laddar upp filer</string>
     <string name="product_downloadable_files_upload_failed">Fel vid uppladdning av filen</string>
     <string name="product_downloadable_files_add_title">Lägg till nedladdningsbar fil</string>
-    <string name="product_downloadable_add_bottomsheet_header">Lägg till nedladdningsbar fil</string>
+    <string name="product_downloadable_add_bottomsheet_header">Lägg till nedladdningsbar fil från</string>
     <string name="bottom_sheet_downloadable_files_desc">Inkludera nedladdningsbara filer med köp</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Avbryt</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Ja, ändra</string>
@@ -2887,7 +3040,7 @@ Language: sv_SE
     <string name="login_text_otp_another">Skicka ett nytt SMS med en kod till mig istället.</string>
     <string name="login_text_otp">Skicka mig en kod via SMS istället.</string>
     <string name="enter_verification_code_sms">Vi har skickat ett SMS till telefonnumret som slutar på %s. Skriv in bekräftelsekoden from SMS;et.</string>
-    <string name="enter_verification_code">Nästan klart! Skriv in verifieringskoden från din Authenticator-app.</string>
+    <string name="enter_verification_code">Nästan där! Ange verifieringskoden för WordPress.com från din autentiseringsapp.</string>
     <string name="enter_username_instead">Logga in med ditt användarnamn.</string>
     <string name="enter_site_address_instead">Logga in genom att skriva din webbplatsadress.</string>
     <string name="alternatively">Alternativt:</string>
@@ -3053,5 +3206,13 @@ Language: sv_SE
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Anpassat paket</item>
         <item>Tjänstepaket</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Varje</item>
+        <item>Varannan</item>
+        <item>Var 3:e</item>
+        <item>Var 4:e</item>
+        <item>Var 5:e</item>
+        <item>Var 6:e</item>
     </string-array>
 </resources>

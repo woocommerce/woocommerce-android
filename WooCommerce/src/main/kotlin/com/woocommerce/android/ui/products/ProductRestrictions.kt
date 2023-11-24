@@ -24,7 +24,6 @@ class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictio
 class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictions {
     override val restrictions: List<ProductRestriction>
         get() = listOf(
-            ProductRestriction.NonPublishedProducts,
             ProductRestriction.VariableProductsWithNoVariations,
             ProductRestriction.ProductWithPriceNotSpecified,
         )

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -21,9 +22,15 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
+import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -31,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.util.captureValues
@@ -43,6 +51,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -64,10 +73,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var sut: OrderCreateEditViewModel
     protected lateinit var viewState: OrderCreateEditViewModel.ViewState
     protected lateinit var savedState: SavedStateHandle
-    protected lateinit var mapItemToProductUIModel: MapItemToProductUiModel
+    protected lateinit var orderCreationProductMapper: OrderCreationProductMapper
     protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
-    protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
-    protected lateinit var autoSyncOrder: AutoSyncOrder
+    private lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
+    private lateinit var autoSyncOrder: AutoSyncOrder
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
@@ -79,8 +88,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     private lateinit var productRestrictions: OrderCreationProductRestrictions
     private lateinit var taxRateToAddress: GetAddressFromTaxRate
+    private lateinit var getAutoTaxRateSetting: GetAutoTaxRateSetting
+    private lateinit var getTaxRatePercentageValueText: GetTaxRatePercentageValueText
+    private lateinit var getTaxRateLabel: GetTaxRateLabel
+    private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
+    val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
+    private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -94,6 +109,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
 
+    @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
@@ -108,6 +124,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn defaultOrderItem
             onBlocking { invoke(456, null) } doReturn createOrderItem(456)
+            onBlocking { invoke(789, null) } doReturn createOrderItem(789)
             onBlocking { invoke(1, 2) } doReturn createOrderItem(1, 2)
             ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
         }
@@ -128,14 +145,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         orderDetailRepository = mock {
             on { getOrderStatusOptions() } doReturn orderStatusList
         }
-        mapItemToProductUIModel = mock {
-            onBlocking { invoke(any()) } doReturn ProductUIModel(
-                item = defaultOrderItem,
-                imageUrl = "",
-                isStockManaged = false,
-                stockQuantity = 0.0,
-                stockStatus = ProductStockStatus.InStock
-            )
+        @Suppress("UNCHECKED_CAST")
+        orderCreationProductMapper = mock {
+            onBlocking { toOrderProducts(any(), eq(null)) } doAnswer { invocationOnMock ->
+                val args = invocationOnMock.arguments
+                (args.first() as? List<Order.Item>)?.let { list ->
+                    if (list.isEmpty()) {
+                        emptyList()
+                    } else {
+                        list.map { createProductItem(item = it) }
+                    }
+                } ?: emptyList()
+            }
         }
         determineMultipleLinesContext = mock {
             on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
@@ -148,10 +169,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on {
                 getString(R.string.order_creation_barcode_scanning_scanning_failed)
             } doReturn "Scanning failed. Please try again later"
+            on { getString(R.string.order_creation_set_tax_rate) } doReturn "Set New Tax Rate"
         }
         productRestrictions = mock()
         selectedSite = mock()
         taxRateToAddress = mock()
+        getAutoTaxRateSetting = mock {
+            onBlocking { invoke() } doReturn null
+        }
+        getTaxRatePercentageValueText = mock()
+        getTaxRateLabel = mock()
+        prefs = mock()
+        mapFeeLineToCustomAmountUiModel = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -168,6 +197,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
             ),
         )
     }
@@ -189,13 +219,20 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
             ),
         )
     }
 
     @Test
     fun `when customer address edited, send tracks event`() {
-        sut.onCustomerAddressEdited(0, Address.EMPTY, Address.EMPTY)
+        sut.onCustomerEdited(
+            Order.Customer(
+                customerId = 0,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY
+            )
+        )
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_ADD,
@@ -221,19 +258,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when customer address deleted, then order is update with empty address`() {
-        sut.onCustomerAddressDeleted()
+    fun `when customer deleted, then order is update with null customer info`() {
+        sut.onCustomerDeleted()
 
         val values = sut.orderDraft.captureValues()
 
-        assertThat(values.last().customerId).isNull()
-        assertThat(values.last().billingAddress).isEqualTo(Address.EMPTY)
-        assertThat(values.last().shippingAddress).isEqualTo(Address.EMPTY)
+        assertThat(values.last().customer).isNull()
     }
 
     @Test
     fun `when customer address deleted, then delete event tracked`() {
-        sut.onCustomerAddressDeleted()
+        sut.onCustomerDeleted()
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_DELETE,
@@ -338,9 +373,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         val productId = 1L
         val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 3F)
         val order = defaultOrderValue.copy(items = products)
+
+        var orderProducts: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            orderProducts = it
+        }
+
         initMocksForAnalyticsWithOrder(order)
         createSut()
-        sut.onRemoveProduct(products.first())
+        val productToRemove = orderProducts!!.first()
+        sut.onRemoveProduct(productToRemove)
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
@@ -1596,6 +1638,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1628,6 +1671,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -2138,6 +2182,200 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `check that products are ordered by product id to prevent bundle items from switching positions`() {
+        var productsIds: List<Long>? = null
+        val expectedOrder = listOf(123L, 456L, 789L)
+        sut.products.observeForever { products ->
+            productsIds = products.map { it.item.productId }
+        }
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(456),
+            ProductSelectorViewModel.SelectedItem.Product(789),
+            ProductSelectorViewModel.SelectedItem.Product(123),
+        )
+        sut.onProductsSelected(selectedItems)
+
+        assertThat(productsIds).isEqualTo(expectedOrder)
+    }
+
+    @Test
+    fun `given configurable item expanded, then track configuration CTA shown`() {
+        testBlocking {
+            createSut()
+            val product = OrderCreationProduct.ProductItem(
+                item = Order.Item.EMPTY,
+                productInfo = ProductInfo(
+                    imageUrl = "",
+                    isStockManaged = true,
+                    stockQuantity = 5.0,
+                    stockStatus = ProductStockStatus.InStock,
+                    productType = ProductType.BUNDLE,
+                    isConfigurable = true,
+                    pricePreDiscount = "5",
+                    priceTotal = "5",
+                    priceSubtotal = "5",
+                    discountAmount = "0",
+                    priceAfterDiscount = "5",
+                    hasDiscount = false,
+                )
+            )
+
+            sut.onProductExpanded(true, product)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given configurable item NOT expanded, then DON'T track configuration CTA shown`() {
+        testBlocking {
+            createSut()
+            val product = OrderCreationProduct.ProductItem(
+                item = Order.Item.EMPTY,
+                productInfo = ProductInfo(
+                    imageUrl = "",
+                    isStockManaged = true,
+                    stockQuantity = 5.0,
+                    stockStatus = ProductStockStatus.InStock,
+                    productType = ProductType.BUNDLE,
+                    isConfigurable = true,
+                    pricePreDiscount = "5",
+                    priceTotal = "5",
+                    priceSubtotal = "5",
+                    discountAmount = "0",
+                    priceAfterDiscount = "5",
+                    hasDiscount = false,
+                )
+            )
+
+            sut.onProductExpanded(false, product)
+
+            verify(tracker, never()).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `on edit configuration, then track configuration CTA tapped`() {
+        testBlocking {
+            createSut()
+            val rules: ProductRules = mock()
+            val item: Order.Item = mock()
+            val productInfo: ProductInfo = mock()
+            val configuration: ProductConfiguration = mock()
+
+            whenever(productInfo.productType) doReturn ProductType.BUNDLE
+
+            val product = OrderCreationProduct.GroupedProductItemWithRules(
+                item = item,
+                productInfo = productInfo,
+                configuration = configuration,
+                rules = rules,
+                children = emptyList()
+            )
+
+            sut.onEditConfiguration(product)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `on edit configuration, then DON'T  track configuration CTA tapped if product is not BUNDLE`() {
+        testBlocking {
+            createSut()
+            val rules: ProductRules = mock()
+            val item: Order.Item = mock()
+            val productInfo: ProductInfo = mock()
+            val configuration: ProductConfiguration = mock()
+
+            whenever(productInfo.productType) doReturn ProductType.COMPOSITE
+
+            val product = OrderCreationProduct.GroupedProductItemWithRules(
+                item = item,
+                productInfo = productInfo,
+                configuration = configuration,
+                rules = rules,
+                children = emptyList()
+            )
+
+            sut.onEditConfiguration(product)
+
+            verify(tracker, never()).track(
+                AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `check that when products selected contains a bundle configuration hasBundleConfiguration is true`() {
+        val configuration: ProductConfiguration = mock()
+        whenever(configuration.configurationType) doReturn ConfigurationType.BUNDLE
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(456),
+            ProductSelectorViewModel.SelectedItem.Product(789),
+            ProductSelectorViewModel.SelectedItem.Product(123),
+            ProductSelectorViewModel.SelectedItem.ConfigurableProduct(183, configuration)
+        )
+        sut.onProductsSelected(selectedItems)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to true
+            )
+        )
+    }
+
+    @Test
+    fun `check that when products selected DON'T contains a bundle configuration hasBundleConfiguration is false`() {
+        val configuration: ProductConfiguration = mock()
+        whenever(configuration.configurationType) doReturn ConfigurationType.UNKNOWN
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(456),
+            ProductSelectorViewModel.SelectedItem.Product(789),
+            ProductSelectorViewModel.SelectedItem.Product(123),
+            ProductSelectorViewModel.SelectedItem.ConfigurableProduct(183, configuration)
+        )
+        sut.onProductsSelected(selectedItems)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+            )
+        )
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
@@ -2148,7 +2386,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,
-            mapItemToProductUiModel = mapItemToProductUIModel,
             createOrderItem = createOrderItemUseCase,
             determineMultipleLinesContext = determineMultipleLinesContext,
             parameterRepository = parameterRepository,
@@ -2165,7 +2402,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 selectedSite,
                 resourceProvider
             ),
-            getAddressFromTaxRate = taxRateToAddress
+            getAddressFromTaxRate = taxRateToAddress,
+            getAutoTaxRateSetting = getAutoTaxRateSetting,
+            getTaxRatePercentageValueText = getTaxRatePercentageValueText,
+            getTaxRateLabel = getTaxRateLabel,
+            prefs = prefs,
+            orderCreationProductMapper = orderCreationProductMapper,
+            isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
+            adjustProductQuantity = AdjustProductQuantity(),
+            mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel
         )
     }
 
@@ -2184,6 +2429,28 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 quantity = 1F,
             )
         }
+
+    protected fun createProductItem(item: Order.Item? = null): OrderCreationProduct {
+        val orderItem = item ?: createOrderItem()
+        val productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = false,
+            stockQuantity = 0.0,
+            stockStatus = ProductStockStatus.InStock,
+            productType = ProductType.SIMPLE,
+            isConfigurable = false,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$30",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            hasDiscount = true
+        )
+        return OrderCreationProduct.ProductItem(
+            item = orderItem,
+            productInfo = productInfo
+        )
+    }
 
     protected val orderStatusList = listOf(
         Order.OrderStatus("first key", "first status"),

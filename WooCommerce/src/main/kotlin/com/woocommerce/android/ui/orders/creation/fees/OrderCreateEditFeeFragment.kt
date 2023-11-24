@@ -12,7 +12,6 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFeeBinding
@@ -25,6 +24,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.RemoveFee
 import com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeViewModel.UpdateFee
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.format
 import org.wordpress.android.util.ActivityUtils
@@ -35,7 +35,7 @@ import javax.inject.Inject
 class OrderCreateEditFeeFragment :
     BaseFragment(R.layout.fragment_order_create_edit_fee),
     MenuProvider {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val editFeeViewModel by viewModels<OrderCreateEditFeeViewModel>()
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter

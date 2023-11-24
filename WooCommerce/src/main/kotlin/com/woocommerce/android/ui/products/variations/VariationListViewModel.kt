@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -41,6 +40,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.mediapicker.util.map
 import javax.inject.Inject
 
 /**
@@ -80,7 +80,7 @@ class VariationListViewModel @Inject constructor(
     private val isReadOnlyMode = navArgs.isReadOnlyMode
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
-    val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
+    val variationList: LiveData<List<ProductVariation>> = _variationList.map { variations ->
         variations.apply {
             viewState = viewState.copy(
                 isEmptyViewVisible = isEmpty,

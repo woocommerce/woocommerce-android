@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.filter
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -78,7 +79,6 @@ import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
-import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -117,14 +117,15 @@ class OrderListViewModel @Inject constructor(
         LifecycleRegistry(this)
     }
 
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
+
     private val simplePaymentsAndOrderCreationFeedbackState
         get() = feedbackPrefs.getFeatureFeedbackSettings(
             FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
         )?.feedbackState ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     val performanceObserver: LifecycleObserver = orderListTransactionLauncher
-
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null

@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitSettings
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPurchaseNoteEditor
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,12 +25,15 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     private var _binding: FragmentProductSettingsBinding? = null
     private val binding get() = _binding!!
 
+    @Suppress("LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductSettingsBinding.bind(view)
 
         setupObservers()
+
+        val productDraft = viewModel.getProduct().productDraft
 
         binding.productStatus.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_STATUS_TAPPED)
@@ -61,13 +64,25 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             activity?.invalidateOptionsMenu()
         }
 
-        if (viewModel.getProduct().productDraft?.productType == SIMPLE) {
+        val showProductTypeOptions = productDraft?.productType.let {
+            it == ProductType.SIMPLE || it == ProductType.SUBSCRIPTION
+        }
+
+        if (showProductTypeOptions) {
+            binding.productIsVirtualDivider.visibility = View.VISIBLE
+            binding.productIsVirtual.visibility = View.VISIBLE
+            binding.productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
+                viewModel.updateProductDraft(isVirtual = isChecked)
+            }
             binding.productIsDownloadable.visibility = View.VISIBLE
             binding.productIsDownloadableDivider.visibility = View.VISIBLE
             binding.productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
                 updateIsDownloadableFlag(checkbox, isChecked)
             }
         } else {
+            binding.productIsVirtual.visibility = View.GONE
+            binding.productIsVirtualDivider.visibility = View.GONE
             binding.productIsDownloadable.visibility = View.GONE
             binding.productIsDownloadableDivider.visibility = View.GONE
         }
@@ -129,7 +144,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitSettings())
+        viewModel.onBackButtonClicked(ExitSettings)
         return false
     }
 
@@ -162,6 +177,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         binding.productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         binding.productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         binding.productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)
+        binding.productIsVirtual.isChecked = product.isVirtual
         binding.productIsDownloadable.isChecked = product.isDownloadable
     }
 

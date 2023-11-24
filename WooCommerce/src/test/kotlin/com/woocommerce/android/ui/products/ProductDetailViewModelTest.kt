@@ -11,6 +11,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
@@ -53,7 +54,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -198,7 +198,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                             resources.getString(R.string.product_dimensions),
                             productWithParameters.productDraft?.getSizeWithUnits(siteParams.dimensionUnit) ?: ""
                         ),
-                        Pair(resources.getString(R.string.product_shipping_class), "")
+                        Pair(resources.getString(R.string.product_shipping_class), ""),
+                        Pair(resources.getString(R.string.subscription_one_time_shipping), "")
                     ),
                     R.drawable.ic_gridicons_shipping,
                     true
@@ -221,15 +222,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_align_left
                 ),
                 ComplexProperty(
+                    R.string.product_downloadable_files,
+                    resources.getString(R.string.product_downloadable_files_value_single),
+                    R.drawable.ic_gridicons_cloud
+                ),
+                ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
                     R.drawable.ic_gridicons_product,
                     true
-                ),
-                ComplexProperty(
-                    R.string.product_downloadable_files,
-                    resources.getString(R.string.product_downloadable_files_value_single),
-                    R.drawable.ic_gridicons_cloud
                 )
             )
         )
@@ -263,7 +264,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),
-                isBlazeEnabled = isBlazeEnabled
+                isBlazeEnabled = isBlazeEnabled,
+                blazeUrlsHelper = BlazeUrlsHelper(selectedSite),
+                isProductCurrentlyPromoted = mock(),
             )
         )
 
@@ -743,9 +746,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 PRODUCT_REMOTE_ID,
                 "uri",
                 UploadStatus.Failed(
-                    MediaModel(),
-                    MediaErrorType.GENERIC_ERROR,
-                    "error"
+                    mediaErrorType = MediaErrorType.GENERIC_ERROR,
+                    mediaErrorMessage = "error"
                 )
             )
         )

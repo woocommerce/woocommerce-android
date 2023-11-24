@@ -54,6 +54,15 @@
                 app:header="@string/products"
                 app:keepAddButtons="true" />
 
+            <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                android:id="@+id/custom_amounts_section"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hasEditButton="false"
+                app:header="@string/custom_amounts"
+                app:keepAddButtons="true" />
+
             <include
                 android:id="@+id/multiple_lines_warning_section"
                 layout="@layout/multiple_lines_warning" />
@@ -84,12 +93,12 @@
                 android:id="@+id/customer_section"
                 style="@style/Woo.Card"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:header="@string/order_creation_customer" />
+                android:layout_height="wrap_content" />
 
             <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
                 android:id="@+id/notes_section"
                 style="@style/Woo.Card"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:header="@string/order_creation_customer_note" />

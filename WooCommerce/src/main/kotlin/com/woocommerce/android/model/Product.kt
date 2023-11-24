@@ -85,7 +85,8 @@ data class Product(
     override val weight: Float,
     val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
-    val specialStockStatus: ProductStockStatus? = null
+    val specialStockStatus: ProductStockStatus? = null,
+    val isConfigurable: Boolean = false
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -94,9 +95,9 @@ data class Product(
     @Parcelize
     data class Image(
         val id: Long,
-        val name: String,
+        val name: String?,
         val source: String,
-        val dateCreated: Date
+        val dateCreated: Date?
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
@@ -156,7 +157,8 @@ data class Product(
         get() {
             return weight > 0 ||
                 length > 0 || width > 0 || height > 0 ||
-                shippingClass.isNotEmpty()
+                shippingClass.isNotEmpty() ||
+                subscription?.oneTimeShipping == true
         }
     val productType get() = ProductType.fromString(type)
     val variationEnabledAttributes
@@ -471,12 +473,16 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
         it.purchasable = isPurchasable
+        // Subscription details are currently the only editable metadata fields from the app.
+        it.metadata = subscription?.toMetadataJson().toString()
     }
 }
 
 fun WCProductModel.toAppModel(): Product {
     val productType = ProductType.fromString(type)
-    val subscription = if (productType == ProductType.SUBSCRIPTION) {
+    val subscription = if (
+        productType == ProductType.SUBSCRIPTION || productType == ProductType.VARIABLE_SUBSCRIPTION
+    ) {
         SubscriptionDetailsMapper.toAppModel(this.metadata)
     } else {
         null
@@ -571,7 +577,8 @@ fun WCProductModel.toAppModel(): Product {
             ProductStockStatus.fromString(this.specialStockStatus)
         } else {
             null
-        }
+        },
+        isConfigurable = isConfigurable
     )
 }
 

@@ -1,4 +1,71 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.4
+-----
+- [***] [Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]
+- [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
+- [*] [Internal] Animation to indicate change in the balances on the payments screen [https://github.com/woocommerce/woocommerce-android/pull/10209]
+- [**] Custom Amounts M4.1: Add the ability to charge tax for custom amounts [https://github.com/woocommerce/woocommerce-android/pull/10222]
+- [*] Add ability to set the option "one-time shipping" for subscription products [https://github.com/woocommerce/woocommerce-android/issues/10199]
+- [*] Add ability to set subscription products as "virtual products" [https://github.com/woocommerce/woocommerce-android/pull/10219]
+- [*] [Internal] Fix a bug that caused a failure when duplicating variable products [https://github.com/woocommerce/woocommerce-android/pull/10235]
+
+16.3
+-----
+- [**] WooCommerce Payments users can see information about their balances and deposits on the Payments screen [https://github.com/woocommerce/woocommerce-android/pull/10169]
+- [***] Custom Amounts M3: Redesign order detail screen [https://github.com/woocommerce/woocommerce-android/pull/10184]
+- [***] Users can now create or edit subscription products. [https://github.com/woocommerce/woocommerce-android/issues/10107]
+- [***] Support bundle products in the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/9646]
+
+16.2
+-----
+- [*] [Internal] Improve handling of Jetpack Connection for Jetpack CP sites when using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/10083]
+- [***] Custom Amounts M2: Redesign Payments and Customers section [https://github.com/woocommerce/woocommerce-android/pull/10122]
+- [**] Replaced the custom device image picker with Android photo picker, which doesn't require special image & video permissions [https://github.com/woocommerce/woocommerce-android/pull/10141]
+
+16.1
+-----
+- [*] [Internal] Fixed a bug to handle fallback to WordPress.com username login when email is not allowed in the Jetpack Connection [https://github.com/woocommerce/woocommerce-android/pull/10044]
+- [*] [Internal] Fixed a crash during store creation flow [https://github.com/woocommerce/woocommerce-android/pull/10039]
+- [***] Introduce functionality to input custom amounts during the order creation process. [https://github.com/woocommerce/woocommerce-android/pull/10035]
+- [*] [Internal] Improve error handling during Jetpack Connection when using a custom admin URL [https://github.com/woocommerce/woocommerce-android/pull/10077]
+
+16.0
+-----
+- [**] Revamped UI of order's item list in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9851]
+- [*] [Internal] Fixed a crash during jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/10019]
+- [*] [Internal] Fixed a rare crash that occurs in the Jetpack Connection flow [https://github.com/woocommerce/woocommerce-android/pull/10012]
+- [***] Optimized Blaze experience: Improved Blaze campaign creation and list screens. [https://github.com/woocommerce/woocommerce-android/issues/9929]
+- [***] Product Creation using AI: Generate product title and description using a package photo. [https://github.com/woocommerce/woocommerce-android/pull/10038]
+
+15.9
+-----
+- [***] In-Person Payments: Tap To Pay On Android in the UK and Canada [https://github.com/woocommerce/woocommerce-android/pull/9922]
+
+15.8
+-----
+- [*] Order details: Users can navigate to the previous or next order from the order detail screen [https://github.com/woocommerce/woocommerce-android/pull/9904]
+
+15.8
+-----
+- [*] [Internal] Fixed a crash when navigation to Excluded Products from the Coupon Details screen [https://github.com/woocommerce/woocommerce-android/pull/9952]
+- [*] [Internal] Fixed some crashes that occurred when restoring the app after a process-death [https://github.com/woocommerce/woocommerce-android/pull/9956]
+
+15.7
+-----
+- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
+- [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]
+- [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
+- [*] Product Listing: Fixed a product filter bug where users were not able to filter product by "Product Status" [https://github.com/woocommerce/woocommerce-android/pull/9891]
+- [*] Order creation: Customers selected from the list that don't have address information now properly displayed on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/9863]
+- [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]
+- [*] Product Creation using AI: Added support for suggesting new categories and tags [https://github.com/woocommerce/woocommerce-android/pull/9919]
+
+15.6
+-----
+- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
+- [**] Added possibility to set up automatic tax rate setting for merchants selling temporarily in different locations [https://github.com/woocommerce/woocommerce-android/pull/9791]
+- [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
+- [***]  WPCOM stores and self-hosted stores with Jetpack AI plugin can now create products using AI.[https://github.com/woocommerce/woocommerce-android/issues/9785]
 
 15.5
 -----

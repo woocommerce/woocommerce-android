@@ -9,9 +9,6 @@ import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -27,8 +24,6 @@ class MainSettingsPresenter @Inject constructor(
     private val accountRepository: AccountRepository,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
-
-    private var jetpackMonitoringJob: Job? = null
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
@@ -66,15 +61,6 @@ class MainSettingsPresenter @Inject constructor(
                 (FeatureFlag.REST_API_I2.isEnabled() && it == SiteConnectionType.ApplicationPasswords)
         }
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
-        jetpackMonitoringJob?.cancel()
-        if (supportsJetpackInstallation) {
-            jetpackMonitoringJob = coroutineScope.launch {
-                selectedSite.observe()
-                    .filter { it?.isJetpackConnected == true }
-                    .take(1)
-                    .collect { setupJetpackInstallOption() }
-            }
-        }
     }
 
     override fun setupApplicationPasswordsSettings() {

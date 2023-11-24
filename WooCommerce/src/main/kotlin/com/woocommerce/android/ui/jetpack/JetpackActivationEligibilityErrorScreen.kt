@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel
 
 @Composable
 fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibilityErrorViewModel) {

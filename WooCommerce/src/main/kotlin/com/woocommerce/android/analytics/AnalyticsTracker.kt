@@ -59,20 +59,12 @@ class AnalyticsTracker private constructor(
         return uuid
     }
 
-    private fun track(stat: String) {
-        track(stat, false, emptyMap<String, String>())
-    }
-
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
-        track(stat.name, stat.siteless, properties)
-    }
-
-    private fun track(statName: String, isSiteless: Boolean, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
 
-        val eventName = statName.lowercase(Locale.getDefault())
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -85,7 +77,7 @@ class AnalyticsTracker private constructor(
         val finalProperties = properties.toMutableMap()
 
         val selectedSiteModel = selectedSite.getOrNull()
-        if (!isSiteless) {
+        if (!stat.siteless) {
             selectedSiteModel?.let {
                 if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
@@ -251,15 +243,23 @@ class AnalyticsTracker private constructor(
         const val VALUE_SUBMIT = "submit"
         const val VALUE_DISMISS = "dismiss"
         const val VALUE_SUPPORT = "support"
+        const val VALUE_WP_COM = "wp_com"
+        const val VALUE_NO_WP_COM = "no_wp_com"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
         const val KEY_HAS_CUSTOMER_DETAILS = "has_customer_details"
         const val KEY_HAS_FEES = "has_fees"
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
+        const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
+        const val KEY_CUSTOM_AMOUNT_TAX_STATUS = "tax_status"
+        const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE = "taxable"
+        const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE = "none"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
         const val VALUE_FLOW_LIST = "list"
+
+        const val AUTO_TAX_RATE_ENABLED = "auto_tax_rate_enabled"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
@@ -502,6 +502,7 @@ class AnalyticsTracker private constructor(
         const val KEY_IAP_ELIGIBLE = "is_eligible"
         const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
         const val VALUE_SWITCHING_STORE = "switching_store"
+        const val VALUE_STORE_PICKER = "store_picker"
         const val VALUE_PROLOGUE = "prologue"
         const val VALUE_LOGIN = "login"
         const val VALUE_OTHER = "other"
@@ -522,6 +523,7 @@ class AnalyticsTracker private constructor(
         const val KEY_NEW_SITE_ID = "new_site_id"
         const val KEY_INITIAL_DOMAIN = "initial_domain"
         const val KEY_CHALLENGE = "challenges"
+        const val KEY_FEATURES = "features"
         const val VALUE_CHALLENGE_SETTING_UP_ONLINE_STORE = "setting_up_online_store"
         const val VALUE_CHALLENGE_FINDING_CUSTOMERS = "finding_customers"
         const val VALUE_CHALLENGE_MANAGING_INVENTORY = "managing_inventory"
@@ -611,6 +613,31 @@ class AnalyticsTracker private constructor(
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
+        const val KEY_HAS_BUNDLE_CONFIGURATION = "has_bundle_configuration"
+        const val VALUE_PRODUCT_CARD = "product_card"
+        const val KEY_CHANGED_FIELD = "changed_field"
+        const val VALUE_CHANGED_FIELD_QUANTITY = "quantity"
+        const val VALUE_CHANGED_FIELD_VARIATION = "variation"
+        const val VALUE_CHANGED_FIELD_OPTIONAL = "optional"
+
+        // -- AI product name
+        const val KEY_HAS_INPUT_NAME = "has_input_name"
+        const val VALUE_PRODUCT_CREATION = "product_creation"
+        const val VALUE_PRODUCT_CREATION_AI = "product_creation_ai"
+
+        // -- AI product creation
+        const val KEY_TONE = "tone"
+        const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
+
+        // -- AI product from package photo
+        const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"
+        const val KEY_SELECTED_TEXT_COUNT = "selected_text_count"
+        const val VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO = "product_creation_from_package_photo"
+
+        const val KEY_IS_AI_CONTENT = "is_ai_content"
+
+        // -- Product subscriptions
+        const val KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS = "is_eligible_for_subscriptions"
 
         var sendUsageStats: Boolean = true
             set(value) {
@@ -627,12 +654,6 @@ class AnalyticsTracker private constructor(
             instance = AnalyticsTracker(context.applicationContext, selectedSite)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
-        }
-
-        fun track(stat: String) {
-            if (sendUsageStats) {
-                instance?.track(stat)
-            }
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {

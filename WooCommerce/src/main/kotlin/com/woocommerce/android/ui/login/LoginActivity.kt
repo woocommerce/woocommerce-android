@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withStarted
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
@@ -22,8 +23,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.extensions.parcelable
@@ -63,6 +67,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -117,6 +122,11 @@ class LoginActivity :
 
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
         const val EMAIL_PARAMETER = "email"
+
+        const val SITE_URL_PARAMETER = "siteUrl"
+        const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
+        const val APP_LOGIN_AUTHORITY = "app-login"
+        const val USERNAME_PARAMETER = "username"
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -156,6 +166,10 @@ class LoginActivity :
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
                 gotWpcomEmail(email, verifyEmail = true, null)
+            }
+
+            intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
+                intent.data?.let { uri -> handleAppLoginUri(uri) }
             }
 
             hasJetpackConnectedIntent() -> {
@@ -397,9 +411,11 @@ class LoginActivity :
             .commitAllowingStateLoss()
     }
 
-    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
-        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    private fun showPrologueFragment() = lifecycleScope.launch {
+        withStarted { // suspend until the fragment is started
+            val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+            changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+        }
     }
 
     override fun loginViaSocialAccount(
@@ -455,7 +471,26 @@ class LoginActivity :
     }
 
     override fun needs2fa(email: String?, password: String?) {
+        loginAnalyticsListener.trackLogin2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstance(email, password)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
+    }
+
+    override fun needs2fa(
+        email: String?,
+        password: String?,
+        userId: String?,
+        webauthnNonce: String?,
+        nonceAuthenticator: String?,
+        nonceBackup: String?,
+        noncePush: String?,
+        supportedAuthTypes: MutableList<String>?
+    ) {
+        loginAnalyticsListener.trackLogin2faNeeded()
+        val login2FaFragment = Login2FaFragment.newInstance(
+            email, password, userId,
+            webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes
+        )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
@@ -464,12 +499,14 @@ class LoginActivity :
         userId: String?,
         nonceAuthenticator: String?,
         nonceBackup: String?,
-        nonceSms: String?
+        nonceSms: String?,
+        nonceWebauthn: String?,
+        supportedAuthTypes: MutableList<String>?
     ) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocial(
-            email, userId,
-            nonceAuthenticator, nonceBackup, nonceSms
+            email, userId, nonceAuthenticator,
+            nonceBackup, nonceSms, nonceWebauthn, supportedAuthTypes
         )
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
@@ -858,8 +895,9 @@ class LoginActivity :
         showMainActivityAndFinish()
     }
 
-    override fun onLoginWithEmail(email: String?) {
+    override fun onExistingEmail(email: String?) {
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
+        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
         changeFragment(
             fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
             shouldAddToBackStack = true,
@@ -892,6 +930,45 @@ class LoginActivity :
             )
         )
         openQrCodeScannerFragment()
+    }
+
+    private fun handleAppLoginUri(uri: Uri) {
+        unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
+        val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER) ?: ""
+        val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER) ?: ""
+        val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
+        when {
+            siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
+                gotWpcomSiteInfo(siteUrl)
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                    properties = mapOf(KEY_FLOW to VALUE_WP_COM)
+                )
+                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+            }
+
+            siteUrl.isNotEmpty() && username.isNotEmpty() -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                    properties = mapOf(KEY_FLOW to VALUE_NO_WP_COM)
+                )
+                showUsernamePasswordScreen(
+                    siteAddress = siteUrl,
+                    inputUsername = username,
+                    endpointAddress = null,
+                    inputPassword = null
+                )
+            }
+
+            else -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_MALFORMED_APP_LOGIN_LINK,
+                    properties = mapOf(KEY_URL to uri.toString())
+                )
+                ToastUtils.showToast(this, R.string.login_app_login_malformed_link)
+                showPrologue()
+            }
+        }
     }
 
     private fun openQrCodeScannerFragment() {

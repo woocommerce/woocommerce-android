@@ -1,11 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 15:54:23+0000
+Translation-Revision-Date: 2023-11-15 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="notification_security_key_needed">Lütfen devam etmek için güvenlik anahtarınızı girin.</string>
+    <string name="login_error_security_key">Güvenlik anahtarıyla oturum açarken bir sorunla karşılaştık</string>
+    <string name="login_text_security_key">Bir güvenlik anahtarı kullanın</string>
+    <string name="product_subscription_period">Dönem</string>
+    <string name="product_subscription_interval">Fatura aralığı</string>
+    <string name="product_sale">İndirim</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Bilinmiyor</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Başarısız</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">İptal edildi</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">Geçiş yapılıyor</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Bekliyor</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Ödendi</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Tahmini</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Depozito özetini daralt/genişlet</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Fonlarınızı ne zaman alacağınız hakkında daha fazla bilgi edinin</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">Mevcut fonlar otomatik olarak her hafta yatırılır.</string>
+    <string name="card_reader_hub_deposit_summary_last">Son</string>
+    <string name="card_reader_hub_deposit_summary_next">Sonraki</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Depozito</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">Fonlar 7 gün beklemenin ardından kullanılabilir hale gelir.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depozito</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depozito</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Bekleyen fonlar</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Mevcut fonlar</string>
+    <string name="order_creation_payment_tax_label">Vergiler</string>
+    <string name="order_creation_payment_products">Ürünler</string>
+    <string name="order_creation_payment_header">Ödeme toplamı</string>
+    <string name="email_or_username">E-posta adresi veya Kullanıcı Adı</string>
+    <string name="custom_amounts_creation_error">Özel tutarlı sipariş oluşturulamadı</string>
+    <string name="custom_amounts_add_custom_name_hint">Özel ad girin</string>
+    <string name="custom_amounts_add_custom_amount">Özel Tutar Ekle</string>
+    <string name="custom_amounts_name">Ad</string>
+    <string name="custom_amounts_enter_amount">Tutar</string>
+    <string name="custom_amounts_dialog_title">Özel Tutar</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Lütfen bir tarayıcıdan yönetici sayfanız aracılığıyla Jetpack\'i bağlayın veya destek ile iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_connection_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
+    <string name="custom_amounts">Özel Tutarlar</string>
+    <string name="product_details_blaze_card">Blaze ile tanıt</string>
+    <string name="blaze_campaign_ceation_celebration_button">Anladım</string>
+    <string name="blaze_campaign_ceation_celebration_message">Reklam onaya gönderildi. Reklam onaylanıp yayınlandığında size bir onay e-postası göndereceğiz.</string>
+    <string name="blaze_campaign_creation_celebration_header">Her şey hazır!</string>
+    <string name="blaze_campaign_creation_intro_button">Hemen Blaze kampanyasını başlat</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Performansı takip edin, dilediğiniz zaman Blaze kampanyasını başlatın veya durdurun.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">WordPress ve Tumblr sitelerinde milyonlara ulaşın.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Günde yalnızca birkaç dolar karşılığında kontrolü ele alın. Bütçe dostudur.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Ürününüzü dakikalar içinde tanıtın.</string>
+    <string name="blaze_campaign_creation_intro_title">Blaze ile mağazanızda daha fazla satış yapın</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Kampanya listesi yenilenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="media_picker_dialog_title">Ortam Kaynağı Seçin</string>
+    <string name="product_creation_package_photo_error">Ürün adı ve açıklaması oluşturulurken bir hata oluştu.</string>
+    <string name="product_creation_package_photo_no_text_detected">Metin algılanmadı. Lütfen başka bir ambalaj fotoğrafı seçin veya ürün ayrıntılarını manuel olarak girin.</string>
+    <string name="order_editing_add_content_description">Ürün ekleyin</string>
+    <string name="order_editing_barcode_content_description">Barkodu tarayın</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Ürün kartını daraltın/genişletin</string>
+    <string name="order_creation_decrease_item_amount_content_description">Ürün miktarını azaltın</string>
+    <string name="order_creation_increase_item_amount_content_description">Ürün miktarını artırın</string>
+    <string name="order_creation_add_custom_amounts">Özel tutar ekle</string>
+    <string name="order_creation_price_after_discount">İndirim sonrası fiyat</string>
+    <string name="previous_order">Önceki sipariş</string>
+    <string name="next_order">Sonraki sipariş</string>
+    <string name="blaze_campaign_details_title">Kampanya ayrıntıları</string>
+    <string name="blaze_campaign_list_title">Kampanyaları öne çıkarın</string>
+    <string name="blaze_campaign_status_canceled">İptal edildi</string>
+    <string name="blaze_campaign_status_scheduled">Zamanlandı</string>
+    <string name="product_creation_package_photo_keywords_info">Metninizi düzenleyin: İhtiyacınız olmayan taramaların seçimini kaldırın veya düzenlemek için dokunun</string>
+    <string name="product_creation_package_photo_keywords_section">Anahtar Sözcükler</string>
+    <string name="ai_product_creation_photo_button">Ambalaj fotoğrafı kullan (İsteğe bağlı)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Sipariş Ayrıntıları veya Menü &gt; Ödemeler bölümünde\nÖdeme Alma seçeneklerinden Tap to Pay\'i seçin.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Banka veya kredi kartınızla bir %s ödemesi yapmayı deneyin.\nÖdeme, işiniz bittiğinde iade edilir.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Kolay, güvenli ve gizlidir.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Doğrudan telefonunuzdan her türde şahsen ödemeyi\nkabul edin. Ekstra donanım gerektirmez.</string>
+    <string name="blaze_campaign_status_budget">Bütçe</string>
+    <string name="blaze_campaign_status_clicks">Tıklamalar</string>
+    <string name="blaze_campaign_status_impressions">İzlenimler</string>
+    <string name="blaze_campaign_status_rejected">Reddedildi</string>
+    <string name="blaze_campaign_status_completed">Tamamlandı</string>
+    <string name="blaze_campaign_status_active">Etkin</string>
+    <string name="blaze_campaign_status_in_moderation">Denetlemede</string>
+    <string name="blaze_campaign_show_all_button">Hepsini göster</string>
+    <string name="blaze_campaign_create_campaign_button">Kampanya oluştur</string>
+    <string name="blaze_campaign_subtitle">Görünürlüğü artırın ve ürünlerinizin hızla satılmasını sağlayın.</string>
+    <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. “Tamamlandı” onay işaretini gördükten sonra mağazanız ödemeyi işleme alır ve işlem tamamlanır.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Müşteriniz kartını telefonunuzun üzerinde temassız simgesinin üstünde yatay olarak tutar.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Telefonunuzu müşteriye gösterin.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. “Ödemeyi Al” seçeneğine dokunun ve ardından “Tap to Pay” seçeneğini belirleyin.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ödeme alın</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Sipariş oluştur</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s veya %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Nasıl çalışır?</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Kart okuyucular hakkında daha fazla bilgi edinin</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Bu sınırın üzerindeki ödemeleri kabul etmek için PIN girdisi kabul eden bir kart okuyucu satın almayı düşünün.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Tap to Pay on Android\'de PIN girdisi desteklenmiyor.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s içinde bazı kartlar %2$s tutarının üzerindeki temassız işlemler için bir PIN gerektirir.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Önemli bilgiler</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay, fiziksel bir kart okuyucu satın almanıza gerek kalmadan fiziksel banka ve kredi kartlarından dijital cüzdanlara kadar tüm temassız ödeme türlerini kabul etmenizi sağlar.</string>
+    <string name="card_reader_tap_to_pay_about_header">Tap to Pay Nedir?</string>
+    <string name="card_reader_tap_to_pay_about_title">Tap To Pay Hakkında</string>
+    <string name="ai_feedback_form_negative_button">Negatif geri bildirim</string>
+    <string name="ai_feedback_form_positive_button">Pozitif geri bildirim</string>
+    <string name="ai_feedback_form_message">Sonuç faydalı oldu mu?</string>
+    <string name="product_creation_ai_preview_short_description_section">Kısa ürün açıklaması</string>
+    <string name="card_reader_payment_update_available">Kart okuyucu için bir güncelleme var</string>
+    <string name="card_reader_about_tap_to_pay">Tap to Pay Hakkında</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">AYARLAR</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Ayrıntıları e-posta kullanarak el ile ekle</string>
+    <string name="login_app_login_malformed_link">Uygulamada oturum açma isteğinizi işleme koyamadık</string>
+    <string name="ai_product_name_copy_error">Ürün adını panoya kopyalamada hata.</string>
+    <string name="ai_product_name_copy_success">Ürün adı panoya kopyalandı.</string>
+    <string name="ai_product_name_copy_label">Ürün adı Yapay Zeka tarafından oluşturuldu</string>
+    <string name="ai_product_description_copy_error">Ürün açıklamasını panoya kopyalamada hata.</string>
+    <string name="ai_product_description_copy_success">Ürün açıklaması panoya kopyalandı.</string>
+    <string name="product_creation_ai_generation_failure_message">Ürün oluşturma başarısız. Lütfen tekrar deneyin</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresi temizleyin ve bu oranı kullanmayı bırakın</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Bu sipariş için yeni bir vergi oranı belirleyin</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Vergi oranını otomatik olarak ekleme</string>
+    <string name="ai_product_name_sheet_error_message">Ürün adı oluşturulurken bir sorun oluştu. Lütfen tekrar deneyin.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Yeniden oluştur</string>
+    <string name="ai_product_name_sheet_generate_button">Benim için yaz</string>
+    <string name="ai_product_name_sheet_input_description">Bize ürününüzden ve onu benzersiz kılanın ne olduğundan bahsedin!</string>
+    <string name="ai_product_name_sheet_subtitle">Yapay zekanın sizin için etkileyici başlıklar oluşturmasına izin verin</string>
+    <string name="ai_product_name_sheet_title">Ürün adı</string>
+    <string name="empty_review_filtered_list_message">Tüm ürün incelemelerinizi görmek için okunmamış filtresini devre dışı bırakmayı deneyin</string>
+    <string name="empty_review_filtered_list_title">Okunmamış ürün incelemesi yok</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Ton seçildi</string>
+    <string name="product_creation_ai_tone_convincing">İkna edici</string>
+    <string name="product_creation_ai_tone_flowery">Çiçekli</string>
+    <string name="product_creation_ai_tone_formal">Resmi</string>
+    <string name="product_creation_ai_tone_casual">Gelişigüzel</string>
+    <string name="product_creation_ai_tone_description">Ürününüzün sunumunu markanızla uyumlu biçimde şekillendirmek için tonu ve sesi belirleyin.</string>
+    <string name="product_creation_ai_tone_title">Ton ve ses</string>
+    <string name="product_creation_ai_preview_details_section">Ayrıntılar</string>
+    <string name="product_creation_ai_preview_description_section">Ürün açıklaması</string>
+    <string name="product_creation_ai_preview_name_section">Ürün adı</string>
+    <string name="product_creation_ai_preview_subtitle">Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
+    <string name="product_creation_ai_preview_title">Önizleme</string>
+    <string name="product_creation_ai_about_product_continue_button">Ürünler Ayrıntıları Oluştur</string>
+    <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Ürününüzün internette bulunmasına yardımcı olmak için temel özellikler, avantajlar veya ayrıntılar ekleyin.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Örneğin, yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım</string>
+    <string name="product_creation_ai_about_product_subtitle">Ürününüzü benzersiz kılan özellikleri vurgulayın ve yapay zekanın işini yapmasına izin verin.</string>
+    <string name="product_creation_ai_about_product_title">Ürününüz hakkında</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Bir ad öner</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Örnek: Yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Ürün adı</string>
+    <string name="ai_product_creation_add_name_subtitle">Ya da daha fazla isim önerisi için dokunarak seçeneklerinizi genişletin.</string>
+    <string name="ai_product_creation_add_name_title">Ürün adınızı ekleyin</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Yapay zeka destekli. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Bir ürünü ve ayrıntılarını manuel olarak ekleyin</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">El ile ekle</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Ayrıntıları sizin için hızlıca oluşturur</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Yapay zeka ile ürün oluşturun</string>
+    <string name="product_creation_ai_entry_sheet_header">Ürün ekleyin</string>
+    <string name="product_review_list_unread_reviews_filter">Sadece okunmamış incelemeler</string>
+    <string name="order_creation_edit_tax_rate">Vergi Oranı Ayarını Düzenle</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">Bu durum çevrimiçi siparişleri etkilemeyecek</string>
+    <string name="tax_rate_selector_auto_rate_label">Oluşturulan tüm siparişlere bu oranı ekle</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Vergi Oranlarını Düzenle</string>
+    <string name="tax_rate_selector_empty_list_button">Yöneticide Vergi Oranlarını Düzenle</string>
+    <string name="tax_rate_selector_empty_list_message">Yöneticide vergi oranlarını ekle. Yalnızca konum bilgisine sahip vergi oranları burada gösterilecek.</string>
+    <string name="tax_rate_selector_empty_list_title">Hiçbir vergi oranı bulamadık</string>
+    <string name="store_onboarding_payments_setup_description">Diğer ödeme sağlayıcılarını keşfedin ve \nbir ödeme sağlayıcısı seçin.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Ödeme Yöntemleri</string>
+    <string name="product_downloadable_files_add_documents_from_device">Cihazdaki belgeler</string>
+    <string name="product_downloadable_files_add_media_from_device">Cihazdaki ortam dosyaları</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Şimdi çözün</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Kurulumu tamamla</string>
+    <string name="tax_rate_selector_title">Vergi Oranını Belirle</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Etkinleştir</string>
+    <string name="order_creation_set_tax_rate">Yeni Vergi Oranı Belirle</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Ayarla</string>
     <string name="tax_rate_selector_edit_rates_button_label">Yöneticide vergi oranlarını düzenle</string>
     <string name="tax_rate_selector_header_label">Bu, müşterinin adresini seçtiğiniz vergi oranının konumuna değiştirecektir.</string>
     <string name="tax_rate_selector_info_icon_content_description">Vergi oranları bilgi iletişim kutusunu açan düğme</string>
@@ -21,16 +195,14 @@ Language: tr
     <string name="tax_rates_info_dialog_primary_text">Vergiler, müşterinizin fatura veya gönderim adresiyle ya da mağaza adresiniz bir vergi oranı konumuyla eşleşecek şekilde hesaplanır.</string>
     <string name="tax_rates_information_content_description">Veri oranları bilgileri</string>
     <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments\'ı kullanarak &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Hizmet Koşullarımıza&lt;/u&gt;&lt;/a&gt; bağlı kalmayı ve &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Gizlilik Politikamızı&lt;/u&gt;&lt;/a&gt; okuduğunuzu kabul etmiş olursunuz.</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">Ayarla</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">Bilgilerinizi WooPayments ile doğrulama hakkında &lt;a href=\'learnMore\'&gt;&lt;u&gt;daha fazla bilgi alın&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="store_onboarding_wcpay_instructions_content_button">Kurulumu başlat</string>
-    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Stripe for WooPayments ile iş ortaklığı kurdunuz. Kaydolmak için Stripe\'ın sitesine yönlendirileceksiniz. Ardından para yatırma işlevini etkinleştirmek için işletmenizi ve ödeme ayrıntılarınızı doğrulamanızı isteyeceğiz.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Stripe for WooPayments ile iş ortaklığı kurduk. Kaydolmak için Stripe\'ın sitesine yönlendirileceksiniz. Ardından işletmenizi ve ödeme ayrıntılarınızı doğrulamanızı isteyeceğiz.</string>
     <string name="store_onboarding_wcpay_instructions_content_step_1_content">WooPayments bildirimleriniz WordPress.com hesabınızın e-posta adresine gönderilecektir. Yeni bir hesabı mı tercih edersiniz? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Daha fazla ayrıntıyı burada bulabilirsiniz.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_content_title">Kurulumu başlatmadan önce</string>
     <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 dakika</string>
     <string name="store_onboarding_wcpay_instructions_estimate_title">Tahmini kurulum süresi</string>
-    <string name="store_onboarding_wcpay_instructions_title">Tüm ödemeleri WooPayments ile tek bir yerden yönetin. Kartları, Apple Pay\'i, şahsi ödemeleri ve 135\'ten fazla para birimini hiçbir kurulum maliyeti veya aylık ücret olmadan kabul edin.</string>
+    <string name="store_onboarding_wcpay_instructions_title">Tüm ödemeleri WooPayments ile zahmetsizce tek bir yerden yönetin. Kartları, Apple Pay\'i, şahsi ödemeleri ve 135\'ten fazla para birimini hiçbir kurulum maliyeti veya aylık ücret olmadan kabul edin.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Mağaza adı kaydedilemiyor. Lütfen tekrar deneyin.</string>
     <string name="settings_name_your_store_dialog_loading">Yeni mağaza adı kaydediliyor…</string>
     <string name="settings_name_your_store_dialog_success">Mağaza adı ayarlandı!</string>
@@ -167,7 +339,6 @@ Language: tr
     <string name="empty_order_test_order_message">WooCommerce işleminizin kusursuz bir müşteri deneyimi sağladığından emin olmak için bir test siparişi gerçekleştirin</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ayrıntıları el ile ekle</string>
     <string name="order_creation_customer_search_old_wc_hint">Müşterilerde şuna göre ara</string>
-    <string name="shipping_classes_zones">Gönderim sınıfları ve bölgeleri</string>
     <string name="free_trial_survey_free_text">Diğer sebep (lütfen belirtin)</string>
     <string name="free_trial_survey_option4">Bir ekibin parçasıyım ve kararı toplu olarak almamız gerekiyor.</string>
     <string name="free_trial_survey_option3">Hizmetin fiyatını kararımda önemli bir faktör olarak görüyorum.</string>
@@ -212,13 +383,6 @@ Language: tr
     <string name="highlights_tooltip_button_hint">Düğme metni</string>
     <string name="highlights_tooltip_message_hint">Araç ipucu mesajı. \n Bu birkaç satırdan oluşabilir.</string>
     <string name="highlights_tooltip_title_hint">Araç ipucu başlığı</string>
-    <string name="blaze_banner_dismiss_dialog_button">Anladım</string>
-    <string name="blaze_banner_dismiss_dialog_description">Endişe etmeyin! Blaze, konforunuz için Menü ve ürün ayrıntıları menüsünden erişilebilir.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze reklamları</string>
-    <string name="blaze_banner_close_button_content_description">Blaze bandı düğmesini kapat</string>
-    <string name="blaze_banner_button">Blaze\'i şimdi deneyin</string>
-    <string name="blaze_banner_description">Ürünlerinizi WordPress.com ve Tumblr\'da milyonlarca sitede gösterilen reklamlara dönüştürün.</string>
-    <string name="blaze_banner_title">Ürünleri Blaze ile tanıt</string>
     <string name="ai_product_description_tooltip_dismiss">Anladım</string>
     <string name="ai_product_description_tooltip_message">Ürün açıklamalarınızı hızlıca oluşturmak için yapay zeka destekli aracımızı kullanın. Anahtar sözcükleri girin ve gerisini bize bırakın!</string>
     <string name="ai_product_description_tooltip_title">✨ Yapay zeka ile yaz</string>
@@ -242,7 +406,6 @@ Language: tr
     <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>
     <string name="ai_product_description_feedback">Oluşturulan\naçıklama faydalı oldu mu?</string>
     <string name="ai_product_description_regenerate_button">Yeniden oluştur</string>
-    <string name="ai_product_description_survey">Oluşturulan açıklama faydalı oldu mu?</string>
     <string name="ai_product_description_hint">Özelleştirilmiş bir açıklama için ürününüzün benzersiz özelliklerini ve hedef kitlenizi anahtar sözcüklerle vurgulayın.</string>
     <string name="ai_product_description_example">Örneğin: Saksıda Yetişir, Kaktüs, Bitki, Dekoratif, Bakımı kolay</string>
     <string name="ai_product_description_product_name">Ürün adınızı girin</string>
@@ -279,8 +442,6 @@ Language: tr
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Paketimizle işletmenizin yoluna devam etmesini sağlayın!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express ücretsiz deneme sürümünüz yarın (%1$s) sona eriyor. Şimdi kendi geleceğinizi belirleme zamanı; bir paket seçin ve büyümeye hazır olun.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Ücretsiz deneme sürümünüz için zamanınız azalıyor!</string>
-    <string name="local_notification_without_free_trial_description">Merhaba %1$s, %2$s sizin için hazır! Çevrimiçi işletmenizi başlatmak için 14 günlük Woo Express ücretsiz deneme sürümünüzü tek bir tıkla başlatın.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Mağazanız bekliyor!</string>
     <string name="local_notification_store_creation_complete_description">Merhaba %1$s! 14 günlük Woo Express ücretsiz deneme sürümüne hoş geldiniz. Başarılı bir çevrimiçi işletme başlatmak ve büyütmek için ihtiyacınız olan her şey tek bir yerde. Keşfetmeye hazır mısınız?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Mağazanız hazır!</string>
     <string name="product_type_variation">Varyasyon ürün</string>
@@ -418,8 +579,7 @@ Language: tr
     <string name="product_selector_popular_products_heading">Popüler</string>
     <string name="jetpack_install_role_eligibility_learn_more">Roller ve izin hakkında daha fazla bilgi edinin</string>
     <string name="jetpack_install_role_eligibility_error_message">Görünüşe göre rolünüz Jetpack\'i yüklemenize izin vermiyor. \nLütfen yardım için site yöneticinizle iletişime geçin.</string>
-    <string name="card_reader_tap_to_pay_description">Tap to Pay\'i küçük bir\ntutarla burada test edebilirsiniz.</string>
-    <string name="card_reader_test_tap_to_pay">Tap to Pay\'inizi Test Edin</string>
+    <string name="card_reader_test_tap_to_pay">Tap to Pay\'i Deneyin</string>
     <string name="subscription_free_trial">Ücretsiz Deneme</string>
     <string name="subscription_sign_up_fee">Kayıt ücreti</string>
     <string name="subscription_expire">Şundan sonra sona erdir:</string>
@@ -438,7 +598,6 @@ Language: tr
     <string name="subscription_status_cancelled">İptal edildi</string>
     <string name="subscription_status_on_hold">Beklemede</string>
     <string name="subscription_status_active">Aktif</string>
-    <string name="no_variable_subscription_warning">Web panosunda yalnızca değişken abonelikler ekleyebilirsiniz.</string>
     <string name="subscription_details_info_notice">Ürün aboneliklerini web panosunda düzenleyebilirsiniz.</string>
     <string name="subscription_no_trial">Deneme sürümü süresi yok</string>
     <string name="subscription_no_sign_up_fee">Kayıt ücreti yok</string>
@@ -456,7 +615,8 @@ Language: tr
     <string name="product_subscription_title">Abonelik</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kart okuyucu, banka ve kredi kartlarıyla dokunarak, çiple ve kaydırarak yapılan ödemeleri kabul eder.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay ile ilgili görüşlerinizi paylaşın</string>
+    <string name="card_reader_tap_to_pay_description">Kart\nödemeleri almak için telefonunuzu kullanın. Şimdi deneyin.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Görüşlerinizi Paylaşın</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
     <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
     <string name="login_site_credentials_fetching_site_failed">Web siteniz getirilirken bir hata oluştu.</string>
@@ -550,9 +710,6 @@ Language: tr
     <string name="jetpack_benefits_fetching_status">Jetpack Durumu Alınıyor</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Tap to Pay on Android\'i\nMenü &gt; Ödemeler kısmında bulabilirsiniz veya Ödeme Al ve\nTap to Pay\'i seçin.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Kartınızı kullanarak ödeme yapmayı deneyin ve\nişiniz bittiğinde iade edilecek.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Telefonunuz Tap to Pay için hazır.\nMüşteriniz ödeme yapmak için\nkartını telefonunuza dokundurabilir.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">EYLEMLER</string>
@@ -708,7 +865,7 @@ Language: tr
     <string name="login_jetpack_installation_retry_activating">Tekrar etkinleştirmeyi deneyin</string>
     <string name="login_jetpack_installation_retry_installing">Tekrar kurmayı deneyin</string>
     <string name="login_jetpack_installation_get_support">Destek alın</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
     <string name="login_jetpack_installation_error_generic_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Bu mağazada eklentileri yönetme izniniz yok.</string>
     <string name="login_jetpack_installation_error_authorizing">Jetpack\'e bağlantı yetkisi verilirken hata oluştu</string>
@@ -1312,7 +1469,6 @@ Language: tr
     <string name="order_creation_customer_note">Müşteri notu</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Mağazanızda WooCommerce Stripe Gateway uzantısının eski sürümü yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Yenile</string>
     <string name="card_reader_payment_failed_unknown">Bilinmeyen bir nedenle ödeme reddedildi</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Test modunda bir sitede canlı kart kullanıldı</string>
     <string name="card_reader_payment_failed_test_card">Sistem test kartlarına ödeme yapılmasına izin verilmiyor</string>
@@ -1532,7 +1688,6 @@ Language: tr
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Güncellemeden sonra yenileyin</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce Payments uzantısının eski sürümü mağazanızda yüklü. Şahsen Ödemeleri kabul etmek için lütfen güncelleyin.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments\'ı Güncelleyin</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Yenile</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Çok az kaldı! Şahsen Ödemeleri kabul etmeye başlamak için lütfen WooCommerce Paymenst kurulumunu tamamlayın.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Mağaza yönetici bölümünüzde WooCommerce Payments kurulumunu tamamlayın</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Etkinleştirdikten sonra yenileyin</string>
@@ -1896,14 +2051,13 @@ Language: tr
     <string name="product_downloadable_files_download_settings">İndirme Ayarları</string>
     <string name="product_downloadable_files_name_invalid">Lütfen geçerli bir ad girin</string>
     <string name="product_downloadable_files_add_manually">Dosya URL\'si girin</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Ortam Kütüphanesinden</string>
-    <string name="product_downloadable_files_add_media_from_device">Cihazdan</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Ortam Kütüphanesi</string>
     <string name="product_downloadable_files_url_invalid">Girilen URL\'nin geçerli olup olmadığını kontrol edin</string>
     <string name="product_downloadable_files_upload_dialog_message">Lütfen bekleyin…</string>
     <string name="product_downloadable_files_upload_dialog_title">Dosyalar yükleniyor</string>
     <string name="product_downloadable_files_upload_failed">Dosya yüklenirken hata oldu</string>
     <string name="product_downloadable_files_add_title">İndirilebilir dosya ekle</string>
-    <string name="product_downloadable_add_bottomsheet_header">İndirilebilir dosya ekle</string>
+    <string name="product_downloadable_add_bottomsheet_header">Şuradan indirilebilir dosya ekle</string>
     <string name="bottom_sheet_downloadable_files_desc">Satın alma işlemlerine indirilebilir dosyaları ekle</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">İptal</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Evet, değiştir</string>
@@ -2886,7 +3040,7 @@ Language: tr
     <string name="login_text_otp_another">Bana SMS ile başka bir kod gönder.</string>
     <string name="login_text_otp">Bunun yerine bana SMS ile bir kod gönder.</string>
     <string name="enter_verification_code_sms">%s ile biten telefon numaranıza mesaj gönderdik. Lütfen SMS ile aldığınız doğrulama kodunu giriniz.</string>
-    <string name="enter_verification_code">Neredeyse tamam. Lütfen kimlik doğrulayıcı uygulamanızdan doğrulama kodunu girin.</string>
+    <string name="enter_verification_code">Çok az kaldı! Lütfen WordPress.com için kimlik doğrulayıcı uygulamanızdaki doğrulama kodunu girin.</string>
     <string name="enter_username_instead">Kullanıcı adınızla oturum açın.</string>
     <string name="enter_site_address_instead">Site adresinizi girerek oturum açın.</string>
     <string name="alternatively">Alternatif olarak:</string>
@@ -3052,5 +3206,13 @@ Language: tr
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Özelleştirilmiş paket</item>
         <item>Hizmet paketi</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Her</item>
+        <item>Her 2.</item>
+        <item>Her 3.</item>
+        <item>Her 4.</item>
+        <item>Her 5.</item>
+        <item>Her 6.</item>
     </string-array>
 </resources>

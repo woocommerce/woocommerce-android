@@ -2,11 +2,9 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.GiftCardSummary
@@ -29,9 +27,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.details.OrderDetailTracker
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
@@ -100,7 +99,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val addonsRepository: AddonRepository = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
-    private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
+    private val orderDetailTracker: OrderDetailTracker = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -108,7 +107,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
 
-    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+    private val savedState = OrderDetailFragmentArgs(
+        orderId = ORDER_ID,
+        allOrderIds = arrayOf(ORDER_ID).toLongArray()
+    ).initSavedStateHandle()
 
     private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
@@ -134,7 +136,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val currentViewStateValue
         get() = viewModel.viewStateData.liveData.value
 
-    private val orderWithParameters = ViewState(
+    private val orderWithParameters = OrderDetailViewState(
         orderInfo = orderInfo,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
@@ -170,7 +172,30 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 productImageMap,
                 paymentCollectibilityChecker,
                 cardReaderTracker,
-                analyticsTraWrapper,
+                orderDetailTracker,
+                shippingLabelOnboardingRepository,
+                orderDetailsTransactionLauncher,
+                getOrderSubscriptions,
+                giftCardRepository,
+                orderProductMapper
+            )
+        )
+    }
+
+    private fun createViewModel(newSavedState: SavedStateHandle) {
+        viewModel = spy(
+            OrderDetailViewModel(
+                newSavedState,
+                appPrefsWrapper,
+                networkStatus,
+                resources,
+                orderDetailRepository,
+                addonsRepository,
+                selectedSite,
+                productImageMap,
+                paymentCollectibilityChecker,
+                cardReaderTracker,
+                orderDetailTracker,
                 shippingLabelOnboardingRepository,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
@@ -239,7 +264,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-        var orderData: ViewState? = null
+        var orderData: OrderDetailViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
@@ -603,7 +628,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            var orderData: ViewState? = null
+            var orderData: OrderDetailViewState? = null
             viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
             val shippingLabels = ArrayList<ShippingLabel>()
@@ -1124,13 +1149,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.onSeeReceiptClicked()
 
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.RECEIPT_VIEW_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_ORDER_ID to order.id,
-                    AnalyticsTracker.KEY_STATUS to order.status
-                )
-            )
+            verify(orderDetailTracker).trackReceiptViewTapped(order.id, order.status)
         }
 
     @Test
@@ -1352,7 +1371,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onRefreshRequested()
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
+            verify(orderDetailTracker).trackOrderDetailPulledToRefresh()
         }
 
     @Test
@@ -1369,13 +1388,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onNewShipmentTrackingAdded(testOrderShipmentTrackings[0])
 
             // Then
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.ORDER_TRACKING_ADD,
-                mapOf(
-                    AnalyticsTracker.KEY_ID to order.id,
-                    AnalyticsTracker.KEY_STATUS to order.status,
-                    AnalyticsTracker.KEY_CARRIER to testOrderShipmentTrackings[0].trackingProvider
-                )
+            verify(orderDetailTracker).trackAddOrderTrackingTapped(
+                order.id,
+                order.status,
+                testOrderShipmentTrackings[0].trackingProvider
             )
         }
 
@@ -1397,14 +1413,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onOrderStatusChanged(updateSource)
 
             // Then
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.ORDER_STATUS_CHANGE,
-                mapOf(
-                    AnalyticsTracker.KEY_ID to order.id,
-                    AnalyticsTracker.KEY_FROM to order.status.value,
-                    AnalyticsTracker.KEY_TO to updateSource.newStatus,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_EDITING
-                )
+            verify(orderDetailTracker).trackOrderStatusChanged(
+                order.id,
+                order.status.value,
+                updateSource.newStatus
             )
         }
 
@@ -1422,7 +1434,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onCreateShippingLabelButtonTapped()
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+            verify(orderDetailTracker).trackShippinhLabelTapped()
         }
 
     @Test
@@ -1439,7 +1451,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onMarkOrderCompleteButtonTapped()
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+            verify(orderDetailTracker).trackMarkOrderAsCompleteTapped()
         }
 
     @Test
@@ -1456,7 +1468,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onViewOrderedAddonButtonTapped(order.items[0])
 
             // Then
-            verify(analyticsTraWrapper).track(AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+            verify(orderDetailTracker).trackViewAddonsTapped()
         }
 
     @Test
@@ -1473,12 +1485,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onEditClicked()
 
             // Then
-            verify(analyticsTraWrapper).track(
-                AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
-                    AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
-                )
+            verify(orderDetailTracker).trackEditButtonTapped(
+                order.feesLines.size,
+                order.shippingLines.size
             )
         }
 
@@ -1698,7 +1707,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+        verify(orderDetailTracker).trackOrderDetailsSubscriptionsShown()
     }
 
     @Test
@@ -1719,7 +1728,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsSubscriptionsShown()
     }
 
     @Test
@@ -1740,7 +1749,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsSubscriptionsShown()
     }
 
     @Test
@@ -1798,7 +1807,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+        verify(orderDetailTracker).trackOrderDetailsGiftCardShown()
     }
 
     @Test
@@ -1819,7 +1828,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsGiftCardShown()
     }
 
     @Test
@@ -1840,7 +1849,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+        verify(orderDetailTracker, never()).trackOrderDetailsGiftCardShown()
     }
 
     @Test
@@ -1876,13 +1885,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(
-            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.PRODUCT_TYPES to types,
-                AnalyticsTracker.HAS_ADDONS to hasAddons
-            )
+        verify(orderDetailTracker).trackProductsLoaded(
+            order.id,
+            types,
+            hasAddons
         )
     }
 
@@ -1901,13 +1907,84 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(analyticsTraWrapper).track(
-            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.PRODUCT_TYPES to types,
-                AnalyticsTracker.HAS_ADDONS to hasAddons
-            )
+        verify(orderDetailTracker).trackProductsLoaded(
+            order.id,
+            types,
+            hasAddons
         )
+    }
+
+    @Test
+    fun `given order ids passed, when ViewModel starts, then previous order navigations is not enabled`() =
+        testBlocking {
+            val newSavedState = OrderDetailFragmentArgs(
+                orderId = ORDER_ID,
+                allOrderIds = arrayOf(ORDER_ID, 2).toLongArray()
+            ).initSavedStateHandle()
+
+            createViewModel(newSavedState)
+
+            viewModel.start()
+
+            // Then
+            assertThat(viewModel.previousOrderNavigationIsEnabled()).isFalse
+        }
+
+    @Test
+    fun `when the order is the last one then it disables navigation to next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2, ORDER_ID).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        // Then
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when the order is in the middle then it enables navigation to previous and next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2, ORDER_ID, 3).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.previousOrderNavigationIsEnabled()).isTrue
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isTrue
+    }
+
+    @Test
+    fun `when the order is not in the list then it disables order navigation`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2L, 3L).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.orderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when there is only one order then it disables order navigation`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(ORDER_ID).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.orderNavigationIsEnabled()).isFalse
     }
 }

@@ -336,7 +336,6 @@ class SitePickerViewModel @Inject constructor(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
                             siteUrl = url,
-                            hasConnectedStores = sitePickerViewState.hasConnectedStores ?: false
                         )
                     )
                 }
@@ -441,6 +440,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
+        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_STORE_PICKER)
         triggerEvent(NavigateToAddStoreEvent)
     }
 
@@ -640,6 +640,10 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun startStoreCreationFlow() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_FLOW_STARTED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource())
+        )
         appPrefsWrapper.markAsNewSignUp(newSignUp = false)
         triggerEvent(NavigateToStoreCreationEvent)
     }
@@ -733,7 +737,6 @@ class SitePickerViewModel @Inject constructor(
         data class NavigateToAccountMismatchScreen(
             val primaryButton: AccountMismatchPrimaryButton,
             val siteUrl: String,
-            val hasConnectedStores: Boolean
         ) : SitePickerEvent()
     }
 

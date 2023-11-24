@@ -1,11 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-07 09:54:04+0000
+Translation-Revision-Date: 2023-11-15 16:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="notification_security_key_needed">請提供安全性金鑰以繼續使用。</string>
+    <string name="login_error_security_key">使用安全性金鑰登入時遇到問題</string>
+    <string name="login_text_security_key">使用安全性金鑰</string>
+    <string name="product_subscription_period">期間</string>
+    <string name="product_subscription_interval">帳單間隔</string>
+    <string name="product_sale">特價</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">未知</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">失敗</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">已取消</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">運送中</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">待確認</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">已付費</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">估計值</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">收合/展開存款摘要</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">深入瞭解何時會收到款項</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">可用款項將自動於每週存入。</string>
+    <string name="card_reader_hub_deposit_summary_last">上一個</string>
+    <string name="card_reader_hub_deposit_summary_next">下一個</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">存款</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">待確認款項 7 天後即可使用。</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">存款：%d</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">存款：%d</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">待確認款項</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">可用款項</string>
+    <string name="order_creation_payment_tax_label">稅金</string>
+    <string name="order_creation_payment_products">產品</string>
+    <string name="order_creation_payment_header">付款總金額</string>
+    <string name="email_or_username">電子郵件地址或使用者名稱</string>
+    <string name="custom_amounts_creation_error">無法建立自訂金額訂單</string>
+    <string name="custom_amounts_add_custom_name_hint">輸入自訂名稱</string>
+    <string name="custom_amounts_add_custom_amount">新增自訂金額</string>
+    <string name="custom_amounts_name">名稱</string>
+    <string name="custom_amounts_enter_amount">金額</string>
+    <string name="custom_amounts_dialog_title">自訂金額</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">請透過瀏覽器上的管理頁面連結 Jetpack，或聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_connection_message">與你的網站通訊時發生錯誤。</string>
+    <string name="custom_amounts">自訂金額</string>
+    <string name="product_details_blaze_card">使用 Blaze 進行宣傳</string>
+    <string name="blaze_campaign_ceation_celebration_button">知道了</string>
+    <string name="blaze_campaign_ceation_celebration_message">廣告已提交供核准。 核准並執行後，我們會傳送確認郵件給你。</string>
+    <string name="blaze_campaign_creation_celebration_header">一切都準備好了！</string>
+    <string name="blaze_campaign_creation_intro_button">開始 Blaze 行銷活動</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">你可以追蹤成效，也可以隨時開始/停止使用 Blaze 行銷活動。</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">觸及 WordPress 和 Tumblr 網站上數百萬名使用者。</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">每天只需支付幾美元即可掌握世界。 經濟實惠。</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">只需短短幾分鐘即可宣傳產品。</string>
+    <string name="blaze_campaign_creation_intro_title">使用 Blaze 為你的商店帶動更多銷售業績</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. 請稍後再試。</string>
+    <string name="media_picker_dialog_title">選取媒體來源</string>
+    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
+    <string name="product_creation_package_photo_no_text_detected">未偵測到文字。 請選取另一張包裹照片或手動輸入產品詳細資訊。</string>
+    <string name="order_editing_add_content_description">新增商品</string>
+    <string name="order_editing_barcode_content_description">掃瞄條碼</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
+    <string name="order_creation_decrease_item_amount_content_description">商品數量</string>
+    <string name="order_creation_increase_item_amount_content_description">增加數量</string>
+    <string name="order_creation_add_custom_amounts">新增自訂金額</string>
+    <string name="order_creation_price_after_discount">折扣後價格</string>
+    <string name="previous_order">上一筆訂單</string>
+    <string name="next_order">下一筆訂單</string>
+    <string name="blaze_campaign_details_title">行銷活動詳細資訊</string>
+    <string name="blaze_campaign_list_title">Blaze 行銷活動</string>
+    <string name="blaze_campaign_status_canceled">已取消</string>
+    <string name="blaze_campaign_status_scheduled">已排程</string>
+    <string name="product_creation_package_photo_keywords_info">微調你的文字：取消選取你不需要的掃瞄項目，或點一下即可編輯</string>
+    <string name="product_creation_package_photo_keywords_section">關鍵字</string>
+    <string name="ai_product_creation_photo_button">使用包裹照片 (可留空)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">在「訂單詳細資訊」的「收款」選項或「選單」&gt;「付款」中，\n選擇「Tap to Pay」(輕觸付款)。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">嘗試使用簽帳金融卡或信用卡支付 %s 款項。\n完成後就會退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">簡單、安全且私密。</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">接受所有類型的親自收款，\n全都能在手機上完成。 無須使用額外硬體。</string>
+    <string name="blaze_campaign_status_budget">預算</string>
+    <string name="blaze_campaign_status_clicks">點擊數</string>
+    <string name="blaze_campaign_status_impressions">曝光數</string>
+    <string name="blaze_campaign_status_rejected">已拒絕</string>
+    <string name="blaze_campaign_status_completed">已完成</string>
+    <string name="blaze_campaign_status_active">已啟用</string>
+    <string name="blaze_campaign_status_in_moderation">審核中</string>
+    <string name="blaze_campaign_show_all_button">顯示全部</string>
+    <string name="blaze_campaign_create_campaign_button">建立行銷活動</string>
+    <string name="blaze_campaign_subtitle">提升能見度，加速產品銷售。</string>
+    <string name="blaze_campaign_title">Blaze 行銷活動</string>
+    <string name="card_reader_tap_to_pay_about_copyright">「感應支付符號」為 EMVCo, LLC 所擁有，並經其許可所使用的商標。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. 在你看到「完成」核取記號後，你的商店將處理付款並完成交易。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. 顧客手持卡片，以水平方向置於你手機的感應支付符號上方。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. 向顧客展示你的手機。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. 點選「收取款項」並選擇「輕觸付款」。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">收取付款</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">建立訂單</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s 或 %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">瞭解使用方式</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">深入瞭解讀卡機</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">若要接受高於此限制的付款，請考慮購買可輸入 PIN 碼的讀卡機。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">我們不在 Android 裝置上支援可輸入 PIN 碼的輕觸付款功能。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">在%1$s，有些卡片需要輸入 PIN 碼才能在超過 %2$s 的交易使用感應支付。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">重要資訊</string>
+    <string name="card_reader_tap_to_pay_about_description">「輕觸付款」功能可接受所有類型的感應付款，從實體簽帳金融卡、信用卡，到數位錢包等，讓你無需購買實體讀卡機。</string>
+    <string name="card_reader_tap_to_pay_about_header">「輕觸付款」是什麼？</string>
+    <string name="card_reader_tap_to_pay_about_title">關於「輕觸付款」</string>
+    <string name="ai_feedback_form_negative_button">負面意見回饋</string>
+    <string name="ai_feedback_form_positive_button">正面意見回饋</string>
+    <string name="ai_feedback_form_message">此結果是否有幫助？</string>
+    <string name="product_creation_ai_preview_short_description_section">商品簡短說明</string>
+    <string name="card_reader_payment_update_available">讀卡機有更新可用</string>
+    <string name="card_reader_about_tap_to_pay">關於「卡緊收」</string>
+    <string name="card_reader_tap_to_pay_header">「卡緊收」功能</string>
+    <string name="card_reader_settings_header">設定</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">使用電子郵件手動新增詳情</string>
+    <string name="login_app_login_malformed_link">我們無法處理你的應用程式登入要求</string>
+    <string name="ai_product_name_copy_error">複製商品名稱到剪貼簿時發生錯誤。</string>
+    <string name="ai_product_name_copy_success">商品名稱已複製到剪貼簿。</string>
+    <string name="ai_product_name_copy_label">AI 產生的商品名稱</string>
+    <string name="ai_product_description_copy_error">複製商品說明到剪貼簿時發生錯誤。</string>
+    <string name="ai_product_description_copy_success">商品說明已複製到剪貼簿。</string>
+    <string name="product_creation_ai_generation_failure_message">商品產生失敗。 請再試一次</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">清除地址並停止使用此稅率</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">為此訂單設定新稅率</string>
+    <string name="tax_rate_selector_auto_rate_details_title">自動新增稅率</string>
+    <string name="ai_product_name_sheet_error_message">產生產品名稱時發生問題， 請再試一次。</string>
+    <string name="ai_product_name_sheet_regenerate_button">重新產生</string>
+    <string name="ai_product_name_sheet_generate_button">幫我撰寫</string>
+    <string name="ai_product_name_sheet_input_description">介紹你的產品與其獨特之處！</string>
+    <string name="ai_product_name_sheet_subtitle">讓 AI 為你產生吸引人的名稱</string>
+    <string name="ai_product_name_sheet_title">產品名稱</string>
+    <string name="empty_review_filtered_list_message">嘗試停用「未讀」篩選條件，便可看到所有產品評論</string>
+    <string name="empty_review_filtered_list_title">沒有未讀的產品評論</string>
+    <string name="product_creation_ai_tone_selected_content_desc">已選取語氣</string>
+    <string name="product_creation_ai_tone_convincing">具有說服力</string>
+    <string name="product_creation_ai_tone_flowery">誇飾華麗</string>
+    <string name="product_creation_ai_tone_formal">正式</string>
+    <string name="product_creation_ai_tone_casual">休閒</string>
+    <string name="product_creation_ai_tone_description">設定語氣和風格，讓產品反映品牌形象。</string>
+    <string name="product_creation_ai_tone_title">語氣和風格</string>
+    <string name="product_creation_ai_preview_details_section">詳細資料</string>
+    <string name="product_creation_ai_preview_description_section">產品說明</string>
+    <string name="product_creation_ai_preview_name_section">產品名稱</string>
+    <string name="product_creation_ai_preview_subtitle">稍後也可隨時變更下方詳細資訊。</string>
+    <string name="product_creation_ai_preview_title">預覽</string>
+    <string name="product_creation_ai_about_product_continue_button">建立產品詳細資料</string>
+    <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">新增主要功能、優點或詳細資料，可以讓人更容易在網路上找到你的產品。</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">例如布料柔軟、強固縫線、獨特設計</string>
+    <string name="product_creation_ai_about_product_subtitle">列出產品獨特之處，AI 便能產生絕佳內容。</string>
+    <string name="product_creation_ai_about_product_title">產品相關資訊</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">建議名稱</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">例如布料柔軟、強固縫線、獨特設計</string>
+    <string name="ai_product_creation_add_name_keywords_label">產品名稱</string>
+    <string name="ai_product_creation_add_name_subtitle">或點選更多名稱建議，查看更多選項。</string>
+    <string name="ai_product_creation_add_name_title">新增產品名稱</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">AI 技術支援。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手動新增產品和詳細資料</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">手動新增</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">立即為你產生詳細資料</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">使用 AI 建立產品</string>
+    <string name="product_creation_ai_entry_sheet_header">新增產品</string>
+    <string name="product_review_list_unread_reviews_filter">僅顯示未讀評論</string>
+    <string name="order_creation_edit_tax_rate">編輯稅率設定</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">這不會影響線上訂單</string>
+    <string name="tax_rate_selector_auto_rate_label">將此稅率新增至所有已建立的訂單</string>
+    <string name="tax_rate_selector_empty_list_button_alt">編輯稅率</string>
+    <string name="tax_rate_selector_empty_list_button">使用管理員編輯稅率</string>
+    <string name="tax_rate_selector_empty_list_message">使用管理員新增稅率。 僅附帶國家/地區資訊的稅率會顯示於此。</string>
+    <string name="tax_rate_selector_empty_list_title">我們找不到任何稅率</string>
+    <string name="store_onboarding_payments_setup_description">探索其他付款服務供應商並且 \n選擇付款供應商。</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">付款方式</string>
+    <string name="product_downloadable_files_add_documents_from_device">裝置文件</string>
+    <string name="product_downloadable_files_add_media_from_device">裝置媒體檔案</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">立即解決</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">完成設定</string>
+    <string name="tax_rate_selector_title">設定稅率</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">啟用</string>
+    <string name="order_creation_set_tax_rate">設定新的稅率</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">設定</string>
     <string name="tax_rate_selector_edit_rates_button_label">使用管理員編輯稅率</string>
     <string name="tax_rate_selector_header_label">如此顧客地址即會變更至所選稅率的地點。</string>
     <string name="tax_rate_selector_info_icon_content_description">開啟稅率資訊對話方塊的按鈕</string>
@@ -21,8 +195,6 @@ Language: zh_TW
     <string name="tax_rates_info_dialog_primary_text">稅金計算方式是根據顧客帳單或運送地址的比對結果，或依照稅率地點的商店地址。</string>
     <string name="tax_rates_information_content_description">稅率資訊</string>
     <string name="store_onboarding_wcpay_setup_description">使用 WooCommerce Payments，即表示你同意遵守我們的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服務條款&lt;/u&gt;&lt;/a&gt;，並確認已詳閱我們的&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;隱私權政策&lt;/u&gt;&lt;/a&gt;。</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">設定</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;如何向 WooPayments 驗證個人資訊。</string>
     <string name="store_onboarding_wcpay_instructions_content_button">開始設定</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">我們已與 Stripe 合作，為 WooPayments 提供支援。 系統會將你導入 Stripe 的網站進行註冊。 我們會要求你驗證商家和付款詳細資料。</string>
@@ -30,7 +202,7 @@ Language: zh_TW
     <string name="store_onboarding_wcpay_instructions_content_title">開始設定之前</string>
     <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 分鐘</string>
     <string name="store_onboarding_wcpay_instructions_estimate_title">預估設定時間</string>
-    <string name="store_onboarding_wcpay_instructions_title">運用 WooPayments，集中一處輕鬆管理付款。 接受金融卡、Apple Pay、親自收款，以及超過 135 種不同貨幣，完全免設定費或月費。</string>
+    <string name="store_onboarding_wcpay_instructions_title">運用 WooPayments，集中一處輕鬆管理付款。 接受卡片、Apple Pay、親自收款選項，以及超過 135 種不同貨幣，完全免設定費或月費。</string>
     <string name="store_onboarding_name_your_store_dialog_failure">無法儲存商店名稱， 請再試一次。</string>
     <string name="settings_name_your_store_dialog_loading">正在儲存新商店名稱……</string>
     <string name="settings_name_your_store_dialog_success">商店名稱設定完成！</string>
@@ -167,7 +339,6 @@ Language: zh_TW
     <string name="empty_order_test_order_message">執行測試訂單，確認你的 WooCommerce 流程能提供流暢的顧客體驗</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動新增詳情</string>
     <string name="order_creation_customer_search_old_wc_hint">依條件搜尋顧客</string>
-    <string name="shipping_classes_zones">運送類別與區域</string>
     <string name="free_trial_survey_free_text">其他原因 (請說明)。</string>
     <string name="free_trial_survey_option4">我需要和團隊成員一起決定。</string>
     <string name="free_trial_survey_option3">服務價格是影響我決策的重要因素。</string>
@@ -212,13 +383,6 @@ Language: zh_TW
     <string name="highlights_tooltip_button_hint">按鈕文字</string>
     <string name="highlights_tooltip_message_hint">工具提示訊息。 \n 可以是多行內容。</string>
     <string name="highlights_tooltip_title_hint">工具提示標題</string>
-    <string name="blaze_banner_dismiss_dialog_button">知道了</string>
-    <string name="blaze_banner_dismiss_dialog_description">別擔心！ 你可以從「選單」和產品詳細資訊的選單來存取 Blaze，非常方便。</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze 廣告</string>
-    <string name="blaze_banner_close_button_content_description">關閉 Blaze 橫幅按鈕</string>
-    <string name="blaze_banner_button">立即試用 Blaze</string>
-    <string name="blaze_banner_description">將產品變成廣告，投放到 WordPress.com 和 Tumblr 上的數百萬個網站。</string>
-    <string name="blaze_banner_title">使用 Blaze 宣傳產品</string>
     <string name="ai_product_description_tooltip_dismiss">知道了</string>
     <string name="ai_product_description_tooltip_message">使用 AI 支援的工具來快速產生產品說明。 只要輸入關鍵字，剩下交給我們就行了！</string>
     <string name="ai_product_description_tooltip_title">✨ 使用 AI 撰寫</string>
@@ -242,7 +406,6 @@ Language: zh_TW
     <string name="ai_product_description_note_dialog_heading">很棒的開始！</string>
     <string name="ai_product_description_feedback">產生的說明\n對你有幫助嗎？</string>
     <string name="ai_product_description_regenerate_button">重新產生</string>
-    <string name="ai_product_description_survey">產生的說明對你有幫助嗎？</string>
     <string name="ai_product_description_hint">不妨使用關鍵字來強調你產品的獨特功能和受眾，以確保說明符合你的確切需求。</string>
     <string name="ai_product_description_example">範例：盆栽, 仙人掌, 植物, 家飾, 輕鬆照顧</string>
     <string name="ai_product_description_product_name">輸入你的產品名稱</string>
@@ -279,8 +442,6 @@ Language: zh_TW
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我們的方案維持業務運作！</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">你的 Woo Express 免費試用將於明天 (%1$s) 結束。 掌握未來就趁現在：快挑選一個方案，準備迎接業務成長。</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 免費試用的機會就快消失！</string>
-    <string name="local_notification_without_free_trial_description">%1$s，你好！我們已為你備妥 %2$s！ 只要按一下即可開始免費試用 14 天 Woo Express，展開你的網路事業。  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ 你的商店蓄勢待發！</string>
     <string name="local_notification_store_creation_complete_description">%1$s，你好！ 歡迎免費試用 14 天 Woo Express。建立及發展成功的網路事業，你所需的一切盡在這裡。 準備好開始探索了嗎？</string>
     <string name="local_notification_store_creation_complete_title">🎉 你的商店已準備就緒！</string>
     <string name="product_type_variation">商品款式</string>
@@ -418,8 +579,7 @@ Language: zh_TW
     <string name="product_selector_popular_products_heading">熱門</string>
     <string name="jetpack_install_role_eligibility_learn_more">深入瞭解角色和權限</string>
     <string name="jetpack_install_role_eligibility_error_message">你的角色似乎不允許安裝 Jetpack。 \n請聯絡管理員尋求協助。</string>
-    <string name="card_reader_tap_to_pay_description">你可以在此小額測試「Tap to Pay」(輕觸付款)\n功能。</string>
-    <string name="card_reader_test_tap_to_pay">測試「Tap to Pay」(輕觸付款) 功能</string>
+    <string name="card_reader_test_tap_to_pay">試用「卡緊收」</string>
     <string name="subscription_free_trial">免費試用</string>
     <string name="subscription_sign_up_fee">註冊費</string>
     <string name="subscription_expire">到期時間：</string>
@@ -438,7 +598,6 @@ Language: zh_TW
     <string name="subscription_status_cancelled">已取消</string>
     <string name="subscription_status_on_hold">保留</string>
     <string name="subscription_status_active">已啟用</string>
-    <string name="no_variable_subscription_warning">你只能在網頁儀表板中新增多款式訂閱項目。</string>
     <string name="subscription_details_info_notice">你可以在網頁儀表板中編輯產品訂閱項目。</string>
     <string name="subscription_no_trial">無試用期</string>
     <string name="subscription_no_sign_up_fee">無註冊費</string>
@@ -456,7 +615,8 @@ Language: zh_TW
     <string name="product_subscription_title">訂閱</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">讀卡機接受信用卡和簽帳金融卡的輕觸、晶片和刷卡付款。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">直接從手機安全地接受零接觸付款。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">分享「Tap to Pay」(輕觸付款) 功能意見回饋</string>
+    <string name="card_reader_tap_to_pay_description">使用手機接受信用卡\n付款。 立即試用。</string>
+    <string name="card_reader_tap_to_pay_share_feedback">分享意見反應</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">無法登入，因為未核准建立應用程式密碼。</string>
     <string name="login_site_credentials_fetching_site">正在擷取網站…</string>
     <string name="login_site_credentials_fetching_site_failed">擷取你的網站時發生錯誤</string>
@@ -550,9 +710,6 @@ Language: zh_TW
     <string name="jetpack_benefits_fetching_status">擷取 Jetpack 狀態</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">發生錯誤。 請稍後再試一次。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">嘗試付款</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> 若使用 Android 系統，可以在\n「選單」&gt;「付款」找到「點選支付」或「收款」\n，然後選擇「點選支付」。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">使用信用卡嘗試付款\n，完成後就會退款。</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">你的手機已可使用「點選支付」功能。\n你的顧客可以在手機上點選信用卡\n來付款。</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
     <string name="card_reader_hub_actions_category_header">動作</string>
@@ -708,7 +865,7 @@ Language: zh_TW
     <string name="login_jetpack_installation_retry_activating">嘗試重新啟用</string>
     <string name="login_jetpack_installation_retry_installing">嘗試重新安裝</string>
     <string name="login_jetpack_installation_get_support">取得支援</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
     <string name="login_jetpack_installation_error_generic_message">與你的網站通訊時發生錯誤。</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">你無權管理此商店的外掛程式</string>
     <string name="login_jetpack_installation_error_authorizing">授權連結到 Jetpack 時發生錯誤</string>
@@ -1312,7 +1469,6 @@ Language: zh_TW
     <string name="order_creation_customer_note">顧客備註</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">在更新後重新整理</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">貴店安裝的 WooCommerce Stripe Gateway 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">更新</string>
     <string name="card_reader_payment_failed_unknown">付款因不明原因遭拒</string>
     <string name="card_reader_payment_failed_test_mode_live_card">在測試模式下的網站上使用了有效信用卡</string>
     <string name="card_reader_payment_failed_test_card">不允許使用系統測試卡片付款</string>
@@ -1532,7 +1688,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">在更新後重新整理</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">貴店安裝的 WooCommerce Payments 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">重新整理</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">快完成了！ 請完成 WooCommerce Payments 設定以開始接受親自收款。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">在商店管理員中完成 WooCommerce Payments 設定</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">在啟用後重新整理</string>
@@ -1896,14 +2051,13 @@ Language: zh_TW
     <string name="product_downloadable_files_download_settings">下載設定</string>
     <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
     <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">來自 WordPress 媒體庫</string>
-    <string name="product_downloadable_files_add_media_from_device">來自裝置</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress 媒體庫</string>
     <string name="product_downloadable_files_url_invalid">檢查輸入的 URL 是否有效</string>
     <string name="product_downloadable_files_upload_dialog_message">請稍候…</string>
     <string name="product_downloadable_files_upload_dialog_title">正在上傳檔案</string>
     <string name="product_downloadable_files_upload_failed">上傳檔案時發生錯誤</string>
     <string name="product_downloadable_files_add_title">新增可下載的檔案</string>
-    <string name="product_downloadable_add_bottomsheet_header">新增可下載的檔案</string>
+    <string name="product_downloadable_add_bottomsheet_header">從以下位置新增可下載的檔案：</string>
     <string name="bottom_sheet_downloadable_files_desc">在購買項目包含可下載的檔案</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">取消</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">是，請變更</string>
@@ -2886,7 +3040,7 @@ Language: zh_TW
     <string name="login_text_otp_another">請使用簡訊傳送另一個驗證碼給我。</string>
     <string name="login_text_otp">請改用簡訊傳送驗證碼給我。</string>
     <string name="enter_verification_code_sms">我們已將簡訊傳送至結尾為 %s 的電話號碼。請輸入簡訊中的驗證碼。</string>
-    <string name="enter_verification_code">快完成了！請輸入驗證器應用程式上的驗證碼。</string>
+    <string name="enter_verification_code">快完成了！ 請輸入驗證器應用程式上的 WordPress.com 驗證碼。</string>
     <string name="enter_username_instead">用你的使用者名稱登入。</string>
     <string name="enter_site_address_instead">藉由輸入你的網站位址來登入。</string>
     <string name="alternatively">替代作法：</string>
@@ -3052,5 +3206,13 @@ Language: zh_TW
     <string-array name="shipping_label_create_new_package_tabs">
         <item>自訂包裹</item>
         <item>服務包裹</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>每</item>
+        <item>每月 2 號</item>
+        <item>每月 3 號</item>
+        <item>每月 4 號</item>
+        <item>每月 5 號</item>
+        <item>每月 6 號</item>
     </string-array>
 </resources>

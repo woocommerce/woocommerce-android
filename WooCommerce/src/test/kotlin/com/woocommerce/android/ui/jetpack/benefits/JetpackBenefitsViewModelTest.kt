@@ -79,8 +79,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
         givenJetpackFetchResult(
-            jetpackStatus,
-            FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
+            FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus)
         )
 
         // When
@@ -98,13 +97,8 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     @Test
     fun `given REST API login and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
         // Given
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = true,
-            isJetpackConnected = false,
-            wpComEmail = null
-        )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.FORBIDDEN)
+        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden)
         givenUserEligibility(user, UserRole.Editor)
 
         // When
@@ -128,7 +122,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
             wpComEmail = null
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.NOT_FOUND)
+        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
         givenUserEligibility(user, UserRole.Administrator)
 
         // When
@@ -152,7 +146,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
             wpComEmail = null
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.NOT_FOUND)
+        givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
         givenUserEligibility(user, UserRole.Editor)
 
         // When
@@ -181,10 +175,9 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     private fun givenJetpackFetchResult(
-        jetpackStatus: JetpackStatus,
         jetpackStatusFetchResponse: FetchJetpackStatus.JetpackStatusFetchResponse
     ) = testBlocking {
-        val result = Result.success(jetpackStatus to jetpackStatusFetchResponse)
+        val result = Result.success(jetpackStatusFetchResponse)
         whenever(fetchJetpackStatus.invoke()).thenReturn(result)
     }
 

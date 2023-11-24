@@ -8,7 +8,6 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -19,6 +18,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.creation.views.bindEditFields
@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -50,8 +51,8 @@ class OrderCreateEditCustomerAddFragment :
         private const val MENU_ITEM_DELETE_ID = Int.MAX_VALUE
     }
 
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val addressViewModel by fixedHiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
     private val editingOfAddedCustomer: OrderCreateEditCustomerAddFragmentArgs by navArgs()
 
@@ -124,16 +125,21 @@ class OrderCreateEditCustomerAddFragment :
                 is ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
-                    sharedViewModel.onCustomerAddressEdited(
-                        customerId = event.customerId,
-                        billingAddress = event.addresses.getValue(BILLING),
-                        shippingAddress = event.addresses.getValue(SHIPPING)
+                    sharedViewModel.onCustomerEdited(
+                        Order.Customer(
+                            customerId = event.customerId,
+                            firstName = event.firstName,
+                            lastName = event.lastName,
+                            email = event.email,
+                            billingAddress = event.addresses.getValue(BILLING),
+                            shippingAddress = event.addresses.getValue(SHIPPING),
+                        )
                     )
 
                     findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
                 is AddressViewModel.DeleteCustomer -> {
-                    sharedViewModel.onCustomerAddressDeleted()
+                    sharedViewModel.onCustomerDeleted()
                     findNavController().navigateUp()
                 }
             }

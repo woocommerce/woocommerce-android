@@ -3,14 +3,23 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNT_TAX_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
@@ -27,8 +36,9 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -45,6 +55,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -105,6 +116,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
             whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_shipping_address))
                 .thenReturn("Calculated on shipping address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
             createSut()
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on shipping address")
@@ -116,6 +129,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
             whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address))
                 .thenReturn("Calculated on billing address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
             createSut()
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on billing address")
@@ -138,6 +153,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetTaxRateClicked()
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
+    }
+
+    @Test
+    fun `when onSetNewTaxRateClicked, then should track event`() = testBlocking {
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        sut.onSetNewTaxRateClicked()
+        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
     }
 
     @Test
@@ -181,7 +204,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
         val defaultShippingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Shipping")
 
-        sut.onCustomerAddressEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
+        sut.onCustomerEdited(
+            Order.Customer(
+                DEFAULT_CUSTOMER_ID,
+                billingAddress = defaultBillingAddress,
+                shippingAddress = defaultShippingAddress
+            )
+        )
 
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultShippingAddress)
@@ -196,7 +225,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
         val defaultShippingAddress = Address.EMPTY
 
-        sut.onCustomerAddressEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
+        sut.onCustomerEdited(
+            Order.Customer(
+                DEFAULT_CUSTOMER_ID,
+                billingAddress = defaultBillingAddress,
+                shippingAddress = defaultShippingAddress
+            )
+        )
 
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultBillingAddress)
@@ -341,7 +376,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when adding products, then update product liveData when quantity is one or more`() = testBlocking {
-        var products: List<ProductUIModel> = emptyList()
+        var products: List<OrderCreationProduct> = emptyList()
         sut.products.observeForever {
             products = it
         }
@@ -365,19 +400,23 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = testBlocking {
         var orderDraft: Order? = null
-        var addedProductItem: Order.Item? = null
+        var addedProduct: OrderCreationProduct? = null
         sut.orderDraft.observeForever { order ->
             orderDraft = order
-            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
+        sut.products.observeForever { productList ->
+            addedProduct = productList.find { it.item.productId == 123L }
         }
 
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
-        assertThat(addedProductItem).isNotNull
-        val addedProductItemId = addedProductItem!!.itemId
+        assertThat(addedProduct).isNotNull
 
-        sut.onIncreaseProductsQuantity(addedProductItemId)
-        sut.onRemoveProduct(addedProductItem!!)
+        val addedProductItemId = addedProduct!!.item.itemId
+
+        sut.onIncreaseProductsQuantity(addedProduct!!)
+        sut.onRemoveProduct(addedProduct!!)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
@@ -471,6 +510,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -483,15 +527,17 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
     fun `when removing product, should make view not editable`() = testBlocking {
         // given
-        val orderItemToRemove: Order.Item = mock()
+        val orderProductToRemove: OrderCreationProduct = mock()
 
         // when
-        sut.onRemoveProduct(orderItemToRemove)
+        sut.onRemoveProduct(orderProductToRemove)
 
         // then
         sut.viewStateData.liveData.value?.let { viewState ->
@@ -529,6 +575,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -541,6 +592,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
@@ -1067,38 +1120,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when hitting a product that is not synced then do nothing`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        val orderItem = Order.Item.EMPTY
-        sut.onProductClicked(orderItem)
-
-        assertThat(lastReceivedEvent).isNull()
-    }
-
-    @Test
-    fun `when hitting a product that is synced then show product details`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        val orderItem = createOrderItem()
-        sut.onProductClicked(orderItem)
-
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                val currentOrderItem = showProductDetailsEvent.item
-                assertThat(currentOrderItem).isEqualTo(orderItem)
-            } ?: fail("Last event should be of ShowProductDetails type")
-    }
-
-    @Test
     fun `should initialize with empty order`() {
         sut.orderDraft.observeForever {}
 
@@ -1143,11 +1164,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCreateOrderClicked(defaultOrderValue)
 
+        val productCount = sut.products.value?.count() ?: 0
+
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_PRODUCT_COUNT to productCount,
                 AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
                 AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
                 AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
@@ -1207,37 +1230,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
-        }
-    }
-
-    @Test
-    fun `given products and coupon applied, when going to product details, then should disable discount editing`() {
-        createSut()
-        sut.onCouponAdded("abc")
-        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
-        sut.onProductClicked(sut.currentDraft.items.first())
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-        with(lastReceivedEvent) {
-            assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse
-        }
-    }
-
-    @Test
-    fun `given products and no coupons applied, when going to product details, then should enable discount editing`() {
-        createSut()
-        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
-        sut.onProductClicked(sut.currentDraft.items.first())
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-        with(lastReceivedEvent) {
-            assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue
         }
     }
 
@@ -1474,6 +1466,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
@@ -1517,8 +1510,360 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                    KEY_HAS_BUNDLE_CONFIGURATION to false
                 )
             )
         }
     }
+
+    // region Custom Amounts
+    @Test
+    fun `when custom amount added, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when custom amount added with tax status as taxable, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.first()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
+    }
+
+    @Test
+    fun `when custom amount added with tax status as false, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.first()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.NONE)
+    }
+
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper amount`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.TEN)
+    }
+
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount")
+    }
+
+    @Test
+    fun `when custom amount added without name, then fee line gets updated with default name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = ""
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
+    }
+
+    @Test
+    fun `when custom amount added, then exit event is triggered`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        assertThat(sut.event.value).isEqualTo(Exit)
+    }
+
+    @Test
+    fun `when custom amount is updated, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when custom amount is updated with amount, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.ONE)
+    }
+
+    @Test
+    fun `when custom amount is updated with tax status, then fee line gets updated with proper tax status`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
+    }
+
+    @Test
+    fun `when custom amount is updated with name, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount updated")
+    }
+
+    @Test
+    fun `when custom amount removed, then fee line is updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount"
+            )
+        )
+
+        assertThat(orderDraft?.feesLines?.filter { it.name != null }?.size).isEqualTo(0)
+    }
+    @Test
+    fun `when custom amount is added, then proper event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+    }
+
+    @Test
+    fun `when custom amount name is added, then proper event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount name is added, then fee add event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            eq(ORDER_FEE_ADD),
+            any()
+        )
+    }
+
+    @Test
+    fun `when custom amount name is added with tax, then fee add event is tracked with tax_status value taxable`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+            )
+        )
+    }
+
+    @Test
+    fun `when custom amount name is added with no tax, then fee add event is tracked with tax_status value none`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+            )
+        )
+    }
+
+    @Test
+    fun `when custom amount name is not added, then event is not tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Custom Amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker, never()).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount is removed, then event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Custom Amount"
+        )
+
+        sut.onCustomAmountRemoved(customAmountUIModel)
+
+        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
+    }
+    //endregion
 }

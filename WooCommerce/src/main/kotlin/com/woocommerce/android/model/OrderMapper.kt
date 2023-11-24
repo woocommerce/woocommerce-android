@@ -44,8 +44,11 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             paymentMethodTitle = databaseEntity.paymentMethodTitle,
             isCashPayment = CASH_PAYMENTS.contains(databaseEntity.paymentMethod),
             pricesIncludeTax = databaseEntity.pricesIncludeTax,
-            billingAddress = databaseEntity.getBillingAddress().mapAddress(),
-            shippingAddress = databaseEntity.getShippingAddress().mapAddress(),
+            customer = Order.Customer(
+                customerId = null,
+                billingAddress = databaseEntity.getBillingAddress().mapAddress(),
+                shippingAddress = databaseEntity.getShippingAddress().mapAddress(),
+            ),
             shippingMethods = databaseEntity.getShippingLineList().mapShippingMethods(),
             items = databaseEntity.getLineItemList().mapLineItems(),
             shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
@@ -56,7 +59,6 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
             paymentUrl = databaseEntity.paymentUrl,
             isEditable = databaseEntity.isEditable,
-            customerId = null,
         )
     }
 
@@ -124,7 +126,8 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                     it.getAttributeList().map { attribute ->
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
                     },
-                    it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull()
+                    it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull(),
+                    configurationKey = it.configurationKey
                 )
             }
 

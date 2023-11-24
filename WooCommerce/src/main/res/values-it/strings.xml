@@ -1,11 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 11:54:05+0000
+Translation-Revision-Date: 2023-11-15 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="notification_security_key_needed">Fornisci una chiave di sicurezza per continuare.</string>
+    <string name="login_error_security_key">Si è verificato un errore con l\'accesso alla chiave di sicurezza</string>
+    <string name="login_text_security_key">Usa una chiave di sicurezza</string>
+    <string name="product_subscription_period">Periodo</string>
+    <string name="product_subscription_interval">Intervallo di fatturazione</string>
+    <string name="product_sale">Offerta</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Sconosciuto</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Non riuscito</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Annullato</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">In transito</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">In sospeso</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Pagato</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Stimato</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Comprimi/espandi il riepilogo dell\'acconto</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Scopri di più su quando riceverai i fondi</string>
+    <string name="card_reader_hub_deposit_summary_available_deposited_time">I fondi disponibili vengono depositati automaticamente, ogni settimana.</string>
+    <string name="card_reader_hub_deposit_summary_last">Ultimo</string>
+    <string name="card_reader_hub_deposit_summary_next">Successivo</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Acconti</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after">I fondi saranno disponibili dopo un periodo di attesa di 7 giorni.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d acconto</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d acconti</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Fondi in sospeso</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">Fondi disponibili</string>
+    <string name="order_creation_payment_tax_label">Imposte</string>
+    <string name="order_creation_payment_products">Prodotti</string>
+    <string name="order_creation_payment_header">Totali pagamenti</string>
+    <string name="email_or_username">Indirizzo e-mail o nome utente</string>
+    <string name="custom_amounts_creation_error">Impossibile creare un ordine con importo personalizzato</string>
+    <string name="custom_amounts_add_custom_name_hint">Inserisci nome personalizzato</string>
+    <string name="custom_amounts_add_custom_amount">Aggiungi importo personalizzato</string>
+    <string name="custom_amounts_name">Nome</string>
+    <string name="custom_amounts_enter_amount">Importo</string>
+    <string name="custom_amounts_dialog_title">Importo personalizzato</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Connetti Jetpack tramite la tua pagina di amministrazione su un browser o contatta il supporto.</string>
+    <string name="login_jetpack_installation_error_connection_message">Si è verificato un errore durante la comunicazione con il sito.</string>
+    <string name="custom_amounts">Importi personalizzati</string>
+    <string name="product_details_blaze_card">Promuovi con Blaze</string>
+    <string name="blaze_campaign_ceation_celebration_button">Fatto</string>
+    <string name="blaze_campaign_ceation_celebration_message">L\'annuncio è stato inviato per l\'approvazione. Ti invieremo un\'e-mail di conferma una volta che sarà approvato e pubblicato.</string>
+    <string name="blaze_campaign_creation_celebration_header">Tutto impostato.</string>
+    <string name="blaze_campaign_creation_intro_button">Avvia subito la Campagna Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Tieni traccia delle prestazioni, avvia e interrompi la campagna Blaze in qualsiasi momento.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Raggiungi milioni di persone sui siti WordPress e Tumblr.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Assumi il controllo con soli pochi dollari al giorno. A prova di budget.</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promuovi i tuoi prodotti in pochi minuti.</string>
+    <string name="blaze_campaign_creation_intro_title">Incrementa le vendite nel tuo negozio con Blaze</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Si è verificato un errore durante l\'aggiornamento dell\'elenco delle campagne. Riprova più tardi.</string>
+    <string name="media_picker_dialog_title">Seleziona la fonte degli elementi multimediali</string>
+    <string name="product_creation_package_photo_error">Si è verificato un errore durante la generazione del nome e della descrizione del prodotto.</string>
+    <string name="product_creation_package_photo_no_text_detected">Nessun testo rilevato. Seleziona un\'altra foto del pacchetto o inserisci manualmente i dettagli del prodotto.</string>
+    <string name="order_editing_add_content_description">Aggiungi prodotto</string>
+    <string name="order_editing_barcode_content_description">Scansiona codice a barre</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Comprimi/espandi la scheda del prodotto</string>
+    <string name="order_creation_decrease_item_amount_content_description">Diminuisci la quantità del prodotto</string>
+    <string name="order_creation_increase_item_amount_content_description">Aumenta la quantità del prodotto</string>
+    <string name="order_creation_add_custom_amounts">Aggiungi importo personalizzato</string>
+    <string name="order_creation_price_after_discount">Prezzo dopo lo sconto</string>
+    <string name="previous_order">Ordine precedente</string>
+    <string name="next_order">Ordine successivo</string>
+    <string name="blaze_campaign_details_title">Dettagli della campagna</string>
+    <string name="blaze_campaign_list_title">Campagne Blaze</string>
+    <string name="blaze_campaign_status_canceled">Annullata</string>
+    <string name="blaze_campaign_status_scheduled">Pianificata</string>
+    <string name="product_creation_package_photo_keywords_info">Ritocca il testo: deseleziona le scansioni che non ti servono o tocca per modificare</string>
+    <string name="product_creation_package_photo_keywords_section">Parole chiave</string>
+    <string name="ai_product_creation_photo_button">Utilizza foto del pacchetto (opzionale)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Scegli Tocca per pagare dalle opzioni di Ricevi pagamenti in\nDettagli dell\'ordine o Menu &gt; Pagamenti.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Prova un pagamento di %s con la tua carta di debito o di credito:\nti verrà rimborsato quando hai terminato.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">È facile, sicuro e privato.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accetta tutti i tipi di pagamenti di persona direttamente\ndal tuo telefono. Non è necessario alcun hardware aggiuntivo.</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_campaign_status_clicks">Clic</string>
+    <string name="blaze_campaign_status_impressions">Impressioni</string>
+    <string name="blaze_campaign_status_rejected">Rifiutata</string>
+    <string name="blaze_campaign_status_completed">Completata</string>
+    <string name="blaze_campaign_status_active">Attiva</string>
+    <string name="blaze_campaign_status_in_moderation">In moderazione</string>
+    <string name="blaze_campaign_show_all_button">Mostra tutte</string>
+    <string name="blaze_campaign_create_campaign_button">Crea la campagna</string>
+    <string name="blaze_campaign_subtitle">Aumenta la visibilità e vendi i tuoi prodotti rapidamente.</string>
+    <string name="blaze_campaign_title">Campagna Blaze</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Il simbolo del contactless è un marchio registrato di proprietà e utilizzato su concessione di EMVCo, LLC.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. Dopo aver visualizzato il segno di spunta \"Fatto\", il negozio elaborerà il pagamento e la transazione verrà completata.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Il cliente posiziona la carta orizzontalmente sulla parte superiore del telefono, sopra il simbolo del contactless.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Sempre tenendo il tuo telefono in mano, rivolgilo verso il cliente.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tocca \"Ricevi pagamenti\" e scegli \"Tocca per pagare\".</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ricevi un pagamento</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Crea un ordine</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s o %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Come funziona</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Scopri di più sui lettori di carte</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Per accettare pagamenti superiori a questo limite, potresti acquistare un lettore di carte che accetta l\'inserimento del PIN.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Non supportiamo l\'inserimento del PIN con Tocca per pagare su Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s - In questo Paese, alcune carte richiedono il PIN per le transazioni superiori a %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Informazioni importanti</string>
+    <string name="card_reader_tap_to_pay_about_description">Tocca per pagare ti consente di accettare tutti i tipi di pagamento contactless: dalle carte di credito e di debito fisiche ai portafogli digitali. Tutto senza il bisogno di acquistare un lettore di carte fisico.</string>
+    <string name="card_reader_tap_to_pay_about_header">Che cos\'è Tocca per pagare?</string>
+    <string name="card_reader_tap_to_pay_about_title">Informazioni su Tocca per pagare</string>
+    <string name="ai_feedback_form_negative_button">Feedback negativo</string>
+    <string name="ai_feedback_form_positive_button">Feedback positivo</string>
+    <string name="ai_feedback_form_message">Il risultato è utile?</string>
+    <string name="product_creation_ai_preview_short_description_section">Breve descrizione del prodotto</string>
+    <string name="card_reader_payment_update_available">È disponibile un aggiornamento per il lettore di carte</string>
+    <string name="card_reader_about_tap_to_pay">Informazioni su Tocca per pagare</string>
+    <string name="card_reader_tap_to_pay_header">TOCCA PER PAGARE</string>
+    <string name="card_reader_settings_header">IMPOSTAZIONI</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Aggiungi dettagli manualmente utilizzando l\'e-mail</string>
+    <string name="login_app_login_malformed_link">Impossibile elaborare la richiesta di accesso all\'app</string>
+    <string name="ai_product_name_copy_error">Errore durante la copia del nome del prodotto negli appunti.</string>
+    <string name="ai_product_name_copy_success">Nome del prodotto copiato negli appunti.</string>
+    <string name="ai_product_name_copy_label">Nome del prodotto generato dall\'IA</string>
+    <string name="ai_product_description_copy_error">Errore durante la copia della descrizione del prodotto negli appunti.</string>
+    <string name="ai_product_description_copy_success">Descrizione del prodotto copiata negli appunti.</string>
+    <string name="product_creation_ai_generation_failure_message">Generazione del prodotto non riuscita. Riprova</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Cancella l\'indirizzo e non utilizzare più questa aliquota</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Configura una nuova aliquota d\'imposta per questo ordine</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Aggiunta automatica dell\'aliquota d\'imposta</string>
+    <string name="ai_product_name_sheet_error_message">Si è verificato un problema durante la generazione del nome del prodotto. Riprova.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Rigenera</string>
+    <string name="ai_product_name_sheet_generate_button">Scrivilo per me</string>
+    <string name="ai_product_name_sheet_input_description">Parlaci del tuo prodotto e di cosa lo rende unico.</string>
+    <string name="ai_product_name_sheet_subtitle">Lascia che l\'IA generi titoli accattivanti per te.</string>
+    <string name="ai_product_name_sheet_title">Nome del prodotto</string>
+    <string name="empty_review_filtered_list_message">Prova a disattivare il filtro delle recensioni non lette per visualizzarle tutte</string>
+    <string name="empty_review_filtered_list_title">Nessuna recensione del prodotto non letta</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tono selezionato</string>
+    <string name="product_creation_ai_tone_convincing">Convincente</string>
+    <string name="product_creation_ai_tone_flowery">Note floreali</string>
+    <string name="product_creation_ai_tone_formal">Formale</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_description">Imposta il tone of voice per dare forma a una presentazione del prodotto che sia in linea con il tuo brand.</string>
+    <string name="product_creation_ai_tone_title">Tone of voice</string>
+    <string name="product_creation_ai_preview_details_section">Dettagli</string>
+    <string name="product_creation_ai_preview_description_section">Descrizione del prodotto</string>
+    <string name="product_creation_ai_preview_name_section">Nome del prodotto</string>
+    <string name="product_creation_ai_preview_subtitle">Puoi sempre modificare i dettagli riportati di seguito in un secondo momento.</string>
+    <string name="product_creation_ai_preview_title">Anteprima</string>
+    <string name="product_creation_ai_about_product_continue_button">Crea dettagli del prodotto</string>
+    <string name="product_creation_ai_about_product_set_tone">Imposta il tone of voice</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Aggiungi funzionalità, vantaggi o dettagli chiave per consentire al tuo prodotto di essere trovato online.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Ad esempio tessuto morbido, cuciture resistenti e design unico</string>
+    <string name="product_creation_ai_about_product_subtitle">Metti in evidenza ciò che rende unico il tuo prodotto e lascia che l\'IA faccia la magia.</string>
+    <string name="product_creation_ai_about_product_title">Informazioni sul tuo prodotto</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Suggerisci un nome</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Ad esempio tessuto morbido, cuciture resistenti e design unico</string>
+    <string name="ai_product_creation_add_name_keywords_label">Nome del prodotto</string>
+    <string name="ai_product_creation_add_name_subtitle">Oppure amplia le tue scelte toccando per ottenere ulteriori suggerimenti sui nomi.</string>
+    <string name="ai_product_creation_add_name_title">Aggiungi nome del prodotto</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Con tecnologia IA. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Aggiungi un prodotto e i dettagli manualmente</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Aggiungi manualmente</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Genera rapidamente i dettagli per te</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Crea un prodotto con l\'IA</string>
+    <string name="product_creation_ai_entry_sheet_header">Aggiungi un prodotto</string>
+    <string name="product_review_list_unread_reviews_filter">Solo le recensioni non lette</string>
+    <string name="order_creation_edit_tax_rate">Modifica le impostazioni dell\'aliquota d\'imposta</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">Ciò non influirà sugli ordini online</string>
+    <string name="tax_rate_selector_auto_rate_label">Aggiungi questa aliquota a tutti gli ordini creati</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Modifica le aliquote d\'imposta</string>
+    <string name="tax_rate_selector_empty_list_button">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
+    <string name="tax_rate_selector_empty_list_message">Aggiungi le aliquote d\'imposta nella pagina dell\'amministratore. Qui verranno visualizzate solo le aliquote d\'imposta con le informazioni sulla posizione.</string>
+    <string name="tax_rate_selector_empty_list_title">Impossibile trovare le aliquote d\'imposta</string>
+    <string name="store_onboarding_payments_setup_description">Scopri altri fornitori di servizi di pagamento e \nscegline uno.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Metodi di pagamento</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documenti sul dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">File multimediali sul dispositivo</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Risolvi ora</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Completa la configurazione</string>
+    <string name="tax_rate_selector_title">Imposta l\'aliquota d\'imposta</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Attiva</string>
+    <string name="order_creation_set_tax_rate">Imposta la nuova aliquota d\'imposta</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Configura</string>
     <string name="tax_rate_selector_edit_rates_button_label">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
     <string name="tax_rate_selector_header_label">Questa azione modificherà l\'indirizzo del cliente nella località dell\'aliquota d\'imposta selezionata.</string>
     <string name="tax_rate_selector_info_icon_content_description">Pulsante che apre la finestra di dialogo delle informazioni sulle aliquote d\'imposta</string>
@@ -21,8 +195,6 @@ Language: it
     <string name="tax_rates_info_dialog_primary_text">Le tasse vengono calcolate abbinando l\'indirizzo di fatturazione o di spedizione del cliente o l\'indirizzo del tuo negozio a una località dell\'aliquota d\'imposta.</string>
     <string name="tax_rates_information_content_description">Informazioni sulle tasse</string>
     <string name="store_onboarding_wcpay_setup_description">Usando WooCommerce Payments, accetti di essere vincolato dai &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e confermi di aver letto la &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Politica sulla privacy&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">Configura</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sulla verifica delle tue informazioni con WooPayments.</string>
     <string name="store_onboarding_wcpay_instructions_content_button">Inizia l\'impostazione</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Collaboriamo con Stripe per WooPayments. Verrai indirizzato al sito di Stripe per l\'iscrizione. Ti chiederemo di verificare i dettagli della tua attività e di pagamento.</string>
@@ -167,7 +339,6 @@ Language: it
     <string name="empty_order_test_order_message">Esegui un ordine di prova per assicurarti che il processo WooCommerce offra un\'esperienza cliente fluida</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Aggiungi dettagli manualmente</string>
     <string name="order_creation_customer_search_old_wc_hint">Cerca clienti per</string>
-    <string name="shipping_classes_zones">Classi e zone di spedizione</string>
     <string name="free_trial_survey_free_text">Altro motivo (specificare)</string>
     <string name="free_trial_survey_option4">Faccio parte di una team e la decisione va presa insieme a tutti i membri.</string>
     <string name="free_trial_survey_option3">Trovo che il prezzo del servizio sia un fattore significativo nella mia decisione.</string>
@@ -212,13 +383,6 @@ Language: it
     <string name="highlights_tooltip_button_hint">Testo del pulsante</string>
     <string name="highlights_tooltip_message_hint">Messaggio del tooltip. \n Può essere più righe.</string>
     <string name="highlights_tooltip_title_hint">Titolo del tooltip</string>
-    <string name="blaze_banner_dismiss_dialog_button">Fatto</string>
-    <string name="blaze_banner_dismiss_dialog_description">Non preoccuparti. Blaze è accessibile da Menu e dal menu dei dettagli del prodotto per tua comodità.</string>
-    <string name="blaze_banner_dismiss_dialog_title">Annunci pubblicitari di Blaze</string>
-    <string name="blaze_banner_close_button_content_description">Chiudi il pulsante del banner di Blaze</string>
-    <string name="blaze_banner_button">Prova Blaze ora</string>
-    <string name="blaze_banner_description">Trasforma i tuoi prodotti in annunci pubblicitari pubblicati su milioni di siti su WordPress.com e Tumblr.</string>
-    <string name="blaze_banner_title">Promuovi i prodotti con Blaze</string>
     <string name="ai_product_description_tooltip_dismiss">Fatto</string>
     <string name="ai_product_description_tooltip_message">Usa il nostro strumento basato sull\'IA per generare rapidamente le descrizioni dei prodotti. Basta inserire le parole chiave e noi faremo il resto.</string>
     <string name="ai_product_description_tooltip_title">✨ Scrivi con l\'IA</string>
@@ -242,7 +406,6 @@ Language: it
     <string name="ai_product_description_note_dialog_heading">Ottimo inizio.</string>
     <string name="ai_product_description_feedback">La descrizione\ngenerata è utile?</string>
     <string name="ai_product_description_regenerate_button">Rigenera</string>
-    <string name="ai_product_description_survey">La descrizione generata è utile?</string>
     <string name="ai_product_description_hint">Metti in evidenza le caratteristiche uniche del tuo prodotto e il pubblico a cui si rivolge con delle parole chiave per una descrizione personalizzata.</string>
     <string name="ai_product_description_example">Esempio: In vaso, Cactus, Pianta, Decorativa, Di facile manutenzione</string>
     <string name="ai_product_description_product_name">Inserisci il nome del prodotto</string>
@@ -279,8 +442,6 @@ Language: it
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Mantieni attiva la tua attività con il nostro piano.</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">La tua prova gratuita di Woo Express termina domani (%1$s). Ora è il momento di pensare al tuo futuro: scegli un piano e preparati a crescere.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Il periodo della prova gratuita sta per scadere.</string>
-    <string name="local_notification_without_free_trial_description">Salve %1$s, %2$s è pronto per te. Inizia la prova gratuita di 14 giorni di Woo Express con un solo clic per far partire l\'attività online.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Il tuo negozio attende.</string>
     <string name="local_notification_store_creation_complete_description">Salve, %1$s. Ti diamo il benvenuto nella prova gratuita di 14 giorni di Woo Express: tutto ciò di cui hai bisogno per avviare e far crescere un\'attività di successo online, tutto in un unico posto. Tutto pronto per iniziare a esplorare?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Il tuo negozio è pronto.</string>
     <string name="product_type_variation">Prodotto con varianti</string>
@@ -418,8 +579,7 @@ Language: it
     <string name="product_selector_popular_products_heading">Popolare</string>
     <string name="jetpack_install_role_eligibility_learn_more">Scopri di più sui ruoli e sull\'autorizzazione</string>
     <string name="jetpack_install_role_eligibility_error_message">Sembra che il tuo ruolo non ti permetta di installare Jetpack. \nContatta l\'amministratore del sito per assistenza.</string>
-    <string name="card_reader_tap_to_pay_description">Puoi provare Tocca per pagare con un piccolo\nimporto qui.</string>
-    <string name="card_reader_test_tap_to_pay">Prova il tuo Tocca per pagare</string>
+    <string name="card_reader_test_tap_to_pay">Prova Tocca per pagare</string>
     <string name="subscription_free_trial">Prova gratuita</string>
     <string name="subscription_sign_up_fee">Commissione di iscrizione</string>
     <string name="subscription_expire">Scade dopo</string>
@@ -438,7 +598,6 @@ Language: it
     <string name="subscription_status_cancelled">Annullato</string>
     <string name="subscription_status_on_hold">In sospeso</string>
     <string name="subscription_status_active">Attivo</string>
-    <string name="no_variable_subscription_warning">Puoi aggiungere abbonamenti variabili solo nella bacheca web.</string>
     <string name="subscription_details_info_notice">Puoi modificare gli abbonamenti ai prodotti nella bacheca web.</string>
     <string name="subscription_no_trial">Nessun periodo di prova</string>
     <string name="subscription_no_sign_up_fee">Nessuna commissione di iscrizione</string>
@@ -456,7 +615,8 @@ Language: it
     <string name="product_subscription_title">Abbonamento</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Il lettore di carte accetta pagamenti contactless, chip e tramite strisciata con carte di debito e di credito.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accetta in modo sicuro pagamenti contactless direttamente dal tuo telefono.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Condividi il feedback su Tocca per pagare</string>
+    <string name="card_reader_tap_to_pay_description">Usa il telefono per accettare i pagamenti\ncon carta. Prova ora.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Condividi il feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossibile accedere perché la creazione della password dell\'applicazione non è stata approvata.</string>
     <string name="login_site_credentials_fetching_site">Sito in caricamento…</string>
     <string name="login_site_credentials_fetching_site_failed">Si è verificato un errore durante il recupero del sito web</string>
@@ -550,9 +710,6 @@ Language: it
     <string name="jetpack_benefits_fetching_status">Recupero dello stato di Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Si è verificato un problema. Riprova più tardi.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova un pagamento</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Puoi trovare la funzione Tocca per pagare su Android in\nMenu &gt; Pagamenti o Ricevi pagamenti e\nscegli Tocca per pagare.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova un pagamento usando la tua carta e\nverrà rimborsato quando hai terminato.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Il tuo telefono è pronto per Tocca per pagare.\nIl tuo cliente può toccare le sue carte\npresenti sul telefono per pagare.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ricevi pagamenti con carta\ncon il tuo telefono</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tocca per pagare</string>
     <string name="card_reader_hub_actions_category_header">AZIONI</string>
@@ -708,7 +865,7 @@ Language: it
     <string name="login_jetpack_installation_retry_activating">Prova di nuovo l\'attivazione</string>
     <string name="login_jetpack_installation_retry_installing">Prova di nuovo l\'installazione</string>
     <string name="login_jetpack_installation_get_support">Ottieni assistenza</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Riprova e contatta il supporto se l\'errore persiste.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Riprova e contatta il supporto se l\'errore persiste.</string>
     <string name="login_jetpack_installation_error_generic_message">Si è verificato un errore durante la comunicazione con il sito.</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">Non disponi dell\'autorizzazione per gestire i plugin in questo negozio</string>
     <string name="login_jetpack_installation_error_authorizing">Errore di autorizzazione della connessione a Jetpack</string>
@@ -1312,7 +1469,6 @@ Language: it
     <string name="order_creation_customer_note">Nota cliente</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Ricarica dopo l\'aggiornamento</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Sul tuo negozio è installata una versione non aggiornata dell\'estensione WooCommerce Stripe Gateway. Esegui l\'aggiornamento per accettare Pagamenti di persona.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Aggiorna</string>
     <string name="card_reader_payment_failed_unknown">Il pagamento è stato rifiutato per una ragione sconosciuta</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Una carta in tempo reale è stata usata su un sito in modalità di prova</string>
     <string name="card_reader_payment_failed_test_card">Le carte di prova del sistema non sono autorizzate al pagamento</string>
@@ -1532,7 +1688,6 @@ Language: it
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Ricarica dopo l\'aggiornamento</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Sul tuo negozio è installata una versione non aggiornata dell\'estensione WooCommerce Payments. Esegui l\'aggiornamento per accettare Pagamenti di persona.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Aggiorna WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Aggiorna</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Ci sei quasi! Completa l\'impostazione di WooCommerce Payments per iniziare ad accettare pagamenti di persona.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Completa la configurazione di WooCommerce Payments nella pagina di amministrazione del negozio</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Ricarica dopo l\'attivazione</string>
@@ -1896,14 +2051,13 @@ Language: it
     <string name="product_downloadable_files_download_settings">Impostazioni download</string>
     <string name="product_downloadable_files_name_invalid">Inserisci un nome valido</string>
     <string name="product_downloadable_files_add_manually">Inserisci URL file</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Dalla libreria multimediale WordPress</string>
-    <string name="product_downloadable_files_add_media_from_device">Dal dispositivo</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Libreria multimediale WordPress</string>
     <string name="product_downloadable_files_url_invalid">Verifica che l\'URL inserito sia valido</string>
     <string name="product_downloadable_files_upload_dialog_message">Attendi…</string>
     <string name="product_downloadable_files_upload_dialog_title">Caricamento file</string>
     <string name="product_downloadable_files_upload_failed">Errore durante il caricamento del file</string>
     <string name="product_downloadable_files_add_title">Aggiungi file scaricabile</string>
-    <string name="product_downloadable_add_bottomsheet_header">Aggiungi file scaricabile</string>
+    <string name="product_downloadable_add_bottomsheet_header">Aggiungi file scaricabile da</string>
     <string name="bottom_sheet_downloadable_files_desc">Includi i file scaricabili con gli acquisti</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Annulla</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Sì, modifica</string>
@@ -2886,7 +3040,7 @@ Language: it
     <string name="login_text_otp_another">Inviami invece un messaggio con un altro codice.</string>
     <string name="login_text_otp">Inviami un codice.</string>
     <string name="enter_verification_code_sms">Abbiamo inviato un messaggio di testo al numero di telefono che termina in %s. Inserisci il codice di verifica contenuto nell\'SMS.</string>
-    <string name="enter_verification_code">Ci sei quasi! Inserisci il codice di verifica dalla tua app di autenticazione.</string>
+    <string name="enter_verification_code">Ci sei quasi! Inserisci il codice di verifica per WordPress.com dalla tua app di autenticazione.</string>
     <string name="enter_username_instead">Accedi con il tuo nome utente.</string>
     <string name="enter_site_address_instead">Accedi inserendo l\'indirizzo del tuo sito.</string>
     <string name="alternatively">In alternativa:</string>
@@ -3052,5 +3206,13 @@ Language: it
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Pacchetto personalizzato</item>
         <item>Pacchetto del servizio</item>
+    </string-array>
+    <string-array name="subscription_interval_options">
+        <item>Ogni</item>
+        <item>Ogni 2°</item>
+        <item>Ogni 3°</item>
+        <item>Ogni 4°</item>
+        <item>Ogni 5°</item>
+        <item>Ogni 6°</item>
     </string-array>
 </resources>

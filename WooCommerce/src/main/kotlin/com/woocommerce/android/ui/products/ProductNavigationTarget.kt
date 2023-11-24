@@ -5,9 +5,9 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
-import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
@@ -26,15 +26,16 @@ sealed class ProductNavigationTarget : Event() {
         val title: String,
         val subject: String
     ) : ProductNavigationTarget()
+
     data class ShareProductWithAI(
         val permalink: String,
         val title: String,
         val description: String? = null
     ) : ProductNavigationTarget()
+
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
-        val isReadOnlyMode: Boolean = false
     ) : ProductNavigationTarget()
 
     data class ViewProductInventory(
@@ -132,6 +133,8 @@ sealed class ProductNavigationTarget : Event() {
         val productSourceForTracking: ProductSourceForTracking,
     ) : ProductNavigationTarget()
 
+    data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()
+
     data class NavigateToProductFilter(
         val stockStatus: String?,
         val productType: String?,
@@ -141,9 +144,12 @@ sealed class ProductNavigationTarget : Event() {
         val restrictions: List<ProductRestriction>
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscription(
-        val subscription: SubscriptionDetails,
-        val sale: SaleDetails? = null
+    data class ViewProductSubscriptionExpiration(
+        val subscription: SubscriptionDetails
+    ) : ProductNavigationTarget()
+
+    data class ViewProductSubscriptionFreeTrial(
+        val subscription: SubscriptionDetails
     ) : ProductNavigationTarget()
 
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()

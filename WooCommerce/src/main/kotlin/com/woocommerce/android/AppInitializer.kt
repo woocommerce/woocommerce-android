@@ -138,6 +138,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
+
                             selectedSite.reset()
                             restartMainActivity()
                         }

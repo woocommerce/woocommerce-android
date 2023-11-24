@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_154"
+msgctxt "release_note_163"
 msgid ""
-"15.4:\n"
-"Merchants can now select a tax rate when creating an order and add downloadable files from all supported file types during product editing. We've improved In-Person Payments; if WcPay setup isn't finished, users can now complete it from the app. Minor updates include a fix for tracking the country when IPP onboarding isn't finished and an explanation screen before opening the Payments task.\n"
+"16.3:\n"
+"In this update, we've made managing your WooCommerce store even easier! You can now view your balances and deposits directly on the Payments screen if you're a WooCommerce Payments user. Additionally, we've added the ability to create or edit subscription products. And, to make order creation smoother, we now support bundle products. Enjoy the improved functionality and keep your feedback coming!\n"
 msgstr ""
 
-msgctxt "release_note_153"
+msgctxt "release_note_162"
 msgid ""
-"15.3:\n"
-"We're excited to roll out the latest update for our Android App. This release brings general improvements for a smoother, faster, and more user-friendly experience. Enjoy enhanced performance, a streamlined interface, and bug fixes. Happy selling!\n"
+"16.2:\n"
+"Welcome to the latest update of our WooCommerce mobile app! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

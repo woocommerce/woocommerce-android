@@ -33,22 +33,15 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.blaze.BlazeBanner
-import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_LIST_BANNER
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -61,7 +54,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -105,7 +97,6 @@ class ProductListFragment :
     private val selectionPredicate = MutableMultipleSelectionPredicate<Long>()
 
     private val productListViewModel: ProductListViewModel by viewModels()
-    private val blazeViewModel: BlazeBannerViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
 
@@ -159,9 +150,7 @@ class ProductListFragment :
         }
 
         initAddProductFab(binding.addProductButton)
-
         addSelectionTracker()
-        setUpBlazeBanner()
 
         when {
             productListViewModel.isSearching() -> {
@@ -171,42 +160,6 @@ class ProductListFragment :
 
             else -> {
                 productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
-            }
-        }
-    }
-
-    private fun setUpBlazeBanner() {
-        blazeViewModel.setBlazeBannerSource(PRODUCT_LIST_BANNER)
-        blazeViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
-            if (!isVisible) binding.blazeBannerView.hide()
-            else {
-                binding.blazeBannerView.apply {
-                    show()
-                    setContent {
-                        WooThemeWithBackground {
-                            BlazeBanner(
-                                onClose = blazeViewModel::onBlazeBannerDismissed,
-                                onTryBlazeClicked = blazeViewModel::onTryBlazeBannerClicked
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        blazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
-                is BlazeBannerViewModel.OpenBlazeEvent -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
-                            urlToLoad = event.url,
-                            source = event.source
-                        )
-                    )
-                }
-
-                is ShowDialog -> event.showDialog()
             }
         }
     }
@@ -457,7 +410,6 @@ class ProductListFragment :
 
         viewModel.productList.observe(viewLifecycleOwner) {
             showProductList(it)
-            blazeViewModel.updateBlazeBannerStatus()
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->

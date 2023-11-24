@@ -344,6 +344,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
 
+    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+
+    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
+
+    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 
@@ -361,10 +367,4 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
-
-    fun isBlazeBannerHidden(siteId: Int): Boolean = AppPrefs.isBlazeBannerHidden(siteId)
-
-    fun setBlazeBannerHidden(siteId: Int, hide: Boolean) {
-        AppPrefs.setBlazeBannerHidden(siteId, hide)
-    }
 }

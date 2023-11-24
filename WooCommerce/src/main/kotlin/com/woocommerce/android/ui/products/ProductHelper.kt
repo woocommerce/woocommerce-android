@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.SubscriptionDetails
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
 import java.util.Date
@@ -40,7 +43,7 @@ object ProductHelper {
             description = "",
             shortDescription = "",
             type = productType.value,
-            status = if (productType == VARIABLE) DRAFT else PUBLISH,
+            status = if (productType.isVariableProduct()) DRAFT else PUBLISH,
             catalogVisibility = VISIBLE,
             isFeatured = false,
             stockStatus = InStock,
@@ -90,9 +93,24 @@ object ProductHelper {
             variationIds = listOf(),
             downloads = listOf(),
             isPurchasable = false,
-            subscription = null,
+            subscription =
+            if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) getDefaultSubscriptionDetails()
+            else null,
             isSampleProduct = false,
             parentId = 0,
         )
     }
+
+    fun getDefaultSubscriptionDetails(): SubscriptionDetails =
+        SubscriptionDetails(
+            price = null,
+            period = SubscriptionPeriod.Month,
+            periodInterval = 1,
+            length = null,
+            signUpFee = null,
+            trialPeriod = null,
+            trialLength = null,
+            oneTimeShipping = false,
+            paymentsSyncDate = null
+        )
 }

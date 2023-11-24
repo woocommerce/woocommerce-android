@@ -146,7 +146,8 @@ class UnifiedLoginTracker
         LOGIN_SITE_ADDRESS("login_site_address"),
         SIGNUP("signup"),
         GOOGLE_SIGNUP("google_signup"),
-        EPILOGUE("epilogue")
+        EPILOGUE("epilogue"),
+        LOGIN_QR("login_qr"),
     }
 
     enum class Step(val value: String) {

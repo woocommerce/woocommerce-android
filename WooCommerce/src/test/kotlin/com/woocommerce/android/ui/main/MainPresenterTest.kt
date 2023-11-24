@@ -24,6 +24,8 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -146,5 +148,18 @@ class MainPresenterTest : BaseUnitTest() {
         mainPresenter.takeView(mainContractView)
 
         verify(mainContractView).hideOrderBadge()
+    }
+
+    @Test
+    fun `Handles invalid token error correctly`() = testBlocking {
+        mainPresenter.takeView(mainContractView)
+
+        // Check that the resulting OnAuthenticationChanged ends up logging user out and restarting the View
+        val event = OnAuthenticationChanged()
+        event.error = AuthenticationError(INVALID_TOKEN, "Invalid token")
+        mainPresenter.onAuthenticationChanged(event)
+
+        verify(accountRepository).logout()
+        verify(mainContractView).restart()
     }
 }

@@ -63,6 +63,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="custom_amounts">Custom Amounts</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
@@ -322,8 +323,10 @@
     <string name="login_jetpack_installation_error_activating">Error activating Jetpack</string>
     <string name="login_jetpack_installation_error_authorizing">Error authorising connection to Jetpack</string>
     <string name="login_jetpack_installation_error_plugin_permission_message">You don’t have permission to manage plugins on this store</string>
+    <string name="login_jetpack_installation_error_connection_message">There was an error communicating with your site.</string>
+    <string name="login_jetpack_installation_error_connection_suggestion">Please connect Jetpack through your admin page on a browser or contact support.</string>
     <string name="login_jetpack_installation_error_generic_message">There was an error communicating with your site.</string>
-    <string name="login_jetpack_installation_retry_or_contact_support">Please try again and contact support if this error continues.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Please try again and contact support if this error continues.</string>
     <string name="login_jetpack_installation_get_support">Get support</string>
     <string name="login_jetpack_installation_retry_installing">Try installing again</string>
     <string name="login_jetpack_installation_retry_activating">Try activating again</string>
@@ -350,7 +353,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
-
+    <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <!--
         My Store View
     -->
@@ -498,6 +501,18 @@
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+
+    <!--
+         Custom Amounts
+    -->
+    <string name="custom_amounts_dialog_title">Custom Amount</string>
+    <string name="custom_amounts_enter_amount">Amount</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
+    <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
+    <string name="custom_amounts_tax_label">Charge Taxes</string>
+
     <!--
          Taxes
     -->
@@ -515,6 +530,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_price_after_discount">Price after discount</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
@@ -525,14 +541,18 @@
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add products</string>
+    <string name="order_creation_add_custom_amounts">Add custom amount</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
+    <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_select_coupon">Select a coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
+    <string name="order_creation_increase_item_amount_content_description">Increase product quantity</string>
+    <string name="order_creation_decrease_item_amount_content_description">Decrease product quantity</string>
     <string name="coupon_selector_empty_list_button">Go to Coupons</string>
     <string name="coupon_selector_empty_list_message">You haven\'t created any coupons yet. Create a coupon to apply it to this order.</string>
     <string name="coupon_selector_empty_list_title">Everyone loves a deal</string>
@@ -561,7 +581,9 @@
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_payment">Payment</string>
+    <string name="order_creation_payment_header">Payment totals</string>
     <string name="order_creation_payment_products_total">Products Total</string>
+    <string name="order_creation_payment_products">Products</string>
     <string name="order_creation_payment_order_total">Order Total</string>
     <string name="order_creation_payment_fee">Fees</string>
     <string name="order_creation_loading_dialog_title">Creating your order</string>
@@ -569,6 +591,7 @@
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
     <string name="order_creation_payment_tax">Taxes Total</string>
+    <string name="order_creation_payment_tax_label">Taxes</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -588,6 +611,7 @@
     <string name="order_creation_customer_search_empty_name">No name</string>
     <string name="order_creation_customer_search_empty_email">No email address</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Add details manually</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Add details manually using email</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
@@ -600,6 +624,7 @@
     <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
 
     <!--
          Barcode Scanning
@@ -666,6 +691,8 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_editing_barcode_content_description">Scan barcode</string>
+    <string name="order_editing_add_content_description">Add product</string>
     <string name="order_sync_failed">Unable to save changes</string>
     <string name="order_sync_coupon_removed">Coupon could not be applied and was removed from the order</string>
     <!--
@@ -697,6 +724,7 @@
         Order Detail Views
     -->
     <string name="customer_information">Customer information</string>
+    <string name="orderdetail_customer_header">CUSTOMER</string>
     <string name="customer_full_name">%1$s %2$s</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
@@ -718,6 +746,8 @@
     <string name="orderdetail_product_image_contentdesc">Product Image</string>
     <string name="orderdetail_product">Product</string>
     <string name="orderdetail_product_multiple">Products</string>
+    <string name="orderdetail_product_uppercase">PRODUCT</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUCTS</string>
     <string name="orderdetail_product_qty">QTY</string>
     <string name="orderdetail_payment_summary_completed">%1$s via %2$s</string>
     <string name="orderdetail_payment_summary_onhold">Awaiting payment via %s</string>
@@ -738,6 +768,7 @@
     <string name="orderdetail_note_public">To customer</string>
     <string name="orderdetail_note_system">System</string>
     <string name="orderdetail_order_notes">Order notes</string>
+    <string name="orderdetail_order_notes_uppercase">ORDER NOTES</string>
     <string name="orderdetail_customer_note_hint">Edit a customer order note</string>
     <string name="orderdetail_payment_cleared">Payment Cleared</string>
     <string name="orderdetail_show_billing">Show Billing</string>
@@ -829,6 +860,8 @@
     <string name="orderdetail_empty_address">No address specified</string>
     <string name="order_detail_use_as_billing_address">Use as Billing Address</string>
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
+    <string name="order_detail_payment_header">PAYMENT TOTALS</string>
+    <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
 
     <!--
         Shipping label Refunds
@@ -1259,6 +1292,7 @@
     <string name="card_reader_hub_collect_payment">Collect Payment</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
@@ -1269,24 +1303,47 @@
     <string name="card_reader_icon_content_description">Card Reader Image</string>
     <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;a href=\'\'&gt;Continue setup&lt;/a&gt;</string>
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
-    <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Share Tap To Pay Feedback</string>
+    <string name="card_reader_test_tap_to_pay">Try out Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_about_tap_to_pay">About Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_description">Use your phone to accept card\npayments. Try it now.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Share Feedback</string>
     <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
     <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
-
+    <string name="card_reader_hub_deposit_summary_available_funds">Available funds</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">Pending funds</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d deposits</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d deposit</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">Funds become available after pending for %d day.</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">Deposits</string>
+    <string name="card_reader_hub_deposit_summary_next">Next</string>
+    <string name="card_reader_hub_deposit_summary_last">Last</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Available funds are deposited automatically, every day.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Available funds are deposited automatically, every %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Available funds are deposited automatically, every month on the %s.</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">Learn more about when you\'ll receive your funds</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Collapse/expand deposit summary</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">Estimated</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">Paid</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">Pending</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">In transit</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">Canceled</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">Failed</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">Unknown</string>
     <!--
            Card Reader Tap To Pay Explanation
         -->
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu &gt; Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
@@ -1295,6 +1352,28 @@
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with Tap To Pay on Android</string>
+
+    <!--
+           Card Reader Tap To Pay About
+        -->
+    <string name="card_reader_tap_to_pay_about_title">About Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_about_header">What is Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay lets you accept all types of contactless payments – from physical debit and credit cards, to digital wallets – without the need to purchase a physical card reader.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Important information</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">In %1$s, some cards require a PIN for contactless transactions above %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">We do not support PIN entry with Tap to Pay on Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">To accept payments above this limit, consider purchasing a card reader that accepts PIN entry.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Learn more about card readers</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">How it works</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s or %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Create an order</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">collect a payment</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. After you see the “Done” checkmark, your store will process the payment, and the transaction will be complete.</string>
+    <string name="card_reader_tap_to_pay_about_copyright">The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC.</string>
+
 
     <!--
             Card Reader Type Selection
@@ -1408,6 +1487,7 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
+    <string name="card_reader_payment_update_available">An update for the card reader is available</string>
 
     <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -1658,6 +1738,7 @@
     <string name="product_inventory_empty">Add inventory</string>
     <string name="product_variants">Variants</string>
     <string name="product_price">Price</string>
+    <string name="product_sale">Sale</string>
     <string name="product_price_empty">Add price</string>
     <string name="variable_product_attributes">Variations attributes</string>
     <string name="product_attributes">Attributes</string>
@@ -1667,6 +1748,8 @@
     <string name="product_shipping_empty">Add shipping</string>
     <string name="product_regular_price">Regular price</string>
     <string name="product_sale_price">Sale price</string>
+    <string name="product_subscription_interval">Billing interval</string>
+    <string name="product_subscription_period">Period</string>
     <string name="product_schedule_sale_label">Schedule sale</string>
     <string name="product_schedule_sale_sublabel">Automatically start and end a sale</string>
     <string name="product_schedule_sale_from_label">From</string>
@@ -1869,6 +1952,9 @@
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
     <string name="product_subscription_title">Subscription</string>
+    <string name="product_subscription_expiration_title">Subscription expiration</string>
+    <string name="product_subscription_free_trial_title">Subscription free trial</string>
+    <string name="product_subscription_free_trial_info">An optional period of time to wait before charging the first recurring payment. Any sign up fee will still be charged at the outset of the subscription. The trial period can not exceed: 90 days, 52 weeks, 24 months or 5 years.</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
@@ -1904,18 +1990,31 @@
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
-    <string name="product_creation_ai_about_product_edit_text_header">My product</string>
-    <string name="product_creation_ai_about_product_edit_text_hint">For example, Soft fabric, durable stitching, unique design</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
-    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_subtitle">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
+    <string name="product_creation_ai_tone_title">Tone and voice</string>
+    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_flowery">Flowery</string>
+    <string name="product_creation_ai_tone_convincing">Convincing</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
+    <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
+    <string name="product_creation_package_photo_keywords_section">Keywords</string>
+    <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
+    <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
+    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -2008,6 +2107,7 @@
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="photo_picker_title">Device Media Library</string>
+    <string name="media_picker_dialog_title">Select Media Source</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
@@ -2096,7 +2196,7 @@
     <string name="settings_tracking_analytics_error_update">There was an error updating your privacy settings</string>
     <string name="settings_more_privacy_options_header">More privacy options</string>
     <string name="settings_web_options">Web Options</string>
-    <string name="settings_web_options_description">More privacy options available for woocommerce.com users. Check here to learn more.</string>
+    <string name="settings_web_options_description">More privacy options available for woo.com users. Check here to learn more.</string>
     <string name="settings_usage_tracking">Usage Tracking</string>
     <string name="settings_usage_tracking_description">Learn more about the data we collect about your store and your options to control this data sharing.</string>
     <string name="settings_privacy_header">Privacy</string>
@@ -2239,7 +2339,7 @@
     <string name="alternatively">Alternatively:</string>
     <string name="enter_site_address_instead">Log in by entering your site address.</string>
     <string name="enter_username_instead">Log in with your username.</string>
-    <string name="enter_verification_code">Almost there! Please enter the verification code from your Authenticator app.</string>
+    <string name="enter_verification_code">Almost there! Please enter the verification code for WordPress.com from your authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
 
 
@@ -2352,6 +2452,7 @@
     <string name="notification_error_wrong_password">Please double check your password to continue.</string>
     <string name="notification_2fa_needed">Please provide an authentication code to continue.</string>
     <string name="notification_login_failed">An error has occurred.</string>
+    <string name="email_or_username">Email address or Username</string>
 
     <!-- Screen titles -->
     <string name="email_address_login_title">Email address login</string>
@@ -2414,10 +2515,14 @@
     <string name="product_type_list_header">Select a product type</string>
     <string name="product_type_simple_title">Simple physical product</string>
     <string name="product_type_simple_desc">A unique physical product that you may have to ship to the customer</string>
+    <string name="product_type_simple_subscription_title">Simple subscription product</string>
+    <string name="product_type_simple_subscription_desc">A unique product subscription that enables recurring payments</string>
     <string name="product_type_virtual_title">Simple virtual product</string>
     <string name="product_type_virtual_desc">A unique digital product like services, downloadable books, music or videos</string>
     <string name="product_type_variable_title">Variable product</string>
     <string name="product_type_variable_desc">A product with variations like color or size</string>
+    <string name="product_type_variable_subscription_title">Variable subscription product</string>
+    <string name="product_type_variable_subscription_desc">A product subscription with variations</string>
     <string name="product_type_grouped_title">Grouped product</string>
     <string name="product_type_grouped_desc">A collection of related products</string>
     <string name="product_type_external_title">External product</string>
@@ -3076,8 +3181,8 @@
     <string name="product_downloadable_files_upload_dialog_title">Uploading files</string>
     <string name="product_downloadable_files_upload_dialog_message">Please wait…</string>
     <string name="product_downloadable_files_url_invalid">Check that the url entered is valid</string>
-    <string name="product_downloadable_files_add_media_from_device">Media files on device</string>
-    <string name="product_downloadable_files_add_documents_from_device">Documents on device</string>
+    <string name="product_downloadable_files_add_media_from_device">Images and videos on device</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documents and other files on device</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Media Library</string>
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
@@ -3414,7 +3519,6 @@
     <string name="subscription_no_sign_up_fee">No sign up fee</string>
     <string name="subscription_no_trial">No trial period</string>
     <string name="subscription_details_info_notice">You can edit product subscriptions in the web dashboard.</string>
-    <string name="no_variable_subscription_warning">You can only add variable subscriptions in the web dashboard.</string>
     <!--
     Subscription status
     -->
@@ -3442,7 +3546,12 @@
     <string name="subscription_price">Subscription price</string>
     <string name="subscription_expire">Expire after</string>
     <string name="subscription_sign_up_fee">Sign up fee</string>
+    <string name="subscription_sign_up_fee_explanation">Optional, the sign-up fee will be charged immediately, even if the product has a free trial or the payment dates are synced.</string>
     <string name="subscription_free_trial">Free trial</string>
+    <string name="subscription_one_time_shipping">One time shipping</string>
+    <string name="subscription_one_time_shipping_enabled">Enabled</string>
+    <string name="subscription_one_time_shipping_description">Enable this to only charge shipping once on the initial order.</string>
+    <string name="subscription_one_time_shipping_note">Note: for this setting to be enabled the subscription must not have a free trial or a synced renewal date.</string>
 
 
     <!--
@@ -3573,7 +3682,6 @@
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
     <string name="ai_product_description_title_hint">Enter product title.</string>
-    <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
     <string name="ai_product_description_note_dialog_heading">Great start!</string>
@@ -3588,6 +3696,8 @@
     <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
     <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
+    <string name="ai_product_description_copy_success">Product description copied to clipboard.</string>
+    <string name="ai_product_description_copy_error">Error copying product description to clipboard.</string>
 
     <!--
     AI thank you note
@@ -3601,15 +3711,62 @@
 
 
     <!--
-    Blaze banner
+    AI Product name description
     -->
-    <string name="blaze_banner_title">Promote products with Blaze</string>
-    <string name="blaze_banner_description">Turn your products into ads that run across millions of sites on WordPress.com and Tumblr.</string>
-    <string name="blaze_banner_button">Try Blaze now</string>
-    <string name="blaze_banner_close_button_content_description">Close Blaze banner button</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
-    <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
-    <string name="blaze_banner_dismiss_dialog_button">Got it</string>
+    <string name="ai_product_name_sheet_title">Product name</string>
+    <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
+    <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
+    <string name="ai_product_name_sheet_generate_button">Write it for me</string>
+    <string name="ai_product_name_sheet_regenerate_button">Regenerate</string>
+    <string name="ai_product_name_sheet_error_message">There was a problem generating the product name. Please try again.</string>
+    <string name="ai_product_name_copy_label">Product name generated by AI</string>
+    <string name="ai_product_name_copy_success">Product name copied to clipboard.</string>
+    <string name="ai_product_name_copy_error">Error copying product name to clipboard.</string>
+
+    <!--
+    My Store Blaze view
+    -->
+    <string name="blaze_campaign_title">Blaze campaign</string>
+    <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
+    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_status_in_moderation">In moderation</string>
+    <string name="blaze_campaign_status_active">Active</string>
+    <string name="blaze_campaign_status_completed">Completed</string>
+    <string name="blaze_campaign_status_scheduled">Scheduled</string>
+    <string name="blaze_campaign_status_rejected">Rejected</string>
+    <string name="blaze_campaign_status_canceled">Canceled</string>
+    <string name="blaze_campaign_status_impressions">Impressions</string>
+    <string name="blaze_campaign_status_clicks">Clicks</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+
+    <!--
+    Blaze campaign list
+    -->
+    <string name="blaze_campaign_list_title">Blaze campaigns</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
+    <!--
+    Blaze campaign creation intro
+    -->
+    <string name="blaze_campaign_creation_intro_title">Drive more sales to your store with Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promote your product in just minutes.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Take control with just a few dollars a day. It’s budget-friendly.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Reach millions on WordPress and Tumblr sites.</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Track performance, start and stop your Blaze campaign anytime.</string>
+    <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
+
+    <!--
+    Blaze campaign creation celebration
+    -->
+    <string name="blaze_campaign_creation_celebration_header">All set!</string>
+    <string name="blaze_campaign_ceation_celebration_message">The ad has been submistted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
+    <string name="blaze_campaign_ceation_celebration_button">Got it</string>
+
+    <!--
+    Blaze other
+    -->
+    <string name="blaze_campaign_details_title">Campaign details</string>
+    <string name="product_details_blaze_card">Promote with Blaze</string>
 
     <!--
     Highlights tooltip
@@ -3627,11 +3784,6 @@
     <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
     <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
-
-    <!--
-    Shipping zones
-    -->
-    <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
 
     <!--
     Tax rates info dialog
@@ -3661,4 +3813,40 @@
     <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
     <string name="tax_rate_selector_auto_rate_label">Add this rate to all created orders</string>
     <string name="tax_rate_selector_auto_rate_subtitle">This will not affect online orders</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
+    <string name="next_order">Next order</string>
+    <string name="previous_order">Previous order</string>
+
+    <!--
+    AI feedback form
+    -->
+    <string name="ai_feedback_form_message">Is the result helpful?</string>
+    <string name="ai_feedback_form_positive_button">Positive feedback</string>
+    <string name="ai_feedback_form_negative_button">Negative feedback</string>
+    <string name="login_text_security_key">Use a security key</string>
+    <string name="login_error_security_key">There was some trouble with the Security key login</string>
+    <string name="notification_security_key_needed">Please provide your security key to continue.</string>
+
+
+    <string name="extension_configure_button">Configure</string>
+    <string name="default_product_title">Product %s</string>
+    <string name="product_configuration_title">Configuration</string>
+    <string name="save_configuration">Save configuration</string>
+    <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
+    <string name="configuration_required">Configuration required</string>
+    <string name="configuration_quantity_item">%d item</string>
+    <string name="configuration_quantity_item_plural">%d items</string>
+    <string name="configuration_quantity_between"> between %1$s and %2$s items </string>
+    <string name="configuration_quantity_less_than"> less than %1$s items </string>
+    <string name="configuration_quantity_more_than"> more than %1$s item </string>
+    <string name="configuration_quantity_more_than_plural"> more than %1$s items </string>
+    <string name="configuration_quantity_rule_issue"> Please select %1$s </string>
+    <string name="configuration_quantity_items_selected"> %1$s item selected </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s items selected </string>
+    <string name="configuration_variable_selection"> please select a variation </string>
+    <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
+    <string name="configuration_variable_update">Choose variation</string>
+    <string name="product_variation_picker_title">Select a variation</string>
 </resources>

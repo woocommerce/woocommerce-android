@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -111,10 +113,12 @@ object AppPrefs {
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
         WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
-        BLAZE_BANNER_HIDDEN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
+        AI_CONTENT_GENERATION_TONE,
+        AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_CELEBRATION_SCREEN_SHOWN,
     }
 
     /**
@@ -123,7 +127,8 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
-        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AUTO_TAX_RATE_ID,
     }
 
     /**
@@ -272,16 +277,6 @@ object AppPrefs {
                 remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
             }
         }
-
-    fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
-        setBoolean(getBlazeBannerKey(currentSiteId), hidden)
-    }
-
-    fun isBlazeBannerHidden(currentSiteId: Int) =
-        getBoolean(getBlazeBannerKey(currentSiteId), default = false)
-
-    private fun getBlazeBannerKey(currentSiteId: Int) =
-        PrefKeyString("${DeletablePrefKey.BLAZE_BANNER_HIDDEN}:$currentSiteId")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -1036,6 +1031,33 @@ object AppPrefs {
             value = value
         )
 
+    var aiContentGenerationTone: AiTone
+        get() = AiTone.fromString(getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE))
+        set(value) = setString(
+            key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
+            value = value.slug
+        )
+
+    var aiProductCreationIsFirstAttempt: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+            default = true
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+            value = value
+        )
+
+    var isBlazeCelebrationScreenShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
+            value = value
+        )
+
     fun incrementAIDescriptionTooltipShownNumber() {
         val currentTotal = getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
         setInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, currentTotal + 1)
@@ -1092,6 +1114,25 @@ object AppPrefs {
         ),
         default = false
     )
+
+    /**
+     * Auto-tax-rate setting
+     */
+    fun isAutoTaxRateEnabled(): Boolean {
+        getLong(AUTO_TAX_RATE_ID, -1L).let {
+            return it != -1L
+        }
+    }
+
+    fun getAutoTaxRateId() = getLong(AUTO_TAX_RATE_ID, -1)
+
+    fun setAutoTaxRateId(taxRateId: Long) {
+        setLong(AUTO_TAX_RATE_ID, taxRateId)
+    }
+
+    fun disableAutoTaxRate() {
+        remove(AUTO_TAX_RATE_ID)
+    }
 
     /**
      * Remove all user and site-related preferences.

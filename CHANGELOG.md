@@ -1,6 +1,30 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.3
+In this update, we've made managing your WooCommerce store even easier! You can now view your balances and deposits directly on the Payments screen if you're a WooCommerce Payments user. Additionally, we've added the ability to create or edit subscription products. And, to make order creation smoother, we now support bundle products. Enjoy the improved functionality and keep your feedback coming!
+
+## 16.2
+Welcome to the latest update of our WooCommerce mobile app! We're excited to unveil a redesigned Payments and Customers section, enhancing your order creation workflow. This update aligns with our design specifications, making it easier to input custom amounts. Enjoy a more intuitive, user-friendly experience. Update now!
+
+## 16.1
+Discover a more seamless WooCommerce experience with our latest update! We've introduced a new feature allowing you to input custom amounts during order creation, providing you with greater flexibility. Also, we've enhanced our error handling for a smoother Jetpack Connection, especially when using a custom admin URL. Enjoy a more streamlined and efficient app, designed for your convenience.
+
+## 16.0
+Welcome to the latest update of WooCommerce! We've redesigned the order's item list for a more intuitive flow. Blaze experience is now more efficient with improved campaign creation. Also, introducing the Product Creation via AI using package photos for getting automatic title and descriptions. Enjoy a seamless shopping experience!
+
+## 15.9
+We're thrilled to introduce the new Tap to Pay feature, now available for merchants in the UK and Canada. This means that UK and Canadian-based businesses can now provide a faster and more convenient payment experience to their customers, all from the palm of your hand. Update now and start boosting your sales with Tap to Pay in WooCommerce!
+
+## 15.8
+This update brings crucial bug fixes, ensuring a smoother experience. It also introduces the ability to update tax rates when editing orders, providing you with greater control. Stay tuned for more exciting features in upcoming releases. Thank you for choosing WooCommerce.
+
+## 15.7
+Enhance your WooCommerce experience with our latest update. In-Person Payments now notify you about card reader updates, keeping transactions smooth. We've boosted Order Creation - the customers list uses cached data for speed, and customers without address information are properly displayed. Can't find a customer with an email? There's a shortcut to create that manually. Plus, Product Creation uses AI to suggest new categories and tags. Upgrade for a more efficient WooCommerce experience.
+
+## 15.6
+We're thrilled to announce our latest update! Now, merchants selling in different locations can enjoy the convenience of automatic tax rate settings. We've also fixed an issue that was preventing login when sites used a custom directory for WordPress installation. Plus, we've supercharged product creation with AI capabilities for WPCOM and self-hosted stores using the Jetpack AI plugin. Enjoy smoother operations and enhanced productivity with these new improvements. Happy selling!
+
 ## 15.5
 We're excited to introduce a new feature in this new update! To help you stay on top of customer feedback, we've added a new filter for unread product reviews. This will allow you to easily sort and prioritize your responses, ensuring that all your customers feel heard and valued. Enjoy this new level or efficiency in managing your online store.
 
