@@ -36,8 +36,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.component.WcOverflowMenu
 
 @Composable
 fun MyStoreBlazeView(
@@ -100,9 +100,10 @@ fun MyStoreBlazeView(
                     else -> error("Invalid state")
                 }
             }
-            WcOverflowMenu(
+            WCOverflowMenu(
                 items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
                 onSelected = { onDismissBlazeView() },
+                modifier = Modifier.align(Alignment.TopEnd)
             )
         }
     }
