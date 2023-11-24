@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
@@ -37,7 +38,8 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
     private val blazeCampaignState = flow {
@@ -60,7 +62,7 @@ class MyStoreBlazeViewModel @Inject constructor(
         }
     }
 
-    private val isBlazeDismissed = MutableStateFlow(false)
+    private val isBlazeDismissed = MutableStateFlow(prefsWrapper.isMyStoreBlazeViewDismissed)
 
     val blazeViewState = combine(
         blazeCampaignState,
@@ -172,6 +174,7 @@ class MyStoreBlazeViewModel @Inject constructor(
     @Suppress("UNUSED_PARAMETER")
     fun onBlazeViewDismissed(menuItem: String) {
         isBlazeDismissed.value = true
+        prefsWrapper.isMyStoreBlazeViewDismissed = true
     }
 
     sealed interface MyStoreBlazeCampaignState {

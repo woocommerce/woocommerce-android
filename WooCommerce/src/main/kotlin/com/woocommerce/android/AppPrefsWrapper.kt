@@ -350,6 +350,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
+    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
+
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 
