@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.products.inventory
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +26,12 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ProductInfo
 
 @Composable
 fun QuickInventoryUpdateBottomSheet(
-    product: ScanToUpdateInventoryViewModel.ProductInfo,
+    product: ProductInfo,
     onIncrementQuantityClicked: () -> Unit,
 ) {
     Surface(
@@ -105,13 +101,14 @@ fun QuickInventoryUpdateBottomSheet(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun QuickInventoryUpdateBottomSheetPreview() {
-    val product = ScanToUpdateInventoryViewModel.ProductInfo(
+    val product = ProductInfo(
+        id = 12,
         name = "Product Name",
         imageUrl = "https://woocommerce.com/wp-content/uploads/2017/03/woocommerce-logo.png",
         sku = "123-SKU-456",
         quantity = 10,
     )
     WooTheme {
-        QuickInventoryUpdateBottomSheet(product, {})
+        QuickInventoryUpdateBottomSheet(product) {}
     }
 }
