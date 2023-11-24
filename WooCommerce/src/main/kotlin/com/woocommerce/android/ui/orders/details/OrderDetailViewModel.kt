@@ -787,5 +787,29 @@ class OrderDetailViewModel @Inject constructor(
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
     }
 
+    fun onAIThankYouNoteButtonClicked() {
+        launch {
+            val orderRefunds = loadOrderRefunds()
+            val orderProducts = loadOrderProducts(orderRefunds)
+
+            val firstProductId = when (val first = orderProducts.list.first()) {
+                is OrderProduct.GroupedProductItem -> first.product.productId
+                is OrderProduct.ProductItem -> first.product.productId
+            }
+
+            val product = productDetailRepository.getProductAsync(firstProductId)
+            product?.let {
+                triggerEvent(
+                    OrderNavigationTarget.AIThankYouNote(
+                        customerName = order.billingAddress.firstName,
+                        productName = it.name,
+                        productDescription = it.description
+                    )
+                )
+            }
+        }
+    }
+
+
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

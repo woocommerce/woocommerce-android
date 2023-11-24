@@ -73,7 +73,7 @@ fun ThankYouNoteGenerationForm(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
         ) {
-            Header()
+            ThankYouNoteHeader()
 
             when (state) {
                 is GenerationState.Generating -> GeneratingState()
@@ -92,7 +92,7 @@ fun ThankYouNoteGenerationForm(
 }
 
 @Composable
-fun Header() {
+fun ThankYouNoteHeader() {
     Column {
         Text(
             text = stringResource(id = R.string.ai_order_thank_you_note_dialog_title),

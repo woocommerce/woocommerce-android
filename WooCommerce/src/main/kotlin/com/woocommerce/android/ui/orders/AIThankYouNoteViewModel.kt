@@ -53,7 +53,6 @@ class AIThankYouNoteViewModel @Inject constructor(
 
     private suspend fun createThankYouNote(languageISOCode: String) {
         val result = aiRepository.generateOrderThankYouNote(
-            site = site.get(),
             customerName = navArgs.customerName,
             productName = navArgs.productName,
             productDescription = navArgs.productDescription,
@@ -134,7 +133,6 @@ class AIThankYouNoteViewModel @Inject constructor(
 
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
-            site = site.get(),
             text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}",
             feature = AIRepository.ORDER_DETAIL_THANK_YOU_NOTE
         ).fold(
