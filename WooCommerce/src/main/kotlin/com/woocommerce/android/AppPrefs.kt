@@ -119,6 +119,7 @@ object AppPrefs {
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
+        MY_STORE_BLAZE_VIEW_DISMISSED,
     }
 
     /**
@@ -1055,6 +1056,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
+            value = value
+        )
+
+    var isMyStoreBlazeViewDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
             value = value
         )
 
