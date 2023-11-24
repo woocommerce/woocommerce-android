@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.compose.component.WcOverflowMenu
 @Composable
 fun MyStoreBlazeView(
     state: MyStoreBlazeCampaignState,
-    onDismissBlazeView: (String) -> Unit,
+    onDismissBlazeView: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -102,7 +102,7 @@ fun MyStoreBlazeView(
             }
             WcOverflowMenu(
                 items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
-                onSelected = onDismissBlazeView,
+                onSelected = { onDismissBlazeView() },
             )
         }
     }

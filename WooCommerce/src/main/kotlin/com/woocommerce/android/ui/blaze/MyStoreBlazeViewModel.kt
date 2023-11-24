@@ -174,8 +174,7 @@ class MyStoreBlazeViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onBlazeViewDismissed(menuItem: String) {
+    fun onBlazeViewDismissed() {
         prefsWrapper.isMyStoreBlazeViewDismissed = true
         analyticsTrackerWrapper.track(
             stat = BLAZE_VIEW_DISMISSED,
