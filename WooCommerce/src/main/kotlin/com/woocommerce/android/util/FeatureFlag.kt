@@ -53,7 +53,7 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            THEME_PICKER-> PackageUtils.isDebugBuild()
+            THEME_PICKER -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
