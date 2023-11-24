@@ -180,8 +180,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 pending = null
             ),
             deposit = WooPaymentsDepositsOverview.Deposit(
-                lastPaid = listOf(
-                ),
+                lastPaid = listOf(),
                 nextScheduled = listOf(
                     WooPaymentsDepositsOverview.Deposit.Info(
                         amount = 250,
@@ -276,7 +275,6 @@ class PaymentsHubDepositSummaryStateMapperTest {
         assertThat(result.overview.infoPerCurrency[thirdKey]?.fundsDepositInterval).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
         )
-
     }
 
     @Test
