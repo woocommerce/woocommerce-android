@@ -188,7 +188,12 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             val addingProductsViaScanningButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
             addingProductsViaScanningButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_barcode)
             addingProductsViaScanningButton.iconPadding = 0
-            addingProductsViaScanningButton.setPadding(0, 0, getDensityPixel(context, 16), 0)
+            addingProductsViaScanningButton.setPadding(
+                0,
+                0,
+                resources.getDimensionPixelSize(R.dimen.major_100),
+                0
+            )
             addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_END
             addingProductsViaScanningButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
             val addProductsViaScanningButtonParams = RelativeLayout.LayoutParams(
