@@ -64,7 +64,6 @@ open class BarcodeScanningFragment : BaseFragment() {
                             viewLifecycleOwner.lifecycleScope.launch {
                                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                                     codeScannerStatus.collect { status ->
-                                        Log.d("BarcodeScanningFragment", "onScannedResult: $status")
                                         onScannedResult(status)
                                     }
                                 }
