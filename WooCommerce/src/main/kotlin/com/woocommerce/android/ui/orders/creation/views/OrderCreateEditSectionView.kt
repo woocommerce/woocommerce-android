@@ -20,6 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationSectionBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.util.getDensityPixel
 
 class OrderCreateEditSectionView @JvmOverloads constructor(
     ctx: Context,
@@ -85,7 +86,8 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
     }
 
     fun showAddProductsHeaderActions() {
-        binding.productsAdd.show()
+        binding.addIcon.show()
+        binding.barcodeIcon.show()
     }
 
     fun showAddAction() {
@@ -97,7 +99,8 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
     }
 
     fun hideAddProductsHeaderActions() {
-        binding.productsAdd.hide()
+        binding.addIcon.hide()
+        binding.barcodeIcon.hide()
     }
     fun hideHeader() {
         binding.headerLabel.hide()
@@ -185,8 +188,8 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             val addingProductsViaScanningButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
             addingProductsViaScanningButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_barcode)
             addingProductsViaScanningButton.iconPadding = 0
-            addingProductsViaScanningButton.setPadding(0)
-            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+            addingProductsViaScanningButton.setPadding(0, 0, getDensityPixel(context, 16), 0)
+            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_END
             addingProductsViaScanningButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
             val addProductsViaScanningButtonParams = RelativeLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
