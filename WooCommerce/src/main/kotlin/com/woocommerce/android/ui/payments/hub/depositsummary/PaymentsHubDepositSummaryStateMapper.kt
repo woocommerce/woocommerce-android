@@ -10,10 +10,9 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val dateFormatter: DateToDDMMMYYYYStringFormatter
 ) {
-    @Suppress("ReturnCount")
     fun mapDepositOverviewToViewModelOverviews(
         overview: WooPaymentsDepositsOverview
-    ): PaymentsHubDepositSummaryState.Overview? {
+    ): Result {
         val pendingBalances = overview.balance?.pending.orEmpty()
         val availableBalances = overview.balance?.available.orEmpty()
 
@@ -22,7 +21,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
 
         val defaultCurrency = overview.account?.defaultCurrency.orEmpty()
 
-        if (defaultCurrency.isEmpty()) return null
+        if (defaultCurrency.isEmpty()) return Result.InvalidateInputDate
 
         val currencies = (
             (pendingBalances + availableBalances).map {
@@ -31,31 +30,34 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                 it.currency
             }
             ).filterNotNull().toSet()
-        if (currencies.isEmpty()) return null
 
-        return PaymentsHubDepositSummaryState.Overview(
-            defaultCurrency = defaultCurrency,
-            infoPerCurrency = currencies.associateWith { currency ->
-                PaymentsHubDepositSummaryState.Info(
-                    availableFundsFormatted = formatMoney(
-                        amount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                        currency = currency
-                    ),
-                    pendingFundsFormatted = formatMoney(
-                        amount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                        currency = currency
-                    ),
-                    availableFundsAmount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                    pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                    pendingBalanceDepositsCount = pendingBalances.firstOrNull {
-                        it.currency == currency
-                    }?.depositsCount ?: 0,
-                    fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
-                    fundsDepositInterval = overview.account.fundsAvailableIn(),
-                    nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
-                    lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
-                )
-            }
+        return if (currencies.isEmpty())
+            Result.InvalidateInputDate
+        else Result.Success(
+            PaymentsHubDepositSummaryState.Overview(
+                defaultCurrency = defaultCurrency,
+                infoPerCurrency = currencies.associateWith { currency ->
+                    PaymentsHubDepositSummaryState.Info(
+                        availableFundsFormatted = formatMoney(
+                            amount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                            currency = currency
+                        ),
+                        pendingFundsFormatted = formatMoney(
+                            amount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                            currency = currency
+                        ),
+                        availableFundsAmount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                        pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                        pendingBalanceDepositsCount = pendingBalances.firstOrNull {
+                            it.currency == currency
+                        }?.depositsCount ?: 0,
+                        fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
+                        fundsDepositInterval = overview.account.fundsAvailableIn(),
+                        nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
+                        lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
+                    )
+                }
+            )
         )
     }
 
@@ -98,6 +100,11 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             "FAILED" -> PaymentsHubDepositSummaryState.Deposit.Status.FAILED
             else -> PaymentsHubDepositSummaryState.Deposit.Status.UNKNOWN
         }
+
+    sealed class Result {
+        data class Success(val overview: PaymentsHubDepositSummaryState.Overview) : Result()
+        object InvalidateInputDate : Result()
+    }
 }
 
 class DateToDDMMMYYYYStringFormatter @Inject constructor() {
