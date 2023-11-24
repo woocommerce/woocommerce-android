@@ -20,13 +20,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
@@ -63,7 +63,9 @@ class MyStoreBlazeViewModel @Inject constructor(
         }
     }
 
-    private val isBlazeDismissed = MutableStateFlow(prefsWrapper.isMyStoreBlazeViewDismissed)
+    private val isBlazeDismissed = prefsWrapper.observePrefs()
+        .onStart { emit(Unit) }
+        .map { prefsWrapper.isMyStoreBlazeViewDismissed }
 
     val blazeViewState = combine(
         blazeCampaignState,
@@ -174,7 +176,6 @@ class MyStoreBlazeViewModel @Inject constructor(
 
     @Suppress("UNUSED_PARAMETER")
     fun onBlazeViewDismissed(menuItem: String) {
-        isBlazeDismissed.value = true
         prefsWrapper.isMyStoreBlazeViewDismissed = true
         analyticsTrackerWrapper.track(
             stat = BLAZE_VIEW_DISMISSED,
