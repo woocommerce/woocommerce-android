@@ -3830,6 +3830,11 @@
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 
+    <!--
+    Scan to update inventory
+    -->
+    <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU: %s not found. Please try again.</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantity + 1</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
