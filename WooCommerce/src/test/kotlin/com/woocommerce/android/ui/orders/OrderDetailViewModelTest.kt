@@ -177,7 +177,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
-                orderProductMapper
+                orderProductMapper,
+                productDetailRepository
             )
         )
     }
