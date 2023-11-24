@@ -26,7 +26,10 @@ class QuickInventoryUpdateBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooTheme {
-                    QuickInventoryUpdateBottomSheet(args.productInfo)
+                    QuickInventoryUpdateBottomSheet(args.productInfo) {
+                        viewModel.onIncrementQuantityClicked()
+                        dismiss()
+                    }
                 }
             }
         }
