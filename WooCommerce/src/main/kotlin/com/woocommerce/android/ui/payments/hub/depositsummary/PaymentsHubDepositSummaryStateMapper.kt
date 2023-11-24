@@ -56,7 +56,9 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                         nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
                         lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
                     )
-                }
+                }.toSortedMap(
+                    compareBy<String> { it != defaultCurrency }.thenBy { it }
+                )
             )
         )
     }
