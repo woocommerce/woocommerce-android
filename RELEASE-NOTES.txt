@@ -71,7 +71,6 @@
 15.5
 -----
 - [*] Add new filter for unread product reviews [https://github.com/woocommerce/woocommerce-android/pull/9753]
-- [*] AI: Thank-you note can now be generated on completed order's details screen. [https://github.com/woocommerce/woocommerce-android/pull/9749/]
 
 15.4
 -----
