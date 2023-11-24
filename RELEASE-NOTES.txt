@@ -8,6 +8,7 @@
 - [*] Add ability to set the option "one-time shipping" for subscription products [https://github.com/woocommerce/woocommerce-android/issues/10199]
 - [*] Add ability to set subscription products as "virtual products" [https://github.com/woocommerce/woocommerce-android/pull/10219]
 - [*] [Internal] Fix a bug that caused a failure when duplicating variable products [https://github.com/woocommerce/woocommerce-android/pull/10235]
+- [*] AI: Thank-you note can now be generated on completed order's details screen. [https://github.com/woocommerce/woocommerce-android/pull/9749/]
 
 16.3
 -----
