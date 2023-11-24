@@ -360,7 +360,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             val overview: WooPaymentsDepositsOverview = mock()
             val mappedOverview = mock<PaymentsHubDepositSummaryState.Overview> {
                 on { infoPerCurrency }.thenReturn(
-                    mapOf(
+                    sortedMapOf(
                         "USD" to mock(),
                         "EUR" to mock(),
                     )
@@ -400,7 +400,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             val overview: WooPaymentsDepositsOverview = mock()
             val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock {
                 on { infoPerCurrency }.thenReturn(
-                    mapOf()
+                    sortedMapOf()
                 )
             }
             whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
