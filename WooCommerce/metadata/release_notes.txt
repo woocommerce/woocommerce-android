@@ -1,9 +1,1 @@
-- [***] [Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]
-- [*] [Internal] Fixes push notification not opening the correct screen  [https://github.com/woocommerce/woocommerce-android/pull/10195]
-- [*] [Internal] Animation to indicate change in the balances on the payments screen [https://github.com/woocommerce/woocommerce-android/pull/10209]
-- [**] Custom Amounts M4.1: Add the ability to charge tax for custom amounts [https://github.com/woocommerce/woocommerce-android/pull/10222]
-- [*] Add ability to set the option "one-time shipping" for subscription products [https://github.com/woocommerce/woocommerce-android/issues/10199]
-- [*] Add ability to set subscription products as "virtual products" [https://github.com/woocommerce/woocommerce-android/pull/10219]
-- [*] [Internal] Fix a bug that caused a failure when duplicating variable products [https://github.com/woocommerce/woocommerce-android/pull/10235]
-- [*] AI: Thank-you note can now be generated on completed order's details screen. [https://github.com/woocommerce/woocommerce-android/pull/9749/]
-
+We're excited to introduce some new features! Our latest update allows you to charge tax for custom amounts and set one-time shipping for subscription products. You can also set subscription products as "virtual products". Plus, we've added an AI feature that generates a thank-you note on the completed order's details screen. Enjoy our new and improved WooCommerce app!
