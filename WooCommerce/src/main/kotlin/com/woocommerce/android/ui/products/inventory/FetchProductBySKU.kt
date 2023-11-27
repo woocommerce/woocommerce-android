@@ -19,7 +19,7 @@ class FetchProductBySKU @Inject constructor(
             searchQuery = codeScannerResultCode,
             skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch
         )?.firstOrNull()
-            ?: if (codeScannerResultFormat.isEAN() && codeScannerResultFormat.isUPC()) {
+            ?: if (codeScannerResultFormat.isEAN() || codeScannerResultFormat.isUPC()) {
                 val sku = checkDigitRemoverFactory.getCheckDigitRemoverFor(codeScannerResultFormat)
                     .getSKUWithoutCheckDigit(codeScannerResultCode)
                 productRepository.searchProductList(
