@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.inventory
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
@@ -19,6 +20,8 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -195,5 +198,35 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 assertIs<BarcodeScanning>(this)
             }
         }
+    }
+
+    @Test
+    fun `given bottom sheet shown, when increment quantity clicked, then should should update product`() = testBlocking {
+        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
+        whenever(fetchProductBySKU(any(), any())).thenReturn(
+            Result.success(originalProduct)
+        )
+        whenever(repo.getProduct(any())).thenReturn(originalProduct)
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+        whenever(repo.updateProduct(any())).thenReturn(true)
+        whenever(resourceProvider.getString(
+            R.string.scan_to_update_inventory_success_snackbar,
+            "${originalProduct.stockQuantity} ➡ ${originalProduct.stockQuantity + 1}"
+        )).thenReturn("Quantity updated")
+        sut.viewState.test {
+            awaitItem().apply {
+                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+            }
+        }
+
+        sut.onIncrementQuantityClicked()
+
+        val expectedProduct = originalProduct.copy(stockQuantity = originalProduct.stockQuantity + 1)
+        verify(repo).updateProduct(expectedProduct)
     }
 }

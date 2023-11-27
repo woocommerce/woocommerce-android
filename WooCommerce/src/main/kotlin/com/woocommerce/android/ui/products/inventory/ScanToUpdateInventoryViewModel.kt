@@ -117,14 +117,14 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private suspend fun handleQuantityUpdateSuccess(oldProduct: Product, updatedProduct: Product) {
-        val oldQuantity = oldProduct.stockQuantity.toInt()
-        val newQuantity = updatedProduct.stockQuantity.toInt()
+        val oldQuantity = oldProduct.stockQuantity
+        val newQuantity = updatedProduct.stockQuantity
         val quantityChangeString = "$oldQuantity ➡ $newQuantity"
         val message = resourceProvider.getString(
             R.string.scan_to_update_inventory_success_snackbar,
             quantityChangeString
         )
-        triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message, true)))
+        triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
         delay(SCANNER_RESTART_DEBOUNCE_MS)
         _viewState.value = ViewState.BarcodeScanning
     }
