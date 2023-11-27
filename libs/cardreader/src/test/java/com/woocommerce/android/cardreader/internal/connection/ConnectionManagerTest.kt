@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import android.app.Application
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.DeviceType
@@ -43,6 +44,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     private val terminalListenerImpl: TerminalListenerImpl = mock {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
     }
+    private val application: Application = mock()
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
@@ -63,6 +65,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             bluetoothReaderListener,
             discoverReadersAction,
             terminalListenerImpl,
+            application,
         )
     }
 
