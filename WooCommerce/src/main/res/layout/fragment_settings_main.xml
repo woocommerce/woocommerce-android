@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:optionTitle="@string/settings_install_jetpack"
+                app:optionTitle="@string/settings_themes"
                 tools:visibility="visible" />
 
             <!--
@@ -70,6 +70,15 @@
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
                 android:id="@+id/option_domain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/domain" />
+
+            <!--
+                Domain configuration
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_theme_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/domain" />
