@@ -45,7 +45,6 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
 import okhttp3.OkHttpClient
 
-
 @Composable
 fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
