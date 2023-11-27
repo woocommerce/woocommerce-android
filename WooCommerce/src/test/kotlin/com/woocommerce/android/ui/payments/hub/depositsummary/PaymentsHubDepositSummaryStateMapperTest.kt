@@ -19,6 +19,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(250, "EUR") }.thenReturn("250€")
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "USD") }.thenReturn("0$")
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(250, "RUB") }.thenReturn("250R")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "RUB") }.thenReturn("0R")
     }
     private val dateFormatter: DateToDDMMMYYYYStringFormatter = mock()
     private val mapper = PaymentsHubDepositSummaryStateMapper(
@@ -146,7 +147,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
             balance = WooPaymentsDepositsOverview.Balance(
                 available = listOf(
                     WooPaymentsDepositsOverview.Balance.Info(
-                        amount = 100,
+                        amount = 250,
                         currency = "RUB",
                         fee = null,
                         feePercentage = null,
@@ -180,7 +181,21 @@ class PaymentsHubDepositSummaryStateMapperTest {
                 pending = null
             ),
             deposit = WooPaymentsDepositsOverview.Deposit(
-                lastPaid = listOf(),
+                lastPaid = listOf(
+                    WooPaymentsDepositsOverview.Deposit.Info(
+                        amount = 200,
+                        automatic = true,
+                        bankAccount = "bank_account",
+                        created = currentDate,
+                        currency = "USD",
+                        date = currentDate,
+                        fee = null,
+                        feePercentage = null,
+                        depositId = "deposit_id",
+                        status = "PAID",
+                        type = "type"
+                    )
+                ),
                 nextScheduled = listOf(
                     WooPaymentsDepositsOverview.Deposit.Info(
                         amount = 250,
