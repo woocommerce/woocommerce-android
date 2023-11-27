@@ -8,10 +8,17 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
+import com.woocommerce.android.ui.products.ProductType.COMPOSITE
 import com.woocommerce.android.ui.products.ProductType.OTHER
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -30,6 +37,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.CATE
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,13 +47,20 @@ class ProductFilterListViewModel @Inject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val networkStatus: NetworkStatus,
     private val productRestrictions: ProductFilterProductRestrictions,
+    private val pluginRepository: PluginRepository,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
+        private const val SUBSCRIPTIONS_URL = "https://woo.com/products/woocommerce-subscriptions/"
+        private const val BUNDLES_URL = "https://woo.com/products/product-bundles/"
+        private const val COMPOSITE_URL = "https://woo.com/products/composite-products/"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
+
+    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
     private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
     val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
@@ -137,7 +152,12 @@ class ProductFilterListViewModel @Inject constructor(
             )
         }
 
-        _filterListItems.value = buildFilterListItemUiModel()
+        launch {
+            productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = true)
+            getPluginInfo()
+            _filterListItems.value = buildFilterListItemUiModel()
+            productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = false)
+        }
 
         val screenTitle = if (productFilterOptions.isNotEmpty()) {
             resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
@@ -147,6 +167,48 @@ class ProductFilterListViewModel @Inject constructor(
             screenTitle = screenTitle,
             displayClearButton = productFilterOptions.isNotEmpty()
         )
+    }
+
+    private fun getTypeFilterWithExploreOptions(): MutableList<FilterListOptionItemUiModel> {
+        return ProductType.values().filterNot { it == OTHER }.map {
+            when {
+                it == BUNDLE && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        BUNDLES_URL
+                    )
+                }
+
+                it == SUBSCRIPTION && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        SUBSCRIPTIONS_URL
+                    )
+                }
+
+                it == VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        SUBSCRIPTIONS_URL
+                    )
+                }
+
+                it == COMPOSITE && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        COMPOSITE_URL
+                    )
+                }
+
+                else -> {
+                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        filterOptionItemValue = it.value,
+                        isSelected = productFilterOptions[TYPE] == it.value
+                    )
+                }
+            }
+        }.toMutableList()
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
@@ -206,6 +268,18 @@ class ProductFilterListViewModel @Inject constructor(
     fun onClearFilterSelected() {
         productFilterOptions.clear()
         loadFilters()
+    }
+
+    private fun isPluginInstalled(productType: ProductType): Boolean? {
+        return when (productType) {
+            BUNDLE -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName]?.isInstalled
+            SUBSCRIPTION -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
+            VARIABLE_SUBSCRIPTION ->
+                pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
+
+            COMPOSITE -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS.pluginName]?.isInstalled
+            else -> null
+        }
     }
 
     fun onFilterOptionItemSelected(
@@ -287,24 +361,31 @@ class ProductFilterListViewModel @Inject constructor(
                 )
             )
         }
+        val typeFilters = getTypeFilterWithExploreOptions()
         filterListItems.add(
             FilterListItemUiModel(
                 TYPE,
                 resourceProvider.getString(string.product_type),
-                addDefaultFilterOption(
-                    ProductType.values().filterNot { it == OTHER }.map {
-                        FilterListOptionItemUiModel(
-                            resourceProvider.getString(it.stringResource),
-                            filterOptionItemValue = it.value,
-                            isSelected = productFilterOptions[TYPE] == it.value
-                        )
-                    }.toMutableList(),
-                    productFilterOptions[TYPE].isNullOrEmpty()
-                )
+                addDefaultFilterOption(typeFilters, productFilterOptions[TYPE].isNullOrEmpty())
             )
         )
         filterListItems.add(buildCategoryFilterListItemUiModel())
         return filterListItems
+    }
+
+    private suspend fun getPluginInfo() {
+        val site = selectedSite.getIfExists()
+        pluginsInformation = site?.let { siteModel ->
+            pluginRepository.getPluginsInfo(
+                site = siteModel,
+                plugins = listOf(
+                    WooCommerceStore.WooPlugin.WOO_CORE,
+                    WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS,
+                    WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES,
+                    WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS
+                )
+            )
+        } ?: emptyMap()
     }
 
     private fun buildCategoryFilterListItemUiModel(): FilterListItemUiModel {

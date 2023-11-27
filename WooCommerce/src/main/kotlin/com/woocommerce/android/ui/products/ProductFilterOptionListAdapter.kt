@@ -48,20 +48,30 @@ class ProductFilterOptionListAdapter(
         }
     }
 
-    override fun getItemId(position: Int) = getItem(position).filterOptionItemValue.hashCode().toLong()
+    override fun getItemId(position: Int) = position.toLong()
 
     class ProductFilterOptionViewHolder(val viewBinding: ProductFilterOptionListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(filter: FilterListOptionItemUiModel) {
-            viewBinding.filterOptionItemName.apply {
-                if (filter.margin != 0) {
-                    val newLayoutParams = layoutParams as LayoutParams
-                    newLayoutParams.marginStart = filter.margin
-                    layoutParams = newLayoutParams
+            when (filter) {
+                is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel -> {
+                    viewBinding.filterOptionItemName.apply {
+                        if (filter.margin != 0) {
+                            val newLayoutParams = layoutParams as LayoutParams
+                            newLayoutParams.marginStart = filter.margin
+                            layoutParams = newLayoutParams
+                        }
+                        text = filter.filterOptionItemName
+                    }
+                    viewBinding.filterOptionItemTick.isVisible = filter.isSelected
+                    viewBinding.explorePlugin.isVisible = false
                 }
-                text = filter.filterOptionItemName
+                is FilterListOptionItemUiModel.ExploreOptionItemUiModel -> {
+                    viewBinding.filterOptionItemName.text = filter.filterOptionItemName
+                    viewBinding.filterOptionItemTick.isVisible = false
+                    viewBinding.explorePlugin.isVisible = true
+                }
             }
-            viewBinding.filterOptionItemTick.isVisible = filter.isSelected
         }
     }
 
