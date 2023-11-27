@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -287,29 +288,40 @@ class ProductFilterListViewModel @Inject constructor(
         selectedFilterItem: FilterListOptionItemUiModel
     ) {
         _filterListItems.value?.let {
-            // iterate through the filter option list and update the `isSelected`value to reflect the item selected and
-            // update the UI of this change
-            val filterItem = it[selectedFilterListItemPosition]
-            val filterOptionItemList = filterItem.filterOptionListItems.map { filterOptionItem ->
-                filterOptionItem.copy(
-                    isSelected = filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
-                )
-            }
-            _filterOptionListItems.value = filterOptionItemList
+            when (selectedFilterItem) {
+                is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel -> {
+                    // iterate through the filter option list and update the `isSelected`value to reflect the item selected and
+                    // update the UI of this change
+                    val filterItem = it[selectedFilterListItemPosition]
+                    val filterOptionItemList = filterItem.filterOptionListItems.map { filterOptionItem ->
+                        (filterOptionItem as? FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel)
+                            ?.copy(
+                                isSelected =
+                                filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
+                            ) ?: filterOptionItem
+                    }
+                    _filterOptionListItems.value = filterOptionItemList
 
-            if (filterItem.filterItemKey == CATEGORY) {
-                selectedCategoryName = selectedFilterItem.filterOptionItemName
-                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
-            }
+                    if (filterItem.filterItemKey == CATEGORY) {
+                        selectedCategoryName = selectedFilterItem.filterOptionItemName
+                        savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+                    }
 
-            // update the filter options map - which is used to load the filter list screen
-            // if the selected filter option item is the default filter item i.e. ANY,
-            // then remove the filter from the map, since this means the filter for that option has been cleared,
-            // otherwise update the filter item.
-            if (selectedFilterItem.filterOptionItemName == resourceProvider.getString(string.product_filter_default)) {
-                productFilterOptions.remove(filterItem.filterItemKey)
-            } else {
-                productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
+                    // update the filter options map - which is used to load the filter list screen
+                    // if the selected filter option item is the default filter item i.e. ANY,
+                    // then remove the filter from the map, since this means the filter for that option has been cleared,
+                    // otherwise update the filter item.
+                    val defaultOption = resourceProvider.getString(string.product_filter_default)
+                    if (selectedFilterItem.filterOptionItemName == defaultOption) {
+                        productFilterOptions.remove(filterItem.filterItemKey)
+                    } else {
+                        productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
+                    }
+                }
+
+                is FilterListOptionItemUiModel.ExploreOptionItemUiModel -> {
+                    triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(selectedFilterItem.url))
+                }
             }
         }
     }
