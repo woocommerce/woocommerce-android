@@ -43,7 +43,7 @@ class ThemeRepository @Inject constructor(
 
         return if (themesResult.error != null) {
             with(themesResult.error) {
-                WooLog.w(WooLog.T.THEMES, "Error fetching themes: ${type}, $message")
+                WooLog.w(WooLog.T.THEMES, "Error fetching themes: $type, $message")
             }
             Result.failure(OnChangedException(themesResult.error))
         } else {
@@ -80,7 +80,7 @@ class ThemeRepository @Inject constructor(
 
             else -> {
                 with(activationResult.error) {
-                    WooLog.w(WooLog.T.THEMES, "Error activating theme: ${type}, $message")
+                    WooLog.w(WooLog.T.THEMES, "Error activating theme: $type, $message")
                 }
                 Result.failure(OnChangedException(activationResult.error))
             }
@@ -107,7 +107,7 @@ class ThemeRepository @Inject constructor(
 
             else -> {
                 with(installationResult.error) {
-                    WooLog.w(WooLog.T.THEMES, "Error installing theme: ${type}, $message")
+                    WooLog.w(WooLog.T.THEMES, "Error installing theme: $type, $message")
                 }
                 Result.failure(OnChangedException(installationResult.error))
             }
