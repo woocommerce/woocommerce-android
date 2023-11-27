@@ -148,7 +148,7 @@
     </fragment>
     <fragment
         android:id="@+id/themePickerFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.themes.ThemePickerFragment"
+        android:name="com.woocommerce.android.ui.themes.ThemePickerFragment"
         android:label="ThemePickerFragment" >
         <action
             android:id="@+id/action_themePickerFragment_to_storeCreationInstallationFragment"

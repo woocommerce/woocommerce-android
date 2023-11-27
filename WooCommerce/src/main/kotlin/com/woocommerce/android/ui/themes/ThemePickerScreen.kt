@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.themes
+package com.woocommerce.android.ui.themes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +39,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.login.storecreation.themes.ThemePickerViewModel.ViewState.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
 
 @Composable
 fun ThemePickerScreen(viewModel: ThemePickerViewModel) {

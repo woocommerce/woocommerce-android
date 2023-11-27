@@ -1,11 +1,11 @@
-package com.woocommerce.android.ui.login.storecreation.themes
+package com.woocommerce.android.ui.themes
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.storecreation.themes.ThemePickerViewModel.ViewState.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel

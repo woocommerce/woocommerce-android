@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.themes
+package com.woocommerce.android.ui.themes
 
 import android.os.Bundle
 import android.view.LayoutInflater
