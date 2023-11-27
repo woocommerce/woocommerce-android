@@ -1,7 +1,6 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
-import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
@@ -81,13 +80,6 @@ internal class CardReaderManagerImpl(
         terminal.setupSimulator(updateFrequency, useInterac)
     }
 
-    @RequiresPermission(
-        allOf = [
-            "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.BLUETOOTH_CONNECT",
-            "android.permission.BLUETOOTH_SCAN"
-        ]
-    )
     override fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,

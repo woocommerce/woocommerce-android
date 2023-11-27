@@ -53,7 +53,6 @@ internal class DiscoverReadersAction(
             "android.permission.ACCESS_FINE_LOCATION",
             "android.permission.ACCESS_COARSE_LOCATION"
         ],
-        conditional = true
     )
     private fun discoverReaders(config: DiscoveryConfiguration): Flow<DiscoverReadersStatus> {
         return callbackFlow {
