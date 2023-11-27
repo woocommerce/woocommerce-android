@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:optionTitle="@string/settings_themes"
+                app:optionTitle="@string/settings_install_jetpack"
                 tools:visibility="visible" />
 
             <!--
@@ -75,13 +75,13 @@
                 app:optionTitle="@string/domain" />
 
             <!--
-                Domain configuration
+                Themes configuration
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
                 android:id="@+id/option_theme_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:optionTitle="@string/domain" />
+                app:optionTitle="@string/settings_themes" />
 
             <!--
                 Store onboarding list visibility
