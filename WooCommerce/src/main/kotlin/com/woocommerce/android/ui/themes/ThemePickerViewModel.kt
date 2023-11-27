@@ -54,6 +54,10 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onSkipPressed() {
+        triggerEvent(MoveToNextStep)
+    }
+
     @Parcelize
     data class ViewState(
         val carouselItems: List<CarouselItem> = emptyList(),
@@ -67,4 +71,6 @@ class ThemePickerViewModel @Inject constructor(
             data class Message(val title: String, val description: String) : CarouselItem()
         }
     }
+
+    object MoveToNextStep : Event()
 }

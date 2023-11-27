@@ -49,6 +49,11 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                 title = { Text("") },
                 navigationIcon = Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
+                actions = {
+                    TextButton(onClick = viewModel::onSkipPressed) {
+                        Text(text = stringResource(id = string.skip))
+                    }
+                }
             )
         }) { padding ->
             ThemePickerScreenCarousel(
