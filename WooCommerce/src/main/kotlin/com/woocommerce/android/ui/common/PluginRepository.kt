@@ -42,7 +42,8 @@ import javax.inject.Inject
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
-    @Suppress("unused") private val pluginStore: PluginStore
+    @Suppress("unused") private val pluginStore: PluginStore,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     companion object {
         private const val GENERIC_ERROR = "Unknown issue."
