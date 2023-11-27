@@ -27,9 +27,11 @@ class ThemeRepository @Inject constructor(
     companion object {
         private const val STORE_THEMES_FILTER = "subject:store"
         private const val STORE_THEMES_LIMIT = 100
-        private val supportedThemes = listOf(
-            "tsubaki", "tazza", "amulet", "zaino", "thriving-artist", "attar"
-        )
+        private val supportedThemes by lazy {
+            listOf(
+                "tsubaki", "tazza", "amulet", "zaino", "thriving-artist", "attar"
+            )
+        }
     }
 
     suspend fun fetchThemes(): Result<List<Theme>> {
