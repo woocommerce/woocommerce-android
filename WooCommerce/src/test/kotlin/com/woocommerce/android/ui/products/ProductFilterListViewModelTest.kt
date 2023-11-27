@@ -41,6 +41,8 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             productCategoriesRepository = productCategoriesRepository,
             networkStatus = networkStatus,
             productRestrictions = productRestrictions,
+            pluginRepository = mock(),
+            selectedSite = mock()
         )
 
         whenever(resourceProvider.getString(any())).thenReturn("")
