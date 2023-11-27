@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.generated.ThemeActionBuilder
 import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.store.ThemeStore
 import org.wordpress.android.fluxc.store.ThemeStore.FetchWPComThemesPayload
+import org.wordpress.android.fluxc.store.ThemeStore.OnCurrentThemeFetched
 import org.wordpress.android.fluxc.store.ThemeStore.OnThemeInstalled
 import org.wordpress.android.fluxc.store.ThemeStore.OnWpComThemesChanged
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload
@@ -61,6 +62,22 @@ class ThemeRepository @Inject constructor(
 
     suspend fun getTheme(themeId: String): Theme? = withContext(Dispatchers.IO) {
         themeStore.getWpComThemeByThemeId(themeId)?.toAppModel()
+    }
+
+    suspend fun fetchCurrentTheme(): Result<Theme> {
+        val currentThemResult: OnCurrentThemeFetched = dispatcher.dispatchAndAwait(
+            ThemeActionBuilder.newFetchCurrentThemeAction(selectedSite.get())
+        )
+
+        return if (currentThemResult.isError) {
+            with(currentThemResult.error) {
+                WooLog.w(WooLog.T.THEMES, "Error fetching current theme: $type, $message")
+            }
+            Result.failure(OnChangedException(currentThemResult.error))
+        } else {
+            WooLog.d(WooLog.T.THEMES, "Fetched current theme successfully")
+            Result.success(currentThemResult.theme!!.toAppModel())
+        }
     }
 
     suspend fun activateTheme(theme: Theme): Result<Unit> {
