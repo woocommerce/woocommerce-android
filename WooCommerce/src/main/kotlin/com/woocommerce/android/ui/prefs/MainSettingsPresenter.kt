@@ -90,5 +90,5 @@ class MainSettingsPresenter @Inject constructor(
         get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
             accountRepository.getUserAccount()?.userName != null
     override val isThemePickerOptionVisible: Boolean
-        get() = selectedSite.get().isWpComStore && FeatureFlag.THEME_PICKER.isEnabled()
+        get() = selectedSite.get().isWPComAtomic && FeatureFlag.THEME_PICKER.isEnabled()
 }
