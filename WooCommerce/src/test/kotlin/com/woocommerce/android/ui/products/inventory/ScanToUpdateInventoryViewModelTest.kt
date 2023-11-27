@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.inventory
 
-
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
@@ -16,7 +15,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -25,7 +23,6 @@ import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertIsNot
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
@@ -177,7 +174,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given bottom sheet shown, when bottom sheet dismissed, should should start scanning again`() = testBlocking{
+    fun `given bottom sheet shown, when bottom sheet dismissed, should should start scanning again`() = testBlocking {
         whenever(fetchProductBySKU(any(), any())).thenReturn(
             Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
         )
