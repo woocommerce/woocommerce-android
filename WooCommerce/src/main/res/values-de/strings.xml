@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-15 11:54:04+0000
+Translation-Revision-Date: 2023-11-22 22:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Verfügbares Guthaben wird automatisch an jedem %s ausgezahlt.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Verfügbares Guthaben wird automatisch jeden Tag ausgezahlt.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Guthaben, das seit %d Tagen aussteht, wird zur Verfügung gestellt.</string>
+    <string name="product_variation_picker_title">Variante auswählen</string>
+    <string name="configuration_variable_update">Variante aktualisieren</string>
+    <string name="configuration_children_issue"> „%1$s“ -&gt; %2$s </string>
+    <string name="configuration_variable_selection"> Bitte wähle eine Variante aus </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s Artikel ausgewählt </string>
+    <string name="configuration_quantity_items_selected"> %1$s Artikel ausgewählt </string>
+    <string name="configuration_quantity_rule_issue"> Wähle bitte %1$s aus </string>
+    <string name="configuration_quantity_more_than_plural"> mehr als %1$s Artikel </string>
+    <string name="configuration_quantity_more_than"> mehr als %1$s Artikel </string>
+    <string name="configuration_quantity_less_than"> weniger als %1$s Artikel </string>
+    <string name="configuration_quantity_between"> zwischen %1$s und %2$s Artikeln </string>
+    <string name="configuration_quantity_item_plural">%d Artikel</string>
+    <string name="configuration_quantity_item">%d Artikel</string>
+    <string name="configuration_issues">Konfigurationsprobleme</string>
+    <string name="order_configuration_change_product_quantity">Ändere die Produktmenge von %1$f zu %2$f</string>
+    <string name="save_configuration">Konfiguration speichern</string>
+    <string name="product_configuration_title">Konfiguration</string>
+    <string name="default_product_title">Produkt %s</string>
+    <string name="extension_configure_button">Konfigurieren</string>
+    <string name="subscription_sign_up_fee_explanation">Optional wird diese Anmeldegebühr sofort fällig, egal ob das Produkt im Rahmen des Gratis-Tests genutzt wird oder die Zahlungstermine synchronisiert sind.</string>
+    <string name="product_type_variable_subscription_desc">Ein Produktabonnement mit Varianten</string>
+    <string name="product_type_variable_subscription_title">Variables Abonnementprodukt</string>
+    <string name="product_type_simple_subscription_desc">Ein individuelles Abonnementprodukt, das wiederkehrende Zahlungen ermöglicht</string>
+    <string name="product_type_simple_subscription_title">Einfaches Abonnementprodukt</string>
+    <string name="product_subscription_free_trial_info">Ein optionaler Zeitraum, bevor die erste wiederkehrende Zahlung in Rechnung gestellt wird. Jegliche Registrierungsgebühr wird zu Beginn des Abonnements berechnet.  Der Testzeitraum darf nicht länger sein als: 90 Tage, 52 Wochen, 24 Monate oder 5 Jahre.</string>
+    <string name="product_subscription_free_trial_title">Gratis-Test für Abonnement</string>
+    <string name="product_subscription_expiration_title">Ende des Abonnements</string>
+    <string name="order_detail_custom_amounts_header">INDIVIDUELLE BETRÄGE</string>
+    <string name="order_detail_payment_header">ZAHLUNGSÜBERSICHT</string>
+    <string name="orderdetail_order_notes_uppercase">BESTELLHINWEISE</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUKTE</string>
+    <string name="orderdetail_product_uppercase">PRODUKT</string>
+    <string name="orderdetail_customer_header">KUNDE</string>
     <string name="notification_security_key_needed">Bitte gib deinen Sicherheitsschlüssel an, um fortzufahren.</string>
     <string name="login_error_security_key">Es gab einige Probleme mit der Anmeldung per Sicherheitsschlüssel</string>
     <string name="login_text_security_key">Sicherheitsschlüssel verwenden</string>
@@ -21,11 +57,11 @@ Language: de
     <string name="card_reader_hub_deposit_summary_status_estimated">Geschätzt</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Zusammenfassung der Auszahlungen aus-/einblenden</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Weitere Informationen zum Erhalt deiner Zahlungen</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">Verfügbares Guthaben wird automatisch jede Woche ausgezahlt.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Verfügbares Guthaben wird automatisch am %s jedes Monats ausgezahlt.</string>
     <string name="card_reader_hub_deposit_summary_last">Zuletzt</string>
     <string name="card_reader_hub_deposit_summary_next">Als Nächstes</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">Auszahlungen</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">Guthaben, das seit 7 Tagen aussteht, wird zur Verfügung gestellt.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">Guthaben, das seit %d Tag aussteht, wird zur Verfügung gestellt.</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d Auszahlung</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d Auszahlungen</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Ausstehendes Guthaben</string>
@@ -3206,13 +3242,5 @@ Language: de
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Individuelles Paket</item>
         <item>Service-Paket</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>Jede/n</item>
-        <item>An jedem 2.</item>
-        <item>An jedem 3.</item>
-        <item>An jedem 4.</item>
-        <item>An jedem 5.</item>
-        <item>An jedem 6.</item>
     </string-array>
 </resources>
