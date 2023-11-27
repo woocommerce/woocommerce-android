@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,18 +28,18 @@ class ThemePickerViewModel @Inject constructor(
         _viewState.update {
             _viewState.value.copy(
                 carouselItems = listOf(
-                    CarouselItem.Theme(screenshotUrl = getThemeUrl(themeName = "tsubaki")),
-                    CarouselItem.Theme(screenshotUrl = getThemeUrl(themeName = "tazza")),
-                    CarouselItem.Theme(screenshotUrl = getThemeUrl(themeName = "amulet")),
-                    CarouselItem.Theme(screenshotUrl = getThemeUrl(themeName = "zaino")),
-                    CarouselItem.Theme(screenshotUrl = getThemeUrl(themeName = "thriving-artist")),
-                    CarouselItem.Theme(screenshotUrl = getThemeUrl(themeName = "attar")),
+                    CarouselItem.Theme(name = "tsubaki", screenshotUrl = getThemeUrl(themeUrl = "wordpress.org")),
+                    CarouselItem.Theme(name = "tazza", screenshotUrl = getThemeUrl(themeUrl = "facebook.com")),
+                    CarouselItem.Theme(name = "amulet", screenshotUrl = getThemeUrl(themeUrl = "twitter.com")),
+                    CarouselItem.Theme(name = "zaino", screenshotUrl = getThemeUrl(themeUrl = "apple.com")),
+                    CarouselItem.Theme(name = "thriving-artist", screenshotUrl = getThemeUrl(themeUrl = "dennikn.sk")),
+                    CarouselItem.Theme(name = "attar", screenshotUrl = getThemeUrl(themeUrl = "android.com")),
                     CarouselItem.Message(
                         title = resourceProvider.getString(
-                            R.string.store_creation_theme_picker_carousel_info_item_title
+                            R.string.theme_picker_carousel_info_item_title
                         ),
                         description = resourceProvider.getString(
-                            R.string.store_creation_theme_picker_carousel_info_item_description
+                            R.string.theme_picker_carousel_info_item_description
                         ),
                     ),
                 )
@@ -46,9 +47,8 @@ class ThemePickerViewModel @Inject constructor(
         }
     }
 
-    private fun getThemeUrl(themeName: String) =
-        "https://s0.wp.com/mshots/v1/https://${themeName}demo.wpcomstaging.com/" +
-            "?demo=true/?w=1200&h=2400&vpw=400&vph=800"
+    private fun getThemeUrl(themeUrl: String) =
+        "https://s0.wp.com/mshots/v1/https://$themeUrl?demo=true/?w=1200&h=2400&vpw=400&vph=800"
 
     fun onArrowBackPressed() {
         triggerEvent(Exit)
@@ -65,7 +65,7 @@ class ThemePickerViewModel @Inject constructor(
     ) : Parcelable {
         sealed class CarouselItem : Parcelable {
             @Parcelize
-            data class Theme(val screenshotUrl: String) : CarouselItem()
+            data class Theme(val name: String, val screenshotUrl: String) : CarouselItem()
 
             @Parcelize
             data class Message(val title: String, val description: String) : CarouselItem()

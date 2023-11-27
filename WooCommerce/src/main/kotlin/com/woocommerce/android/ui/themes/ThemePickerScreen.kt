@@ -18,6 +18,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -32,14 +33,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.CachePolicy.DISABLED
+import coil.ImageLoader
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
+import okhttp3.OkHttpClient
+
 
 @Composable
 fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
@@ -77,7 +82,7 @@ private fun ThemePickerScreenCarousel(
             .fillMaxSize()
     ) {
         Text(
-            text = stringResource(id = string.store_creation_theme_picker_title),
+            text = stringResource(id = string.theme_picker_title),
             style = MaterialTheme.typography.h5,
             modifier = Modifier
                 .padding(
@@ -86,7 +91,7 @@ private fun ThemePickerScreenCarousel(
                 )
         )
         Text(
-            text = stringResource(id = string.store_creation_theme_picker_description),
+            text = stringResource(id = string.theme_picker_description),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = color.color_on_surface_medium),
             modifier = Modifier.padding(dimensionResource(id = dimen.major_100))
@@ -102,8 +107,8 @@ private fun ThemePickerScreenCarousel(
         ) {
             items(items) { item ->
                 when (item) {
-                    is CarouselItem.Theme -> Theme(item.screenshotUrl)
-                    is CarouselItem.Message -> Message(item.title, item.description)
+                    is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl)
+                    is CarouselItem.Message -> Message(item.title, item.description, Modifier.width(320.dp))
                 }
             }
         }
@@ -111,11 +116,10 @@ private fun ThemePickerScreenCarousel(
 }
 
 @Composable
-private fun Message(title: String, description: String) {
+private fun Message(title: String, description: String, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .width(320.dp)
+        modifier = modifier
+            .fillMaxHeight()
             .padding(dimensionResource(id = dimen.major_100)),
         contentAlignment = Alignment.Center
     ) {
@@ -145,21 +149,45 @@ private fun Message(title: String, description: String) {
 }
 
 @Composable
-private fun Theme(screenshotUrl: String) {
+private fun Theme(name: String, screenshotUrl: String) {
+    val themeModifier = Modifier.width(240.dp)
     Card(
         shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
         elevation = dimensionResource(id = dimen.minor_50),
+        modifier = themeModifier
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(screenshotUrl)
-                .diskCachePolicy(DISABLED)
-                .crossfade(true)
-                .build(),
+        val imageLoader = ImageLoader.Builder(LocalContext.current)
+            .okHttpClient {
+                OkHttpClient.Builder()
+                    .followRedirects(false)
+                    .build()
+            }
+            .build()
+
+        val request = ImageRequest.Builder(LocalContext.current)
+            .data(screenshotUrl)
+            .crossfade(true)
+            .build()
+
+        SubcomposeAsyncImage(
+            model = request,
+            imageLoader = imageLoader,
             contentDescription = stringResource(string.settings_app_theme_title),
             contentScale = ContentScale.FillHeight,
-            modifier = Modifier
-                .fillMaxHeight()
-        )
+            modifier = Modifier.fillMaxHeight()
+        ) {
+            when (painter.state) {
+                is AsyncImagePainter.State.Error -> {
+                    Message(
+                        title = stringResource(id = string.theme_picker_carousel_placeholder_title, name),
+                        description = stringResource(id = string.theme_picker_carousel_placeholder_message),
+                        themeModifier
+                    )
+                }
+                else -> {
+                    SubcomposeAsyncImageContent()
+                }
+            }
+        }
     }
 }
