@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 16.5
 -----
-
+- [*] [Internal] Always use default currency as first choice to show in the deposits summary in the cases multiple currencies used [https://github.com/woocommerce/woocommerce-android/pull/10251]
 
 16.4
 -----
