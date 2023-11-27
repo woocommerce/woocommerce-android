@@ -176,7 +176,7 @@ class ProductFilterListViewModel @Inject constructor(
             productCategories
                 .sortCategories(resourceProvider)
                 .map { (category, margin, _) ->
-                    FilterListOptionItemUiModel(
+                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                         category.name,
                         category.remoteCategoryId.toString(),
                         isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString(),
@@ -259,7 +259,7 @@ class ProductFilterListViewModel @Inject constructor(
                 resourceProvider.getString(string.product_stock_status),
                 addDefaultFilterOption(
                     CoreProductStockStatus.values().map {
-                        FilterListOptionItemUiModel(
+                        FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                             resourceProvider.getString(fromString(it.value).stringResource),
                             filterOptionItemValue = it.value,
                             isSelected = productFilterOptions[STOCK_STATUS] == it.value
@@ -276,7 +276,7 @@ class ProductFilterListViewModel @Inject constructor(
                     resourceProvider.getString(string.product_status),
                     addDefaultFilterOption(
                         ProductStatus.values().map {
-                            FilterListOptionItemUiModel(
+                            FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                                 resourceProvider.getString(it.stringResource),
                                 filterOptionItemValue = it.value,
                                 isSelected = productFilterOptions[STATUS] == it.value
@@ -326,7 +326,7 @@ class ProductFilterListViewModel @Inject constructor(
         return filterOptionList.apply {
             add(
                 0,
-                FilterListOptionItemUiModel(
+                FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                     filterOptionItemName = resourceProvider.getString(string.product_filter_default),
                     filterOptionItemValue = "",
                     isSelected = isDefaultFilterOptionSelected
@@ -411,16 +411,24 @@ class ProductFilterListViewModel @Inject constructor(
      * for product status, this would be pending, draft
      * for category, this would be category ID
      */
+
     @Parcelize
-    data class FilterListOptionItemUiModel(
-        val filterOptionItemName: String,
-        val filterOptionItemValue: String,
-        val isSelected: Boolean = false,
-        var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
-    ) : Parcelable {
-        companion object {
-            @DimenRes
-            const val DEFAULT_FILTER_OPTION_MARGIN = 0
+    sealed class FilterListOptionItemUiModel : Parcelable {
+        data class DefaultFilterListOptionItemUiModel(
+            val filterOptionItemName: String,
+            val filterOptionItemValue: String,
+            val isSelected: Boolean = false,
+            var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
+        ) : FilterListOptionItemUiModel() {
+            companion object {
+                @DimenRes
+                const val DEFAULT_FILTER_OPTION_MARGIN = 0
+            }
         }
+
+        data class ExploreOptionItemUiModel(
+            val filterOptionItemName: String,
+            val url: String
+        ) : FilterListOptionItemUiModel()
     }
 }

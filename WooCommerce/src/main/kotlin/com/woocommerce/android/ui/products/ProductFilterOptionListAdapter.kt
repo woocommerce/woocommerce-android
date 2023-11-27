@@ -70,7 +70,16 @@ class ProductFilterOptionListAdapter(
             oldItem: FilterListOptionItemUiModel,
             newItem: FilterListOptionItemUiModel
         ): Boolean {
-            return oldItem.filterOptionItemValue == newItem.filterOptionItemValue
+
+            val areDefaultItemsTheSame = oldItem is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel &&
+                newItem is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel &&
+                oldItem.filterOptionItemValue == newItem.filterOptionItemValue
+
+            val areExploreItemsTheSame = oldItem is FilterListOptionItemUiModel.ExploreOptionItemUiModel &&
+                newItem is FilterListOptionItemUiModel.ExploreOptionItemUiModel &&
+                oldItem.filterOptionItemName == newItem.filterOptionItemName
+
+            return areDefaultItemsTheSame || areExploreItemsTheSame
         }
 
         override fun areContentsTheSame(
