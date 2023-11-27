@@ -78,7 +78,7 @@
                 Themes configuration
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/option_theme_picker"
+                android:id="@+id/option_site_themes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/settings_themes" />

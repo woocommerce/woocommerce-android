@@ -243,9 +243,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 )
         }
 
-        binding.optionTheme.isVisible = presenter.isThemePickerOptionVisible
-        binding.optionTheme.setOnClickListener {
-
+        binding.optionThemePicker.isVisible = presenter.isThemePickerOptionVisible
+        binding.optionThemePicker.setOnClickListener {// TODO
         }
     }
 
