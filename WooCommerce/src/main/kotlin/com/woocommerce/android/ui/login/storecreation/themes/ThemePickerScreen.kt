@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -122,6 +123,7 @@ private fun Message(title: String, description: String) {
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = color.color_on_surface_medium),
                 textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(bottom = dimensionResource(id = dimen.major_100))
                     .fillMaxWidth()
