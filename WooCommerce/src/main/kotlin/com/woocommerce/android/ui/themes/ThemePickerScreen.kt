@@ -193,3 +193,15 @@ private fun Theme(name: String, screenshotUrl: String) {
         }
     }
 }
+
+@Preview
+@Composable
+private fun PreviewThemePickerError() {
+    ThemePicker(ViewState.Error, Modifier)
+}
+
+@Preview
+@Composable
+private fun PreviewThemePickerLoading() {
+    ThemePicker(ViewState.Loading, Modifier)
+}

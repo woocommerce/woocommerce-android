@@ -58,17 +58,24 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(MoveToNextStep)
     }
 
-    @Parcelize
-    data class ViewState(
-        val carouselItems: List<CarouselItem> = emptyList(),
-        val isLoading: Boolean = false
-    ) : Parcelable {
-        sealed class CarouselItem : Parcelable {
-            @Parcelize
-            data class Theme(val name: String, val screenshotUrl: String) : CarouselItem()
+    sealed interface ViewState : Parcelable {
+        @Parcelize
+        object Loading : ViewState
 
-            @Parcelize
-            data class Message(val title: String, val description: String) : CarouselItem()
+        @Parcelize
+        object Error : ViewState
+
+        @Parcelize
+        data class Success(
+            val carouselItems: List<CarouselItem> = emptyList()
+        ) : ViewState {
+            sealed class CarouselItem : Parcelable {
+                @Parcelize
+                data class Theme(val name: String, val screenshotUrl: String) : CarouselItem()
+
+                @Parcelize
+                data class Message(val title: String, val description: String) : CarouselItem()
+            }
         }
     }
 
