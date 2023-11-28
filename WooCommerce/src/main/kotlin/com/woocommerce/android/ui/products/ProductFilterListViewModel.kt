@@ -210,7 +210,6 @@ class ProductFilterListViewModel @Inject constructor(
             }
         }.sortedBy { it is FilterListOptionItemUiModel.ExploreOptionItemUiModel }
             .toMutableList()
-
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
@@ -492,7 +491,6 @@ class ProductFilterListViewModel @Inject constructor(
         val filterItemName: String,
         var filterOptionListItems: List<FilterListOptionItemUiModel>
     ) : Parcelable
-
 
     @Parcelize
     sealed class FilterListOptionItemUiModel : Parcelable {
