@@ -5,7 +5,6 @@ import androidx.annotation.DimenRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
@@ -453,7 +452,7 @@ class ProductFilterListViewModel @Inject constructor(
                     productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
                     productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
                         .getOrElse {
-                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            triggerEvent(ShowSnackbar(string.error_generic))
                             return@launch
                         }
                     val categoryOptions = productCategoriesToOptionListItems()
@@ -494,21 +493,21 @@ class ProductFilterListViewModel @Inject constructor(
         var filterOptionListItems: List<FilterListOptionItemUiModel>
     ) : Parcelable
 
-    /**
-     * [filterOptionItemName] is the display name of the filter option
-     * Eg: for stock status, this would be In Stock, Out of stock.
-     * for product type, this would be Simple, Grouped.
-     * for product type, this would be Pending, Draft
-     *
-     * [filterOptionItemValue] is the slug for the filter option.
-     * Eg: for stock status, this would be instock, outofstock
-     * for product type, this would be simple, grouped, variable
-     * for product status, this would be pending, draft
-     * for category, this would be category ID
-     */
 
     @Parcelize
     sealed class FilterListOptionItemUiModel : Parcelable {
+        /**
+         * [filterOptionItemName] is the display name of the filter option
+         * Eg: for stock status, this would be In Stock, Out of stock.
+         * for product type, this would be Simple, Grouped.
+         * for product type, this would be Pending, Draft
+         *
+         * [filterOptionItemValue] is the slug for the filter option.
+         * Eg: for stock status, this would be instock, outofstock
+         * for product type, this would be simple, grouped, variable
+         * for product status, this would be pending, draft
+         * for category, this would be category ID
+         */
         data class DefaultFilterListOptionItemUiModel(
             val filterOptionItemName: String,
             val filterOptionItemValue: String,
