@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,10 @@ class ThemePreviewViewModel @Inject constructor(
 
     fun onPageSelected(updatedDemoUri: String) {
         _viewState.value = _viewState.value.copy(demoUri = updatedDemoUri)
+    }
+
+    fun onBackNavigationClicked() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     @Parcelize

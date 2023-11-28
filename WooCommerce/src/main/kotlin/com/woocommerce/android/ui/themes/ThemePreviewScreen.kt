@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import kotlinx.coroutines.launch
+import okhttp3.internal.userAgent
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
@@ -45,7 +46,8 @@ fun ThemePreviewScreen(
             userAgent = userAgent,
             wpcomWebViewAuthenticator = wpcomWebViewAuthenticator,
             activityRegistry = activityRegistry,
-            viewModel::onPageSelected
+            viewModel::onPageSelected,
+            viewModel::onBackNavigationClicked,
         )
     }
 }
@@ -57,7 +59,8 @@ fun ThemePreviewScreen(
     userAgent: UserAgent,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
     activityRegistry: ActivityResultRegistry,
-    onPageSelected: (String) -> Unit
+    onPageSelected: (String) -> Unit,
+    onBackNavigationClicked: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -89,7 +92,8 @@ fun ThemePreviewScreen(
             topBar = {
                 Toolbar(
                     title = stringResource(id = string.more_menu_button_blaze),
-                    navigationIcon = Filled.ArrowBack
+                    navigationIcon = Filled.ArrowBack,
+                    onNavigationButtonClick = onBackNavigationClicked,
                 )
             },
             backgroundColor = MaterialTheme.colors.surface
