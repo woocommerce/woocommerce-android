@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import kotlinx.coroutines.launch
-import okhttp3.internal.userAgent
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
@@ -91,7 +90,7 @@ fun ThemePreviewScreen(
         Scaffold(
             topBar = {
                 Toolbar(
-                    title = stringResource(id = string.more_menu_button_blaze),
+                    title = stringResource(id = string.theme_preview_title),
                     navigationIcon = Filled.ArrowBack,
                     onNavigationButtonClick = onBackNavigationClicked,
                 )
