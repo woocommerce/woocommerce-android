@@ -175,6 +175,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == BUNDLE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        BUNDLE.value,
                         BUNDLES_URL
                     )
                 }
@@ -182,6 +183,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == SUBSCRIPTION && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        SUBSCRIPTION.value,
                         SUBSCRIPTIONS_URL
                     )
                 }
@@ -189,6 +191,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        VARIABLE_SUBSCRIPTION.value,
                         SUBSCRIPTIONS_URL
                     )
                 }
@@ -196,6 +199,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == COMPOSITE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        COMPOSITE.value,
                         COMPOSITE_URL
                     )
                 }
@@ -520,6 +524,7 @@ class ProductFilterListViewModel @Inject constructor(
 
         data class ExploreOptionItemUiModel(
             val filterOptionItemName: String,
+            val filterOptionItemValue: String,
             val url: String
         ) : FilterListOptionItemUiModel()
     }
