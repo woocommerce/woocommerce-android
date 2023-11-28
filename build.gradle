@@ -94,7 +94,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2905-a942137afdf5e2b98f9a9d53dc82980f2887124c'
+    fluxCVersion = 'issue_support-gift-card-in-orders-a942137afdf5e2b98f9a9d53dc82980f2887124c'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
