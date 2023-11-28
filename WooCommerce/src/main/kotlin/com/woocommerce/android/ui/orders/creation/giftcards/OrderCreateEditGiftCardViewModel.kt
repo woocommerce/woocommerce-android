@@ -17,4 +17,8 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         initialValue = ""
     )
     val giftCard = _giftCard.asLiveData()
+
+    fun onGiftCardChanged(giftCard: String) {
+        _giftCard.value = giftCard
+    }
 }
