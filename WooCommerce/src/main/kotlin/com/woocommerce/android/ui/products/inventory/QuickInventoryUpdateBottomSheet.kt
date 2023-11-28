@@ -100,8 +100,7 @@ fun QuickInventoryUpdateBottomSheet(
                 Text(modifier = Modifier.weight(1f), text = "Quantity", fontSize = 17.sp)
                 BasicTextField(
                     value = product.quantity.toString(),
-                    onValueChange = onManualQuantityEntered
-                    ,
+                    onValueChange = onManualQuantityEntered,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = TextStyle(
@@ -156,7 +155,15 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         sku = "123-SKU-456",
         quantity = 10,
     )
-    val state = rememberSaveable { mutableStateOf(ScanToUpdateInventoryViewModel.ViewState.ProductLoaded(product, true, "8")) }
+    val state = rememberSaveable {
+        mutableStateOf(
+            ScanToUpdateInventoryViewModel.ViewState.ProductLoaded(
+                product,
+                true,
+                "8"
+            )
+        )
+    }
     WooTheme {
         QuickInventoryUpdateBottomSheet(state, {}, {}, {})
     }

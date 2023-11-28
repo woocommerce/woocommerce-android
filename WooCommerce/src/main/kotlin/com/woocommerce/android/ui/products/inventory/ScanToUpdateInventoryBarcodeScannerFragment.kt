@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.inventory
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
@@ -12,7 +11,6 @@ import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcod
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint

@@ -20,7 +20,6 @@ import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class QuickInventoryUpdateBottomSheetFragment : WCBottomSheetDialogFragment() {
     private val viewModel: ScanToUpdateInventoryViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_main)
-    private val args: QuickInventoryUpdateBottomSheetFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
