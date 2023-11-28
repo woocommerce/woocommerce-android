@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-class OrderCreateEditGiftCardFragment: BaseFragment() {
+class OrderCreateEditGiftCardFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -20,6 +20,5 @@ class OrderCreateEditGiftCardFragment: BaseFragment() {
                 }
             }
         }
-
     }
 }

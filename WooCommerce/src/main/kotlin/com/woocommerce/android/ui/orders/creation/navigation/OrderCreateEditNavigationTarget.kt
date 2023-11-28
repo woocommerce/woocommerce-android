@@ -70,6 +70,6 @@ sealed class OrderCreateEditNavigationTarget : Event() {
 
     data class EditGiftCard(
         val giftCard: String
-    ): OrderCreateEditNavigationTarget()
+    ) : OrderCreateEditNavigationTarget()
     object AddGiftCard : OrderCreateEditNavigationTarget()
 }
