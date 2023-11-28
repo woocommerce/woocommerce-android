@@ -53,9 +53,9 @@ class ProductFilterListViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
-        private const val SUBSCRIPTIONS_URL = "https://woo.com/products/woocommerce-subscriptions/"
-        private const val BUNDLES_URL = "https://woo.com/products/product-bundles/"
-        private const val COMPOSITE_URL = "https://woo.com/products/composite-products/"
+        const val SUBSCRIPTIONS_URL = "https://woo.com/products/woocommerce-subscriptions/"
+        const val BUNDLES_URL = "https://woo.com/products/product-bundles/"
+        const val COMPOSITE_URL = "https://woo.com/products/composite-products/"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
