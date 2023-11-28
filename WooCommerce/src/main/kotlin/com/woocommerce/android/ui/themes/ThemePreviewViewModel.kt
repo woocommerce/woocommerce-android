@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
