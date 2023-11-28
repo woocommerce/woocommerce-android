@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -49,10 +50,10 @@ fun CustomAmountCard(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
             ) {
                 ImageWithBorder()
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
                 Column(modifier = Modifier.weight(2f)) {
                     Text(
                         text = customAmountUI.name,
@@ -87,10 +88,10 @@ fun CustomAmountCard(
             if (customAmountUI.shouldShowDivider) {
                 Divider(
                     color = colorResource(id = R.color.divider_color),
-                    thickness = 1.dp,
+                    thickness = dimensionResource(id = R.dimen.minor_10),
                     modifier = Modifier.padding(
-                        vertical = 8.dp,
-                        horizontal = 8.dp
+                        vertical = dimensionResource(id = R.dimen.minor_100),
+                        horizontal = dimensionResource(id = R.dimen.minor_100)
                     )
                 )
             }

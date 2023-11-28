@@ -388,7 +388,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onJetpackTimeoutError(event: OnJetpackTimeoutError) {
         with(event) {
             // Replace numeric IDs with a placeholder so events can be aggregated
-            val genericPath = apiPath.replace(REGEX_API_NUMERIC_PARAM, "/ID/")
+            val genericPath = apiPath?.replace(REGEX_API_NUMERIC_PARAM, "/ID/")
             val protocol = REGEX_API_JETPACK_TUNNEL_METHOD.find(apiPath)?.groups?.get(1)?.value ?: ""
 
             val properties = mapOf(

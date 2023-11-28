@@ -36,11 +36,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun MyStoreBlazeView(
-    state: MyStoreBlazeCampaignState
+    state: MyStoreBlazeCampaignState,
+    onDismissBlazeView: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -48,54 +50,61 @@ fun MyStoreBlazeView(
             .wrapContentHeight(),
         shape = RoundedCornerShape(0.dp)
     ) {
-        Column {
-            Column(
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.major_100),
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                )
-            ) {
-                BlazeCampaignHeader()
-                when (state) {
-                    is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
-                        campaign = state.campaign,
-                        onCampaignClicked = state.onCampaignClicked,
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column {
+                Column(
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.major_100),
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
                     )
-
-                    is MyStoreBlazeCampaignState.NoCampaign -> {
-                        Text(
-                            modifier = Modifier.padding(
-                                top = dimensionResource(id = R.dimen.major_100),
-                                end = dimensionResource(id = R.dimen.major_300)
-                            ),
-                            text = stringResource(id = R.string.blaze_campaign_subtitle),
-                            style = MaterialTheme.typography.body1,
-                        )
-                        BlazeProductItem(
-                            product = state.product,
-                            onProductSelected = state.onProductClicked,
+                ) {
+                    BlazeCampaignHeader()
+                    when (state) {
+                        is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
+                            campaign = state.campaign,
+                            onCampaignClicked = state.onCampaignClicked,
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
+
+                        is MyStoreBlazeCampaignState.NoCampaign -> {
+                            Text(
+                                modifier = Modifier.padding(
+                                    top = dimensionResource(id = R.dimen.major_100),
+                                    end = dimensionResource(id = R.dimen.major_300)
+                                ),
+                                text = stringResource(id = R.string.blaze_campaign_subtitle),
+                                style = MaterialTheme.typography.body1,
+                            )
+                            BlazeProductItem(
+                                product = state.product,
+                                onProductSelected = state.onProductClicked,
+                                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                            )
+                        }
+
+                        else -> error("Invalid state")
                     }
+                }
+                when (state) {
+                    is MyStoreBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
+                        onShowAllClicked = state.onViewAllCampaignsClicked,
+                        onCreateCampaignClicked = state.onCreateCampaignClicked
+                    )
+
+                    is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
+                        onCreateCampaignClicked = state.onCreateCampaignClicked,
+                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                    )
 
                     else -> error("Invalid state")
                 }
             }
-            when (state) {
-                is MyStoreBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
-                    onShowAllClicked = state.onViewAllCampaignsClicked,
-                    onCreateCampaignClicked = state.onCreateCampaignClicked
-                )
-
-                is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
-                    onCreateCampaignClicked = state.onCreateCampaignClicked,
-                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
-                )
-
-                else -> error("Invalid state")
-            }
+            WCOverflowMenu(
+                items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
+                onSelected = { onDismissBlazeView() },
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
         }
     }
 }
@@ -230,7 +239,8 @@ fun MyStoreBlazeViewCampaignPreview() {
             onCampaignClicked = {},
             onViewAllCampaignsClicked = {},
             onCreateCampaignClicked = {}
-        )
+        ),
+        onDismissBlazeView = {}
     )
 }
 
@@ -250,6 +260,7 @@ fun MyStoreBlazeViewNoCampaignPreview() {
             ),
             onProductClicked = {},
             onCreateCampaignClicked = {}
-        )
+        ),
+        onDismissBlazeView = {}
     )
 }

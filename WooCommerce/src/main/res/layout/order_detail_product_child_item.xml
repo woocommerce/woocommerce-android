@@ -12,7 +12,7 @@
         android:layout_height="@dimen/image_minor_100"
         android:layout_gravity="center_vertical"
         android:layout_marginVertical="@dimen/major_100"
-        android:layout_marginStart="@dimen/major_375"
+        android:layout_marginStart="@dimen/major_250"
         android:background="@drawable/picture_frame"
         android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_total"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         tools:text="Candle" />
@@ -49,8 +49,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="@dimen/major_100"
+        android:textColor="@color/color_on_surface_disabled"
         tools:text="$30.00" />
 
     <com.google.android.material.textview.MaterialTextView

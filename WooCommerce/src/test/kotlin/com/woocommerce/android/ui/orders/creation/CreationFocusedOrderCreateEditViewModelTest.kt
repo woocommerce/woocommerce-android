@@ -6,11 +6,15 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNT_TAX_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
@@ -51,6 +55,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -1777,6 +1782,62 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         verify(tracker).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount name is added, then fee add event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            eq(ORDER_FEE_ADD),
+            any()
+        )
+    }
+
+    @Test
+    fun `when custom amount name is added with tax, then fee add event is tracked with tax_status value taxable`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+            )
+        )
+    }
+
+    @Test
+    fun `when custom amount name is added with no tax, then fee add event is tracked with tax_status value none`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker).track(
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+            )
+        )
     }
 
     @Test
