@@ -26,7 +26,12 @@ class ThemePreviewFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    ThemePreviewScreen(viewModel)
+                    ThemePreviewScreen(
+                        viewModel = viewModel,
+                        userAgent = viewModel.userAgent,
+                        wpcomWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
+                        activityRegistry = requireActivity().activityResultRegistry,
+                    )
                 }
             }
         }

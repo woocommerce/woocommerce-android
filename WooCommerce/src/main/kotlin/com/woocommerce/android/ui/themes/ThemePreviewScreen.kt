@@ -108,7 +108,7 @@ fun ThemePreviewScreen(
 }
 
 @Composable
-@Suppress("unused")
+@Suppress("UNUSED_PARAMETER")
 private fun ThemeDemoPagesBottomSheet(
     onPageSelected: (String) -> Unit,
 ) {

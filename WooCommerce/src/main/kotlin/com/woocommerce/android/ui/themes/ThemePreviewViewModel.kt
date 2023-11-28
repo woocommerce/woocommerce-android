@@ -3,14 +3,18 @@ package com.woocommerce.android.ui.themes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @HiltViewModel
 class ThemePreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val userAgent: UserAgent,
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = savedStateHandle.getStateFlow(
         viewModelScope,
