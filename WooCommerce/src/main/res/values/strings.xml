@@ -3366,6 +3366,16 @@
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
 
     <!--
+    Store theme
+    -->
+    <string name="theme_picker_title">Choose a theme</string>
+    <string name="theme_picker_description">You can always change it later in the settings.</string>
+    <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
+    <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
+    <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
+    <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
+
+    <!--
     Store onboarding
     -->
     <string name="store_onboarding_title">Store setup</string>

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.profiler
+package com.woocommerce.android.ui.themes
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,13 +13,12 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreProfilerFeaturesFragment : BaseFragment() {
-    private val viewModel: StoreProfilerFeaturesViewModel by viewModels()
+class ThemePickerFragment : BaseFragment() {
+    private val viewModel: ThemePickerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -29,7 +28,7 @@ class StoreProfilerFeaturesFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreProfilerScreen(viewModel)
+                    ThemePickerScreen(viewModel)
                 }
             }
         }
@@ -44,30 +43,15 @@ class StoreProfilerFeaturesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToNextStep -> navigateToNextStep()
+                is NavigateToNextStep -> navigateToStoreInstallationStep()
             }
         }
     }
 
-    private fun navigateToNextStep() {
-        if (FeatureFlag.THEME_PICKER.isEnabled()) {
-            navigateToThemePicker()
-        } else {
-            navigateToStoreInstallationStep()
-        }
-    }
-
-    private fun navigateToThemePicker() {
-        findNavController().navigateSafely(
-            StoreProfilerFeaturesFragmentDirections
-                .actionStoreProfilerFeaturesFragmentToThemePickerFragment()
-        )
-    }
-
     private fun navigateToStoreInstallationStep() {
         findNavController().navigateSafely(
-            StoreProfilerFeaturesFragmentDirections
-                .actionStoreProfilerFeaturesFragmentToStoreCreationInstallationFragment()
+            ThemePickerFragmentDirections
+                .actionThemePickerFragmentToStoreCreationInstallationFragment()
         )
     }
 }
