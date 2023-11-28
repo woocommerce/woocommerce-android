@@ -4,7 +4,6 @@ import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
-import com.stripe.stripeterminal.external.models.DiscoveryMethod
 import com.stripe.stripeterminal.external.models.Reader
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
@@ -210,7 +209,12 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             any(),
             any()
         )
-        assertThat(configCaptor.firstValue.discoveryMethod).isEqualTo(DiscoveryMethod.BLUETOOTH_SCAN)
+        assertThat(configCaptor.firstValue).isEqualTo(
+            DiscoveryConfiguration.BluetoothDiscoveryConfiguration(
+                60,
+                false
+            )
+        )
     }
 
     @Test
@@ -225,7 +229,11 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             any(),
             any()
         )
-        assertThat(configCaptor.firstValue.discoveryMethod).isEqualTo(DiscoveryMethod.LOCAL_MOBILE)
+        assertThat(configCaptor.firstValue).isEqualTo(
+            DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(
+                true
+            )
+        )
     }
 
     @Test
