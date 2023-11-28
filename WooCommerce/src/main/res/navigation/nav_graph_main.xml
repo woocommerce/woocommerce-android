@@ -207,12 +207,7 @@
     <dialog
         android:id="@+id/quickInventoryUpdateBottomSheet"
         android:name="com.woocommerce.android.ui.products.inventory.QuickInventoryUpdateBottomSheetFragment"
-        android:label="quick_inventory_update_bottom_sheet" >
-        <argument
-            android:name="productInfo"
-            app:argType="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel$ProductInfo"
-            />
-    </dialog>
+        android:label="quick_inventory_update_bottom_sheet" />
     <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"

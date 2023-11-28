@@ -61,7 +61,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 )
                 if (product.isStockManaged) {
                     _viewState.value = ViewState.ProductLoaded(productInfo)
-                    triggerEvent(OpenInventoryUpdateBottomSheet(productInfo))
+                    triggerEvent(OpenInventoryUpdateBottomSheet)
                 } else {
                     handleProductIsNotStockManaged(product)
                 }
@@ -181,7 +181,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         object ProductUpdating : ViewState()
     }
 
-    data class OpenInventoryUpdateBottomSheet(val product: ProductInfo) : MultiLiveEvent.Event()
+    object OpenInventoryUpdateBottomSheet : MultiLiveEvent.Event()
 
     companion object {
         private const val SCANNER_RESTART_DEBOUNCE_MS = 1000L

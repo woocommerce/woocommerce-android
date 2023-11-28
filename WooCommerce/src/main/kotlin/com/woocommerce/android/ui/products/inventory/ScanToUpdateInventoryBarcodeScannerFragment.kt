@@ -34,11 +34,8 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BarcodeScanningFragment() {
                     uiMessageResolver.showSnack(it.message)
                 }
                 is ScanToUpdateInventoryViewModel.OpenInventoryUpdateBottomSheet -> {
-                    actionScanToUpdateInventoryBarcodeScannerFragmentToQuickInventoryUpdateBottomSheet(
-                        it.product
-                    ).let {
-                        findNavController().navigate(it)
-                    }
+                    findNavController()
+                        .navigate(actionScanToUpdateInventoryBarcodeScannerFragmentToQuickInventoryUpdateBottomSheet())
                 }
             }
         }
