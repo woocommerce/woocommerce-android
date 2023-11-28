@@ -252,6 +252,9 @@ class AnalyticsTracker private constructor(
         const val KEY_HAS_FEES = "has_fees"
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
+        const val KEY_CUSTOM_AMOUNT_TAX_STATUS = "tax_status"
+        const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE = "taxable"
+        const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE = "none"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
         const val VALUE_FLOW_LIST = "list"
@@ -600,6 +603,9 @@ class AnalyticsTracker private constructor(
 
         // -- AI Language detection
         const val KEY_DETECTED_LANGUAGE = "language"
+
+        // -- AI thank-you note
+        const val VALUE_ORDER_THANK_YOU_NOTE = "order_thank_you_note"
 
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"

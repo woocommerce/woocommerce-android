@@ -3,8 +3,12 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,20 +54,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 internal const val OUTLINED_BORDER_OPACITY = 0.14f
@@ -73,31 +84,19 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     BackHandler(onBack = viewModel::onCancel)
     Scaffold(topBar = {
-        Column {
-            val issues = (viewState as? ProductConfigurationViewModel.ViewState.DisplayConfiguration)
-                ?.configurationIssues ?: emptyList()
-
-            AnimatedVisibility(visible = issues.isEmpty().not()) {
-                ConfigurationIssues(
-                    issues = issues,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.product_configuration_title)) },
-                navigationIcon = {
-                    IconButton(viewModel::onCancel) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(id = R.string.close)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
-            )
-        }
+        TopAppBar(
+            title = { Text(stringResource(id = R.string.product_configuration_title)) },
+            navigationIcon = {
+                IconButton(viewModel::onCancel) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(id = R.string.close)
+                    )
+                }
+            },
+            backgroundColor = colorResource(id = R.color.color_toolbar),
+            elevation = 0.dp,
+        )
     }) { padding ->
         when (val state = viewState) {
             is ProductConfigurationViewModel.ViewState.Error -> Text(text = state.message)
@@ -117,6 +116,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
         }
     }
 }
+
 @Suppress("ComplexMethod")
 @Composable
 fun ProductConfigurationScreen(
@@ -158,13 +158,13 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
-                            val info = childMapEntry.value[VariableProductRule.KEY]
-                                .getAttributeOptionsFromJsonStringOrNull()
+                            val attributes = childMapEntry.value[VariableProductRule.KEY]
+                                .toAttributesFromConfigurationStringOrNull()
 
                             OptionalVariableQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
-                                info = info,
+                                info = null,
                                 quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
@@ -175,7 +175,8 @@ fun ProductConfigurationScreen(
                                 isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                                 onSwitchChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                                }
+                                },
+                                attributes = attributes
                             )
                         }
 
@@ -184,20 +185,21 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
-                            val info = childMapEntry.value[VariableProductRule.KEY]
-                                .getAttributeOptionsFromJsonStringOrNull()
+                            val attributes = childMapEntry.value[VariableProductRule.KEY]
+                                .toAttributesFromConfigurationStringOrNull()
 
                             VariableQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
-                                info = info,
+                                info = null,
                                 quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                                 },
                                 minValue = quantityRule?.quantityMin,
                                 maxValue = quantityRule?.quantityMax,
-                                onSelectAttributes = { onSelectChildrenAttributes(item.id) }
+                                onSelectAttributes = { onSelectChildrenAttributes(item.id) },
+                                attributes = attributes
                             )
                         }
 
@@ -260,6 +262,25 @@ fun ProductConfigurationScreen(
                     )
                 }
             }
+
+            val density = LocalDensity.current
+            AnimatedVisibility(
+                visible = configurationIssues.isEmpty().not(),
+                enter = slideInVertically {
+                    with(density) { -40.dp.roundToPx() }
+                } + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(initialAlpha = 0.3f),
+                exit = slideOutVertically {
+                    with(density) { 10.dp.roundToPx() }
+                } + fadeOut()
+            ) {
+                ConfigurationIssues(
+                    issues = configurationIssues,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             Divider(
                 color = colorResource(id = R.color.divider_color),
                 thickness = dimensionResource(id = R.dimen.minor_10)
@@ -675,18 +696,29 @@ fun ConfigurationIssues(
     issues: List<String>,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Column(
         modifier = modifier
-            .background(colorResource(id = R.color.woo_blue_5))
-            .padding(start = 18.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+            .padding(all = 16.dp)
+            .background(
+                shape = RoundedCornerShape(8.dp),
+                color = colorResource(id = R.color.woo_blue_5)
+            )
+            .padding(all = 16.dp)
+            .animateContentSize()
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_info_outline_20dp),
-            contentDescription = stringResource(id = R.string.configuration_issues),
-            tint = colorResource(id = R.color.blaze_blue_60)
+        Text(
+            text = stringResource(id = R.string.configuration_required),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Bold
         )
-        LazyColumn(modifier = Modifier.padding(start = 8.dp)) {
-            items(issues) { issue -> Text(text = " • $issue", color = MaterialTheme.colors.onSurface) }
+        LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
+            items(issues) { issue ->
+                Text(
+                    text = issue,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface
+                )
+            }
         }
     }
 }
@@ -709,9 +741,20 @@ fun VariableQuantityProductItem(
     onSelectAttributes: () -> Unit,
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
-    minValue: Float? = null
+    minValue: Float? = null,
+    attributes: List<VariantOption>? = null
 ) {
-    Column(modifier = modifier.clickable { onSelectAttributes() }) {
+    Column(
+        modifier = modifier
+            .clickable {
+                if (quantity > 0f) {
+                    onSelectAttributes()
+                } else {
+                    onQuantityChanged(1f)
+                }
+            }
+            .animateContentSize()
+    ) {
         ConfigurableListItem(
             title = title,
             imageUrl = imageUrl,
@@ -726,7 +769,7 @@ fun VariableQuantityProductItem(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
                 )
             },
-            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 8.dp, end = 0.dp)
+            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 0.dp)
         ) {
             AnimatedVisibility(
                 visible = quantity > 0f,
@@ -744,12 +787,17 @@ fun VariableQuantityProductItem(
             }
         }
 
-        WCTextButton(
-            onClick = { onSelectAttributes() },
-            text = stringResource(id = R.string.configuration_variable_update),
-            allCaps = false,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-        )
+        AnimatedVisibility(
+            visible = quantity > 0f,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            VariableSelection(
+                attributes = attributes,
+                onSelectAttributes = onSelectAttributes,
+                modifier = Modifier.padding(start = 56.dp, end = 8.dp)
+            )
+        }
     }
 }
 
@@ -765,9 +813,20 @@ fun OptionalVariableQuantityProductItem(
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
-    minValue: Float? = null
+    minValue: Float? = null,
+    attributes: List<VariantOption>? = null
 ) {
-    Column(modifier = modifier.clickable { onSelectAttributes() }) {
+    Column(
+        modifier = modifier
+            .clickable {
+                if (isIncluded) {
+                    onSelectAttributes()
+                } else {
+                    onSwitchChanged(true)
+                }
+            }
+            .animateContentSize()
+    ) {
         ConfigurableListItem(
             title = title,
             imageUrl = imageUrl,
@@ -779,7 +838,7 @@ fun OptionalVariableQuantityProductItem(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
                 )
             },
-            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 8.dp, end = 0.dp)
+            modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 0.dp)
         ) {
             AnimatedVisibility(
                 visible = isIncluded,
@@ -797,12 +856,68 @@ fun OptionalVariableQuantityProductItem(
             }
         }
 
-        WCTextButton(
-            onClick = { onSelectAttributes() },
-            text = stringResource(id = R.string.configuration_variable_update),
-            allCaps = false,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+        AnimatedVisibility(
+            visible = isIncluded,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            VariableSelection(
+                attributes = attributes,
+                onSelectAttributes = onSelectAttributes,
+                modifier = Modifier.padding(start = 56.dp, end = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun VariableSelection(
+    attributes: List<VariantOption>?,
+    onSelectAttributes: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
         )
+
+        if (attributes?.isNotEmpty() == true) {
+            Column(modifier = Modifier.padding(top = 8.dp)) {
+                attributes.forEach { attribute ->
+                    val annotatedString = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(attribute.name)
+                        }
+                        append(" ${attribute.option}")
+                    }
+                    Text(text = annotatedString, modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .clickable { onSelectAttributes() }
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically),
+                text = stringResource(id = R.string.configuration_variable_update),
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.primary,
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_right),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .size(dimensionResource(id = R.dimen.major_200))
+                    .align(Alignment.CenterVertically)
+            )
+        }
     }
 }
 
@@ -821,12 +936,18 @@ fun VariableQuantityProductItemPreview() {
     }
 }
 
-fun String?.getAttributeOptionsFromJsonStringOrNull(): String? {
-    return this?.let { attributes ->
-        val regexPattern = "\"option\"\\s*:\\s*\"([^\"]+)\""
-        val regex = Regex(regexPattern)
-        val matches = regex.findAll(attributes)
-        val optionsList = matches.map { it.groupValues[1] }
-        optionsList.joinToString(" • ")
-    }
+@Suppress("UNCHECKED_CAST")
+private fun String?.toAttributesFromConfigurationStringOrNull(): List<VariantOption>? {
+    return this?.runCatching {
+        val gson = Gson()
+        val mapType = object : TypeToken<Map<String, Any>>() {}.type
+        val map = gson.fromJson<Map<String, Any>>(this, mapType)
+        (map[VariableProductRule.VARIATION_ATTRIBUTES] as? List<Map<String, Any>>)?.mapNotNull { attribute ->
+            VariantOption(
+                id = attribute["id"] as? Long,
+                name = attribute["name"]?.toString(),
+                option = attribute["option"]?.toString()
+            ).takeIf { variantOption -> variantOption != VariantOption.empty }
+        }
+    }?.getOrNull()
 }

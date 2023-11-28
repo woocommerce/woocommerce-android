@@ -6,13 +6,20 @@ import javax.inject.Inject
 
 class AdjustProductQuantity @Inject constructor() {
     operator fun invoke(order: Order, product: OrderCreationProduct, quantityToAdd: Int): Order {
+        if (product.item.itemId == Order.Item.EMPTY.itemId) return order
         return when (product.productInfo.productType) {
             ProductType.BUNDLE -> adjustBundleQuantity(order, product, quantityToAdd)
             else -> adjustQuantity(order, product.item.itemId, quantityToAdd)
         }
     }
 
-    operator fun invoke(order: Order, itemId: Long, quantityToAdd: Int) = adjustQuantity(order, itemId, quantityToAdd)
+    operator fun invoke(order: Order, itemId: Long, quantityToAdd: Int): Order {
+        return if (itemId == Order.Item.EMPTY.itemId) {
+            order
+        } else {
+            adjustQuantity(order, itemId, quantityToAdd)
+        }
+    }
 
     private fun adjustBundleQuantity(order: Order, product: OrderCreationProduct, quantityToAdd: Int): Order {
         return (product as? OrderCreationProduct.GroupedProductItemWithRules)?.let { groupedProduct ->

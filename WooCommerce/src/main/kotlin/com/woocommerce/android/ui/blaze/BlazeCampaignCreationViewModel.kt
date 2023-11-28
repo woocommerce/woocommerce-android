@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
@@ -34,7 +35,8 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     val userAgent: UserAgent,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
-    private val blazeCampaignsStore: BlazeCampaignsStore
+    private val blazeCampaignsStore: BlazeCampaignsStore,
+    private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private companion object {
         const val BLAZE_CTA_TAPPED_TRACKED_KEY = "blaze_cta_tapped_tracked_key"
@@ -103,6 +105,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 )
             )
             triggerEvent(CampaignCreated)
+            prefsWrapper.isMyStoreBlazeViewDismissed = false
         }
     }
 

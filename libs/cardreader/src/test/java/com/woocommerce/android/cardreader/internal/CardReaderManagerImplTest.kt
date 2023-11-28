@@ -12,6 +12,7 @@ import com.woocommerce.android.cardreader.internal.payments.InteracRefundManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalApplicationDelegateWrapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +21,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -67,14 +67,6 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             softwareUpdateManager,
             terminalListener,
         )
-    }
-
-    @Test
-    fun `when manager gets initialized, then terminal gets registered to components lifecycle`() {
-
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
-
-        verify(application, atLeastOnce()).registerComponentCallbacks(any())
     }
 
     @Test
@@ -213,7 +205,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
         assertThatIllegalStateException().isThrownBy {
             testBlocking {
-                cardReaderManager.refundInteracPayment(mock())
+                cardReaderManager.refundInteracPayment(mock(), mock())
             }
         }
     }
@@ -222,7 +214,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `when refund interac payment is initiated, then reset bluetooth card reader messages`() =
         testBlocking {
             whenever(terminalWrapper.isInitialized()).thenReturn(true)
-            cardReaderManager.refundInteracPayment(mock())
+            cardReaderManager.refundInteracPayment(mock(), mock())
 
             verify(connectionManager).resetBluetoothCardReaderDisplayMessage()
         }
@@ -236,11 +228,13 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
                 amount = BigDecimal.TEN,
                 currency = "USD"
             )
-            val captor = argumentCaptor<RefundParams>()
+            val refundConfig = RefundConfig(enableCustomerCancellation = true)
+            val captorParam = argumentCaptor<RefundParams>()
+            val captorConfig = argumentCaptor<RefundConfig>()
 
-            cardReaderManager.refundInteracPayment(refundParams)
+            cardReaderManager.refundInteracPayment(refundParams, refundConfig)
 
-            verify(interacRefundManager).refundInteracPayment(captor.capture())
-            assertThat(captor.firstValue).isEqualTo(refundParams)
+            verify(interacRefundManager).refundInteracPayment(captorParam.capture(), captorConfig.capture())
+            assertThat(captorParam.firstValue).isEqualTo(refundParams)
         }
 }

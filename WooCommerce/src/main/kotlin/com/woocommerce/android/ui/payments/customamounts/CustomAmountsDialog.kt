@@ -7,6 +7,10 @@ import android.os.Looper
 import android.view.View
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
@@ -17,9 +21,12 @@ import com.woocommerce.android.databinding.DialogCustomAmountsBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
+import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -63,10 +70,12 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                 CustomAmountUIModel(
                     id = viewModel.viewState.customAmountUIModel.id,
                     amount = viewModel.viewState.customAmountUIModel.currentPrice,
-                    name = viewModel.viewState.customAmountUIModel.name
+                    name = viewModel.viewState.customAmountUIModel.name,
+                    taxStatus = viewModel.viewState.customAmountUIModel.taxStatus,
                 )
             )
         }
+        setupTaxToggleView(binding)
         binding.imageClose.setOnClickListener {
             cancelDialog()
         }
@@ -80,6 +89,24 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             )
         }
         setupObservers(binding)
+    }
+
+    private fun setupTaxToggleView(binding: DialogCustomAmountsBinding) {
+        binding.taxToggleComposeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    val viewState = viewModel.viewStateLiveData.liveData.observeAsState()
+                    val taxToggleState = remember { mutableStateOf(false) }
+                    TaxToggle(taxStatus = viewState.value?.customAmountUIModel?.taxStatus ?: TaxStatus()) { isChecked ->
+                        taxToggleState.value = isChecked
+                        viewModel.taxToggleState = viewModel.taxToggleState.copy(
+                            isTaxable = isChecked
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun setupObservers(binding: DialogCustomAmountsBinding) {

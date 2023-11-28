@@ -32,7 +32,7 @@ class OrderDetailProductItemListAdapter(
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = productItem.product
-            val imageSize = view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+            val imageSize = view.resources.getDimensionPixelSize(R.dimen.image_major_50)
             val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
             view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
             itemView.setOnClickListener {
@@ -56,7 +56,7 @@ class OrderDetailProductItemListAdapter(
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = groupedItem.product
-            val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+            val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_major_50)
             val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
 
             binding.productInfoGroupedProduct.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
@@ -67,8 +67,11 @@ class OrderDetailProductItemListAdapter(
                     productItemListener.openOrderProductDetail(item.productId)
                 }
             }
+            binding.productInfoGroupedProduct.hideProductTotal()
+            val orderTotal = formatCurrencyForDisplay(item.total)
+            binding.groupedProductTotal.text = orderTotal
 
-            binding.expandIcon.setOnClickListener {
+            binding.root.setOnClickListener {
                 groupedItem.isExpanded = groupedItem.isExpanded.not()
                 notifyItemChanged(bindingAdapterPosition)
             }

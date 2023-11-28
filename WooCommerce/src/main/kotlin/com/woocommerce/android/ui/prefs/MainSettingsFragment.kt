@@ -242,6 +242,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToNameYourStoreDialogFragment()
                 )
         }
+
+        binding.optionSiteThemes.isVisible = presenter.isThemePickerOptionVisible
+        binding.optionSiteThemes.setOnClickListener {
+            // TODO open store themes picker
+        }
     }
 
     private fun showDomainDashboard() {
