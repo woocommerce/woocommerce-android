@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -15,7 +14,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CashOnDeliverySettingsRepositoryTest {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
