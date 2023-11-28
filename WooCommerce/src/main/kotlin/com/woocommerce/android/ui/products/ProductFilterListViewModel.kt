@@ -209,7 +209,9 @@ class ProductFilterListViewModel @Inject constructor(
                     )
                 }
             }
-        }.toMutableList()
+        }.sortedBy { it is FilterListOptionItemUiModel.ExploreOptionItemUiModel }
+            .toMutableList()
+
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
