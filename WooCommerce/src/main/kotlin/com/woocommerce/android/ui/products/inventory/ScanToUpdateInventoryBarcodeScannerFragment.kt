@@ -30,21 +30,17 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BarcodeScanningFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launch {
-            viewModel.viewState.collect {
-                if (it is ScanToUpdateInventoryViewModel.ViewState.ProductLoaded) {
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is MultiLiveEvent.Event.ShowUiStringSnackbar -> {
+                    uiMessageResolver.showSnack(it.message)
+                }
+                is ScanToUpdateInventoryViewModel.OpenInventoryUpdateBottomSheet -> {
                     actionScanToUpdateInventoryBarcodeScannerFragmentToQuickInventoryUpdateBottomSheet(
                         it.product
                     ).let {
                         findNavController().navigate(it)
                     }
-                }
-            }
-        }
-        viewModel.event.observe(viewLifecycleOwner) {
-            when (it) {
-                is MultiLiveEvent.Event.ShowUiStringSnackbar -> {
-                    uiMessageResolver.showSnack(it.message)
                 }
             }
         }

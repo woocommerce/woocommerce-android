@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
@@ -44,10 +45,18 @@ class QuickInventoryUpdateBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooTheme {
-                    QuickInventoryUpdateBottomSheet(args.productInfo) {
-                        viewModel.onIncrementQuantityClicked()
-                        dismiss()
-                    }
+                    QuickInventoryUpdateBottomSheet(
+                        onUpdateQuantityClicked = {
+                            viewModel.onUpdateQuantityClicked()
+                            dismiss()
+                        },
+                        onIncrementQuantityClicked = {
+                            viewModel.onIncrementQuantityClicked()
+                            dismiss()
+                        },
+                        onManualQuantityEntered = viewModel::onManualQuantityEntered,
+                        state = viewModel.viewState.collectAsState(),
+                    )
                 }
             }
         }

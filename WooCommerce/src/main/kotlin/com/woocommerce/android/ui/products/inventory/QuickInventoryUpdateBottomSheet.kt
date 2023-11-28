@@ -7,11 +7,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +27,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,15 +41,19 @@ import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewMo
 
 @Composable
 fun QuickInventoryUpdateBottomSheet(
-    product: ProductInfo,
+    state: State<ScanToUpdateInventoryViewModel.ViewState>,
     onIncrementQuantityClicked: () -> Unit,
+    onManualQuantityEntered: (String) -> Unit,
+    onUpdateQuantityClicked: () -> Unit,
 ) {
+    val product = (state.value as ScanToUpdateInventoryViewModel.ViewState.ProductLoaded).product
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp))
     ) {
         Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -81,18 +95,52 @@ fun QuickInventoryUpdateBottomSheet(
             Divider()
             Row(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(modifier = Modifier.weight(1f), text = "Quantity")
-                Text(text = product.quantity.toString())
+                Text(modifier = Modifier.weight(1f), text = "Quantity", fontSize = 17.sp)
+                BasicTextField(
+                    value = product.quantity.toString(),
+                    onValueChange = onManualQuantityEntered
+                    ,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        textAlign = TextAlign.End,
+                        color = MaterialTheme.colors.onSurface
+                    ),
+                )
             }
             Divider()
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
-                onClick = onIncrementQuantityClicked,
-                text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
-            )
+            val productState = state.value as ScanToUpdateInventoryViewModel.ViewState.ProductLoaded
+            if (productState.isPendingUpdate) {
+                Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.scan_to_update_inventory_original_quantity_label),
+                        style = MaterialTheme.typography.caption,
+                    )
+                    Text(
+                        text = productState.originalQuantity,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                WCColoredButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.major_100)),
+                    onClick = onUpdateQuantityClicked,
+                    text = stringResource(R.string.scan_to_update_inventory_update_quantity_button)
+                )
+            } else {
+                WCColoredButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.major_100)),
+                    onClick = onIncrementQuantityClicked,
+                    text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
+                )
+            }
         }
     }
 }
@@ -108,7 +156,8 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         sku = "123-SKU-456",
         quantity = 10,
     )
+    val state = rememberSaveable { mutableStateOf(ScanToUpdateInventoryViewModel.ViewState.ProductLoaded(product, true, "8")) }
     WooTheme {
-        QuickInventoryUpdateBottomSheet(product) {}
+        QuickInventoryUpdateBottomSheet(state, {}, {}, {})
     }
 }
