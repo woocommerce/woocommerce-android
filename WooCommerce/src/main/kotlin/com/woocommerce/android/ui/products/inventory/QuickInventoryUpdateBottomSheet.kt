@@ -25,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -99,8 +101,13 @@ fun QuickInventoryUpdateBottomSheet(
             ) {
                 Text(modifier = Modifier.weight(1f), text = "Quantity", fontSize = 17.sp)
                 BasicTextField(
-                    value = product.quantity.toString(),
-                    onValueChange = onManualQuantityEntered,
+                    value = TextFieldValue(
+                        text = product.quantity.toString(),
+                        selection = TextRange(product.quantity.toString().length)
+                    ),
+                    onValueChange = {
+                        onManualQuantityEntered(it.text)
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     textStyle = TextStyle(
