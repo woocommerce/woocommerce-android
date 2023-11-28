@@ -153,7 +153,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val state = viewState.value
         if (state !is ViewState.ProductLoaded) return
         _viewState.value = state.copy(
-            product = state.product.copy(quantity = newQuantity.toInt()),
+            product = state.product.copy(quantity = newQuantity.toIntOrNull() ?: 0),
             isPendingUpdate = true
         )
     }
