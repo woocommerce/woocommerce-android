@@ -118,7 +118,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     fun `given barcode successfully scanned, when corresponding product is not stock managed, should show snackbar with error`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
-                Result.success(ProductTestUtils.generateProduct(isStockManaged = false))
+                Result.success(ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123"))
             )
             whenever(
                 resourceProvider.getString(
@@ -136,7 +136,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 sut.event.value.apply {
                     assertIs<MultiLiveEvent.Event.ShowUiStringSnackbar>(this)
                     assertEquals(
-                        "Product with SKU: 123 is not stock managed. Please try again.",
+                        "Product with SKU: 123 is not stock-managed. Please try again.",
                         (message as UiString.UiStringText).text
                     )
                 }
@@ -215,7 +215,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         whenever(
             resourceProvider.getString(
                 R.string.scan_to_update_inventory_success_snackbar,
-                "${originalProduct.stockQuantity} ➡ ${originalProduct.stockQuantity + 1}"
+                "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
             )
         ).thenReturn("Quantity updated")
         sut.viewState.test {
@@ -226,7 +226,8 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         sut.onIncrementQuantityClicked()
 
-        val expectedProduct = originalProduct.copy(stockQuantity = originalProduct.stockQuantity + 1)
+        val expectedProduct =
+            originalProduct.copy(stockQuantity = (originalProduct.stockQuantity.toInt() + 1).toDouble())
         verify(repo).updateProduct(expectedProduct)
     }
 }
