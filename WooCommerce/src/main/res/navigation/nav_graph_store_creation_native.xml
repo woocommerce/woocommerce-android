@@ -155,7 +155,7 @@
             app:destination="@id/storeCreationInstallationFragment" />
         <action
             android:id="@+id/action_themePickerFragment_to_themePreviewFragment"
-            app:destination="@id/storeCreationInstallationFragment">
+            app:destination="@id/themePreviewFragment">
             <argument
                 android:name="themeDemoUri"
                 app:argType="string" />
