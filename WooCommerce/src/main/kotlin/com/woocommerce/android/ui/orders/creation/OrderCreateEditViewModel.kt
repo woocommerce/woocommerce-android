@@ -966,7 +966,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onGiftCardButtonClicked() {
-        triggerEvent(OrderCreateEditNavigationTarget.GiftCardView)
+        triggerEvent(OrderCreateEditNavigationTarget.EditGiftCard)
     }
 
     fun onAddGiftCardButtonClicked() {
