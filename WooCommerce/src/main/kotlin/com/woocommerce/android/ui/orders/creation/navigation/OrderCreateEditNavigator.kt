@@ -111,6 +111,12 @@ object OrderCreateEditNavigator {
                 )
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToEditConfiguration(flow)
             }
+            is OrderCreateEditNavigationTarget.AddGiftCard -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(giftCard = null)
+            }
+            is OrderCreateEditNavigationTarget.GiftCardView -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment("")
+            }
         }
         navController.navigate(action)
     }

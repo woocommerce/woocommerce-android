@@ -149,6 +149,9 @@
         <action
             android:id="@+id/action_orderCreationFragment_to_editConfiguration"
             app:destination="@id/productConfigurationFragment" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_giftCardFragment"
+            app:destination="@id/giftCardFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
