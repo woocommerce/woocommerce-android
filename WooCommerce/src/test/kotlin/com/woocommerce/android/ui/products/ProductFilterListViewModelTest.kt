@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
@@ -15,6 +18,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -30,6 +34,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     private lateinit var productRestrictions: ProductFilterProductRestrictions
     private lateinit var productFilterListViewModel: ProductFilterListViewModel
     private lateinit var pluginRepository: PluginRepository
+    private lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
     private val siteModel: SiteModel = SiteModel().apply { id = 123 }
     private val selectedSiteMock: SelectedSite = mock {
         on { getIfExists() }.doReturn(siteModel)
@@ -44,6 +49,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         networkStatus = mock()
         productRestrictions = mock()
         pluginRepository = mock()
+        analyticsTrackerWrapper = mock()
         productFilterListViewModel = ProductFilterListViewModel(
             savedState = ProductFilterListFragmentArgs(
                 selectedStockStatus = "instock",
@@ -57,7 +63,8 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             networkStatus = networkStatus,
             productRestrictions = productRestrictions,
             pluginRepository = pluginRepository,
-            selectedSite = selectedSiteMock
+            selectedSite = selectedSiteMock,
+            analyticsTrackerWrapper
         )
 
         whenever(resourceProvider.getString(any())).thenReturn("")
@@ -226,5 +233,22 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         }
 
         assertFalse(hasAnExploreOption)
+    }
+
+    @Test
+    fun `given a explore option is tapped, then track the event`() = testBlocking {
+        val exploreOption = ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+            filterOptionItemName = ProductType.COMPOSITE.value,
+            filterOptionItemValue = ProductType.COMPOSITE.value,
+            url = ProductFilterListViewModel.COMPOSITE_URL
+        )
+
+        productFilterListViewModel.loadFilters()
+        productFilterListViewModel.onFilterOptionItemSelected(0, exploreOption)
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.PRODUCT_FILTER_LIST_EXPLORE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to exploreOption.filterOptionItemValue)
+        )
     }
 }
