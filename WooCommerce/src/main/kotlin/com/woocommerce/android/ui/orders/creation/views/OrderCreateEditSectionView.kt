@@ -211,7 +211,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         id: Int,
     ) {
         val addProductButtonsParams = RelativeLayout.LayoutParams(
-            LayoutParams.WRAP_CONTENT,
+            LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT
         )
         addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
@@ -220,6 +220,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         addingProductsManuallyButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
         addingProductsManuallyButton.id = id
         addingProductsManuallyButton.layoutParams = addProductButtonsParams
+        addingProductsManuallyButton.gravity = Gravity.START
         addingProductsManuallyButton.setOnClickListener { addProductsButton.onClickListener() }
 
         container.addView(addingProductsManuallyButton)
