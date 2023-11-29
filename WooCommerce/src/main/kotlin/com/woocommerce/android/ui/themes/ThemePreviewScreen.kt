@@ -43,7 +43,7 @@ fun ThemePreviewScreen(
         ThemePreviewScreen(
             state = viewState,
             userAgent = userAgent,
-            wpcomWebViewAuthenticator = wpcomWebViewAuthenticator,
+            wpComWebViewAuthenticator = wpcomWebViewAuthenticator,
             activityRegistry = activityRegistry,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
@@ -56,7 +56,7 @@ fun ThemePreviewScreen(
 fun ThemePreviewScreen(
     state: ViewState,
     userAgent: UserAgent,
-    wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
+    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     activityRegistry: ActivityResultRegistry,
     onPageSelected: (String) -> Unit,
     onBackNavigationClicked: () -> Unit,
@@ -100,7 +100,7 @@ fun ThemePreviewScreen(
             WCWebView(
                 url = state.demoUri,
                 userAgent = userAgent,
-                wpComAuthenticator = wpcomWebViewAuthenticator,
+                wpComAuthenticator = wpComWebViewAuthenticator,
                 activityRegistry = activityRegistry,
                 modifier = Modifier
                     .padding(paddingValues)
