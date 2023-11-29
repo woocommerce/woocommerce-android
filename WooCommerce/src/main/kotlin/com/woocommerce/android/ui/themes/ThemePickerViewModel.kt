@@ -4,8 +4,12 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Error
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Loading
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Success
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Success.CarouselItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -13,42 +17,53 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
 class ThemePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val themeRepository: ThemeRepository,
     private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
-    private val _viewState = savedStateHandle.getStateFlow(viewModelScope, ViewState())
+    private val _viewState = savedStateHandle.getStateFlow<ViewState>(viewModelScope, Loading)
     val viewState = _viewState.asLiveData()
 
     init {
-        _viewState.update {
-            _viewState.value.copy(
-                carouselItems = listOf(
-                    CarouselItem.Theme(name = "tsubaki", screenshotUrl = getThemeUrl(themeUrl = "wordpress.org")),
-                    CarouselItem.Theme(name = "tazza", screenshotUrl = getThemeUrl(themeUrl = "facebook.com")),
-                    CarouselItem.Theme(name = "amulet", screenshotUrl = getThemeUrl(themeUrl = "twitter.com")),
-                    CarouselItem.Theme(name = "zaino", screenshotUrl = getThemeUrl(themeUrl = "apple.com")),
-                    CarouselItem.Theme(name = "thriving-artist", screenshotUrl = getThemeUrl(themeUrl = "dennikn.sk")),
-                    CarouselItem.Theme(name = "attar", screenshotUrl = getThemeUrl(themeUrl = "android.com")),
-                    CarouselItem.Message(
-                        title = resourceProvider.getString(
-                            R.string.theme_picker_carousel_info_item_title
-                        ),
-                        description = resourceProvider.getString(
-                            R.string.theme_picker_carousel_info_item_description
-                        ),
-                    ),
-                )
-            )
+        viewModelScope.launch {
+            loadThemes()
         }
     }
 
-    private fun getThemeUrl(themeUrl: String) =
-        "https://s0.wp.com/mshots/v1/https://$themeUrl?demo=true/?w=1200&h=2400&vpw=400&vph=800"
+    private suspend fun loadThemes() {
+        themeRepository.fetchThemes().fold(
+            onSuccess = { result ->
+                _viewState.update {
+                    Success(
+                        carouselItems = result.map { theme ->
+                            CarouselItem.Theme(
+                                name = theme.name,
+                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl)
+                            )
+                        }.plus(
+                            CarouselItem.Message(
+                                title = resourceProvider.getString(
+                                    string.theme_picker_carousel_info_item_title
+                                ),
+                                description = resourceProvider.getString(
+                                    string.theme_picker_carousel_info_item_description
+                                )
+                            )
+                        )
+                    )
+                }
+            },
+            onFailure = {
+                _viewState.update { Error }
+            }
+        )
+    }
 
     fun onArrowBackPressed() {
         triggerEvent(Exit)
@@ -62,17 +77,24 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToThemePreview(themeUri))
     }
 
-    @Parcelize
-    data class ViewState(
-        val carouselItems: List<CarouselItem> = emptyList(),
-        val isLoading: Boolean = false
-    ) : Parcelable {
-        sealed class CarouselItem : Parcelable {
-            @Parcelize
-            data class Theme(val name: String, val screenshotUrl: String) : CarouselItem()
+    sealed interface ViewState : Parcelable {
+        @Parcelize
+        object Loading : ViewState
 
-            @Parcelize
-            data class Message(val title: String, val description: String) : CarouselItem()
+        @Parcelize
+        object Error : ViewState
+
+        @Parcelize
+        data class Success(
+            val carouselItems: List<CarouselItem> = emptyList()
+        ) : ViewState {
+            sealed class CarouselItem : Parcelable {
+                @Parcelize
+                data class Theme(val name: String, val screenshotUrl: String) : CarouselItem()
+
+                @Parcelize
+                data class Message(val title: String, val description: String) : CarouselItem()
+            }
         }
     }
 

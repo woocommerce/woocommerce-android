@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -35,17 +37,22 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
+import coil.util.DebugLogger
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.CarouselItem
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Success.CarouselItem
 import okhttp3.OkHttpClient
 
 @Composable
@@ -63,23 +70,24 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                 }
             )
         }) { padding ->
-            ThemePickerScreenCarousel(
-                items = viewState.carouselItems,
-                onThemeTapped = viewModel::onThemeTapped,
+            ThemePicker(
                 modifier = Modifier
                     .padding(padding)
+                    .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .background(MaterialTheme.colors.surface),
+                viewState = viewState,
+                onThemeTapped = viewModel::onThemeTapped
             )
         }
     }
 }
 
 @Composable
-private fun ThemePickerScreenCarousel(
-    items: List<CarouselItem>,
-    onThemeTapped: (String) -> Unit,
-    modifier: Modifier = Modifier,
+private fun ThemePicker(
+    modifier: Modifier,
+    viewState: ViewState,
+    onThemeTapped: (String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -102,31 +110,80 @@ private fun ThemePickerScreenCarousel(
             modifier = Modifier.padding(dimensionResource(id = dimen.major_100))
         )
 
-        LazyRow(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.major_150))
-                .height(480.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100)),
-            contentPadding = PaddingValues(start = dimensionResource(id = dimen.major_100))
-        ) {
-            items(items) { item ->
-                when (item) {
-                    is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl, onThemeTapped)
-                    is CarouselItem.Message -> Message(item.title, item.description, Modifier.width(320.dp))
-                }
+        when (viewState) {
+            is ViewState.Loading -> {
+                Loading()
+            }
+
+            is ViewState.Error -> {
+                Error()
+            }
+
+            is ViewState.Success -> {
+                Carousel(viewState.carouselItems, onThemeTapped)
             }
         }
     }
 }
 
 @Composable
-private fun Message(title: String, description: String, modifier: Modifier = Modifier) {
+private fun ColumnScope.Loading() {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxWidth()
+            .weight(1f)
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.Error() {
+    Message(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        title = stringResource(id = string.theme_picker_error_title),
+        description = stringResource(id = string.theme_picker_error_message),
+        color = color.color_error
+    )
+}
+
+@Composable
+private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit) {
+    LazyRow(
+        modifier = Modifier
+            .padding(top = dimensionResource(id = dimen.major_150))
+            .height(480.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100)),
+        contentPadding = PaddingValues(start = dimensionResource(id = dimen.major_100))
+    ) {
+        items(items) { item ->
+            when (item) {
+                is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl, onThemeTapped)
+                is CarouselItem.Message -> Message(modifier = Modifier.width(320.dp), item.title, item.description)
+            }
+        }
+    }
+}
+
+@Composable
+private fun Message(
+    modifier: Modifier = Modifier,
+    title: String,
+    description: String,
+    color: Int = R.color.color_on_surface_medium
+) {
     Box(
         modifier = modifier
             .fillMaxHeight()
             .padding(dimensionResource(id = dimen.major_100)),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
@@ -135,7 +192,7 @@ private fun Message(title: String, description: String, modifier: Modifier = Mod
             Text(
                 text = title,
                 style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = color.color_on_surface_medium),
+                color = colorResource(id = color),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -144,7 +201,7 @@ private fun Message(title: String, description: String, modifier: Modifier = Mod
             )
             Text(
                 text = description,
-                color = colorResource(id = color.color_on_surface_medium),
+                color = colorResource(id = color),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -171,6 +228,7 @@ private fun Theme(
                     .followRedirects(false)
                     .build()
             }
+            .logger(DebugLogger())
             .build()
 
         val request = ImageRequest.Builder(LocalContext.current)
@@ -188,9 +246,9 @@ private fun Theme(
             when (painter.state) {
                 is AsyncImagePainter.State.Error -> {
                     Message(
+                        modifier = themeModifier,
                         title = stringResource(id = string.theme_picker_carousel_placeholder_title, name),
-                        description = stringResource(id = string.theme_picker_carousel_placeholder_message),
-                        themeModifier
+                        description = stringResource(id = string.theme_picker_carousel_placeholder_message)
                     )
                 }
 
@@ -199,5 +257,21 @@ private fun Theme(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewThemePickerError() {
+    WooThemeWithBackground {
+        ThemePicker(Modifier, ViewState.Error, {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewThemePickerLoading() {
+    WooThemeWithBackground {
+        ThemePicker(Modifier, ViewState.Loading, {})
     }
 }
