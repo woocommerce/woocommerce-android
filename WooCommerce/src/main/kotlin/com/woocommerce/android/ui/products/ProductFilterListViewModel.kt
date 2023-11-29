@@ -6,6 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.sortCategories
@@ -48,7 +51,8 @@ class ProductFilterListViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val productRestrictions: ProductFilterProductRestrictions,
     private val pluginRepository: PluginRepository,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -175,6 +179,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == BUNDLE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        BUNDLE.value,
                         BUNDLES_URL
                     )
                 }
@@ -182,6 +187,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == SUBSCRIPTION && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        SUBSCRIPTION.value,
                         SUBSCRIPTIONS_URL
                     )
                 }
@@ -189,6 +195,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        VARIABLE_SUBSCRIPTION.value,
                         SUBSCRIPTIONS_URL
                     )
                 }
@@ -196,6 +203,7 @@ class ProductFilterListViewModel @Inject constructor(
                 it == COMPOSITE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
+                        COMPOSITE.value,
                         COMPOSITE_URL
                     )
                 }
@@ -320,6 +328,10 @@ class ProductFilterListViewModel @Inject constructor(
                 }
 
                 is FilterListOptionItemUiModel.ExploreOptionItemUiModel -> {
+                    analyticsTracker.track(
+                        AnalyticsEvent.PRODUCT_FILTER_LIST_EXPLORE_BUTTON_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_TYPE to selectedFilterItem.filterOptionItemValue)
+                    )
                     triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(selectedFilterItem.url))
                 }
             }
@@ -520,6 +532,7 @@ class ProductFilterListViewModel @Inject constructor(
 
         data class ExploreOptionItemUiModel(
             val filterOptionItemName: String,
+            val filterOptionItemValue: String,
             val url: String
         ) : FilterListOptionItemUiModel()
     }
