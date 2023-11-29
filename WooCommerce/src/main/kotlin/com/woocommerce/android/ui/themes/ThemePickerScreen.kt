@@ -49,6 +49,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Success.CarouselItem
 import okhttp3.OkHttpClient
@@ -140,11 +141,11 @@ private fun ColumnScope.Loading() {
 @Composable
 private fun ColumnScope.Error() {
     Message(
-        title = stringResource(id = string.theme_picker_error_title),
-        description = stringResource(id = string.theme_picker_error_message),
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
+        title = stringResource(id = string.theme_picker_error_title),
+        description = stringResource(id = string.theme_picker_error_message),
         color = color.color_error
     )
 }
@@ -162,7 +163,7 @@ private fun Carousel(items: List<CarouselItem>) {
         items(items) { item ->
             when (item) {
                 is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl)
-                is CarouselItem.Message -> Message(item.title, item.description, modifier = Modifier.width(320.dp))
+                is CarouselItem.Message -> Message(modifier = Modifier.width(320.dp), item.title, item.description)
             }
         }
     }
@@ -170,10 +171,10 @@ private fun Carousel(items: List<CarouselItem>) {
 
 @Composable
 private fun Message(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
-    color: Int = R.color.color_on_surface_medium,
-    modifier: Modifier = Modifier
+    color: Int = R.color.color_on_surface_medium
 ) {
     Box(
         modifier = modifier
@@ -238,9 +239,9 @@ private fun Theme(name: String, screenshotUrl: String) {
             when (painter.state) {
                 is AsyncImagePainter.State.Error -> {
                     Message(
+                        modifier = themeModifier,
                         title = stringResource(id = string.theme_picker_carousel_placeholder_title, name),
-                        description = stringResource(id = string.theme_picker_carousel_placeholder_message),
-                        modifier = themeModifier
+                        description = stringResource(id = string.theme_picker_carousel_placeholder_message)
                     )
                 }
                 else -> {
@@ -251,14 +252,18 @@ private fun Theme(name: String, screenshotUrl: String) {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewThemePickerError() {
-    ThemePicker(ViewState.Error, Modifier)
+    WooThemeWithBackground {
+        ThemePicker(ViewState.Error, Modifier)
+    }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewThemePickerLoading() {
-    ThemePicker(ViewState.Loading, Modifier)
+    WooThemeWithBackground {
+        ThemePicker(ViewState.Loading, Modifier)
+    }
 }
