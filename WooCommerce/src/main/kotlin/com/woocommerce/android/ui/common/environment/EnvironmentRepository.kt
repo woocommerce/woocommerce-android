@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.common.environment
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.network.environment.EnvironmentRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -28,7 +29,7 @@ class EnvironmentRepository @Inject constructor(
     suspend fun fetchOrGetStoreID(site: SiteModel = selectedSite.get()): WooResult<String?> {
         // If exists locally return it.
         val storedStoreID = appPrefsWrapper.getWCStoreID(site.siteId)
-        if (storedStoreID != null) {
+        if (storedStoreID.isNotNullOrEmpty()) {
             return WooResult(storedStoreID)
         }
 
