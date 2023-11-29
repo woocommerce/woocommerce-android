@@ -99,7 +99,10 @@ fun QuickInventoryUpdateBottomSheet(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(modifier = Modifier.weight(1f), text = "Quantity", fontSize = 17.sp)
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Quantity",
+                )
                 BasicTextField(
                     value = TextFieldValue(
                         text = product.quantity.toString(),
@@ -110,10 +113,9 @@ fun QuickInventoryUpdateBottomSheet(
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = TextStyle(
-                        fontSize = 17.sp,
+                    textStyle = MaterialTheme.typography.body1.copy(
                         textAlign = TextAlign.End,
-                        color = MaterialTheme.colors.onSurface
+                        color = MaterialTheme.colors.onSurface,
                     ),
                 )
             }
