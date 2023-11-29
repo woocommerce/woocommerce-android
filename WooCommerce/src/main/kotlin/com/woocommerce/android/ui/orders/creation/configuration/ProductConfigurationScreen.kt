@@ -4,11 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,7 +51,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -263,23 +259,10 @@ fun ProductConfigurationScreen(
                 }
             }
 
-            val density = LocalDensity.current
-            AnimatedVisibility(
-                visible = configurationIssues.isEmpty().not(),
-                enter = slideInVertically {
-                    with(density) { -40.dp.roundToPx() }
-                } + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(initialAlpha = 0.3f),
-                exit = slideOutVertically {
-                    with(density) { 10.dp.roundToPx() }
-                } + fadeOut()
-            ) {
-                ConfigurationIssues(
-                    issues = configurationIssues,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            ConfigurationIssues(
+                issues = configurationIssues,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Divider(
                 color = colorResource(id = R.color.divider_color),
@@ -696,28 +679,40 @@ fun ConfigurationIssues(
     issues: List<String>,
     modifier: Modifier = Modifier
 ) {
+    val text = if (issues.isEmpty()) {
+        stringResource(id = R.string.configuration_complete)
+    } else {
+        stringResource(id = R.string.configuration_required)
+    }
+    val color = if (issues.isEmpty()) {
+        colorResource(id = R.color.woo_green_5)
+    } else {
+        colorResource(id = R.color.woo_blue_5)
+    }
     Column(
         modifier = modifier
             .padding(all = 16.dp)
             .background(
                 shape = RoundedCornerShape(8.dp),
-                color = colorResource(id = R.color.woo_blue_5)
+                color = color
             )
             .padding(all = 16.dp)
             .animateContentSize()
     ) {
         Text(
-            text = stringResource(id = R.string.configuration_required),
+            text = text,
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold
         )
-        LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
-            items(issues) { issue ->
-                Text(
-                    text = issue,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface
-                )
+        if (issues.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
+                items(issues) { issue ->
+                    Text(
+                        text = issue,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onSurface
+                    )
+                }
             }
         }
     }
