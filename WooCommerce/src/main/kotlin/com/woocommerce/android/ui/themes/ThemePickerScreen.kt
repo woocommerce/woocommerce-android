@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.themes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,12 +71,13 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
             )
         }) { padding ->
             ThemePicker(
-                viewState = viewState,
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .background(MaterialTheme.colors.surface)
+                    .background(MaterialTheme.colors.surface),
+                viewState = viewState,
+                onThemeTapped = viewModel::onThemeTapped
             )
         }
     }
@@ -83,8 +85,9 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
 
 @Composable
 private fun ThemePicker(
+    modifier: Modifier,
     viewState: ViewState,
-    modifier: Modifier
+    onThemeTapped: (String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -117,7 +120,7 @@ private fun ThemePicker(
             }
 
             is ViewState.Success -> {
-                Carousel(viewState.carouselItems)
+                Carousel(viewState.carouselItems, onThemeTapped)
             }
         }
     }
@@ -151,7 +154,7 @@ private fun ColumnScope.Error() {
 }
 
 @Composable
-private fun Carousel(items: List<CarouselItem>) {
+private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit) {
     LazyRow(
         modifier = Modifier
             .padding(top = dimensionResource(id = dimen.major_150))
@@ -162,7 +165,7 @@ private fun Carousel(items: List<CarouselItem>) {
     ) {
         items(items) { item ->
             when (item) {
-                is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl)
+                is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl, onThemeTapped)
                 is CarouselItem.Message -> Message(modifier = Modifier.width(320.dp), item.title, item.description)
             }
         }
@@ -208,12 +211,16 @@ private fun Message(
 }
 
 @Composable
-private fun Theme(name: String, screenshotUrl: String) {
+private fun Theme(
+    name: String,
+    screenshotUrl: String,
+    onThemeTapped: (String) -> Unit
+) {
     val themeModifier = Modifier.width(240.dp)
     Card(
         shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
         elevation = dimensionResource(id = dimen.minor_50),
-        modifier = themeModifier
+        modifier = themeModifier.clickable { onThemeTapped(screenshotUrl) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
@@ -244,6 +251,7 @@ private fun Theme(name: String, screenshotUrl: String) {
                         description = stringResource(id = string.theme_picker_carousel_placeholder_message)
                     )
                 }
+
                 else -> {
                     SubcomposeAsyncImageContent()
                 }
@@ -256,7 +264,7 @@ private fun Theme(name: String, screenshotUrl: String) {
 @Composable
 private fun PreviewThemePickerError() {
     WooThemeWithBackground {
-        ThemePicker(ViewState.Error, Modifier)
+        ThemePicker(Modifier, ViewState.Error, {})
     }
 }
 
@@ -264,6 +272,6 @@ private fun PreviewThemePickerError() {
 @Composable
 private fun PreviewThemePickerLoading() {
     WooThemeWithBackground {
-        ThemePicker(ViewState.Loading, Modifier)
+        ThemePicker(Modifier, ViewState.Loading, {})
     }
 }

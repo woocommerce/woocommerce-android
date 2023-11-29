@@ -73,6 +73,10 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(MoveToNextStep)
     }
 
+    fun onThemeTapped(themeUri: String) {
+        triggerEvent(NavigateToThemePreview(themeUri))
+    }
+
     sealed interface ViewState : Parcelable {
         @Parcelize
         object Loading : ViewState
@@ -95,4 +99,5 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     object MoveToNextStep : Event()
+    data class NavigateToThemePreview(val themeDemoUri: String) : Event()
 }
