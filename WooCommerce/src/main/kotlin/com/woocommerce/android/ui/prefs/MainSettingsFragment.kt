@@ -245,7 +245,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionSiteThemes.isVisible = presenter.isThemePickerOptionVisible
         binding.optionSiteThemes.setOnClickListener {
-            // TODO open store themes picker
+            findNavController()
+                .navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToThemePickerFragment()
+                )
         }
     }
 
