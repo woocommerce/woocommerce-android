@@ -113,18 +113,35 @@
                     app:usesFullFormatting="true"
                     tools:hint="0.00" />
 
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/groupPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="editPercentage, percentageSymbolText"/>
+
                 <EditText
                     android:id="@+id/editPercentage"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/edit_percentage_max_width"
                     android:gravity="start"
                     android:imeOptions="flagNoFullscreen"
                     android:textSize="@dimen/line_height_major_100"
-                    android:hint="0%"
+                    android:inputType="number"
+                    android:hint="0"
                     android:paddingBottom="@dimen/minor_00"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:hint="50%"/>
+                    tools:hint="50"/>
+
+                <TextView
+                    android:id="@+id/percentageSymbolText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/editPercentage"
+                    app:layout_constraintBottom_toBottomOf="@id/editPercentage"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:text="%"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/updatedAmount"
