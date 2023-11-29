@@ -69,7 +69,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given barcode successfully scanned, when product not found by sku, should show error snackbar`() =
+    fun `given barcode successfully scanned, when product not found by sku, then should show error snackbar`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(Result.failure(Throwable()))
             whenever(
@@ -96,7 +96,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given barcode successfully scanned, when product found by sku, should show bottom sheet`() =
+    fun `given barcode successfully scanned, when product found by sku, then should show bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
@@ -115,7 +115,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given barcode successfully scanned, when corresponding product is not stock managed, should show snackbar with error`() =
+    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should show snackbar with error`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123"))
@@ -144,7 +144,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given barcode successfully scanned, when corresponding product is not stock managed, should start scanning again`() =
+    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should start scanning again`() =
         testBlocking {
             whenever(
                 resourceProvider.getString(
@@ -175,7 +175,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given bottom sheet shown, when bottom sheet dismissed, should should start scanning again`() = testBlocking {
+    fun `given bottom sheet shown, when bottom sheet dismissed, then should should start scanning again`() = testBlocking {
         whenever(fetchProductBySKU(any(), any())).thenReturn(
             Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
         )
