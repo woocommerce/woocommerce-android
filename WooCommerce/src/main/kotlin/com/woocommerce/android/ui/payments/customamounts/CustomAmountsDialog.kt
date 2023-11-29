@@ -74,7 +74,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         val binding = DialogCustomAmountsBinding.bind(view)
         binding.editPrice.editText.setPadding(
-            getDensityPixel(binding.editPrice.context, 8), 0, 0, 0
+            getDensityPixel(binding.editPrice.context, START_PADDING), 0, 0, 0
         )
 
         with(binding.percentageLabel) {
@@ -106,28 +106,11 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                 KEYBOARD_DELAY
             )
         }
+        setupPrimaryEditView(binding)
         setupObservers(binding)
     }
 
-    private fun setupTaxToggleView(binding: DialogCustomAmountsBinding) {
-        binding.taxToggleComposeView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    val viewState = viewModel.viewStateLiveData.liveData.observeAsState()
-                    val taxToggleState = remember { mutableStateOf(false) }
-                    TaxToggle(taxStatus = viewState.value?.customAmountUIModel?.taxStatus ?: TaxStatus()) { isChecked ->
-                        taxToggleState.value = isChecked
-                        viewModel.taxToggleState = viewModel.taxToggleState.copy(
-                            isTaxable = isChecked
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun setupObservers(binding: DialogCustomAmountsBinding) {
+    private fun setupPrimaryEditView(binding: DialogCustomAmountsBinding) {
         when (arguments.customAmountType) {
             FIXED_CUSTOM_AMOUNT -> {
                 binding.editPrice.show()
@@ -149,8 +132,26 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                 binding.editPercentage.show()
             }
         }
+    }
 
-
+    private fun setupTaxToggleView(binding: DialogCustomAmountsBinding) {
+        binding.taxToggleComposeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    val viewState = viewModel.viewStateLiveData.liveData.observeAsState()
+                    val taxToggleState = remember { mutableStateOf(false) }
+                    TaxToggle(taxStatus = viewState.value?.customAmountUIModel?.taxStatus ?: TaxStatus()) { isChecked ->
+                        taxToggleState.value = isChecked
+                        viewModel.taxToggleState = viewModel.taxToggleState.copy(
+                            isTaxable = isChecked
+                        )
+                    }
+                }
+            }
+        }
+    }
+    private fun setupObservers(binding: DialogCustomAmountsBinding) {
         binding.editPercentage.addTextChangedListener {
             if (it != null && it.toString().isNotEmpty()) {
                 if (it.toString() != viewModel.currentPercentage.toString()) {
@@ -210,5 +211,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         const val CUSTOM_AMOUNT = "Custom Amount"
         const val EDIT_PRICE_UPDATE_DELAY = 100L
+        const val START_PADDING = 8
     }
 }
