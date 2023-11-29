@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class CustomAmountsDialogViewModel @Inject constructor(
@@ -29,6 +30,20 @@ class CustomAmountsDialogViewModel @Inject constructor(
                 isDoneButtonEnabled = value > BigDecimal.ZERO,
                 customAmountUIModel = viewState.customAmountUIModel.copy(
                     currentPrice = value
+                )
+            )
+        }
+
+    var currentPercentage: BigDecimal
+        get() = (viewState.customAmountUIModel.currentPrice / BigDecimal(args.orderTotal)) * BigDecimal(100)
+        set(value) {
+            val totalAmount = BigDecimal(args.orderTotal ?: "0")
+            val percentage = value.toString().toDouble().roundToInt()
+            val updatedAmount = (totalAmount * BigDecimal(percentage) / BigDecimal(100))
+            viewState = viewState.copy(
+                isDoneButtonEnabled = value > BigDecimal.ZERO,
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    currentPrice = updatedAmount,
                 )
             )
         }
@@ -60,7 +75,14 @@ class CustomAmountsDialogViewModel @Inject constructor(
     init {
         args.customAmountUIModel?.let {
             // Edit mode
-            currentPrice = it.amount
+            when (args.customAmountType) {
+                CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
+                    currentPrice = it.amount
+                }
+                CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
+                     currentPercentage = (it.amount / BigDecimal(args.orderTotal)) * BigDecimal(100)
+                }
+            }
             viewState = viewState.copy(
                 customAmountUIModel = viewState.customAmountUIModel.copy(
                     id = it.id,
@@ -94,4 +116,9 @@ class CustomAmountsDialogViewModel @Inject constructor(
         val isTaxable: Boolean = false,
         val text: Int = R.string.custom_amounts_tax_label,
     ) : Parcelable
+
+    enum class CustomAmountType {
+        FIXED_CUSTOM_AMOUNT,
+        PERCENTAGE_CUSTOM_AMOUNT
+    }
 }
