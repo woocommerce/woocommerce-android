@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Error
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Loading
@@ -43,7 +44,7 @@ class ThemePickerViewModel @Inject constructor(
                         carouselItems = result.map { theme ->
                             CarouselItem.Theme(
                                 name = theme.name,
-                                screenshotUrl = getScreenshotUrl(theme.demoUrl)
+                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl)
                             )
                         }.plus(
                             CarouselItem.Message(
@@ -63,9 +64,6 @@ class ThemePickerViewModel @Inject constructor(
             }
         )
     }
-
-    private fun getScreenshotUrl(themeDemoUrl: String) =
-        "https://s0.wp.com/mshots/v1/$themeDemoUrl?demo=true/?w=1200&h=2400&vpw=400&vph=800"
 
     fun onArrowBackPressed() {
         triggerEvent(Exit)
