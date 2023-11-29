@@ -35,13 +35,13 @@ class CustomAmountsDialogViewModel @Inject constructor(
         }
 
     var currentPercentage: BigDecimal
-        get() = (viewState.customAmountUIModel.currentPrice / BigDecimal(args.orderTotal)) * BigDecimal(
-            PERCENTAGE_SCALE_FACTOR
-        )
+        get() = (viewState.customAmountUIModel.currentPrice.divide(BigDecimal(args.orderTotal)))
+            .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
         set(value) {
             val totalAmount = BigDecimal(args.orderTotal ?: "0")
             val percentage = value.toString().toDouble().roundToInt()
-            val updatedAmount = (totalAmount * BigDecimal(percentage) / BigDecimal(PERCENTAGE_SCALE_FACTOR))
+            val updatedAmount = (totalAmount.multiply(BigDecimal(percentage))
+                .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR)))
             viewState = viewState.copy(
                 isDoneButtonEnabled = value > BigDecimal.ZERO,
                 customAmountUIModel = viewState.customAmountUIModel.copy(
@@ -82,7 +82,8 @@ class CustomAmountsDialogViewModel @Inject constructor(
                     currentPrice = it.amount
                 }
                 CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                    currentPercentage = (it.amount / BigDecimal(args.orderTotal)) * BigDecimal(PERCENTAGE_SCALE_FACTOR)
+                    currentPercentage = (it.amount.divide(BigDecimal(args.orderTotal)))
+                        .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
                 }
             }
             viewState = viewState.copy(
