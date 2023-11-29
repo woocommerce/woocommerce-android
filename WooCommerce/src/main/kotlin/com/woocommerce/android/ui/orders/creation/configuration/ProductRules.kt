@@ -150,8 +150,15 @@ class ProductConfiguration(
         const val PARENT_KEY = -1L
     }
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
-        val result = mutableMapOf<Long, String>()
+        val issues = mutableMapOf<Long, String>()
 
+        getParentConfigurationIssues(issues, resourceProvider)
+        getChildrenConfigurationIssues(issues, resourceProvider)
+
+        return issues
+    }
+
+    private fun getParentConfigurationIssues(issues: MutableMap<Long, String>, resourceProvider: ResourceProvider) {
         if (rules.itemRules.containsKey(QuantityRule.KEY)) {
             val itemQuantityRule = rules.itemRules[QuantityRule.KEY] as QuantityRule
             val childrenQuantity = childrenConfiguration?.values
@@ -168,22 +175,25 @@ class ProductConfiguration(
             val isMaximumOutOfBounds = childrenQuantity > (itemQuantityRule.quantityMax ?: Float.MAX_VALUE)
             if (isMinimumOutOfBounds || isMaximumOutOfBounds || childrenQuantity == 0f) {
                 val ruleBounds = itemQuantityRule.getRuleBounds(resourceProvider, childrenQuantity)
-                result[PARENT_KEY] = resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds)
+                issues[PARENT_KEY] = resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds)
             }
         }
+    }
+
+    private fun getChildrenConfigurationIssues(issues: MutableMap<Long, String>, resourceProvider: ResourceProvider) {
         childrenConfiguration?.forEach { entry ->
             val isOptional = entry.value.containsKey(OptionalRule.KEY)
             val optionalValue = entry.value[OptionalRule.KEY]?.toBooleanStrict() ?: false
-            val isIncluded = isOptional && optionalValue || isOptional.not()
             val itemQuantity = entry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+            val isIncluded = isOptional && optionalValue || isOptional.not() && itemQuantity > 0f
+
             val isVariable = entry.value.containsKey(VariableProductRule.KEY)
             val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
 
-            if (isIncluded && itemQuantity > 0f && isVariable && attributesAreNullOrEmpty) {
-                result[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
+            if (isIncluded && isVariable && attributesAreNullOrEmpty) {
+                issues[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
         }
-        return result
     }
 
     fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String) {
