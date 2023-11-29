@@ -60,7 +60,7 @@ fun QuickInventoryUpdateBottomSheet(
         ) {
             Text(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                text = "Product",
+                text = stringResource(id = R.string.scan_to_update_inventory_product_label),
                 fontSize = 17.sp,
                 fontWeight = FontWeight(590)
             )
@@ -101,7 +101,7 @@ fun QuickInventoryUpdateBottomSheet(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Quantity",
+                    text = stringResource(id = R.string.scan_to_update_inventory_quantity_label),
                 )
                 BasicTextField(
                     value = TextFieldValue(
