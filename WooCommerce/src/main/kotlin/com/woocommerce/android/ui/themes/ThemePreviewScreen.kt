@@ -173,7 +173,8 @@ private fun CustomToolbar(
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Home",
+                    text = state.themePages.firstOrNull { it.isLoaded }?.title
+                        ?: stringResource(id = R.string.theme_preview_default_page_loaded),
                     style = MaterialTheme.typography.caption,
                 )
                 Icon(
@@ -195,17 +196,15 @@ private fun ThemeDemoPagesBottomSheet(
     onPageSelected: (ThemeDemoPage) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
         Text(
             modifier = Modifier
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.minor_100)
+                    bottom = dimensionResource(id = R.dimen.minor_100),
+                    top = dimensionResource(id = R.dimen.minor_100)
                 )
                 .align(Alignment.CenterHorizontally),
             text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_title),
@@ -220,6 +219,7 @@ private fun ThemeDemoPagesBottomSheet(
                 .align(Alignment.CenterHorizontally),
             text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_subtitle),
             style = MaterialTheme.typography.subtitle2,
+            color = colorResource(id = R.color.color_on_surface_medium)
         )
         Divider()
         pages.forEach { page ->
@@ -228,6 +228,7 @@ private fun ThemeDemoPagesBottomSheet(
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .clickable { onPageSelected(page) }
+                    .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.minor_100))
             )
         }
