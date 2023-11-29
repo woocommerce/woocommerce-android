@@ -23,7 +23,7 @@ class TagView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.tagViewStyle,
     defStyleRes: Int = R.style.Woo_TextView_Caption
-) : MaterialTextView(ctx, attrs, defStyleAttr, defStyleRes) {
+) : MaterialTextView(ctx, attrs, defStyleAttr) {
     init {
         if (attrs != null) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.TagView, defStyleAttr, defStyleRes)
