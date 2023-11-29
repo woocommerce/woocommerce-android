@@ -8,18 +8,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.NavigateToThemePreview
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ThemePickerFragment : BaseFragment() {
-    private val viewModel: ThemePickerViewModel by viewModels()
+class ThemePreviewFragment : BaseFragment() {
+    private val viewModel: ThemePreviewViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -29,7 +26,12 @@ class ThemePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    ThemePickerScreen(viewModel)
+                    ThemePreviewScreen(
+                        viewModel = viewModel,
+                        userAgent = viewModel.userAgent,
+                        wpcomWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
+                        activityRegistry = requireActivity().activityResultRegistry,
+                    )
                 }
             }
         }
@@ -44,25 +46,7 @@ class ThemePickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToNextStep -> navigateToStoreInstallationStep()
-                is NavigateToThemePreview -> navigateToThemePreviewFragment(event.themeDemoUri)
             }
         }
-    }
-
-    private fun navigateToStoreInstallationStep() {
-        findNavController().navigateSafely(
-            ThemePickerFragmentDirections
-                .actionThemePickerFragmentToStoreCreationInstallationFragment()
-        )
-    }
-
-    private fun navigateToThemePreviewFragment(themeDemoUri: String) {
-        findNavController().navigateSafely(
-            ThemePickerFragmentDirections
-                .actionThemePickerFragmentToThemePreviewFragment(
-                    themeDemoUri = themeDemoUri
-                )
-        )
     }
 }

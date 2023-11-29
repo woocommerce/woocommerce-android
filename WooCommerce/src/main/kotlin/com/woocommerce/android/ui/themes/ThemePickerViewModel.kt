@@ -58,6 +58,10 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(MoveToNextStep)
     }
 
+    fun onThemeTapped(themeUri: String) {
+        triggerEvent(NavigateToThemePreview(themeUri))
+    }
+
     @Parcelize
     data class ViewState(
         val carouselItems: List<CarouselItem> = emptyList(),
@@ -73,4 +77,5 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     object MoveToNextStep : Event()
+    data class NavigateToThemePreview(val themeDemoUri: String) : Event()
 }

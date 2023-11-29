@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.themes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,11 +64,12 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
             )
         }) { padding ->
             ThemePickerScreenCarousel(
+                items = viewState.carouselItems,
+                onThemeTapped = viewModel::onThemeTapped,
                 modifier = Modifier
                     .padding(padding)
                     .verticalScroll(rememberScrollState())
                     .background(MaterialTheme.colors.surface),
-                viewState.carouselItems
             )
         }
     }
@@ -75,8 +77,9 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
 
 @Composable
 private fun ThemePickerScreenCarousel(
-    modifier: Modifier,
-    items: List<CarouselItem>
+    items: List<CarouselItem>,
+    onThemeTapped: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -109,7 +112,7 @@ private fun ThemePickerScreenCarousel(
         ) {
             items(items) { item ->
                 when (item) {
-                    is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl)
+                    is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl, onThemeTapped)
                     is CarouselItem.Message -> Message(item.title, item.description, Modifier.width(320.dp))
                 }
             }
@@ -151,12 +154,16 @@ private fun Message(title: String, description: String, modifier: Modifier = Mod
 }
 
 @Composable
-private fun Theme(name: String, screenshotUrl: String) {
+private fun Theme(
+    name: String,
+    screenshotUrl: String,
+    onThemeTapped: (String) -> Unit
+) {
     val themeModifier = Modifier.width(240.dp)
     Card(
         shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
         elevation = dimensionResource(id = dimen.minor_50),
-        modifier = themeModifier
+        modifier = themeModifier.clickable { onThemeTapped(screenshotUrl) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
@@ -186,6 +193,7 @@ private fun Theme(name: String, screenshotUrl: String) {
                         themeModifier
                     )
                 }
+
                 else -> {
                     SubcomposeAsyncImageContent()
                 }

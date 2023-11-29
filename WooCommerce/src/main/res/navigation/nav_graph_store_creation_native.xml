@@ -149,9 +149,20 @@
     <fragment
         android:id="@+id/themePickerFragment"
         android:name="com.woocommerce.android.ui.themes.ThemePickerFragment"
-        android:label="ThemePickerFragment" >
+        android:label="ThemePickerFragment">
         <action
             android:id="@+id/action_themePickerFragment_to_storeCreationInstallationFragment"
             app:destination="@id/storeCreationInstallationFragment" />
+        <action
+            android:id="@+id/action_themePickerFragment_to_themePreviewFragment"
+            app:destination="@id/themePreviewFragment">
+            <argument
+                android:name="themeDemoUri"
+                app:argType="string" />
+        </action>
     </fragment>
+    <fragment
+        android:id="@+id/themePreviewFragment"
+        android:name="com.woocommerce.android.ui.themes.ThemePreviewFragment"
+        android:label="ThemePreviewFragment" />
 </navigation>
