@@ -104,5 +104,24 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
         assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("5.00"))
     }
 
+    @Test
+    fun `when custom amount is modified by adding a certain percentage, then proper current price is calculated`() {
+        viewModel = CustomAmountsDialogViewModel(
+            CustomAmountsDialogArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = ""
+                ),
+                customAmountType = PERCENTAGE_CUSTOM_AMOUNT,
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker
+        )
+        viewModel.currentPercentage = BigDecimal("20")
+
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40"))
+    }
+
     //endregion
 }
