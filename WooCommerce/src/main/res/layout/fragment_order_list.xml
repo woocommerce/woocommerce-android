@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="ippFeedbackBanner, jitmOrdersFragment" />
+            app:constraint_referenced_ids="jitmOrdersFragment" />
 
         <com.woocommerce.android.ui.orders.list.OrderListView
             android:id="@+id/order_list_view"
