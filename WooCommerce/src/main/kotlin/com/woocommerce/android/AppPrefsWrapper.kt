@@ -370,7 +370,7 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getWCStoreID(siteID: Long) = AppPrefs.getWCStoreID(siteID)
 
-    fun setWCStoreID(siteID: Long, storeID: String) {
+    fun setWCStoreID(siteID: Long, storeID: String?) {
         AppPrefs.setWCStoreID(siteID, storeID)
     }
 

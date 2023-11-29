@@ -1134,12 +1134,14 @@ object AppPrefs {
         )
     )
 
-    fun setWCStoreID(siteID: Long, storeID: String) = setString(
-        key = PrefKeyString(
-            "$WC_STORE_ID:$siteID"
-        ),
-        value = storeID
-    )
+    fun setWCStoreID(siteID: Long, storeID: String?) {
+        val key = PrefKeyString("$WC_STORE_ID:$siteID")
+        if (storeID.isNullOrEmpty()) {
+            remove(key)
+        } else {
+            setString(key, storeID)
+        }
+    }
 
     /**
      * Auto-tax-rate setting

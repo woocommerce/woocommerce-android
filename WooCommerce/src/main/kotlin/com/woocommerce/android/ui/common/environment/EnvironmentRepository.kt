@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.common.environment
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.network.environment.EnvironmentRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class EnvironmentRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val environmentRestClient: EnvironmentRestClient,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatchers: CoroutineDispatchers
 ){
     /**
@@ -24,8 +26,13 @@ class EnvironmentRepository @Inject constructor(
      * Can be retrieved locally or fetched from the remote source.
      */
     suspend fun fetchOrGetStoreID(site: SiteModel = selectedSite.get()): WooResult<String?> {
-        // TODO: Store `storeID` locally
-        // TODO: Get `storeID` if locally available
+        // If exists locally return it.
+        val storedStoreID = appPrefsWrapper.getWCStoreID(site.siteId)
+        if (storedStoreID != null) {
+            return WooResult(storedStoreID)
+        }
+
+        // If it doesn't exists, fetch it and store it locally.
         return withContext(dispatchers.io) {
             val environmentResponse = environmentRestClient.fetchStoreEnvironment(site)
             when {
@@ -34,6 +41,7 @@ class EnvironmentRepository @Inject constructor(
                 }
                 environmentResponse.result != null -> {
                     val storeID = environmentResponse.result!!.storeID
+                    appPrefsWrapper.setWCStoreID(site.siteId, storeID)
                     WooResult(storeID)
                 }
                 else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
