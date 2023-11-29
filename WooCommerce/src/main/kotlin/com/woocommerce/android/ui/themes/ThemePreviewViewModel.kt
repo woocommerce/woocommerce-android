@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.UserAgent
@@ -19,11 +20,10 @@ class ThemePreviewViewModel @Inject constructor(
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
 ) : ScopedViewModel(savedStateHandle) {
+    private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
     private val _viewState = savedStateHandle.getStateFlow(
         viewModelScope,
-        ViewState(
-            demoUri = "https://zainodemo.wpcomstaging.com/\" // TODO pass this as argument from previous screen"
-        )
+        ViewState(demoUri = navArgs.themeDemoUri)
     )
     val viewState = _viewState.asLiveData()
 

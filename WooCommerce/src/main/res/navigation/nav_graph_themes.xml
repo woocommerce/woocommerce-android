@@ -21,5 +21,9 @@
     <fragment
         android:id="@+id/themePreviewFragment"
         android:name="com.woocommerce.android.ui.themes.ThemePreviewFragment"
-        android:label="ThemePreviewFragment" />
+        android:label="ThemePreviewFragment">
+        <argument
+            android:name="themeDemoUri"
+            app:argType="string" />
+    </fragment>
 </navigation>
