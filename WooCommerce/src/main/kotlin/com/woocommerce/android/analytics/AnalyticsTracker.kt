@@ -84,7 +84,7 @@ class AnalyticsTracker private constructor(
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
-                finalProperties[KEY_STORE_ID] = AppPrefsWrapper().getWCStoreID(it.siteId)
+                AppPrefsWrapper().getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG

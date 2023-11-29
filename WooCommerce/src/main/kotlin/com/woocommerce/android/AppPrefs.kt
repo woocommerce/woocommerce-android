@@ -1132,7 +1132,7 @@ object AppPrefs {
         key = PrefKeyString(
             "$WC_STORE_ID:$siteID"
         )
-    )
+    ).orNullIfEmpty()
 
     fun setWCStoreID(siteID: Long, storeID: String?) {
         val key = PrefKeyString("$WC_STORE_ID:$siteID")
