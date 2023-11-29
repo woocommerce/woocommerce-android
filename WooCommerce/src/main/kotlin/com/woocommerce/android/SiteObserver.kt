@@ -2,7 +2,6 @@ package com.woocommerce.android
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
-import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull

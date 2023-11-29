@@ -2,8 +2,6 @@ package com.woocommerce.android.tools
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.util.PreferenceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
