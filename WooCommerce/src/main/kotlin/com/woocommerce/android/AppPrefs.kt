@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.WC_STORE_ID
 import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
@@ -120,6 +121,7 @@ object AppPrefs {
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
         MY_STORE_BLAZE_VIEW_DISMISSED,
+        WC_STORE_ID,
     }
 
     /**
@@ -1124,6 +1126,19 @@ object AppPrefs {
             "$APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
         ),
         default = false
+    )
+
+    fun getWCStoreID(siteID: Long): String? = getString(
+        key = PrefKeyString(
+            "$WC_STORE_ID:$siteID"
+        )
+    )
+
+    fun setWCStoreID(siteID: Long, storeID: String) = setString(
+        key = PrefKeyString(
+            "$WC_STORE_ID:$siteID"
+        ),
+        value = storeID
     )
 
     /**
