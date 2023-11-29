@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.themes
 
 import androidx.activity.result.ActivityResultRegistry
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -12,6 +16,7 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
@@ -22,12 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
@@ -47,6 +57,7 @@ fun ThemePreviewScreen(
             activityRegistry = activityRegistry,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
+            viewModel::onSelectThemeClicked
         )
     }
 }
@@ -60,6 +71,7 @@ fun ThemePreviewScreen(
     activityRegistry: ActivityResultRegistry,
     onPageSelected: (String) -> Unit,
     onBackNavigationClicked: () -> Unit,
+    onSelectThemeClicked: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -97,15 +109,44 @@ fun ThemePreviewScreen(
             },
             backgroundColor = MaterialTheme.colors.surface
         ) { paddingValues ->
-            WCWebView(
-                url = state.demoUri,
-                userAgent = userAgent,
-                wpComAuthenticator = wpComWebViewAuthenticator,
-                activityRegistry = activityRegistry,
+            Column(
                 modifier = Modifier
-                    .padding(paddingValues)
                     .fillMaxSize()
-            )
+                    .padding(paddingValues)
+            ) {
+                WCWebView(
+                    url = state.demoUri,
+                    userAgent = userAgent,
+                    wpComAuthenticator = wpComWebViewAuthenticator,
+                    activityRegistry = activityRegistry,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = colorResource(id = color.color_surface))
+                        .padding(dimensionResource(id = dimen.major_100))
+                ) {
+                    WCColoredButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = dimensionResource(id = dimen.major_100)),
+                        onClick = onSelectThemeClicked,
+                        text = stringResource(id = string.theme_preview_select_theme_button)
+                    )
+
+                    Text(
+                        text = stringResource(id = string.theme_preview_current_theme, state.themeName),
+                        color = colorResource(id = color.color_on_surface_medium),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
+            }
         }
     }
 }

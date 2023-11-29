@@ -22,6 +22,7 @@ class ThemePreviewViewModel @Inject constructor(
     private val _viewState = savedStateHandle.getStateFlow(
         viewModelScope,
         ViewState(
+            themeName = "Zaino",
             demoUri = "https://zainodemo.wpcomstaging.com/\" // TODO pass this as argument from previous screen"
         )
     )
@@ -35,8 +36,13 @@ class ThemePreviewViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onSelectThemeClicked() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     @Parcelize
     data class ViewState(
-        val demoUri: String,
+        val themeName: String,
+        val demoUri: String
     ) : Parcelable
 }

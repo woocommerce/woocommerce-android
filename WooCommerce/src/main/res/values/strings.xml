@@ -3378,6 +3378,8 @@
     <string name="theme_picker_error_title">An error occurred</string>
     <string name="theme_picker_error_message">Unable to load themes at this time.</string>
     <string name="theme_preview_title">Preview</string>
+    <string name="theme_preview_select_theme_button">Start with this theme</string>
+    <string name="theme_preview_current_theme">Theme: %s</string>
 
     <!--
     Store onboarding
