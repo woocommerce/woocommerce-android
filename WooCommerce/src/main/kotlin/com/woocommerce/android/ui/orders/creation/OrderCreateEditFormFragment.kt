@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -538,10 +539,14 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.hide()
     }
 
-    private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
+    private fun navigateToCustomAmountsDialog(
+        customAmountUIModel: CustomAmountUIModel? = null,
+        type: CustomAmountsDialogViewModel.CustomAmountType = CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT,
+        orderTotal: String = viewModel.orderDraft.value?.total.toString()
+    ) {
         OrderCreateEditNavigator.navigate(
             this,
-            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel)
+            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel, type, orderTotal)
         )
     }
     private fun updateProgressBarsVisibility(
@@ -739,7 +744,7 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = { navigateToCustomAmountsDialog(it) },
+                        onCustomAmountClick = { navigateToCustomAmountsDialog(customAmountUIModel = it) },
                         onCustomAmountDeleteClick = {
                             viewModel.onCustomAmountRemoved(it)
                         }
