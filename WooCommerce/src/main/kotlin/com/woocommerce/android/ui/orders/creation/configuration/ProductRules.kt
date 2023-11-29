@@ -67,7 +67,7 @@ class QuantityRule(val quantityMin: Float?, val quantityMax: Float?, val quantit
 
     override fun getInitialValue(): String? = quantityDefault?.toString()
 
-    fun getRuleBounds(resourceProvider: ResourceProvider): String {
+    fun getRuleBounds(resourceProvider: ResourceProvider, childrenQuantity: Float): String {
         return when {
             quantityMin != null && quantityMax != null && quantityMin == quantityMax -> {
                 StringUtils.getQuantityString(
@@ -100,6 +100,9 @@ class QuantityRule(val quantityMin: Float?, val quantityMax: Float?, val quantit
                 )
             }
 
+            childrenQuantity == 0f -> {
+                resourceProvider.getString(R.string.configuration_quantity_item, 1)
+            }
             else -> StringUtils.EMPTY
         }
     }
@@ -163,8 +166,8 @@ class ProductConfiguration(
 
             val isMinimumOutOfBounds = childrenQuantity < (itemQuantityRule.quantityMin ?: Float.NEGATIVE_INFINITY)
             val isMaximumOutOfBounds = childrenQuantity > (itemQuantityRule.quantityMax ?: Float.MAX_VALUE)
-            if (isMinimumOutOfBounds || isMaximumOutOfBounds) {
-                val ruleBounds = itemQuantityRule.getRuleBounds(resourceProvider)
+            if (isMinimumOutOfBounds || isMaximumOutOfBounds || childrenQuantity == 0f) {
+                val ruleBounds = itemQuantityRule.getRuleBounds(resourceProvider, childrenQuantity)
                 result[PARENT_KEY] = resourceProvider.getString(R.string.configuration_quantity_rule_issue, ruleBounds)
             }
         }
