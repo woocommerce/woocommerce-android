@@ -33,7 +33,7 @@ class EnvironmentRepository @Inject constructor(
                     WooResult(environmentResponse.error)
                 }
                 environmentResponse.result != null -> {
-                    val storeID = environmentResponse.result.storeID
+                    val storeID = environmentResponse.result!!.storeID
                     WooResult(storeID)
                 }
                 else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
