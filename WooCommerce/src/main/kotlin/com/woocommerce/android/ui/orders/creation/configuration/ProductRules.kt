@@ -152,7 +152,13 @@ class ProductConfiguration(
         if (rules.itemRules.containsKey(QuantityRule.KEY)) {
             val itemQuantityRule = rules.itemRules[QuantityRule.KEY] as QuantityRule
             val childrenQuantity = childrenConfiguration?.values
-                ?.filter { map -> map.containsKey(QuantityRule.KEY) }
+                ?.filter { map ->
+                    val containsQuantityRule = map.containsKey(QuantityRule.KEY)
+                    val isOptional = map.containsKey(OptionalRule.KEY)
+                    val optionalValue = map[OptionalRule.KEY]?.toBooleanStrict() ?: false
+                    val isIncluded = isOptional && optionalValue || isOptional.not()
+                    containsQuantityRule && isIncluded
+                }
                 ?.sumByFloat { map -> map[QuantityRule.KEY]?.toFloatOrNull() ?: 0f } ?: 0f
 
             val isMinimumOutOfBounds = childrenQuantity < (itemQuantityRule.quantityMin ?: Float.NEGATIVE_INFINITY)
@@ -163,11 +169,15 @@ class ProductConfiguration(
             }
         }
         childrenConfiguration?.forEach { entry ->
+            val isOptional = entry.value.containsKey(OptionalRule.KEY)
+            val optionalValue = entry.value[OptionalRule.KEY]?.toBooleanStrict() ?: false
+            val isIncluded = isOptional && optionalValue || isOptional.not()
             val itemQuantity = entry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
             val isVariable = entry.value.containsKey(VariableProductRule.KEY)
             val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
 
-            if (itemQuantity > 0f && isVariable && attributesAreNullOrEmpty) {
+
+            if (isIncluded && itemQuantity > 0f && isVariable && attributesAreNullOrEmpty) {
                 result[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
         }
