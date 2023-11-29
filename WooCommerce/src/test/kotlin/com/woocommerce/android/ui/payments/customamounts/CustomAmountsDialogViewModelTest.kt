@@ -3,10 +3,13 @@ package com.woocommerce.android.ui.payments.customamounts
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.PERCENTAGE_BASE
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -53,7 +56,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount dialog is opened for editing, then proper event is tracked`() {
-        CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsDialogViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
@@ -82,6 +85,24 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
         viewModel.currentPercentage = BigDecimal.TEN
 
         assertTrue(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `when custom amount is opened for editing in percentage mode, then proper percentage is calculated from current price`() {
+        viewModel = CustomAmountsDialogViewModel(
+            CustomAmountsDialogArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = ""
+                ),
+                customAmountType = PERCENTAGE_CUSTOM_AMOUNT,
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker
+        )
+
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("5.00"))
     }
 
     //endregion
