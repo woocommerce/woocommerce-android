@@ -265,7 +265,6 @@ class ProductListFragment :
      */
     private fun refreshOptionsMenu() {
         val showSearch = shouldShowSearchMenuItem()
-        val showScan = !productListViewModel.isSquarePluginActive()
         searchMenuItem?.let { menuItem ->
             if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
 
@@ -281,9 +280,7 @@ class ProductListFragment :
                 }
             }
         }
-        scanBarcodeMenuItem?.let { menuItem ->
-            if (showScan) menuItem.isVisible else menuItem.isVisible = false
-        }
+        scanBarcodeMenuItem?.isVisible = !productListViewModel.isSquarePluginActive()
     }
 
     private fun getSearchQueryHint(): String {
