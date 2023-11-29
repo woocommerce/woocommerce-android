@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -45,8 +46,7 @@ fun QuickInventoryUpdateBottomSheet(
             Text(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
                 text = "Product",
-                fontSize = 17.sp,
-                fontWeight = FontWeight(590)
+                fontWeight = FontWeight(590),
             )
             Divider()
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)))
@@ -63,11 +63,7 @@ fun QuickInventoryUpdateBottomSheet(
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 text = product.name,
                 overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    fontSize = 22.sp,
-                    lineHeight = 28.sp,
-                    fontWeight = FontWeight(700),
-                )
+                style = MaterialTheme.typography.h5
             )
             Text(
                 modifier = Modifier.padding(
