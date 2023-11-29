@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
@@ -83,6 +84,7 @@ class AnalyticsTracker private constructor(
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
+                finalProperties[KEY_STORE_ID] = AppPrefsWrapper().getWCStoreID(it.siteId)
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -138,6 +140,7 @@ class AnalyticsTracker private constructor(
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
+        const val KEY_STORE_ID = "store_id"
         const val KEY_CONTEXT = "context"
         const val KEY_ERROR = "error"
         const val KEY_ERROR_CONTEXT = "error_context"
