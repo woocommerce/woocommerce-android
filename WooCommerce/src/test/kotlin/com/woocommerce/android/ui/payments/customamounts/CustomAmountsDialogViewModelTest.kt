@@ -68,4 +68,14 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
     }
+
+    // region Percentage based custom amounts
+    @Test
+    fun `when percentage is zero, then done button is not enabled`() {
+        viewModel.currentPercentage = BigDecimal.ZERO
+
+        assertFalse(viewModel.viewState.isDoneButtonEnabled)
+    }
+
+    //endregion
 }
