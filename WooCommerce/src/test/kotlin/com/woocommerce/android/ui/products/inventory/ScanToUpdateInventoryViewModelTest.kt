@@ -230,4 +230,37 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             originalProduct.copy(stockQuantity = (originalProduct.stockQuantity.toInt() + 1).toDouble())
         verify(repo).updateProduct(expectedProduct)
     }
+
+    @Test
+    fun `given bottom sheet shown, when quantity entered manually, then should update product`() = testBlocking {
+        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
+        whenever(fetchProductBySKU(any(), any())).thenReturn(
+            Result.success(originalProduct)
+        )
+        whenever(repo.getProduct(any())).thenReturn(originalProduct)
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+        whenever(repo.updateProduct(any())).thenReturn(true)
+        whenever(
+            resourceProvider.getString(
+                R.string.scan_to_update_inventory_success_snackbar,
+                "${originalProduct.stockQuantity.toInt()} ➡ 999"
+            )
+        ).thenReturn("Quantity updated")
+        sut.viewState.test {
+            awaitItem().apply {
+                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+            }
+        }
+
+        sut.onManualQuantityEntered("999")
+        sut.onUpdateQuantityClicked()
+
+        val expectedProduct = originalProduct.copy(stockQuantity = (999).toDouble())
+        verify(repo).updateProduct(expectedProduct)
+    }
 }
