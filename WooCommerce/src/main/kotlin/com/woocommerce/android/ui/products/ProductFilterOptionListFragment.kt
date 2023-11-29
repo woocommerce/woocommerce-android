@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -94,6 +96,9 @@ class ProductFilterOptionListFragment :
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
                 is ExitWithResult<*> -> {
                     navigateToParentWithResult(
                         ProductListFragment.PRODUCT_FILTER_RESULT_KEY,
