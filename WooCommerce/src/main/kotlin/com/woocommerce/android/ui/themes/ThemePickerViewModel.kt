@@ -44,7 +44,8 @@ class ThemePickerViewModel @Inject constructor(
                         carouselItems = result.map { theme ->
                             CarouselItem.Theme(
                                 name = theme.name,
-                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl)
+                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl),
+                                demoUri = theme.demoUrl
                             )
                         }.plus(
                             CarouselItem.Message(
@@ -90,7 +91,11 @@ class ThemePickerViewModel @Inject constructor(
         ) : ViewState {
             sealed class CarouselItem : Parcelable {
                 @Parcelize
-                data class Theme(val name: String, val screenshotUrl: String) : CarouselItem()
+                data class Theme(
+                    val name: String,
+                    val screenshotUrl: String,
+                    val demoUri: String
+                ) : CarouselItem()
 
                 @Parcelize
                 data class Message(val title: String, val description: String) : CarouselItem()
