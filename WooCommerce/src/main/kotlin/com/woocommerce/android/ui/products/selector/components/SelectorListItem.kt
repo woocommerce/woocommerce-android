@@ -135,13 +135,13 @@ fun SelectorListItem(
                 stringResource(id = string.extension_configure_button)
             }
 
-            val color = if(isArrowVisible){
+            val color = if (isArrowVisible) {
                 MaterialTheme.colors.onSurface
-            } else{
+            } else {
                 MaterialTheme.colors.primary
             }
 
-            val iconModifier = if(isArrowVisible){
+            val iconModifier = if (isArrowVisible) {
                 Modifier
                     .size(dimensionResource(id = dimen.major_200))
             } else {
