@@ -77,5 +77,12 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
         assertFalse(viewModel.viewState.isDoneButtonEnabled)
     }
 
+    @Test
+    fun `when percentage is not zero, then done button is enabled`() {
+        viewModel.currentPercentage = BigDecimal.TEN
+
+        assertTrue(viewModel.viewState.isDoneButtonEnabled)
+    }
+
     //endregion
 }
