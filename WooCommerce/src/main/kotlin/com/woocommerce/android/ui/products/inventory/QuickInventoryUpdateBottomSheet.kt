@@ -48,7 +48,7 @@ fun QuickInventoryUpdateBottomSheet(
     onManualQuantityEntered: (String) -> Unit,
     onUpdateQuantityClicked: () -> Unit,
 ) {
-    val product = (state.value as ScanToUpdateInventoryViewModel.ViewState.ProductLoaded).product
+    val productState = state.value as ScanToUpdateInventoryViewModel.ViewState.ProductLoaded
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,12 +72,12 @@ fun QuickInventoryUpdateBottomSheet(
                     .clip(
                         RoundedCornerShape(8.dp)
                     ),
-                imageUrl = product.imageUrl,
+                imageUrl = productState.product.imageUrl,
             )
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)))
             Text(
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                text = product.name,
+                text = productState.product.name,
                 overflow = TextOverflow.Ellipsis,
                 style = TextStyle(
                     fontSize = 22.sp,
@@ -92,7 +92,7 @@ fun QuickInventoryUpdateBottomSheet(
                     bottom = dimensionResource(id = R.dimen.major_200),
                     top = dimensionResource(id = R.dimen.minor_50),
                 ),
-                text = product.sku
+                text = productState.product.sku
             )
             Divider()
             Row(
@@ -105,8 +105,8 @@ fun QuickInventoryUpdateBottomSheet(
                 )
                 BasicTextField(
                     value = TextFieldValue(
-                        text = product.quantity.toString(),
-                        selection = TextRange(product.quantity.toString().length)
+                        text = productState.product.quantity.toString(),
+                        selection = TextRange(productState.product.quantity.toString().length)
                     ),
                     onValueChange = {
                         onManualQuantityEntered(it.text)
@@ -120,7 +120,6 @@ fun QuickInventoryUpdateBottomSheet(
                 )
             }
             Divider()
-            val productState = state.value as ScanToUpdateInventoryViewModel.ViewState.ProductLoaded
             if (productState.isPendingUpdate) {
                 Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
                     Text(
