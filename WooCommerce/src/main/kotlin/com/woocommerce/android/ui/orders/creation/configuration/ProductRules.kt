@@ -179,7 +179,6 @@ class ProductConfiguration(
             val isVariable = entry.value.containsKey(VariableProductRule.KEY)
             val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
 
-
             if (isIncluded && itemQuantity > 0f && isVariable && attributesAreNullOrEmpty) {
                 result[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
