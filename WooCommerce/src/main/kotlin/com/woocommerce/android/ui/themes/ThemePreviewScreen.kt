@@ -5,12 +5,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -32,12 +35,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -69,7 +75,7 @@ fun ThemePreviewScreen(
     userAgent: UserAgent,
     wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     activityRegistry: ActivityResultRegistry,
-    onPageSelected: (String) -> Unit,
+    onPageSelected: (ThemeDemoPage) -> Unit,
     onBackNavigationClicked: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -91,16 +97,19 @@ fun ThemePreviewScreen(
         else ModalBottomSheetDefaults.scrimColor,
         sheetContent = {
             ThemeDemoPagesBottomSheet(
+                pages = state.themePages,
                 onPageSelected = {
                     coroutineScope.launch { modalSheetState.hide() }
                     onPageSelected(it)
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
         }
     ) {
         Scaffold(
             topBar = {
                 CustomToolbar(
+                    state,
                     coroutineScope,
                     modalSheetState,
                     onBackNavigationClicked
@@ -124,6 +133,7 @@ fun ThemePreviewScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CustomToolbar(
+    state: ViewState,
     coroutineScope: CoroutineScope,
     modalSheetState: ModalBottomSheetState,
     onBackNavigationClicked: () -> Unit
@@ -145,11 +155,13 @@ private fun CustomToolbar(
             modifier = Modifier
                 .padding(start = 24.dp)
                 .clickable {
-                    coroutineScope.launch {
-                        if (modalSheetState.isVisible)
-                            modalSheetState.hide()
-                        else {
-                            modalSheetState.show()
+                    if (state.themePages.isNotEmpty()) {
+                        coroutineScope.launch {
+                            if (modalSheetState.isVisible)
+                                modalSheetState.hide()
+                            else {
+                                modalSheetState.show()
+                            }
                         }
                     }
                 }
@@ -161,11 +173,13 @@ private fun CustomToolbar(
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Home ",
+                    text = "Home",
                     style = MaterialTheme.typography.caption,
                 )
                 Icon(
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier
+                        .size(16.dp)
+                        .padding(start = 4.dp),
                     painter = painterResource(drawable.ic_arrow_down),
                     contentDescription = "",
                     tint = colorResource(id = color.color_on_surface)
@@ -176,9 +190,46 @@ private fun CustomToolbar(
 }
 
 @Composable
-@Suppress("UNUSED_PARAMETER")
 private fun ThemeDemoPagesBottomSheet(
-    onPageSelected: (String) -> Unit,
+    pages: List<ThemeDemoPage>,
+    onPageSelected: (ThemeDemoPage) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Text(text = "ThemeDemoPagesBottomSheet")
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+        Text(
+            modifier = Modifier
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100)
+                )
+                .align(Alignment.CenterHorizontally),
+            text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_title),
+            style = MaterialTheme.typography.h6,
+        )
+        Text(
+            modifier = Modifier
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100)
+                )
+                .align(Alignment.CenterHorizontally),
+            text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_subtitle),
+            style = MaterialTheme.typography.subtitle2,
+        )
+        Divider()
+        pages.forEach { page ->
+            Text(
+                text = page.title,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .clickable { onPageSelected(page) }
+                    .padding(dimensionResource(id = R.dimen.minor_100))
+            )
+        }
+    }
 }

@@ -40,15 +40,23 @@ class ThemePreviewViewModel @Inject constructor(
                 themePages = themePages.map {
                     ThemeDemoPage(
                         uri = it.link,
-                        title = it.title
+                        title = it.title,
+                        isLoaded = false
                     )
                 }
             )
         }
     }
 
-    fun onPageSelected(updatedDemoUri: String) {
-        _viewState.value = _viewState.value.copy(demoUri = updatedDemoUri)
+    fun onPageSelected(demoPage: ThemeDemoPage) {
+        _viewState.value = _viewState.value.copy(
+            demoUri = demoPage.uri,
+            themePages = _viewState.value.themePages.map {
+                if (it.uri == demoPage.uri)
+                    it.copy(isLoaded = true)
+                else it
+            }
+        )
     }
 
     fun onBackNavigationClicked() {
@@ -64,6 +72,7 @@ class ThemePreviewViewModel @Inject constructor(
     @Parcelize
     data class ThemeDemoPage(
         val uri: String,
-        val title: String
+        val title: String,
+        val isLoaded: Boolean
     ) : Parcelable
 }
