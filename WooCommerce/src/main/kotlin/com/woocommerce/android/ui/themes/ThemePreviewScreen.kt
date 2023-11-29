@@ -1,34 +1,45 @@
 package com.woocommerce.android.ui.themes
 
 import androidx.activity.result.ActivityResultRegistry
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -89,10 +100,10 @@ fun ThemePreviewScreen(
     ) {
         Scaffold(
             topBar = {
-                Toolbar(
-                    title = stringResource(id = string.theme_preview_title),
-                    navigationIcon = Filled.ArrowBack,
-                    onNavigationButtonClick = onBackNavigationClicked,
+                CustomToolbar(
+                    coroutineScope,
+                    modalSheetState,
+                    onBackNavigationClicked
                 )
             },
             backgroundColor = MaterialTheme.colors.surface
@@ -110,10 +121,64 @@ fun ThemePreviewScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun CustomToolbar(
+    coroutineScope: CoroutineScope,
+    modalSheetState: ModalBottomSheetState,
+    onBackNavigationClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(drawable.ic_gridicons_cross_24dp),
+            contentDescription = "",
+            modifier = Modifier
+                .clickable { onBackNavigationClicked() }
+                .padding(16.dp)
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 24.dp)
+                .clickable {
+                    coroutineScope.launch {
+                        if (modalSheetState.isVisible)
+                            modalSheetState.hide()
+                        else {
+                            modalSheetState.show()
+                        }
+                    }
+                }
+                .padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = string.theme_preview_title),
+                style = MaterialTheme.typography.body1,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Home ",
+                    style = MaterialTheme.typography.caption,
+                )
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(drawable.ic_arrow_down),
+                    contentDescription = "",
+                    tint = colorResource(id = color.color_on_surface)
+                )
+            }
+        }
+    }
+}
+
 @Composable
 @Suppress("UNUSED_PARAMETER")
 private fun ThemeDemoPagesBottomSheet(
     onPageSelected: (String) -> Unit,
 ) {
-    // TODO display demo pager here
+    Text(text = "ThemeDemoPagesBottomSheet")
 }
