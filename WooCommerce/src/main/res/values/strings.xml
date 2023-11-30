@@ -3380,6 +3380,8 @@
     <string name="theme_picker_error_title">An error occurred</string>
     <string name="theme_picker_error_message">Unable to load themes at this time.</string>
     <string name="theme_preview_title">Preview</string>
+    <string name="theme_preview_activate_theme_button">Use this theme</string>
+    <string name="theme_preview_theme_name">Theme: %1$s</string>
 
     <!--
     Store onboarding
@@ -3867,4 +3869,5 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+    <string name="store_creation_use_theme_button">Start with this theme</string>
 </resources>

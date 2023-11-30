@@ -35,8 +35,14 @@ class ThemePreviewViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onActivateThemeClicked() {
+        // TODO
+    }
+
     @Parcelize
     data class ViewState(
         val demoUri: String,
+        val themeName: String,
+        val isFromStoreCreation: Boolean
     ) : Parcelable
 }
