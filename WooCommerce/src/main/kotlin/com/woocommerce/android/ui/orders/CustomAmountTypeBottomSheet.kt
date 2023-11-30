@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,13 +19,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
+
 @Composable
-fun CustomAmountTypeBottomSheet() {
-    BottomSheetContent()
+fun CustomAmountTypeBottomSheet(onClick: (CustomAmountType) -> Unit) {
+    BottomSheetContent(onClick)
 }
 
 @Composable
-fun BottomSheetContent() {
+fun BottomSheetContent(
+    onClick: (CustomAmountType) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,21 +50,23 @@ fun BottomSheetContent() {
         )
         CustomAmountOption(
             label = "A fixed amount",
-            symbol = "$"
+            symbol = "$",
+            onClick = { onClick(CustomAmountType.FIXED_CUSTOM_AMOUNT) }
         )
         CustomAmountOption(
             label = "A percentage of the order total",
-            symbol = "%"
+            symbol = "%",
+            onClick = { onClick(CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) }
         )
     }
 }
 
 @Composable
-fun CustomAmountOption(label: String, symbol: String) {
+fun CustomAmountOption(label: String, symbol: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onClick() }
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -72,8 +79,11 @@ fun CustomAmountOption(label: String, symbol: String) {
         Text(text = label)
     }
 }
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewCustomAmountBottomSheet() {
-    CustomAmountTypeBottomSheet()
+    CustomAmountTypeBottomSheet() {
+
+    }
 }
