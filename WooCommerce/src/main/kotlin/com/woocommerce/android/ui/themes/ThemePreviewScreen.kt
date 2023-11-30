@@ -180,7 +180,10 @@ private fun DemoSectionsToolbar(
                 Icon(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.major_100))
-                        .padding(start = dimensionResource(id = R.dimen.minor_50)),
+                        .padding(
+                            start = dimensionResource(id = R.dimen.minor_50),
+                            top = dimensionResource(id = R.dimen.minor_75),
+                        ),
                     painter = painterResource(drawable.ic_arrow_down),
                     contentDescription = "",
                     tint = colorResource(id = color.color_on_surface)
