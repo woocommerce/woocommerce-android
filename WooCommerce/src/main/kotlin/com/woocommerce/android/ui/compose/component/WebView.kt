@@ -65,9 +65,17 @@ fun WCWebView(
     var progress by remember { mutableStateOf(0) }
     var lastLoadedUrl by remember { mutableStateOf("") }
     var canGoBack by remember { mutableStateOf(false) }
+    var scale by remember { mutableStateOf(initialScale) }
 
     BackHandler(captureBackPresses && canGoBack) {
         webView?.goBack()
+    }
+
+    if (scale != initialScale) {
+        scale = initialScale
+
+        webView?.setInitialScale(scale)
+        webView?.reload()
     }
 
     LaunchedEffect(webView, webViewNavigator) {
