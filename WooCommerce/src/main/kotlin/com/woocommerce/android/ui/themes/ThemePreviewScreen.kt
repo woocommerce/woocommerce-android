@@ -121,6 +121,7 @@ fun ThemePreviewScreen(
                 userAgent = userAgent,
                 wpComAuthenticator = wpComWebViewAuthenticator,
                 activityRegistry = activityRegistry,
+                captureBackPresses = false,
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
