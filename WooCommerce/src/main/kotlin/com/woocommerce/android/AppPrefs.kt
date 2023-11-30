@@ -120,6 +120,8 @@ object AppPrefs {
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
         MY_STORE_BLAZE_VIEW_DISMISSED,
+        CREATED_STORE_SITE_ID,
+        CREATED_STORE_THEME_ID,
     }
 
     /**
@@ -278,6 +280,22 @@ object AppPrefs {
                 remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
             }
         }
+
+    /**
+     * Persists the ID of the last created site in case the app was closed while the site was being created.
+     * This allows to switch to the newly created site when the app is opened again.
+     */
+    var createdStoreSiteId: Long?
+        get() = getLong(DeletablePrefKey.CREATED_STORE_SITE_ID, -1).takeIf { it != -1L }
+        set(value) = setLong(DeletablePrefKey.CREATED_STORE_SITE_ID, value ?: -1)
+
+    /**
+     * Persists the ID of the selected theme for the last created site in case the app was closed while the
+     * site was being created.
+     */
+    var themeIdForCreatedStore: String?
+        get() = getString(DeletablePrefKey.CREATED_STORE_THEME_ID).orNullIfEmpty()
+        set(value) = setString(DeletablePrefKey.CREATED_STORE_THEME_ID, value ?: "")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

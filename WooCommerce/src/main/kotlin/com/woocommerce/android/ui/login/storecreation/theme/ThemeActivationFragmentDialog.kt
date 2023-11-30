@@ -21,21 +21,40 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ThemeActivationFragmentDialog : DialogFragment() {
+    companion object {
+        const val THEME_ACTIVATION_FINISHED = "theme_activation_finished"
+    }
+
     private val viewModel: ThemeActivationViewModel by viewModels()
 
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         isCancelable = false
 
         return composeView {
             ThemeActivationScreen(viewModel = viewModel)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Event.Exit -> navigateBackWithNotice(THEME_ACTIVATION_FINISHED)
+            }
         }
     }
 }

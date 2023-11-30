@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -16,6 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ThemePreviewFragment : BaseFragment() {
+    companion object {
+        val THEME_SELECTED_NOTICE = "theme-selected"
+    }
     private val viewModel: ThemePreviewViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -45,8 +49,13 @@ class ThemePreviewFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is ThemePreviewViewModel.ContinueStoreCreationWithTheme -> continueStoreCreation()
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
             }
         }
+    }
+
+    private fun continueStoreCreation() {
+        navigateBackWithNotice(THEME_SELECTED_NOTICE)
     }
 }

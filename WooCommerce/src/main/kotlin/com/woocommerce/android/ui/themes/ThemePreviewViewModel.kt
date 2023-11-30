@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -22,7 +23,8 @@ class ThemePreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
-    val themeRepository: ThemeRepository
+    val themeRepository: ThemeRepository,
+    val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
@@ -58,7 +60,12 @@ class ThemePreviewViewModel @Inject constructor(
     }
 
     fun onActivateThemeClicked() {
-        // TODO
+        if (viewState.value?.isFromStoreCreation == true) {
+            appPrefsWrapper.themeIdForCreatedStore = navArgs.themeId
+            triggerEvent(ContinueStoreCreationWithTheme)
+        } else {
+            TODO()
+        }
     }
 
     @Parcelize
@@ -67,4 +74,6 @@ class ThemePreviewViewModel @Inject constructor(
         val themeName: String,
         val isFromStoreCreation: Boolean
     ) : Parcelable
+
+    object ContinueStoreCreationWithTheme : MultiLiveEvent.Event()
 }

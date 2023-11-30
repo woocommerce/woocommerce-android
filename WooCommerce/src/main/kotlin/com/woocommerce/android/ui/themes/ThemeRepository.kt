@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.store.ThemeStore
 import org.wordpress.android.fluxc.store.ThemeStore.FetchWPComThemesPayload
 import org.wordpress.android.fluxc.store.ThemeStore.OnCurrentThemeFetched
+import org.wordpress.android.fluxc.store.ThemeStore.OnThemeActivated
 import org.wordpress.android.fluxc.store.ThemeStore.OnThemeInstalled
 import org.wordpress.android.fluxc.store.ThemeStore.OnWpComThemesChanged
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload
@@ -83,7 +84,7 @@ class ThemeRepository @Inject constructor(
     suspend fun activateTheme(themeId: String): Result<Unit> {
         installThemeIfNeeded(themeId).onFailure { return Result.failure(it) }
 
-        val activationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
+        val activationResult: OnThemeActivated = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newActivateThemeAction(
                 SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
             )
