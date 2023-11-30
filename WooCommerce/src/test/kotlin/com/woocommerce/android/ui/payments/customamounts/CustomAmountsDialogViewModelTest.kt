@@ -22,8 +22,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private var viewModel = CustomAmountsDialogViewModel(
         CustomAmountsDialogArgs(
-            customAmountUIModel = null,
-            customAmountType = FIXED_CUSTOM_AMOUNT,
+            customAmountUIModel = CustomAmountUIModel.EMPTY,
             orderTotal = null,
         ).toSavedStateHandle(),
         tracker
@@ -60,9 +59,9 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
-                    name = ""
+                    name = "",
+                    type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
                 ),
-                customAmountType = FIXED_CUSTOM_AMOUNT,
                 orderTotal = null
             ).toSavedStateHandle(),
             tracker
@@ -93,9 +92,9 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
-                    name = ""
+                    name = "",
+                    type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
                 ),
-                customAmountType = PERCENTAGE_CUSTOM_AMOUNT,
                 orderTotal = "200"
             ).toSavedStateHandle(),
             tracker
@@ -111,9 +110,9 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
-                    name = ""
+                    name = "",
+                    type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
                 ),
-                customAmountType = PERCENTAGE_CUSTOM_AMOUNT,
                 orderTotal = "200"
             ).toSavedStateHandle(),
             tracker
