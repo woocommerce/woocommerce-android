@@ -19,6 +19,22 @@ class AppPrefsWrapper @Inject constructor() {
      */
     var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
 
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
+
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
+    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+
+    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
+
+    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
+    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
+
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
@@ -344,20 +360,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
-    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
-
-    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
-
-    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
-
-    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
-
-    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
-
-    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
-
-    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
-
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 
@@ -373,8 +375,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
-
-    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
     fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
         AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
