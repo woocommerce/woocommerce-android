@@ -5,6 +5,7 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -104,6 +105,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -248,6 +250,9 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private val _selectedCustomAmount = MutableLiveData<CustomAmountUIModel?>()
+    val selectedCustomAmount: LiveData<CustomAmountUIModel?> = _selectedCustomAmount
+
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val syncStrategy =
@@ -311,6 +316,14 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun selectCustomAmount(customAmount: CustomAmountUIModel) {
+        _selectedCustomAmount.value = customAmount
+    }
+
+    fun onCustomAmountTypeSelected(type: CustomAmountType) {
+        triggerEvent(OnCustomAmountTypeSelected(type = type))
     }
 
     private suspend fun updateAutoTaxRateSettingState() {
@@ -573,6 +586,8 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
+
+    private fun Order.hasCustomAmounts() = feesLines.isNotEmpty()
 
     fun onScanClicked() {
         trackBarcodeScanningTapped()
@@ -1441,6 +1456,9 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun orderContainsProductsOrCustomAmounts() =
+        orderDraft.value?.hasProducts() == true || orderDraft.value?.hasCustomAmounts() == true
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
@@ -1523,6 +1541,10 @@ object OnCouponRejectedByBackend : Event() {
     @StringRes
     val message: Int = string.order_sync_coupon_removed
 }
+
+data class OnCustomAmountTypeSelected(
+    val type: CustomAmountType
+) : Event()
 
 @Parcelize
 data class CustomAmountUIModel(
