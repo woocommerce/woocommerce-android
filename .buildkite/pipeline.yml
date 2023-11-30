@@ -21,6 +21,19 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+
+# using a trigger step didn't work as "danger" isn't a valid slug  
+# - trigger: "danger"
+#   label: "☢️ Danger - PR Check"
+#   build:
+#     message: "${BUILDKITE_MESSAGE}"
+#     commit: "${BUILDKITE_COMMIT}"
+#     branch: "${BUILDKITE_BRANCH}"
+#     env:
+#       BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
+#       BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+#       BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+
   - label: "☢️ Danger - PR Check"
     command: .buildkite/commands/danger-pr-check.sh
     plugins:

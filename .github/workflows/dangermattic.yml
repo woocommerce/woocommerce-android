@@ -1,0 +1,17 @@
+name: Danger on GitHub PR events
+
+on:
+  pull_request:
+    types: [review_requested, review_request_removed, labeled, unlabeled, milestoned, demilestoned]
+
+jobs:
+  dangermattic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "☢️ Danger - PR Check"
+        uses: "buildkite/trigger-pipeline-action@v2.0.0"
+        with:
+          buildkite_api_access_token: ${{ secrets.TRIGGER_BK_BUILD_TOKEN }}
+          pipeline: "automattic/woocommerce-android"
+          branch: "${{ github.head_ref }}"
+          build_env_vars: '{"PIPELINE": "danger.yml", "BUILDKITE_PULL_REQUEST": "${{ github.event.issue.number }}", "BUILDKITE_PULL_REQUEST_REPO": "${{ github.repositoryUrl }}", "BUILDKITE_PULL_REQUEST_BASE_BRANCH": "${{ github.base_ref }}"}'
