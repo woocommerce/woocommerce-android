@@ -165,7 +165,7 @@ private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit)
     ) {
         items(items) { item ->
             when (item) {
-                is CarouselItem.Theme -> Theme(item.name, item.screenshotUrl, onThemeTapped)
+                is CarouselItem.Theme -> Theme(item, onThemeTapped)
                 is CarouselItem.Message -> Message(modifier = Modifier.width(320.dp), item.title, item.description)
             }
         }
@@ -212,15 +212,14 @@ private fun Message(
 
 @Composable
 private fun Theme(
-    name: String,
-    screenshotUrl: String,
+    theme: CarouselItem.Theme,
     onThemeTapped: (String) -> Unit
 ) {
     val themeModifier = Modifier.width(240.dp)
     Card(
         shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
         elevation = dimensionResource(id = dimen.minor_50),
-        modifier = themeModifier.clickable { onThemeTapped(screenshotUrl) }
+        modifier = themeModifier.clickable { onThemeTapped(theme.demoUri) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
@@ -232,7 +231,7 @@ private fun Theme(
             .build()
 
         val request = ImageRequest.Builder(LocalContext.current)
-            .data(screenshotUrl)
+            .data(theme.screenshotUrl)
             .crossfade(true)
             .build()
 
@@ -247,7 +246,7 @@ private fun Theme(
                 is AsyncImagePainter.State.Error -> {
                     Message(
                         modifier = themeModifier,
-                        title = stringResource(id = string.theme_picker_carousel_placeholder_title, name),
+                        title = stringResource(id = string.theme_picker_carousel_placeholder_title, theme.name),
                         description = stringResource(id = string.theme_picker_carousel_placeholder_message)
                     )
                 }
