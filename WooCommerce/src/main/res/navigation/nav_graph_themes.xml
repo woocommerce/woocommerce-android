@@ -14,6 +14,9 @@
             android:id="@+id/action_themePickerFragment_to_themePreviewFragment"
             app:destination="@id/themePreviewFragment">
             <argument
+                android:name="themeName"
+                app:argType="string" />
+            <argument
                 android:name="themeDemoUri"
                 app:argType="string" />
         </action>
@@ -22,6 +25,9 @@
         android:id="@+id/themePreviewFragment"
         android:name="com.woocommerce.android.ui.themes.ThemePreviewFragment"
         android:label="ThemePreviewFragment">
+        <argument
+            android:name="themeName"
+            app:argType="string" />
         <argument
             android:name="themeDemoUri"
             app:argType="string" />

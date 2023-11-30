@@ -45,7 +45,7 @@ class ThemePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> navigateToStoreInstallationStep()
-                is NavigateToThemePreview -> navigateToThemePreviewFragment(event.themeDemoUri)
+                is NavigateToThemePreview -> navigateToThemePreviewFragment(event.themeName, event.themeDemoUri)
             }
         }
     }
@@ -57,10 +57,11 @@ class ThemePickerFragment : BaseFragment() {
         )
     }
 
-    private fun navigateToThemePreviewFragment(themeDemoUri: String) {
+    private fun navigateToThemePreviewFragment(themeName: String, themeDemoUri: String) {
         findNavController().navigateSafely(
             ThemePickerFragmentDirections
                 .actionThemePickerFragmentToThemePreviewFragment(
+                    themeName = themeName,
                     themeDemoUri = themeDemoUri
                 )
         )

@@ -24,7 +24,7 @@ class ThemePreviewViewModel @Inject constructor(
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
     private val _viewState = savedStateHandle.getStateFlow(
         viewModelScope,
-        ViewState(themeName = "Zaino", demoUri = navArgs.themeDemoUri)
+        ViewState(themeName = navArgs.themeName, demoUri = navArgs.themeDemoUri)
     )
     val viewState = _viewState.asLiveData()
 
