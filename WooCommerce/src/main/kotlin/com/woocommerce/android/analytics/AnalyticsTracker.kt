@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
-import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
@@ -18,6 +18,7 @@ import java.util.UUID
 class AnalyticsTracker private constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
+    private val appPrefs: AppPrefs,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
@@ -84,7 +85,7 @@ class AnalyticsTracker private constructor(
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
-                AppPrefsWrapper().getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
+                appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -653,8 +654,8 @@ class AnalyticsTracker private constructor(
                 }
             }
 
-        fun init(context: Context, selectedSite: SelectedSite) {
-            instance = AnalyticsTracker(context.applicationContext, selectedSite)
+        fun init(context: Context, selectedSite: SelectedSite, appPrefs: AppPrefs) {
+            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }

@@ -21,7 +21,7 @@ class EnvironmentRepository @Inject constructor(
     private val environmentRestClient: EnvironmentRestClient,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatchers: CoroutineDispatchers
-){
+) {
     /**
      * Gets the `storeID`.
      * Can be retrieved locally or fetched from the remote source.

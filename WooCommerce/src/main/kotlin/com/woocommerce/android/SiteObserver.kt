@@ -31,8 +31,7 @@ class SiteObserver @Inject constructor(
                 // Makes sure the store ID is fetched for the site.
                 environmentRepository.fetchOrGetStoreID(site)
                     .takeIf { result -> result.isError.not() }
-                    ?.let { result ->
-                        val storeID = result.model ?: return@let
+                    ?.model?.let { storeID ->
                         WooLog.d(WooLog.T.UTILS, "Fetched StoreID $storeID for site ${site.name}")
                     }
             }
