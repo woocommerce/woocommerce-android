@@ -34,7 +34,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -149,11 +148,11 @@ private fun CustomToolbar(
             contentDescription = "",
             modifier = Modifier
                 .clickable { onBackNavigationClicked() }
-                .padding(16.dp)
+                .padding(dimensionResource(id = R.dimen.major_100))
         )
         Column(
             modifier = Modifier
-                .padding(start = 24.dp)
+                .padding(start = dimensionResource(id = R.dimen.major_150))
                 .clickable {
                     if (state.themePages.isNotEmpty()) {
                         coroutineScope.launch {
@@ -165,7 +164,7 @@ private fun CustomToolbar(
                         }
                     }
                 }
-                .padding(16.dp)
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = stringResource(id = string.theme_preview_title),
@@ -179,8 +178,8 @@ private fun CustomToolbar(
                 )
                 Icon(
                     modifier = Modifier
-                        .size(16.dp)
-                        .padding(start = 4.dp),
+                        .size(dimensionResource(id = R.dimen.major_100))
+                        .padding(start = dimensionResource(id = R.dimen.minor_50)),
                     painter = painterResource(drawable.ic_arrow_down),
                     contentDescription = "",
                     tint = colorResource(id = color.color_on_surface)
@@ -199,14 +198,13 @@ private fun ThemeDemoPagesBottomSheet(
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         Text(
             modifier = Modifier
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.minor_100),
                     top = dimensionResource(id = R.dimen.minor_100)
-                )
-                .align(Alignment.CenterHorizontally),
+                ),
             text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_title),
             style = MaterialTheme.typography.h6,
         )
@@ -215,22 +213,29 @@ private fun ThemeDemoPagesBottomSheet(
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
                     bottom = dimensionResource(id = R.dimen.minor_100)
-                )
-                .align(Alignment.CenterHorizontally),
+                ),
             text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_subtitle),
             style = MaterialTheme.typography.subtitle2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         Divider()
-        pages.forEach { page ->
+        pages.forEachIndexed { index, page ->
             Text(
                 text = page.title,
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier
                     .clickable { onPageSelected(page) }
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.minor_100))
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_85),
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.major_85)
+                    )
             )
+            if (index == pages.lastIndex) {
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+            }
         }
     }
 }
