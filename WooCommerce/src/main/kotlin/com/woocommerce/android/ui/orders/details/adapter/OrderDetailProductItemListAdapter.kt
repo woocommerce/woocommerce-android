@@ -68,7 +68,7 @@ class OrderDetailProductItemListAdapter(
                 }
             }
             binding.productInfoGroupedProduct.hideProductTotal()
-            val itemTotal  = formatCurrencyForDisplay(item.total)
+            val itemTotal = formatCurrencyForDisplay(item.total)
             val productTotal = formatCurrencyForDisplay(groupedItem.groupedProductTotal)
             binding.groupedProductItemTotal.text = itemTotal
             binding.groupedProductTotal.text = productTotal
