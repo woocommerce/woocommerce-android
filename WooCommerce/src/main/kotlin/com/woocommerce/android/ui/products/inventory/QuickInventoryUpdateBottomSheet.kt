@@ -48,6 +48,8 @@ fun QuickInventoryUpdateBottomSheet(
     onManualQuantityEntered: (String) -> Unit,
     onUpdateQuantityClicked: () -> Unit,
 ) {
+    if (state.value !is ScanToUpdateInventoryViewModel.ViewState.ProductLoaded) return
+
     val productState = state.value as ScanToUpdateInventoryViewModel.ViewState.ProductLoaded
     Surface(
         modifier = Modifier

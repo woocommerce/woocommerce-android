@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.barcodescanner
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
@@ -27,6 +29,7 @@ fun BarcodeScannerScreen(
     onResult: (Boolean) -> Unit,
     onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
     isContinuousScanningEnabled: Boolean = false,
+    overlay: @Composable BoxScope.() -> Unit,
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -37,37 +40,40 @@ fun BarcodeScannerScreen(
     LaunchedEffect(key1 = Unit) {
         cameraPermissionLauncher.launch(BarcodeScanningFragment.KEY_CAMERA_PERMISSION)
     }
-    when (permissionState) {
-        BarcodeScanningViewModel.PermissionState.Granted -> {
-            BarcodeScanner(
-                codeScanner = codeScanner,
-                onScannedResult = onScannedResult,
-                isContinuousScanningEnabled = isContinuousScanningEnabled,
-            )
+    Box {
+        when (permissionState) {
+            BarcodeScanningViewModel.PermissionState.Granted -> {
+                BarcodeScanner(
+                    codeScanner = codeScanner,
+                    onScannedResult = onScannedResult,
+                    isContinuousScanningEnabled = isContinuousScanningEnabled,
+                )
+            }
+            is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {
+                AlertDialog(
+                    title = stringResource(id = permissionState.title),
+                    message = stringResource(id = permissionState.message),
+                    ctaLabel = stringResource(id = permissionState.ctaLabel),
+                    dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
+                    ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
+                    dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
+                )
+            }
+            is BarcodeScanningViewModel.PermissionState.PermanentlyDenied -> {
+                AlertDialog(
+                    title = stringResource(id = permissionState.title),
+                    message = stringResource(id = permissionState.message),
+                    ctaLabel = stringResource(id = permissionState.ctaLabel),
+                    dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
+                    ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
+                    dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
+                )
+            }
+            BarcodeScanningViewModel.PermissionState.Unknown -> {
+                // no-op
+            }
         }
-        is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {
-            AlertDialog(
-                title = stringResource(id = permissionState.title),
-                message = stringResource(id = permissionState.message),
-                ctaLabel = stringResource(id = permissionState.ctaLabel),
-                dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
-                ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
-                dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
-            )
-        }
-        is BarcodeScanningViewModel.PermissionState.PermanentlyDenied -> {
-            AlertDialog(
-                title = stringResource(id = permissionState.title),
-                message = stringResource(id = permissionState.message),
-                ctaLabel = stringResource(id = permissionState.ctaLabel),
-                dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
-                ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
-                dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
-            )
-        }
-        BarcodeScanningViewModel.PermissionState.Unknown -> {
-            // no-op
-        }
+        overlay()
     }
 }
 

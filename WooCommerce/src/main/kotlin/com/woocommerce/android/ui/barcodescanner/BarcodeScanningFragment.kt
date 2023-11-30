@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -68,12 +70,15 @@ open class BarcodeScanningFragment : BaseFragment() {
                                 }
                             }
                         },
-                        isContinuousScanningEnabled = isContinuousScanningEnabled
+                        isContinuousScanningEnabled = isContinuousScanningEnabled,
+                        overlay = getScannerOverlay(),
                     )
                 }
             }
         }
     }
+
+    open fun getScannerOverlay(): @Composable BoxScope.() -> Unit = {}
 
     open fun onScannedResult(status: CodeScannerStatus) {
         navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
