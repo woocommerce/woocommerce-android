@@ -651,7 +651,7 @@ private fun PaymentsHubDepositSummaryState.Info.Interval.buildText() =
         }
     }
 
-private val previewState = mapOf(
+private val previewState = sortedMapOf(
     "USD" to PaymentsHubDepositSummaryState.Info(
         availableFundsFormatted = "100$",
         pendingFundsFormatted = "200$",
@@ -818,7 +818,7 @@ fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
         PaymentsHubDepositSummaryView(
             PaymentsHubDepositSummaryState.Overview(
                 defaultCurrency = "USD",
-                infoPerCurrency = mapOf(
+                infoPerCurrency = sortedMapOf(
                     "USD" to PaymentsHubDepositSummaryState.Info(
                         availableFundsFormatted = "100$",
                         pendingFundsFormatted = "200$",
