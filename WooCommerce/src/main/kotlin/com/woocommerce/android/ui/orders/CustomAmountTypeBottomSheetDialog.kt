@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,11 +26,16 @@ class CustomAmountTypeBottomSheetDialog : WCBottomSheetDialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     CustomAmountTypeBottomSheet { customAmountType ->
-                        dismiss()
                         sharedViewModel.onCustomAmountTypeSelected(customAmountType)
+                        dismiss()
                     }
                 }
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        sharedViewModel.clearSelectedCustomAmount()
     }
 }
