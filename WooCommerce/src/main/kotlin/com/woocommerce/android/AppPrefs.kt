@@ -289,14 +289,6 @@ object AppPrefs {
         get() = getLong(DeletablePrefKey.CREATED_STORE_SITE_ID, -1).takeIf { it != -1L }
         set(value) = setLong(DeletablePrefKey.CREATED_STORE_SITE_ID, value ?: -1)
 
-    /**
-     * Persists the ID of the selected theme for the last created site in case the app was closed while the
-     * site was being created.
-     */
-    var themeIdForCreatedStore: String?
-        get() = getString(DeletablePrefKey.CREATED_STORE_THEME_ID).orNullIfEmpty()
-        set(value) = setString(DeletablePrefKey.CREATED_STORE_THEME_ID, value ?: "")
-
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
     fun setProductSortingChoice(currentSiteId: Int, value: String) {
@@ -1161,6 +1153,25 @@ object AppPrefs {
 
     fun disableAutoTaxRate() {
         remove(AUTO_TAX_RATE_ID)
+    }
+
+    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) {
+        setString(DeletablePrefKey.CREATED_STORE_THEME_ID, "$siteId:$themeId")
+    }
+
+    fun clearThemeIdForStoreCreation() {
+        remove(DeletablePrefKey.CREATED_STORE_THEME_ID)
+    }
+
+    fun getThemeIdForStoreCreation(siteId: Long): String? {
+        return getString(DeletablePrefKey.CREATED_STORE_THEME_ID).orNullIfEmpty()?.let {
+            val split = it.split(":")
+            if (split.size == 2 && split[0].toLong() == siteId) {
+                split[1]
+            } else {
+                null
+            }
+        }
     }
 
     /**

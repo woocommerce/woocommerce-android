@@ -33,7 +33,7 @@ class ThemeActivationViewModel @Inject constructor(
         _viewState.value = LoadingState
         themeRepository.activateTheme(args.themeId).fold(
             onSuccess = {
-                appPrefsWrapper.themeIdForCreatedStore = null
+                appPrefsWrapper.clearThemeIdForStoreCreation()
                 triggerEvent(Event.ShowSnackbar(R.string.theme_activated_successfully))
                 triggerEvent(Event.Exit)
             },

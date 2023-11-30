@@ -190,9 +190,9 @@ class MainActivityViewModel @Inject constructor(
         if (selectedSite.exists()) {
             // Upload any pending store profiler answers
             storeProfilerRepository.uploadAnswers()
-            if (prefs.themeIdForCreatedStore != null) {
+            prefs.getThemeIdForStoreCreation(selectedSite.get().siteId)?.let {
                 withContext(dispatchers.main) {
-                    triggerEvent(LaunchThemeActivation(prefs.themeIdForCreatedStore!!))
+                    triggerEvent(LaunchThemeActivation(it))
                 }
             }
         }

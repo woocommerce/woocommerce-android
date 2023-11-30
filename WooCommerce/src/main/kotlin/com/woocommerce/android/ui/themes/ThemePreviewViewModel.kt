@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,8 +24,9 @@ class ThemePreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
-    val themeRepository: ThemeRepository,
-    val appPrefsWrapper: AppPrefsWrapper
+    private val themeRepository: ThemeRepository,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val newStore: NewStore
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
@@ -61,7 +63,7 @@ class ThemePreviewViewModel @Inject constructor(
 
     fun onActivateThemeClicked() {
         if (viewState.value?.isFromStoreCreation == true) {
-            appPrefsWrapper.themeIdForCreatedStore = navArgs.themeId
+            appPrefsWrapper.saveThemeIdForStoreCreation(newStore.data.siteId!!, navArgs.themeId)
             triggerEvent(ContinueStoreCreationWithTheme)
         } else {
             TODO()

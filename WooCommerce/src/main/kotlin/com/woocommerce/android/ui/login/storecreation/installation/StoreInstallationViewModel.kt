@@ -110,10 +110,10 @@ class StoreInstallationViewModel @Inject constructor(
                 )
                 installationTransactionLauncher.onStoreInstalled(properties)
 
-                if (appPrefsWrapper.themeIdForCreatedStore != null) {
+                appPrefsWrapper.getThemeIdForStoreCreation(storeData.siteId!!)?.let {
                     // Launch theme activation flow, the installation will continue after the theme is activated
-                    triggerEvent(LaunchThemeActivation(appPrefsWrapper.themeIdForCreatedStore!!))
-                } else {
+                    triggerEvent(LaunchThemeActivation(it))
+                } ?: run {
                     _viewState.update { SuccessState(newStoreUrl) }
                 }
             }

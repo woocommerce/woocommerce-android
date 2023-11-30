@@ -18,11 +18,6 @@ class AppPrefsWrapper @Inject constructor() {
      * This allows to switch to the newly created site when the app is opened again.
      */
     var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
-    /**
-     * Persists the ID of the selected theme for the last created site in case the app was closed while the
-     * site was being created.
-     */
-    var themeIdForCreatedStore: String? by AppPrefs::themeIdForCreatedStore
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -380,4 +375,11 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
+        AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
+
+    fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
+
+    fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
 }
