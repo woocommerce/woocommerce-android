@@ -25,7 +25,7 @@ class CustomAmountTypeBottomSheetDialog : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CustomAmountTypeBottomSheet { customAmountType ->
+                    CustomAmountTypeBottomSheet(sharedViewModel.getCurrencySymbol()) { customAmountType ->
                         sharedViewModel.onCustomAmountTypeSelected(customAmountType)
                         dismiss()
                     }
