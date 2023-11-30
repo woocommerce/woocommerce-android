@@ -184,6 +184,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     object OpenInventoryUpdateBottomSheet : MultiLiveEvent.Event()
 
     companion object {
-        private const val SCANNER_RESTART_DEBOUNCE_MS = 1000L
+        private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
     }
 }
