@@ -27,10 +27,9 @@ class QuickInventoryUpdateBottomSheetFragment : WCBottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).apply {
-            if (this is BottomSheetDialog) {
-                behavior.skipCollapsed = true
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            }
+            this as BottomSheetDialog
+            behavior.skipCollapsed = true
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
