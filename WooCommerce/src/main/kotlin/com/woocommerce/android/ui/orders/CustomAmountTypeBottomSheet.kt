@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,23 +17,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
 
 @Composable
-fun CustomAmountTypeBottomSheet(onClick: (CustomAmountType) -> Unit) {
-    BottomSheetContent(onClick)
+fun CustomAmountTypeBottomSheet(currency: String, onClick: (CustomAmountType) -> Unit) {
+    BottomSheetContent(currency, onClick)
 }
 
 @Composable
 fun BottomSheetContent(
+    currency: String,
     onClick: (CustomAmountType) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .background(colorResource(id = R.color.color_surface))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -44,17 +52,22 @@ fun BottomSheetContent(
             color = Color.Gray
         )
         Text(
-            text = "How do you want to add your custom amount?",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
+            text = stringResource(id = R.string.custom_amounts_bottom_sheet_heading),
+            style = TextStyle(
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp,
+                color = Color.Gray
+            ),
+            modifier = Modifier.padding(bottom = 24.dp),
+            color = colorResource(id = R.color.color_on_surface_medium)
         )
         CustomAmountOption(
-            label = "A fixed amount",
-            symbol = "$",
+            label = stringResource(id = R.string.custom_amounts_bottom_sheet_fixed_amount_option),
+            symbol = currency,
             onClick = { onClick(CustomAmountType.FIXED_CUSTOM_AMOUNT) }
         )
         CustomAmountOption(
-            label = "A percentage of the order total",
+            label = stringResource(id = R.string.custom_amounts_bottom_sheet_percentage_amount_option),
             symbol = "%",
             onClick = { onClick(CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) }
         )
@@ -73,16 +86,27 @@ fun CustomAmountOption(label: String, symbol: String, onClick: () -> Unit) {
         Text(
             text = symbol,
             modifier = Modifier.size(24.dp),
-            fontWeight = FontWeight.Medium
+            style = TextStyle(
+                fontWeight = FontWeight.Normal,
+                fontSize = 20.sp,
+            ),
+            color = colorResource(id = R.color.color_on_surface)
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = label)
+        Text(
+            text = label,
+            style = TextStyle(
+                fontWeight = FontWeight.Normal,
+                fontSize = 20.sp,
+            ),
+            color = colorResource(id = R.color.color_on_surface)
+        )
     }
 }
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewCustomAmountBottomSheet() {
-    CustomAmountTypeBottomSheet() {
+    CustomAmountTypeBottomSheet("$") {
     }
 }
