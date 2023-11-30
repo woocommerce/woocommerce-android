@@ -37,12 +37,23 @@ class ThemeActivationViewModel @Inject constructor(
                 triggerEvent(Event.ShowSnackbar(R.string.theme_activated_successfully))
                 triggerEvent(Event.Exit)
             },
-            onFailure = { _viewState.value = ViewState.ErrorState(onRetry = ::startThemeInstallation) }
+            onFailure = {
+                _viewState.value = ViewState.ErrorState(
+                    onRetry = ::startThemeInstallation,
+                    onDismiss = {
+                        appPrefsWrapper.clearThemeIdForStoreCreation()
+                        triggerEvent(Event.Exit)
+                    }
+                )
+            }
         )
     }
 
     sealed interface ViewState {
         object LoadingState : ViewState
-        data class ErrorState(val onRetry: () -> Unit) : ViewState
+        data class ErrorState(
+            val onRetry: () -> Unit,
+            val onDismiss: () -> Unit
+        ) : ViewState
     }
 }

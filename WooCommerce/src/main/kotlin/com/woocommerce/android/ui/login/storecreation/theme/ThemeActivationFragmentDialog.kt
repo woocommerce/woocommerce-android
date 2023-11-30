@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -24,6 +26,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -64,7 +67,10 @@ private fun ThemeActivationScreen(viewModel: ThemeActivationViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         when (state) {
             is ThemeActivationViewModel.ViewState.LoadingState -> ThemeActivationLoading()
-            is ThemeActivationViewModel.ViewState.ErrorState -> ThemeActivationError(onRetry = state.onRetry)
+            is ThemeActivationViewModel.ViewState.ErrorState -> ThemeActivationError(
+                onRetry = state.onRetry,
+                onDismiss = state.onDismiss
+            )
         }
     }
 }
@@ -89,11 +95,11 @@ private fun ThemeActivationLoading() {
 
 @Composable
 private fun ThemeActivationError(
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
             .fillMaxWidth()
             .padding(dimensionResource(id = R.dimen.major_100))
@@ -102,8 +108,10 @@ private fun ThemeActivationError(
             text = stringResource(id = R.string.store_creation_theme_activation_error),
             textAlign = TextAlign.Center
         )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
         WCColoredButton(onClick = onRetry, text = stringResource(id = R.string.retry))
+        WCTextButton(onClick = onDismiss, text = stringResource(id = R.string.dismiss))
     }
 }
 
@@ -119,6 +127,6 @@ private fun ThemeActivationLoadingPreview() {
 @Preview(showBackground = true)
 private fun ThemeActivationErrorPreview() {
     WooThemeWithBackground {
-        ThemeActivationError(onRetry = {})
+        ThemeActivationError(onRetry = {}, onDismiss = {})
     }
 }
