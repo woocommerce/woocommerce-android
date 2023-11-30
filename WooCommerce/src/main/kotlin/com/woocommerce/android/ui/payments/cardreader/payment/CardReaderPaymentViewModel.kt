@@ -44,6 +44,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingP
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.extensions.exhaustive
@@ -387,6 +388,9 @@ class CardReaderPaymentViewModel
                     chargeId = chargeId,
                     amount = refundAmount,
                     currency = order.currency
+                ),
+                RefundConfig(
+                    enableCustomerCancellation = false
                 )
             ).collect { refundStatus ->
                 onRefundStatusChanged(

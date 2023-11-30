@@ -5,15 +5,25 @@ import androidx.annotation.DimenRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
+import com.woocommerce.android.ui.products.ProductType.COMPOSITE
 import com.woocommerce.android.ui.products.ProductType.OTHER
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -30,6 +40,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.CATE
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,13 +50,21 @@ class ProductFilterListViewModel @Inject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val networkStatus: NetworkStatus,
     private val productRestrictions: ProductFilterProductRestrictions,
+    private val pluginRepository: PluginRepository,
+    private val selectedSite: SelectedSite,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
+        const val SUBSCRIPTIONS_URL = "https://woo.com/products/woocommerce-subscriptions/"
+        const val BUNDLES_URL = "https://woo.com/products/product-bundles/"
+        const val COMPOSITE_URL = "https://woo.com/products/composite-products/"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
+
+    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
     private val _filterListItems = MutableLiveData<List<FilterListItemUiModel>>()
     val filterListItems: LiveData<List<FilterListItemUiModel>> = _filterListItems
@@ -137,7 +156,12 @@ class ProductFilterListViewModel @Inject constructor(
             )
         }
 
-        _filterListItems.value = buildFilterListItemUiModel()
+        launch {
+            productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = true)
+            getPluginInfo()
+            _filterListItems.value = buildFilterListItemUiModel()
+            productFilterOptionListViewState = productFilterOptionListViewState.copy(isSkeletonShown = false)
+        }
 
         val screenTitle = if (productFilterOptions.isNotEmpty()) {
             resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
@@ -147,6 +171,53 @@ class ProductFilterListViewModel @Inject constructor(
             screenTitle = screenTitle,
             displayClearButton = productFilterOptions.isNotEmpty()
         )
+    }
+
+    private fun getTypeFilterWithExploreOptions(): MutableList<FilterListOptionItemUiModel> {
+        return ProductType.values().filterNot { it == OTHER }.map {
+            when {
+                it == BUNDLE && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        BUNDLE.value,
+                        BUNDLES_URL
+                    )
+                }
+
+                it == SUBSCRIPTION && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        SUBSCRIPTION.value,
+                        SUBSCRIPTIONS_URL
+                    )
+                }
+
+                it == VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        VARIABLE_SUBSCRIPTION.value,
+                        SUBSCRIPTIONS_URL
+                    )
+                }
+
+                it == COMPOSITE && isPluginInstalled(it) == false -> {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        COMPOSITE.value,
+                        COMPOSITE_URL
+                    )
+                }
+
+                else -> {
+                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                        resourceProvider.getString(it.stringResource),
+                        filterOptionItemValue = it.value,
+                        isSelected = productFilterOptions[TYPE] == it.value
+                    )
+                }
+            }
+        }.sortedBy { it is FilterListOptionItemUiModel.ExploreOptionItemUiModel }
+            .toMutableList()
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
@@ -176,7 +247,7 @@ class ProductFilterListViewModel @Inject constructor(
             productCategories
                 .sortCategories(resourceProvider)
                 .map { (category, margin, _) ->
-                    FilterListOptionItemUiModel(
+                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                         category.name,
                         category.remoteCategoryId.toString(),
                         isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString(),
@@ -208,34 +279,61 @@ class ProductFilterListViewModel @Inject constructor(
         loadFilters()
     }
 
+    private fun isPluginInstalled(productType: ProductType): Boolean? {
+        return when (productType) {
+            BUNDLE -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName]?.isInstalled
+            SUBSCRIPTION -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
+            VARIABLE_SUBSCRIPTION ->
+                pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
+
+            COMPOSITE -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS.pluginName]?.isInstalled
+            else -> null
+        }
+    }
+
     fun onFilterOptionItemSelected(
         selectedFilterListItemPosition: Int,
         selectedFilterItem: FilterListOptionItemUiModel
     ) {
         _filterListItems.value?.let {
-            // iterate through the filter option list and update the `isSelected`value to reflect the item selected and
-            // update the UI of this change
-            val filterItem = it[selectedFilterListItemPosition]
-            val filterOptionItemList = filterItem.filterOptionListItems.map { filterOptionItem ->
-                filterOptionItem.copy(
-                    isSelected = filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
-                )
-            }
-            _filterOptionListItems.value = filterOptionItemList
+            when (selectedFilterItem) {
+                is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel -> {
+                    // iterate through the filter option list and update the `isSelected`value to reflect the item selected and
+                    // update the UI of this change
+                    val filterItem = it[selectedFilterListItemPosition]
+                    val filterOptionItemList = filterItem.filterOptionListItems.map { filterOptionItem ->
+                        (filterOptionItem as? FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel)
+                            ?.copy(
+                                isSelected =
+                                filterOptionItem.filterOptionItemValue == selectedFilterItem.filterOptionItemValue
+                            ) ?: filterOptionItem
+                    }
+                    _filterOptionListItems.value = filterOptionItemList
 
-            if (filterItem.filterItemKey == CATEGORY) {
-                selectedCategoryName = selectedFilterItem.filterOptionItemName
-                savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
-            }
+                    if (filterItem.filterItemKey == CATEGORY) {
+                        selectedCategoryName = selectedFilterItem.filterOptionItemName
+                        savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+                    }
 
-            // update the filter options map - which is used to load the filter list screen
-            // if the selected filter option item is the default filter item i.e. ANY,
-            // then remove the filter from the map, since this means the filter for that option has been cleared,
-            // otherwise update the filter item.
-            if (selectedFilterItem.filterOptionItemName == resourceProvider.getString(string.product_filter_default)) {
-                productFilterOptions.remove(filterItem.filterItemKey)
-            } else {
-                productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
+                    // update the filter options map - which is used to load the filter list screen
+                    // if the selected filter option item is the default filter item i.e. ANY,
+                    // then remove the filter from the map, since this means the filter for that option has been cleared,
+                    // otherwise update the filter item.
+                    val defaultOption = resourceProvider.getString(string.product_filter_default)
+                    if (selectedFilterItem.filterOptionItemName == defaultOption) {
+                        productFilterOptions.remove(filterItem.filterItemKey)
+                    } else {
+                        productFilterOptions[filterItem.filterItemKey] = selectedFilterItem.filterOptionItemValue
+                    }
+                }
+
+                is FilterListOptionItemUiModel.ExploreOptionItemUiModel -> {
+                    analyticsTracker.track(
+                        AnalyticsEvent.PRODUCT_FILTER_LIST_EXPLORE_BUTTON_TAPPED,
+                        mapOf(AnalyticsTracker.KEY_TYPE to selectedFilterItem.filterOptionItemValue)
+                    )
+                    triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(selectedFilterItem.url))
+                }
             }
         }
     }
@@ -259,7 +357,7 @@ class ProductFilterListViewModel @Inject constructor(
                 resourceProvider.getString(string.product_stock_status),
                 addDefaultFilterOption(
                     CoreProductStockStatus.values().map {
-                        FilterListOptionItemUiModel(
+                        FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                             resourceProvider.getString(fromString(it.value).stringResource),
                             filterOptionItemValue = it.value,
                             isSelected = productFilterOptions[STOCK_STATUS] == it.value
@@ -276,7 +374,7 @@ class ProductFilterListViewModel @Inject constructor(
                     resourceProvider.getString(string.product_status),
                     addDefaultFilterOption(
                         ProductStatus.values().map {
-                            FilterListOptionItemUiModel(
+                            FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                                 resourceProvider.getString(it.stringResource),
                                 filterOptionItemValue = it.value,
                                 isSelected = productFilterOptions[STATUS] == it.value
@@ -287,24 +385,31 @@ class ProductFilterListViewModel @Inject constructor(
                 )
             )
         }
+        val typeFilters = getTypeFilterWithExploreOptions()
         filterListItems.add(
             FilterListItemUiModel(
                 TYPE,
                 resourceProvider.getString(string.product_type),
-                addDefaultFilterOption(
-                    ProductType.values().filterNot { it == OTHER }.map {
-                        FilterListOptionItemUiModel(
-                            resourceProvider.getString(it.stringResource),
-                            filterOptionItemValue = it.value,
-                            isSelected = productFilterOptions[TYPE] == it.value
-                        )
-                    }.toMutableList(),
-                    productFilterOptions[TYPE].isNullOrEmpty()
-                )
+                addDefaultFilterOption(typeFilters, productFilterOptions[TYPE].isNullOrEmpty())
             )
         )
         filterListItems.add(buildCategoryFilterListItemUiModel())
         return filterListItems
+    }
+
+    private suspend fun getPluginInfo() {
+        val site = selectedSite.getIfExists()
+        pluginsInformation = site?.let { siteModel ->
+            pluginRepository.getPluginsInfo(
+                site = siteModel,
+                plugins = listOf(
+                    WooCommerceStore.WooPlugin.WOO_CORE,
+                    WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS,
+                    WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES,
+                    WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS
+                )
+            )
+        } ?: emptyMap()
     }
 
     private fun buildCategoryFilterListItemUiModel(): FilterListItemUiModel {
@@ -326,7 +431,7 @@ class ProductFilterListViewModel @Inject constructor(
         return filterOptionList.apply {
             add(
                 0,
-                FilterListOptionItemUiModel(
+                FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                     filterOptionItemName = resourceProvider.getString(string.product_filter_default),
                     filterOptionItemValue = "",
                     isSelected = isDefaultFilterOptionSelected
@@ -358,7 +463,7 @@ class ProductFilterListViewModel @Inject constructor(
                     productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
                     productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
                         .getOrElse {
-                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            triggerEvent(ShowSnackbar(string.error_generic))
                             return@launch
                         }
                     val categoryOptions = productCategoriesToOptionListItems()
@@ -399,28 +504,36 @@ class ProductFilterListViewModel @Inject constructor(
         var filterOptionListItems: List<FilterListOptionItemUiModel>
     ) : Parcelable
 
-    /**
-     * [filterOptionItemName] is the display name of the filter option
-     * Eg: for stock status, this would be In Stock, Out of stock.
-     * for product type, this would be Simple, Grouped.
-     * for product type, this would be Pending, Draft
-     *
-     * [filterOptionItemValue] is the slug for the filter option.
-     * Eg: for stock status, this would be instock, outofstock
-     * for product type, this would be simple, grouped, variable
-     * for product status, this would be pending, draft
-     * for category, this would be category ID
-     */
     @Parcelize
-    data class FilterListOptionItemUiModel(
-        val filterOptionItemName: String,
-        val filterOptionItemValue: String,
-        val isSelected: Boolean = false,
-        var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
-    ) : Parcelable {
-        companion object {
-            @DimenRes
-            const val DEFAULT_FILTER_OPTION_MARGIN = 0
+    sealed class FilterListOptionItemUiModel : Parcelable {
+        /**
+         * [filterOptionItemName] is the display name of the filter option
+         * Eg: for stock status, this would be In Stock, Out of stock.
+         * for product type, this would be Simple, Grouped.
+         * for product type, this would be Pending, Draft
+         *
+         * [filterOptionItemValue] is the slug for the filter option.
+         * Eg: for stock status, this would be instock, outofstock
+         * for product type, this would be simple, grouped, variable
+         * for product status, this would be pending, draft
+         * for category, this would be category ID
+         */
+        data class DefaultFilterListOptionItemUiModel(
+            val filterOptionItemName: String,
+            val filterOptionItemValue: String,
+            val isSelected: Boolean = false,
+            var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
+        ) : FilterListOptionItemUiModel() {
+            companion object {
+                @DimenRes
+                const val DEFAULT_FILTER_OPTION_MARGIN = 0
+            }
         }
+
+        data class ExploreOptionItemUiModel(
+            val filterOptionItemName: String,
+            val filterOptionItemValue: String,
+            val url: String
+        ) : FilterListOptionItemUiModel()
     }
 }
