@@ -83,34 +83,44 @@ class CustomAmountsDialogViewModel @Inject constructor(
     private val args: CustomAmountsDialogArgs by savedState.navArgs()
 
     init {
-        if (args.customAmountUIModel.amount == BigDecimal.ZERO) {
-            tracker.track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
-        } else {
+        if (isInEditMode()) {
             // Edit mode
-            args.customAmountUIModel.apply {
-                triggerEvent(PopulatePercentage(this))
-                when (type) {
-                    CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
-                        currentPrice = amount
-                    }
-
-                    CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                        currentPercentage = (amount.divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP))
-                            .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
-                    }
-                }
-                viewState = viewState.copy(
-                    customAmountUIModel = viewState.customAmountUIModel.copy(
-                        id = id,
-                        name = name,
-                        taxStatus = taxStatus,
-                        currentPrice = amount
-                    )
-                )
-                tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
-            }
+            populateUIWithExistingData()
+            tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
+        } else {
+            tracker.track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
         }
     }
+
+    private fun populateUIWithExistingData() {
+        args.customAmountUIModel.apply {
+            populatePercentage(this)
+            when (type) {
+                CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
+                    currentPrice = amount
+                }
+
+                CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
+                    currentPercentage = (amount.divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP))
+                        .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+                }
+            }
+            viewState = viewState.copy(
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    id = id,
+                    name = name,
+                    taxStatus = taxStatus,
+                    currentPrice = amount
+                )
+            )
+        }
+    }
+
+    private fun populatePercentage(customAmountUIModel: CustomAmountUIModel) {
+        triggerEvent(PopulatePercentage(customAmountUIModel))
+    }
+
+    private fun isInEditMode() = args.customAmountUIModel.amount == BigDecimal.ZERO
 
     @Parcelize
     data class ViewState(
