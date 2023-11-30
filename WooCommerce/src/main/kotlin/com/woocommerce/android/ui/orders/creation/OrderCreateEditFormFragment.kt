@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -61,8 +60,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -544,17 +542,21 @@ class OrderCreateEditFormFragment :
     }
 
     private fun navigateToCustomAmountsDialog(
-        customAmountUIModel: CustomAmountUIModel? = null,
-        type: CustomAmountsDialogViewModel.CustomAmountType = PERCENTAGE_CUSTOM_AMOUNT,
+        customAmountUIModel: CustomAmountUIModel = CustomAmountUIModel.EMPTY,
         orderTotal: String = viewModel.orderDraft.value?.total.toString(),
     ) {
-        Log.d("ABCD", customAmountUIModel.toString() + type.toString() + orderTotal)
-        val bottomSheet = CustomAmountTypeBottomSheetDialog()
-        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
-//        OrderCreateEditNavigator.navigate(
-//            this,
-//            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel, type, orderTotal)
-//        )
+        if (viewModel.orderContainsProductsOrCustomAmounts()) {
+            val bottomSheet = CustomAmountTypeBottomSheetDialog()
+            bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
+        } else {
+            OrderCreateEditNavigator.navigate(
+                this,
+                OrderCreateEditNavigationTarget.CustomAmountDialog(
+                    customAmountUIModel.copy(type = FIXED_CUSTOM_AMOUNT),
+                    orderTotal
+                )
+            )
+        }
     }
 
     private fun updateProgressBarsVisibility(
@@ -753,6 +755,7 @@ class OrderCreateEditFormFragment :
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
                         onCustomAmountClick = {
+                            viewModel.selectCustomAmount(it)
                             navigateToCustomAmountsDialog(
                                 customAmountUIModel = it,
                             )
@@ -996,6 +999,18 @@ class OrderCreateEditFormFragment :
                 uiMessageResolver.getSnack(
                     stringResId = event.message
                 ).show()
+            }
+
+            is OnCustomAmountTypeSelected -> {
+                OrderCreateEditNavigator.navigate(
+                    this,
+                    OrderCreateEditNavigationTarget.CustomAmountDialog(
+                        customAmountUIModel = viewModel.selectedCustomAmount.value?.copy(
+                            type = event.type
+                        ) ?: CustomAmountUIModel.EMPTY.copy(type = event.type),
+                        orderTotal = viewModel.orderDraft.value?.total.toString(),
+                    )
+                )
             }
 
             is Exit -> findNavController().navigateUp()
