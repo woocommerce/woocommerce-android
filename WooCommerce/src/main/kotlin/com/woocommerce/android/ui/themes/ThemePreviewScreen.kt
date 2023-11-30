@@ -1,15 +1,23 @@
 package com.woocommerce.android.ui.themes
 
 import androidx.activity.result.ActivityResultRegistry
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
@@ -18,18 +26,25 @@ import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import com.woocommerce.android.R
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
@@ -37,8 +52,11 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.DESKTOP
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.MOBILE
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.TABLET
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -46,18 +64,19 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun ThemePreviewScreen(
     viewModel: ThemePreviewViewModel,
     userAgent: UserAgent,
-    wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
+    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     activityRegistry: ActivityResultRegistry,
 ) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         ThemePreviewScreen(
             state = viewState,
             userAgent = userAgent,
-            wpComWebViewAuthenticator = wpcomWebViewAuthenticator,
+            wpComWebViewAuthenticator = wpComWebViewAuthenticator,
             activityRegistry = activityRegistry,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
-            viewModel::onSelectThemeClicked
+            viewModel::onSelectThemeClicked,
+            viewModel::onPreviewTypeChanged
         )
     }
 }
@@ -72,6 +91,7 @@ fun ThemePreviewScreen(
     onPageSelected: (String) -> Unit,
     onBackNavigationClicked: () -> Unit,
     onSelectThemeClicked: () -> Unit,
+    onPreviewTypeChanged: (PreviewType) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -105,6 +125,9 @@ fun ThemePreviewScreen(
                     title = stringResource(id = string.theme_preview_title),
                     navigationIcon = Filled.ArrowBack,
                     onNavigationButtonClick = onBackNavigationClicked,
+                    actions = {
+                        ThemePreviewMenu(state.previewType, onPreviewTypeChanged)
+                    }
                 )
             },
             backgroundColor = MaterialTheme.colors.surface
@@ -148,6 +171,63 @@ fun ThemePreviewScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ThemePreviewMenu(
+    selectedType: PreviewType,
+    onPreviewTypeChanged: (PreviewType) -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    @Composable
+    fun PreviewMenuItem(
+        previewType: PreviewType,
+        @StringRes previewMenuTextResourceId: Int,
+    ) {
+        DropdownMenuItem(
+            modifier = Modifier
+                .height(dimensionResource(id = dimen.major_175)),
+            onClick = {
+                showMenu = false
+                onPreviewTypeChanged(previewType)
+            }
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(id = previewMenuTextResourceId))
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(dimensionResource(id = dimen.major_300))
+                )
+                if (selectedType == previewType) {
+                    Icon(
+                        imageVector = Outlined.Check,
+                        tint = MaterialTheme.colors.primary,
+                        contentDescription = stringResource(string.toggle_option_checked)
+                    )
+                }
+            }
+        }
+    }
+
+    IconButton(onClick = { showMenu = !showMenu }) {
+        Icon(
+            imageVector = Outlined.Devices,
+            tint = MaterialTheme.colors.onSurface,
+            contentDescription = stringResource(string.theme_preview_title),
+        )
+    }
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
+    ) {
+        PreviewMenuItem(MOBILE, string.theme_preview_type_mobile)
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        PreviewMenuItem(TABLET, string.theme_preview_type_tablet)
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        PreviewMenuItem(DESKTOP, string.theme_preview_type_desktop)
     }
 }
 

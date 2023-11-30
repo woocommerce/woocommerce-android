@@ -3380,6 +3380,9 @@
     <string name="theme_preview_title">Preview</string>
     <string name="theme_preview_select_theme_button">Start with this theme</string>
     <string name="theme_preview_current_theme">Theme: %s</string>
+    <string name="theme_preview_type_mobile">Mobile</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
 
     <!--
     Store onboarding

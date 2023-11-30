@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -39,9 +40,20 @@ class ThemePreviewViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onPreviewTypeChanged(previewType: PreviewType) {
+        _viewState.value = _viewState.value.copy(previewType = previewType)
+    }
+
     @Parcelize
     data class ViewState(
         val themeName: String,
-        val demoUri: String
-    ) : Parcelable
+        val demoUri: String,
+        val previewType: PreviewType = PreviewType.MOBILE
+    ) : Parcelable {
+        enum class PreviewType {
+            DESKTOP,
+            TABLET,
+            MOBILE
+        }
+    }
 }
