@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ThemePreviewFragment : BaseFragment() {
     companion object {
-        val THEME_SELECTED_NOTICE = "theme-selected"
+        const val THEME_SELECTED_NOTICE = "theme-selected"
     }
     private val viewModel: ThemePreviewViewModel by viewModels()
 

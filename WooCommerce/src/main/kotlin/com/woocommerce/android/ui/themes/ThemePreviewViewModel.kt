@@ -47,7 +47,7 @@ class ThemePreviewViewModel @Inject constructor(
         ViewState(
             demoUri = selectedPage ?: theme.demoUrl,
             themeName = theme.name,
-            isFromStoreCreation = true // TODO: Pass this from the previous screen
+            isFromStoreCreation = true // TODO Pass this from the previous screen
         )
     }.asLiveData()
 
