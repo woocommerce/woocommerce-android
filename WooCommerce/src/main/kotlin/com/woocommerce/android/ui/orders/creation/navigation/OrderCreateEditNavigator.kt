@@ -100,7 +100,6 @@ object OrderCreateEditNavigator {
 
             is OrderCreateEditNavigationTarget.CustomAmountDialog -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
-                    target.type,
                     target.customAmountUIModel,
                     target.orderTotal
                 )

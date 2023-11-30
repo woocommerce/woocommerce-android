@@ -60,8 +60,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class CustomAmountDialog(
-        val customAmountUIModel: CustomAmountUIModel? = null,
-        val type: CustomAmountType,
+        val customAmountUIModel: CustomAmountUIModel,
         val orderTotal: String,
     ) : OrderCreateEditNavigationTarget()
 
