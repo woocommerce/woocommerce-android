@@ -80,18 +80,18 @@ class ThemeRepository @Inject constructor(
         }
     }
 
-    suspend fun activateTheme(theme: Theme): Result<Unit> {
-        installThemeIfNeeded(theme).onFailure { return Result.failure(it) }
+    suspend fun activateTheme(themeId: String): Result<Unit> {
+        installThemeIfNeeded(themeId).onFailure { return Result.failure(it) }
 
         val activationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newActivateThemeAction(
-                SiteThemePayload(selectedSite.get(), theme.toThemeModel())
+                SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
             )
         )
 
         return when {
             !activationResult.isError -> {
-                WooLog.d(WooLog.T.THEMES, "Theme activated successfully: ${theme.id}")
+                WooLog.d(WooLog.T.THEMES, "Theme activated successfully: $themeId")
                 Result.success(Unit)
             }
 
@@ -104,19 +104,19 @@ class ThemeRepository @Inject constructor(
         }
     }
 
-    private suspend fun installThemeIfNeeded(theme: Theme): Result<Unit> {
+    private suspend fun installThemeIfNeeded(themeId: String): Result<Unit> {
         val installationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newInstallThemeAction(
-                SiteThemePayload(selectedSite.get(), theme.toThemeModel())
+                SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
             )
         )
 
         return when {
             !installationResult.isError || installationResult.error.type == ThemeErrorType.THEME_ALREADY_INSTALLED -> {
                 if (installationResult.isError) {
-                    WooLog.w(WooLog.T.THEMES, "Theme already installed: ${theme.id}")
+                    WooLog.w(WooLog.T.THEMES, "Theme already installed: $themeId")
                 } else {
-                    WooLog.d(WooLog.T.THEMES, "Theme installed successfully: ${theme.id}")
+                    WooLog.d(WooLog.T.THEMES, "Theme installed successfully: $themeId")
                 }
 
                 Result.success(Unit)
@@ -128,14 +128,6 @@ class ThemeRepository @Inject constructor(
                 }
                 Result.failure(OnChangedException(installationResult.error))
             }
-        }
-    }
-
-    private fun Theme.toThemeModel(): ThemeModel {
-        return ThemeModel().apply {
-            themeId = this@toThemeModel.id
-            name = this@toThemeModel.name
-            demoUrl = this@toThemeModel.demoUrl
         }
     }
 }

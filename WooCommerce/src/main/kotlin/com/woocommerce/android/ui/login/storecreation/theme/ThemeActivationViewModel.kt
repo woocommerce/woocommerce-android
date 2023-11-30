@@ -3,17 +3,35 @@ package com.woocommerce.android.ui.login.storecreation.theme
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.login.storecreation.theme.ThemeActivationViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.themes.ThemeRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ThemeActivationViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val themeRepository: ThemeRepository
 ) : ScopedViewModel(savedStateHandle) {
-    private val _viewState = MutableStateFlow(LoadingState)
+    private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
+
+    private val args by savedStateHandle.navArgs<ThemeActivationFragmentDialogArgs>()
+
+    init {
+        startThemeInstallation()
+    }
+
+    private fun startThemeInstallation() = launch {
+        _viewState.value = LoadingState
+        themeRepository.activateTheme(args.themeId).fold(
+            onSuccess = { TODO() },
+            onFailure = { _viewState.value = ViewState.ErrorState(onRetry = ::startThemeInstallation) }
+        )
+    }
 
     sealed interface ViewState {
         object LoadingState : ViewState
