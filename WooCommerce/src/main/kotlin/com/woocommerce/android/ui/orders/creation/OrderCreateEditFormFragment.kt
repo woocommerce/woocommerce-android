@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -171,6 +173,7 @@ class OrderCreateEditFormFragment :
                 viewModel.onCreateOrderClicked(viewModel.currentDraft)
                 true
             }
+
             else -> false
         }
     }
@@ -543,13 +546,17 @@ class OrderCreateEditFormFragment :
     private fun navigateToCustomAmountsDialog(
         customAmountUIModel: CustomAmountUIModel? = null,
         type: CustomAmountsDialogViewModel.CustomAmountType = PERCENTAGE_CUSTOM_AMOUNT,
-        orderTotal: String = viewModel.orderDraft.value?.total.toString()
+        orderTotal: String = viewModel.orderDraft.value?.total.toString(),
     ) {
-        OrderCreateEditNavigator.navigate(
-            this,
-            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel, type, orderTotal)
-        )
+        Log.d("ABCD", customAmountUIModel.toString() + type.toString() + orderTotal)
+        val bottomSheet = CustomAmountTypeBottomSheetDialog()
+        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
+//        OrderCreateEditNavigator.navigate(
+//            this,
+//            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel, type, orderTotal)
+//        )
     }
+
     private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
@@ -745,7 +752,11 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = { navigateToCustomAmountsDialog(customAmountUIModel = it) },
+                        onCustomAmountClick = {
+                            navigateToCustomAmountsDialog(
+                                customAmountUIModel = it,
+                            )
+                        },
                         onCustomAmountDeleteClick = {
                             viewModel.onCustomAmountRemoved(it)
                         }
@@ -844,9 +855,11 @@ class OrderCreateEditFormFragment :
                 shouldHideCustomerAddressAndNotesSections(newOrderData) -> {
                     hideCustomerAddressAndNotesSections()
                 }
+
                 shouldShowCustomerSectionOnly(newOrderData) -> {
                     showCustomerSectionOnly(newOrderData)
                 }
+
                 shouldShowNotesSectionOnly(newOrderData) -> {
                     showNotesSectionOnly(newOrderData)
                 }
