@@ -88,7 +88,7 @@ class CustomAmountsDialogViewModel @Inject constructor(
         } else {
             // Edit mode
             args.customAmountUIModel.apply {
-                triggerEvent(PopulateFields(this))
+                triggerEvent(PopulatePercentage(this))
                 when (type) {
                     CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
                         currentPrice = amount
@@ -140,7 +140,7 @@ class CustomAmountsDialogViewModel @Inject constructor(
         PERCENTAGE_CUSTOM_AMOUNT
     }
 
-    data class PopulateFields(val customAmountUIModel: CustomAmountUIModel) : Event()
+    data class PopulatePercentage(val customAmountUIModel: CustomAmountUIModel) : Event()
 
     companion object {
         const val PERCENTAGE_SCALE_FACTOR = 100
