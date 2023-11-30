@@ -114,7 +114,7 @@ class StoreInstallationViewModel @Inject constructor(
                     // Launch theme activation flow, the installation will continue after the theme is activated
                     triggerEvent(LaunchThemeActivation(it))
                 } ?: run {
-                    _viewState.update { SuccessState(newStoreUrl) }
+                    _viewState.update { SuccessState(newStoreWpAdminUrl) }
                 }
             }
 
