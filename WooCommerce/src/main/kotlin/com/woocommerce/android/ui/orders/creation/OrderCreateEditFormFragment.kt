@@ -686,7 +686,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
-        giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked(newOrderData.giftCard.orEmpty()) }
+        giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards.orEmpty()) }
         addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
     }
 
