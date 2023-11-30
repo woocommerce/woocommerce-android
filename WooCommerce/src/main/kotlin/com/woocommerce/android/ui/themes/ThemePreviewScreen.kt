@@ -141,6 +141,11 @@ fun ThemePreviewScreen(
                     url = state.demoUri,
                     userAgent = userAgent,
                     wpComAuthenticator = wpComWebViewAuthenticator,
+                    initialScale = when (state.previewType) {
+                        MOBILE -> 0
+                        TABLET -> 150
+                        DESKTOP -> 50
+                    },
                     activityRegistry = activityRegistry,
                     modifier = Modifier
                         .fillMaxWidth()
