@@ -322,6 +322,10 @@ class OrderCreateEditViewModel @Inject constructor(
         _selectedCustomAmount.value = customAmount
     }
 
+    fun clearSelectedCustomAmount() {
+        _selectedCustomAmount.value = null
+    }
+
     fun onCustomAmountTypeSelected(type: CustomAmountType) {
         triggerEvent(OnCustomAmountTypeSelected(type = type))
     }
