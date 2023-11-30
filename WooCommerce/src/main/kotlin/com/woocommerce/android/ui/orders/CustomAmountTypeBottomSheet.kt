@@ -84,6 +84,5 @@ fun CustomAmountOption(label: String, symbol: String, onClick: () -> Unit) {
 @Composable
 fun PreviewCustomAmountBottomSheet() {
     CustomAmountTypeBottomSheet() {
-
     }
 }

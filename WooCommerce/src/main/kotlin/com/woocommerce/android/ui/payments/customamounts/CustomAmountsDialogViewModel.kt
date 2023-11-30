@@ -38,8 +38,10 @@ class CustomAmountsDialogViewModel @Inject constructor(
         }
 
     var currentPercentage: BigDecimal
-        get() = (viewState.customAmountUIModel.currentPrice
-            .divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP))
+        get() = (
+            viewState.customAmountUIModel.currentPrice
+                .divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP)
+            )
             .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
         set(value) {
             val totalAmount = BigDecimal(args.orderTotal ?: "0")

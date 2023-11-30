@@ -13,11 +13,11 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import javax.annotation.Nullable
 
-
 class CustomAmountTypeBottomSheetDialog : WCBottomSheetDialogFragment() {
     private val sharedViewModel: OrderCreateEditViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_order_creations)
     override fun onCreateView(
-        inflater: LayoutInflater, @Nullable container: ViewGroup?,
+        inflater: LayoutInflater,
+        @Nullable container: ViewGroup?,
         @Nullable savedInstanceState: Bundle?
     ): View? {
         return ComposeView(requireContext()).apply {
