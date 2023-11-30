@@ -1,8 +1,6 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
-import android.content.ComponentCallbacks2
-import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
@@ -19,6 +17,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.flow.Flow
 
@@ -64,16 +63,6 @@ internal class CardReaderManagerImpl(
         if (!terminal.isInitialized()) {
             terminal.getLifecycleObserver().onCreate(application)
 
-            application.registerComponentCallbacks(object : ComponentCallbacks2 {
-                override fun onConfigurationChanged(newConfig: Configuration) {}
-
-                override fun onLowMemory() {}
-
-                override fun onTrimMemory(level: Int) {
-                    terminal.getLifecycleObserver().onTrimMemory(application, level)
-                }
-            })
-
             val logLevel = if (isDebug) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
@@ -115,10 +104,13 @@ internal class CardReaderManagerImpl(
         return paymentManager.acceptPayment(paymentInfo)
     }
 
-    override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
+    override suspend fun refundInteracPayment(
+        refundParams: RefundParams,
+        refundConfig: RefundConfig
+    ): Flow<CardInteracRefundStatus> {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         resetBluetoothDisplayMessage()
-        return interacRefundManager.refundInteracPayment(refundParams)
+        return interacRefundManager.refundInteracPayment(refundParams, refundConfig)
     }
 
     private fun resetBluetoothDisplayMessage() {

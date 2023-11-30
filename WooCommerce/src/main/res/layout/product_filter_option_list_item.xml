@@ -21,6 +21,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Canada Post" />
 
+    <Button
+        android:id="@+id/explorePlugin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/product_filter_explore_plugin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="@dimen/major_100"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        android:clickable="false"/>
+
     <ImageView
         android:id="@+id/filterOptionItem_tick"
         android:layout_width="@dimen/image_minor_60"

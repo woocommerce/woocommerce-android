@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-15 20:54:04+0000
+Translation-Revision-Date: 2023-11-23 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">يتم إيداع الأموال المتوافرة تلقائيًا في كل %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">يتم إيداع الأموال المتوافرة تلقائيًا في كل يوم.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">تصبح الأموال متوافرة بعد تعليقها لمدة %d من الأيام.</string>
+    <string name="product_variation_picker_title">تحديد شكل</string>
+    <string name="configuration_variable_update">تحديث الشكل</string>
+    <string name="configuration_children_issue"> \" %1$s \" -&gt; %2$s </string>
+    <string name="configuration_variable_selection"> يرجى تحديد شكل </string>
+    <string name="configuration_quantity_items_selected_plural"> تم تحديد ⁦%1$s⁩ من العناصر </string>
+    <string name="configuration_quantity_items_selected"> تم تحديد ⁦%1$s⁩ من العناصر </string>
+    <string name="configuration_quantity_rule_issue"> يرجى تحديد ⁦%1$s⁩ </string>
+    <string name="configuration_quantity_more_than_plural"> أكثر من ⁦%1$s⁩ من العناصر </string>
+    <string name="configuration_quantity_more_than"> أكثر من ⁦%1$s⁩ من العناصر </string>
+    <string name="configuration_quantity_less_than"> أقل من ⁦%1$s⁩ من العناصر </string>
+    <string name="configuration_quantity_between"> يتراوح بين ⁦%1$s⁩ و⁦%2$s⁩ من العناصر </string>
+    <string name="configuration_quantity_item_plural">%d من العناصر</string>
+    <string name="configuration_quantity_item">%d من العناصر</string>
+    <string name="configuration_issues">مشكلات التكوين</string>
+    <string name="order_configuration_change_product_quantity">تغيير كمية المنتج من ⁦%1$f⁩ إلى ⁦%2$f⁩</string>
+    <string name="save_configuration">حفظ التكوين</string>
+    <string name="product_configuration_title">التكوين</string>
+    <string name="default_product_title">المنتج %s</string>
+    <string name="extension_configure_button">تكوين</string>
+    <string name="subscription_sign_up_fee_explanation">بشكل اختياري، سيتم تحصيل رسوم التسجيل على الفور، حتى إذا كان المنتج يحتوي على إصدار تجريبي مجاني أو تمت مزامنة تواريخ الدفع.</string>
+    <string name="product_type_variable_subscription_desc">الاشتراك في المنتج مع الأشكال</string>
+    <string name="product_type_variable_subscription_title">منتج باشتراك متغير</string>
+    <string name="product_type_simple_subscription_desc">اشتراك في المنتج فريد يتيح المدفوعات المتكررة</string>
+    <string name="product_type_simple_subscription_title">منتج باشتراك بسيط</string>
+    <string name="product_subscription_free_trial_info">فترة زمنية اختيارية للانتظار قبل تحصيل الدفع المتكرر الأول. سيتم تحصيل أي رسوم تسجيل في بداية الاشتراك. يتعذر تجاوز فترة التشغيل التجريبي: 90 يومًا أو 52 أسبوعًا أو 24 شهرًا أو 5 أعوام.</string>
+    <string name="product_subscription_free_trial_title">التشغيل التجريبي المجاني للاشتراك</string>
+    <string name="product_subscription_expiration_title">انتهاء صلاحية الاشتراك</string>
+    <string name="order_detail_custom_amounts_header">مبالغ مخصصة</string>
+    <string name="order_detail_payment_header">إجماليات المدفوعات</string>
+    <string name="orderdetail_order_notes_uppercase">ملاحظات الطلب</string>
+    <string name="orderdetail_product_multiple_uppercase">المنتجات</string>
+    <string name="orderdetail_product_uppercase">المنتج</string>
+    <string name="orderdetail_customer_header">العميل</string>
     <string name="notification_security_key_needed">يرجى إدخال مفتاح الأمان الخاص بك للاستمرار.</string>
     <string name="login_error_security_key">كانت هناك بعض المشكلات عند تسجيل الدخول باستخدام مفتاح الأمان</string>
     <string name="login_text_security_key">استخدام مفتاح الأمان</string>
@@ -21,11 +57,11 @@ Language: ar
     <string name="card_reader_hub_deposit_summary_status_estimated">المقدَّر</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">طي/توسيع ملخص الإيداع</string>
     <string name="card_reader_hub_deposit_summary_learn_more">معرفة المزيد حول موعد الحصول على أموالك</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">يتم إيداع الأموال المتوافرة تلقائيًا عند الطلب في كل أسبوع</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">يتم إيداع الأموال المتوافرة تلقائيًا في كل شهر على %s.</string>
     <string name="card_reader_hub_deposit_summary_last">الأخير</string>
     <string name="card_reader_hub_deposit_summary_next">التالي</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">الودائع</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">تصبح الأموال متوافرة بعد تعليقها لمدة 7 أيام.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">تصبح الأموال متوافرة بعد تعليقها لمدة %d من الأيام.</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d من الودائع</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d من الودائع</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">الأموال المعلّقة</string>
@@ -3206,13 +3242,5 @@ Language: ar
     <string-array name="shipping_label_create_new_package_tabs">
         <item>حزمة مخصصة</item>
         <item>حزمة الخدمة</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>كل </item>
-        <item>كل يوم الثاني</item>
-        <item>كل يوم الثالث</item>
-        <item>كل يوم الرابع</item>
-        <item>كل يوم الخامس</item>
-        <item>كل يوم السادس</item>
     </string-array>
 </resources>

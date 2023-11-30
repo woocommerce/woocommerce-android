@@ -25,6 +25,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
     private var _binding: FragmentProductSettingsBinding? = null
     private val binding get() = _binding!!
 
+    @Suppress("LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,13 +64,25 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
             activity?.invalidateOptionsMenu()
         }
 
-        if (productDraft?.productType == ProductType.SIMPLE || productDraft?.productType == ProductType.SUBSCRIPTION) {
+        val showProductTypeOptions = productDraft?.productType.let {
+            it == ProductType.SIMPLE || it == ProductType.SUBSCRIPTION
+        }
+
+        if (showProductTypeOptions) {
+            binding.productIsVirtualDivider.visibility = View.VISIBLE
+            binding.productIsVirtual.visibility = View.VISIBLE
+            binding.productIsVirtual.setOnCheckedChangeListener { _, isChecked ->
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_SETTINGS_VIRTUAL_TOGGLED)
+                viewModel.updateProductDraft(isVirtual = isChecked)
+            }
             binding.productIsDownloadable.visibility = View.VISIBLE
             binding.productIsDownloadableDivider.visibility = View.VISIBLE
             binding.productIsDownloadable.setOnCheckedChangeListener { checkbox, isChecked ->
                 updateIsDownloadableFlag(checkbox, isChecked)
             }
         } else {
+            binding.productIsVirtual.visibility = View.GONE
+            binding.productIsVirtualDivider.visibility = View.GONE
             binding.productIsDownloadable.visibility = View.GONE
             binding.productIsDownloadableDivider.visibility = View.GONE
         }
@@ -164,6 +177,7 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         binding.productPurchaseNote.optionValue = valueOrNotSet(product.purchaseNote.fastStripHtml())
         binding.productVisibility.optionValue = viewModel.getProductVisibility().toLocalizedString(requireActivity())
         binding.productMenuOrder.optionValue = valueOrNotSet(product.menuOrder)
+        binding.productIsVirtual.isChecked = product.isVirtual
         binding.productIsDownloadable.isChecked = product.isDownloadable
     }
 

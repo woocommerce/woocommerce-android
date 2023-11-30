@@ -7,19 +7,21 @@
 
     <FrameLayout
         android:id="@+id/productInfo_iconFrame"
-        android:layout_width="@dimen/image_minor_100"
-        android:layout_height="@dimen/image_minor_100"
+        android:layout_width="@dimen/image_major_50"
+        android:layout_height="@dimen/image_major_50"
         android:layout_gravity="center_vertical"
         android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
         android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0">
 
         <ImageView
             android:id="@+id/productInfo_icon"
-            android:layout_width="@dimen/image_minor_100"
-            android:layout_height="@dimen/image_minor_100"
+            android:layout_width="@dimen/image_major_50"
+            android:layout_height="@dimen/image_major_50"
             android:layout_gravity="center"
             android:contentDescription="@string/orderdetail_product_image_contentdesc"
             android:padding="@dimen/image_frame_stroke_width"
@@ -35,7 +37,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_total"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         tools:text="Candle" />
@@ -46,8 +48,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/major_100"
         tools:text="$30.00" />
 
     <com.google.android.material.textview.MaterialTextView

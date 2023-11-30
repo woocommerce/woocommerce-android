@@ -86,7 +86,7 @@ class ReviewModerationHandlerTests {
 
             val latestStatus = runTestAndCollectLastStatus {
                 handler.postModerationRequest(review, HOLD)
-                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                testScheduler.apply { advanceTimeBy(ReviewModerationHandler.UNDO_DELAY); runCurrent() }
             }
 
             assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUBMITTED)
@@ -108,7 +108,7 @@ class ReviewModerationHandlerTests {
 
             val latestStatus = runTestAndCollectLastStatus {
                 handler.postModerationRequest(review, HOLD)
-                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+                testScheduler.apply { advanceTimeBy(ReviewModerationHandler.UNDO_DELAY); runCurrent() }
             }
 
             assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.SUCCESS)
@@ -130,8 +130,8 @@ class ReviewModerationHandlerTests {
 
             val statusList = runTestAndReturnLastEmittedStatusList {
                 handler.postModerationRequest(review, HOLD)
-                advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-                advanceTimeBy(ReviewModerationHandler.SUCCESS_DELAY)
+                testScheduler.apply { advanceTimeBy(ReviewModerationHandler.UNDO_DELAY); runCurrent() }
+                testScheduler.apply { advanceTimeBy(ReviewModerationHandler.SUCCESS_DELAY); runCurrent() }
             }
 
             assertThat(statusList).isEmpty()
@@ -149,7 +149,7 @@ class ReviewModerationHandlerTests {
 
         val latestStatus = runTestAndCollectLastStatus {
             handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
+            testScheduler.apply { advanceTimeBy(ReviewModerationHandler.UNDO_DELAY); runCurrent() }
         }
 
         assertThat(latestStatus.actionStatus).isEqualTo(ActionStatus.ERROR)
@@ -167,8 +167,8 @@ class ReviewModerationHandlerTests {
 
         val statusList = runTestAndReturnLastEmittedStatusList {
             handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY)
-            advanceTimeBy(ReviewModerationHandler.ERROR_SNACKBAR_DELAY)
+            testScheduler.apply { advanceTimeBy(ReviewModerationHandler.UNDO_DELAY); runCurrent() }
+            testScheduler.apply { advanceTimeBy(ReviewModerationHandler.ERROR_SNACKBAR_DELAY); runCurrent() }
         }
 
         assertThat(statusList).isEmpty()
@@ -180,7 +180,7 @@ class ReviewModerationHandlerTests {
 
         val latestStatus = runTestAndCollectLastStatus {
             handler.postModerationRequest(review, HOLD)
-            advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2)
+            testScheduler.apply { advanceTimeBy(ReviewModerationHandler.UNDO_DELAY / 2); runCurrent() }
             handler.undoOperation(review)
         }
 

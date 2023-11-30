@@ -145,7 +145,8 @@ private fun VariationList(
                     selectionState = variation.selectionState,
                     isArrowVisible = false,
                     onClickLabel = stringResource(id = string.product_selector_select_variation_label, variation.title),
-                    imageContentDescription = stringResource(string.product_image_content_description)
+                    imageContentDescription = stringResource(string.product_image_content_description),
+                    isCogwheelVisible = false
                 ) {
                     onVariationClick(variation)
                 }
