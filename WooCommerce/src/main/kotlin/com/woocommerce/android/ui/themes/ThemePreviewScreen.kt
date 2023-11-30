@@ -173,7 +173,7 @@ private fun DemoSectionsToolbar(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = state.themePages.firstOrNull { it.isLoaded }?.title
-                        ?: stringResource(id = R.string.theme_preview_default_page_loaded),
+                        ?: stringResource(id = R.string.theme_preview_bottom_sheet_home_section),
                     style = MaterialTheme.typography.caption,
                 )
                 Icon(

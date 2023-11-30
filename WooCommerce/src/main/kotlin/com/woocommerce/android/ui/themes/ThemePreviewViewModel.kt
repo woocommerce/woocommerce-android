@@ -64,7 +64,7 @@ class ThemePreviewViewModel @Inject constructor(
             themePages = _viewState.value.themePages.map {
                 if (it.uri == demoPage.uri)
                     it.copy(isLoaded = true)
-                else it
+                else it.copy(isLoaded = false)
             }
         )
     }
