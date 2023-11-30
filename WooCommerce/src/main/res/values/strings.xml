@@ -3381,6 +3381,7 @@
     <string name="theme_preview_default_page_loaded">Home</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
+    <string name="theme_preview_bottom_sheet_home_section">Home</string>
 
     <!--
     Store onboarding

@@ -107,7 +107,7 @@ fun ThemePreviewScreen(
     ) {
         Scaffold(
             topBar = {
-                CustomToolbar(
+                DemoSectionsToolbar(
                     state,
                     coroutineScope,
                     modalSheetState,
@@ -131,7 +131,7 @@ fun ThemePreviewScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun CustomToolbar(
+private fun DemoSectionsToolbar(
     state: ViewState,
     coroutineScope: CoroutineScope,
     modalSheetState: ModalBottomSheetState,

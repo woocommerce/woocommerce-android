@@ -4,8 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -22,6 +24,7 @@ class ThemePreviewViewModel @Inject constructor(
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
     val themeCoroutineStore: ThemeCoroutineStore,
+    val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
     private val _viewState = savedStateHandle.getStateFlow(
@@ -37,7 +40,14 @@ class ThemePreviewViewModel @Inject constructor(
         launch {
             val themePages = themeCoroutineStore.fetchDemoThemePages(navArgs.themeDemoUri)
             _viewState.value = _viewState.value.copy(
-                themePages = themePages.map {
+                themePages =
+                listOf(
+                    ThemeDemoPage(
+                        uri = navArgs.themeDemoUri,
+                        title = resourceProvider.getString(R.string.theme_preview_bottom_sheet_home_section),
+                        isLoaded = true
+                    )
+                ) + themePages.map {
                     ThemeDemoPage(
                         uri = it.link,
                         title = it.title,
