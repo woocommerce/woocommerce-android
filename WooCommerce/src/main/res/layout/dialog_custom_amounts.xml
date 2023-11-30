@@ -127,7 +127,7 @@
                     android:gravity="start"
                     android:imeOptions="flagNoFullscreen"
                     android:textSize="@dimen/line_height_major_100"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:hint="0"
                     android:paddingBottom="@dimen/minor_00"
                     app:layout_constraintTop_toTopOf="parent"
