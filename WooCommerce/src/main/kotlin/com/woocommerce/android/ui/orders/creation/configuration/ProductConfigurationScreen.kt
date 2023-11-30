@@ -729,7 +729,8 @@ fun ConfigurationIssues(
         Text(
             text = text,
             style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
         if (issues.isNotEmpty()) {
             LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
@@ -737,7 +738,7 @@ fun ConfigurationIssues(
                     Text(
                         text = issue,
                         style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onSurface
+                        color = Color.Black
                     )
                 }
             }
