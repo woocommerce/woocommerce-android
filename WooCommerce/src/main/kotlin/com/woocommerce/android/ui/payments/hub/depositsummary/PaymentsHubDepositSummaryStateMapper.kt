@@ -21,7 +21,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
 
         val defaultCurrency = overview.account?.defaultCurrency.orEmpty()
 
-        if (defaultCurrency.isEmpty()) return Result.InvalidateInputDate
+        if (defaultCurrency.isEmpty()) return Result.InvalidInputDate
 
         val currencies = (
             (pendingBalances + availableBalances).map {
@@ -32,7 +32,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
             ).filterNotNull().toSet()
 
         return if (currencies.isEmpty())
-            Result.InvalidateInputDate
+            Result.InvalidInputDate
         else Result.Success(
             PaymentsHubDepositSummaryState.Overview(
                 defaultCurrency = defaultCurrency,
@@ -105,7 +105,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
 
     sealed class Result {
         data class Success(val overview: PaymentsHubDepositSummaryState.Overview) : Result()
-        object InvalidateInputDate : Result()
+        object InvalidInputDate : Result()
     }
 }
 

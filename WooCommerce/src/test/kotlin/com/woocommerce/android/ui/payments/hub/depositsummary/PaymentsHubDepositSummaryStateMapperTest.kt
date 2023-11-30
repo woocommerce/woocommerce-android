@@ -50,7 +50,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
         val result = mapper.mapDepositOverviewToViewModelOverviews(overview)
 
         // THEN
-        assertThat(result).isInstanceOf(PaymentsHubDepositSummaryStateMapper.Result.InvalidateInputDate::class.java)
+        assertThat(result).isInstanceOf(PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate::class.java)
     }
 
     @Suppress("LongMethod")
