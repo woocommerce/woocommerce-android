@@ -318,7 +318,9 @@ fun OptionalQuantityProductItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(vertical = 16.dp, horizontal = 8.dp),
+        modifier = modifier
+            .clickable { if (isSelectionEnabled) { onSwitchChanged(!isIncluded) } }
+            .padding(vertical = 16.dp, horizontal = 8.dp),
         configurableControlStart = {
             SelectionCheck(
                 isSelected = isIncluded,
@@ -361,7 +363,9 @@ fun QuantityProductItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
+        modifier = modifier
+            .clickable { if (isSelectionEnabled) { onQuantityChanged(if (quantity == 0f) 1f else 0f) } }
+            .padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
         configurableControlStart = {
             SelectionCheck(
                 isSelected = quantity > 0f,
@@ -773,7 +777,7 @@ fun VariableQuantityProductItem(
             .clickable {
                 if (quantity > 0f) {
                     onSelectAttributes()
-                } else {
+                } else if (isSelectionEnabled) {
                     onQuantityChanged(1f)
                 }
             }
@@ -846,7 +850,7 @@ fun OptionalVariableQuantityProductItem(
             .clickable {
                 if (isIncluded) {
                     onSelectAttributes()
-                } else {
+                } else if (isSelectionEnabled) {
                     onSwitchChanged(true)
                 }
             }
