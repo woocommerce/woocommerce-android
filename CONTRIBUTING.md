@@ -9,8 +9,8 @@ Before anything else, please take a moment to read our [Code of Conduct](CODE-OF
 ## Reporting Bugs, Asking Questions, and Suggesting Features
 
 * [Report a bug](https://github.com/woocommerce/woocommerce-android/issues/new?template=Bug_report.md)  and prefix the title with "Bug:"
-* [Request a feature](http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283)
-* [Chat with us on Slack](https://woocommerce.com/community-slack/): #mobile
+* [Request a feature](https://github.com/woocommerce/woocommerce-android/issues/new?assignees=&labels=&projects=&template=Feature_request.md)
+* [Chat with us on Slack](https://woo.com/community-slack/): #mobile
 * Submit a help request from directly within the app
 
 ## Translating
@@ -54,4 +54,4 @@ Have a look at the [Coding Style Guide](https://github.com/woocommerce/woocommer
 
 ## Getting in Touch
 
-If you have questions or just want to say hi, join the [WooCommerce Slack](https://woocommerce.com/community-slack/) and drop a message on the `#mobile-apps` channel.
+If you have questions or just want to say hi, join the [WooCommerce Slack](https://woo.com/community-slack/) and drop a message on the `#mobile-apps` channel.

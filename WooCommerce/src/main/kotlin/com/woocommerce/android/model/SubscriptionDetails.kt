@@ -30,12 +30,12 @@ data class SubscriptionDetails(
 
 fun SubscriptionDetails.toMetadataJson(): JsonArray {
     val subscriptionValues = mapOf(
-        SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to price,
+        SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to price?.toString().orEmpty(),
         SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD to period.value,
         SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL to periodInterval,
-        SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH to length,
+        SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH to (length ?: 0),
         SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to signUpFee?.toString().orEmpty(),
-        SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to trialPeriod?.value,
+        SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to (trialPeriod ?: SubscriptionPeriod.Day).value,
         SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to (trialLength ?: 0),
         SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to if (oneTimeShipping) "yes" else "no",
     )

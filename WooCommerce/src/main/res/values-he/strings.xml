@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-07 09:54:04+0000
+Translation-Revision-Date: 2023-11-23 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">כספים זמינים יופקדו באופן אוטומטי, מדי %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">כספים זמינים יופקדו באופן אוטומטי, מדי יום.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">כספים ייעשו זמינים לאחר תקופת המתנה בת %d ימים.</string>
+    <string name="product_variation_picker_title">נא לבחור וריאציה</string>
+    <string name="configuration_variable_update">לעדכן וריאציה</string>
+    <string name="configuration_children_issue"> \" %1$s \" -&gt; %2$s </string>
+    <string name="configuration_variable_selection"> נא לבחור וריאציה </string>
+    <string name="configuration_quantity_items_selected_plural"> נבחרו ⁦%1$s⁩ פריטים </string>
+    <string name="configuration_quantity_items_selected"> נבחר פריט ⁦%1$s⁩ </string>
+    <string name="configuration_quantity_rule_issue"> נא לבחור ⁦%1$s⁩ </string>
+    <string name="configuration_quantity_more_than_plural"> מעל ⁦%1$s⁩ פריטים </string>
+    <string name="configuration_quantity_more_than"> מעל ⁦%1$s⁩ פריט </string>
+    <string name="configuration_quantity_less_than"> פחות מ-⁦%1$s⁩ פריטים </string>
+    <string name="configuration_quantity_between"> ⁦%1$s⁩ עד ⁦%2$s⁩ פריטים </string>
+    <string name="configuration_quantity_item_plural">%d פריטים</string>
+    <string name="configuration_quantity_item">פריט %d</string>
+    <string name="configuration_issues">בעיות תצורה</string>
+    <string name="order_configuration_change_product_quantity">לשנות את כמות המוצר מ-⁦%1$f⁩ ל-⁦%2$f⁩</string>
+    <string name="save_configuration">לשמור הגדרות תצורה</string>
+    <string name="product_configuration_title">הגדרות תצורה</string>
+    <string name="default_product_title">מוצר %s</string>
+    <string name="extension_configure_button">להגדיר תצורה</string>
+    <string name="subscription_sign_up_fee_explanation">אופציונלי, החיוב בדמי ההרשמה יתבצע מידית, גם אם מוצעת עבור המוצר תקופת ניסיון בחינם או אם תאריכי התשלום מסונכרנים.</string>
+    <string name="product_type_variable_subscription_desc">מינוי עם וריאציות</string>
+    <string name="product_type_variable_subscription_title">מינוי עם וריאציות</string>
+    <string name="product_type_simple_subscription_desc">מינוי למוצר ספציפי; מאפשר תשלומים חוזרים</string>
+    <string name="product_type_simple_subscription_title">מינוי פשוט</string>
+    <string name="product_subscription_free_trial_info">פרק הזמן האופציונלי עד לגביית התשלום החוזר הראשון. דמי הרשמה (אם ישנם) עדיין יחויבו בתחילת השימוש במינוי. תקופת הניסיון יכולה להימשך לכל היותר: 90 יום, 52 שבועות, 24 חודשים או 5 שנים.</string>
+    <string name="product_subscription_free_trial_title">תקופת ניסיון של מינוי</string>
+    <string name="product_subscription_expiration_title">תפוגת המינוי</string>
+    <string name="order_detail_custom_amounts_header">סכומים בהתאמה אישית</string>
+    <string name="order_detail_payment_header">סכומים כוללים לתשלום</string>
+    <string name="orderdetail_order_notes_uppercase">הערות להזמנה</string>
+    <string name="orderdetail_product_multiple_uppercase">מוצרים</string>
+    <string name="orderdetail_product_uppercase">מוצר</string>
+    <string name="orderdetail_customer_header">לקוח</string>
+    <string name="notification_security_key_needed">כדי להמשיך עליך לספק מפתח אבטחה.</string>
+    <string name="login_error_security_key">בעיה בהתחברות בעזרת מפתח האבטחה</string>
+    <string name="login_text_security_key">להשתמש במפתח אבטחה</string>
+    <string name="product_subscription_period">פרק זמן</string>
+    <string name="product_subscription_interval">תדירות החיוב</string>
+    <string name="product_sale">מבצע</string>
+    <string name="card_reader_hub_deposit_summary_status_unknown">לא ידוע</string>
+    <string name="card_reader_hub_deposit_summary_status_failed">נכשל</string>
+    <string name="card_reader_hub_deposit_summary_status_canceled">בוטל</string>
+    <string name="card_reader_hub_deposit_summary_status_in_transit">במעבר</string>
+    <string name="card_reader_hub_deposit_summary_status_pending">בהמתנה</string>
+    <string name="card_reader_hub_deposit_summary_status_paid">שולם</string>
+    <string name="card_reader_hub_deposit_summary_status_estimated">משוער</string>
+    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">לכווץ/להרחיב סיכום פיקדון</string>
+    <string name="card_reader_hub_deposit_summary_learn_more">למידע נוסף על עיתוי הזמינות של הכספים שלך</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">כספים זמינים יופקדו באופן אוטומטי, ביום ה-%s של כל חודש.</string>
+    <string name="card_reader_hub_deposit_summary_last">אחרון</string>
+    <string name="card_reader_hub_deposit_summary_next">הבא</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">פיקדונות</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">כספים ייעשו זמינים לאחר תקופת המתנה בת יום %d.</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d פיקדון</string>
+    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d פיקדונות</string>
+    <string name="card_reader_hub_deposit_summary_pending_funds">כספים בהמתנה לאישור</string>
+    <string name="card_reader_hub_deposit_summary_available_funds">כספים זמינים</string>
+    <string name="order_creation_payment_tax_label">מיסים</string>
+    <string name="order_creation_payment_products">מוצרים</string>
+    <string name="order_creation_payment_header">סכומים כוללים לתשלום</string>
     <string name="email_or_username">כתובת אימייל או שם משתמש</string>
     <string name="custom_amounts_creation_error">אין אפשרות ליצור סכום בהתאמה אישית בהזמנה</string>
     <string name="custom_amounts_add_custom_name_hint">להזין שם בהתאמה אישית</string>

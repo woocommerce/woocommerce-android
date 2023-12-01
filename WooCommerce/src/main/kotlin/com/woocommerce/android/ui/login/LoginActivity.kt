@@ -471,28 +471,8 @@ class LoginActivity :
     }
 
     override fun needs2fa(email: String?, password: String?) {
+        loginAnalyticsListener.trackLogin2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstance(email, password)
-        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
-    }
-
-    override fun needs2faSocial(
-        email: String?,
-        userId: String?,
-        nonceAuthenticator: String?,
-        nonceBackup: String?,
-        nonceSms: String?
-    ) {
-        loginAnalyticsListener.trackLoginSocial2faNeeded()
-        val login2FaFragment = Login2FaFragment.newInstanceSocial(
-            email, userId,
-            nonceAuthenticator, nonceBackup, nonceSms
-        )
-        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
-    }
-
-    override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
-        loginAnalyticsListener.trackLoginSocial2faNeeded()
-        val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
@@ -506,10 +486,34 @@ class LoginActivity :
         noncePush: String?,
         supportedAuthTypes: MutableList<String>?
     ) {
+        loginAnalyticsListener.trackLogin2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstance(
             email, password, userId,
             webauthnNonce, nonceAuthenticator, nonceBackup, noncePush, supportedAuthTypes
         )
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
+    }
+
+    override fun needs2faSocial(
+        email: String?,
+        userId: String?,
+        nonceAuthenticator: String?,
+        nonceBackup: String?,
+        nonceSms: String?,
+        nonceWebauthn: String?,
+        supportedAuthTypes: MutableList<String>?
+    ) {
+        loginAnalyticsListener.trackLoginSocial2faNeeded()
+        val login2FaFragment = Login2FaFragment.newInstanceSocial(
+            email, userId, nonceAuthenticator,
+            nonceBackup, nonceSms, nonceWebauthn, supportedAuthTypes
+        )
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
+    }
+
+    override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
+        loginAnalyticsListener.trackLoginSocial2faNeeded()
+        val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 

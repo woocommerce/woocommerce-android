@@ -48,8 +48,10 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -70,6 +72,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LargeClass")
 class OrderDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -86,7 +89,8 @@ class OrderDetailViewModel @Inject constructor(
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
-    private val orderProductMapper: OrderProductMapper
+    private val orderProductMapper: OrderProductMapper,
+    private val productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -748,9 +752,15 @@ class OrderDetailViewModel @Inject constructor(
             wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
                 order,
                 orderEligibleForInPersonPayments
-            )
+            ),
+            isAIThankYouNoteButtonShown = shouldShowThankYouNoteButton()
         )
     }
+
+    private fun shouldShowThankYouNoteButton() = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
+        selectedSite.getIfExists()?.isWPComAtomic == true &&
+        order.status == Order.Status.Completed &&
+        productList.value?.isNotEmpty() == true
 
     private fun displayCustomAmounts() {
         _feeLineList.value = order.feesLines
@@ -775,6 +785,29 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onWcShippingBannerDismissed() {
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
+    }
+
+    fun onAIThankYouNoteButtonClicked() {
+        launch {
+            val orderRefunds = loadOrderRefunds()
+            val orderProducts = loadOrderProducts(orderRefunds)
+
+            val firstProductId = when (val first = orderProducts.list.first()) {
+                is OrderProduct.GroupedProductItem -> first.product.productId
+                is OrderProduct.ProductItem -> first.product.productId
+            }
+
+            val product = productDetailRepository.getProductAsync(firstProductId)
+            product?.let {
+                triggerEvent(
+                    OrderNavigationTarget.AIThankYouNote(
+                        customerName = order.billingAddress.firstName,
+                        productName = it.name,
+                        productDescription = it.description
+                    )
+                )
+            }
+        }
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())

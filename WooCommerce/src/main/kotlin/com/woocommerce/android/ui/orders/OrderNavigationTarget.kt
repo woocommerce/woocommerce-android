@@ -59,4 +59,6 @@ sealed class OrderNavigationTarget : Event() {
     data class EditOrder(val orderId: Long) : OrderNavigationTarget()
     data class ShowOrder(val orderId: Long, val allOrderIds: LongArray) : OrderNavigationTarget()
     data class ViewCustomFields(val orderId: Long) : OrderNavigationTarget()
+    data class AIThankYouNote(val customerName: String, val productName: String, val productDescription: String?) :
+        OrderNavigationTarget()
 }

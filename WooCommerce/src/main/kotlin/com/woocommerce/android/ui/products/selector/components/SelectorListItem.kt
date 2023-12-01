@@ -47,6 +47,7 @@ fun SelectorListItem(
     imageContentDescription: String?,
     selectionState: SelectionState,
     isArrowVisible: Boolean,
+    isCogwheelVisible: Boolean,
     onItemClick: () -> Unit
 ) {
     Row(
@@ -117,10 +118,22 @@ fun SelectorListItem(
             }
         }
 
-        if (isArrowVisible) {
+        if (isArrowVisible || isCogwheelVisible) {
+            val painter = if (isArrowVisible) {
+                painterResource(id = drawable.ic_arrow_right)
+            } else {
+                painterResource(id = drawable.ic_configuration)
+            }
+
+            val contentDescription = if (isArrowVisible) {
+                stringResource(id = string.product_selector_arrow_content_description)
+            } else {
+                stringResource(id = string.extension_configure_button)
+            }
+
             Image(
-                painter = painterResource(id = drawable.ic_arrow_right),
-                contentDescription = stringResource(id = string.product_selector_arrow_content_description),
+                painter = painter,
+                contentDescription = contentDescription,
                 modifier = Modifier
                     .size(dimensionResource(id = dimen.major_200))
                     .align(Alignment.CenterVertically),
@@ -153,5 +166,6 @@ private fun SelectorListItemPreview() =
         isArrowVisible = true,
         onItemClick = {},
         onClickLabel = null,
-        imageContentDescription = null
+        imageContentDescription = null,
+        isCogwheelVisible = false
     )

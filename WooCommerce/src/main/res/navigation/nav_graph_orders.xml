@@ -280,6 +280,9 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_installWcShippingFlow"
             app:destination="@id/installWcShippingFlowFragment" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_AIThankYouNoteBottomSheetFragment"
+            app:destination="@id/AIThankYouNoteBottomSheetFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -643,6 +646,24 @@
             app:argType="string" />
         <argument
             android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/AIThankYouNoteBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.AIThankYouNoteBottomSheetFragment"
+        android:label="AIThankYouNoteBottomSheetFragment">
+        <argument
+            android:name="customerName"
+            app:argType="string" />
+
+        <argument
+            android:name="productName"
+            app:argType="string" />
+
+        <argument
+            android:name="productDescription"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />

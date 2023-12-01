@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
@@ -17,6 +18,7 @@ import java.util.UUID
 class AnalyticsTracker private constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
+    private val appPrefs: AppPrefs,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
@@ -83,6 +85,7 @@ class AnalyticsTracker private constructor(
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
+                appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -138,6 +141,7 @@ class AnalyticsTracker private constructor(
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
+        const val KEY_STORE_ID = "store_id"
         const val KEY_CONTEXT = "context"
         const val KEY_ERROR = "error"
         const val KEY_ERROR_CONTEXT = "error_context"
@@ -252,6 +256,9 @@ class AnalyticsTracker private constructor(
         const val KEY_HAS_FEES = "has_fees"
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
+        const val KEY_CUSTOM_AMOUNT_TAX_STATUS = "tax_status"
+        const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE = "taxable"
+        const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE = "none"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
         const val VALUE_FLOW_LIST = "list"
@@ -601,6 +608,9 @@ class AnalyticsTracker private constructor(
         // -- AI Language detection
         const val KEY_DETECTED_LANGUAGE = "language"
 
+        // -- AI thank-you note
+        const val VALUE_ORDER_THANK_YOU_NOTE = "order_thank_you_note"
+
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
@@ -644,8 +654,8 @@ class AnalyticsTracker private constructor(
                 }
             }
 
-        fun init(context: Context, selectedSite: SelectedSite) {
-            instance = AnalyticsTracker(context.applicationContext, selectedSite)
+        fun init(context: Context, selectedSite: SelectedSite, appPrefs: AppPrefs) {
+            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }

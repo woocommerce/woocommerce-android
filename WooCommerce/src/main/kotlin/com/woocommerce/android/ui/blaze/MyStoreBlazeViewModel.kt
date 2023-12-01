@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.blaze
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_VIEW_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,11 +20,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
@@ -34,10 +39,11 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val blazeCampaignState = flow {
+    private val blazeCampaignState = flow {
         if (!isBlazeEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
         else {
             analyticsTrackerWrapper.track(
@@ -55,6 +61,17 @@ class MyStoreBlazeViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    private val isBlazeDismissed = prefsWrapper.observePrefs()
+        .onStart { emit(Unit) }
+        .map { prefsWrapper.isMyStoreBlazeViewDismissed }
+
+    val blazeViewState = combine(
+        blazeCampaignState,
+        isBlazeDismissed
+    ) { blazeViewState, isBlazeDismissed ->
+        if (isBlazeDismissed) Hidden else blazeViewState
     }.asLiveData()
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
@@ -155,6 +172,16 @@ class MyStoreBlazeViewModel @Inject constructor(
             )
             emit(getCachedProducts())
         }
+    }
+
+    fun onBlazeViewDismissed() {
+        prefsWrapper.isMyStoreBlazeViewDismissed = true
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_VIEW_DISMISSED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+            )
+        )
     }
 
     sealed interface MyStoreBlazeCampaignState {
