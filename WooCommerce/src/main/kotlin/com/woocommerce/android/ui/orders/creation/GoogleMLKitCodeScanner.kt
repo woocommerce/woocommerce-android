@@ -27,7 +27,7 @@ class GoogleMLKitCodeScanner @Inject constructor(
         }
         barcodeTask.addOnSuccessListener { barcodeList ->
             cont.resume(
-                if (barcodeList.isNullOrEmpty()) {
+                if (!barcodeList.isNullOrEmpty()) {
                     handleScanSuccess(barcodeList.firstOrNull())
                 } else {
                     CodeScannerStatus.NotFound
