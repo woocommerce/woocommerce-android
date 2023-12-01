@@ -308,6 +308,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
                         updateAddShippingButtonVisibility(order)
+                        updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
                     }
@@ -573,6 +574,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
+    }
+
+    private fun updateAddGiftCardButtonVisibility(order: Order) {
+        viewState = viewState.copy(isAddGiftCardButtonEnabled = order.hasProducts() && order.isEditable)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1095,6 +1100,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             }.also {
                                 updateCouponButtonVisibility(it)
                                 updateAddShippingButtonVisibility(it)
+                                updateAddGiftCardButtonVisibility(it)
                             }
                         }
                     }
@@ -1464,6 +1470,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
+        val isAddGiftCardButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
