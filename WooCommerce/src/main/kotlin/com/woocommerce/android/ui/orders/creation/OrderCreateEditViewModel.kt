@@ -145,6 +145,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.util.FeatureFlag
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -577,7 +578,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
-        viewState = viewState.copy(isAddGiftCardButtonEnabled = order.hasProducts() && order.isEditable)
+        viewState = viewState.copy(isAddGiftCardButtonEnabled = order.hasProducts()
+            && order.isEditable
+            && FeatureFlag.ORDER_GIFT_CARD.isEnabled()
+        )
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
