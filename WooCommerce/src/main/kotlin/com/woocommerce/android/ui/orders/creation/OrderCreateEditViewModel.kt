@@ -15,6 +15,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
@@ -1256,7 +1257,19 @@ class OrderCreateEditViewModel @Inject constructor(
             draft.copy(feesLines = feesList)
         }
         trackIfNameAdded(customAmountUIModel)
+        trackIfPercentageBasedCustomAmount(customAmountUIModel)
         triggerEvent(Exit)
+    }
+
+    private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
+        when (customAmountUIModel.type) {
+            CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
+                tracker.track(ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED)
+            }
+            CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
+                // no -op
+            }
+        }
     }
 
     private fun trackIfNameAdded(customAmountUIModel: CustomAmountUIModel) {
