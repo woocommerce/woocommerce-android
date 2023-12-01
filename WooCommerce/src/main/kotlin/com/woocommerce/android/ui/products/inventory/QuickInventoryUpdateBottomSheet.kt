@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ProductInfo
 
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewMo
 fun QuickInventoryUpdateBottomSheet(
     product: ProductInfo,
     onIncrementQuantityClicked: () -> Unit,
+    onViewProductDetailsClicked: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -89,10 +91,28 @@ fun QuickInventoryUpdateBottomSheet(
             WCColoredButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        top = dimensionResource(id = R.dimen.major_100),
+                    ),
                 onClick = onIncrementQuantityClicked,
                 text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
             )
+            WCOutlinedButton(
+                onClick =  onViewProductDetailsClicked,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.major_100),
+                    ),
+            ) {
+                Text(
+                    text = stringResource(R.string.scan_to_update_inventory_product_details_button)
+                )
+            }
         }
     }
 }
@@ -109,6 +129,6 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         quantity = 10,
     )
     WooTheme {
-        QuickInventoryUpdateBottomSheet(product) {}
+        QuickInventoryUpdateBottomSheet(product, {}) {}
     }
 }
