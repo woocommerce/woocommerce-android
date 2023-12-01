@@ -380,6 +380,8 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.addShippingButton.isEnabled =
                         new.isAddShippingButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
+                    binding.paymentSection.addGiftCardButton.isEnabled =
+                        new.isAddGiftCardButtonEnabled && idle
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -410,6 +412,9 @@ class OrderCreateEditFormFragment :
             }
             new.isAddShippingButtonEnabled.takeIfNotEqualTo(old?.isAddShippingButtonEnabled) {
                 binding.paymentSection.addShippingButton.isEnabled = it
+            }
+            new.isAddGiftCardButtonEnabled.takeIfNotEqualTo(old?.isAddGiftCardButtonEnabled) {
+                binding.paymentSection.addGiftCardButton.isEnabled = it
             }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
