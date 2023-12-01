@@ -85,8 +85,6 @@ class StoreInstallationViewModel @Inject constructor(
             storeData = newStore.data
         }
 
-        appPrefsWrapper.createdStoreSiteId = storeData.siteId
-
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
             mapOf(
