@@ -3,7 +3,9 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
+import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.toStripeRefundConfiguration
 import com.woocommerce.android.cardreader.payments.toStripeRefundParameters
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -15,16 +17,21 @@ internal class InteracRefundManager(
     private val refundErrorMapper: RefundErrorMapper,
     private val paymentsUtils: PaymentUtils,
 ) {
-    fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
-        collectInteracRefund(refundParameters)
+    fun refundInteracPayment(
+        refundParameters: RefundParams,
+        refundConfig: RefundConfig,
+    ): Flow<CardInteracRefundStatus> = flow {
+        collectInteracRefund(refundParameters, refundConfig)
     }
 
     private suspend fun FlowCollector<CardInteracRefundStatus>.collectInteracRefund(
-        refundParameters: RefundParams
+        refundParameters: RefundParams,
+        refundConfig: RefundConfig,
     ) {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
-            refundParameters.toStripeRefundParameters(paymentsUtils)
+            refundParameters.toStripeRefundParameters(paymentsUtils),
+            refundConfig.toStripeRefundConfiguration()
         ).collect { refundStatus ->
             when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.payments.woo.WooPaymentsDepositsOverview
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -45,22 +46,17 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
             repository.retrieveDepositOverview().map {
                 when (it) {
                     is RetrieveDepositOverviewResult.Cache ->
-                        PaymentsHubDepositSummaryState.Success(
-                            mapper.mapDepositOverviewToViewModelOverviews(it.overview)
-                                ?: return@map constructApiError(),
-                            onLearnMoreClicked = { onLearnMoreClicked() },
-                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
-                            onCurrencySelected = { currency -> onCurrencySelected(currency) }
+                        buildDepositSummaryState(
+                            overview = it.overview,
+                            fromCache = true
                         )
 
-                    is RetrieveDepositOverviewResult.Remote ->
-                        PaymentsHubDepositSummaryState.Success(
-                            mapper.mapDepositOverviewToViewModelOverviews(it.overview)
-                                ?: return@map constructApiError(),
-                            onLearnMoreClicked = { onLearnMoreClicked() },
-                            onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
-                            onCurrencySelected = { currency -> onCurrencySelected(currency) }
+                    is RetrieveDepositOverviewResult.Remote -> {
+                        buildDepositSummaryState(
+                            overview = it.overview,
+                            fromCache = false
                         )
+                    }
 
                     is RetrieveDepositOverviewResult.Error -> {
                         PaymentsHubDepositSummaryState.Error(it.error)
@@ -75,15 +71,6 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
         }
     }
 
-    private fun onCurrencySelected(currency: String) {
-        trackerWrapper.track(
-            AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_CURRENCY_SELECTED,
-            properties = mapOf(
-                KEY_CURRENCY to currency.lowercase()
-            )
-        )
-    }
-
     fun onSummaryDepositShown() {
         val success = _viewState.value as? PaymentsHubDepositSummaryState.Success ?: return
         trackerWrapper.track(
@@ -94,11 +81,37 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
         )
     }
 
+    private fun buildDepositSummaryState(
+        overview: WooPaymentsDepositsOverview,
+        fromCache: Boolean
+    ): PaymentsHubDepositSummaryState =
+        when (val mappingResult = mapper.mapDepositOverviewToViewModelOverviews(overview)) {
+            PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate -> constructApiError()
+            is PaymentsHubDepositSummaryStateMapper.Result.Success -> {
+                PaymentsHubDepositSummaryState.Success(
+                    overview = mappingResult.overview,
+                    fromCache = fromCache,
+                    onLearnMoreClicked = { onLearnMoreClicked() },
+                    onExpandCollapseClicked = { expanded -> onExpandCollapseClicked(expanded) },
+                    onCurrencySelected = { currency -> onCurrencySelected(currency) }
+                )
+            }
+        }
+
     private fun onLearnMoreClicked() {
         trackerWrapper.track(AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_LEARN_MORE_CLICKED)
         launch {
             _openBrowserEvents.emit(LEARN_MORE_ABOUT_DEPOSIT_URL)
         }
+    }
+
+    private fun onCurrencySelected(currency: String) {
+        trackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_CURRENCY_SELECTED,
+            properties = mapOf(
+                KEY_CURRENCY to currency.lowercase()
+            )
+        )
     }
 
     private fun onExpandCollapseClicked(expanded: Boolean) {

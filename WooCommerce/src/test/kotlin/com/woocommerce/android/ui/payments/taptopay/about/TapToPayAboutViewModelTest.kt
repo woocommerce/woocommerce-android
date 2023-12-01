@@ -118,7 +118,7 @@ class TapToPayAboutViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
             NavigateToUrlInGenericWebView(
-                "https://woocommerce.com/products/hardware/CA"
+                "https://woo.com/products/hardware/CA"
             )
         )
     }
@@ -150,7 +150,7 @@ class TapToPayAboutViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
             NavigateToUrlInGenericWebView(
-                "https://woocommerce.com/products/hardware/GB"
+                "https://woo.com/products/hardware/GB"
             )
         )
     }
