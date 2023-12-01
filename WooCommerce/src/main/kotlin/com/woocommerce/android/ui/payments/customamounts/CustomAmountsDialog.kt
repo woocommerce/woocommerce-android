@@ -192,6 +192,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             }
         }
     }
+
     private fun setupObservers(binding: DialogCustomAmountsBinding) {
         observePercentageView(binding)
         observeCustomAmountNameView(binding)
@@ -217,10 +218,9 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                             binding.editPrice.editText.setSelection(binding.editPrice.editText.text?.length ?: 0)
                         }
                     }
+
                     PERCENTAGE_CUSTOM_AMOUNT -> {
-                        if (binding.editPercentage.text.toString() != viewModel.currentPercentage.toString()) {
-                            binding.updatedAmount.text = viewModel.currentPrice.toString()
-                        }
+                        binding.updatedAmount.text = viewModel.currentPrice.toString()
                     }
                 }
             }
