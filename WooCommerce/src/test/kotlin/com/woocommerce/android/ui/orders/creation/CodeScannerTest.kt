@@ -69,7 +69,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).first()
+            val result = codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Success::class.java)
@@ -107,7 +107,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).first()
+            val result = codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
@@ -144,7 +144,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).toList()
+            val result = codeScanner.recogniseCode(imageProxy).toList()
 
             // assert
             assertThat(result.size).isEqualTo(1)
@@ -170,7 +170,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).first()
+            val result = codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Failure::class.java)
@@ -204,7 +204,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).first()
+            val result = codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             assertThat((result as CodeScannerStatus.Failure).error).isEqualTo(errorMessage)
@@ -240,7 +240,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).first()
+            val result = codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Failure::class.java)
@@ -277,7 +277,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).first()
+            val result = codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             assertThat((result as CodeScannerStatus.Failure).error).isEqualTo(errorMessage)
@@ -304,7 +304,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).toList()
+            val result = codeScanner.recogniseCode(imageProxy).toList()
 
             // assert
             assertThat(result.size).isEqualTo(1)
@@ -335,7 +335,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            codeScanner.startScan(imageProxy).first()
+            codeScanner.recogniseCode(imageProxy).first()
 
             // assert
             verify(imageProxy).close()
@@ -366,7 +366,7 @@ class CodeScannerTest : BaseUnitTest() {
             }
 
             // act
-            val result = codeScanner.startScan(imageProxy).toList()
+            val result = codeScanner.recogniseCode(imageProxy).toList()
 
             // assert
             assertThat(result).isNotInstanceOf(CodeScannerStatus.Success::class.java)
