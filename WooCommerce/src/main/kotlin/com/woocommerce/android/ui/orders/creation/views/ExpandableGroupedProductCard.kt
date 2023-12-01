@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.getStockText
+import java.math.BigDecimal
 
 @Composable
 fun ExpandableGroupedProductCard(
@@ -317,8 +318,6 @@ fun ExpandableChildrenProductCard(
                 color = colorResource(id = R.color.color_on_surface_disabled)
             )
         } else {
-            Row() {
-            }
             Text(
                 modifier = Modifier
                     .constrainAs(quantity) {
@@ -334,6 +333,12 @@ fun ExpandableChildrenProductCard(
                 text = getQuantityWithTotalText(product),
                 color = colorResource(id = R.color.color_on_surface_disabled)
             )
+            val priceColor = if (product.item.price.compareTo(BigDecimal.ZERO) == 1){
+                MaterialTheme.colors.onSurface
+            } else {
+                colorResource(id = R.color.color_on_surface_disabled)
+            }
+
             Text(
                 modifier = Modifier.constrainAs(price) {
                     end.linkTo(chevron.start)
@@ -341,7 +346,7 @@ fun ExpandableChildrenProductCard(
                 },
                 style = MaterialTheme.typography.body2,
                 text = product.productInfo.priceAfterDiscount,
-                color = MaterialTheme.colors.onSurface
+                color = priceColor
             )
         }
         IconButton(
@@ -358,7 +363,7 @@ fun ExpandableChildrenProductCard(
                 imageVector = Icons.Filled.KeyboardArrowDown,
                 contentDescription =
                 stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
-                tint = MaterialTheme.colors.primary
+                tint = colorResource(id = R.color.color_on_surface_disabled)
             )
         }
         AnimatedVisibility(
