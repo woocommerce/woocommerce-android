@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +28,8 @@ class BarcodeScanningViewModel @Inject constructor(
     private val _permissionState = MutableLiveData<PermissionState>()
     val permissionState: LiveData<PermissionState> = _permissionState
 
-    private val frameChannel = Channel<ImageProxy>(Channel.BUFFERED)
+    private var frameChannel = createChannel()
+
     private var processingJob: Job? = null
 
     init {
@@ -35,6 +37,7 @@ class BarcodeScanningViewModel @Inject constructor(
     }
 
     fun startCodesRecognition() {
+        frameChannel = createChannel()
         processingJob = launch {
             for (frame in frameChannel) {
                 codeScanner.recogniseCode(frame).let { status ->
@@ -121,6 +124,11 @@ class BarcodeScanningViewModel @Inject constructor(
         )
         stopCodesRecognition()
     }
+
+    private fun createChannel() = Channel<ImageProxy>(
+        Channel.BUFFERED,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
 
     sealed class ScanningEvents : Event() {
         data class LaunchCameraPermission(

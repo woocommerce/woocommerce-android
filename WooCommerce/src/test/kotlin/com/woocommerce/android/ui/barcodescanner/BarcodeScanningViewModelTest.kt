@@ -13,13 +13,18 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -306,5 +311,75 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
                         codeScannerStatus
                     )
                 )
+        }
+
+    @Test
+    fun `given recognition started and stopped and started, when onNewFrame is called, then success emitted`() =
+        runTest {
+            val imageProxy: ImageProxy = mock()
+            val codeScannerStatus = CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatCode128
+            )
+            whenever(codeScanner.recogniseCode(imageProxy)).thenReturn(codeScannerStatus)
+            barcodeScanningViewModel.startCodesRecognition()
+            barcodeScanningViewModel.stopCodesRecognition()
+            barcodeScanningViewModel.startCodesRecognition()
+
+            barcodeScanningViewModel.onNewFrame(imageProxy)
+
+            assertThat(barcodeScanningViewModel.event.value)
+                .isEqualTo(
+                    BarcodeScanningViewModel.ScanningEvents.OnScanningResult(
+                        codeScannerStatus
+                    )
+                )
+        }
+
+    @Test
+    fun `given recognition started, when onNewFrame is called multiple times, then success emitted multiple times`() =
+        runTest {
+            val imageProxy: ImageProxy = mock()
+            val codeScannerStatus = CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatCode128
+            )
+            whenever(codeScanner.recogniseCode(imageProxy)).thenReturn(codeScannerStatus)
+            barcodeScanningViewModel.startCodesRecognition()
+
+            val events = barcodeScanningViewModel.event.captureValues()
+
+            repeat(200) {
+                barcodeScanningViewModel.onNewFrame(imageProxy)
+            }
+
+            assertThat(events).hasSize(200)
+        }
+
+    @Test
+    fun `given recognition started and slow, when onNewFrame is called multiple times, then success emitted buffer size times`() =
+        runTest {
+            val imageProxy: ImageProxy = mock()
+            val codeScannerStatus = CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatCode128
+            )
+            whenever(codeScanner.recogniseCode(imageProxy)).doSuspendableAnswer {
+                delay(1)
+                codeScannerStatus
+            }
+            barcodeScanningViewModel.startCodesRecognition()
+
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            barcodeScanningViewModel.event.observeForever {
+                events.add(it)
+            }
+
+            repeat(200) {
+                barcodeScanningViewModel.onNewFrame(imageProxy)
+            }
+            advanceUntilIdle()
+
+            assertThat(events).hasSize(2)
         }
 }
