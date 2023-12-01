@@ -60,7 +60,9 @@ class StoreProfilerFeaturesFragment : BaseFragment() {
     private fun navigateToThemePicker() {
         findNavController().navigateSafely(
             StoreProfilerFeaturesFragmentDirections
-                .actionStoreProfilerFeaturesFragmentToThemePickerFragment()
+                .actionStoreProfilerFeaturesFragmentToThemePickerFragment(
+                    isFromStoreCreation = true
+                )
         )
     }
 

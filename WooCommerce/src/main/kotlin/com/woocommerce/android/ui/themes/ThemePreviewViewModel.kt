@@ -67,7 +67,7 @@ class ThemePreviewViewModel @Inject constructor(
     ) { theme, selectedPage, isActivatingTheme, demoPages ->
         ViewState(
             themeName = theme.name,
-            isFromStoreCreation = true, // TODO Pass this from the previous screen
+            isFromStoreCreation = navArgs.isFromStoreCreation,
             isActivatingTheme = isActivatingTheme,
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)

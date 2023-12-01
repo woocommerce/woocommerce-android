@@ -247,7 +247,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionSiteThemes.setOnClickListener {
             findNavController()
                 .navigateSafely(
-                    MainSettingsFragmentDirections.actionMainSettingsFragmentToThemePickerFragment()
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToThemePickerFragment(
+                        isFromStoreCreation = false
+                    )
                 )
         }
     }
