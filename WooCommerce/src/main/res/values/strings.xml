@@ -516,6 +516,7 @@
     <string name="custom_amounts_bottom_sheet_heading">How do you want to add your custom amount?</string>
     <string name="custom_amounts_bottom_sheet_fixed_amount_option">A fixed amount</string>
     <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
+    <string name="custom_amounts_percentage_hint">0</string>
 
     <!--
          Taxes
