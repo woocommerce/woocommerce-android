@@ -606,7 +606,7 @@ class OrderCreateEditFormFragment :
                 newOrderData
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
-            paymentSection.bindGiftCardSubSection()
+            paymentSection.bindGiftCardSubSection(newOrderData)
         }
     }
 
