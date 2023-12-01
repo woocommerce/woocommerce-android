@@ -8,9 +8,14 @@ import androidx.compose.material.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 
 class OrderCreateEditGiftCardFragment : BaseFragment() {
     val viewModel: OrderCreateEditGiftCardViewModel by viewModels()
@@ -27,4 +32,17 @@ class OrderCreateEditGiftCardFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_add_gift_card)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> findNavController().popBackStack()
+                is ExitWithResult<*> -> navigateBackWithNotice(GIFT_CARD_RESULT)
+            }
+        }
+    }
+
+    companion object {
+        const val GIFT_CARD_RESULT = "gift-card-result"
+    }
 }
