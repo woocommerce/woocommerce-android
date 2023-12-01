@@ -514,6 +514,7 @@
     <string name="custom_amounts_tax_label">Charge Taxes</string>
     <string name="custom_amounts_percentage_label">Percentage of order total (%1$s)</string>
     <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
 
     <!--
          Taxes

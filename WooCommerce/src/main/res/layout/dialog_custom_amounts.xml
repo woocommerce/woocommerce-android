@@ -141,7 +141,7 @@
                     app:layout_constraintStart_toEndOf="@id/editPercentage"
                     app:layout_constraintBottom_toBottomOf="@id/editPercentage"
                     android:textSize="@dimen/line_height_major_100"
-                    android:text="%"/>
+                    android:text="@string/custom_amounts_percentage_symbol"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/updatedAmount"
