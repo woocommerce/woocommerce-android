@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.inventory
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
@@ -19,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -270,7 +272,11 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given bottom sheet with variation shown, when increment quantity clicked, then should should update product`() = testBlocking {
-        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true, productId = 2, parentID = 1)
+        val productId = 1L
+        val variationId = 2L
+        val originalProduct =
+            ProductTestUtils.generateProduct(isStockManaged = true, productId = variationId, parentID = productId)
+                .copy(stockQuantity = 1.0)
         whenever(fetchProductBySKU(any(), any())).thenReturn(
             Result.success(originalProduct)
         )
@@ -282,14 +288,14 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
         )
         val originalVariation =
-            ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
-                .copy(stockQuantity = 1.0)
-        whenever(variationRepo.getVariation(1, 2)).thenReturn(originalVariation)
-        whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
+            ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
+                .copy(stockQuantity = originalProduct.stockQuantity)
+        whenever(variationRepo.getVariation(productId, variationId)).thenReturn(originalVariation)
+        whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, variationId))
         whenever(
             resourceProvider.getString(
                 R.string.scan_to_update_inventory_success_snackbar,
-                "${originalProduct.stockQuantity.toInt()} ➡ 999"
+                "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
             )
         ).thenReturn("Quantity updated")
         sut.viewState.test {
@@ -298,11 +304,12 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.onManualQuantityEntered("999")
+        sut.onIncrementQuantityClicked()
         sut.onUpdateQuantityClicked()
 
-        val expectedVariation = originalVariation.copy(stockQuantity = originalVariation.stockQuantity + 1)
-        verify(variationRepo).updateVariation(expectedVariation)
+        val argumentCaptor = argumentCaptor<ProductVariation>()
+        verify(variationRepo).updateVariation(argumentCaptor.capture())
+        assertEquals(originalVariation.stockQuantity + 1, argumentCaptor.firstValue.stockQuantity)
     }
 
     @Test
