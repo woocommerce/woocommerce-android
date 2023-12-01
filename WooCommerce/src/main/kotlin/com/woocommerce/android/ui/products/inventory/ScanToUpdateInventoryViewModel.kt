@@ -4,9 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +29,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val fetchProductBySKU: FetchProductBySKU,
     private val resourceProvider: ResourceProvider,
     private val productRepository: ProductDetailRepository,
+    private val variationRepository: VariationDetailRepository,
 ) : ScopedViewModel(savedState) {
     private val _viewState: MutableStateFlow<ViewState> =
         savedState.getStateFlow(this, ViewState.BarcodeScanning, "viewState")
@@ -120,10 +124,16 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             handleQuantityUpdateError()
         } else {
             launch {
-                val updatedProduct = product.copy(stockQuantity = updatedProductInfo.quantity.toDouble())
-                val result = productRepository.updateProduct(updatedProduct)
-                if (result) {
-                    handleQuantityUpdateSuccess(product, updatedProduct)
+                val result = if (product.isVariable()) {
+                    product.updateVariation(updatedProductInfo)
+                } else {
+                    product.updateProduct(updatedProductInfo)
+                }
+                if (result.isSuccess) {
+                    handleQuantityUpdateSuccess(
+                        product.stockQuantity.toInt().toString(),
+                        updatedProductInfo.quantity.toString()
+                    )
                 } else {
                     handleQuantityUpdateError()
                 }
@@ -131,10 +141,34 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleQuantityUpdateSuccess(oldProduct: Product, updatedProduct: Product) {
-        val oldQuantity = oldProduct.stockQuantity
-        val newQuantity = updatedProduct.stockQuantity
-        val quantityChangeString = "${oldQuantity.toInt()} ➡ ${newQuantity.toInt()}"
+    private suspend fun Product.updateProduct(updatedProductInfo: ProductInfo): Result<Unit> {
+        val updatedProduct = copy(stockQuantity = updatedProductInfo.quantity.toDouble())
+        val result: Boolean = productRepository.updateProduct(updatedProduct)
+        return if (result) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exception("Unable to update product"))
+        }
+    }
+
+    private suspend fun Product.updateVariation(updatedProductInfo: ProductInfo): Result<Unit> {
+        val variation: ProductVariation? = variationRepository.getVariation(
+            remoteProductId = parentId,
+            remoteVariationId = remoteId
+        )
+        val updatedVariation = variation?.copy(stockQuantity = updatedProductInfo.quantity.toDouble())
+            ?: return Result.failure(Exception("Unable to find variation"))
+
+        val result: WCProductStore.OnVariationUpdated = variationRepository.updateVariation(updatedVariation)
+        return if (result.isError) {
+            Result.failure(Exception("Unable to update variation"))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    private suspend fun handleQuantityUpdateSuccess(oldQuantity: String, updatedQuantity: String) {
+        val quantityChangeString = "$oldQuantity ➡ $updatedQuantity"
         val message = resourceProvider.getString(
             R.string.scan_to_update_inventory_success_snackbar,
             quantityChangeString
@@ -156,6 +190,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             product = state.product.copy(quantity = newQuantity.toIntOrNull() ?: 0),
             isPendingUpdate = true
         )
+    }
+
+    private fun Product.isVariable(): Boolean {
+        return this.parentId != 0L
     }
 
     @Parcelize

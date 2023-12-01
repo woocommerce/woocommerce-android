@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.BarcodeScanning
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.ProductLoading
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -21,6 +22,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertIsNot
@@ -30,7 +32,8 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     private val fetchProductBySKU: FetchProductBySKU = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
-    private val repo: ProductDetailRepository = mock()
+    private val productRepo: ProductDetailRepository = mock()
+    private val variationRepo: VariationDetailRepository = mock()
 
     private lateinit var sut: ScanToUpdateInventoryViewModel
 
@@ -40,7 +43,8 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             fetchProductBySKU = fetchProductBySKU,
             savedState = savedStateHandle,
             resourceProvider = resourceProvider,
-            productRepository = repo,
+            productRepository = productRepo,
+            variationRepository = variationRepo,
         )
     }
 
@@ -199,19 +203,19 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given bottom sheet shown, when increment quantity clicked, then should should update product`() = testBlocking {
+    fun `given bottom sheet with product shown, when increment quantity clicked, then should should update product`() = testBlocking {
         val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
         whenever(fetchProductBySKU(any(), any())).thenReturn(
             Result.success(originalProduct)
         )
-        whenever(repo.getProduct(any())).thenReturn(originalProduct)
+        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
         sut.onBarcodeScanningResult(
             CodeScannerStatus.Success(
                 "123",
                 GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
             )
         )
-        whenever(repo.updateProduct(any())).thenReturn(true)
+        whenever(productRepo.updateProduct(any())).thenReturn(true)
         whenever(
             resourceProvider.getString(
                 R.string.scan_to_update_inventory_success_snackbar,
@@ -228,23 +232,23 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         val expectedProduct =
             originalProduct.copy(stockQuantity = (originalProduct.stockQuantity.toInt() + 1).toDouble())
-        verify(repo).updateProduct(expectedProduct)
+        verify(productRepo).updateProduct(expectedProduct)
     }
 
     @Test
-    fun `given bottom sheet shown, when quantity entered manually, then should update product`() = testBlocking {
+    fun `given bottom sheet with product shown, when quantity entered manually, then should update product`() = testBlocking {
         val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
         whenever(fetchProductBySKU(any(), any())).thenReturn(
             Result.success(originalProduct)
         )
-        whenever(repo.getProduct(any())).thenReturn(originalProduct)
+        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
         sut.onBarcodeScanningResult(
             CodeScannerStatus.Success(
                 "123",
                 GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
             )
         )
-        whenever(repo.updateProduct(any())).thenReturn(true)
+        whenever(productRepo.updateProduct(any())).thenReturn(true)
         whenever(
             resourceProvider.getString(
                 R.string.scan_to_update_inventory_success_snackbar,
@@ -261,6 +265,80 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         sut.onUpdateQuantityClicked()
 
         val expectedProduct = originalProduct.copy(stockQuantity = (999).toDouble())
-        verify(repo).updateProduct(expectedProduct)
+        verify(productRepo).updateProduct(expectedProduct)
+    }
+
+    @Test
+    fun `given bottom sheet with variation shown, when increment quantity clicked, then should should update product`() = testBlocking {
+        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true, productId = 2, parentID = 1)
+        whenever(fetchProductBySKU(any(), any())).thenReturn(
+            Result.success(originalProduct)
+        )
+        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+        val originalVariation =
+            ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
+                .copy(stockQuantity = 1.0)
+        whenever(variationRepo.getVariation(1, 2)).thenReturn(originalVariation)
+        whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
+        whenever(
+            resourceProvider.getString(
+                R.string.scan_to_update_inventory_success_snackbar,
+                "${originalProduct.stockQuantity.toInt()} ➡ 999"
+            )
+        ).thenReturn("Quantity updated")
+        sut.viewState.test {
+            awaitItem().apply {
+                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+            }
+        }
+
+        sut.onManualQuantityEntered("999")
+        sut.onUpdateQuantityClicked()
+
+        val expectedVariation = originalVariation.copy(stockQuantity = originalVariation.stockQuantity + 1)
+        verify(variationRepo).updateVariation(expectedVariation)
+    }
+
+    @Test
+    fun `given bottom sheet with variation shown, when quantity entered manually, then should update product`() = testBlocking {
+        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true, productId = 2, parentID = 1)
+        whenever(fetchProductBySKU(any(), any())).thenReturn(
+            Result.success(originalProduct)
+        )
+        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+        val originalVariation =
+            ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
+                .copy(stockQuantity = 1.0)
+        whenever(variationRepo.getVariation(1, 2)).thenReturn(originalVariation)
+        whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
+        whenever(
+            resourceProvider.getString(
+                R.string.scan_to_update_inventory_success_snackbar,
+                "${originalProduct.stockQuantity.toInt()} ➡ 999"
+            )
+        ).thenReturn("Quantity updated")
+        sut.viewState.test {
+            awaitItem().apply {
+                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+            }
+        }
+
+        sut.onManualQuantityEntered("999")
+        sut.onUpdateQuantityClicked()
+
+        val expectedVariation = originalVariation.copy(stockQuantity = (999).toDouble())
+        verify(variationRepo).updateVariation(expectedVariation)
     }
 }
