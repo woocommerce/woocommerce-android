@@ -146,11 +146,11 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/updatedAmount"
-                    style="@style/Woo.TextView.Subtitle1"
+                    style="@style/Woo.TextView.Headline6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
                     android:textSize="@dimen/text_major_25"
+                    android:paddingEnd="@dimen/minor_100"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="@id/editPercentage"
                     tools:text="6.00"/>
