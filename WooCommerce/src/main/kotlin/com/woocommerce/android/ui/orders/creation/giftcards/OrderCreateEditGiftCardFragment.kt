@@ -19,7 +19,7 @@ class OrderCreateEditGiftCardFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Text("Gift Card UI")
+                    EditGiftCardScreen(viewModel = viewModel)
                 }
             }
         }
