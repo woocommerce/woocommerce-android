@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.themes
 import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -41,6 +43,7 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
@@ -63,6 +66,7 @@ fun ThemePreviewScreen(
             activityRegistry = activityRegistry,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
+            viewModel::onActivateThemeClicked
         )
     }
 }
@@ -76,6 +80,7 @@ fun ThemePreviewScreen(
     activityRegistry: ActivityResultRegistry,
     onPageSelected: (ThemeDemoPage) -> Unit,
     onBackNavigationClicked: () -> Unit,
+    onActivateThemeClicked: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -116,17 +121,68 @@ fun ThemePreviewScreen(
             },
             backgroundColor = MaterialTheme.colors.surface
         ) { paddingValues ->
-            WCWebView(
-                url = state.demoUri,
-                userAgent = userAgent,
-                wpComAuthenticator = wpComWebViewAuthenticator,
-                activityRegistry = activityRegistry,
-                captureBackPresses = false,
-                modifier = Modifier
+            Column(
+                Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-            )
+            ) {
+                WCWebView(
+                    url = state.currentPage.uri,
+                    userAgent = userAgent,
+                    wpComAuthenticator = wpComWebViewAuthenticator,
+                    activityRegistry = activityRegistry,
+                    captureBackPresses = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+
+                ThemePreviewBottomSection(
+                    isFromStoreCreation = state.isFromStoreCreation,
+                    themeName = state.themeName,
+                    onActivateThemeClicked = onActivateThemeClicked,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun ThemePreviewBottomSection(
+    isFromStoreCreation: Boolean,
+    themeName: String,
+    onActivateThemeClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            dimensionResource(id = dimen.major_100)
+        ),
+        modifier = modifier
+    ) {
+        Divider()
+        WCColoredButton(
+            onClick = onActivateThemeClicked,
+            text = stringResource(
+                id = if (isFromStoreCreation) R.string.store_creation_use_theme_button
+                else R.string.theme_preview_activate_theme_button
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = dimen.major_100))
+        )
+
+        Text(
+            text = stringResource(id = R.string.theme_preview_theme_name, themeName),
+            style = MaterialTheme.typography.body2,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = dimen.major_100))
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
     }
 }
 
@@ -173,8 +229,7 @@ private fun DemoSectionsToolbar(
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = state.themePages.firstOrNull { it.isLoaded }?.title
-                        ?: stringResource(id = R.string.theme_preview_bottom_sheet_home_section),
+                    text = state.currentPage.title,
                     style = MaterialTheme.typography.caption,
                 )
                 Icon(
