@@ -43,6 +43,7 @@ class ThemePickerViewModel @Inject constructor(
                     Success(
                         carouselItems = result.map { theme ->
                             CarouselItem.Theme(
+                                themeId = theme.id,
                                 name = theme.name,
                                 screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl),
                                 demoUri = theme.demoUrl
@@ -74,8 +75,8 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(MoveToNextStep)
     }
 
-    fun onThemeTapped(theme: CarouselItem.Theme) {
-        triggerEvent(NavigateToThemePreview(theme.name, theme.demoUri))
+    fun onThemeTapped(themeId: String) {
+        triggerEvent(NavigateToThemePreview(themeId))
     }
 
     sealed interface ViewState : Parcelable {
@@ -92,6 +93,7 @@ class ThemePickerViewModel @Inject constructor(
             sealed class CarouselItem : Parcelable {
                 @Parcelize
                 data class Theme(
+                    val themeId: String,
                     val name: String,
                     val screenshotUrl: String,
                     val demoUri: String
@@ -104,5 +106,5 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     object MoveToNextStep : Event()
-    data class NavigateToThemePreview(val themeName: String, val themeDemoUri: String) : Event()
+    data class NavigateToThemePreview(val themeId: String) : Event()
 }

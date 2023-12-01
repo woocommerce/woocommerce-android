@@ -759,9 +759,7 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForPushNotification -> onRestartActivityEvent(event)
-                is RestartActivityForLocalNotification -> onRestartActivityEvent(event)
-                is RestartActivityForAppLink -> onRestartActivityEvent(event)
+                is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
@@ -788,6 +786,7 @@ class MainActivity :
                 }
 
                 is OpenFreeTrialSurvey -> openFreeTrialSurvey()
+                is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
             }
         }
 
@@ -896,6 +895,12 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
+    private fun startThemeActivation(themeId: String) {
+        navController.navigateSafely(
+            NavGraphMainDirections.actionGlobalThemeActivationFragmentDialog(themeId)
+        )
+    }
+
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
         intent.apply {
             when (event) {
@@ -905,6 +910,9 @@ class MainActivity :
                     putExtra(FIELD_OPENED_FROM_PUSH, true)
                     putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     putExtra(FIELD_PUSH_ID, event.pushId)
+                }
+                else -> {
+                    // continue to restart the activity
                 }
             }
         }
