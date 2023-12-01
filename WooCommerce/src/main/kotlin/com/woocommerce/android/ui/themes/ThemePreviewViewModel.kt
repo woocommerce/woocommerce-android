@@ -111,8 +111,8 @@ class ThemePreviewViewModel @Inject constructor(
         val isFromStoreCreation: Boolean,
         val themePages: List<ThemeDemoPage>
     ) {
-        val demoUri: String
-            get() = themePages.first { it.isLoaded }.uri
+        val currentPage: ThemeDemoPage
+            get() = themePages.first { it.isLoaded }
     }
 
     @Parcelize

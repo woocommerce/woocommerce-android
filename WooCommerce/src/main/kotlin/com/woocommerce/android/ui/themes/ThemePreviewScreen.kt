@@ -127,7 +127,7 @@ fun ThemePreviewScreen(
                     .fillMaxSize()
             ) {
                 WCWebView(
-                    url = state.demoUri,
+                    url = state.currentPage.uri,
                     userAgent = userAgent,
                     wpComAuthenticator = wpComWebViewAuthenticator,
                     activityRegistry = activityRegistry,
@@ -229,8 +229,7 @@ private fun DemoSectionsToolbar(
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = state.themePages.firstOrNull { it.isLoaded }?.title
-                        ?: stringResource(id = R.string.theme_preview_bottom_sheet_home_section),
+                    text = state.currentPage.title,
                     style = MaterialTheme.typography.caption,
                 )
                 Icon(
