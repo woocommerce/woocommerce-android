@@ -18,6 +18,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 
 @Composable
 fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
@@ -32,20 +33,17 @@ fun EditGiftCardScreen(
     onDoneClicked: () -> Unit
 ) {
     Column {
-        TextField(
+        WCOutlinedTextField(
             value = giftCardValue,
             onValueChange = onTextChanged,
-            placeholder = {
-                Text(stringResource(id = R.string.order_creation_gift_card_text_field_hint))
-            },
+            label = stringResource(id = R.string.order_creation_gift_card_text_field_hint),
             colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         )
 
         Button(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100)),
+                .fillMaxWidth(),
             onClick = onDoneClicked
         ) {
             Text(stringResource(id = R.string.apply))
