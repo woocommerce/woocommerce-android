@@ -67,7 +67,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         val binding = DialogCustomAmountsBinding.bind(view)
         binding.editPrice.editText.setPadding(
-            getDensityPixel(binding.editPrice.context, 8), 0, 0, 0
+            getDensityPixel(binding.editPrice.context, START_PADDING), 0, 0, 0
         )
 
         binding.buttonDone.setOnClickListener {
@@ -165,5 +165,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         const val CUSTOM_AMOUNT = "Custom Amount"
         const val EDIT_PRICE_UPDATE_DELAY = 100L
+        const val START_PADDING = 8
     }
 }
