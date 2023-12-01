@@ -83,12 +83,12 @@ class CustomAmountsDialogViewModel @Inject constructor(
     private val args: CustomAmountsDialogArgs by savedState.navArgs()
 
     init {
-        if (isInEditMode()) {
+        if (isInCreateMode()) {
+            tracker.track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
+        } else {
             // Edit mode
             populateUIWithExistingData()
             tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
-        } else {
-            tracker.track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
         }
     }
 
@@ -120,7 +120,7 @@ class CustomAmountsDialogViewModel @Inject constructor(
         triggerEvent(PopulatePercentage(customAmountUIModel))
     }
 
-    private fun isInEditMode() = args.customAmountUIModel.amount == BigDecimal.ZERO
+    private fun isInCreateMode() = args.customAmountUIModel.amount == BigDecimal.ZERO
 
     @Parcelize
     data class ViewState(
