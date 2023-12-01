@@ -1,5 +1,1 @@
-- [*] [Internal] Always use default currency as first choice to show in the deposits summary in the cases multiple currencies used [https://github.com/woocommerce/woocommerce-android/pull/10251]
-- [*] [Internal] Changes in the minSdkVersion from 24 to 26 and coroutines library update to version 1.7.3 [https://github.com/woocommerce/woocommerce-android/pull/10187]
-- [*] [Internal] Stripe SDK Migration to version 3.1.1 [https://github.com/woocommerce/woocommerce-android/pull/10103]
-- [*] [Internal] Send `store_id` in track events when available. [https://github.com/woocommerce/woocommerce-android/pull/10286]
-
+The latest WooCommerce app version focuses on stability improvements! Additionally, WooPayments users can now seamlessly switch between currencies on the Deposits Summary view. Upgrade now for a smoother WooCommerce experience!
