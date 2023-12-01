@@ -55,7 +55,7 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             THEME_PICKER,
-            ORDER_GIFT_CARD-> PackageUtils.isDebugBuild()
+            ORDER_GIFT_CARD -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
