@@ -117,7 +117,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
         )
         viewModel.currentPercentage = BigDecimal("20")
 
-        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40"))
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40.00"))
     }
 
     //endregion
