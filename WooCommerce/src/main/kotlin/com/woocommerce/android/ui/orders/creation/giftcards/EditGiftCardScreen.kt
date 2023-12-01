@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +22,11 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 @Composable
 fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
     val giftCardValue by viewModel.giftCard.observeAsState()
-    EditGiftCardScreen(giftCardValue.orEmpty(), viewModel::onGiftCardChanged, {})
+    EditGiftCardScreen(
+        giftCardValue = giftCardValue.orEmpty(),
+        onTextChanged = viewModel::onGiftCardChanged,
+        onDoneClicked = viewModel::onDoneButtonClicked
+    )
 }
 
 @Composable
@@ -32,7 +35,10 @@ fun EditGiftCardScreen(
     onTextChanged: (String) -> Unit,
     onDoneClicked: () -> Unit
 ) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
         WCOutlinedTextField(
             value = giftCardValue,
             onValueChange = onTextChanged,

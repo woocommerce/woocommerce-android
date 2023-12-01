@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.creation.giftcards
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -23,5 +25,9 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
 
     fun onGiftCardChanged(giftCard: String) {
         _giftCard.value = giftCard
+    }
+
+    fun onDoneButtonClicked() {
+        triggerEvent(ExitWithResult(_giftCard.value))
     }
 }
