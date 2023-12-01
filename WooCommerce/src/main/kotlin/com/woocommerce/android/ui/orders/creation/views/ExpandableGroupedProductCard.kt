@@ -17,6 +17,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -139,6 +140,10 @@ fun ExpandableGroupedProductCard(
                 isExpanded = isChildrenExpanded,
                 modifier = childrenModifier
             )
+
+            if (isChildrenExpanded.not() && index == children.lastIndex) {
+                Spacer(Modifier.padding(dimensionResource(id = R.dimen.minor_50)))
+            }
         }
     }
 }
@@ -279,7 +284,7 @@ fun ExpandableChildrenProductCard(
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
                     end = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.minor_100),
                 ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -327,13 +332,13 @@ fun ExpandableChildrenProductCard(
                     .padding(
                         start = dimensionResource(id = R.dimen.major_100),
                         end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.minor_100),
                     ),
                 style = MaterialTheme.typography.body2,
                 text = getQuantityWithTotalText(product),
                 color = colorResource(id = R.color.color_on_surface_disabled)
             )
-            val priceColor = if (product.item.price.compareTo(BigDecimal.ZERO) == 1){
+            val priceColor = if (product.item.price.compareTo(BigDecimal.ZERO) == 1) {
                 MaterialTheme.colors.onSurface
             } else {
                 colorResource(id = R.color.color_on_surface_disabled)
