@@ -3386,6 +3386,7 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
     <!--
     Store onboarding
