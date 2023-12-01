@@ -1463,7 +1463,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.ORDER_PRODUCT_ADD,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
@@ -1507,7 +1507,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.ORDER_PRODUCT_ADD,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
@@ -1788,6 +1788,42 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+    }
+
+    @Test
+    fun `when custom amount is updated, then do not track order_fee_add event`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.EMPTY.copy(
+                        feesLines = listOf(
+                            Order.FeeLine.EMPTY.copy(
+                                id = 1,
+                                total = BigDecimal(1),
+                                name = "Test amount",
+                            ),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 1L,
+            amount = BigDecimal.ONE,
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        verify(tracker, never()).track(
+            ORDER_FEE_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to "none"
+            )
+        )
     }
 
     @Test
