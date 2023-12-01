@@ -1,2 +1,0 @@
-16.3:
-Met deze update maken we het beheren van je WooCommerce-winkel nog makkelijker! Als je WooCommerce Payments gebruikt, kan je nu je saldo's en betalingen direct op het scherm van Payments zien. Ook heb je nu de optie om abonnementproducten te maken of te bewerken. Verder is het aanmaken van bestellingen makkelijker en ondersteunen we nu gebundelde producten. Geniet van de verbeterde functionaliteit en blijf ons vooral je feedback sturen!
