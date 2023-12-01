@@ -546,8 +546,7 @@ class OrderCreateEditFormFragment :
         orderTotal: String = viewModel.orderDraft.value?.total.toString(),
     ) {
         if (viewModel.orderContainsProductsOrCustomAmounts()) {
-            val bottomSheet = CustomAmountTypeBottomSheetDialog()
-            bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
+            displayCustomAmountTypeBottomSheet()
         } else {
             OrderCreateEditNavigator.navigate(
                 this,
@@ -557,6 +556,11 @@ class OrderCreateEditFormFragment :
                 )
             )
         }
+    }
+
+    private fun displayCustomAmountTypeBottomSheet() {
+        val bottomSheet = CustomAmountTypeBottomSheetDialog()
+        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
     }
 
     private fun updateProgressBarsVisibility(
