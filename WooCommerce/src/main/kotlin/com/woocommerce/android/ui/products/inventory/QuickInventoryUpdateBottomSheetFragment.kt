@@ -10,6 +10,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
@@ -26,13 +28,34 @@ class QuickInventoryUpdateBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooTheme {
-                    QuickInventoryUpdateBottomSheet(args.productInfo) {
-                        viewModel.onIncrementQuantityClicked()
-                        dismiss()
-                    }
+                    QuickInventoryUpdateBottomSheet(
+                        product = args.productInfo,
+                        onIncrementQuantityClicked = {
+                            viewModel.onIncrementQuantityClicked()
+                            dismiss()
+                        },
+                        onViewProductDetailsClicked = { navigateToProductDetails(args.productInfo.id) }
+                    )
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is NavigateToProductDetailsEvent -> navigateToProductDetails(event.productId)
+            }
+        }
+    }
+
+    private fun navigateToProductDetails(productInfo: Long) {
+        (requireActivity() as? MainNavigationRouter)?.showProductDetail(productInfo)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
