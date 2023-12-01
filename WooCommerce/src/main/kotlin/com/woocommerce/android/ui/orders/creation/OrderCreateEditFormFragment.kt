@@ -606,7 +606,7 @@ class OrderCreateEditFormFragment :
                 newOrderData
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
-            paymentSection.bindGiftCardSubSection(newOrderData)
+            paymentSection.bindGiftCardSubSection()
         }
     }
 
@@ -690,9 +690,9 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
+    private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection() {
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
-            giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked(newOrderData.giftCard.orEmpty()) }
+            giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked() }
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
         }
     }
