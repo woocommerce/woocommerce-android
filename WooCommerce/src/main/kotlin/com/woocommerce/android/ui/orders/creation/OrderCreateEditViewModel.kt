@@ -1262,11 +1262,11 @@ class OrderCreateEditViewModel @Inject constructor(
                         }
                     )
                 )
-                tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
                 addCustomAmount(draft, customAmountUIModel)
             }
             draft.copy(feesLines = feesList)
         }
+        tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
         triggerEvent(Exit)
