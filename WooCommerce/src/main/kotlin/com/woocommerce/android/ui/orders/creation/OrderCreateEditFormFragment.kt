@@ -686,8 +686,12 @@ class OrderCreateEditFormFragment :
     }
 
     private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
-        giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked(newOrderData.giftCard.orEmpty()) }
-        addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
+        if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
+            giftCardButton.isVisible = true
+            giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked(newOrderData.giftCard.orEmpty()) }
+            addGiftCardButton.isVisible = true
+            addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
+        }
     }
 
     private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
