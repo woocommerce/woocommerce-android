@@ -1059,7 +1059,7 @@ class OrderCreateEditFormFragment :
             lockIcon.isVisible = false
             couponButton.isEnabled = state.isCouponButtonEnabled
             addCouponButton.isEnabled = state.isCouponButtonEnabled
-            addGiftCardButton.isEnabled = true
+            addGiftCardButton.isEnabled = state.isAddGiftCardButtonEnabled
             giftCardButton.isEnabled = true
         }
         customAmountsSection.apply {
