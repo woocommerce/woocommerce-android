@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -150,6 +151,8 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         data class ProductLoaded(val product: ProductInfo) : ViewState()
         object ProductUpdating : ViewState()
     }
+
+    data class NavigateToProductDetailsEvent(val productId: Long) : Event()
 
     companion object {
         private const val SCANNER_RESTART_DEBOUNCE_MS = 1000L
