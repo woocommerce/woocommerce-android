@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -24,4 +25,6 @@ class OrderCreateEditGiftCardFragment : BaseFragment() {
             }
         }
     }
+
+    override fun getFragmentTitle() = getString(R.string.order_creation_add_gift_card)
 }
