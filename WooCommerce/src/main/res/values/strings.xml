@@ -3380,6 +3380,9 @@
     <string name="theme_picker_error_title">An error occurred</string>
     <string name="theme_picker_error_message">Unable to load themes at this time.</string>
     <string name="theme_preview_title">Preview</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
+    <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>

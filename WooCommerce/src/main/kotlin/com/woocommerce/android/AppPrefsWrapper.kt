@@ -376,6 +376,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
+    fun getWCStoreID(siteID: Long) = AppPrefs.getWCStoreID(siteID)
+
+    fun setWCStoreID(siteID: Long, storeID: String?) {
+        AppPrefs.setWCStoreID(siteID, storeID)
+    }
+
     fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
         AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
 
