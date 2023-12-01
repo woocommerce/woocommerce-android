@@ -60,8 +60,8 @@ class ThemePreviewViewModel @Inject constructor(
         ViewState(
             themeName = theme.name,
             isFromStoreCreation = true, // TODO Pass this from the previous screen
-            themePages = demoPages.mapIndexed { index, page ->
-                page.copy(isLoaded = if (selectedPage == null) index == 0 else page.uri == selectedPage.uri)
+            themePages = demoPages.map { page ->
+                page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
             }
         )
     }.asLiveData()
