@@ -135,6 +135,31 @@ object AIPrompts {
         """.trimIndent()
     }
 
+    private const val ORDER_DETAIL_THANK_YOU_NOTE_PROMPT = "Write a 2 paragraphs thank-you note for a customer " +
+        "whose name is \"%1\$s\", who has just purchased a product named \"%2\$s\". \n" +
+        "%3\$s\n" +
+        "Your response should be in the ISO language code \"%4\$s\". \n" +
+        "Make sure the note sounds genuine and explains the appreciation well." +
+        "Use a 9th grade reading level.\n"
+
+    fun generateThankYouNotePrompt(
+        customerName: String,
+        productName: String,
+        productDescription: String = "",
+        languageISOCode: String = "en"
+    ): String {
+        val descriptionPart =
+            if (productDescription.isNotEmpty()) "Use the following product description to improve the " +
+                "thank-you note's message, but only if it makes sense: \"$productDescription\"" else ""
+        return String.format(
+            ORDER_DETAIL_THANK_YOU_NOTE_PROMPT,
+            customerName,
+            productName,
+            descriptionPart,
+            languageISOCode
+        )
+    }
+
     private const val LANGUAGE_IDENTIFICATION_PROMPT = "What is the ISO language code of the language used in the " +
         "below text? Do not include any explanations and only provide the ISO language code in your response. \n" +
         "Text: ```(%1\$s)```"

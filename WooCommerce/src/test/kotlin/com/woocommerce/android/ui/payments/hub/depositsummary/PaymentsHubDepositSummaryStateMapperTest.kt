@@ -18,6 +18,8 @@ class PaymentsHubDepositSummaryStateMapperTest {
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(150, "EUR") }.thenReturn("150€")
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(250, "EUR") }.thenReturn("250€")
         on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "USD") }.thenReturn("0$")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(250, "RUB") }.thenReturn("250R")
+        on { formatCurrencyGivenInTheSmallestCurrencyUnit(0, "RUB") }.thenReturn("0R")
     }
     private val dateFormatter: DateToDDMMMYYYYStringFormatter = mock()
     private val mapper = PaymentsHubDepositSummaryStateMapper(
@@ -48,7 +50,7 @@ class PaymentsHubDepositSummaryStateMapperTest {
         val result = mapper.mapDepositOverviewToViewModelOverviews(overview)
 
         // THEN
-        assertThat(result).isNull()
+        assertThat(result).isInstanceOf(PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate::class.java)
     }
 
     @Suppress("LongMethod")
@@ -112,20 +114,22 @@ class PaymentsHubDepositSummaryStateMapperTest {
         val result = mapper.mapDepositOverviewToViewModelOverviews(overview)
 
         // THEN
-        assertThat(result).isNotNull
-        assertThat(result?.defaultCurrency).isEqualTo("USD")
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("300$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(2)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(1)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
+        result as PaymentsHubDepositSummaryStateMapper.Result.Success
+        assertThat(result.overview.defaultCurrency).isEqualTo("USD")
+        assertThat(result.overview.infoPerCurrency["USD"]?.availableFundsFormatted).isEqualTo("100$")
+        assertThat(result.overview.infoPerCurrency["USD"]?.availableFundsAmount).isEqualTo(100)
+        assertThat(result.overview.infoPerCurrency["USD"]?.pendingFundsFormatted).isEqualTo("300$")
+        assertThat(result.overview.infoPerCurrency["USD"]?.pendingFundsAmount).isEqualTo(300)
+        assertThat(result.overview.infoPerCurrency["USD"]?.pendingBalanceDepositsCount).isEqualTo(2)
+        assertThat(result.overview.infoPerCurrency["USD"]?.fundsAvailableInDays).isEqualTo(1)
+        assertThat(result.overview.infoPerCurrency["USD"]?.fundsDepositInterval).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Weekly("monday")
         )
     }
 
     @Suppress("LongMethod")
     @Test
-    fun `given overview with multiple currencies and different deposit statuses, when mapDepositOverviewToViewModelOverviews, then return Overview with correct statuses`() {
+    fun `given overview with multiple currencies and different deposit statuses, when mapDepositOverviewToViewModelOverviews, then return Overview with correct statuses and sorted`() {
         // GIVEN
         val currentDate = System.currentTimeMillis()
         val overview = WooPaymentsDepositsOverview(
@@ -143,8 +147,8 @@ class PaymentsHubDepositSummaryStateMapperTest {
             balance = WooPaymentsDepositsOverview.Balance(
                 available = listOf(
                     WooPaymentsDepositsOverview.Balance.Info(
-                        amount = 100,
-                        currency = "USD",
+                        amount = 250,
+                        currency = "RUB",
                         fee = null,
                         feePercentage = null,
                         net = null,
@@ -161,7 +165,17 @@ class PaymentsHubDepositSummaryStateMapperTest {
                         transactionIds = null,
                         sourceTypes = null,
                         depositsCount = null
-                    )
+                    ),
+                    WooPaymentsDepositsOverview.Balance.Info(
+                        amount = 100,
+                        currency = "USD",
+                        fee = null,
+                        feePercentage = null,
+                        net = null,
+                        transactionIds = null,
+                        sourceTypes = null,
+                        depositsCount = null
+                    ),
                 ),
                 instant = null,
                 pending = null
@@ -188,6 +202,19 @@ class PaymentsHubDepositSummaryStateMapperTest {
                         automatic = true,
                         bankAccount = "bank_account",
                         created = currentDate,
+                        currency = "RUB",
+                        date = currentDate,
+                        fee = null,
+                        feePercentage = null,
+                        depositId = "deposit_id",
+                        status = "ESTIMATED",
+                        type = "type",
+                    ),
+                    WooPaymentsDepositsOverview.Deposit.Info(
+                        amount = 250,
+                        automatic = true,
+                        bankAccount = "bank_account",
+                        created = currentDate,
                         currency = "EUR",
                         date = currentDate,
                         fee = null,
@@ -195,6 +222,19 @@ class PaymentsHubDepositSummaryStateMapperTest {
                         depositId = "deposit_id",
                         status = "ESTIMATED",
                         type = "type",
+                    ),
+                    WooPaymentsDepositsOverview.Deposit.Info(
+                        amount = 200,
+                        automatic = true,
+                        bankAccount = "bank_account",
+                        created = currentDate,
+                        currency = "USD",
+                        date = currentDate,
+                        fee = null,
+                        feePercentage = null,
+                        depositId = "deposit_id",
+                        status = "PAID",
+                        type = "type"
                     )
                 ),
                 lastManualDeposits = null
@@ -207,30 +247,47 @@ class PaymentsHubDepositSummaryStateMapperTest {
         val result = mapper.mapDepositOverviewToViewModelOverviews(overview)
 
         // THEN
-        assertThat(result).isNotNull
-        assertThat(result?.defaultCurrency).isEqualTo("USD")
-        assertThat(result?.infoPerCurrency?.get("USD")?.lastDeposit?.status).isEqualTo(
+        result as PaymentsHubDepositSummaryStateMapper.Result.Success
+        assertThat(result.overview.defaultCurrency).isEqualTo("USD")
+        val firstKey = result.overview.infoPerCurrency.keys.elementAt(0)
+        val secondKey = result.overview.infoPerCurrency.keys.elementAt(1)
+        val thirdKey = result.overview.infoPerCurrency.keys.elementAt(2)
+        assertThat(result.overview.infoPerCurrency[firstKey]?.lastDeposit?.status).isEqualTo(
             PaymentsHubDepositSummaryState.Deposit.Status.PAID
         )
-        assertThat(result?.infoPerCurrency?.get("USD")?.lastDeposit?.amount).isEqualTo("200$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.lastDeposit?.date).isEqualTo(date)
-        assertThat(result?.infoPerCurrency?.get("EUR")?.nextDeposit?.status).isEqualTo(
+        assertThat(result.overview.infoPerCurrency[firstKey]?.lastDeposit?.amount).isEqualTo("200$")
+        assertThat(result.overview.infoPerCurrency[firstKey]?.lastDeposit?.date).isEqualTo(date)
+        assertThat(result.overview.infoPerCurrency[secondKey]?.nextDeposit?.status).isEqualTo(
             PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED
         )
-        assertThat(result?.infoPerCurrency?.get("EUR")?.nextDeposit?.amount).isEqualTo("250€")
-        assertThat(result?.infoPerCurrency?.get("EUR")?.nextDeposit?.date).isEqualTo(date)
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("100$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(30)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
+        assertThat(result.overview.infoPerCurrency[secondKey]?.nextDeposit?.amount).isEqualTo("250€")
+        assertThat(result.overview.infoPerCurrency[secondKey]?.nextDeposit?.date).isEqualTo(date)
+        assertThat(result.overview.infoPerCurrency[firstKey]?.availableFundsFormatted).isEqualTo("100$")
+        assertThat(result.overview.infoPerCurrency[firstKey]?.availableFundsAmount).isEqualTo(100)
+        assertThat(result.overview.infoPerCurrency[firstKey]?.pendingFundsFormatted).isEqualTo("0$")
+        assertThat(result.overview.infoPerCurrency[firstKey]?.pendingFundsAmount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency[firstKey]?.pendingBalanceDepositsCount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency[firstKey]?.fundsAvailableInDays).isEqualTo(30)
+        assertThat(result.overview.infoPerCurrency[firstKey]?.fundsDepositInterval).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
         )
-        assertThat(result?.infoPerCurrency?.get("EUR")?.availableFunds).isEqualTo("150€")
-        assertThat(result?.infoPerCurrency?.get("EUR")?.pendingFunds).isEqualTo("0€")
-        assertThat(result?.infoPerCurrency?.get("EUR")?.pendingBalanceDepositsCount).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("EUR")?.fundsAvailableInDays).isEqualTo(30)
-        assertThat(result?.infoPerCurrency?.get("EUR")?.fundsDepositInterval).isEqualTo(
+        assertThat(result.overview.infoPerCurrency[secondKey]?.availableFundsFormatted).isEqualTo("150€")
+        assertThat(result.overview.infoPerCurrency[secondKey]?.availableFundsAmount).isEqualTo(150)
+        assertThat(result.overview.infoPerCurrency[secondKey]?.pendingFundsFormatted).isEqualTo("0€")
+        assertThat(result.overview.infoPerCurrency[secondKey]?.pendingFundsAmount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency[secondKey]?.pendingBalanceDepositsCount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency[secondKey]?.fundsAvailableInDays).isEqualTo(30)
+        assertThat(result.overview.infoPerCurrency[secondKey]?.fundsDepositInterval).isEqualTo(
+            PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
+        )
+
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.availableFundsFormatted).isEqualTo("250R")
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.availableFundsAmount).isEqualTo(250)
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.pendingFundsFormatted).isEqualTo("0R")
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.pendingFundsAmount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.pendingBalanceDepositsCount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.fundsAvailableInDays).isEqualTo(30)
+        assertThat(result.overview.infoPerCurrency[thirdKey]?.fundsDepositInterval).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Monthly(15)
         )
     }
@@ -279,18 +336,20 @@ class PaymentsHubDepositSummaryStateMapperTest {
         val result = mapper.mapDepositOverviewToViewModelOverviews(overview)
 
         // THEN
-        assertThat(result).isNotNull
-        assertThat(result?.defaultCurrency).isEqualTo("USD")
-        assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.amount).isEqualTo("500$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.status).isEqualTo(
+        result as PaymentsHubDepositSummaryStateMapper.Result.Success
+        assertThat(result.overview.defaultCurrency).isEqualTo("USD")
+        assertThat(result.overview.infoPerCurrency["USD"]?.nextDeposit?.amount).isEqualTo("500$")
+        assertThat(result.overview.infoPerCurrency["USD"]?.nextDeposit?.status).isEqualTo(
             PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED
         )
-        assertThat(result?.infoPerCurrency?.get("USD")?.nextDeposit?.date).isEqualTo(date)
-        assertThat(result?.infoPerCurrency?.get("USD")?.availableFunds).isEqualTo("0$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingFunds).isEqualTo("0$")
-        assertThat(result?.infoPerCurrency?.get("USD")?.pendingBalanceDepositsCount).isEqualTo(0)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsAvailableInDays).isEqualTo(5)
-        assertThat(result?.infoPerCurrency?.get("USD")?.fundsDepositInterval).isEqualTo(
+        assertThat(result.overview.infoPerCurrency["USD"]?.nextDeposit?.date).isEqualTo(date)
+        assertThat(result.overview.infoPerCurrency["USD"]?.availableFundsFormatted).isEqualTo("0$")
+        assertThat(result.overview.infoPerCurrency["USD"]?.availableFundsAmount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency["USD"]?.pendingFundsFormatted).isEqualTo("0$")
+        assertThat(result.overview.infoPerCurrency["USD"]?.pendingFundsAmount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency["USD"]?.pendingBalanceDepositsCount).isEqualTo(0)
+        assertThat(result.overview.infoPerCurrency["USD"]?.fundsAvailableInDays).isEqualTo(5)
+        assertThat(result.overview.infoPerCurrency["USD"]?.fundsDepositInterval).isEqualTo(
             PaymentsHubDepositSummaryState.Info.Interval.Daily
         )
     }

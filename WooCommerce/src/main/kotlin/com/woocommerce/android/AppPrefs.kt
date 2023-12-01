@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.WC_STORE_ID
 import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
@@ -119,6 +120,8 @@ object AppPrefs {
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
+        MY_STORE_BLAZE_VIEW_DISMISSED,
+        WC_STORE_ID,
     }
 
     /**
@@ -1058,6 +1061,16 @@ object AppPrefs {
             value = value
         )
 
+    var isMyStoreBlazeViewDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
+            value = value
+        )
+
     fun incrementAIDescriptionTooltipShownNumber() {
         val currentTotal = getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
         setInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, currentTotal + 1)
@@ -1114,6 +1127,21 @@ object AppPrefs {
         ),
         default = false
     )
+
+    fun getWCStoreID(siteID: Long): String? = getString(
+        key = PrefKeyString(
+            "$WC_STORE_ID:$siteID"
+        )
+    ).orNullIfEmpty()
+
+    fun setWCStoreID(siteID: Long, storeID: String?) {
+        val key = PrefKeyString("$WC_STORE_ID:$siteID")
+        if (storeID.isNullOrEmpty()) {
+            remove(key)
+        } else {
+            setString(key, storeID)
+        }
+    }
 
     /**
      * Auto-tax-rate setting
