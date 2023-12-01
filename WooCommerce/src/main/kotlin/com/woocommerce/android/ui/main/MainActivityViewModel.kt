@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.isWooExpressSiteReadyToUse
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
@@ -176,7 +177,7 @@ class MainActivityViewModel @Inject constructor(
     private fun handlePostStoreCreationTasks() = launch(dispatchers.io) {
         val createdStoreSiteId = prefs.createdStoreSiteId
         if (createdStoreSiteId != null &&
-            siteStore.getSiteBySiteId(createdStoreSiteId)?.hasWooCommerce == true
+            siteStore.getSiteBySiteId(createdStoreSiteId).isWooExpressSiteReadyToUse
         ) {
             prefs.createdStoreSiteId = null
             if (selectedSite.get().siteId != createdStoreSiteId) {
