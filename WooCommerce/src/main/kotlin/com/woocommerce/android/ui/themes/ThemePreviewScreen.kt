@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.themes
 
 import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,13 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
@@ -73,7 +70,6 @@ fun ThemePreviewScreen(
             activityRegistry = activityRegistry,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
-            viewModel::onSelectThemeClicked,
             viewModel::onPreviewTypeChanged
         )
     }
@@ -88,7 +84,6 @@ fun ThemePreviewScreen(
     activityRegistry: ActivityResultRegistry,
     onPageSelected: (String) -> Unit,
     onBackNavigationClicked: () -> Unit,
-    onSelectThemeClicked: () -> Unit,
     onPreviewTypeChanged: (PreviewType) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -149,29 +144,6 @@ fun ThemePreviewScreen(
                         .fillMaxWidth()
                         .weight(1f)
                 )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = colorResource(id = color.color_surface))
-                        .padding(dimensionResource(id = dimen.major_100))
-                ) {
-                    WCColoredButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = dimensionResource(id = dimen.major_100)),
-                        onClick = onSelectThemeClicked,
-                        text = stringResource(id = string.theme_preview_select_theme_button)
-                    )
-
-                    Text(
-                        text = stringResource(id = string.theme_preview_current_theme, state.themeName),
-                        color = colorResource(id = color.color_on_surface_medium),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
             }
         }
     }
