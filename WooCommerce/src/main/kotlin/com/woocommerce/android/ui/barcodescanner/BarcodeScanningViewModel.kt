@@ -126,7 +126,7 @@ class BarcodeScanningViewModel @Inject constructor(
     }
 
     private fun createChannel() = Channel<ImageProxy>(
-        Channel.BUFFERED,
+        capacity = BUFFER_SIZE,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
@@ -166,5 +166,9 @@ class BarcodeScanningViewModel @Inject constructor(
         ) : PermissionState()
 
         object Unknown : PermissionState()
+    }
+
+    private companion object {
+        private const val BUFFER_SIZE = 30
     }
 }

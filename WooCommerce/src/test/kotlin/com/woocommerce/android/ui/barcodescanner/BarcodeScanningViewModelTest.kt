@@ -380,6 +380,6 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             }
             advanceUntilIdle()
 
-            assertThat(events).hasSize(2)
+            assertThat(events).hasSize(31)
         }
 }
