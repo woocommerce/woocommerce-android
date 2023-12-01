@@ -1826,7 +1826,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1846,7 +1847,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
