@@ -27,6 +27,8 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        triggerEvent(ExitWithResult(_giftCard.value))
+        triggerEvent(ExitWithResult(GiftCardResult(_giftCard.value)))
     }
+
+    data class GiftCardResult(val selectedGiftCard: String)
 }
