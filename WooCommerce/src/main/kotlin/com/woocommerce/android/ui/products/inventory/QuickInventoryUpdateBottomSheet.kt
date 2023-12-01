@@ -100,7 +100,7 @@ fun QuickInventoryUpdateBottomSheet(
                 text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
             )
             WCOutlinedButton(
-                onClick =  onViewProductDetailsClicked,
+                onClick = onViewProductDetailsClicked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
