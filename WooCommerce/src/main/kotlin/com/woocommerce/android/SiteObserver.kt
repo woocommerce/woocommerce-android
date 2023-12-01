@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.environment.EnvironmentRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -16,7 +17,8 @@ import javax.inject.Inject
  */
 class SiteObserver @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val environmentRepository: EnvironmentRepository
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
         selectedSite.observe()
@@ -25,6 +27,13 @@ class SiteObserver @Inject constructor(
             .collect { site ->
                 WooLog.d(WooLog.T.UTILS, "Fetch plugins for site ${site.name}")
                 wooCommerceStore.fetchSitePlugins(site)
+
+                // Makes sure the store ID is fetched for the site.
+                environmentRepository.fetchOrGetStoreID(site)
+                    .takeIf { result -> result.isError.not() }
+                    ?.model?.let { storeID ->
+                        WooLog.d(WooLog.T.UTILS, "Fetched StoreID $storeID for site ${site.name}")
+                    }
             }
     }
 }

@@ -320,7 +320,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun initAnalytics() {
-        AnalyticsTracker.init(application, selectedSite)
+        AnalyticsTracker.init(application, selectedSite, prefs)
 
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }

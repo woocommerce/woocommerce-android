@@ -172,7 +172,9 @@
             android:id="@+id/gift_card_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/major_300">
+            android:minHeight="@dimen/major_300"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/gift_card_button"
@@ -358,6 +360,7 @@
             app:icon="@drawable/ic_add"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_gift_card_button"
             style="@style/Woo.Button.TextButton.Secondary"

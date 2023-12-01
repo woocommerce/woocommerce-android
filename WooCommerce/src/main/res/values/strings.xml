@@ -2016,6 +2016,7 @@
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
+    <string name="product_filter_explore_plugin">Explore!</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3375,6 +3376,9 @@
     <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
     <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
+    <string name="theme_picker_error_title">An error occurred</string>
+    <string name="theme_picker_error_message">Unable to load themes at this time.</string>
+    <string name="theme_preview_title">Preview</string>
 
     <!--
     Store onboarding
