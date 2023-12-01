@@ -117,6 +117,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -145,7 +146,6 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.util.FeatureFlag
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -578,9 +578,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
-        viewState = viewState.copy(isAddGiftCardButtonEnabled = order.hasProducts()
-            && order.isEditable
-            && FeatureFlag.ORDER_GIFT_CARD.isEnabled()
+        viewState = viewState.copy(
+            isAddGiftCardButtonEnabled = order.hasProducts() &&
+                order.isEditable &&
+                FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
     }
 

@@ -63,5 +63,3 @@ fun EditGiftCardScreen(
 private fun EditGiftCardScreenPreview() {
     EditGiftCardScreen("XPTO-1234-ABCD-XPTO", {}, {})
 }
-
-
