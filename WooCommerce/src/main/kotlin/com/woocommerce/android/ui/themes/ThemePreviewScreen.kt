@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -37,16 +38,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.Screen.ScreenType
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Desktop
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Mobile
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Tablet
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.rememberScreen
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.DESKTOP
@@ -130,19 +138,27 @@ fun ThemePreviewScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+                val screen = rememberScreen()
+
                 WCWebView(
                     url = state.demoUri,
                     userAgent = userAgent,
                     wpComAuthenticator = wpComWebViewAuthenticator,
-                    initialScale = when (state.previewType) {
-                        MOBILE -> 0
-                        TABLET -> 150
-                        DESKTOP -> 50
-                    },
+                    initialScale = state.previewType.initialScale(screen.type),
+                    loadWithOverviewMode = true,
                     activityRegistry = activityRegistry,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .then(
+                            if (state.previewType == MOBILE && screen.type != Mobile) {
+                                Modifier.widthIn(max = Mobile.width.dp)
+                            } else if (state.previewType == TABLET && screen.type == Desktop) {
+                                Modifier.widthIn(max = Tablet.width.dp)
+                            } else {
+                                Modifier.fillMaxWidth()
+                            }
+                        )
                         .weight(1f)
+                        .align(Alignment.CenterHorizontally)
                 )
             }
         }
@@ -212,4 +228,31 @@ private fun ThemeDemoPagesBottomSheet(
     onPageSelected: (String) -> Unit,
 ) {
     // TODO display demo pager here
+}
+
+@Composable
+private fun PreviewType.initialScale(screenType: ScreenType): Int {
+    return when (screenType) {
+        Mobile -> {
+            when (this) {
+                MOBILE -> 0
+                TABLET -> 160
+                DESKTOP -> 110
+            }
+        }
+        Tablet -> {
+            when (this) {
+                MOBILE -> 160
+                TABLET -> 0
+                DESKTOP -> 110
+            }
+        }
+        Desktop -> {
+            when (this) {
+                MOBILE -> 160
+                TABLET -> 0
+                DESKTOP -> 0
+            }
+        }
+    }
 }
