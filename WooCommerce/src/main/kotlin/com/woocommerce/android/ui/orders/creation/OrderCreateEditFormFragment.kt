@@ -47,6 +47,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
+import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment.Companion.GIFT_CARD_RESULT
+import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
@@ -952,6 +954,9 @@ class OrderCreateEditFormFragment :
             ProductConfigurationFragment.PRODUCT_CONFIGURATION_RESULT
         ) { result ->
             viewModel.onConfigurationChanged(result.itemId, result.productConfiguration)
+        }
+        handleResult<GiftCardResult>(GIFT_CARD_RESULT) { result ->
+            viewModel.onGiftCardSelected(result.selectedGiftCard)
         }
     }
 

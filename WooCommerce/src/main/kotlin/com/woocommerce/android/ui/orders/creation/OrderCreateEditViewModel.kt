@@ -986,6 +986,12 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
     }
 
+    fun onGiftCardSelected(selectedGiftCard: String) {
+        _orderDraft.update { order ->
+            order.copy(giftCards = selectedGiftCard)
+        }
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
