@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import androidx.camera.core.Preview as CameraPreview
 
+@Suppress("TooGenericExceptionCaught")
 @Composable
 fun BarcodeScanner(
     onNewFrame: (ImageProxy) -> Unit,
