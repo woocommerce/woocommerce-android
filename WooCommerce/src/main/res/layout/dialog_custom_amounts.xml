@@ -128,7 +128,7 @@
                     android:imeOptions="flagNoFullscreen"
                     android:textSize="@dimen/line_height_major_100"
                     android:inputType="number"
-                    android:hint="0"
+                    android:hint="@string/custom_amounts_percentage_hint"
                     android:paddingBottom="@dimen/minor_00"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
