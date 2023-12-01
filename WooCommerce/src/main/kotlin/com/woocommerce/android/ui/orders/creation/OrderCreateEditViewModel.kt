@@ -1233,16 +1233,6 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
-        tracker.track(
-            ORDER_FEE_ADD,
-            mapOf(
-                KEY_FLOW to flow,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to when (customAmountUIModel.taxStatus.isTaxable) {
-                    true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
-                    false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
-                }
-            )
-        )
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
@@ -1251,6 +1241,16 @@ class OrderCreateEditViewModel @Inject constructor(
                 updateCustomAmount(draft, customAmountUIModel)
             } else {
                 // If no FeeLine with the given ID exists, we add a new one.
+                tracker.track(
+                    ORDER_FEE_ADD,
+                    mapOf(
+                        KEY_FLOW to flow,
+                        KEY_CUSTOM_AMOUNT_TAX_STATUS to when (customAmountUIModel.taxStatus.isTaxable) {
+                            true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+                            false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+                        }
+                    )
+                )
                 tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
                 addCustomAmount(draft, customAmountUIModel)
             }
