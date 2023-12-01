@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.themes
 
 import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,9 @@ import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.rememberModalBottomSheetState
@@ -46,8 +47,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -65,6 +64,7 @@ import com.woocommerce.android.ui.compose.Screen.ScreenType.Desktop
 import com.woocommerce.android.ui.compose.Screen.ScreenType.Mobile
 import com.woocommerce.android.ui.compose.Screen.ScreenType.Tablet
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.rememberScreen
@@ -141,12 +141,19 @@ fun ThemePreviewScreen(
     ) {
         Scaffold(
             topBar = {
-                DemoSectionsToolbar(
-                    state,
-                    coroutineScope,
-                    modalSheetState,
-                    onBackNavigationClicked,
-                    onPreviewTypeChanged
+                Toolbar(
+                    title = {
+                        DemoSectionsToolbar(
+                            state,
+                            coroutineScope,
+                            modalSheetState
+                        )
+                    },
+                    navigationIcon = Filled.ArrowBack,
+                    onNavigationButtonClick = onBackNavigationClicked,
+                    actions = {
+                        ThemePreviewMenu(state.previewType, onPreviewTypeChanged)
+                    }
                 )
             },
             backgroundColor = MaterialTheme.colors.surface
@@ -234,62 +241,44 @@ private fun DemoSectionsToolbar(
     state: ViewState,
     coroutineScope: CoroutineScope,
     modalSheetState: ModalBottomSheetState,
-    onBackNavigationClicked: () -> Unit,
-    onPreviewTypeChanged: (PreviewType) -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .wrapContentHeight()
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(drawable.ic_gridicons_cross_24dp),
-            contentDescription = "",
-            modifier = Modifier
-                .clickable { onBackNavigationClicked() }
-                .padding(dimensionResource(id = dimen.major_100))
-        )
-        Column(
-            modifier = Modifier
-                .padding(start = dimensionResource(id = dimen.major_150))
-                .clickable {
-                    if (state.themePages.isNotEmpty()) {
-                        coroutineScope.launch {
-                            if (modalSheetState.isVisible)
-                                modalSheetState.hide()
-                            else {
-                                modalSheetState.show()
-                            }
+            .padding(start = dimensionResource(id = dimen.major_150))
+            .clickable {
+                if (state.themePages.isNotEmpty()) {
+                    coroutineScope.launch {
+                        if (modalSheetState.isVisible)
+                            modalSheetState.hide()
+                        else {
+                            modalSheetState.show()
                         }
                     }
                 }
-                .padding(dimensionResource(id = dimen.major_100))
-        ) {
-            Text(
-                text = stringResource(id = string.theme_preview_title),
-                style = MaterialTheme.typography.body1,
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = state.currentPage.title,
-                    style = MaterialTheme.typography.caption,
-                )
-                Icon(
-                    modifier = Modifier
-                        .size(dimensionResource(id = dimen.major_100))
-                        .padding(
-                            start = dimensionResource(id = dimen.minor_50),
-                            top = dimensionResource(id = dimen.minor_75),
-                        ),
-                    painter = painterResource(drawable.ic_arrow_down),
-                    contentDescription = "",
-                    tint = colorResource(id = color.color_on_surface)
-                )
             }
+    ) {
+        Text(
+            text = stringResource(id = string.theme_preview_title),
+            style = MaterialTheme.typography.body1,
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = state.currentPage.title,
+                style = MaterialTheme.typography.caption,
+            )
+            Icon(
+                modifier = Modifier
+                    .size(dimensionResource(id = dimen.major_100))
+                    .padding(
+                        start = dimensionResource(id = dimen.minor_50),
+                        top = dimensionResource(id = dimen.minor_75),
+                    ),
+                painter = painterResource(drawable.ic_arrow_down),
+                contentDescription = "",
+                tint = colorResource(id = color.color_on_surface)
+            )
         }
-
-        ThemePreviewMenu(state.previewType, onPreviewTypeChanged)
     }
 }
 
@@ -331,33 +320,22 @@ private fun ThemePreviewMenu(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
+    IconButton(onClick = { showMenu = !showMenu }) {
+        Icon(
+            imageVector = Outlined.Devices,
+            tint = MaterialTheme.colors.onSurface,
+            contentDescription = stringResource(string.theme_preview_title),
+        )
+    }
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
     ) {
-        IconButton(
-            modifier = Modifier.align(Alignment.TopEnd),
-            onClick = { showMenu = !showMenu }
-        ) {
-            Icon(
-                imageVector = Outlined.Devices,
-                tint = MaterialTheme.colors.onSurface,
-                contentDescription = stringResource(string.theme_preview_title),
-            )
-        }
-
-        DropdownMenu(
-            modifier = Modifier
-                .align(Alignment.TopEnd),
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            PreviewMenuItem(MOBILE, string.theme_preview_type_mobile)
-            Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
-            PreviewMenuItem(TABLET, string.theme_preview_type_tablet)
-            Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
-            PreviewMenuItem(DESKTOP, string.theme_preview_type_desktop)
-        }
+        PreviewMenuItem(MOBILE, string.theme_preview_type_mobile)
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        PreviewMenuItem(TABLET, string.theme_preview_type_tablet)
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        PreviewMenuItem(DESKTOP, string.theme_preview_type_desktop)
     }
 }
 
