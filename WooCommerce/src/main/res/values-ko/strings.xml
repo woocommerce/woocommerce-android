@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-24 09:54:23+0000
+Translation-Revision-Date: 2023-11-28 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="configuration_required">구성 필수</string>
+    <string name="blaze_overflow_menu_hide_blaze">Blaze 숨기기</string>
+    <string name="ai_order_thank_you_note_copy_label">AI로 생성된 감사 인사</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">감사 인사를 생성할 수 없습니다. 아래 버튼을 사용하여 다시 시도하세요.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">공유</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">재생성</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ 주문에 대한 감사 인사 생성 중…</string>
+    <string name="ai_order_thank_you_note_dialog_title">감사 인사</string>
+    <string name="subscription_one_time_shipping_note">참고: 이 설정을 활성화하려면 구독에 무료 평가판 또는 동기화된 갱신 날짜가 없어야 합니다.</string>
+    <string name="subscription_one_time_shipping_description">활성화하면 초기 주문 시 한 번만 배송비가 청구됩니다.</string>
+    <string name="subscription_one_time_shipping_enabled">활성화됨</string>
+    <string name="subscription_one_time_shipping">1회 배송</string>
+    <string name="product_downloadable_files_add_documents_from_device">기기의 문서 및 기타 파일</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨감사 인사 생성</string>
+    <string name="custom_amounts_tax_label">세금 청구</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">%s마다 사용 가능한 자금이 자동으로 예치됩니다.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">매일 사용 가능한 자금이 자동으로 예치됩니다.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">%d일 대기 후 자금을 이용할 수 있게 됩니다.</string>
     <string name="product_variation_picker_title">변형 선택</string>
-    <string name="configuration_variable_update">변형 업데이트</string>
+    <string name="configuration_variable_update">변형 선택</string>
     <string name="configuration_children_issue"> \" %1$s \" -&gt; %2$s </string>
     <string name="configuration_variable_selection"> 변형을 선택하세요. </string>
     <string name="configuration_quantity_items_selected_plural"> %1$s개 아이템 선택됨 </string>
@@ -22,7 +37,6 @@ Language: ko_KR
     <string name="configuration_quantity_between"> %1$s~%2$s개 아이템  </string>
     <string name="configuration_quantity_item_plural">%d개 아이템</string>
     <string name="configuration_quantity_item">%d개 아이템</string>
-    <string name="configuration_issues">구성 문제</string>
     <string name="order_configuration_change_product_quantity">%1$f개에서 %2$f개로 상품 수량 변경</string>
     <string name="save_configuration">구성 저장</string>
     <string name="product_configuration_title">구성</string>
@@ -207,8 +221,7 @@ Language: ko_KR
     <string name="tax_rate_selector_empty_list_title">어떠한 세율도 찾을 수 없음</string>
     <string name="store_onboarding_payments_setup_description">다른 결제 제공업체를 살펴보고 \n결제 제공업체를 선택합니다.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">결제 수단</string>
-    <string name="product_downloadable_files_add_documents_from_device">기기의 문서</string>
-    <string name="product_downloadable_files_add_media_from_device">기기의 미디어 파일</string>
+    <string name="product_downloadable_files_add_media_from_device">기기의 이미지와 비디오</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">지금 해결</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">설정 완료</string>
     <string name="tax_rate_selector_title">세율 설정</string>
@@ -500,7 +513,7 @@ Language: ko_KR
     <string name="settings_privacy_header">개인정보</string>
     <string name="settings_usage_tracking_description">이 데이터 공유를 제어하기 위해 당사에서 수집하는 회원님의 스토어와 옵션에 대한 데이터에 대해 자세히 알아보세요.</string>
     <string name="settings_usage_tracking">사용량 추적</string>
-    <string name="settings_web_options_description">woocommerce.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
+    <string name="settings_web_options_description">Woo.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
     <string name="settings_web_options">웹 옵션</string>
     <string name="settings_more_privacy_options_header">추가 개인정보 옵션</string>
     <string name="settings_tracking_analytics_error_update">프라이버시 설정 업데이트 중 오류가 발생했습니다.</string>
