@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.giftcards
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
 @HiltViewModel
 class OrderCreateEditGiftCardViewModel @Inject constructor(
@@ -30,5 +32,6 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         triggerEvent(ExitWithResult(GiftCardResult(_giftCard.value)))
     }
 
-    data class GiftCardResult(val selectedGiftCard: String)
+    @Parcelize
+    data class GiftCardResult(val selectedGiftCard: String): Parcelable
 }
