@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 16.5
-The latest WooCommerce app version focuses on stability improvements! Additionally, WooPayments users can now enjoy seamlessly switching between currencies on the Deposits Summary view. Upgrade now for a smoother WooCommerce experience!
+The latest WooCommerce app version focuses on stability improvements! Additionally, WooPayments users can now enjoy seamlessly switch between currencies on the Deposits Summary view. Upgrade now for a smoother WooCommerce experience!
 
 ## 16.4
 We're excited to introduce some new features! Our latest update allows you to charge tax for custom amounts and set one-time shipping for subscription products. You can also set subscription products as "virtual products". Plus, we've added an AI feature that generates a thank-you note on the completed order's details screen. Enjoy our new and improved WooCommerce app!
