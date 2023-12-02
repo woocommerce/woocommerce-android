@@ -13,7 +13,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.use
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.view.setPadding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -165,12 +164,13 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             val addingCustomAmountsButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
             addingCustomAmountsButton.text = addCustomAmountsButton.text
             addingCustomAmountsButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
+            addingCustomAmountsButton.gravity = Gravity.START or Gravity.CENTER_VERTICAL
             addingCustomAmountsButton.setOnClickListener { addCustomAmountsButton.onClickListener() }
             val addCustomAmountsButtonParams = RelativeLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT,
+                LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT
             )
-            addCustomAmountsButtonParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+            addCustomAmountsButtonParams.addRule(RelativeLayout.ALIGN_PARENT_START)
             addingProductsManuallyButtonId?.let {
                 addCustomAmountsButtonParams.addRule(RelativeLayout.BELOW, addingProductsManuallyButtonId)
             }
@@ -199,7 +199,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
             )
-            addProductsViaScanningButtonParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+            addProductsViaScanningButtonParams.addRule(RelativeLayout.ALIGN_PARENT_END)
             addingProductsViaScanningButton.layoutParams = addProductsViaScanningButtonParams
             container.addView(addingProductsViaScanningButton)
         }
@@ -214,13 +214,13 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT
         )
-        addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+        addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_START)
         val addingProductsManuallyButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
         addingProductsManuallyButton.text = addProductsButton.text
         addingProductsManuallyButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
         addingProductsManuallyButton.id = id
         addingProductsManuallyButton.layoutParams = addProductButtonsParams
-        addingProductsManuallyButton.gravity = Gravity.START
+        addingProductsManuallyButton.gravity = Gravity.START or Gravity.CENTER_VERTICAL
         addingProductsManuallyButton.setOnClickListener { addProductsButton.onClickListener() }
 
         container.addView(addingProductsManuallyButton)
