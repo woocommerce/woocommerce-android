@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
@@ -12,6 +14,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,10 +27,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -41,6 +44,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +64,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -527,7 +532,7 @@ private fun AmountPicker(
             selection = if (isFocused) {
                 TextRange(
                     start = 0,
-                    end = textFieldValue.text.length
+                    end = amount.length - 1
                 )
             } else {
                 TextRange.Zero
@@ -535,49 +540,74 @@ private fun AmountPicker(
         )
     }
 
-    Row(
-        modifier = modifier
-            .border(
-                1.dp,
-                colorResource(id = R.color.divider_color),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
-            )
-            .wrapContentWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
-    ) {
-        val decreaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
-        val increaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
-        IconButton(onClick = onDecreaseClicked, enabled = isAmountChangeable) {
-            Icon(
-                imageVector = Icons.Filled.Remove,
-                contentDescription =
-                stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
-                tint = decreaseButtonTint
+    val elevation = animateDpAsState(
+        targetValue = if (isFocused) 4.dp else 0.dp,
+        label = "elevation"
+    )
+
+    val fontStyleAnimation = animateFloatAsState(
+        targetValue = if (isFocused) 1.0F else 0.0F,
+        label = "fontSize"
+    )
+
+    val nonFocusedFontStyle = MaterialTheme.typography.body1
+    val focusedFontStyle = MaterialTheme.typography.h4
+    val textStyle by remember(fontStyleAnimation.value) {
+        derivedStateOf {
+            lerp(
+                nonFocusedFontStyle,
+                focusedFontStyle,
+                fontStyleAnimation.value
             )
         }
-        BasicTextField(
-            value = textFieldValue,
-            onValueChange = {},
-            readOnly = !isAmountChangeable,
-            singleLine = true,
-            textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            interactionSource = interactionSource,
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
-                .width(IntrinsicSize.Min)
+    }
+
+    Card(
+        modifier = modifier,
+        elevation = elevation.value,
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large)),
+        border = BorderStroke(
+            width = 1.dp,
+            color = colorResource(id = R.color.divider_color),
         )
-        IconButton(onClick = onIncreaseClicked, enabled = isAmountChangeable) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription =
-                stringResource(id = R.string.order_creation_increase_item_amount_content_description),
-                tint = increaseButtonTint
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+        ) {
+            val decreaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
+            val increaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
+            IconButton(onClick = onDecreaseClicked, enabled = isAmountChangeable) {
+                Icon(
+                    imageVector = Icons.Filled.Remove,
+                    contentDescription =
+                    stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
+                    tint = decreaseButtonTint
+                )
+            }
+            BasicTextField(
+                value = textFieldValue,
+                onValueChange = {},
+                readOnly = !isAmountChangeable,
+                singleLine = true,
+                textStyle = textStyle,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                interactionSource = interactionSource,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
+                    .width(IntrinsicSize.Min)
             )
+            IconButton(onClick = onIncreaseClicked, enabled = isAmountChangeable) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription =
+                    stringResource(id = R.string.order_creation_increase_item_amount_content_description),
+                    tint = increaseButtonTint
+                )
+            }
         }
     }
 }
