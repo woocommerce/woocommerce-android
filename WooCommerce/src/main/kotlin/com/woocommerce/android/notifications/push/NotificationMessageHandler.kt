@@ -11,7 +11,6 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
-import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.notifications.getDefaults
@@ -39,7 +38,6 @@ import kotlin.random.Random
 
 @Singleton
 class NotificationMessageHandler @Inject constructor(
-    private val notificationChannelsHandler: NotificationChannelsHandler,
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
@@ -183,14 +181,15 @@ class NotificationMessageHandler @Inject constructor(
 
         val channelType = notification.channelType
         val defaults = channelType.getDefaults(appPrefsWrapper)
-        val channelId = with(notificationChannelsHandler) {
-            channelType.getChannelId()
-        }
+
         val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
         with(notificationBuilder) {
             buildAndDisplayWooNotification(
-                localPushId, defaults, channelId, notification,
-                appPrefsWrapper.isOrderNotificationsChaChingEnabled(), isGroupNotification
+                pushId = localPushId,
+                defaults = defaults,
+                notification = notification,
+                addCustomNotificationSound = appPrefsWrapper.isOrderNotificationsChaChingEnabled(),
+                isGroupNotification = isGroupNotification
             )
 
             if (isGroupNotification) {
@@ -206,8 +205,11 @@ class NotificationMessageHandler @Inject constructor(
                     notesMap.size - MAX_INBOX_ITEMS
                 )
                 buildAndDisplayWooGroupNotification(
-                    channelId, stringBuilder.toString(), subject, summaryText, notification,
-                    notesMap.size > MAX_INBOX_ITEMS
+                    inboxMessage = stringBuilder.toString(),
+                    subject = subject,
+                    summaryText = summaryText,
+                    notification = notification,
+                    shouldDisplaySummaryText = notesMap.size > MAX_INBOX_ITEMS
                 )
             }
         }

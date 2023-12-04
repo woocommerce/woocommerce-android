@@ -24,7 +24,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WooNotificationBuilder @Inject constructor(private val context: Context) {
+class WooNotificationBuilder @Inject constructor(
+    private val context: Context,
+    private val notificationChannelsHandler: NotificationChannelsHandler
+) {
     fun isNotificationsEnabled(): Boolean {
         return NotificationManagerCompat.from(context.applicationContext).areNotificationsEnabled()
     }
@@ -62,12 +65,12 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     }
 
     fun buildAndDisplayLocalNotification(
-        channelId: String,
         notification: Notification,
         notificationTappedIntent: Intent,
         actions: List<Pair<String, Intent>> = emptyList()
     ) {
         val channelType = notification.channelType
+        val channelId = with(notificationChannelsHandler) { channelType.getChannelId() }
         getNotificationBuilder(channelId, notification).apply {
             val notificationContentIntent =
                 buildPendingIntentForGivenIntent(notification.noteId, notificationTappedIntent)
@@ -96,12 +99,12 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     fun buildAndDisplayWooNotification(
         pushId: Int,
         defaults: Int,
-        channelId: String,
         notification: Notification,
         addCustomNotificationSound: Boolean,
         isGroupNotification: Boolean
     ) {
         val channelType = notification.channelType
+        val channelId = with(notificationChannelsHandler) { channelType.getChannelId() }
         getNotificationBuilder(channelId, notification).apply {
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
             setDefaults(defaults)
@@ -122,7 +125,6 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     }
 
     fun buildAndDisplayWooGroupNotification(
-        channelId: String,
         inboxMessage: String,
         subject: String,
         summaryText: String,
@@ -130,10 +132,12 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
         shouldDisplaySummaryText: Boolean,
     ) {
         val inboxStyle = NotificationCompat.InboxStyle().addLine(inboxMessage)
+        val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
 
         if (shouldDisplaySummaryText) {
             inboxStyle.setSummaryText(summaryText)
         }
+
         NotificationCompat.Builder(context, channelId)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
             .setSmallIcon(R.drawable.ic_woo_w_notification)
