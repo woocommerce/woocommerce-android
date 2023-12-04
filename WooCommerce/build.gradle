@@ -269,6 +269,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+    implementation 'androidx.compose.material3:material3:1.1.2'
 
     kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"

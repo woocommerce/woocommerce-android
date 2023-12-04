@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.connection.actions
 
+import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
-import com.stripe.stripeterminal.external.models.DiscoveryMethod
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
@@ -30,20 +30,33 @@ internal class DiscoverReadersAction(
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
     }
 
+    @RequiresPermission(
+        value = "android.permission.ACCESS_FINE_LOCATION",
+    )
     fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
-        discoverReaders(isSimulated, DiscoveryMethod.LOCAL_MOBILE)
+        discoverReaders(DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(isSimulated))
 
+    @RequiresPermission(
+        allOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.BLUETOOTH_CONNECT",
+            "android.permission.BLUETOOTH_SCAN"
+        ]
+    )
     fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
-        discoverReaders(isSimulated, DiscoveryMethod.BLUETOOTH_SCAN)
+        discoverReaders(
+            DiscoveryConfiguration.BluetoothDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated)
+        )
 
-    private fun discoverReaders(isSimulated: Boolean, discoveryMethod: DiscoveryMethod): Flow<DiscoverReadersStatus> {
+    @RequiresPermission(
+        anyOf = [
+            "android.permission.ACCESS_FINE_LOCATION",
+            "android.permission.ACCESS_COARSE_LOCATION"
+        ],
+    )
+    private fun discoverReaders(config: DiscoveryConfiguration): Flow<DiscoverReadersStatus> {
         return callbackFlow {
             sendAndLog(Started, logWrapper)
-            val config = DiscoveryConfiguration(
-                DISCOVERY_TIMEOUT_IN_SECONDS,
-                discoveryMethod,
-                isSimulated,
-            )
             var foundReaders: List<Reader>? = null
             val cancelable = terminal.discoverReaders(
                 config,

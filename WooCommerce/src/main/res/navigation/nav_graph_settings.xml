@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
+    <include app:graph="@navigation/nav_graph_jetpack_install" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
+    <include app:graph="@navigation/nav_graph_themes" />
     <fragment
         android:id="@+id/mainSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
@@ -48,6 +51,9 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_themePickerFragment"
+            app:destination="@id/nav_graph_themes" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -153,16 +159,14 @@
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
         app:destination="@id/WPComWebViewFragment" />
-    <include app:graph="@navigation/nav_graph_jetpack_install" />
     <fragment
         android:id="@+id/developerOptionsFragment"
         android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
         android:label="DeveloperOptionsFragment" />
-    <include app:graph="@navigation/nav_graph_domain_change" />
     <fragment
         android:id="@+id/accountSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.account.AccountSettingsFragment"
-        android:label="AccountSettingsFragment" >
+        android:label="AccountSettingsFragment">
         <action
             android:id="@+id/action_accountSettingsFragment_to_closeAccountDialogFragment"
             app:destination="@id/closeAccountDialogFragment" />
@@ -174,11 +178,10 @@
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
-        android:label="NameYourStoreDialogFragment" >
+        android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
-
 </navigation>
