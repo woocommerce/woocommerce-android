@@ -5,6 +5,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
@@ -12,7 +13,8 @@ import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
 import javax.inject.Inject
 
 class NotificationChannelsHandler @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
     private val notificationManagerCompat: NotificationManagerCompat by lazy {
         NotificationManagerCompat.from(context)
@@ -20,6 +22,13 @@ class NotificationChannelsHandler @Inject constructor(
 
     init {
         createChannels()
+    }
+
+    @Suppress("unused")
+    fun recreateNotificationChannel(channelType: NotificationChannelType) {
+        notificationManagerCompat.deleteNotificationChannel(channelType.getChannelId())
+        appPrefsWrapper.incrementNotificationChannelTypeSuffix(channelType)
+        createChannel(channelType)
     }
 
     private fun createChannels() {
@@ -48,13 +57,16 @@ class NotificationChannelsHandler @Inject constructor(
     }
 
     fun NotificationChannelType.getChannelId(): String {
-        return context.getString(
+        val baseChannelId = context.getString(
             when (this) {
                 NEW_ORDER -> R.string.notification_channel_order_id
                 REVIEW -> R.string.notification_channel_review_id
                 OTHER -> R.string.notification_channel_general_id
             }
         )
+        val suffix = appPrefsWrapper.getNotificationChannelTypeSuffix(this)
+
+        return suffix?.let { "$baseChannelId-$it" } ?: baseChannelId
     }
 
     private fun NotificationChannelType.getChannelTitle(): String {
