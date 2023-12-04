@@ -170,7 +170,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
             )
-            addCustomAmountsButtonParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+            addCustomAmountsButtonParams.addRule(RelativeLayout.ALIGN_PARENT_START)
             addingProductsManuallyButtonId?.let {
                 addCustomAmountsButtonParams.addRule(RelativeLayout.BELOW, addingProductsManuallyButtonId)
             }
@@ -193,13 +193,13 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
                 resources.getDimensionPixelSize(R.dimen.major_100),
                 0
             )
-            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_END
+            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_END
             addingProductsViaScanningButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
             val addProductsViaScanningButtonParams = RelativeLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
             )
-            addProductsViaScanningButtonParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+            addProductsViaScanningButtonParams.addRule(RelativeLayout.ALIGN_PARENT_END)
             addingProductsViaScanningButton.layoutParams = addProductsViaScanningButtonParams
             container.addView(addingProductsViaScanningButton)
         }
@@ -214,7 +214,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
         )
-        addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+        addProductButtonsParams.addRule(RelativeLayout.ALIGN_PARENT_START)
         val addingProductsManuallyButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
         addingProductsManuallyButton.text = addProductsButton.text
         addingProductsManuallyButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
