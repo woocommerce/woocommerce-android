@@ -60,7 +60,9 @@ class NotificationMessageHandlerTest {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
-        on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { invocationOnMock ->
+            "${invocationOnMock.arguments[0]}-${invocationOnMock.arguments[1]}"
+        }
     }
     private val notificationBuilder: WooNotificationBuilder = mock()
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker = mock()
@@ -281,7 +283,7 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming review notification
@@ -299,14 +301,12 @@ class NotificationMessageHandlerTest {
         )
 
         // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${reviewNotification.noteMessage!!}\n"),
+            inboxMessage = eq("${orderNotification.noteMessage!!}\n${reviewNotification.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(reviewNotification),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(reviewNotification)
         )
     }
 
@@ -329,7 +329,7 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming order notification
@@ -351,14 +351,12 @@ class NotificationMessageHandlerTest {
         )
 
         // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(orderNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(orderNotification2)
         )
     }
 
@@ -381,7 +379,7 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming review notification
@@ -403,14 +401,12 @@ class NotificationMessageHandlerTest {
         )
 
         // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(reviewNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(reviewNotification2)
         )
     }
 
@@ -433,7 +429,7 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming order notification for different store
@@ -455,14 +451,12 @@ class NotificationMessageHandlerTest {
         )
 
         // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(orderNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(orderNotification2)
         )
     }
 
@@ -485,7 +479,7 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming review notification
@@ -507,14 +501,43 @@ class NotificationMessageHandlerTest {
         )
 
         // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(reviewNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(reviewNotification2)
+        )
+    }
+
+    @Test
+    fun `when more than 5 notifications are received for same store, display the notification correctly`() {
+        // clear all notifications
+        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
+        val notificationsCount = NotificationMessageHandler.MAX_INBOX_ITEMS + 1
+        val notifications = List(notificationsCount) { orderNotification }
+
+        repeat(notificationsCount) {
+            notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        }
+
+        // verify that the contents for the group notification is correct
+        val subject = resourceProvider.getString(
+            R.string.new_notifications,
+            notificationsCount
+        )
+        val summary = resourceProvider.getString(
+            R.string.more_notifications,
+            notificationsCount - NotificationMessageHandler.MAX_INBOX_ITEMS
+        )
+        verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
+            inboxMessage = eq(
+                notifications.take(NotificationMessageHandler.MAX_INBOX_ITEMS)
+                    .joinToString(separator = "\n") { it.noteMessage.orEmpty() }
+            ),
+            subject = eq(subject),
+            summaryText = eq(summary),
+            notification = eq(orderNotification)
         )
     }
 

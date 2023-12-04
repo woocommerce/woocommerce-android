@@ -127,14 +127,13 @@ class WooNotificationBuilder @Inject constructor(
     fun buildAndDisplayWooGroupNotification(
         inboxMessage: String,
         subject: String,
-        summaryText: String,
-        notification: Notification,
-        shouldDisplaySummaryText: Boolean,
+        summaryText: String?,
+        notification: Notification
     ) {
         val inboxStyle = NotificationCompat.InboxStyle().addLine(inboxMessage)
         val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
 
-        if (shouldDisplaySummaryText) {
+        summaryText?.let {
             inboxStyle.setSummaryText(summaryText)
         }
 

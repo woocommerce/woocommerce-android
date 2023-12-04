@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.push
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
@@ -54,7 +55,9 @@ class NotificationMessageHandler @Inject constructor(
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
-        private const val MAX_INBOX_ITEMS = 5
+
+        @VisibleForTesting
+        const val MAX_INBOX_ITEMS = 5
 
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
@@ -194,22 +197,23 @@ class NotificationMessageHandler @Inject constructor(
 
             if (isGroupNotification) {
                 val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
-                val stringBuilder = StringBuilder()
-                for (note in notesMap.values.take(MAX_INBOX_ITEMS)) {
-                    stringBuilder.appendLine("${note.noteMessage}")
+                val message = notesMap.values.take(MAX_INBOX_ITEMS).joinToString("\n") {
+                    it.noteMessage.orEmpty()
                 }
 
-                val subject = String.format(resourceProvider.getString(R.string.new_notifications), notesMap.size)
-                val summaryText = String.format(
-                    resourceProvider.getString(R.string.more_notifications),
-                    notesMap.size - MAX_INBOX_ITEMS
-                )
+                val subject = resourceProvider.getString(R.string.new_notifications, notesMap.size)
+                val showGroupSummary = notesMap.size > MAX_INBOX_ITEMS
+                val summaryText = if (showGroupSummary) {
+                    resourceProvider.getString(
+                        R.string.more_notifications,
+                        notesMap.size - MAX_INBOX_ITEMS
+                    )
+                } else null
                 buildAndDisplayWooGroupNotification(
-                    inboxMessage = stringBuilder.toString(),
+                    inboxMessage = message,
                     subject = subject,
                     summaryText = summaryText,
-                    notification = notification,
-                    shouldDisplaySummaryText = notesMap.size > MAX_INBOX_ITEMS
+                    notification = notification
                 )
             }
         }
