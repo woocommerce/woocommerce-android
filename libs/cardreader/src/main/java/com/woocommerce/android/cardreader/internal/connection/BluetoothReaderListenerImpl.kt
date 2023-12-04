@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import com.stripe.stripeterminal.external.callable.BluetoothReaderListener
 import com.stripe.stripeterminal.external.callable.Cancelable
+import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderEvent
@@ -27,7 +27,7 @@ internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
     private val additionalInfoMapper: AdditionalInfoMapper,
     private val updateErrorMapper: UpdateErrorMapper,
-) : BluetoothReaderListener {
+) : ReaderListener {
     private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
 

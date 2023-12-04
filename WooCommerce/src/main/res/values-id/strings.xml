@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-15 09:54:04+0000
+Translation-Revision-Date: 2023-11-28 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="configuration_required">Konfigurasi diperlukan</string>
+    <string name="blaze_overflow_menu_hide_blaze">Sembunyikan Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">Ucapan terima kasih yang dibuat AI</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">Tidak dapat membuat ucapan terima kasih. Gunakan tombol di bawah untuk mencoba lagi.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Bagikan</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Buat ulang</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Membuat ucapan terima kasih untuk pesanan Anda …</string>
+    <string name="ai_order_thank_you_note_dialog_title">Ucapan terima kasih</string>
+    <string name="subscription_one_time_shipping_note">Catatan: agar pengaturan ini dapat diaktifkan, langganan tidak boleh menyertakan percobaan gratis atau tanggal perpanjangan tersinkronisasi.</string>
+    <string name="subscription_one_time_shipping_description">Aktifkan fitur ini supaya biaya pengiriman hanya dikenakan sekali pada pesanan pertama.</string>
+    <string name="subscription_one_time_shipping_enabled">Diaktifkan</string>
+    <string name="subscription_one_time_shipping">Pengiriman satu kali saja</string>
+    <string name="product_downloadable_files_add_documents_from_device">Dokumen dan berkas lain di perangkat</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨Buat ucapan terima kasih</string>
+    <string name="custom_amounts_tax_label">Kenakan Pajak</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Deposit dana yang tersedia dilakukan secara otomatis tiap %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Deposit dana yang tersedia dilakukan secara otomatis tiap hari.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Dana akan tersedia setelah tertunda selama %d hari.</string>
+    <string name="product_variation_picker_title">Pilih variasi</string>
+    <string name="configuration_variable_update">Pilih variasi</string>
+    <string name="configuration_children_issue"> \" %1$s \" -&gt; %2$s </string>
+    <string name="configuration_variable_selection"> pilih satu variasi </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s item dipilih </string>
+    <string name="configuration_quantity_items_selected"> %1$s item dipilih </string>
+    <string name="configuration_quantity_rule_issue"> Pilih %1$s </string>
+    <string name="configuration_quantity_more_than_plural"> lebih dari %1$s item </string>
+    <string name="configuration_quantity_more_than"> lebih dari %1$s item </string>
+    <string name="configuration_quantity_less_than"> kurang dari %1$s item </string>
+    <string name="configuration_quantity_between"> antara %1$s dan %2$s item </string>
+    <string name="configuration_quantity_item_plural">%d item</string>
+    <string name="configuration_quantity_item">%d item</string>
+    <string name="order_configuration_change_product_quantity">Ubah jumlah produk dari %1$f menjadi %2$f</string>
+    <string name="save_configuration">Simpan konfigurasi</string>
+    <string name="product_configuration_title">Konfigurasi</string>
+    <string name="default_product_title">Produk %s</string>
+    <string name="extension_configure_button">Konfigurasikan</string>
+    <string name="subscription_sign_up_fee_explanation">Opsional: biaya pendaftaran akan langsung dikenakan walaupun produk termasuk percobaan gratis atau tanggal pembayaran tersinkron.</string>
+    <string name="product_type_variable_subscription_desc">Langganan produk dengan variasi</string>
+    <string name="product_type_variable_subscription_title">Produk langganan variabel</string>
+    <string name="product_type_simple_subscription_desc">Langganan produk unik yang memungkinkan pembayaran berulang</string>
+    <string name="product_type_simple_subscription_title">Produk langganan sederhana</string>
+    <string name="product_subscription_free_trial_info">Periode waktu tunggu opsional sebelum menagih pembayaran berulang pertama. Semua biaya pendaftaran akan tetap dikenakan di awal berlangganan. Periode percobaan tidak boleh melebihi: 90 hari, 52 minggu, 24 bulan, atau 5 tahun.</string>
+    <string name="product_subscription_free_trial_title">Percobaan langganan gratis</string>
+    <string name="product_subscription_expiration_title">Tanggal kedaluwarsa langganan</string>
+    <string name="order_detail_custom_amounts_header">JUMLAH KUSTOM</string>
+    <string name="order_detail_payment_header">TOTAL PEMBAYARAN</string>
+    <string name="orderdetail_order_notes_uppercase">CATATAN PESANAN</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUK</string>
+    <string name="orderdetail_product_uppercase">PRODUK</string>
+    <string name="orderdetail_customer_header">PELANGGAN</string>
     <string name="notification_security_key_needed">Silakan berikan kunci keamanan Anda untuk melanjutkan.</string>
     <string name="login_error_security_key">Terjadi masalah dengan login kunci Keamanan.</string>
     <string name="login_text_security_key">Gunakan kunci keamanan</string>
@@ -21,11 +71,11 @@ Language: id
     <string name="card_reader_hub_deposit_summary_status_estimated">Estimasi</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Ciutkan/perluas ringkasan deposit</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Baca selengkapnya tentang kapan Anda akan menerima dana</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">Deposit dana yang tersedia dilakukan secara otomatis setiap minggu.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Deposit dana yang tersedia dilakukan secara otomatis tiap bulan pada %s.</string>
     <string name="card_reader_hub_deposit_summary_last">Terakhir</string>
     <string name="card_reader_hub_deposit_summary_next">Berikutnya</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">Deposit</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">Dana telah tersedia setelah tertunda selama 7 hari.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">Dana akan tersedia setelah tertunda selama %d hari.</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d deposit</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d deposit</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Dana yang tertunda</string>
@@ -171,8 +221,7 @@ Language: id
     <string name="tax_rate_selector_empty_list_title">Kami tidak dapat menemukan tarif pajak</string>
     <string name="store_onboarding_payments_setup_description">Jelajahi penyedia pembayaran lainnya dan \npilih penyedia pembayaran.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Metode Pembayaran</string>
-    <string name="product_downloadable_files_add_documents_from_device">Dokumen di perangkat</string>
-    <string name="product_downloadable_files_add_media_from_device">Berkas media di perangkat</string>
+    <string name="product_downloadable_files_add_media_from_device">Gambar dan video di perangkat</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Selesaikan sekarang</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Selesaikan penyiapan</string>
     <string name="tax_rate_selector_title">Atur Tarif Pajak</string>
@@ -464,7 +513,7 @@ Language: id
     <string name="settings_privacy_header">Privasi</string>
     <string name="settings_usage_tracking_description">Pelajari selengkapnya tentang data yang kami kumpulkan seputar toko Anda dan pilihan Anda dalam mengelola pembagian data.</string>
     <string name="settings_usage_tracking">Pelacakan Penggunaan</string>
-    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woocommerce.com. Lihat di sini untuk mempelajari selengkapnya.</string>
+    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woo.com. Lihat di sini untuk membaca selengkapnya.</string>
     <string name="settings_web_options">Pilihan Web</string>
     <string name="settings_more_privacy_options_header">Pilihan privasi lainnya</string>
     <string name="settings_tracking_analytics_error_update">Terjadi error saat memperbarui pengaturan privasi Anda</string>
@@ -3206,13 +3255,5 @@ Language: id
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Paket khusus</item>
         <item>Paket layanan</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>Setiap Langganan ke</item>
-        <item>Setiap Langganan ke-2</item>
-        <item>Setiap Langganan ke-3</item>
-        <item>Setiap Langganan ke-4</item>
-        <item>Setiap Langganan ke-5</item>
-        <item>Setiap Langganan ke-6</item>
     </string-array>
 </resources>

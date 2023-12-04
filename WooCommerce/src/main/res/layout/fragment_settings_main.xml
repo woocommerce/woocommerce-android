@@ -75,6 +75,15 @@
                 app:optionTitle="@string/domain" />
 
             <!--
+                Themes configuration
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_site_themes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/settings_themes" />
+
+            <!--
                 Store onboarding list visibility
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView

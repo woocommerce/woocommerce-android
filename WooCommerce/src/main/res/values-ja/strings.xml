@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-16 10:54:24+0000
+Translation-Revision-Date: 2023-11-29 13:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="configuration_required">設定が必要です</string>
+    <string name="blaze_overflow_menu_hide_blaze">Blaze を非表示</string>
+    <string name="ai_order_thank_you_note_copy_label">AI が生成したお礼状</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">お礼状を作成できません。 下のボタンを使用して再試行してください。</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">共有</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">再生成</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ ご注文へのお礼状を作成しています…</string>
+    <string name="ai_order_thank_you_note_dialog_title">お礼状</string>
+    <string name="subscription_one_time_shipping_note">注: この設定を有効にするには、定期購入に無料お試しや同期された更新日が含まれていない必要があります。</string>
+    <string name="subscription_one_time_shipping_description">これを有効にすると、初回注文でのみ送料を請求します。</string>
+    <string name="subscription_one_time_shipping_enabled">有効</string>
+    <string name="subscription_one_time_shipping">1回限りの発送</string>
+    <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメントとその他のファイル</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨お礼状を作成できません</string>
+    <string name="custom_amounts_tax_label">税金を請求</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">利用可能な資金は毎%s自動で入金されます。</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">利用可能な資金は毎日自動で入金されます。</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">資金は%d日間保留された後に利用可能になります。</string>
+    <string name="product_variation_picker_title">バリエーションを選択する</string>
+    <string name="configuration_variable_update">バリエーションを選択</string>
+    <string name="configuration_children_issue"> 「%1$s」-&gt; %2$s </string>
+    <string name="configuration_variable_selection"> バリエーションを選択してください </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s個のアイテムを選択済み </string>
+    <string name="configuration_quantity_items_selected"> %1$s個のアイテムを選択済み </string>
+    <string name="configuration_quantity_rule_issue"> %1$sを選択してください </string>
+    <string name="configuration_quantity_more_than_plural"> %1$s個超のアイテム </string>
+    <string name="configuration_quantity_more_than"> %1$s個超のアイテム </string>
+    <string name="configuration_quantity_less_than"> %1$s個未満のアイテム </string>
+    <string name="configuration_quantity_between"> %1$s～%2$s個のアイテム </string>
+    <string name="configuration_quantity_item_plural">%d個のアイテム</string>
+    <string name="configuration_quantity_item">%d個のアイテム</string>
+    <string name="order_configuration_change_product_quantity">商品数量を%1$fから%2$fに変更</string>
+    <string name="save_configuration">設定を保存する</string>
+    <string name="product_configuration_title">設定</string>
+    <string name="default_product_title">商品 %s</string>
+    <string name="extension_configure_button">設定</string>
+    <string name="subscription_sign_up_fee_explanation">オプションで、商品に無料お試しがある場合や支払日が同期されている場合でも、登録手数料は即座に請求されます。</string>
+    <string name="product_type_variable_subscription_desc">バリエーションのある商品の定期購入</string>
+    <string name="product_type_variable_subscription_title">バリエーションのある定期購入商品</string>
+    <string name="product_type_simple_subscription_desc">定期支払いを可能にする独自商品の定期購入</string>
+    <string name="product_type_simple_subscription_title">シンプルな定期購入商品</string>
+    <string name="product_subscription_free_trial_info">最初の定期支払いを請求するまでに待機する任意の期間。 定期購入の開始時に、登録手数料の請求が発生します。 お試し期間は90日、52週、24か月、または5年を超えることはできません。</string>
+    <string name="product_subscription_free_trial_title">定期購入の無料お試し</string>
+    <string name="product_subscription_expiration_title">購読期限</string>
+    <string name="order_detail_custom_amounts_header">カスタム金額</string>
+    <string name="order_detail_payment_header">支払総額</string>
+    <string name="orderdetail_order_notes_uppercase">注文メモ</string>
+    <string name="orderdetail_product_multiple_uppercase">商品</string>
+    <string name="orderdetail_product_uppercase">商品</string>
+    <string name="orderdetail_customer_header">顧客</string>
     <string name="notification_security_key_needed">続行するにはセキュリティキーを入力してください。</string>
     <string name="login_error_security_key">セキュリティキーログインで問題が発生しました</string>
     <string name="login_text_security_key">セキュリティキーを使用</string>
@@ -21,11 +71,11 @@ Language: ja_JP
     <string name="card_reader_hub_deposit_summary_status_estimated">予定</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">デポジットの概要を折りたたむ / 展開する</string>
     <string name="card_reader_hub_deposit_summary_learn_more">資金の受け取りタイミングについて詳しくはこちら</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">利用可能な資金は毎週自動で入金されます。</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">利用可能な資金は毎月 %s 上で自動で入金されます。</string>
     <string name="card_reader_hub_deposit_summary_last">最後</string>
     <string name="card_reader_hub_deposit_summary_next">次</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">デポジット</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">資金は7日間保留された後に利用可能になります。</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">資金は%d日間保留された後に利用可能になります。</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d件のデポジット</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d件のデポジット</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">保留中の資金</string>
@@ -171,8 +221,7 @@ Language: ja_JP
     <string name="tax_rate_selector_empty_list_title">税率が見つかりませんでした</string>
     <string name="store_onboarding_payments_setup_description">その他の決済サービス業者を探し\n決済サービス業者を選択します。</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">お支払い方法</string>
-    <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメント</string>
-    <string name="product_downloadable_files_add_media_from_device">端末上のメディアファイル</string>
+    <string name="product_downloadable_files_add_media_from_device">端末上の画像と動画</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">今すぐ解決</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">設定完了</string>
     <string name="tax_rate_selector_title">税率を設定する</string>
@@ -464,7 +513,7 @@ Language: ja_JP
     <string name="settings_privacy_header">プライバシー</string>
     <string name="settings_usage_tracking_description">ストアに関して当社が収集しているデータと、このデータ共有をコントロールするオプションについて、詳細をご確認ください。</string>
     <string name="settings_usage_tracking">使用状況の追跡</string>
-    <string name="settings_web_options_description">WooCommerce.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
+    <string name="settings_web_options_description">woo.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
     <string name="settings_web_options">ウェブオプション</string>
     <string name="settings_more_privacy_options_header">その他のプライバシーオプション</string>
     <string name="settings_tracking_analytics_error_update">プライバシー設定の更新でエラーが発生しました</string>
@@ -3206,13 +3255,5 @@ Language: ja_JP
     <string-array name="shipping_label_create_new_package_tabs">
         <item>カスタムパッケージ</item>
         <item>サービスパッケージ</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>日ごと</item>
-        <item>2日ごと</item>
-        <item>3日ごと</item>
-        <item>4日ごと</item>
-        <item>5日ごと</item>
-        <item>6日ごと</item>
     </string-array>
 </resources>

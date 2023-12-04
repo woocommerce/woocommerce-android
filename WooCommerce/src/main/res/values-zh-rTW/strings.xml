@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-15 16:54:04+0000
+Translation-Revision-Date: 2023-11-29 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="configuration_required">需要設定</string>
+    <string name="blaze_overflow_menu_hide_blaze">隱藏 Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">AI 產生的感謝信</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">無法建立感謝信。 請使用下方按鈕重試。</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">分享</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">重新產生</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ 正在建立訂單感謝信…</string>
+    <string name="ai_order_thank_you_note_dialog_title">感謝信</string>
+    <string name="subscription_one_time_shipping_note">備註：如要啟用這項設定，訂閱不可有免費試用或已同步的續訂日期。</string>
+    <string name="subscription_one_time_shipping_description">啟用這項功能，即可僅對初始訂單收取一次性運費。</string>
+    <string name="subscription_one_time_shipping_enabled">已啟用</string>
+    <string name="subscription_one_time_shipping">一次性運費</string>
+    <string name="product_downloadable_files_add_documents_from_device">裝置上的文件和其他檔案</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨建立感謝信</string>
+    <string name="custom_amounts_tax_label">收取稅金</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">可用款項將自動於每%s存入。</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">可用款項將自動於每天存入。</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">待確認款項 %d 天後即可使用。</string>
+    <string name="product_variation_picker_title">選取款式</string>
+    <string name="configuration_variable_update">選擇款式</string>
+    <string name="configuration_children_issue"> 「%1$s」-&gt; %2$s </string>
+    <string name="configuration_variable_selection"> 請選取款式 </string>
+    <string name="configuration_quantity_items_selected_plural"> 已選取 %1$s 個項目 </string>
+    <string name="configuration_quantity_items_selected"> 已選取 %1$s 個項目 </string>
+    <string name="configuration_quantity_rule_issue"> 請選取 %1$s </string>
+    <string name="configuration_quantity_more_than_plural"> %1$s 個以上的項目 </string>
+    <string name="configuration_quantity_more_than"> %1$s 個以上的項目 </string>
+    <string name="configuration_quantity_less_than"> %1$s 個以下的項目 </string>
+    <string name="configuration_quantity_between"> %1$s 至 %2$s 個項目 </string>
+    <string name="configuration_quantity_item_plural">%d 個項目</string>
+    <string name="configuration_quantity_item">%d 個項目</string>
+    <string name="order_configuration_change_product_quantity">將產品數量從 %1$f 變更為 %2$f</string>
+    <string name="save_configuration">儲存設定</string>
+    <string name="product_configuration_title">設定</string>
+    <string name="default_product_title">產品 %s</string>
+    <string name="extension_configure_button">設定</string>
+    <string name="subscription_sign_up_fee_explanation">即使產品有免費試用或付款日期已同步，系統也會立即收取註冊費 (可選)。</string>
+    <string name="product_type_variable_subscription_desc">有多種款式的產品訂閱</string>
+    <string name="product_type_variable_subscription_title">多款式訂閱產品</string>
+    <string name="product_type_simple_subscription_desc">支援定期付款的獨特產品訂閱</string>
+    <string name="product_type_simple_subscription_title">簡單訂閱產品</string>
+    <string name="product_subscription_free_trial_info">第一次定期付款之前的等候時間 (可選)。 如有任何註冊費用，仍須在訂閱開始時支付。 試用期不可超過：90 天、52 週、24 個月或 5 年。</string>
+    <string name="product_subscription_free_trial_title">訂閱試用期</string>
+    <string name="product_subscription_expiration_title">訂閱到期日</string>
+    <string name="order_detail_custom_amounts_header">自訂金額</string>
+    <string name="order_detail_payment_header">付款總金額</string>
+    <string name="orderdetail_order_notes_uppercase">訂單備註</string>
+    <string name="orderdetail_product_multiple_uppercase">產品</string>
+    <string name="orderdetail_product_uppercase">產品</string>
+    <string name="orderdetail_customer_header">顧客</string>
     <string name="notification_security_key_needed">請提供安全性金鑰以繼續使用。</string>
     <string name="login_error_security_key">使用安全性金鑰登入時遇到問題</string>
     <string name="login_text_security_key">使用安全性金鑰</string>
@@ -21,11 +71,11 @@ Language: zh_TW
     <string name="card_reader_hub_deposit_summary_status_estimated">估計值</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">收合/展開存款摘要</string>
     <string name="card_reader_hub_deposit_summary_learn_more">深入瞭解何時會收到款項</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">可用款項將自動於每週存入。</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">可用款項將自動於每月 %s存入。</string>
     <string name="card_reader_hub_deposit_summary_last">上一個</string>
     <string name="card_reader_hub_deposit_summary_next">下一個</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">存款</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">待確認款項 7 天後即可使用。</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">待確認款項 %d 天後即可使用。</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">存款：%d</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">存款：%d</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">待確認款項</string>
@@ -171,8 +221,7 @@ Language: zh_TW
     <string name="tax_rate_selector_empty_list_title">我們找不到任何稅率</string>
     <string name="store_onboarding_payments_setup_description">探索其他付款服務供應商並且 \n選擇付款供應商。</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">付款方式</string>
-    <string name="product_downloadable_files_add_documents_from_device">裝置文件</string>
-    <string name="product_downloadable_files_add_media_from_device">裝置媒體檔案</string>
+    <string name="product_downloadable_files_add_media_from_device">裝置上的圖片和影片</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">立即解決</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">完成設定</string>
     <string name="tax_rate_selector_title">設定稅率</string>
@@ -464,7 +513,7 @@ Language: zh_TW
     <string name="settings_privacy_header">隱私權</string>
     <string name="settings_usage_tracking_description">深入瞭解我們針對你的商店收集了哪些資料，以及您可使用的資料分享控制選項。</string>
     <string name="settings_usage_tracking">使用情況追蹤</string>
-    <string name="settings_web_options_description">woocommerce.com 為使用者提供更多隱私權選項。 如要瞭解詳情，請查看此處。</string>
+    <string name="settings_web_options_description">woo.com 為使用者提供更多隱私權選項。 如要瞭解詳情，請查看此處。</string>
     <string name="settings_web_options">網頁選項</string>
     <string name="settings_more_privacy_options_header">其他隱私權選項</string>
     <string name="settings_tracking_analytics_error_update">更新你的隱私權設定時發生錯誤</string>
@@ -3206,13 +3255,5 @@ Language: zh_TW
     <string-array name="shipping_label_create_new_package_tabs">
         <item>自訂包裹</item>
         <item>服務包裹</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>每</item>
-        <item>每月 2 號</item>
-        <item>每月 3 號</item>
-        <item>每月 4 號</item>
-        <item>每月 5 號</item>
-        <item>每月 6 號</item>
     </string-array>
 </resources>
