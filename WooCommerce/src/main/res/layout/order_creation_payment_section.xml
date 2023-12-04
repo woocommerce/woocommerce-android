@@ -177,7 +177,7 @@
             tools:visibility="visible">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/gift_card_button"
+                android:id="@+id/selected_gift_card_button"
                 style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

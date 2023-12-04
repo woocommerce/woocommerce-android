@@ -695,7 +695,7 @@ class OrderCreateEditFormFragment :
     private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
-            giftCardButton.setOnClickListener {
+            selectedGiftCardButton.setOnClickListener {
                 viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards.orEmpty())
             }
         }
@@ -1067,7 +1067,7 @@ class OrderCreateEditFormFragment :
             couponButton.isEnabled = state.isCouponButtonEnabled
             addCouponButton.isEnabled = state.isCouponButtonEnabled
             addGiftCardButton.isEnabled = state.isAddGiftCardButtonEnabled
-            giftCardButton.isEnabled = true
+            selectedGiftCardButton.isEnabled = true
         }
         customAmountsSection.apply {
             isLocked = false
@@ -1087,7 +1087,7 @@ class OrderCreateEditFormFragment :
             couponButton.isEnabled = false
             addCouponButton.isEnabled = false
             addGiftCardButton.isEnabled = false
-            giftCardButton.isEnabled = false
+            selectedGiftCardButton.isEnabled = false
         }
         customAmountsSection.apply {
             isLocked = true
