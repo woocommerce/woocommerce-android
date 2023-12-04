@@ -320,7 +320,7 @@ fun ExtendedProductCardContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Order count",
+                text = stringResource(id = R.string.order_creation_products_order_count),
                 color = MaterialTheme.colors.onSurface
             )
             val areAmountButtonsEnabled = if (isBundledProduct) {
