@@ -115,7 +115,7 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(giftCard = null)
             }
             is OrderCreateEditNavigationTarget.EditGiftCard -> {
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment("")
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(target.giftCard)
             }
         }
         navController.navigate(action)
