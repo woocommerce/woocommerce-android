@@ -517,17 +517,21 @@ private fun AmountPicker(
     product: OrderCreationProduct,
     isAmountChangeable: Boolean = true,
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(product.item.quantity.toInt().toString())) }
+    val amount = product.item.quantity.toInt().toString()
+    var textFieldValue by remember(amount) { mutableStateOf(TextFieldValue(amount)) }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    LaunchedEffect(isFocused) {
-        val endRange = if (isFocused) textFieldValue.text.length else 0
+    LaunchedEffect(key1 = isFocused, key2 = amount) {
         textFieldValue = textFieldValue.copy(
-            selection = TextRange(
-                start = 0,
-                end = endRange
-            )
+            selection = if (isFocused) {
+                TextRange(
+                    start = 0,
+                    end = textFieldValue.text.length
+                )
+            } else {
+                TextRange.Zero
+            }
         )
     }
 
