@@ -14,7 +14,6 @@ steps:
           propagate-environment: true
           environment:
             - "DANGER_GITHUB_API_TOKEN"
-            - "BUILDKITE_PULL_REQUEST"
     if: "build.pull_request.id != null"
     retry:
       manual:
