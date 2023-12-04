@@ -3,7 +3,6 @@ package com.woocommerce.android.notifications
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.R
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
@@ -24,23 +23,6 @@ private const val GROUP_NOTIFICATION_ID_ORDER = 30001
 private const val GROUP_NOTIFICATION_ID_REVIEW = 30002
 private const val GROUP_NOTIFICATION_ID_OTHER = 30003
 
-@StringRes
-fun NotificationChannelType.getChannelId(): Int {
-    return when (this) {
-        NEW_ORDER -> R.string.notification_channel_order_id
-        REVIEW -> R.string.notification_channel_review_id
-        OTHER -> R.string.notification_channel_general_id
-    }
-}
-
-@StringRes
-fun NotificationChannelType.getChannelTitle(): Int {
-    return when (this) {
-        NEW_ORDER -> R.string.notification_channel_order_title
-        REVIEW -> R.string.notification_channel_review_title
-        OTHER -> R.string.notification_channel_general_title
-    }
-}
 
 @StringRes
 fun NotificationChannelType.getGroupId(): Int {

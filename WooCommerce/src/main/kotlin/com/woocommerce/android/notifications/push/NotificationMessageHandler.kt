@@ -11,9 +11,9 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.notifications.getChannelId
 import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
@@ -39,15 +39,16 @@ import kotlin.random.Random
 
 @Singleton
 class NotificationMessageHandler @Inject constructor(
+    private val notificationChannelsHandler: NotificationChannelsHandler,
+    private val notificationBuilder: WooNotificationBuilder,
+    private val analyticsTracker: NotificationAnalyticsTracker,
+    private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
     private val wooLogWrapper: WooLogWrapper,
     private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    private val notificationBuilder: WooNotificationBuilder,
-    private val analyticsTracker: NotificationAnalyticsTracker,
-    private val notificationsParser: NotificationsParser,
     private val selectedSite: SelectedSite,
     private val topPerformersStore: WCLeaderboardsStore
 ) {
@@ -182,7 +183,9 @@ class NotificationMessageHandler @Inject constructor(
 
         val channelType = notification.channelType
         val defaults = channelType.getDefaults(appPrefsWrapper)
-        val channelId = resourceProvider.getString(channelType.getChannelId())
+        val channelId = with(notificationChannelsHandler) {
+            channelType.getChannelId()
+        }
         val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
         with(notificationBuilder) {
             buildAndDisplayWooNotification(
