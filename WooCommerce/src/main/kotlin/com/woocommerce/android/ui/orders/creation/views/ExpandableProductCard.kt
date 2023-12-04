@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
+import com.woocommerce.android.ui.orders.creation.isSynced
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.getStockText
@@ -322,12 +323,17 @@ fun ExtendedProductCardContent(
                 text = "Order count",
                 color = MaterialTheme.colors.onSurface
             )
+            val areAmountButtonsEnabled = if (isBundledProduct) {
+                editableControlsEnabled
+            } else {
+                product.item.isSynced()
+            }
             AmountPicker(
                 onIncreaseClicked = onIncreaseItemAmountClicked,
                 onDecreaseClicked = onDecreaseItemAmountClicked,
                 product = product,
-                isDecreaseButtonEnabled = (editableControlsEnabled && isBundledProduct) || isBundledProduct.not(),
-                isIncreaseButtonEnabled = (editableControlsEnabled && isBundledProduct) || isBundledProduct.not()
+                isDecreaseButtonEnabled = areAmountButtonsEnabled,
+                isIncreaseButtonEnabled = areAmountButtonsEnabled
             )
         }
         Row(

@@ -3365,6 +3365,8 @@
     <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
+    <string name="store_creation_theme_activation_loading">Activating your store\'s theme…</string>
+    <string name="store_creation_theme_activation_error">An error occurred while activating the theme you selected, please retry again!</string>
 
     <!--
     Store theme
@@ -3378,6 +3380,12 @@
     <string name="theme_picker_error_title">An error occurred</string>
     <string name="theme_picker_error_message">Unable to load themes at this time.</string>
     <string name="theme_preview_title">Preview</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
+    <string name="theme_preview_bottom_sheet_home_section">Home</string>
+    <string name="theme_preview_activate_theme_button">Use this theme</string>
+    <string name="theme_preview_theme_name">Theme: %1$s</string>
+    <string name="theme_activated_successfully">Theme activated successfully</string>
 
     <!--
     Store onboarding
@@ -3865,4 +3873,5 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+    <string name="store_creation_use_theme_button">Start with this theme</string>
 </resources>
