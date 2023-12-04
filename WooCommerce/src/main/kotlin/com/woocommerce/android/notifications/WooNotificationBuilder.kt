@@ -37,20 +37,22 @@ class WooNotificationBuilder @Inject constructor(
     fun cancelAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
     private fun getNotificationBuilder(
-        channelId: String,
         notification: Notification
-    ): NotificationCompat.Builder =
-        NotificationCompat.Builder(context, channelId)
+    ): NotificationCompat.Builder {
+        val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
+
+        return NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_woo_w_notification)
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
-            .setGroup(notification.getGroup(channelId))
+            .setGroup(notification.getGroup())
             .setContentTitle(notification.noteTitle)
             .setContentText(notification.noteMessage)
             .setTicker(notification.noteMessage)
             .setStyle(NotificationCompat.BigTextStyle().bigText(notification.noteMessage))
+    }
 
     private fun getResultIntent(
         pushId: Int,
@@ -70,8 +72,7 @@ class WooNotificationBuilder @Inject constructor(
         actions: List<Pair<String, Intent>> = emptyList()
     ) {
         val channelType = notification.channelType
-        val channelId = with(notificationChannelsHandler) { channelType.getChannelId() }
-        getNotificationBuilder(channelId, notification).apply {
+        getNotificationBuilder(notification).apply {
             val notificationContentIntent =
                 buildPendingIntentForGivenIntent(notification.noteId, notificationTappedIntent)
             setContentIntent(notificationContentIntent)
@@ -104,8 +105,7 @@ class WooNotificationBuilder @Inject constructor(
         isGroupNotification: Boolean
     ) {
         val channelType = notification.channelType
-        val channelId = with(notificationChannelsHandler) { channelType.getChannelId() }
-        getNotificationBuilder(channelId, notification).apply {
+        getNotificationBuilder(notification).apply {
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
             setDefaults(defaults)
             if (addCustomNotificationSound) {
@@ -142,7 +142,7 @@ class WooNotificationBuilder @Inject constructor(
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
             .setSmallIcon(R.drawable.ic_woo_w_notification)
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
-            .setGroup(notification.getGroup(channelId))
+            .setGroup(notification.getGroup())
             .setGroupSummary(true)
             .setAutoCancel(true)
             .setTicker(notification.noteMessage)
