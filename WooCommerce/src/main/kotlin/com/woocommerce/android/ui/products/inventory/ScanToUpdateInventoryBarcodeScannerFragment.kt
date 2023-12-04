@@ -17,14 +17,13 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
-    private val viewModel: ScanToUpdateInventoryViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_main)
+    private val viewModel: ScanToUpdateInventoryViewModel by viewModels()
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
