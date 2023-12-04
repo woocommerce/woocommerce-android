@@ -2015,6 +2015,7 @@
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
+    <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
 
     <!--
@@ -2260,6 +2261,7 @@
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
     <string name="settings_account">Account Settings</string>
+    <string name="settings_themes">Themes</string>
 
     <!--
         Developer Options Screen
@@ -3364,6 +3366,27 @@
     <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
+    <string name="store_creation_theme_activation_loading">Activating your store\'s theme…</string>
+    <string name="store_creation_theme_activation_error">An error occurred while activating the theme you selected, please retry again!</string>
+
+    <!--
+    Store theme
+    -->
+    <string name="theme_picker_title">Choose a theme</string>
+    <string name="theme_picker_description">You can always change it later in the settings.</string>
+    <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
+    <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
+    <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
+    <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
+    <string name="theme_picker_error_title">An error occurred</string>
+    <string name="theme_picker_error_message">Unable to load themes at this time.</string>
+    <string name="theme_preview_title">Preview</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
+    <string name="theme_preview_bottom_sheet_home_section">Home</string>
+    <string name="theme_preview_activate_theme_button">Use this theme</string>
+    <string name="theme_preview_theme_name">Theme: %1$s</string>
+    <string name="theme_activated_successfully">Theme activated successfully</string>
 
     <!--
     Store onboarding
@@ -3740,6 +3763,7 @@
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_overflow_menu_hide_blaze">Hide Blaze</string>
 
     <!--
     Blaze campaign list
@@ -3855,4 +3879,5 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+    <string name="store_creation_use_theme_button">Start with this theme</string>
 </resources>

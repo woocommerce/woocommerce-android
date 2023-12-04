@@ -13,6 +13,28 @@ import javax.inject.Inject
 class AppPrefsWrapper @Inject constructor() {
     var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
 
+    /**
+     * Persists the ID of the last created site in case the app was closed while the site was being created.
+     * This allows to switch to the newly created site when the app is opened again.
+     */
+    var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
+
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
+
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
+    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+
+    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
+
+    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
+    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
+
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
@@ -338,18 +360,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
-    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
-
-    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
-
-    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
-
-    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
-
-    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
-
-    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
-
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 
@@ -366,5 +376,16 @@ class AppPrefsWrapper @Inject constructor() {
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
-    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+    fun getWCStoreID(siteID: Long) = AppPrefs.getWCStoreID(siteID)
+
+    fun setWCStoreID(siteID: Long, storeID: String?) {
+        AppPrefs.setWCStoreID(siteID, storeID)
+    }
+
+    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
+        AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
+
+    fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
+
+    fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
 }

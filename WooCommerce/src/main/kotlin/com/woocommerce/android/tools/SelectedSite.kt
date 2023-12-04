@@ -25,7 +25,7 @@ class SelectedSite(
 ) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
-        private const val RESET_DELAY = 1000L
+        private const val RESET_DELAY = 5000L
 
         fun getEventBus(): EventBus = EventBus.getDefault()
     }

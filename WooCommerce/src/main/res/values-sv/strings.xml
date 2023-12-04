@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-15 13:54:04+0000
+Translation-Revision-Date: 2023-11-28 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="configuration_required">Konfiguration krävs</string>
+    <string name="blaze_overflow_menu_hide_blaze">Dölj Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">AI-genererat tackbrev</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">Kan inte skapa tackbrev. Använd knappen nedan för att försöka igen.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Dela</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Generera igen</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Skapa ett tackbrev för din order …</string>
+    <string name="ai_order_thank_you_note_dialog_title">Tackbrev</string>
+    <string name="subscription_one_time_shipping_note">Obs! För att den här inställningen ska kunna aktiveras får prenumerationen inte ha en gratis provperiod eller ett synkroniserat förnyelsedatum.</string>
+    <string name="subscription_one_time_shipping_description">Aktivera detta för att endast debitera frakt en gång vid den första ordern.</string>
+    <string name="subscription_one_time_shipping_enabled">Aktiverad</string>
+    <string name="subscription_one_time_shipping">Engångsfrakt</string>
+    <string name="product_downloadable_files_add_documents_from_device">Dokument och andra filer på enhet</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨ Skapa tackbrev</string>
+    <string name="custom_amounts_tax_label">Debitera moms</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Tillgängliga medel sätts in automatiskt, varje %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Tillgängliga medel sätts in automatiskt, varje dag.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Medlen blir tillgängliga efter att ha inväntat granskning i %d dagar.</string>
+    <string name="product_variation_picker_title">Välj en variant</string>
+    <string name="configuration_variable_update">Välj variant</string>
+    <string name="configuration_children_issue"> ”%1$s” -&gt; %2$s </string>
+    <string name="configuration_variable_selection">välj en variant</string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s objekt valda </string>
+    <string name="configuration_quantity_items_selected"> %1$s objekt valda </string>
+    <string name="configuration_quantity_rule_issue">Välj %1$s </string>
+    <string name="configuration_quantity_more_than_plural"> fler än %1$s objekt </string>
+    <string name="configuration_quantity_more_than"> fler än %1$s objekt </string>
+    <string name="configuration_quantity_less_than"> färre än %1$s objekt </string>
+    <string name="configuration_quantity_between"> mellan %1$s och %2$s objekt </string>
+    <string name="configuration_quantity_item_plural">%d objekt</string>
+    <string name="configuration_quantity_item">%d objekt</string>
+    <string name="order_configuration_change_product_quantity">Ändra produktantalet från %1$f till %2$f</string>
+    <string name="save_configuration">Spara konfiguration</string>
+    <string name="product_configuration_title">Konfiguration</string>
+    <string name="default_product_title">Produkt %s</string>
+    <string name="extension_configure_button">Konfigurera</string>
+    <string name="subscription_sign_up_fee_explanation">Alternativt kommer registreringsavgiften att debiteras omedelbart, även om produkten har en gratis provperiod eller synkroniserade betalningsdatum.</string>
+    <string name="product_type_variable_subscription_desc">En produktprenumeration med varianter</string>
+    <string name="product_type_variable_subscription_title">Variabel prenumerationsprodukt</string>
+    <string name="product_type_simple_subscription_desc">En unik produktprenumeration som möjliggör återkommande betalningar</string>
+    <string name="product_type_simple_subscription_title">Enkel prenumerationsprodukt</string>
+    <string name="product_subscription_free_trial_info">En valfri tidsperiod att vänta innan den första återkommande betalningen debiteras. Eventuella registreringsavgifter kommer fortfarande att debiteras vid prenumerationens start. Provperioden får inte överstiga: 90 dagar, 52 veckor, 24 månader eller 5 år.</string>
+    <string name="product_subscription_free_trial_title">Gratis provperiod på prenumeration</string>
+    <string name="product_subscription_expiration_title">Prenumerationens utgångsdatum</string>
+    <string name="order_detail_custom_amounts_header">ANPASSADE BELOPP</string>
+    <string name="order_detail_payment_header">BETALNING TOTALT</string>
+    <string name="orderdetail_order_notes_uppercase">ORDERANTECKNINGAR</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUKTER</string>
+    <string name="orderdetail_product_uppercase">PRODUKT</string>
+    <string name="orderdetail_customer_header">KUND</string>
     <string name="notification_security_key_needed">Ange din säkerhetsnyckel för att fortsätta.</string>
     <string name="login_error_security_key">Det uppstod vissa problem med säkerhetsnyckelsinloggningen</string>
     <string name="login_text_security_key">Använd en säkerhetsnyckel</string>
@@ -21,11 +71,11 @@ Language: sv_SE
     <string name="card_reader_hub_deposit_summary_status_estimated">Beräknad</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Minimera/maximera insättningssammanfattningen</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Läs mer om när du får dina medel</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">Tillgängliga medel sätts in automatiskt, varje vecka.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Tillgängliga medel sätts in automatiskt, varje månad den %s.</string>
     <string name="card_reader_hub_deposit_summary_last">Sista</string>
     <string name="card_reader_hub_deposit_summary_next">Nästa</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">Insättningar</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">Medlen blir tillgängliga efter att ha inväntat granskning i 7 dagar.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">Medlen blir tillgängliga efter att ha inväntat granskning i %d dag.</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d insättning</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d insättningar</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Väntande medel</string>
@@ -171,8 +221,7 @@ Language: sv_SE
     <string name="tax_rate_selector_empty_list_title">Vi kunde inte hitta några momssatser</string>
     <string name="store_onboarding_payments_setup_description">Upptäck andra betalningsleverantörer och \nvälj en betalningsleverantör.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Betalningsmetoder</string>
-    <string name="product_downloadable_files_add_documents_from_device">Dokument på enheten</string>
-    <string name="product_downloadable_files_add_media_from_device">Mediafiler på enheten</string>
+    <string name="product_downloadable_files_add_media_from_device">Bilder och videoklipp på enhet</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Lös nu</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Slutför inställning</string>
     <string name="tax_rate_selector_title">Ange momssats</string>
@@ -464,7 +513,7 @@ Language: sv_SE
     <string name="settings_privacy_header">Integritet</string>
     <string name="settings_usage_tracking_description">Läs mer om vilka data vi samlar in om din butik och dina möjligheter att styra vilka data som delas.</string>
     <string name="settings_usage_tracking">Användningsspårning</string>
-    <string name="settings_web_options_description">Fler integritetsinställningar finns tillgängliga för WooCommerce.com-användare. Mer information finns här.</string>
+    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för woo.com-användare. Kolla in här för att lära dig mer.</string>
     <string name="settings_web_options">Webbalternativ</string>
     <string name="settings_more_privacy_options_header">Fler integritetsalternativ</string>
     <string name="settings_tracking_analytics_error_update">Det uppstod ett fel vid uppdateringen av dina integritetsinställningar</string>
@@ -3206,13 +3255,5 @@ Language: sv_SE
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Anpassat paket</item>
         <item>Tjänstepaket</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>Varje</item>
-        <item>Varannan</item>
-        <item>Var 3:e</item>
-        <item>Var 4:e</item>
-        <item>Var 5:e</item>
-        <item>Var 6:e</item>
     </string-array>
 </resources>

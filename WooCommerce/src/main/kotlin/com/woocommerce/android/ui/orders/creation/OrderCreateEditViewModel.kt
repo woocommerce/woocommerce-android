@@ -608,6 +608,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 )
             }
+
+            CodeScannerStatus.NotFound -> {
+                // do nothing
+            }
         }
     }
 
@@ -1564,4 +1568,4 @@ private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
 
 private fun ModelProduct.hasNoPrice() = price == null
 
-fun Order.Item.isSynced() = this.itemId != 0L
+fun Order.Item.isSynced() = this.itemId != Order.Item.EMPTY.itemId
