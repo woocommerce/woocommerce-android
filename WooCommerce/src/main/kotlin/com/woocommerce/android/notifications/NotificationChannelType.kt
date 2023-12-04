@@ -23,7 +23,6 @@ private const val GROUP_NOTIFICATION_ID_ORDER = 30001
 private const val GROUP_NOTIFICATION_ID_REVIEW = 30002
 private const val GROUP_NOTIFICATION_ID_OTHER = 30003
 
-
 @StringRes
 fun NotificationChannelType.getGroupId(): Int {
     return when (this) {
