@@ -38,7 +38,7 @@ class NotificationChannelsHandler @Inject constructor(
         val channel = notificationManagerCompat.getNotificationChannel(channelType.getChannelId())
             ?: return true // If the notification is not created yet, then it'll have the correct sound when created
 
-        return channel.sound != null
+        return channel.importance >= NotificationManager.IMPORTANCE_DEFAULT && channel.sound != null
     }
 
     private fun createChannels() {
