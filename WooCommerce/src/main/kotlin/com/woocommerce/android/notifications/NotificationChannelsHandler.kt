@@ -11,7 +11,9 @@ import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class NotificationChannelsHandler @Inject constructor(
     private val context: Context,
     private val appPrefsWrapper: AppPrefsWrapper
