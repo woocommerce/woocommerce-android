@@ -702,14 +702,12 @@ class OrderListViewModel @Inject constructor(
                     positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
                     negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
                     positiveBtnAction = { _, _ ->
-                        TODO()
+                        notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
                     },
                     negativeBtnAction = { _, _ ->
-                        TODO()
+                        appPrefs.chaChingSoundIssueDialogDismissed = true
                     },
-                    onDismiss = {
-                        TODO()
-                    }
+                    cancelable = false
                 )
             )
         }
