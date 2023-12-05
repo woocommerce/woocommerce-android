@@ -105,6 +105,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
+import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
@@ -423,7 +424,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { adjustProductQuantity(it, id, -1) }
     }
 
-    fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
+    private fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
         tracker.track(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(KEY_FLOW to flow)
@@ -431,7 +432,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { adjustProductQuantity(it, product, +1) }
     }
 
-    fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
+    private fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
         if (product.item.quantity == 1F) {
             tracker.track(
                 ORDER_PRODUCT_REMOVE,
@@ -444,6 +445,31 @@ class OrderCreateEditViewModel @Inject constructor(
             )
         }
         _orderDraft.update { adjustProductQuantity(it, product, -1) }
+    }
+
+    fun onItemAmountChanged(product: OrderCreationProduct, amountChangeEvent: ProductAmountEvent) {
+        when (amountChangeEvent) {
+            ProductAmountEvent.Decrease -> onDecreaseProductsQuantity(product)
+            ProductAmountEvent.Increase -> onIncreaseProductsQuantity(product)
+            is ProductAmountEvent.Change -> {
+                when (val newAmountInt = amountChangeEvent.newAmount.toIntOrNull()) {
+                    null, 0 -> onRemoveProduct(product)
+                    else -> {
+                        tracker.track(
+                            ORDER_PRODUCT_QUANTITY_CHANGE,
+                            mapOf(KEY_FLOW to flow)
+                        )
+                        _orderDraft.update {
+                            adjustProductQuantity(
+                                it,
+                                product,
+                                newAmountInt - product.item.quantity.toInt()
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {

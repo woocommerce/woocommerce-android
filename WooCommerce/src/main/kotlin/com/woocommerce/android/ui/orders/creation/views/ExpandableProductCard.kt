@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -95,8 +96,7 @@ fun ExpandableProductCard(
     product: OrderCreationProduct,
     onRemoveProductClicked: () -> Unit,
     onDiscountButtonClicked: () -> Unit,
-    onIncreaseItemAmountClicked: () -> Unit,
-    onDecreaseItemAmountClicked: () -> Unit,
+    onItemAmountChanged: (ProductAmountEvent) -> Unit,
     onEditConfigurationClicked: () -> Unit,
     onProductExpanded: (isExpanded: Boolean, product: OrderCreationProduct) -> Unit
 ) {
@@ -267,9 +267,8 @@ fun ExpandableProductCard(
                 product,
                 onRemoveProductClicked,
                 onDiscountButtonClicked,
-                onIncreaseItemAmountClicked,
-                onDecreaseItemAmountClicked,
-                onEditConfigurationClicked
+                onItemAmountChanged,
+                onEditConfigurationClicked,
             )
         }
     }
@@ -281,8 +280,7 @@ fun ExtendedProductCardContent(
     product: OrderCreationProduct,
     onRemoveProductClicked: () -> Unit,
     onDiscountButtonClicked: () -> Unit,
-    onIncreaseItemAmountClicked: () -> Unit,
-    onDecreaseItemAmountClicked: () -> Unit,
+    onItemAmountChanged: (ProductAmountEvent) -> Unit,
     onEditConfigurationClicked: () -> Unit
 ) {
     ConstraintLayout(
@@ -344,8 +342,7 @@ fun ExtendedProductCardContent(
                 product.item.isSynced()
             }
             AmountPicker(
-                onIncreaseClicked = onIncreaseItemAmountClicked,
-                onDecreaseClicked = onDecreaseItemAmountClicked,
+                onItemAmountChanged = onItemAmountChanged,
                 product = product,
                 isAmountChangeable = areAmountButtonsEnabled,
             )
@@ -517,8 +514,7 @@ fun ExtendedProductCardContent(
 @Composable
 private fun AmountPicker(
     modifier: Modifier = Modifier,
-    onIncreaseClicked: () -> Unit,
-    onDecreaseClicked: () -> Unit,
+    onItemAmountChanged: (ProductAmountEvent) -> Unit,
     product: OrderCreationProduct,
     isAmountChangeable: Boolean = true,
 ) {
@@ -527,12 +523,12 @@ private fun AmountPicker(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    LaunchedEffect(key1 = isFocused, key2 = amount) {
+    LaunchedEffect(key1 = isFocused) {
         textFieldValue = textFieldValue.copy(
             selection = if (isFocused) {
                 TextRange(
                     start = 0,
-                    end = amount.length - 1
+                    end = amount.length
                 )
             } else {
                 TextRange.Zero
@@ -577,7 +573,7 @@ private fun AmountPicker(
         ) {
             val decreaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
             val increaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
-            IconButton(onClick = onDecreaseClicked, enabled = isAmountChangeable) {
+            IconButton(onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) }, enabled = isAmountChangeable) {
                 Icon(
                     imageVector = Icons.Filled.Remove,
                     contentDescription =
@@ -587,7 +583,7 @@ private fun AmountPicker(
             }
             BasicTextField(
                 value = textFieldValue,
-                onValueChange = {},
+                onValueChange = { value -> textFieldValue = value },
                 readOnly = !isAmountChangeable,
                 singleLine = true,
                 textStyle = textStyle,
@@ -595,12 +591,17 @@ private fun AmountPicker(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        onItemAmountChanged(ProductAmountEvent.Change(textFieldValue.text))
+                    }
+                ),
                 interactionSource = interactionSource,
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
                     .width(IntrinsicSize.Min)
             )
-            IconButton(onClick = onIncreaseClicked, enabled = isAmountChangeable) {
+            IconButton(onClick = { onItemAmountChanged(ProductAmountEvent.Increase) }, enabled = isAmountChangeable) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription =
@@ -615,6 +616,12 @@ private fun AmountPicker(
 @Composable
 private fun getQuantityWithTotalText(product: OrderCreationProduct) =
     "${product.item.quantity.toInt()} $MULTIPLICATION_CHAR ${product.productInfo.pricePreDiscount}"
+
+sealed class ProductAmountEvent {
+    object Increase : ProductAmountEvent()
+    object Decrease : ProductAmountEvent()
+    data class Change(val newAmount: String) : ProductAmountEvent()
+}
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -639,7 +646,7 @@ fun AmountPickerPreview() {
         )
     )
     WooThemeWithBackground {
-        AmountPicker(Modifier, {}, {}, product)
+        AmountPicker(Modifier, {}, product)
     }
 }
 
@@ -671,7 +678,7 @@ fun ExpandableProductCardPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExpandableProductCard(state, product, {}, {}, {}, {}, {}, { _, _ -> })
+        ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
 
@@ -705,7 +712,7 @@ fun ExtendedProductCardContentPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExtendedProductCardContent(state, product, {}, {}, {}, {}) {}
+        ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
 
@@ -739,6 +746,6 @@ fun ExtendedConfigurableProductCardContentPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExtendedProductCardContent(state, product, {}, {}, {}, {}) {}
+        ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
