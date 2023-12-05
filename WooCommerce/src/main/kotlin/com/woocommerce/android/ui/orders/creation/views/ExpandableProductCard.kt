@@ -521,21 +521,21 @@ private fun AmountPicker(
     val amount = product.item.quantity.toInt().toString()
     var textFieldValue by remember(amount) { mutableStateOf(TextFieldValue(amount)) }
     val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
+    val isAmountFieldInFocus by interactionSource.collectIsFocusedAsState()
 
     val focusManager = LocalFocusManager.current
 
     val elevation = animateDpAsState(
-        targetValue = if (isFocused) 4.dp else 0.dp,
+        targetValue = if (isAmountFieldInFocus) 4.dp else 0.dp,
         label = "elevation"
     )
 
     val fontStyleAnimation = animateFloatAsState(
-        targetValue = if (isFocused) 1.0F else 0.0F,
+        targetValue = if (isAmountFieldInFocus) 1.0F else 0.0F,
         label = "fontSize"
     )
 
-    val nonFocusedFontStyle = MaterialTheme.typography.body1
+    val nonFocusedFontStyle = MaterialTheme.typography.subtitle1
     val focusedFontStyle = MaterialTheme.typography.h4
     val textStyle by remember(fontStyleAnimation.value) {
         derivedStateOf {
@@ -557,16 +557,20 @@ private fun AmountPicker(
         )
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            val decreaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
-            val increaseButtonTint = if (isAmountChangeable) MaterialTheme.colors.primary else Color.Gray
-            IconButton(onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) }, enabled = isAmountChangeable) {
+            val isDecreaseIncreaseEnabled = isAmountChangeable && !isAmountFieldInFocus
+            val isDecreaseIncreaseButtonTint = if (isDecreaseIncreaseEnabled) MaterialTheme.colors.primary else Color.Gray
+            IconButton(
+                onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) },
+                enabled = isDecreaseIncreaseEnabled
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Remove,
                     contentDescription =
                     stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
-                    tint = decreaseButtonTint
+                    tint = isDecreaseIncreaseButtonTint
                 )
             }
             BasicTextField(
@@ -574,7 +578,7 @@ private fun AmountPicker(
                 onValueChange = { value -> textFieldValue = value },
                 readOnly = !isAmountChangeable,
                 singleLine = true,
-                textStyle = textStyle,
+                textStyle = textStyle.copy(color = MaterialTheme.colors.onSurface),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -591,12 +595,15 @@ private fun AmountPicker(
                     .widthIn(min = 12.dp, max = 128.dp)
                     .width(IntrinsicSize.Min)
             )
-            IconButton(onClick = { onItemAmountChanged(ProductAmountEvent.Increase) }, enabled = isAmountChangeable) {
+            IconButton(
+                onClick = { onItemAmountChanged(ProductAmountEvent.Increase) },
+                enabled = isDecreaseIncreaseEnabled
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription =
                     stringResource(id = R.string.order_creation_increase_item_amount_content_description),
-                    tint = increaseButtonTint
+                    tint = isDecreaseIncreaseButtonTint
                 )
             }
         }
