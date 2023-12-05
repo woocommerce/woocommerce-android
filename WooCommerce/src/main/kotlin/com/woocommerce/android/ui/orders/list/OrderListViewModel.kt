@@ -14,7 +14,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +30,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrde
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -98,6 +99,7 @@ class OrderListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
+    private val notificationChannelsHandler: NotificationChannelsHandler
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -130,12 +132,7 @@ class OrderListViewModel @Inject constructor(
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
-    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage.map {
-        if (it == false) {
-            orderListTransactionLauncher.onListFetched()
-        }
-        it
-    }
+    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
@@ -189,6 +186,13 @@ class OrderListViewModel @Inject constructor(
         }
 
         displayOrdersBannerOrJitm()
+
+        isFetchingFirstPage.filter { !it }
+            .observeForever {
+                // When first page is fetched
+                orderListTransactionLauncher.onListFetched()
+                checkChaChingSoundSettings()
+            }
     }
 
     fun loadOrders() {
@@ -255,6 +259,7 @@ class OrderListViewModel @Inject constructor(
                 SUCCESS -> {
                     viewState = viewState.copy(arePaymentGatewaysFetched = true)
                 }
+
                 else -> {
                     /* do nothing */
                 }
@@ -300,6 +305,7 @@ class OrderListViewModel @Inject constructor(
                     }
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
                 triggerEvent(
@@ -408,6 +414,7 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
         pagedListWrapper?.apply {
             _pagedListData.removeSource(data)
@@ -451,6 +458,7 @@ class OrderListViewModel @Inject constructor(
                             EmptyViewType.ORDER_LIST_LOADING
                         }
                     }
+
                     isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
@@ -676,6 +684,31 @@ class OrderListViewModel @Inject constructor(
             )
         )
         refreshOrdersBannerVisibility()
+    }
+
+    private fun checkChaChingSoundSettings() {
+        // The notification channels are only available on Oreo and above, so no need to check when below.
+        if (!SystemVersionUtils.isAtLeastO()) return
+
+        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)) {
+            triggerEvent(
+                Event.ShowDialog(
+                    titleId = R.string.cha_ching_sound_issue_dialog_title,
+                    messageId = R.string.cha_ching_sound_issue_dialog_message,
+                    positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
+                    negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
+                    positiveBtnAction = { _, _ ->
+                        TODO()
+                    },
+                    negativeBtnAction = { _, _ ->
+                        TODO()
+                    },
+                    onDismiss = {
+                        TODO()
+                    }
+                )
+            )
+        }
     }
 
     sealed class OrderListEvent : Event() {
