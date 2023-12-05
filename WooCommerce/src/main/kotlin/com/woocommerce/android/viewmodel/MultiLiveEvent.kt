@@ -134,7 +134,9 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             @StringRes val neutralButtonId: Int? = null,
             val positiveBtnAction: OnClickListener? = null,
             val negativeBtnAction: OnClickListener? = null,
-            val neutralBtnAction: OnClickListener? = null
+            val neutralBtnAction: OnClickListener? = null,
+            val cancelable: Boolean = true,
+            val onDismiss: (() -> Unit)? = null
         ) : Event() {
             companion object {
                 fun buildDiscardDialogEvent(
