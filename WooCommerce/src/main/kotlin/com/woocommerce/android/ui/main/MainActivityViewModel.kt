@@ -348,6 +348,12 @@ class MainActivityViewModel @Inject constructor(
         triggerEvent(ShowPrivacySettingsWithError(requestedAnalyticsPreference))
     }
 
+    fun handleIncomingImages(images: List<Uri>?) {
+        if (images.isNullOrEmpty()) return
+
+        triggerEvent(CreateNewProductUsingImages(images))
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
@@ -367,6 +373,8 @@ class MainActivityViewModel @Inject constructor(
         RestartActivityEvent()
 
     data class RestartActivityForAppLink(val data: Uri) : RestartActivityEvent()
+
+    data class CreateNewProductUsingImages(val images: List<Uri>) : Event()
 
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()

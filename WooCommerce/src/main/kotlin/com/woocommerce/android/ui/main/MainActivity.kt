@@ -322,7 +322,14 @@ class MainActivity :
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
             viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+            handleIncomingImages()
         }
+    }
+
+    private fun handleIncomingImages() {
+        viewModel.handleIncomingImages(intent?.clipData?.let {
+            (0 until it.itemCount).map { index -> it.getItemAt(index).uri }
+        })
     }
 
     override fun hideProgressDialog() {
@@ -374,6 +381,7 @@ class MainActivity :
         initFragment(null)
 
         viewModel.handleIncomingAppLink(intent?.data)
+        handleIncomingImages()
     }
 
     public override fun onDestroy() {
@@ -787,6 +795,8 @@ class MainActivity :
 
                 is OpenFreeTrialSurvey -> openFreeTrialSurvey()
                 is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
+
+                is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.images)
             }
         }
 
@@ -946,9 +956,12 @@ class MainActivity :
         navController.navigate(Uri.parse(deeplink))
     }
 
-    override fun showAddProduct() {
+    override fun showAddProduct(images: List<Uri>) {
         showBottomNav()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            isAddProduct = true,
+            images = images.map { it.toString() }.toTypedArray()
+        )
         navController.navigateSafely(action)
     }
 
