@@ -696,11 +696,11 @@ class OrderCreateEditFormFragment :
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
             if (newOrderData.giftCards.isNullOrEmpty()) {
                 addGiftCardButton.isVisible = true
-                giftCardLayout.isVisible = false
+                giftCardLayout.hide()
                 addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
             } else {
                 addGiftCardButton.isVisible = false
-                giftCardLayout.isVisible = true
+                giftCardLayout.show()
                 giftCardCode.text = newOrderData.giftCards
                 selectedGiftCardButton.setOnClickListener {
                     viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards)
