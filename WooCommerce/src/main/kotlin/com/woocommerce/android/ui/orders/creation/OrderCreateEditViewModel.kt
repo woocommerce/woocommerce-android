@@ -634,6 +634,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 )
             }
+
+            CodeScannerStatus.NotFound -> {
+                // do nothing
+            }
         }
     }
 
