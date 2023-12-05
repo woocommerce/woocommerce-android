@@ -112,6 +112,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
 
         data class ShowActionSnackbar(
             val message: String,
+            val actionText: String,
             val action: View.OnClickListener
         ) : Event()
 
