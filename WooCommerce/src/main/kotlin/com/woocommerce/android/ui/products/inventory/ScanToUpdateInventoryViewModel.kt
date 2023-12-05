@@ -25,21 +25,23 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
     private val _viewState: MutableStateFlow<ViewState> =
-        savedState.getStateFlow(this, ViewState.BarcodeScanning, "viewState")
+        savedState.getStateFlow(this, ViewState.QuickInventoryBottomSheetHidden, "viewState")
     val viewState: StateFlow<ViewState> = _viewState
 
+    private val productSearchState: MutableStateFlow<ProductSearchState> =
+        savedState.getStateFlow(this, ProductSearchState.Idle, "productSearchState")
+
     fun onBarcodeScanningResult(status: CodeScannerStatus) {
-        if (viewState.value !is ViewState.BarcodeScanning) return
+        if (productSearchState.value != ProductSearchState.Idle) return
 
         if (status is CodeScannerStatus.Success) {
-            _viewState.value = ViewState.ProductLoading
+            productSearchState.value = ProductSearchState.Ongoing
             handleBarcodeScanningSuccess(status)
         }
     }
 
     fun onBottomSheetDismissed() {
-        if (viewState.value is ViewState.ProductUpdating) return
-        _viewState.value = ViewState.BarcodeScanning
+        productSearchState.value = ProductSearchState.Idle
     }
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
@@ -54,7 +56,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     sku = product.sku,
                     quantity = product.stockQuantity.toInt(),
                 )
-                _viewState.value = ViewState.ProductLoaded(productInfo)
+                _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
             } else {
                 handleProductNotFound(status.code)
             }
@@ -66,7 +68,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private suspend fun handleProductNotFound(barcode: String) {
         triggerProductNotFoundSnackBar(barcode)
         delay(SCANNER_RESTART_DEBOUNCE_MS)
-        _viewState.value = ViewState.BarcodeScanning
+        productSearchState.value = ProductSearchState.Idle
     }
 
     private fun triggerProductNotFoundSnackBar(barcode: String) {
@@ -77,7 +79,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     @Suppress("ForbiddenComment")
     fun onIncrementQuantityClicked() {
         // TODO: Implement actual logic
-        _viewState.value = ViewState.BarcodeScanning
+        productSearchState.value = ProductSearchState.Idle
     }
 
     @Parcelize
@@ -91,10 +93,12 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     @Parcelize
     sealed class ViewState : Parcelable {
-        object BarcodeScanning : ViewState()
-        object ProductLoading : ViewState()
-        data class ProductLoaded(val product: ProductInfo) : ViewState()
-        object ProductUpdating : ViewState()
+        data class QuickInventoryBottomSheetVisible(val product: ProductInfo) : ViewState()
+        object QuickInventoryBottomSheetHidden : ViewState()
+    }
+
+    enum class ProductSearchState {
+        Idle, Ongoing
     }
 
     companion object {

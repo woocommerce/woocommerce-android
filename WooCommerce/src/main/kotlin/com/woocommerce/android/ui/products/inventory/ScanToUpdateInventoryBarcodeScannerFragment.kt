@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.ProductLoaded
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,14 +70,14 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                     ),
                     sheetContent = {
                         viewModel.viewState.collectAsState().value.let { state ->
-                            if (state is ProductLoaded) {
+                            if (state is QuickInventoryBottomSheetVisible) {
                                 QuickInventoryUpdateBottomSheet(
                                     state = state,
                                     onIncrementQuantityClicked = viewModel::onIncrementQuantityClicked
                                 )
                             }
                             LaunchedEffect(state) {
-                                if (state is ProductLoaded) {
+                                if (state is QuickInventoryBottomSheetVisible) {
                                     sheetState.show()
                                 } else {
                                     sheetState.hide()

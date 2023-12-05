@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewMo
 
 @Composable
 fun QuickInventoryUpdateBottomSheet(
-    state: ScanToUpdateInventoryViewModel.ViewState.ProductLoaded,
+    state: ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible,
     onIncrementQuantityClicked: () -> Unit,
 ) {
     Column(
@@ -95,7 +95,7 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         sku = "123-SKU-456",
         quantity = 10,
     )
-    val state = ScanToUpdateInventoryViewModel.ViewState.ProductLoaded(product)
+    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
     WooTheme {
         QuickInventoryUpdateBottomSheet(state, {})
     }
