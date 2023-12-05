@@ -575,7 +575,14 @@ private fun AmountPicker(
             }
             BasicTextField(
                 value = textFieldValue,
-                onValueChange = { value -> textFieldValue = value },
+                onValueChange = { value ->
+                     try {
+                        if (value.text.isNotBlank() && value.text.isNotEmpty()) value.text.toInt()
+                        textFieldValue = value
+                    } catch (_: NumberFormatException) {
+                        // no-op
+                    }
+                },
                 readOnly = !isAmountChangeable,
                 singleLine = true,
                 textStyle = textStyle.copy(color = MaterialTheme.colors.onSurface),
