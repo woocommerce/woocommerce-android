@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.barcodescanner
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
@@ -16,16 +17,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.CodeScanner
-import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun BarcodeScannerScreen(
-    codeScanner: CodeScanner,
+    onNewFrame: (ImageProxy) -> Unit,
+    onBindingException: (Exception) -> Unit,
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
-    onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -39,8 +37,8 @@ fun BarcodeScannerScreen(
     when (permissionState) {
         BarcodeScanningViewModel.PermissionState.Granted -> {
             BarcodeScanner(
-                codeScanner = codeScanner,
-                onScannedResult = onScannedResult
+                onNewFrame = onNewFrame,
+                onBindingException = onBindingException,
             )
         }
         is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {
