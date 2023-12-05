@@ -115,6 +115,7 @@ class OrderCreateEditRepository @Inject constructor(
             shippingLines = order.shippingLines.map { it.toDataModel() },
             feeLines = order.feesLines.map { it.toDataModel() },
             couponLines = order.couponLines.map { it.toDataModel() },
+            giftCard = order.giftCards,
         )
 
         val result = if (order.id == 0L) {

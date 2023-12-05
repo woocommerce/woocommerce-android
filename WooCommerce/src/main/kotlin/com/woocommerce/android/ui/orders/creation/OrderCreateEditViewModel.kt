@@ -581,6 +581,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
+                order.giftCards.isNullOrEmpty() &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
     }
