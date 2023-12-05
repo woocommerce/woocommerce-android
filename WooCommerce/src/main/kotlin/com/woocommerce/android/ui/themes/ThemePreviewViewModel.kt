@@ -92,7 +92,6 @@ class ThemePreviewViewModel @Inject constructor(
                 isActivatingTheme.value = true
                 themeRepository.activateTheme(navArgs.themeId).fold(
                     onSuccess = {
-                        appPrefsWrapper.clearThemeIdForStoreCreation()
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
                         triggerEvent(MultiLiveEvent.Event.Exit)
                     },
