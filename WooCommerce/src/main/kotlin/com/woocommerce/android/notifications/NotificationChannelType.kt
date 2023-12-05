@@ -7,12 +7,6 @@ import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
 
-/**
- * Note that we have separate notification channels for orders with and without the cha-ching sound - this is
- * necessary because once a channel is created we can't change it, and if we delete the channel and re-create
- * it then it will be re-created with the same settings it previously had (ie: we can't simply have a single
- * channel for orders and add/remove the sound from it)
- */
 enum class NotificationChannelType {
     NEW_ORDER,
     REVIEW,
