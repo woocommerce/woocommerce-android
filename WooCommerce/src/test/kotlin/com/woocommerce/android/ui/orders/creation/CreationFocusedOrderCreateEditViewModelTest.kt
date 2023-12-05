@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -415,7 +416,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         val addedProductItemId = addedProduct!!.item.itemId
 
-        sut.onIncreaseProductsQuantity(addedProduct!!)
+        sut.onItemAmountChanged(addedProduct!!, ProductAmountEvent.Increase)
         sut.onRemoveProduct(addedProduct!!)
 
         orderDraft?.items
