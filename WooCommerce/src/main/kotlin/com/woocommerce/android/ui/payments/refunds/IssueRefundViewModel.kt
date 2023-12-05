@@ -268,7 +268,7 @@ class IssueRefundViewModel @Inject constructor(
             .filter { refundableFeeLineIds.contains(it.feeLine.id) }
         _refundFeeLines.value = feeLines
 
-        if (feeLines.isNotEmpty() && items.isEmpty()) {
+        if (orderContainsOnlyCustomAmounts()) {
             refundByItemsState = refundByItemsState.copy(
                 isFeesMainSwitchChecked = true,
                 isFeesRefundAvailable = true
@@ -284,6 +284,10 @@ class IssueRefundViewModel @Inject constructor(
                 decimals = decimals
             )
         }
+    }
+
+    private fun orderContainsOnlyCustomAmounts(): Boolean {
+        return order.items.isEmpty() && order.shippingLines.isEmpty() && order.feesLines.isNotEmpty()
     }
 
     private fun initRefundSummaryState() {
