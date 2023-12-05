@@ -1,4 +1,16 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+16.6
+-----
+- [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
+
+16.5
+-----
+- [*] [Internal] Always use default currency as first choice to show in the deposits summary in the cases multiple currencies used [https://github.com/woocommerce/woocommerce-android/pull/10251]
+- [*] [Internal] Changes in the minSdkVersion from 24 to 26 and coroutines library update to version 1.7.3 [https://github.com/woocommerce/woocommerce-android/pull/10187]
+- [*] [Internal] Stripe SDK Migration to version 3.1.1 [https://github.com/woocommerce/woocommerce-android/pull/10103]
+- [*] [Internal] Send `store_id` in track events when available. [https://github.com/woocommerce/woocommerce-android/pull/10286]
+
 16.4
 -----
 - [***] [Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]

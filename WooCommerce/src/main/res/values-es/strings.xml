@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-16 15:54:05+0000
+Translation-Revision-Date: 2023-11-28 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="configuration_required">Se necesita configuración</string>
+    <string name="blaze_overflow_menu_hide_blaze">Ocultar Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">Nota de agradecimiento generada mediante IA</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">No se ha podido crear la nota de agradecimiento. Pulsa el botón que aparece a continuación para volver a intentarlo.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Compartir</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Regenerar</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Creando una nota de agradecimiento para tu pedido…</string>
+    <string name="ai_order_thank_you_note_dialog_title">Nota de agradecimiento</string>
+    <string name="subscription_one_time_shipping_note">Nota: Para que esta configuración esté habilitada, la suscripción no debe tener un periodo de prueba ni una fecha de renovación sincronizada.</string>
+    <string name="subscription_one_time_shipping_description">Activa esto solo para cobrar una vez los gastos de envío en el pedido inicial.</string>
+    <string name="subscription_one_time_shipping_enabled">Activado</string>
+    <string name="subscription_one_time_shipping">Envío único</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documentos y otros archivos en el dispositivo</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨Crear nota de agradecimiento</string>
+    <string name="custom_amounts_tax_label">Cobrar impuestos</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Los fondos disponibles se depositan automáticamente, cada %s.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Los fondos disponibles se depositan automáticamente, cada día.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Los fondos estarán disponibles después de estar pendientes durante %d días.</string>
+    <string name="product_variation_picker_title">Seleccionar una variación</string>
+    <string name="configuration_variable_update">Elegir variación</string>
+    <string name="configuration_children_issue"> « %1$s » -&gt; %2$s </string>
+    <string name="configuration_variable_selection"> Selecciona una variación. </string>
+    <string name="configuration_quantity_items_selected_plural"> %1$s elementos elegidos </string>
+    <string name="configuration_quantity_items_selected"> %1$s elemento elegido </string>
+    <string name="configuration_quantity_rule_issue"> Por favor, selecciona %1$s </string>
+    <string name="configuration_quantity_more_than_plural"> más de %1$s elementos </string>
+    <string name="configuration_quantity_more_than"> más de %1$s elemento </string>
+    <string name="configuration_quantity_less_than"> menos de %1$s elementos </string>
+    <string name="configuration_quantity_between"> entre %1$s y %2$s elementos </string>
+    <string name="configuration_quantity_item_plural">%d elementos</string>
+    <string name="configuration_quantity_item">%d elemento</string>
+    <string name="order_configuration_change_product_quantity">Cambiar la cantidad de producto de %1$f a %2$f</string>
+    <string name="save_configuration">Guardar configuración</string>
+    <string name="product_configuration_title">Configuración</string>
+    <string name="default_product_title">Producto %s</string>
+    <string name="extension_configure_button">Configurar</string>
+    <string name="subscription_sign_up_fee_explanation">Opcionalmente, la tarifa de inscripción se cobrará de inmediato, incluso si el producto tiene una versión de prueba gratuita o si las fechas de pago están sincronizadas.</string>
+    <string name="product_type_variable_subscription_desc">Suscripción a un producto con variaciones</string>
+    <string name="product_type_variable_subscription_title">Producto de suscripción variable</string>
+    <string name="product_type_simple_subscription_desc">Una suscripción de producto única que activa pagos recurrentes</string>
+    <string name="product_type_simple_subscription_title">Producto de suscripción sencilla</string>
+    <string name="product_subscription_free_trial_info">Período de tiempo opcional que se debe esperar antes de cobrar el primer pago recurrente. La tarifa de inscripción se seguirá cobrando al inicio de la suscripción. El período de prueba no puede superar: 90 días, 52 semanas, 24 meses o 5 años.</string>
+    <string name="product_subscription_free_trial_title">Prueba gratuita de la suscripción</string>
+    <string name="product_subscription_expiration_title">Caducidad de la suscripción</string>
+    <string name="order_detail_custom_amounts_header">CANTIDADES PERSONALIZADAS</string>
+    <string name="order_detail_payment_header">CANTIDAD TOTAL DEL PAGO</string>
+    <string name="orderdetail_order_notes_uppercase">NOTAS DE PEDIDOS</string>
+    <string name="orderdetail_product_multiple_uppercase">PRODUCTOS</string>
+    <string name="orderdetail_product_uppercase">PRODUCTO</string>
+    <string name="orderdetail_customer_header">CLIENTE</string>
     <string name="notification_security_key_needed">Introduce tu clave de seguridad para continuar.</string>
     <string name="login_error_security_key">Hubo algunos problemas con el inicio de sesión de la clave de seguridad</string>
     <string name="login_text_security_key">Usa una clave de seguridad</string>
@@ -21,11 +71,11 @@ Language: es
     <string name="card_reader_hub_deposit_summary_status_estimated">Estimado</string>
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Contraer/ampliar resumen de depósitos</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Obtén más información acerca de cuándo recibirás tus fondos.</string>
-    <string name="card_reader_hub_deposit_summary_available_deposited_time">Los fondos disponibles se depositan automáticamente, cada semana.</string>
+    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Los fondos disponibles se depositan automáticamente cada mes en %s.</string>
     <string name="card_reader_hub_deposit_summary_last">Más reciente</string>
     <string name="card_reader_hub_deposit_summary_next">Siguiente</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">Depósitos</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after">Los fondos estarán disponibles después de estar pendientes durante 7 días.</string>
+    <string name="card_reader_hub_deposit_summary_funds_available_after_one">Los fondos estarán disponibles después de estar pendientes durante %d día.</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depósito</string>
     <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depósitos</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Fondos pendientes</string>
@@ -171,8 +221,7 @@ Language: es
     <string name="tax_rate_selector_empty_list_title">No hemos encontrado tipos impositivos</string>
     <string name="store_onboarding_payments_setup_description">Descubre otros proveedores de pago y \nelige un proveedor de pago.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Métodos de pago</string>
-    <string name="product_downloadable_files_add_documents_from_device">Documentos en el dispositivo</string>
-    <string name="product_downloadable_files_add_media_from_device">Archivos multimedia en el dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">Imágenes y vídeos en el dispositivo</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolver ahora</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Finalizar configuración</string>
     <string name="tax_rate_selector_title">Fijar el tipo impositivo</string>
@@ -464,7 +513,7 @@ Language: es
     <string name="settings_privacy_header">Privacidad</string>
     <string name="settings_usage_tracking_description">Obtén más información sobre los datos que recopilamos sobre tu tienda y tus opciones para controlar los datos que compartes.</string>
     <string name="settings_usage_tracking">Seguimiento de uso</string>
-    <string name="settings_web_options_description">Más opciones de privacidad disponibles para los usuarios de woocommerce.com. Consulta aquí para saber más.</string>
+    <string name="settings_web_options_description">Más opciones de privacidad disponibles para los usuarios de woo.com. Consulta aquí para saber más.</string>
     <string name="settings_web_options">Opciones web</string>
     <string name="settings_more_privacy_options_header">Más opciones de privacidad</string>
     <string name="settings_tracking_analytics_error_update">Se ha producido un error al actualizar tu configuración de privacidad</string>
@@ -3206,13 +3255,5 @@ Language: es
     <string-array name="shipping_label_create_new_package_tabs">
         <item>Paquete personalizado</item>
         <item>Paquete de servicios</item>
-    </string-array>
-    <string-array name="subscription_interval_options">
-        <item>Cada hora</item>
-        <item>Cada 2 horas</item>
-        <item>Cada 3 horas</item>
-        <item>Cada 4 horas</item>
-        <item>Cada 5 horas</item>
-        <item>Cada 6 horas</item>
     </string-array>
 </resources>

@@ -516,6 +516,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_LIST_BULK_UPDATE_SUCCESS,
     PRODUCT_LIST_BULK_UPDATE_FAILURE,
     PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED,
+    PRODUCT_FILTER_LIST_EXPLORE_BUTTON_TAPPED,
 
     // -- Product detail
     PRODUCT_DETAIL_LOADED,
@@ -984,6 +985,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     BLAZE_CAMPAIGN_DETAIL_SELECTED,
     BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
     BLAZE_INTRO_DISPLAYED,
+    BLAZE_VIEW_DISMISSED,
 
     // Hazmat Shipping Declaration
     CONTAINS_HAZMAT_CHECKED,

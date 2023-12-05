@@ -4,9 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +29,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val fetchProductBySKU: FetchProductBySKU,
     private val resourceProvider: ResourceProvider,
     private val productRepository: ProductDetailRepository,
+    private val variationRepository: VariationDetailRepository,
 ) : ScopedViewModel(savedState) {
     private val _viewState: MutableStateFlow<ViewState> =
         savedState.getStateFlow(this, ViewState.BarcodeScanning, "viewState")
@@ -61,6 +65,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 )
                 if (product.isStockManaged) {
                     _viewState.value = ViewState.ProductLoaded(productInfo)
+                    triggerEvent(OpenInventoryUpdateBottomSheet)
                 } else {
                     handleProductIsNotStockManaged(product)
                 }
@@ -93,23 +98,42 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private fun triggerProductNotFoundSnackBar(barcode: String) {
-        val message = resourceProvider.getString(R.string.scan_to_update_inventory_unable_to_find_product, barcode)
+        val message = resourceProvider.getString(
+            R.string.scan_to_update_inventory_unable_to_find_product,
+            barcode
+        )
         triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
     }
 
     fun onIncrementQuantityClicked() {
         val state = viewState.value
         if (state !is ViewState.ProductLoaded) return
-        val product = productRepository.getProduct(state.product.id)
+        updateQuantity(state.product.copy(quantity = state.product.quantity + 1))
+    }
+
+    fun onUpdateQuantityClicked() {
+        val state = viewState.value
+        if (state !is ViewState.ProductLoaded) return
+        updateQuantity(state.product)
+    }
+
+    private fun updateQuantity(updatedProductInfo: ProductInfo) {
+        val product = productRepository.getProduct(updatedProductInfo.id)
         _viewState.value = ViewState.ProductUpdating
         if (product == null) {
             handleQuantityUpdateError()
         } else {
             launch {
-                val updatedProduct = product.copy(stockQuantity = product.stockQuantity + 1)
-                val result = productRepository.updateProduct(updatedProduct)
-                if (result) {
-                    handleQuantityUpdateSuccess(product, updatedProduct)
+                val result = if (product.isVariable()) {
+                    product.updateVariation(updatedProductInfo)
+                } else {
+                    product.updateProduct(updatedProductInfo)
+                }
+                if (result.isSuccess) {
+                    handleQuantityUpdateSuccess(
+                        product.stockQuantity.toInt().toString(),
+                        updatedProductInfo.quantity.toString()
+                    )
                 } else {
                     handleQuantityUpdateError()
                 }
@@ -117,10 +141,34 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleQuantityUpdateSuccess(oldProduct: Product, updatedProduct: Product) {
-        val oldQuantity = oldProduct.stockQuantity
-        val newQuantity = updatedProduct.stockQuantity
-        val quantityChangeString = "$oldQuantity ➡ $newQuantity"
+    private suspend fun Product.updateProduct(updatedProductInfo: ProductInfo): Result<Unit> {
+        val updatedProduct = copy(stockQuantity = updatedProductInfo.quantity.toDouble())
+        val result: Boolean = productRepository.updateProduct(updatedProduct)
+        return if (result) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exception("Unable to update product"))
+        }
+    }
+
+    private suspend fun Product.updateVariation(updatedProductInfo: ProductInfo): Result<Unit> {
+        val variation: ProductVariation? = variationRepository.getVariation(
+            remoteProductId = parentId,
+            remoteVariationId = remoteId
+        )
+        val updatedVariation = variation?.copy(stockQuantity = updatedProductInfo.quantity.toDouble())
+            ?: return Result.failure(Exception("Unable to find variation"))
+
+        val result: WCProductStore.OnVariationUpdated = variationRepository.updateVariation(updatedVariation)
+        return if (result.isError) {
+            Result.failure(Exception("Unable to update variation"))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    private suspend fun handleQuantityUpdateSuccess(oldQuantity: String, updatedQuantity: String) {
+        val quantityChangeString = "$oldQuantity ➡ $updatedQuantity"
         val message = resourceProvider.getString(
             R.string.scan_to_update_inventory_success_snackbar,
             quantityChangeString
@@ -135,6 +183,25 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         _viewState.value = ViewState.BarcodeScanning
     }
 
+    fun onManualQuantityEntered(newQuantity: String) {
+        val state = viewState.value
+        if (state !is ViewState.ProductLoaded) return
+        _viewState.value = state.copy(
+            product = state.product.copy(quantity = newQuantity.toIntOrNull() ?: 0),
+            isPendingUpdate = true
+        )
+    }
+
+    private fun Product.isVariable(): Boolean {
+        return this.parentId != 0L
+    }
+
+    fun onViewProductDetailsClicked() {
+        val state = viewState.value
+        if (state !is ViewState.ProductLoaded) return
+        triggerEvent(NavigateToProductDetailsEvent(state.product.id))
+    }
+
     @Parcelize
     data class ProductInfo(
         val id: Long,
@@ -142,19 +209,26 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val imageUrl: String,
         val sku: String,
         val quantity: Int,
+        val isPendingUpdate: Boolean = false,
     ) : Parcelable
 
     @Parcelize
     sealed class ViewState : Parcelable {
         object BarcodeScanning : ViewState()
         object ProductLoading : ViewState()
-        data class ProductLoaded(val product: ProductInfo) : ViewState()
+        data class ProductLoaded(
+            val product: ProductInfo,
+            val isPendingUpdate: Boolean = false,
+            val originalQuantity: String = product.quantity.toString(),
+        ) : ViewState()
+
         object ProductUpdating : ViewState()
     }
 
     data class NavigateToProductDetailsEvent(val productId: Long) : Event()
+    object OpenInventoryUpdateBottomSheet : Event()
 
     companion object {
-        private const val SCANNER_RESTART_DEBOUNCE_MS = 1000L
+        private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
     }
 }

@@ -321,6 +321,10 @@ class OrderListViewModel @Inject constructor(
                     OrderListEvent.OnBarcodeScanned(status.code, status.format)
                 )
             }
+
+            CodeScannerStatus.NotFound -> {
+                // do nothing
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
+import com.woocommerce.android.extensions.isWooExpressSiteReadyToUse
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
@@ -48,7 +49,7 @@ class ObserveSiteInstallation @Inject constructor(
                             emit(InstallationState.OutOfSync)
                         }
 
-                        if (site.isReadyToUse) {
+                        if (site.isWooExpressSiteReadyToUse) {
                             emit(InstallationState.Success)
                             return@flow
                         }
@@ -64,12 +65,6 @@ class ObserveSiteInstallation @Inject constructor(
             }
         }
     }
-
-    private val SiteModel?.isReadyToUse: Boolean
-        get() = this?.isJetpackInstalled == true &&
-            this.isJetpackConnected &&
-            this.isWpComStore &&
-            this.hasWooCommerce
 
     private fun SiteModel?.isDesynced(expectedName: String): Boolean =
         this?.isJetpackInstalled == true && this.isJetpackConnected &&
