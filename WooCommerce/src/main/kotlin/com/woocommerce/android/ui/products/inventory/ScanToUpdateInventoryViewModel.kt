@@ -9,7 +9,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,7 +64,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 )
                 if (product.isStockManaged) {
                     _viewState.value = ViewState.ProductLoaded(productInfo)
-                    triggerEvent(OpenInventoryUpdateBottomSheet)
                 } else {
                     handleProductIsNotStockManaged(product)
                 }
@@ -218,8 +216,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
         object ProductUpdating : ViewState()
     }
-
-    object OpenInventoryUpdateBottomSheet : MultiLiveEvent.Event()
 
     companion object {
         private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
