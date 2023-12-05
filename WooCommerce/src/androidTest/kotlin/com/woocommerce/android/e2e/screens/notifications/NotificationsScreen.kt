@@ -25,7 +25,6 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
         wooNotificationBuilder.buildAndDisplayWooNotification(
             0,
             0,
-            getTranslatedString(R.string.notification_channel_order_id),
             notification = Notification(
                 noteId = 1,
                 uniqueId = 1L,
