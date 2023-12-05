@@ -17,6 +17,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -99,7 +100,8 @@ class OrderListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
-    private val notificationChannelsHandler: NotificationChannelsHandler
+    private val notificationChannelsHandler: NotificationChannelsHandler,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -690,7 +692,9 @@ class OrderListViewModel @Inject constructor(
         // The notification channels are only available on Oreo and above, so no need to check when below.
         if (!SystemVersionUtils.isAtLeastO()) return
 
-        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)) {
+        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER) &&
+            !appPrefs.chaChingSoundIssueDialogDismissed
+        ) {
             triggerEvent(
                 Event.ShowDialog(
                     titleId = R.string.cha_ching_sound_issue_dialog_title,
