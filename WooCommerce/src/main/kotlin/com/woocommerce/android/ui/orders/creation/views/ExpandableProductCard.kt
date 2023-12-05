@@ -43,7 +43,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,11 +56,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -523,18 +522,7 @@ private fun AmountPicker(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    LaunchedEffect(key1 = isFocused) {
-        textFieldValue = textFieldValue.copy(
-            selection = if (isFocused) {
-                TextRange(
-                    start = 0,
-                    end = amount.length
-                )
-            } else {
-                TextRange.Zero
-            }
-        )
-    }
+    val focusManager = LocalFocusManager.current
 
     val elevation = animateDpAsState(
         targetValue = if (isFocused) 4.dp else 0.dp,
@@ -594,6 +582,7 @@ private fun AmountPicker(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         onItemAmountChanged(ProductAmountEvent.Change(textFieldValue.text))
+                        focusManager.clearFocus()
                     }
                 ),
                 interactionSource = interactionSource,
