@@ -1,4 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.7
+-----
+- [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
 
 16.6
 -----
