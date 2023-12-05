@@ -89,6 +89,7 @@ import java.math.BigDecimal
 
 private const val ANIM_DURATION_MILLIS = 128
 private const val MULTIPLICATION_CHAR = "×"
+private const val MAX_PRODUCT_QUANTITY = 100_000
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
@@ -587,11 +588,16 @@ private fun AmountPicker(
                 value = textFieldValue,
                 onValueChange = { value ->
                     try {
-                        if (value.text.isNotBlank() && value.text.isNotEmpty()) {
-                            // try converting to int to validate that input is a number
-                            value.text.toInt()
-                        }
-                        textFieldValue = value
+                        textFieldValue = if (value.text.isNotBlank() && value.text.isNotEmpty()) {
+                                // try converting to int to validate that input is a number
+                                if (value.text.toInt() > MAX_PRODUCT_QUANTITY) {
+                                    TextFieldValue(MAX_PRODUCT_QUANTITY.toString())
+                                } else {
+                                    value
+                                }
+                            } else {
+                                value
+                            }
                     } catch (_: NumberFormatException) {
                         // no-op
                     }
