@@ -339,7 +339,7 @@ class MainActivity :
     private fun handleIncomingImages() {
         viewModel.handleIncomingImages(
             intent?.clipData?.let {
-                (0 until it.itemCount).map { index -> it.getItemAt(index).uri }
+                (0 until it.itemCount).map { index -> it.getItemAt(index).uri.toString() }
             }
         )
     }
@@ -807,7 +807,7 @@ class MainActivity :
                 is OpenFreeTrialSurvey -> openFreeTrialSurvey()
                 is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
 
-                is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.images)
+                is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
             }
         }
 
@@ -968,11 +968,11 @@ class MainActivity :
         navController.navigate(Uri.parse(deeplink))
     }
 
-    override fun showAddProduct(images: List<Uri>) {
+    override fun showAddProduct(imageUris: List<String>) {
         showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
             isAddProduct = true,
-            images = images.map { it.toString() }.toTypedArray()
+            images = imageUris.toTypedArray()
         )
         navController.navigateSafely(action)
     }
