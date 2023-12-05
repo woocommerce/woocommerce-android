@@ -40,6 +40,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
@@ -560,24 +561,36 @@ private fun AmountPicker(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val isDecreaseIncreaseEnabled = isAmountChangeable && !isAmountFieldInFocus
-            val isDecreaseIncreaseButtonTint = if (isDecreaseIncreaseEnabled) MaterialTheme.colors.primary else Color.Gray
+            val isPlusMinusEnabled = isAmountChangeable && !isAmountFieldInFocus
+            val plusButtonTint = if (isPlusMinusEnabled) MaterialTheme.colors.primary else Color.Gray
+            val isLastItem = amount == "1"
+
+            val minusButtonTint = when {
+                !isPlusMinusEnabled -> Color.Gray
+                isLastItem -> MaterialTheme.colors.error
+                else -> MaterialTheme.colors.primary
+            }
+
+            val decreaseIcon = if (isLastItem) Icons.Filled.DeleteOutline else Icons.Filled.Remove
             IconButton(
                 onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) },
-                enabled = isDecreaseIncreaseEnabled
+                enabled = isPlusMinusEnabled
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Remove,
+                    imageVector = decreaseIcon,
                     contentDescription =
                     stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
-                    tint = isDecreaseIncreaseButtonTint
+                    tint = minusButtonTint
                 )
             }
             BasicTextField(
                 value = textFieldValue,
                 onValueChange = { value ->
-                     try {
-                        if (value.text.isNotBlank() && value.text.isNotEmpty()) value.text.toInt()
+                    try {
+                        if (value.text.isNotBlank() && value.text.isNotEmpty()) {
+                            // try converting to int to validate that input is a number
+                            value.text.toInt()
+                        }
                         textFieldValue = value
                     } catch (_: NumberFormatException) {
                         // no-op
@@ -604,13 +617,13 @@ private fun AmountPicker(
             )
             IconButton(
                 onClick = { onItemAmountChanged(ProductAmountEvent.Increase) },
-                enabled = isDecreaseIncreaseEnabled
+                enabled = isPlusMinusEnabled
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription =
                     stringResource(id = R.string.order_creation_increase_item_amount_content_description),
-                    tint = isDecreaseIncreaseButtonTint
+                    tint = plusButtonTint
                 )
             }
         }
