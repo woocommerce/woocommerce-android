@@ -117,6 +117,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -157,14 +158,22 @@ class MainActivity :
         }
     }
 
-    @Inject lateinit var presenter: MainContract.Presenter
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var crashLogging: CrashLogging
-    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
-    @Inject lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
-    @Inject lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+    @Inject
+    lateinit var presenter: MainContract.Presenter
+    @Inject
+    lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    lateinit var selectedSite: SelectedSite
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var crashLogging: CrashLogging
+    @Inject
+    lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject
+    lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+    @Inject
+    lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -208,7 +217,8 @@ class MainActivity :
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION")
+    private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
@@ -321,17 +331,18 @@ class MainActivity :
 
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
-            viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+            viewModel.handleShortcutAction(intent?.action?.toLowerCase(Locale.ROOT))
             handleIncomingImages()
         }
     }
 
     private fun handleIncomingImages() {
-        viewModel.handleIncomingImages(intent?.clipData?.let {
-            (0 until it.itemCount).map { index -> it.getItemAt(index).uri }
-        })
+        viewModel.handleIncomingImages(
+            intent?.clipData?.let {
+                (0 until it.itemCount).map { index -> it.getItemAt(index).uri }
+            }
+        )
     }
-
     override fun hideProgressDialog() {
         progressDialog?.apply {
             if (isShowing) {
@@ -921,6 +932,7 @@ class MainActivity :
                     putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     putExtra(FIELD_PUSH_ID, event.pushId)
                 }
+
                 else -> {
                     // continue to restart the activity
                 }
