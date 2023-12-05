@@ -703,7 +703,7 @@ class OrderCreateEditFormFragment :
                 giftCardLayout.isVisible = true
                 giftCardCode.text = newOrderData.giftCards
                 selectedGiftCardButton.setOnClickListener {
-                    viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards.orEmpty())
+                    viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards)
                 }
 
             }
