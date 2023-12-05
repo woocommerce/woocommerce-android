@@ -45,6 +45,7 @@ fun QuickInventoryUpdateBottomSheet(
             ModalBottomSheet(
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                 onDismissRequest = onDismiss,
+                containerColor = MaterialTheme.colors.surface
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
