@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import android.net.Uri
 import android.view.View
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 
@@ -28,7 +29,8 @@ interface MainNavigationRouter {
         sharedView: View
     )
 
-    fun showAddProduct()
+    fun showAddProduct(images: List<Uri> = emptyList())
+
     fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
