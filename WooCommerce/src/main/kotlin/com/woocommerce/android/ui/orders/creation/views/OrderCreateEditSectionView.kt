@@ -13,7 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.use
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.view.setPadding
+import androidx.core.view.setMargins
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -184,21 +184,15 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         container: RelativeLayout
     ) {
         addProductsViaScanButton?.let {
-            val addingProductsViaScanningButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
-            addingProductsViaScanningButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_barcode)
-            addingProductsViaScanningButton.iconPadding = 0
-            addingProductsViaScanningButton.setPadding(
-                0,
-                0,
-                resources.getDimensionPixelSize(R.dimen.major_100),
-                0
-            )
-            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_END
+            val addingProductsViaScanningButton = ImageView(context, null)
+            addingProductsViaScanningButton.setImageResource(R.drawable.ic_barcode)
+            val margins = resources.getDimensionPixelSize(R.dimen.major_100)
             addingProductsViaScanningButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
             val addProductsViaScanningButtonParams = RelativeLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
             )
+            addProductsViaScanningButtonParams.setMargins(margins)
             addProductsViaScanningButtonParams.addRule(RelativeLayout.ALIGN_PARENT_END)
             addingProductsViaScanningButton.layoutParams = addProductsViaScanningButtonParams
             container.addView(addingProductsViaScanningButton)
