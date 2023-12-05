@@ -130,6 +130,10 @@ class BarcodeScanningViewModel @Inject constructor(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
+    override fun onCleared() {
+        stopCodesRecognition()
+    }
+
     sealed class ScanningEvents : Event() {
         data class LaunchCameraPermission(
             val cameraLauncher: ManagedActivityResultLauncher<String, Boolean>
