@@ -380,6 +380,11 @@ class OrderListFragment :
                     openBarcodeScanningFragment()
                 }
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+                is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
+                    message = event.message,
+                    actionText = event.actionText,
+                    action = event.action
+                )
                 else -> event.isHandled = false
             }
         }

@@ -32,6 +32,7 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -73,6 +74,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
@@ -101,7 +103,8 @@ class OrderListViewModel @Inject constructor(
     private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val notificationChannelsHandler: NotificationChannelsHandler,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val showTestNotification: ShowTestNotification
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -692,6 +695,28 @@ class OrderListViewModel @Inject constructor(
         // The notification channels are only available on Oreo and above, so no need to check when below.
         if (!SystemVersionUtils.isAtLeastO()) return
 
+        fun recreateNotificationChannel() {
+            notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
+            triggerEvent(
+                Event.ShowActionSnackbar(
+                    message = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar),
+                    actionText = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar_action),
+                    action = {
+                        launch {
+                            showTestNotification(
+                                title = resourceProvider.getString(R.string.cha_ching_sound_test_notification_title),
+                                message = resourceProvider.getString(
+                                    R.string.cha_ching_sound_test_notification_message
+                                ),
+                                channelType = NotificationChannelType.NEW_ORDER,
+                                dismissDelay = 10.seconds
+                            )
+                        }
+                    }
+                )
+            )
+        }
+
         if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER) &&
             !appPrefs.chaChingSoundIssueDialogDismissed
         ) {
@@ -701,9 +726,7 @@ class OrderListViewModel @Inject constructor(
                     messageId = R.string.cha_ching_sound_issue_dialog_message,
                     positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
                     negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
-                    positiveBtnAction = { _, _ ->
-                        notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
-                    },
+                    positiveBtnAction = { _, _ -> recreateNotificationChannel() },
                     negativeBtnAction = { _, _ ->
                         appPrefs.chaChingSoundIssueDialogDismissed = true
                     },
