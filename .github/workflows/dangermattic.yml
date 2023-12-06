@@ -7,11 +7,66 @@ on:
 jobs:
   dangermattic:
     runs-on: ubuntu-latest
+    if: github.event.number > 0
     steps:
-      - name: "☢️ Danger - PR Check"
-        uses: "buildkite/trigger-pipeline-action@v2.0.0"
-        with:
-          buildkite_api_access_token: ${{ secrets.TRIGGER_BK_BUILD_TOKEN }}
-          pipeline: "automattic/woocommerce-android"
-          branch: "${{ github.head_ref }}"
-          build_env_vars: '{"PIPELINE": "danger.yml", "BUILDKITE_PULL_REQUEST": "${{ github.event.issue.number }}", "BUILDKITE_PULL_REQUEST_REPO": "${{ github.repositoryUrl }}", "BUILDKITE_PULL_REQUEST_BASE_BRANCH": "${{ github.base_ref }}"}'
+      - name: "☢️ Danger: Trigger on CI"
+        run: |
+          ORG_SLUG="automattic"
+          PIPELINE_SLUG="woocommerce-android"
+          RETRY_STEP_KEY="danger"
+          BUILDKITE_API_ACCESS_TOKEN="${{ secrets.TRIGGER_BK_BUILD_TOKEN }}"
+          LATEST_COMMIT_SHA="${{ github.sha }}"
+
+          perform_buildkite_request() {
+            local METHOD=$1
+            local BUILDKITE_API_PATH=$2
+
+            local BUILDKITE_API_URL="https://api.buildkite.com/v2/organizations/${ORG_SLUG}/pipelines/${PIPELINE_SLUG}/$BUILDKITE_API_PATH"
+
+            local CODE=0
+            local RAW_RESPONSE=$(
+              curl \
+                --fail-with-body \
+                --silent \
+                --show-error \
+                -X "$METHOD" \
+                -H "Authorization: Bearer ${BUILDKITE_API_ACCESS_TOKEN}" \
+                "$BUILDKITE_API_URL"
+            ) || CODE=$?
+
+            echo "$RAW_RESPONSE" | tr -d '\n' | jq -R -r
+          }
+
+          # get the build(s) associated with the latest commit
+          get_buildkite_build() {
+            perform_buildkite_request "GET" "builds?commit=${LATEST_COMMIT_SHA}"
+          }
+
+          # given the build id ($1) and job id ($2), retry the given job
+          retry_buildkite_job() {
+            local BUILD_ID=$1
+            local JOB_ID=$2
+
+            perform_buildkite_request "PUT" "builds/$BUILD_ID/jobs/$JOB_ID/retry"
+          }
+
+          BUILDKITE_BUILD_RESPONSE=$(get_buildkite_build)
+
+          LATEST_BUILD=$(echo "$BUILDKITE_BUILD_RESPONSE" | jq -r '.[0]')
+          LATEST_BUILD_NUMBER=$(echo "$LATEST_BUILD" | jq -r '.number')
+
+          DANGER_JOB=$(echo "$LATEST_BUILD" | jq -r --arg step_key "$RETRY_STEP_KEY" '.jobs[] | select(.step_key == $step_key)')
+          DANGER_JOB_ID=$(echo "$DANGER_JOB" | jq -r '.id')
+          DANGER_JOB_STATE=$(echo "$DANGER_JOB" | jq -r '.state')
+
+          echo "Build Number: $LATEST_BUILD_NUMBER"
+          echo "Job ID for step '$RETRY_STEP_KEY': $DANGER_JOB_ID"
+          echo "Job state for step '$RETRY_STEP_KEY': $DANGER_JOB_STATE"
+
+          # all states: running, scheduled, passed, failing, failed, blocked, canceled, canceling, skipped, not_run, finished
+          allowed_job_states=("passed" "failed" "canceled" "finished")
+          if [[ " ${allowed_job_states[@]} " =~ " $DANGER_JOB_STATE " ]]; then
+            echo $(retry_buildkite_job "$LATEST_BUILD_NUMBER" "$DANGER_JOB_ID")
+          else
+            echo "Cannot retry job in state '$DANGER_JOB_STATE'"
+          fi
