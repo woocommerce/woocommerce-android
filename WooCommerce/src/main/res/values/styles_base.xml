@@ -811,10 +811,4 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Theme.Woo.BottomSheet" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottomsheet_rounded</item>
     </style>
-
-    <style name="Woo.Theme.BottomSheetDialog.WithKeyboard" parent="Woo.Theme.BottomSheetDialog">
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
-    </style>
 </resources>
