@@ -52,7 +52,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onBottomSheetDismissed() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
+        tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
         if (scanToUpdateInventoryState.value == ScanToUpdateInventoryState.UpdatingProduct) return
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         _viewState.value = ViewState.QuickInventoryBottomSheetHidden
@@ -126,14 +126,14 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onIncrementQuantityClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         updateQuantity(state.product.copy(quantity = state.product.quantity + 1))
     }
 
     fun onUpdateQuantityClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_MANUAL_QUANTITY_UPDATE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_MANUAL_QUANTITY_UPDATE_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         // if user input is empty or invalid, do nothing
@@ -233,7 +233,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onViewProductDetailsClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         triggerEvent(NavigateToProductDetailsEvent(state.product.id))
