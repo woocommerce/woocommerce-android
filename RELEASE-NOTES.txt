@@ -2,9 +2,6 @@
 16.6
 -----
 - [**] Introduce ability to start creating a product by sharing images from other apps [https://github.com/woocommerce/woocommerce-android/pull/10331]
-
-16.6
------
 - [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
 
 16.5
