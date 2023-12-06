@@ -21,9 +21,10 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 
 @Composable
 fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
-    val giftCardValue by viewModel.giftCard.observeAsState()
+    val viewState by viewModel.viewState.observeAsState()
     EditGiftCardScreen(
-        giftCardValue = giftCardValue.orEmpty(),
+        giftCardValue = viewState?.giftCard.orEmpty(),
+        isValidCode = viewState?.isValidCode ?: false,
         onTextChanged = viewModel::onGiftCardChanged,
         onDoneClicked = viewModel::onDoneButtonClicked
     )
@@ -32,6 +33,7 @@ fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
 @Composable
 fun EditGiftCardScreen(
     giftCardValue: String,
+    isValidCode: Boolean,
     onTextChanged: (String) -> Unit,
     onDoneClicked: () -> Unit
 ) {
@@ -50,7 +52,8 @@ fun EditGiftCardScreen(
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = onDoneClicked
+            onClick = onDoneClicked,
+            enabled = isValidCode
         ) {
             Text(stringResource(id = R.string.apply))
         }
@@ -61,5 +64,5 @@ fun EditGiftCardScreen(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun EditGiftCardScreenPreview() {
-    EditGiftCardScreen("XPTO-1234-ABCD-XPTO", {}, {})
+    EditGiftCardScreen("XPTO-1234-ABCD-XPTO", true, {}, {})
 }
