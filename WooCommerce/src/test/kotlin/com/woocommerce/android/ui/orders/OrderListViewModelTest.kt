@@ -92,7 +92,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(any())} doAnswer { it.arguments[0].toString() }
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 

@@ -418,7 +418,6 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
         pagedListWrapper?.apply {
             _pagedListData.removeSource(data)
