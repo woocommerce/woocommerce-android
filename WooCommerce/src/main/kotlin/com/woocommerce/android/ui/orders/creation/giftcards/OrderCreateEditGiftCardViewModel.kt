@@ -29,8 +29,10 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         initialValue = navArgs.giftCard.orEmpty()
     )
     val viewState = _giftCard
-        .map { ViewState(giftCard = it, isValidCode = it.matches(codeFormatRegex)) }
-        .asLiveData()
+        .map {
+            val isValidCode = it.isEmpty() || it.matches(codeFormatRegex)
+            ViewState(giftCard = it, isValidCode = isValidCode)
+        }.asLiveData()
 
     fun onGiftCardChanged(giftCard: String) {
         _giftCard.value = giftCard
