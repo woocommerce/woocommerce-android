@@ -104,10 +104,11 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.UpdatingProduct
-        _viewState.value = ViewState.QuickInventoryBottomSheetHidden
+        _viewState.value = ViewState.Loading
         val product = productRepository.getProduct(state.product.id)
         if (product == null) {
             handleQuantityUpdateError()
+            _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         } else {
             launch {
@@ -118,12 +119,14 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 } else {
                     handleQuantityUpdateError()
                 }
+                _viewState.value = ViewState.QuickInventoryBottomSheetHidden
+                delay(SCANNER_RESTART_DEBOUNCE_MS)
                 scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
             }
         }
     }
 
-    private suspend fun handleQuantityUpdateSuccess(oldProduct: Product, updatedProduct: Product) {
+    private fun handleQuantityUpdateSuccess(oldProduct: Product, updatedProduct: Product) {
         val oldQuantity = oldProduct.stockQuantity
         val newQuantity = updatedProduct.stockQuantity
         val quantityChangeString = "$oldQuantity ➡ $newQuantity"
@@ -132,7 +135,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             quantityChangeString
         )
         triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
-        delay(SCANNER_RESTART_DEBOUNCE_MS)
     }
 
     private fun handleQuantityUpdateError() {
