@@ -11,12 +11,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+
+@Composable
+fun BarcodeScannerScreen(
+    onNewFrame: (ImageProxy) -> Unit,
+    onBindingException: (Exception) -> Unit,
+    permissionState: State<BarcodeScanningViewModel.PermissionState>,
+    onResult: (Boolean) -> Unit,
+) = BarcodeScannerScreen(
+    onNewFrame = onNewFrame,
+    onBindingException = onBindingException,
+    permissionState = permissionState.value,
+    onResult = onResult,
+)
 
 @Composable
 fun BarcodeScannerScreen(

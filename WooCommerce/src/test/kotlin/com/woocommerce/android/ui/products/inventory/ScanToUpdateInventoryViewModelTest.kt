@@ -9,8 +9,9 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.BarcodeScanning
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.ProductLoading
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.Loading
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetHidden
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -22,12 +23,12 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertIsNot
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
@@ -51,27 +52,29 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen opened, then should start scanning`() = testBlocking {
+    fun `when screen opened, then bottom sheet should be hidden`() = testBlocking {
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<BarcodeScanning>(this)
+                assertIs<QuickInventoryBottomSheetHidden>(this)
             }
         }
     }
 
     @Test
-    fun `when barcode successfully scanned, then should stop scanning`() = testBlocking {
+    fun `when barcode successfully scanned, then should stop accepting new barcodes`() = testBlocking {
         sut.onBarcodeScanningResult(
             CodeScannerStatus.Success(
                 "123",
                 GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
             )
         )
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIsNot<BarcodeScanning>(this)
-            }
-        }
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+        verify(fetchProductBySKU, times(1)).invoke(any(), any())
     }
 
     @Test
@@ -115,7 +118,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
             sut.viewState.test {
                 awaitItem().apply {
-                    assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
                 }
             }
         }
@@ -158,26 +161,27 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     "123"
                 )
             ).thenReturn("Product with SKU: 123 is not stock-managed. Please try again.")
-            val product = ProductTestUtils.generateProduct(isStockManaged = false).copy(
-                sku = "123"
-            )
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
-                Result.success(product)
-            )
+            val product = ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123")
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+
+            sut.viewState.test {
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
+                assertEquals(Loading, awaitItem())
+                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
+            }
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
                     "123",
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            sut.viewState.test {
-                awaitItem().apply {
-                    assertIs<ProductLoading>(this)
-                }
-                awaitItem().apply {
-                    assertIs<BarcodeScanning>(this)
-                }
-            }
+            verify(fetchProductBySKU, times(1)).invoke(any(), any())
         }
 
     @Test
@@ -193,15 +197,22 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         )
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+                assertIs<QuickInventoryBottomSheetVisible>(this)
             }
         }
         sut.onBottomSheetDismissed()
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<BarcodeScanning>(this)
+                assertIs<QuickInventoryBottomSheetHidden>(this)
             }
         }
+        sut.onBarcodeScanningResult(
+            CodeScannerStatus.Success(
+                "123",
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+        verify(fetchProductBySKU, times(2)).invoke(any(), any())
     }
 
     @Test
@@ -226,7 +237,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         ).thenReturn("Quantity updated")
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+                assertIs<QuickInventoryBottomSheetVisible>(this)
             }
         }
 
@@ -259,7 +270,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         ).thenReturn("Quantity updated")
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+                assertIs<QuickInventoryBottomSheetVisible>(this)
             }
         }
 
@@ -300,7 +311,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         ).thenReturn("Quantity updated")
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+                assertIs<QuickInventoryBottomSheetVisible>(this)
             }
         }
 
@@ -338,7 +349,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         ).thenReturn("Quantity updated")
         sut.viewState.test {
             awaitItem().apply {
-                assertIs<ScanToUpdateInventoryViewModel.ViewState.ProductLoaded>(this)
+                assertIs<QuickInventoryBottomSheetVisible>(this)
             }
         }
 
