@@ -304,7 +304,7 @@ fun ExtendedProductCardContent(
 
         val buttonBarrier = createTopBarrier(removeButton, configurationButton)
 
-        val editableControlsEnabled = state.value?.isIdle == true
+        val editableControlsEnabled = state.value?.isEditable ?: false
         // The logic to update bundled products quantity is complex so we need to prevent any change while we are
         // updating the bundle and inner products quantity
         val isBundledProduct = product.productInfo.productType == ProductType.BUNDLE
@@ -341,7 +341,7 @@ fun ExtendedProductCardContent(
             val areAmountButtonsEnabled = if (isBundledProduct) {
                 editableControlsEnabled
             } else {
-                product.item.isSynced()
+                product.item.isSynced() && editableControlsEnabled
             }
             AmountPicker(
                 onItemAmountChanged = onItemAmountChanged,
@@ -620,7 +620,8 @@ private fun AmountPicker(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
                     .widthIn(min = 12.dp, max = 128.dp)
-                    .width(IntrinsicSize.Min)
+                    .width(IntrinsicSize.Min),
+                enabled = isAmountChangeable,
             )
             IconButton(
                 onClick = { onItemAmountChanged(ProductAmountEvent.Increase) },

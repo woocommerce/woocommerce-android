@@ -9,6 +9,8 @@ import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
@@ -709,6 +711,7 @@ class OrderCreateEditFormFragment :
         }
         if (productsSection.content == null) {
             productsSection.content = ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(DisposeOnLifecycleDestroyed(viewLifecycleOwner))
                 bindExpandableProductsSection(products)
             }
         }
