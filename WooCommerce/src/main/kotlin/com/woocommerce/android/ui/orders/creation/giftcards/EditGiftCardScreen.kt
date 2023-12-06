@@ -41,10 +41,16 @@ fun EditGiftCardScreen(
         modifier = Modifier.fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
+        val textFieldLabel = if (isValidCode) {
+            stringResource(id = R.string.order_creation_gift_card_text_field_hint)
+        } else {
+            stringResource(id = R.string.order_creation_gift_card_text_error)
+        }
         WCOutlinedTextField(
             value = giftCardValue,
             onValueChange = onTextChanged,
-            label = stringResource(id = R.string.order_creation_gift_card_text_field_hint),
+            isError = isValidCode.not(),
+            label = textFieldLabel,
             colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
             modifier = Modifier.fillMaxWidth()
         )
