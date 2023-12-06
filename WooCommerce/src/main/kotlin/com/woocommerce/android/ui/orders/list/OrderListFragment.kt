@@ -47,7 +47,6 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -340,11 +339,6 @@ class OrderListFragment :
                         )
                     )
                 }
-                is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
-                    NavGraphMainDirections
-                        .actionGlobalFeedbackSurveyFragment(customUrl = event.url)
-                        .apply { findNavController().navigateSafely(this) }
-                }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
                 }
@@ -365,9 +359,6 @@ class OrderListFragment :
                         it.show()
                     }
                     binding.orderRefreshLayout.isRefreshing = false
-                }
-                is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
-                    showIPPFeedbackDismissConfirmationDialog()
                 }
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
                     openOrderCreationFragment(event.code, event.barcodeFormat)
@@ -428,9 +419,6 @@ class OrderListFragment :
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
-            new.ippFeedbackBannerState.takeIfNotEqualTo(old?.ippFeedbackBannerState) { bannerState ->
-                renderIPPFeedbackRequestBanner(bannerState)
-            }
             new.jitmEnabled.takeIfNotEqualTo(old?.jitmEnabled) { jitmEnabled ->
                 initJitm(jitmEnabled)
             }
@@ -441,38 +429,6 @@ class OrderListFragment :
             }
             new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
-            }
-        }
-    }
-
-    private fun showIPPFeedbackDismissConfirmationDialog() {
-        showDialog(
-            activity = requireActivity(),
-            titleId = R.string.feedback_banner_ipp_dismiss_confirmation_title,
-            messageId = R.string.feedback_banner_ipp_dismiss_confirmation_message,
-            positiveButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_button,
-            negativeButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button,
-            negBtnAction = { _, _ -> viewModel.onIPPFeedbackBannerDismissedForever() },
-            posBtnAction = { _, _ -> viewModel.onIPPFeedbackBannerDismissedShowLater() }
-        )
-    }
-
-    private fun renderIPPFeedbackRequestBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
-        val isVisible =
-            bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
-
-        binding.ippFeedbackBanner.isVisible = isVisible
-
-        if (isVisible) {
-            val data =
-                (bannerState as OrderListViewModel.IPPSurveyFeedbackBannerState.Visible).bannerData
-            binding.ippFeedbackBanner.setMessage(data.message)
-            binding.ippFeedbackBanner.setTitle(data.title)
-            binding.ippFeedbackBanner.onDismissClickListener = {
-                viewModel.onDismissIPPFeedbackBannerClicked()
-            }
-            binding.ippFeedbackBanner.onCTAClickListener = {
-                viewModel.onIPPFeedbackBannerCTAClicked()
             }
         }
     }
