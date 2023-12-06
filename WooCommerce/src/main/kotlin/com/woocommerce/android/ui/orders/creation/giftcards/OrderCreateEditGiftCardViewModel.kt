@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class OrderCreateEditGiftCardViewModel @Inject constructor(
@@ -27,8 +28,8 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = navArgs.giftCard.orEmpty()
     )
-    val giftCard = _giftCard
-        .filter { it.matches(codeFormatRegex) }
+    val viewState = _giftCard
+        .map { ViewState(giftCard = it, isValidCode = it.matches(codeFormatRegex)) }
         .asLiveData()
 
     fun onGiftCardChanged(giftCard: String) {
@@ -38,6 +39,11 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
     fun onDoneButtonClicked() {
         triggerEvent(ExitWithResult(GiftCardResult(_giftCard.value)))
     }
+
+    data class ViewState(
+        val giftCard: String,
+        val isValidCode: Boolean
+    )
 
     @Parcelize
     data class GiftCardResult(val selectedGiftCard: String) : Parcelable
