@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filter
 
 @HiltViewModel
 class OrderCreateEditGiftCardViewModel @Inject constructor(
@@ -18,11 +19,17 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: OrderCreateEditGiftCardFragmentArgs by savedState.navArgs()
 
+    private val codeFormatRegex by lazy {
+        "^[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$".toRegex()
+    }
+
     private val _giftCard = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = navArgs.giftCard.orEmpty()
     )
-    val giftCard = _giftCard.asLiveData()
+    val giftCard = _giftCard
+        .filter { it.matches(codeFormatRegex) }
+        .asLiveData()
 
     fun onGiftCardChanged(giftCard: String) {
         _giftCard.value = giftCard
