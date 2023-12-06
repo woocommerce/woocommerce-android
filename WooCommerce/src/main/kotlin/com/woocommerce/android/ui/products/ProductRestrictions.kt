@@ -18,6 +18,7 @@ class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictio
             ProductRestriction.NonPublishedProducts,
             ProductRestriction.VariableProductsWithNoVariations,
             ProductRestriction.ProductWithPriceNotSpecified,
+            ProductRestriction.ProductIsConfigurable
         )
 }
 
@@ -49,6 +50,13 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     object ProductWithPriceNotSpecified : ProductRestriction() {
         override fun invoke(product: Product): Boolean {
             return product.price == null
+        }
+    }
+
+    @Parcelize
+    object ProductIsConfigurable : ProductRestriction() {
+        override fun invoke(product: Product): Boolean {
+            return product.isConfigurable
         }
     }
 }

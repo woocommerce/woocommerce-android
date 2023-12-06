@@ -801,6 +801,19 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Failed to add a product whose price is not specified"
                 )
             }
+            product.isConfigurable -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = resourceProvider.getString(
+                        string.order_creation_barcode_scanning_unable_to_add_configurable_product
+                    ),
+                    withRetryButton = false
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a configurable product"
+                )
+            }
         }
     }
 
@@ -841,11 +854,17 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun sendAddingProductsViaScanningFailedEvent(
-        message: String
+        message: String,
+        withRetryButton: Boolean = true
     ) {
+
         triggerEvent(
-            OnAddingProductViaScanningFailed(message) {
-                triggerEvent(OpenBarcodeScanningFragment)
+            if (withRetryButton) {
+                OnAddingProductViaScanningFailed(message) {
+                    triggerEvent(OpenBarcodeScanningFragment)
+                }
+            } else {
+                OnAddingProductViaScanningFailed(message)
             }
         )
     }
@@ -1521,7 +1540,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
 data class OnAddingProductViaScanningFailed(
     val message: String,
-    val retry: View.OnClickListener,
+    val retry: View.OnClickListener? = null
 ) : Event()
 
 object OpenBarcodeScanningFragment : Event()

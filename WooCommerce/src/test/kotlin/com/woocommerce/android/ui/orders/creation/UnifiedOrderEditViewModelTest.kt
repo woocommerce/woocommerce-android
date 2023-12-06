@@ -1169,7 +1169,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
 
         sut.handleBarcodeScannedStatus(scannedStatus)
-        (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
+        (sut.event.value as OnAddingProductViaScanningFailed).retry?.onClick(mock())
 
         assertThat(sut.event.value).isInstanceOf(OpenBarcodeScanningFragment::class.java)
     }
@@ -1249,7 +1249,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn(null)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
-            (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
+            (sut.event.value as OnAddingProductViaScanningFailed).retry?.onClick(mock())
 
             assertThat(sut.event.value).isInstanceOf(OpenBarcodeScanningFragment::class.java)
         }

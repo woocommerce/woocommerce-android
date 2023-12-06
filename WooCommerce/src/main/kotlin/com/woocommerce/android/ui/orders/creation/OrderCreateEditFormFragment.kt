@@ -953,11 +953,13 @@ class OrderCreateEditFormFragment :
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             is ShowDialog -> event.showDialog()
             is OnAddingProductViaScanningFailed -> {
-                uiMessageResolver.getRetrySnack(
-                    message = event.message,
-                    isIndefinite = false,
-                    actionListener = event.retry
-                ).show()
+                event.retry?.let {
+                    uiMessageResolver.getRetrySnack(
+                        message = event.message,
+                        isIndefinite = false,
+                        actionListener = event.retry
+                    ).show()
+                } ?: uiMessageResolver.showSnack(event.message)
             }
 
             is OpenBarcodeScanningFragment -> {
