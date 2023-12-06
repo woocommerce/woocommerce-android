@@ -16,6 +16,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -25,13 +26,15 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.flow.filter
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
@@ -67,6 +70,9 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                                 )
                             }
                         )
+                        if (viewModel.viewState.collectAsState().value is Loading) {
+                            ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
+                        }
                     },
                     sheetShape = RoundedCornerShape(
                         topStart = dimensionResource(id = R.dimen.corner_radius_large),

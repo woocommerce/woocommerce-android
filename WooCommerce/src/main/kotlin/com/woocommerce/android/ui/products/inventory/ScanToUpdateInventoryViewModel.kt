@@ -49,7 +49,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
-        triggerEvent(ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_loading_product)))
+        _viewState.value = ViewState.Loading
         val productResult: Result<Product> = fetchProductBySKU(status.code, status.format)
         if (productResult.isSuccess) {
             val product = productResult.getOrNull()
@@ -65,6 +65,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
+                    _viewState.value = ViewState.QuickInventoryBottomSheetHidden
                 }
             } else {
                 handleProductNotFound(status.code)
@@ -151,6 +152,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     sealed class ViewState : Parcelable {
         data class QuickInventoryBottomSheetVisible(val product: ProductInfo) : ViewState()
         object QuickInventoryBottomSheetHidden : ViewState()
+        object Loading : ViewState()
     }
 
     enum class ScanToUpdateInventoryState {

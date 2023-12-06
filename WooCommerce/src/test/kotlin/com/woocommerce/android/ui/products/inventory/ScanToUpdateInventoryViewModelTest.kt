@@ -155,16 +155,17 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             ).thenReturn("Product with SKU: 123 is not stock-managed. Please try again.")
             val product = ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123")
             whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
-            sut.onBarcodeScanningResult(
-                CodeScannerStatus.Success(
-                    "123",
-                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                )
-            )
+
             sut.viewState.test {
-                awaitItem().apply {
-                    assertIs<ViewState.QuickInventoryBottomSheetHidden>(this)
-                }
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                assertEquals(ViewState.QuickInventoryBottomSheetHidden, awaitItem())
+                assertEquals(ViewState.Loading, awaitItem())
+                assertEquals(ViewState.QuickInventoryBottomSheetHidden, awaitItem())
             }
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
@@ -220,10 +221,12 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
         )
         whenever(repo.updateProduct(any())).thenReturn(true)
-        whenever(resourceProvider.getString(
-            R.string.scan_to_update_inventory_success_snackbar,
-            "${originalProduct.stockQuantity} ➡ ${originalProduct.stockQuantity + 1}"
-        )).thenReturn("Quantity updated")
+        whenever(
+            resourceProvider.getString(
+                R.string.scan_to_update_inventory_success_snackbar,
+                "${originalProduct.stockQuantity} ➡ ${originalProduct.stockQuantity + 1}"
+            )
+        ).thenReturn("Quantity updated")
         sut.viewState.test {
             awaitItem().apply {
                 assertIs<ViewState.QuickInventoryBottomSheetVisible>(this)

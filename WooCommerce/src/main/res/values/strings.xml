@@ -3859,7 +3859,6 @@
     -->
     <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU: %s not found. Please try again.</string>
     <string name="scan_to_update_inventory_product_not_stock_managed">Product with SKU: %s is not stock-managed. Please try again.</string>
-    <string name="scan_to_update_inventory_loading_product">Searching for product with SKU</string>
     <string name="scan_to_update_inventory_increment_quantity_button">Quantity + 1</string>
     <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
     <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
