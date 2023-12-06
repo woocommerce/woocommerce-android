@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -11,6 +13,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -33,8 +37,9 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -54,6 +59,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -78,11 +84,16 @@ import kotlin.test.assertTrue
 class OrderListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
-    private val orderListRepository: OrderListRepository = mock()
+    private val orderListRepository: OrderListRepository = mock {
+        onBlocking { fetchPaymentGateways() } doReturn RequestResult.SUCCESS
+        onBlocking { fetchOrderStatusOptionsFromApi() } doReturn RequestResult.SUCCESS
+    }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()
     private val orderStore: WCOrderStore = mock()
-    private val resourceProvider: ResourceProvider = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any())} doAnswer { it.arguments[0].toString() }
+    }
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
@@ -98,6 +109,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val feedbackPrefs = mock<FeedbackPrefs>()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
+    private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
+    private val appPrefs = mock<AppPrefsWrapper>()
+    private val showTestNotification = mock<ShowTestNotification>()
 
     @Before
     fun setup() = testBlocking {
@@ -144,6 +158,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         analyticsTracker = analyticsTracker,
         feedbackPrefs = feedbackPrefs,
         barcodeScanningTracker = barcodeScanningTracker,
+        notificationChannelsHandler = notificationChannelsHandler,
+        appPrefs = appPrefs,
+        showTestNotification = showTestNotification
     )
 
     @Test
@@ -506,7 +523,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is Event.ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -541,7 +558,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is Event.ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -739,6 +756,88 @@ class OrderListViewModelTest : BaseUnitTest() {
             any(),
             eq(CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld)
         )
+    }
+
+    @Test
+    fun `given cha-ching sound disabled, when order list is loaded, then show a dialog`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
+            .thenReturn(false)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }
+
+        // then
+        assertThat(events).anyMatch {
+            it is Event.ShowDialog &&
+                it.titleId == R.string.cha_ching_sound_issue_dialog_title &&
+                it.messageId == R.string.cha_ching_sound_issue_dialog_message &&
+                it.positiveButtonId == R.string.cha_ching_sound_issue_dialog_turn_on_sound &&
+                it.negativeButtonId == R.string.cha_ching_sound_issue_dialog_keep_silent
+        }
+    }
+
+    @Test
+    fun `when cha-ching dialog is shown, then clicking turn on sound should re-create notification channel`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
+            .thenReturn(false)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }.first { it is Event.ShowDialog } as Event.ShowDialog
+        event.positiveBtnAction!!.onClick(null, 0)
+
+        // then
+        verify(notificationChannelsHandler).recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
+    }
+
+    @Test
+    fun `when cha-ching dialog is shown, then clicking turn keep silent should mark dialog as dismissed`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
+            .thenReturn(false)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }.first { it is Event.ShowDialog } as Event.ShowDialog
+        event.negativeBtnAction!!.onClick(null, 0)
+
+        // then
+        verify(appPrefs).chaChingSoundIssueDialogDismissed = true
+    }
+
+    @Test
+    fun `given cha-ching dialog dismissed, when order list is loaded, then don't show a dialog`() = testBlocking {
+        // given
+        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
+            .thenReturn(false)
+        whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(true)
+        whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
+
+        // when
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.loadOrders()
+        }
+
+        // then
+        assertThat(events).noneMatch {
+            it is Event.ShowDialog &&
+                it.titleId == R.string.cha_ching_sound_issue_dialog_title &&
+                it.messageId == R.string.cha_ching_sound_issue_dialog_message &&
+                it.positiveButtonId == R.string.cha_ching_sound_issue_dialog_turn_on_sound &&
+                it.negativeButtonId == R.string.cha_ching_sound_issue_dialog_keep_silent
+        }
     }
 
     //endregion

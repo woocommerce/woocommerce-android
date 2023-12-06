@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrde
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -692,9 +691,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun checkChaChingSoundSettings() {
-        // The notification channels are only available on Oreo and above, so no need to check when below.
-        if (!SystemVersionUtils.isAtLeastO()) return
-
         fun recreateNotificationChannel() {
             notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
             triggerEvent(
