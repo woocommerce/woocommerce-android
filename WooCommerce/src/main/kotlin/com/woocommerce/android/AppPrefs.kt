@@ -36,6 +36,7 @@ import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -1189,6 +1190,16 @@ object AppPrefs {
                 null
             }
         }
+    }
+
+    fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) {
+        val prefKey = PrefKeyString(channel.name)
+        val currentSuffix = getInt(prefKey, 0)
+        setInt(prefKey, currentSuffix + 1)
+    }
+
+    fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? {
+        return getInt(PrefKeyString(channel.name), 0).takeIf { it != 0 }
     }
 
     /**
