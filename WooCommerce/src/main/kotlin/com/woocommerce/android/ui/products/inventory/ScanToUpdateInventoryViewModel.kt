@@ -42,6 +42,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     fun onBottomSheetDismissed() {
         productSearchState.value = ProductSearchState.Idle
+        _viewState.value = ViewState.QuickInventoryBottomSheetHidden
     }
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
