@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.products.inventory
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
@@ -30,6 +33,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val productRepository: ProductDetailRepository,
     private val variationRepository: VariationDetailRepository,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val _viewState: MutableStateFlow<ViewState> =
         savedState.getStateFlow(this, ViewState.QuickInventoryBottomSheetHidden, "viewState")
@@ -48,6 +52,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onBottomSheetDismissed() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
         if (scanToUpdateInventoryState.value == ScanToUpdateInventoryState.UpdatingProduct) return
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         _viewState.value = ViewState.QuickInventoryBottomSheetHidden
@@ -75,6 +80,13 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             } else {
                 handleProductNotFound(status.code)
             }
+
+            tracker.track(
+                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.SCAN_TO_UPDATE_INVENTORY to status.code
+                )
+            )
         } else {
             handleProductNotFound(status.code)
         }
@@ -95,6 +107,14 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private suspend fun handleProductNotFound(barcode: String) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
+            mapOf(
+                AnalyticsTracker.SCAN_TO_UPDATE_INVENTORY to resourceProvider.getString(
+                    R.string.scan_to_update_inventory_unable_to_find_product, barcode
+                )
+            )
+        )
         triggerProductNotFoundSnackBar(barcode)
         delay(SCANNER_RESTART_DEBOUNCE_MS)
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
@@ -106,12 +126,14 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onIncrementQuantityClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         updateQuantity(state.product.copy(quantity = state.product.quantity + 1))
     }
 
     fun onUpdateQuantityClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_MANUAL_QUANTITY_UPDATE_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         // if user input is empty or invalid, do nothing
@@ -134,11 +156,13 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 product.updateProduct(updatedProductInfo)
             }
             if (result.isSuccess) {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_SUCCESS)
                 handleQuantityUpdateSuccess(
                     product.stockQuantity.toInt().toString(),
                     updatedProductInfo.quantity.toString()
                 )
             } else {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_FAILURE)
                 handleQuantityUpdateError()
             }
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
@@ -209,6 +233,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onViewProductDetailsClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         triggerEvent(NavigateToProductDetailsEvent(state.product.id))
