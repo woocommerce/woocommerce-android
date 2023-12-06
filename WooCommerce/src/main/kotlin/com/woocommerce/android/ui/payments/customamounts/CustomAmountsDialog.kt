@@ -89,13 +89,27 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         isLandscape: Boolean,
         binding: DialogCustomAmountsBinding
     ) {
-        if (!isLandscape && binding.editPrice.editText.requestFocus()) {
-            binding.editPrice.postDelayed(
-                {
-                    ActivityUtils.showKeyboard(binding.editPrice.editText)
-                },
-                KEYBOARD_DELAY
-            )
+        when (arguments.customAmountUIModel.type) {
+            FIXED_CUSTOM_AMOUNT -> {
+                if (!isLandscape && binding.editPrice.editText.requestFocus()) {
+                    binding.editPrice.postDelayed(
+                        {
+                            ActivityUtils.showKeyboard(binding.editPrice.editText)
+                        },
+                        KEYBOARD_DELAY
+                    )
+                }
+            }
+            PERCENTAGE_CUSTOM_AMOUNT -> {
+                if (!isLandscape && binding.editPercentage.requestFocus()) {
+                    binding.editPercentage.postDelayed(
+                        {
+                            ActivityUtils.showKeyboard(binding.editPercentage)
+                        },
+                        KEYBOARD_DELAY
+                    )
+                }
+            }
         }
     }
 
