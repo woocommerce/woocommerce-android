@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -177,14 +175,15 @@ private fun DomainSearchForm(
                     .then(
                         if (hasEnoughHeight) {
                             Modifier.weight(1f)
-                        }
-                        else {
+                        } else {
                             Modifier
                         }
                     )
             ) {
                 when {
-                    state.loadingState == Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    state.loadingState == Loading -> CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                     state.domainSuggestionsUi.isEmpty() && domainQuery.isBlank() ->
                         ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
 
