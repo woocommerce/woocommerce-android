@@ -1,16 +1,22 @@
 package com.woocommerce.android.ui.products.inventory
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -19,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -78,23 +85,39 @@ fun QuickInventoryUpdateBottomSheet(
         Divider()
         Row(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.scan_to_update_inventory_quantity_label)
             )
-            OutlinedTextField(
-                value = state.product.quantity.toString(),
-                onValueChange = {
-                    onManualQuantityEntered(it)
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                textStyle = MaterialTheme.typography.body1.copy(
-                    textAlign = TextAlign.End,
-                    color = MaterialTheme.colors.onSurface,
+            Card(
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large)),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.divider_color),
                 ),
-            )
+                elevation = 0.dp,
+            ) {
+                BasicTextField(
+                    modifier = Modifier
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.minor_100),
+                            vertical = dimensionResource(id = R.dimen.minor_50),
+                        )
+                        .widthIn(min = 0.dp, max = 128.dp)
+                        .width(IntrinsicSize.Min),
+                    value = state.product.quantity.toString(),
+                    onValueChange = {
+                        onManualQuantityEntered(it)
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    textStyle = MaterialTheme.typography.body1.copy(
+                        color = MaterialTheme.colors.onSurface
+                    )
+                )
+            }
         }
         Divider()
         if (state.isPendingUpdate) {
