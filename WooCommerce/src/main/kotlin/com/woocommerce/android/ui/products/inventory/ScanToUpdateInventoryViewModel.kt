@@ -113,7 +113,9 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     fun onUpdateQuantityClicked() {
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
-        updateQuantity(state.product)
+        // if user input is empty or invalid, do nothing
+        val newQuantityValue = state.newQuantity.toIntOrNull() ?: return
+        updateQuantity(state.product.copy(quantity = newQuantityValue))
     }
 
     private fun updateQuantity(updatedProductInfo: ProductInfo) = launch {
@@ -186,10 +188,19 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     fun onManualQuantityEntered(newQuantity: String) {
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
-        _viewState.value = state.copy(
-            product = state.product.copy(quantity = newQuantity.toIntOrNull() ?: 0),
-            isPendingUpdate = true
-        )
+        try {
+            val quantity = if (newQuantity.isNotBlank() && newQuantity.isNotEmpty()) {
+                // ignore negative values
+                if (newQuantity.toInt() < 0) {
+                    state.newQuantity
+                } else {
+                    newQuantity
+                }
+            } else {
+                newQuantity
+            }
+            _viewState.value = state.copy(newQuantity = quantity, isPendingUpdate = true)
+        } catch (_: NumberFormatException) {}
     }
 
     private fun Product.isVariable(): Boolean {
@@ -210,7 +221,8 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         data class QuickInventoryBottomSheetVisible(
             val product: ProductInfo,
             val isPendingUpdate: Boolean = false,
-            val originalQuantity: String = product.quantity.toString()
+            val originalQuantity: String = product.quantity.toString(),
+            val newQuantity: String = product.quantity.toString()
         ) : ViewState()
         object QuickInventoryBottomSheetHidden : ViewState()
         object Loading : ViewState()
