@@ -27,22 +27,25 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private val productRepository: ProductDetailRepository,
 ) : ScopedViewModel(savedState) {
     private val _viewState: MutableStateFlow<ViewState> =
-        savedState.getStateFlow(this, ViewState.BarcodeScanning, "viewState")
+        savedState.getStateFlow(this, ViewState.QuickInventoryBottomSheetHidden, "viewState")
     val viewState: StateFlow<ViewState> = _viewState
 
+    private val scanToUpdateInventoryState: MutableStateFlow<ScanToUpdateInventoryState> =
+        savedState.getStateFlow(this, ScanToUpdateInventoryState.Idle, "productSearchState")
+
     fun onBarcodeScanningResult(status: CodeScannerStatus) {
-        if (viewState.value !is ViewState.BarcodeScanning) return
+        if (scanToUpdateInventoryState.value != ScanToUpdateInventoryState.Idle) return
 
         if (status is CodeScannerStatus.Success) {
-            _viewState.value = ViewState.ProductLoading
+            scanToUpdateInventoryState.value = ScanToUpdateInventoryState.FetchingProduct
             handleBarcodeScanningSuccess(status)
         }
     }
 
     fun onBottomSheetDismissed() {
-        if (viewState.value is ViewState.ProductUpdating) return
-
-        _viewState.value = ViewState.BarcodeScanning
+        if (scanToUpdateInventoryState.value == ScanToUpdateInventoryState.UpdatingProduct) return
+        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
+        _viewState.value = ViewState.QuickInventoryBottomSheetHidden
     }
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
@@ -59,7 +62,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     quantity = product.stockQuantity.toInt(),
                 )
                 if (product.isStockManaged) {
-                    _viewState.value = ViewState.ProductLoaded(productInfo)
+                    _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
                 }
@@ -74,7 +77,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private suspend fun handleProductIsNotStockManaged(product: Product) {
         triggerProductNotStockManagedSnackBar(product)
         delay(SCANNER_RESTART_DEBOUNCE_MS)
-        _viewState.value = ViewState.BarcodeScanning
+        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
     }
 
     private fun triggerProductNotStockManagedSnackBar(product: Product) {
@@ -88,7 +91,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private suspend fun handleProductNotFound(barcode: String) {
         triggerProductNotFoundSnackBar(barcode)
         delay(SCANNER_RESTART_DEBOUNCE_MS)
-        _viewState.value = ViewState.BarcodeScanning
+        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
     }
 
     private fun triggerProductNotFoundSnackBar(barcode: String) {
@@ -98,11 +101,13 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     fun onIncrementQuantityClicked() {
         val state = viewState.value
-        if (state !is ViewState.ProductLoaded) return
+        if (state !is ViewState.QuickInventoryBottomSheetVisible) return
+        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.UpdatingProduct
+        _viewState.value = ViewState.QuickInventoryBottomSheetHidden
         val product = productRepository.getProduct(state.product.id)
-        _viewState.value = ViewState.ProductUpdating
         if (product == null) {
             handleQuantityUpdateError()
+            scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         } else {
             launch {
                 val updatedProduct = product.copy(stockQuantity = product.stockQuantity + 1)
@@ -112,6 +117,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 } else {
                     handleQuantityUpdateError()
                 }
+                scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
             }
         }
     }
@@ -126,12 +132,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         )
         triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
         delay(SCANNER_RESTART_DEBOUNCE_MS)
-        _viewState.value = ViewState.BarcodeScanning
     }
 
     private fun handleQuantityUpdateError() {
         triggerEvent(ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_failure_snackbar)))
-        _viewState.value = ViewState.BarcodeScanning
     }
 
     @Parcelize
@@ -145,13 +149,15 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     @Parcelize
     sealed class ViewState : Parcelable {
-        object BarcodeScanning : ViewState()
-        object ProductLoading : ViewState()
-        data class ProductLoaded(val product: ProductInfo) : ViewState()
-        object ProductUpdating : ViewState()
+        data class QuickInventoryBottomSheetVisible(val product: ProductInfo) : ViewState()
+        object QuickInventoryBottomSheetHidden : ViewState()
+    }
+
+    enum class ScanToUpdateInventoryState {
+        Idle, FetchingProduct, UpdatingProduct
     }
 
     companion object {
-        private const val SCANNER_RESTART_DEBOUNCE_MS = 1000L
+        private const val SCANNER_RESTART_DEBOUNCE_MS = 3500L
     }
 }
