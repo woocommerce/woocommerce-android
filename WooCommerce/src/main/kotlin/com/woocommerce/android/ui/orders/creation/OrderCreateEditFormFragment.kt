@@ -705,7 +705,6 @@ class OrderCreateEditFormFragment :
                 selectedGiftCardButton.setOnClickListener {
                     viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards)
                 }
-
             }
         }
     }

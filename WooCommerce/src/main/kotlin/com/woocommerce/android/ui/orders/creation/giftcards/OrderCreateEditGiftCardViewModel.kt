@@ -9,8 +9,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @HiltViewModel
 class OrderCreateEditGiftCardViewModel @Inject constructor(
@@ -33,5 +33,5 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
     }
 
     @Parcelize
-    data class GiftCardResult(val selectedGiftCard: String): Parcelable
+    data class GiftCardResult(val selectedGiftCard: String) : Parcelable
 }
