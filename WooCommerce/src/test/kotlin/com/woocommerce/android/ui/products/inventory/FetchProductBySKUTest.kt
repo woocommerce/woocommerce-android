@@ -166,7 +166,7 @@ class FetchProductBySKUTest : BaseUnitTest() {
                 searchQuery = "1234",
                 skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch
             )
-        ).thenReturn(generateProductList())
+        ).thenReturn(emptyList())
         val result = sut("123", GoogleBarcodeFormatMapper.BarcodeFormat.FormatUPCE)
 
         assertTrue(result.isFailure)

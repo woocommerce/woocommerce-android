@@ -111,7 +111,7 @@ object ProductTestUtils {
             .toMutableList()
             .apply { add(generateProduct(6, isVariable = true)) }
 
-    private fun generateProductVariation(
+    fun generateProductVariation(
         productId: Long = 1L,
         variationId: Long = 1L
     ): ProductVariation {

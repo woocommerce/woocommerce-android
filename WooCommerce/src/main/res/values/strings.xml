@@ -3860,8 +3860,13 @@
     <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU: %s not found. Please try again.</string>
     <string name="scan_to_update_inventory_product_not_stock_managed">Product with SKU: %s is not stock-managed. Please try again.</string>
     <string name="scan_to_update_inventory_increment_quantity_button">Quantity + 1</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
+    <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
     <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
     <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantity</string>
+    <string name="scan_to_update_inventory_product_label">Product</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
