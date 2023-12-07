@@ -22,7 +22,7 @@ jobs:
             local METHOD=$1
             local BUILDKITE_API_PATH=$2
 
-            local BUILDKITE_API_URL="https://api.buildkite.com/v2/organizations/${ORG_SLUG}/pipelines/${PIPELINE_SLUG}/$BUILDKITE_API_PATH"
+            local BUILDKITE_API_URL="https://api.buildkite.com/v2/organizations/$ORG_SLUG/pipelines/$PIPELINE_SLUG/$BUILDKITE_API_PATH"
 
             local RAW_RESPONSE=$(
               curl \
@@ -39,7 +39,7 @@ jobs:
 
           # Gets the build(s) associated with the latest commit
           get_buildkite_build() {
-            perform_buildkite_request "GET" "builds?commit=${LATEST_COMMIT_SHA}"
+            perform_buildkite_request "GET" "builds?commit=$LATEST_COMMIT_SHA"
           }
 
           # Given a build id ($1) and a job id ($2), retry the given job
@@ -91,6 +91,8 @@ jobs:
 
             JOB_WEB_URL=$(echo "$BUILDKITE_RETRY_JOB_RESPONSE" | jq -r '.web_url')
             echo "✅ Job succesfully retried: $JOB_WEB_URL"
+          elif [[ "$DANGER_JOB_STATE" == "running" || "$DANGER_JOB_STATE" == "scheduled" ]]; then
+            echo "⚠️ Job is already in state '$DANGER_JOB_STATE', no need to retry."
           else
             echo "❌ Cannot retry job in state '$DANGER_JOB_STATE'"
           fi
