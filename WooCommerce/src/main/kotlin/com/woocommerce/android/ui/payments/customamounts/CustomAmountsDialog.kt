@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.getDensityPixel
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
@@ -65,6 +66,10 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         }
 
         val binding = DialogCustomAmountsBinding.bind(view)
+        binding.editPrice.editText.setPadding(
+            getDensityPixel(binding.editPrice.context, START_PADDING), 0, 0, 0
+        )
+
         binding.buttonDone.setOnClickListener {
             sharedViewModel.onCustomAmountUpsert(
                 CustomAmountUIModel(
@@ -160,5 +165,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         const val CUSTOM_AMOUNT = "Custom Amount"
         const val EDIT_PRICE_UPDATE_DELAY = 100L
+        const val START_PADDING = 8
     }
 }

@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100"
-                android:gravity="center"
+                android:gravity="start"
                 android:text="@string/custom_amounts_enter_amount"
                 android:textSize="@dimen/text_major_25"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -68,12 +68,11 @@
                 android:id="@+id/editPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:imeOptions="flagNoFullscreen"
                 android:textSize="@dimen/line_height_major_100"
                 app:boxBackgroundMode="none"
                 app:editTextLayoutMode="wrap"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/captionText"
                 app:supportsEmptyState="false"
@@ -81,14 +80,23 @@
                 app:usesFullFormatting="true"
                 tools:hint="0.00" />
 
+            <View
+                android:id="@+id/custom_amount_divider"
+                style="@style/Woo.Divider"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editPrice" />
+
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/taxToggleComposeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/major_100"
+                android:layout_margin="@dimen/minor_100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editPrice"/>
+                app:layout_constraintTop_toBottomOf="@id/custom_amount_divider"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customAmountNameCaptionText"
@@ -96,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_150"
-                android:gravity="center"
+                android:gravity="start"
                 android:text="@string/custom_amounts_name"
                 android:textSize="@dimen/text_major_25"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,13 +116,24 @@
                 style="@style/Woo.TextView.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:hint="@string/custom_amounts_add_custom_name_hint"
                 android:inputType="text"
                 android:imeOptions="actionDone"
+                android:paddingTop="@dimen/minor_00"
+                android:layout_marginStart="@dimen/minor_00"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/customAmountNameCaptionText" />
+
+            <View
+                android:id="@+id/custom_amount_name_divider"
+                style="@style/Woo.Divider"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customAmountNameText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
