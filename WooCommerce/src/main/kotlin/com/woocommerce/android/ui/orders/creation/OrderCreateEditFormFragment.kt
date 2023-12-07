@@ -9,7 +9,6 @@ import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
