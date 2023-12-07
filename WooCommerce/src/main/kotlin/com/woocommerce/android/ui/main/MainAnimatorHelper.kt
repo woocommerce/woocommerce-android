@@ -14,7 +14,7 @@ class MainAnimatorHelper @Inject constructor(private val resourceProvider: Resou
             resourceProvider.getDimensionPixelSize(R.dimen.expanded_toolbar_bottom_margin),
             resourceProvider.getDimensionPixelSize(R.dimen.expanded_toolbar_bottom_margin_with_subtitle)
         ).apply {
-            duration = ANIMATION_DURATION
+            duration = COLLAPSING_ANIMATION_DURATION
             interpolator = AccelerateDecelerateInterpolator()
         }
     }
@@ -24,7 +24,7 @@ class MainAnimatorHelper @Inject constructor(private val resourceProvider: Resou
             0,
             toolbarHeight
         ).apply {
-            duration = ANIMATION_DURATION
+            duration = TOOLBAR_ANIMATION_DURATION
             interpolator = AccelerateDecelerateInterpolator()
         }
     }
@@ -56,6 +56,7 @@ class MainAnimatorHelper @Inject constructor(private val resourceProvider: Resou
     }
 
     private companion object {
-        private const val ANIMATION_DURATION = 200L
+        private const val COLLAPSING_ANIMATION_DURATION = 200L
+        private const val TOOLBAR_ANIMATION_DURATION = 300L
     }
 }
