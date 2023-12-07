@@ -190,12 +190,12 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         try {
-            val quantity = if (newQuantity.isNotBlank() && newQuantity.isNotEmpty()) {
-                // ignore negative values
-                if (newQuantity.toInt() < 0) {
-                    state.newQuantity
-                } else {
+            val quantity = if (newQuantity.isNotEmpty()) {
+                // ignore negative values, whitespace, and other invalid values
+                if (newQuantity.toInt() in 0..Int.MAX_VALUE) {
                     newQuantity
+                } else {
+                    state.newQuantity
                 }
             } else {
                 newQuantity
