@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.giftcards
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.initSavedStateHandle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -11,7 +12,7 @@ class OrderCreateEditGiftCardViewModelTest {
 
     @Before
     fun setUp() {
-        val savedState: SavedStateHandle = mock()
+        val savedState = OrderCreateEditGiftCardFragmentArgs("").initSavedStateHandle()
         sut = OrderCreateEditGiftCardViewModel(savedState)
     }
 
