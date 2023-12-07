@@ -348,6 +348,14 @@ class MainActivityViewModel @Inject constructor(
         triggerEvent(ShowPrivacySettingsWithError(requestedAnalyticsPreference))
     }
 
+    fun handleIncomingImages(imageUris: List<String>?) {
+        if (imageUris.isNullOrEmpty()) return
+
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATED_USING_SHARED_IMAGES)
+
+        triggerEvent(CreateNewProductUsingImages(imageUris))
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
@@ -367,6 +375,8 @@ class MainActivityViewModel @Inject constructor(
         RestartActivityEvent()
 
     data class RestartActivityForAppLink(val data: Uri) : RestartActivityEvent()
+
+    data class CreateNewProductUsingImages(val imageUris: List<String>) : Event()
 
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
