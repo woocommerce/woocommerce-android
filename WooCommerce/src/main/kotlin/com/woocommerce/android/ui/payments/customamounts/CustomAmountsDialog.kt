@@ -271,7 +271,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         private const val WIDTH_RATIO = 0.9
         private const val HEIGHT_RATIO_LANDSCAPE = 0.9
         private const val WIDTH_RATIO_LANDSCAPE = 0.6
-        private const val KEYBOARD_DELAY = 100L
+        private const val KEYBOARD_DELAY = 500L
 
         const val CUSTOM_AMOUNT = "Custom Amount"
         const val EDIT_PRICE_UPDATE_DELAY = 100L
