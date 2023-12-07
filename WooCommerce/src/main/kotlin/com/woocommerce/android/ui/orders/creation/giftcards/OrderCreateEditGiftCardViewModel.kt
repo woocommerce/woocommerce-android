@@ -23,22 +23,22 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         "^[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$".toRegex()
     }
 
-    private val _giftCard = savedState.getStateFlow(
+    private val selectedGiftCard = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = navArgs.giftCard.orEmpty()
     )
-    val viewState = _giftCard
+    val viewState = selectedGiftCard
         .map {
             val isValidCode = it.isEmpty() || it.matches(codeFormatRegex)
             ViewState(giftCard = it, isValidCode = isValidCode)
         }.asLiveData()
 
     fun onGiftCardChanged(giftCard: String) {
-        _giftCard.value = giftCard
+        selectedGiftCard.value = giftCard
     }
 
     fun onDoneButtonClicked() {
-        triggerEvent(ExitWithResult(GiftCardResult(_giftCard.value)))
+        triggerEvent(ExitWithResult(GiftCardResult(selectedGiftCard.value)))
     }
 
     data class ViewState(
