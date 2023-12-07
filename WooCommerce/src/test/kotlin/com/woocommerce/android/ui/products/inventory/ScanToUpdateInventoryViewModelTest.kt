@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.inventory
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -37,6 +39,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val productRepo: ProductDetailRepository = mock()
     private val variationRepo: VariationDetailRepository = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var sut: ScanToUpdateInventoryViewModel
 
@@ -48,6 +51,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             productRepository = productRepo,
             variationRepository = variationRepo,
+            tracker = tracker
         )
     }
 
@@ -358,5 +362,31 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         val expectedVariation = originalVariation.copy(stockQuantity = (999).toDouble())
         verify(variationRepo).updateVariation(expectedVariation)
+    }
+
+    @Test
+    fun `when increment quantity button tapped, then proper tracking event is triggered`() = testBlocking {
+        sut.onIncrementQuantityClicked()
+        verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
+    }
+
+    @Test
+    fun `when manual quantity update button tapped, than trigger proper tracking event`() = testBlocking {
+        sut.onManualQuantityEntered("999")
+        sut.onUpdateQuantityClicked()
+        verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_MANUAL_QUANTITY_UPDATE_TAPPED)
+    }
+
+    @Test
+    fun `when bottom sheet dismissed, then trigger proper tracking event`() = testBlocking {
+        sut.onBottomSheetDismissed()
+        verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_DISMISSED)
+    }
+
+    @Test
+    fun `when view prod details btn is clicked, then trigger proper tracking event`() = testBlocking {
+        sut.onViewProductDetailsClicked()
+
+        verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
     }
 }

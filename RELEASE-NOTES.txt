@@ -3,6 +3,7 @@
 16.6
 -----
 - [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
+- [***] Added possibility to scan product's barcode to update its inventory [https://github.com/woocommerce/woocommerce-android/pull/10250]
 
 16.5
 -----
