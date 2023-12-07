@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ProductInfo
 
@@ -53,6 +54,7 @@ fun QuickInventoryUpdateBottomSheet(
     onIncrementQuantityClicked: () -> Unit,
     onManualQuantityEntered: (String) -> Unit,
     onUpdateQuantityClicked: () -> Unit,
+    onViewProductDetailsClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -159,7 +161,11 @@ fun QuickInventoryUpdateBottomSheet(
             WCColoredButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        start = dimensionResource(id = R.dimen.major_100),
+                    ),
                 onClick = onUpdateQuantityClicked,
                 text = stringResource(R.string.scan_to_update_inventory_update_quantity_button)
             )
@@ -167,9 +173,27 @@ fun QuickInventoryUpdateBottomSheet(
             WCColoredButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        start = dimensionResource(id = R.dimen.major_100),
+                    ),
                 onClick = onIncrementQuantityClicked,
                 text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
+            )
+        }
+        WCOutlinedButton(
+            onClick = onViewProductDetailsClicked,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_200),
+                ),
+        ) {
+            Text(
+                text = stringResource(R.string.scan_to_update_inventory_product_details_button)
             )
         }
     }
@@ -188,6 +212,6 @@ fun QuickInventoryUpdateBottomSheetPreview() {
     )
     val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
     WooThemeWithBackground {
-        QuickInventoryUpdateBottomSheet(state, {}, {}, {})
+        QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {})
     }
 }
