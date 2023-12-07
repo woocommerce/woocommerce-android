@@ -158,9 +158,11 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private suspend fun Product.updateVariation(updatedProductInfo: ProductInfo): Result<Unit> {
-        val variation: ProductVariation? = variationRepository.getVariation(
-            remoteProductId = parentId,
-            remoteVariationId = remoteId
+        val variationId = remoteId
+        val productId = parentId
+        val variation: ProductVariation? = variationRepository.getVariationOrNull(
+            remoteProductId = productId,
+            remoteVariationId = variationId
         )
         val updatedVariation = variation?.copy(stockQuantity = updatedProductInfo.quantity.toDouble())
             ?: return Result.failure(Exception("Unable to find variation"))
