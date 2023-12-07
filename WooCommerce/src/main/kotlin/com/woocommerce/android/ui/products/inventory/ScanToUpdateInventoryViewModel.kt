@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
@@ -84,7 +85,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             tracker.track(
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS,
                 mapOf(
-                    AnalyticsTracker.SCAN_TO_UPDATE_INVENTORY to status.code
+                    KEY_SCANNING_SOURCE to AnalyticsTracker.SCAN_TO_UPDATE_INVENTORY
                 )
             )
         } else {
@@ -110,9 +111,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         tracker.track(
             AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
             mapOf(
-                AnalyticsTracker.SCAN_TO_UPDATE_INVENTORY to resourceProvider.getString(
-                    R.string.scan_to_update_inventory_unable_to_find_product, barcode
-                )
+                KEY_SCANNING_SOURCE to AnalyticsTracker.SCAN_TO_UPDATE_INVENTORY
             )
         )
         triggerProductNotFoundSnackBar(barcode)
