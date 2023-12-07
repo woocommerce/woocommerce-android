@@ -25,7 +25,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_DOMAINS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_LOGOUT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
@@ -138,9 +137,18 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         if (SystemVersionUtils.isAtLeastO()) {
             binding.containerNotifsOld.visibility = View.GONE
             binding.containerNotifsNew.visibility = View.VISIBLE
+            binding.optionNotifications.optionTitle = if (presenter.isChaChingSoundEnabled) {
+                getString(R.string.settings_notifs_device)
+            } else {
+                getString(R.string.settings_notifs)
+            }
+            binding.optionNotifications.optionValue = if (presenter.isChaChingSoundEnabled) {
+                getString(R.string.settings_notifs_device_detail)
+            } else {
+                null
+            }
             binding.optionNotifications.setOnClickListener {
-                AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
-                showDeviceAppNotificationSettings()
+                presenter.onNotificationsClicked()
             }
         } else {
             binding.containerNotifsOld.visibility = View.VISIBLE
@@ -281,6 +289,12 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
             activity?.startActivity(intent)
         }
+    }
+
+    override fun showNotificationsSettingsScreen() {
+        findNavController().navigateSafely(
+            MainSettingsFragmentDirections.actionMainSettingsFragmentToNotificationSettingsFragment()
+        )
     }
 
     override fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean) {

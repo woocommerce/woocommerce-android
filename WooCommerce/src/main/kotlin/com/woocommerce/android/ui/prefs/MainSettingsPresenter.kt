@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -22,8 +26,12 @@ class MainSettingsPresenter @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val shouldShowOnboarding: ShouldShowOnboarding,
     private val accountRepository: AccountRepository,
+    private val notificationChannelsHandler: NotificationChannelsHandler
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
+
+    override val isChaChingSoundEnabled: Boolean
+        get() = notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
@@ -80,6 +88,15 @@ class MainSettingsPresenter @Inject constructor(
                     )
                 }
             )
+        }
+    }
+
+    override fun onNotificationsClicked() {
+        if (isChaChingSoundEnabled) {
+            AnalyticsTracker.track(SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
+            appSettingsFragmentView?.showDeviceAppNotificationSettings()
+        } else {
+            appSettingsFragmentView?.showNotificationsSettingsScreen()
         }
     }
 
