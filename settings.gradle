@@ -29,8 +29,8 @@ pluginManagement {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
+        id 'com.automattic.android.measure-builds' version gradle.ext.measureBuildsVersion
         id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
-        id "com.automattic.android.measure-builds" version gradle.ext.measureBuildsVersion
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
         id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
