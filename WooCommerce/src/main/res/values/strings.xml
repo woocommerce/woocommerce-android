@@ -509,9 +509,16 @@
     <string name="custom_amounts_enter_amount">Amount</string>
     <string name="custom_amounts_name">Name</string>
     <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_delete_custom_amount">Delete custom amount</string>
     <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
     <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
     <string name="custom_amounts_tax_label">Charge Taxes</string>
+    <string name="custom_amounts_percentage_label">Percentage of order total (%1$s)</string>
+    <string name="custom_amounts_bottom_sheet_heading">How do you want to add your custom amount?</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">A fixed amount</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
 
     <!--
          Taxes
@@ -531,6 +538,7 @@
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_price_after_discount">Price after discount</string>
+    <string name="order_creation_products_order_count">Order count</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
@@ -3387,6 +3395,7 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
     <!--
     Store onboarding

@@ -33,13 +33,11 @@ data class Notification(
 
     /**
      * Notifications are grouped based on the notification type and the store the notification belongs to.
-     * @param channelId - string resource of [getChannelId]
-     * remoteSiteId - remoteSiteId for the store the notification is from
      *
      * For instance: a new order notification from Store 1 with remoteSiteId = 12345, would return:
-     * wooandroid_notification_channel_order_id 12345
+     * "NEW_ORDER 12345"
      */
-    fun getGroup(channelId: String): String = "$channelId $remoteSiteId"
+    fun getGroup(): String = "${channelType.name} $remoteSiteId"
 
     /**
      * This method returns a group notification id based on the notification type

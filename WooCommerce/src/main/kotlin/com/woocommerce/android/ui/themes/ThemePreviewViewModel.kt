@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.ThemeCoroutineStore
@@ -49,17 +51,24 @@ class ThemePreviewViewModel @Inject constructor(
         emit(theme)
     }
     private val themePages = theme.flatMapLatest { it.prepareThemeDemoPages() }
-    private val _selectedPage = savedStateHandle.getNullableStateFlow(
+    private val selectedPage = savedStateHandle.getNullableStateFlow(
         viewModelScope,
         null,
         ThemeDemoPage::class.java,
         "selectedPage"
     )
+    private val isActivatingTheme = savedStateHandle.getStateFlow(viewModelScope, false, "isActivatingTheme")
 
-    val viewState = combine(theme, _selectedPage, themePages) { theme, selectedPage, demoPages ->
+    val viewState = combine(
+        theme,
+        selectedPage,
+        isActivatingTheme,
+        themePages
+    ) { theme, selectedPage, isActivatingTheme, demoPages ->
         ViewState(
             themeName = theme.name,
-            isFromStoreCreation = true, // TODO Pass this from the previous screen
+            isFromStoreCreation = navArgs.isFromStoreCreation,
+            isActivatingTheme = isActivatingTheme,
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
             }
@@ -67,7 +76,7 @@ class ThemePreviewViewModel @Inject constructor(
     }.asLiveData()
 
     fun onPageSelected(demoPage: ThemeDemoPage) {
-        _selectedPage.value = demoPage
+        selectedPage.value = demoPage
     }
 
     fun onBackNavigationClicked() {
@@ -79,7 +88,19 @@ class ThemePreviewViewModel @Inject constructor(
             appPrefsWrapper.saveThemeIdForStoreCreation(newStore.data.siteId!!, navArgs.themeId)
             triggerEvent(ContinueStoreCreationWithTheme)
         } else {
-            TODO()
+            launch {
+                isActivatingTheme.value = true
+                themeRepository.activateTheme(navArgs.themeId).fold(
+                    onSuccess = {
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
+                        triggerEvent(MultiLiveEvent.Event.Exit)
+                    },
+                    onFailure = {
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
+                    }
+                )
+                isActivatingTheme.value = false
+            }
         }
     }
 
@@ -109,7 +130,8 @@ class ThemePreviewViewModel @Inject constructor(
     data class ViewState(
         val themeName: String,
         val isFromStoreCreation: Boolean,
-        val themePages: List<ThemeDemoPage>
+        val themePages: List<ThemeDemoPage>,
+        val isActivatingTheme: Boolean
     ) {
         val currentPage: ThemeDemoPage
             get() = themePages.first { it.isLoaded }
