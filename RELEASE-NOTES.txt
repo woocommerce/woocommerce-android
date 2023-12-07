@@ -3,6 +3,7 @@
 16.6
 -----
 - [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
+- [*] Add helper actions to allow the user to restore the cha-ching sound in case it was disabled from the device settings [https://github.com/woocommerce/woocommerce-android/issues/10327]
 
 16.5
 -----
