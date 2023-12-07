@@ -1693,6 +1693,9 @@
     <string name="cha_ching_sound_issue_dialog_turn_on_sound">ENABLE SOUND</string>
     <string name="cha_ching_sound_issue_dialog_keep_silent">KEEP SILENT</string>
     <string name="cha_ching_sound_succcess_snackbar">All set! The \'cha-ching\' will now sound for every new order.</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TEST SOUND</string>
+    <string name="cha_ching_sound_test_notification_title">Test notification</string>
+    <string name="cha_ching_sound_test_notification_message">This is just a test notification to check the Cha-Ching sound.\nYou can swipe it away.</string>
     <!--
         Product Review Detail
     -->
@@ -3879,7 +3882,4 @@
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
     <string name="store_creation_use_theme_button">Start with this theme</string>
-    <string name="cha_ching_sound_succcess_snackbar_action">TEST SOUND</string>
-    <string name="cha_ching_sound_test_notification_title">Test notification</string>
-    <string name="cha_ching_sound_test_notification_message">This is just a test notification to check the Cha-Ching sound.\nYou can swipe it away.</string>
 </resources>
