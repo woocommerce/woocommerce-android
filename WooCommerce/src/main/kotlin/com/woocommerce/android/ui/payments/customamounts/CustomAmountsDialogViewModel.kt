@@ -90,6 +90,15 @@ class CustomAmountsDialogViewModel @Inject constructor(
             populateUIWithExistingData()
             tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
         }
+        updateCustomAmountType()
+    }
+
+    private fun updateCustomAmountType() {
+        viewState = viewState.copy(
+            customAmountUIModel = viewState.customAmountUIModel.copy(
+                type = args.customAmountUIModel.type
+            )
+        )
     }
 
     private fun populateUIWithExistingData() {
@@ -110,7 +119,8 @@ class CustomAmountsDialogViewModel @Inject constructor(
                     id = id,
                     name = name,
                     taxStatus = taxStatus,
-                    currentPrice = amount
+                    currentPrice = amount,
+                    type = type
                 )
             )
         }
