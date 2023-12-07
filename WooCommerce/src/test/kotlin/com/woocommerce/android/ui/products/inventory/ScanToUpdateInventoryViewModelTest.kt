@@ -366,7 +366,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when increment quantity button tapped, then proper tracking event is triggered`() = testBlocking {
-
         sut.onIncrementQuantityClicked()
         verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
     }
