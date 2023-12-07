@@ -9,10 +9,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class OrderCreateEditGiftCardViewModel @Inject constructor(

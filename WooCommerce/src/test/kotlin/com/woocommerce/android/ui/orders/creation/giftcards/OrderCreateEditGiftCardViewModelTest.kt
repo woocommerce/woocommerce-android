@@ -1,16 +1,14 @@
 package com.woocommerce.android.ui.orders.creation.giftcards
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OrderCreateEditGiftCardViewModelTest: BaseUnitTest() {
+class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreateEditGiftCardViewModel
 
     @Before
