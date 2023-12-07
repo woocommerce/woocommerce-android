@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation.giftcards
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.assertj.core.api.Assertions.assertThat
@@ -39,7 +38,7 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
         val expectedGiftCardCode = "test gift card code"
         createSutWith(initialGiftCardValue = expectedGiftCardCode)
         var lastGiftCardUpdate: String? = null
-        sut.giftCard.observeForever { lastGiftCardUpdate = it }
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
 
         // Then
         assertThat(lastGiftCardUpdate).isEqualTo(expectedGiftCardCode)
@@ -50,7 +49,7 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
         // Given
         createSutWith(initialGiftCardValue = null)
         var lastGiftCardUpdate: String? = null
-        sut.giftCard.observeForever { lastGiftCardUpdate = it }
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
 
         // Then
         assertThat(lastGiftCardUpdate).isEqualTo("")
