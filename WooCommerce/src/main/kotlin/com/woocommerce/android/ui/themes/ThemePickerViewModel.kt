@@ -75,7 +75,7 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     fun onSkipPressed() {
-        triggerEvent(MoveToNextStep)
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onThemeTapped(themeUri: String) {
@@ -108,6 +108,6 @@ class ThemePickerViewModel @Inject constructor(
         }
     }
 
-    object MoveToNextStep : Event()
+    object NavigateToNextStep : Event()
     data class NavigateToThemePreview(val themeId: String, val isFromStoreCreation: Boolean) : Event()
 }
