@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,6 +30,8 @@ class ThemePickerViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(viewModelScope, Loading)
     val viewState = _viewState.asLiveData()
+
+    private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
     init {
         viewModelScope.launch {
@@ -76,7 +79,7 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     fun onThemeTapped(themeUri: String) {
-        triggerEvent(NavigateToThemePreview(themeUri))
+        triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
     }
 
     sealed interface ViewState : Parcelable {
@@ -106,5 +109,5 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     object MoveToNextStep : Event()
-    data class NavigateToThemePreview(val themeId: String) : Event()
+    data class NavigateToThemePreview(val themeId: String, val isFromStoreCreation: Boolean) : Event()
 }

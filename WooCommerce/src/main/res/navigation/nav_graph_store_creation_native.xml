@@ -80,7 +80,11 @@
             app:destination="@id/storeCreationInstallationFragment" />
         <action
             android:id="@+id/action_storeProfilerFeaturesFragment_to_themePickerFragment"
-            app:destination="@id/nav_graph_themes" />
+            app:destination="@id/nav_graph_themes" >
+            <argument
+                android:name="isFromStoreCreation"
+                app:argType="boolean" />
+        </action>
     </fragment>
 
     <fragment
