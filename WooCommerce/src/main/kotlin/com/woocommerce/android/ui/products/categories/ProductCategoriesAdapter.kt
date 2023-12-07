@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +44,28 @@ class ProductCategoriesAdapter(
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
         }
+
+        holder.itemView.setOnLongClickListener { view ->
+            showOverFlowMenu(view)
+            true
+        }
+    }
+
+    private fun showOverFlowMenu(view: View) {
+        val popup = PopupMenu(view.context, view)
+        popup.menuInflater.inflate(R.menu.menu_product_category, popup.menu)
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    // Handle edit action
+                }
+                R.id.menu_delete -> {
+                    // Handle delete action
+                }
+            }
+            true
+        }
+        popup.show()
     }
 
     private fun handleCategoryClick(
