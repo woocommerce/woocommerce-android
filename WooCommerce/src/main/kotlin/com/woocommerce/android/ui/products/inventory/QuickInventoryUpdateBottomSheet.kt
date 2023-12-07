@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -118,6 +120,7 @@ fun QuickInventoryUpdateBottomSheet(
                             horizontal = dimensionResource(id = R.dimen.minor_100),
                             vertical = dimensionResource(id = R.dimen.minor_50),
                         )
+                        .defaultMinSize(minWidth = 12.dp)
                         .width(IntrinsicSize.Min),
                     value = state.newQuantity,
                     onValueChange = { value ->
@@ -129,7 +132,7 @@ fun QuickInventoryUpdateBottomSheet(
                         imeAction = ImeAction.Done,
                     ),
                     textStyle = MaterialTheme.typography.body1.copy(
-                        color = MaterialTheme.colors.onSurface
+                        color = MaterialTheme.colors.onSurface,
                     ),
                     interactionSource = interactionSource,
                     keyboardActions = KeyboardActions(
