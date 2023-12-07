@@ -6,6 +6,7 @@
 16.6
 -----
 - [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
+- [*] [Internal] Fixed disabling editable controls in product cards in order edit screen in case order is not editable [https://github.com/woocommerce/woocommerce-android/pull/10345]
 
 16.5
 -----
