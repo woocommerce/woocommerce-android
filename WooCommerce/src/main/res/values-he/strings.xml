@@ -2955,12 +2955,6 @@ Language: he_IL
     <string name="wc_approve">אישור</string>
     <string name="wc_view_the_product_external">הצגת המוצר</string>
     <string name="support_help">עזרה ותמיכה</string>
-    <string name="settings_notifs_reviews_detail">קבלת התראות על ביקורות חדשות למוצר</string>
-    <string name="settings_notifs_reviews">ביקורות על מוצר</string>
-    <string name="settings_notifs_tone_detail">הפעלת אפקט קולי של קופה רושמת בביצוע הזמנה חדשה</string>
-    <string name="settings_notifs_tone">צליל</string>
-    <string name="settings_notifs_orders_detail">קבלת התראות בביצוע של הזמנות חדשות</string>
-    <string name="settings_notifs_orders">הזמנות</string>
     <string name="settings_notifs_device_detail">קולות, דחיפות ונקודה לציון הודעות</string>
     <string name="settings_notifs_device">ניהול הודעות</string>
     <string name="settings_notifs">הודעות</string>

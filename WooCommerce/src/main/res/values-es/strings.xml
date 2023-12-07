@@ -2955,12 +2955,6 @@ Language: es
     <string name="wc_approve">Aprobar</string>
     <string name="wc_view_the_product_external">Ver el producto</string>
     <string name="support_help">Ayuda y soporte</string>
-    <string name="settings_notifs_reviews_detail">Recibir alertas para las nuevas reseñas de productos</string>
-    <string name="settings_notifs_reviews">Reseñas de productos</string>
-    <string name="settings_notifs_tone_detail">Reproducir sonido cuando haya un nuevo pedido</string>
-    <string name="settings_notifs_tone">Tono</string>
-    <string name="settings_notifs_orders_detail">Recibir alertas cuando lleguen nuevos pedidos</string>
-    <string name="settings_notifs_orders">Pedidos</string>
     <string name="settings_notifs_device_detail">Sonidos, urgencia y punto de notificación</string>
     <string name="settings_notifs_device">Gestionar notificaciones</string>
     <string name="settings_notifs">Notificaciones</string>

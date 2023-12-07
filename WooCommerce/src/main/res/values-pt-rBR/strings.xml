@@ -2955,12 +2955,6 @@ Language: pt_BR
     <string name="wc_approve">Aprovar</string>
     <string name="wc_view_the_product_external">Visualizar o produto</string>
     <string name="support_help">Ajuda e suporte</string>
-    <string name="settings_notifs_reviews_detail">Receba alertas de novas avaliações de produtos</string>
-    <string name="settings_notifs_reviews">Avaliações de produto</string>
-    <string name="settings_notifs_tone_detail">Reproduzir o som da caixa registradora ao receber um novo pedido</string>
-    <string name="settings_notifs_tone">Tom</string>
-    <string name="settings_notifs_orders_detail">Receba alertas sobre o recebimento de novos pedidos</string>
-    <string name="settings_notifs_orders">Pedidos</string>
     <string name="settings_notifs_device_detail">Sons, urgência e ponto de notificação</string>
     <string name="settings_notifs_device">Gerenciar notificações</string>
     <string name="settings_notifs">Notificações</string>

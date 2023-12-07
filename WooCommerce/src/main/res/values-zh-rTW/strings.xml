@@ -2955,12 +2955,6 @@ Language: zh_TW
     <string name="wc_approve">核准</string>
     <string name="wc_view_the_product_external">檢視產品</string>
     <string name="support_help">說明與支援</string>
-    <string name="settings_notifs_reviews_detail">出現新的產品評論時收到提醒</string>
-    <string name="settings_notifs_reviews">產品評論</string>
-    <string name="settings_notifs_tone_detail">收到新訂單時播放收銀機音效</string>
-    <string name="settings_notifs_tone">音調</string>
-    <string name="settings_notifs_orders_detail">收到新訂單時收到提醒</string>
-    <string name="settings_notifs_orders">訂單</string>
     <string name="settings_notifs_device_detail">音效、緊急狀況和通知圓點</string>
     <string name="settings_notifs_device">管理通知</string>
     <string name="settings_notifs">通知</string>

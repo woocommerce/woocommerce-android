@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.media.AudioManager
 import android.os.RemoteException
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -99,18 +98,13 @@ class WooNotificationBuilder @Inject constructor(
 
     fun buildAndDisplayWooNotification(
         pushId: Int,
-        defaults: Int,
         notification: Notification,
-        addCustomNotificationSound: Boolean,
         isGroupNotification: Boolean
     ) {
         val channelType = notification.channelType
         getNotificationBuilder(notification).apply {
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
-            setDefaults(defaults)
-            if (addCustomNotificationSound) {
-                setSound(context.getChaChingUri(), AudioManager.STREAM_NOTIFICATION)
-            }
+            setDefaults(NotificationCompat.DEFAULT_ALL)
         }.apply {
             showNotification(pushId, notification, this)
 
