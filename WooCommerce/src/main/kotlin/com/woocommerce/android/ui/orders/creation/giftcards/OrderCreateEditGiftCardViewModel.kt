@@ -27,6 +27,7 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = navArgs.giftCard.orEmpty()
     )
+
     val viewState = selectedGiftCard
         .map {
             val isValidCode = it.isEmpty() || it.matches(codeFormatRegex)

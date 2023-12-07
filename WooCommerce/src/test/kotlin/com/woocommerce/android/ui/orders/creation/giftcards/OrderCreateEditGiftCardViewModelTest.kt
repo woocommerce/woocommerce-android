@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.creation.giftcards
 
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
