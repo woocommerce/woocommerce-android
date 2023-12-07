@@ -118,6 +118,15 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         bindPercentageLabel(binding)
         setupTaxToggleView(binding)
         setupPrimaryEditView(binding)
+        setupDeleteCustomAmountView(binding)
+    }
+
+    private fun setupDeleteCustomAmountView(binding: DialogCustomAmountsBinding) {
+        if (viewModel.isInCreateMode()) {
+            binding.buttonDelete.hide()
+        } else {
+            binding.buttonDelete.show()
+        }
     }
 
     private fun bindPercentageLabel(binding: DialogCustomAmountsBinding) {
@@ -137,6 +146,17 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     private fun setupClickListeners(binding: DialogCustomAmountsBinding) {
         binding.buttonDone.setOnClickListener {
             sharedViewModel.onCustomAmountUpsert(
+                CustomAmountUIModel(
+                    id = viewModel.viewState.customAmountUIModel.id,
+                    amount = viewModel.viewState.customAmountUIModel.currentPrice,
+                    name = viewModel.viewState.customAmountUIModel.name,
+                    taxStatus = viewModel.viewState.customAmountUIModel.taxStatus,
+                    type = viewModel.viewState.customAmountUIModel.type
+                )
+            )
+        }
+        binding.buttonDelete.setOnClickListener {
+            sharedViewModel.onCustomAmountRemoved(
                 CustomAmountUIModel(
                     id = viewModel.viewState.customAmountUIModel.id,
                     amount = viewModel.viewState.customAmountUIModel.currentPrice,

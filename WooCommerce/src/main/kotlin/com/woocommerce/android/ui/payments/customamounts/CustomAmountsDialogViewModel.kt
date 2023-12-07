@@ -130,7 +130,7 @@ class CustomAmountsDialogViewModel @Inject constructor(
         triggerEvent(PopulatePercentage(customAmountUIModel))
     }
 
-    private fun isInCreateMode() = args.customAmountUIModel.amount.compareTo(BigDecimal.ZERO) == 0
+    fun isInCreateMode() = args.customAmountUIModel.amount.compareTo(BigDecimal.ZERO) == 0
 
     @Parcelize
     data class ViewState(

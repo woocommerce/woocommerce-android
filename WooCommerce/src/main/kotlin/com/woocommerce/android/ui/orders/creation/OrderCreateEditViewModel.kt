@@ -1339,6 +1339,7 @@ class OrderCreateEditViewModel @Inject constructor(
             draft.copy(feesLines = feesList)
         }
         tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
+        triggerEvent(Exit)
     }
 
     fun onFeeRemoved() {

@@ -213,6 +213,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customAmountNameText" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDelete"
+                style="@style/Woo.Button.Outlined"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:text="@string/custom_amounts_delete_custom_amount"
+                android:textColor="@color/woo_red_50"
+                app:strokeColor="@color/woo_red_50"
+                app:layout_constraintTop_toBottomOf="@id/custom_amount_name_divider"
+                tools:visibility="visible"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
