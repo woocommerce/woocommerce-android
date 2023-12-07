@@ -95,9 +95,9 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     private suspend fun handleProductNotFound(barcode: String) {
         triggerProductNotFoundSnackBar(barcode)
+        _viewState.value = ViewState.QuickInventoryBottomSheetHidden
         delay(SCANNER_RESTART_DEBOUNCE_MS)
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
-        _viewState.value = ViewState.QuickInventoryBottomSheetHidden
     }
 
     private fun triggerProductNotFoundSnackBar(barcode: String) {
