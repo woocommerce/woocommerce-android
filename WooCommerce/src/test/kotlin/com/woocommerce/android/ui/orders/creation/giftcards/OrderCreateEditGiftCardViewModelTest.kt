@@ -29,4 +29,18 @@ class OrderCreateEditGiftCardViewModelTest {
         // Then
         assertThat(lastGiftCardUpdate).isEqualTo(expectedGiftCardCode)
     }
+
+    @Test
+    fun `when gift card code is valid, then isValidCode is true`() {
+        // Given
+        val expectedIsValidCode = true
+        var lastIsValidCodeUpdate: Boolean? = null
+        sut.viewState.observeForever { lastIsValidCodeUpdate = it.isValidCode }
+
+        // When
+        sut.onGiftCardChanged("T3ST-W1TH-L33T-C0D3")
+
+        // Then
+        assertThat(lastIsValidCodeUpdate).isEqualTo(expectedIsValidCode)
+    }
 }
