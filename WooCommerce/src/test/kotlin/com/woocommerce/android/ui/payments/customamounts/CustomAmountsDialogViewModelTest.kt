@@ -161,5 +161,37 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(PERCENTAGE_CUSTOM_AMOUNT)
     }
 
+    @Test
+    fun `when custom amount dialog is opened to edit, then update view state to populate all values`() {
+        val customAmountUIModel = CustomAmountsDialogArgs(
+            customAmountUIModel = CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "",
+                type = PERCENTAGE_CUSTOM_AMOUNT
+            ),
+            orderTotal = "200"
+        )
+        viewModel = CustomAmountsDialogViewModel(
+            customAmountUIModel.toSavedStateHandle(),
+            tracker
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.id).isEqualTo(
+            customAmountUIModel.customAmountUIModel.id
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(
+            customAmountUIModel.customAmountUIModel.amount
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.name).isEqualTo(
+            customAmountUIModel.customAmountUIModel.name
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(
+            customAmountUIModel.customAmountUIModel.type
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.taxStatus).isEqualTo(
+            customAmountUIModel.customAmountUIModel.taxStatus
+        )
+    }
+
     //endregion
 }
