@@ -303,6 +303,14 @@ class ProductListFragment :
                 enableSearchListeners()
                 true
             }
+            R.id.menu_scan_barcode -> {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+                ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
+                    findNavController().navigate(it)
+                }
+                searchMenuItem?.collapseActionView()
+                true
+            }
 
             else -> false
         }

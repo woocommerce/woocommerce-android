@@ -2024,6 +2024,7 @@
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3862,6 +3863,19 @@
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 
+    <!--
+    Scan to update inventory
+    -->
+    <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU: %s not found. Please try again.</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Product with SKU: %s is not stock-managed. Please try again.</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantity + 1</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
+    <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantity</string>
+    <string name="scan_to_update_inventory_product_label">Product</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
