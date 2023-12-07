@@ -20,7 +20,7 @@ class OrderCreateEditGiftCardViewModelTest {
         // Given
         val expectedGiftCardCode = "test gift card code"
         var lastGiftCardUpdate: String? = null
-        sut.giftCard.observeForever { lastGiftCardUpdate = it }
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
 
         // When
         sut.onGiftCardChanged("test gift card code")
