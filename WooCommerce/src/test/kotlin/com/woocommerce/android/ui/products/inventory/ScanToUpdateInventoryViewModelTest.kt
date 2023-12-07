@@ -126,8 +126,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     )
                 )
                 assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
-                assertEquals(Loading, awaitItem())
-                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
             }
         }
 
@@ -328,7 +326,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         val originalVariation =
             ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
                 .copy(stockQuantity = originalProduct.stockQuantity)
-        whenever(variationRepo.getVariation(productId, variationId)).thenReturn(originalVariation)
+        whenever(variationRepo.getVariationOrNull(productId, variationId)).thenReturn(originalVariation)
         whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, variationId))
         whenever(
             resourceProvider.getString(
@@ -366,7 +364,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         val originalVariation =
             ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
                 .copy(stockQuantity = 1.0)
-        whenever(variationRepo.getVariation(1, 2)).thenReturn(originalVariation)
+        whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(originalVariation)
         whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
         whenever(
             resourceProvider.getString(
