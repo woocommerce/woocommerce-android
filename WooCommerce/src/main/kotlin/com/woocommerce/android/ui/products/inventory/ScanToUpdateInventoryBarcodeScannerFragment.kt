@@ -5,36 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.component.ProgressIndicator
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.Loading
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 @AndroidEntryPoint
