@@ -222,8 +222,8 @@
                 android:layout_marginHorizontal="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_75"
                 android:text="@string/custom_amounts_delete_custom_amount"
-                android:textColor="@color/woo_red_70"
-                app:strokeColor="@color/woo_red_70"
+                android:textColor="@color/woo_red_50"
+                app:strokeColor="@color/woo_red_50"
                 app:layout_constraintTop_toBottomOf="@id/custom_amount_name_divider"
                 tools:visibility="visible"/>
 
