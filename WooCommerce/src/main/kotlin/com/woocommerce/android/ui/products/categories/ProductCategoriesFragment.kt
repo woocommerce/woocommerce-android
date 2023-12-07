@@ -28,7 +28,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProductCategoriesFragment :
     BaseProductFragment(R.layout.fragment_product_categories_list),
     OnLoadMoreListener,
-    OnProductCategoryClickListener {
+    OnProductCategoryClickListener,
+    OnProductCategoryLongClickListener {
     private lateinit var productCategoriesAdapter: ProductCategoriesAdapter
 
     private val skeletonView = SkeletonView()
@@ -65,7 +66,7 @@ class ProductCategoriesFragment :
 
         val activity = requireActivity()
 
-        productCategoriesAdapter = ProductCategoriesAdapter(this, this)
+        productCategoriesAdapter = ProductCategoriesAdapter(this, this, this)
         with(binding.productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter
@@ -180,5 +181,13 @@ class ProductCategoriesFragment :
         if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
         }
+    }
+
+    override fun onProductCategoryEditClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        // handle edit
+    }
+
+    override fun onProductCategoryDeleteClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        // handle delete
     }
 }

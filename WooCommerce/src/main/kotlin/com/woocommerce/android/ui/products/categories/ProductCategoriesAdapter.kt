@@ -15,7 +15,8 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesAdapter.P
 
 class ProductCategoriesAdapter(
     private val loadMoreListener: OnLoadMoreListener,
-    private val clickListener: OnProductCategoryClickListener
+    private val clickListener: OnProductCategoryClickListener,
+    private val longClickListener: OnProductCategoryLongClickListener,
 ) : RecyclerView.Adapter<ProductCategoryViewHolder>() {
     private val productCategoryList = ArrayList<ProductCategoryItemUiModel>()
 
@@ -46,21 +47,21 @@ class ProductCategoriesAdapter(
         }
 
         holder.itemView.setOnLongClickListener { view ->
-            showOverFlowMenu(view)
+            showOverFlowMenu(view, productCategory)
             true
         }
     }
 
-    private fun showOverFlowMenu(view: View) {
+    private fun showOverFlowMenu(view: View, productCategory: ProductCategoryItemUiModel) {
         val popup = PopupMenu(view.context, view)
         popup.menuInflater.inflate(R.menu.menu_product_category, popup.menu)
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
-                    // Handle edit action
+                    longClickListener.onProductCategoryEditClick(productCategory)
                 }
                 R.id.menu_delete -> {
-                    // Handle delete action
+                    longClickListener.onProductCategoryDeleteClick(productCategory)
                 }
             }
             true
