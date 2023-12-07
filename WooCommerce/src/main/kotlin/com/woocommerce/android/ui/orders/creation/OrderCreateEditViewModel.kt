@@ -15,6 +15,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
@@ -26,6 +27,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_DELETE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_REMOVE
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_UPDATE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE
@@ -1236,31 +1238,53 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
-        tracker.track(
-            ORDER_FEE_ADD,
-            mapOf(
-                KEY_FLOW to flow,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to when (customAmountUIModel.taxStatus.isTaxable) {
-                    true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
-                    false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
-                }
-            )
-        )
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
             val feesList = if (existingFeeLine != null) {
                 // If the FeeLine with the given ID exists, we update its values.
+                tracker.track(
+                    ORDER_FEE_UPDATE,
+                    mapOf(
+                        KEY_FLOW to flow,
+                        KEY_CUSTOM_AMOUNT_TAX_STATUS to when (customAmountUIModel.taxStatus.isTaxable) {
+                            true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+                            false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+                        }
+                    )
+                )
                 updateCustomAmount(draft, customAmountUIModel)
             } else {
                 // If no FeeLine with the given ID exists, we add a new one.
-                tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+                tracker.track(
+                    ORDER_FEE_ADD,
+                    mapOf(
+                        KEY_FLOW to flow,
+                        KEY_CUSTOM_AMOUNT_TAX_STATUS to when (customAmountUIModel.taxStatus.isTaxable) {
+                            true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+                            false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+                        }
+                    )
+                )
                 addCustomAmount(draft, customAmountUIModel)
             }
             draft.copy(feesLines = feesList)
         }
+        tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
+        trackIfPercentageBasedCustomAmount(customAmountUIModel)
         triggerEvent(Exit)
+    }
+
+    private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
+        when (customAmountUIModel.type) {
+            CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
+                tracker.track(ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED)
+            }
+            CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
+                // no -op
+            }
+        }
     }
 
     private fun trackIfNameAdded(customAmountUIModel: CustomAmountUIModel) {
