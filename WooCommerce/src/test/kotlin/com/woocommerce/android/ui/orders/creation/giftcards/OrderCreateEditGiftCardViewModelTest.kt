@@ -13,8 +13,7 @@ class OrderCreateEditGiftCardViewModelTest: BaseUnitTest() {
 
     @Before
     fun setUp() {
-        val savedState = OrderCreateEditGiftCardFragmentArgs("").initSavedStateHandle()
-        sut = OrderCreateEditGiftCardViewModel(savedState)
+        createSutWith(initialGiftCardValue = "")
     }
 
     @Test
@@ -35,8 +34,7 @@ class OrderCreateEditGiftCardViewModelTest: BaseUnitTest() {
     fun `when navArgs has valid giftCard, then giftCard should be set with the same value`() {
         // Given
         val expectedGiftCardCode = "test gift card code"
-        val savedState = OrderCreateEditGiftCardFragmentArgs(expectedGiftCardCode).initSavedStateHandle()
-        sut = OrderCreateEditGiftCardViewModel(savedState)
+        createSutWith(initialGiftCardValue = expectedGiftCardCode)
         var lastGiftCardUpdate: String? = null
         sut.giftCard.observeForever { lastGiftCardUpdate = it }
 
@@ -47,12 +45,17 @@ class OrderCreateEditGiftCardViewModelTest: BaseUnitTest() {
     @Test
     fun `when navArgs has null giftCard, then giftCard should be set with empty string`() {
         // Given
-        val savedState = OrderCreateEditGiftCardFragmentArgs(null).initSavedStateHandle()
-        sut = OrderCreateEditGiftCardViewModel(savedState)
+        createSutWith(initialGiftCardValue = null)
         var lastGiftCardUpdate: String? = null
         sut.giftCard.observeForever { lastGiftCardUpdate = it }
 
         // Then
         assertThat(lastGiftCardUpdate).isEqualTo("")
+    }
+
+    private fun createSutWith(initialGiftCardValue: String?) {
+        val savedState = OrderCreateEditGiftCardFragmentArgs(initialGiftCardValue)
+            .initSavedStateHandle()
+        sut = OrderCreateEditGiftCardViewModel(savedState)
     }
 }
