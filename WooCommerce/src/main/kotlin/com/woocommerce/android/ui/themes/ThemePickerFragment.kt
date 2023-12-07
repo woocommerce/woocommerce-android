@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -38,6 +39,7 @@ class ThemePickerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleResults()
     }
 
     private fun setupObservers() {
@@ -45,8 +47,14 @@ class ThemePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> navigateToStoreInstallationStep()
-                is NavigateToThemePreview -> navigateToThemePreviewFragment(event.themeDemoUri)
+                is NavigateToThemePreview -> navigateToThemePreviewFragment(event.themeId)
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleNotice(ThemePreviewFragment.THEME_SELECTED_NOTICE) {
+            navigateToStoreInstallationStep()
         }
     }
 
@@ -57,11 +65,11 @@ class ThemePickerFragment : BaseFragment() {
         )
     }
 
-    private fun navigateToThemePreviewFragment(themeDemoUri: String) {
+    private fun navigateToThemePreviewFragment(themeId: String) {
         findNavController().navigateSafely(
             ThemePickerFragmentDirections
                 .actionThemePickerFragmentToThemePreviewFragment(
-                    themeDemoUri = themeDemoUri
+                    themeId = themeId
                 )
         )
     }

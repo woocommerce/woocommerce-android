@@ -219,7 +219,7 @@ private fun Theme(
     Card(
         shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
         elevation = dimensionResource(id = dimen.minor_50),
-        modifier = themeModifier.clickable { onThemeTapped(theme.demoUri) }
+        modifier = themeModifier.clickable { onThemeTapped(theme.themeId) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
