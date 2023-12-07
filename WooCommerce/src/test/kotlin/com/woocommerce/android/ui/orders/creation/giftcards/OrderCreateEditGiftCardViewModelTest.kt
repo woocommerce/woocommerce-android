@@ -8,7 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OrderCreateEditGiftCardViewModelTest: BaseUnitTest() {
+class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderCreateEditGiftCardViewModel
 
     @Before
