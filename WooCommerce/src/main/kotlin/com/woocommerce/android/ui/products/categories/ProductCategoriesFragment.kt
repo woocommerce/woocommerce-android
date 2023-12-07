@@ -187,7 +187,7 @@ class ProductCategoriesFragment :
         // handle edit
     }
 
-    override fun onProductCategoryDeleteClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
-        // handle delete
+    override fun onProductCategoryDeleteClick(productCategory: ProductCategory) {
+        viewModel.deleteProductCategory(productCategory)
     }
 }

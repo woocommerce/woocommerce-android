@@ -61,7 +61,7 @@ class ProductCategoriesAdapter(
                     longClickListener.onProductCategoryEditClick(productCategory)
                 }
                 R.id.menu_delete -> {
-                    longClickListener.onProductCategoryDeleteClick(productCategory)
+                    longClickListener.onProductCategoryDeleteClick(productCategory.category)
                 }
             }
             true

@@ -2149,6 +2149,11 @@ class ProductDetailViewModel @Inject constructor(
         return sortedList.toList()
     }
 
+    fun deleteProductCategory(category: ProductCategory) {
+        productCategoriesRepository.deleteProductCategory(category)
+        refreshProductCategories()
+    }
+
     fun onProductTagsBackButtonClicked() {
         val tags = _addedProductTags.getList()
         // check if there are tags entered that do not exist on the site. If so,
