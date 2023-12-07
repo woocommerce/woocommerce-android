@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -615,6 +616,7 @@ private fun AmountPicker(
                     }
                 ),
                 interactionSource = interactionSource,
+                cursorBrush = SolidColor(MaterialTheme.colors.primary),
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
                     .widthIn(min = 12.dp, max = 128.dp)
