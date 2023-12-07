@@ -161,7 +161,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     updatedProductInfo.quantity.toString()
                 )
             } else {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_FAILURE)
                 handleQuantityUpdateError()
             }
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
@@ -206,6 +205,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private fun handleQuantityUpdateError() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_FAILURE)
         triggerEvent(ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_failure_snackbar)))
     }
 
