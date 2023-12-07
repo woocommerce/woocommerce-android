@@ -79,6 +79,7 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.MAX_PRODUCT_QUANTITY
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.orders.creation.isSynced
@@ -89,7 +90,6 @@ import java.math.BigDecimal
 
 private const val ANIM_DURATION_MILLIS = 128
 private const val MULTIPLICATION_CHAR = "×"
-private const val MAX_PRODUCT_QUANTITY = 100_000
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable

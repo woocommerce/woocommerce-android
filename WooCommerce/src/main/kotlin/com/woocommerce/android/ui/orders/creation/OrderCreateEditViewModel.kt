@@ -177,6 +177,7 @@ class OrderCreateEditViewModel @Inject constructor(
     parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
+        const val MAX_PRODUCT_QUANTITY = 100_000
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -450,7 +451,11 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onItemAmountChanged(product: OrderCreationProduct, amountChangeEvent: ProductAmountEvent) {
         when (amountChangeEvent) {
             ProductAmountEvent.Decrease -> onDecreaseProductsQuantity(product)
-            ProductAmountEvent.Increase -> onIncreaseProductsQuantity(product)
+            ProductAmountEvent.Increase -> {
+                if (product.item.quantity.toInt() < MAX_PRODUCT_QUANTITY) {
+                    onIncreaseProductsQuantity(product)
+                }
+            }
             is ProductAmountEvent.Change -> {
                 when (val newAmountInt = amountChangeEvent.newAmount.toIntOrNull()) {
                     null, 0 -> onRemoveProduct(product)
