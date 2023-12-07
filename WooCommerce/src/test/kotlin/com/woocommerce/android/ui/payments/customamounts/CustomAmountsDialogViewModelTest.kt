@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -141,6 +142,23 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
             tracker
         )
         assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(FIXED_CUSTOM_AMOUNT)
+    }
+
+    @Test
+    fun `when view model is initiated as percentage custom amount type, then assign proper custom amount type to view state`() {
+        viewModel = CustomAmountsDialogViewModel(
+            CustomAmountsDialogArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker
+        )
+        assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(PERCENTAGE_CUSTOM_AMOUNT)
     }
 
     //endregion
