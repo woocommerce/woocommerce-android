@@ -44,8 +44,6 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    @Suppress("LongMethod")
-    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,62 +51,23 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            WooThemeWithBackground {
-                val sheetState = rememberModalBottomSheetState(
-                    initialValue = ModalBottomSheetValue.Hidden,
-                    skipHalfExpanded = true
-                )
-                ModalBottomSheetLayout(
-                    sheetState = sheetState,
-                    content = {
-                        BarcodeScannerScreen(
-                            onNewFrame = scannerViewModel::onNewFrame,
-                            onBindingException = scannerViewModel::onBindingException,
-                            permissionState = scannerViewModel.permissionState.observeAsState(Unknown),
-                            onResult = { granted ->
-                                scannerViewModel.updatePermissionState(
-                                    granted,
-                                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                                )
-                            }
-                        )
-                        if (viewModel.viewState.collectAsState().value is Loading) {
-                            ProgressIndicator(backgroundColor = colorResource(id = R.color.color_scrim_background))
-                        }
-                    },
-                    sheetShape = RoundedCornerShape(
-                        topStart = dimensionResource(id = R.dimen.corner_radius_large),
-                        topEnd = dimensionResource(id = R.dimen.corner_radius_large)
-                    ),
-                    sheetContent = {
-                        viewModel.viewState.collectAsState().value.let { state ->
-                            if (state is QuickInventoryBottomSheetVisible) {
-                                QuickInventoryUpdateBottomSheet(
-                                    state = state,
-                                    onIncrementQuantityClicked = viewModel::onIncrementQuantityClicked,
-                                    onManualQuantityEntered = viewModel::onManualQuantityEntered,
-                                    onUpdateQuantityClicked = viewModel::onUpdateQuantityClicked,
-                                    onViewProductDetailsClicked = viewModel::onViewProductDetailsClicked,
-                                )
-                            }
-                            LaunchedEffect(state) {
-                                if (state is QuickInventoryBottomSheetVisible) {
-                                    sheetState.show()
-                                } else {
-                                    sheetState.hide()
-                                }
-                            }
-                            LaunchedEffect(sheetState) {
-                                snapshotFlow { sheetState.currentValue }
-                                    .filter { it == ModalBottomSheetValue.Hidden }
-                                    .collect {
-                                        viewModel.onBottomSheetDismissed()
-                                    }
-                            }
-                        }
-                    }
-                )
-            }
+            ScanToUpdateInventoryScreen(
+                onNewFrame = scannerViewModel::onNewFrame,
+                onBindingException = scannerViewModel::onBindingException,
+                permissionState = scannerViewModel.permissionState.observeAsState(Unknown),
+                onCameraPermissionResult = { granted ->
+                    scannerViewModel.updatePermissionState(
+                        granted,
+                        shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                    )
+                },
+                viewState = viewModel.viewState.collectAsState(),
+                onBottomSheetDismissed = viewModel::onBottomSheetDismissed,
+                onIncrementQuantityClicked = viewModel::onIncrementQuantityClicked,
+                onUpdateQuantityClicked = viewModel::onUpdateQuantityClicked,
+                onViewProductDetailsClicked = viewModel::onViewProductDetailsClicked,
+                onManualQuantityEntered = viewModel::onManualQuantityEntered,
+            )
         }
     }
 
