@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs.notifications
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -19,7 +22,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel) {
+    val isChaChingSoundEnabled by viewModel.isChaChingSoundEnabled.observeAsState(initial = false)
     NotificationSettingsScreen(
+        isChaChingSoundEnabled = isChaChingSoundEnabled,
         onManageNotificationsClicked = viewModel::onManageNotificationsClicked,
         onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
     )
@@ -27,6 +32,7 @@ fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel) {
 
 @Composable
 private fun NotificationSettingsScreen(
+    isChaChingSoundEnabled: Boolean,
     onManageNotificationsClicked: () -> Unit,
     onEnableChaChingSoundClicked: () -> Unit
 ) {
@@ -43,12 +49,14 @@ private fun NotificationSettingsScreen(
                 onClick = onManageNotificationsClicked,
                 modifier = Modifier.fillMaxWidth()
             )
-            NotificationSettingsItem(
-                title = stringResource(id = R.string.settings_notifs_enable_chaching_sound),
-                subtitle = stringResource(id = R.string.settings_notifs_enable_chaching_sound_description),
-                onClick = onEnableChaChingSoundClicked,
-                modifier = Modifier.fillMaxWidth()
-            )
+            AnimatedVisibility(visible = !isChaChingSoundEnabled) {
+                NotificationSettingsItem(
+                    title = stringResource(id = R.string.settings_notifs_enable_chaching_sound),
+                    subtitle = stringResource(id = R.string.settings_notifs_enable_chaching_sound_description),
+                    onClick = onEnableChaChingSoundClicked,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -82,6 +90,7 @@ private fun NotificationSettingsItem(
 private fun NotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NotificationSettingsScreen(
+            isChaChingSoundEnabled = false,
             onManageNotificationsClicked = {},
             onEnableChaChingSoundClicked = {}
         )
