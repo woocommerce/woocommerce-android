@@ -105,6 +105,29 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given barcode successfully scanned, when product not found by sku, then should hide progress bar and bottomsheet`() =
+        testBlocking {
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.failure(Throwable()))
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_unable_to_find_product,
+                    "123"
+                )
+            ).thenReturn("Product with SKU: 123 not found. Please try again.")
+            sut.viewState.test {
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
+                assertEquals(Loading, awaitItem())
+                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
+            }
+        }
+
+    @Test
     fun `given barcode successfully scanned, when product found by sku, then should show bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
