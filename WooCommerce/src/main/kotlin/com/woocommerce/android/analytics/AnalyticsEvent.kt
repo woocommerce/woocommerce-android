@@ -555,6 +555,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_DETAIL_PRODUCT_DELETED,
     FIRST_CREATED_PRODUCT_SHOWN,
     FIRST_CREATED_PRODUCT_SHARE_TAPPED,
+    PRODUCT_CREATED_USING_SHARED_IMAGES,
 
     // -- Product Categories
     PRODUCT_CATEGORIES_LOADED,

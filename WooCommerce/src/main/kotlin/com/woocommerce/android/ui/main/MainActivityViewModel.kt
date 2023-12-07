@@ -351,6 +351,8 @@ class MainActivityViewModel @Inject constructor(
     fun handleIncomingImages(imageUris: List<String>?) {
         if (imageUris.isNullOrEmpty()) return
 
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATED_USING_SHARED_IMAGES)
+
         triggerEvent(CreateNewProductUsingImages(imageUris))
     }
 
