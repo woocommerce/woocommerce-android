@@ -109,6 +109,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
+import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
@@ -182,6 +183,7 @@ class OrderCreateEditViewModel @Inject constructor(
     parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
+        const val MAX_PRODUCT_QUANTITY = 100_000
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -444,7 +446,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { adjustProductQuantity(it, id, -1) }
     }
 
-    fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
+    private fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
         tracker.track(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(KEY_FLOW to flow)
@@ -452,7 +454,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { adjustProductQuantity(it, product, +1) }
     }
 
-    fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
+    private fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
         if (product.item.quantity == 1F) {
             tracker.track(
                 ORDER_PRODUCT_REMOVE,
@@ -465,6 +467,35 @@ class OrderCreateEditViewModel @Inject constructor(
             )
         }
         _orderDraft.update { adjustProductQuantity(it, product, -1) }
+    }
+
+    fun onItemAmountChanged(product: OrderCreationProduct, amountChangeEvent: ProductAmountEvent) {
+        when (amountChangeEvent) {
+            ProductAmountEvent.Decrease -> onDecreaseProductsQuantity(product)
+            ProductAmountEvent.Increase -> {
+                if (product.item.quantity.toInt() < MAX_PRODUCT_QUANTITY) {
+                    onIncreaseProductsQuantity(product)
+                }
+            }
+            is ProductAmountEvent.Change -> {
+                when (val newAmountInt = amountChangeEvent.newAmount.toIntOrNull()) {
+                    null, 0 -> onRemoveProduct(product)
+                    else -> {
+                        tracker.track(
+                            ORDER_PRODUCT_QUANTITY_CHANGE,
+                            mapOf(KEY_FLOW to flow)
+                        )
+                        _orderDraft.update {
+                            adjustProductQuantity(
+                                it,
+                                product,
+                                newAmountInt - product.item.quantity.toInt()
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
