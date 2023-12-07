@@ -175,6 +175,14 @@
             app:argType="com.woocommerce.android.ui.orders.CustomAmountUIModel"
             android:defaultValue="@null"
             app:nullable="true"/>
+        <argument
+            android:name="customAmountType"
+            app:argType="com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel$CustomAmountType"/>
+        <argument
+            android:name="orderTotal"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true"/>
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"

@@ -512,6 +512,9 @@
     <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
     <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
     <string name="custom_amounts_tax_label">Charge Taxes</string>
+    <string name="custom_amounts_percentage_label">Percentage of order total (%1$s)</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
 
     <!--
          Taxes
