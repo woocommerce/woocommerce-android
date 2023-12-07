@@ -5,38 +5,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.dimensionResource
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.filter
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val viewModel: ScanToUpdateInventoryViewModel by viewModels()
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
-    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,56 +36,23 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            WooThemeWithBackground {
-                val sheetState = rememberModalBottomSheetState(
-                    initialValue = ModalBottomSheetValue.Hidden,
-                    skipHalfExpanded = true
-                )
-                ModalBottomSheetLayout(
-                    sheetState = sheetState,
-                    content = {
-                        BarcodeScannerScreen(
-                            onNewFrame = scannerViewModel::onNewFrame,
-                            onBindingException = scannerViewModel::onBindingException,
-                            permissionState = scannerViewModel.permissionState.observeAsState(Unknown),
-                            onResult = { granted ->
-                                scannerViewModel.updatePermissionState(
-                                    granted,
-                                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                                )
-                            }
-                        )
-                    },
-                    sheetShape = RoundedCornerShape(
-                        topStart = dimensionResource(id = R.dimen.corner_radius_large),
-                        topEnd = dimensionResource(id = R.dimen.corner_radius_large)
-                    ),
-                    sheetContent = {
-                        viewModel.viewState.collectAsState().value.let { state ->
-                            if (state is QuickInventoryBottomSheetVisible) {
-                                QuickInventoryUpdateBottomSheet(
-                                    state = state,
-                                    onIncrementQuantityClicked = viewModel::onIncrementQuantityClicked
-                                )
-                            }
-                            LaunchedEffect(state) {
-                                if (state is QuickInventoryBottomSheetVisible) {
-                                    sheetState.show()
-                                } else {
-                                    sheetState.hide()
-                                }
-                            }
-                            LaunchedEffect(sheetState) {
-                                snapshotFlow { sheetState.currentValue }
-                                    .filter { it == ModalBottomSheetValue.Hidden }
-                                    .collect {
-                                        viewModel.onBottomSheetDismissed()
-                                    }
-                            }
-                        }
-                    }
-                )
-            }
+            ScanToUpdateInventoryScreen(
+                onNewFrame = scannerViewModel::onNewFrame,
+                onBindingException = scannerViewModel::onBindingException,
+                permissionState = scannerViewModel.permissionState.observeAsState(Unknown),
+                onCameraPermissionResult = { granted ->
+                    scannerViewModel.updatePermissionState(
+                        granted,
+                        shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                    )
+                },
+                viewState = viewModel.viewState.collectAsState(),
+                onBottomSheetDismissed = viewModel::onBottomSheetDismissed,
+                onIncrementQuantityClicked = viewModel::onIncrementQuantityClicked,
+                onUpdateQuantityClicked = viewModel::onUpdateQuantityClicked,
+                onViewProductDetailsClicked = viewModel::onViewProductDetailsClicked,
+                onManualQuantityEntered = viewModel::onManualQuantityEntered,
+            )
         }
     }
 
@@ -128,6 +87,16 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
+                }
+            }
+        }
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is MultiLiveEvent.Event.ShowUiStringSnackbar -> {
+                    uiMessageResolver.showSnack(it.message)
+                }
+                is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> {
+                    (requireActivity() as? MainNavigationRouter)?.showProductDetail(it.productId)
                 }
             }
         }
