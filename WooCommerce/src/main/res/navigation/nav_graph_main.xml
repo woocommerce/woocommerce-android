@@ -328,6 +328,11 @@
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
+            android:name="images"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="string[]" />
+        <argument
             android:name="source"
             android:defaultValue="PRODUCT_TAB"
             app:argType="com.woocommerce.android.ui.products.AddProductSource" />

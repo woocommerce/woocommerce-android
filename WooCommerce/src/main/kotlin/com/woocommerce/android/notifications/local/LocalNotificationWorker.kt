@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Notification
@@ -52,9 +51,8 @@ class LocalNotificationWorker @AssistedInject constructor(
         if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
             val notification = buildNotification(notificationId, siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
-                appContext.getString(R.string.notification_channel_general_id),
-                notification,
-                getIntent(notification),
+                notification = notification,
+                notificationTappedIntent = getIntent(notification),
             )
 
             AnalyticsTracker.track(

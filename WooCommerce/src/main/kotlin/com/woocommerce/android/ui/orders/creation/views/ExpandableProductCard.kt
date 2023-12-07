@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -79,6 +80,7 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.MAX_PRODUCT_QUANTITY
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.orders.creation.isSynced
@@ -89,7 +91,6 @@ import java.math.BigDecimal
 
 private const val ANIM_DURATION_MILLIS = 128
 private const val MULTIPLICATION_CHAR = "×"
-private const val MAX_PRODUCT_QUANTITY = 100_000
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
@@ -588,17 +589,15 @@ private fun AmountPicker(
                 value = textFieldValue,
                 onValueChange = { value ->
                     try {
-                        textFieldValue =
-                            if (value.text.isNotBlank() && value.text.isNotEmpty()) {
-                                // try converting to int to validate that input is a number
-                                if (value.text.toInt() > MAX_PRODUCT_QUANTITY) {
-                                    TextFieldValue(MAX_PRODUCT_QUANTITY.toString())
-                                } else {
-                                    value
-                                }
-                            } else {
-                                value
+                        if (value.text.isNotBlank() && value.text.isNotEmpty()) {
+                            // try converting to int to validate that input is a number
+                            val intValue = value.text.toInt()
+                            if (intValue in 0..MAX_PRODUCT_QUANTITY) {
+                                textFieldValue = value
                             }
+                        } else {
+                            textFieldValue = value
+                        }
                     } catch (_: NumberFormatException) {
                         // no-op
                     }
@@ -617,6 +616,7 @@ private fun AmountPicker(
                     }
                 ),
                 interactionSource = interactionSource,
+                cursorBrush = SolidColor(MaterialTheme.colors.primary),
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
                     .widthIn(min = 12.dp, max = 128.dp)

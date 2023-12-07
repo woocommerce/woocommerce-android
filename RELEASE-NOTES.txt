@@ -1,12 +1,15 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 16.7
 -----
-- [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
 
 16.6
 -----
+- [**] Introduce ability to start creating a product by sharing images from other apps [https://github.com/woocommerce/woocommerce-android/pull/10331]
 - [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
 - [*] [Internal] Fixed disabling editable controls in product cards in order edit screen in case order is not editable [https://github.com/woocommerce/woocommerce-android/pull/10345]
+- [***] Custom Amounts M4.2: Redesigned UI, Percentage based custom amounts support [https://github.com/woocommerce/woocommerce-android/pull/10298]
+- [*] [Internal] Custom Amounts: Fix RTL issue in the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10316]
+- [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
 
 16.5
 -----
