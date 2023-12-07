@@ -35,6 +35,7 @@
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
+        android:background="@drawable/list_divider"
         android:layout_marginTop="@dimen/major_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -127,7 +128,7 @@
                     android:gravity="start"
                     android:imeOptions="flagNoFullscreen"
                     android:textSize="@dimen/line_height_major_100"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:hint="@string/custom_amounts_percentage_hint"
                     android:paddingBottom="@dimen/minor_00"
                     app:layout_constraintTop_toTopOf="parent"
@@ -145,11 +146,11 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/updatedAmount"
-                    style="@style/Woo.TextView.Caption"
+                    style="@style/Woo.TextView.Headline6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
                     android:textSize="@dimen/text_major_25"
+                    android:paddingEnd="@dimen/minor_100"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="@id/editPercentage"
                     tools:text="6.00"/>
@@ -158,6 +159,7 @@
             <View
                 android:id="@+id/custom_amount_divider"
                 style="@style/Woo.Divider"
+                android:background="@drawable/list_divider"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -204,6 +206,7 @@
             <View
                 android:id="@+id/custom_amount_name_divider"
                 style="@style/Woo.Divider"
+                android:background="@drawable/list_divider"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_100"
                 app:layout_constraintEnd_toEndOf="parent"

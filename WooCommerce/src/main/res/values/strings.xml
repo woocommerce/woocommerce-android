@@ -513,6 +513,9 @@
     <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
     <string name="custom_amounts_tax_label">Charge Taxes</string>
     <string name="custom_amounts_percentage_label">Percentage of order total (%1$s)</string>
+    <string name="custom_amounts_bottom_sheet_heading">How do you want to add your custom amount?</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">A fixed amount</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
     <string name="custom_amounts_percentage_hint">0</string>
     <string name="custom_amounts_percentage_symbol">%</string>
 

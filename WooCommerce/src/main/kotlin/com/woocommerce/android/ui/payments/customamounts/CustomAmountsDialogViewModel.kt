@@ -7,12 +7,15 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTO
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -35,14 +38,17 @@ class CustomAmountsDialogViewModel @Inject constructor(
         }
 
     var currentPercentage: BigDecimal
-        get() = (viewState.customAmountUIModel.currentPrice.divide(BigDecimal(args.orderTotal)))
+        get() = (
+            viewState.customAmountUIModel.currentPrice
+                .divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP)
+            )
             .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
         set(value) {
             val totalAmount = BigDecimal(args.orderTotal ?: "0")
             val percentage = value.toString().toDouble().roundToInt()
             val updatedAmount = (
                 totalAmount.multiply(BigDecimal(percentage))
-                    .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+                    .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR), 2, RoundingMode.HALF_UP)
                 )
             viewState = viewState.copy(
                 isDoneButtonEnabled = value > BigDecimal.ZERO,
@@ -77,29 +83,45 @@ class CustomAmountsDialogViewModel @Inject constructor(
     private val args: CustomAmountsDialogArgs by savedState.navArgs()
 
     init {
-        args.customAmountUIModel?.let {
+        if (isInCreateMode()) {
+            tracker.track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
+        } else {
             // Edit mode
-            when (args.customAmountType) {
+            populateUIWithExistingData()
+            tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
+        }
+    }
+
+    private fun populateUIWithExistingData() {
+        args.customAmountUIModel.apply {
+            populatePercentage(this)
+            when (type) {
                 CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
-                    currentPrice = it.amount
+                    currentPrice = amount
                 }
+
                 CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                    currentPercentage = (it.amount.divide(BigDecimal(args.orderTotal)))
+                    currentPercentage = (amount.divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP))
                         .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
                 }
             }
             viewState = viewState.copy(
                 customAmountUIModel = viewState.customAmountUIModel.copy(
-                    id = it.id,
-                    name = it.name,
-                    taxStatus = it.taxStatus
+                    id = id,
+                    name = name,
+                    taxStatus = taxStatus,
+                    currentPrice = amount
                 )
             )
-            tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
-        } ?: run {
-            tracker.track(ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
         }
     }
+
+    private fun populatePercentage(customAmountUIModel: CustomAmountUIModel) {
+        triggerEvent(PopulatePercentage(customAmountUIModel))
+    }
+
+    private fun isInCreateMode() = args.customAmountUIModel.amount == BigDecimal.ZERO
+
     @Parcelize
     data class ViewState(
         val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
@@ -113,7 +135,8 @@ class CustomAmountsDialogViewModel @Inject constructor(
         val id: Long = 0,
         val currentPrice: BigDecimal = BigDecimal.ZERO,
         val name: String = "",
-        val taxStatus: TaxStatus = TaxStatus()
+        val taxStatus: TaxStatus = TaxStatus(),
+        val type: CustomAmountType = CustomAmountType.FIXED_CUSTOM_AMOUNT,
     ) : Parcelable
 
     @Parcelize
@@ -126,6 +149,8 @@ class CustomAmountsDialogViewModel @Inject constructor(
         FIXED_CUSTOM_AMOUNT,
         PERCENTAGE_CUSTOM_AMOUNT
     }
+
+    data class PopulatePercentage(val customAmountUIModel: CustomAmountUIModel) : Event()
 
     companion object {
         const val PERCENTAGE_SCALE_FACTOR = 100

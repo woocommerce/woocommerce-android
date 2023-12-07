@@ -1527,7 +1527,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1546,7 +1547,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1565,7 +1567,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1582,7 +1585,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1599,7 +1603,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1616,7 +1621,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = ""
+            name = "",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1629,7 +1635,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         sut.onCustomAmountUpsert(customAmountUIModel)
 
@@ -1645,12 +1652,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         val updatedCustomAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.ONE,
-            name = "Test amount updated"
+            name = "Test amount updated",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         sut.onCustomAmountUpsert(customAmountUIModel)
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
@@ -1670,12 +1679,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         val updatedCustomAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.ONE,
-            name = "Test amount updated"
+            name = "Test amount updated",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         sut.onCustomAmountUpsert(customAmountUIModel)
 
@@ -1695,13 +1706,15 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         val updatedCustomAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.ONE,
             name = "Test amount updated",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         sut.onCustomAmountUpsert(customAmountUIModel)
 
@@ -1720,12 +1733,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         val updatedCustomAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.ONE,
-            name = "Test amount updated"
+            name = "Test amount updated",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         sut.onCustomAmountUpsert(customAmountUIModel)
 
@@ -1743,7 +1758,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
         sut.onCustomAmountUpsert(customAmountUIModel)
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
@@ -1752,7 +1768,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             CustomAmountUIModel(
                 id = 0L,
                 amount = BigDecimal.TEN,
-                name = "Test amount"
+                name = "Test amount",
+                type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
             )
         )
 
@@ -1763,7 +1780,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1776,7 +1794,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1789,7 +1808,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Test amount"
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1806,7 +1826,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1826,7 +1847,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             id = 0L,
             amount = BigDecimal.TEN,
             name = "Test amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1845,7 +1867,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Custom Amount"
+            name = "Custom Amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountUpsert(customAmountUIModel)
@@ -1858,7 +1881,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
             amount = BigDecimal.TEN,
-            name = "Custom Amount"
+            name = "Custom Amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         sut.onCustomAmountRemoved(customAmountUIModel)

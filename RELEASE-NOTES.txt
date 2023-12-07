@@ -3,6 +3,7 @@
 16.6
 -----
 - [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
+- [***] Custom Amounts M4.2: Redesigned UI, Percentage based custom amounts support [https://github.com/woocommerce/woocommerce-android/pull/10298]
 
 16.5
 -----

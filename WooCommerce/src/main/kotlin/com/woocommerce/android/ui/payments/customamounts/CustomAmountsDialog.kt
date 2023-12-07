@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.PopulatePercentage
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
@@ -62,6 +63,16 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val isLandscape = DisplayUtils.isLandscape(requireContext())
+        setWindowLayout(isLandscape)
+        val binding = DialogCustomAmountsBinding.bind(view)
+        bindViews(binding)
+        setupClickListeners(binding)
+        showKeyboard(isLandscape, binding)
+        setupObservers(binding)
+        setupEventObservers(binding)
+    }
+
+    private fun setWindowLayout(isLandscape: Boolean) {
         requireDialog().window?.let { window ->
             window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
             val widthRatio = if (isLandscape) WIDTH_RATIO_LANDSCAPE else WIDTH_RATIO
@@ -72,18 +83,58 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * heightRatio).toInt()
             )
         }
+    }
 
-        val binding = DialogCustomAmountsBinding.bind(view)
-        binding.editPrice.editText.setPadding(
-            getDensityPixel(binding.editPrice.context, START_PADDING), 0, 0, 0
-        )
+    private fun showKeyboard(
+        isLandscape: Boolean,
+        binding: DialogCustomAmountsBinding
+    ) {
+        when (arguments.customAmountUIModel.type) {
+            FIXED_CUSTOM_AMOUNT -> {
+                if (!isLandscape && binding.editPrice.editText.requestFocus()) {
+                    binding.editPrice.postDelayed(
+                        {
+                            ActivityUtils.showKeyboard(binding.editPrice.editText)
+                        },
+                        KEYBOARD_DELAY
+                    )
+                }
+            }
+            PERCENTAGE_CUSTOM_AMOUNT -> {
+                if (!isLandscape && binding.editPercentage.requestFocus()) {
+                    binding.editPercentage.postDelayed(
+                        {
+                            ActivityUtils.showKeyboard(binding.editPercentage)
+                        },
+                        KEYBOARD_DELAY
+                    )
+                }
+            }
+        }
+    }
 
+    private fun bindViews(binding: DialogCustomAmountsBinding) {
+        bindAmountsView(binding)
+        bindPercentageLabel(binding)
+        setupTaxToggleView(binding)
+        setupPrimaryEditView(binding)
+    }
+
+    private fun bindPercentageLabel(binding: DialogCustomAmountsBinding) {
         with(binding.percentageLabel) {
             text = String.format(
                 context.getString(R.string.custom_amounts_percentage_label, arguments.orderTotal)
             )
         }
+    }
 
+    private fun bindAmountsView(binding: DialogCustomAmountsBinding) {
+        binding.editPrice.editText.setPadding(
+            getDensityPixel(binding.editPrice.context, START_PADDING), 0, 0, 0
+        )
+    }
+
+    private fun setupClickListeners(binding: DialogCustomAmountsBinding) {
         binding.buttonDone.setOnClickListener {
             sharedViewModel.onCustomAmountUpsert(
                 CustomAmountUIModel(
@@ -91,31 +142,33 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                     amount = viewModel.viewState.customAmountUIModel.currentPrice,
                     name = viewModel.viewState.customAmountUIModel.name,
                     taxStatus = viewModel.viewState.customAmountUIModel.taxStatus,
+                    type = viewModel.viewState.customAmountUIModel.type
                 )
             )
         }
-        setupTaxToggleView(binding)
         binding.imageClose.setOnClickListener {
             cancelDialog()
         }
+    }
 
-        if (!isLandscape && binding.editPrice.editText.requestFocus()) {
-            binding.editPrice.postDelayed(
-                {
-                    ActivityUtils.showKeyboard(binding.editPrice.editText)
-                },
-                KEYBOARD_DELAY
-            )
+    private fun setupEventObservers(binding: DialogCustomAmountsBinding) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is PopulatePercentage -> {
+                    binding.editPercentage.setText(
+                        viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toString()
+                    )
+                }
+            }
         }
-        setupPrimaryEditView(binding)
-        setupObservers(binding)
     }
 
     private fun setupPrimaryEditView(binding: DialogCustomAmountsBinding) {
-        when (arguments.customAmountType) {
+        when (arguments.customAmountUIModel.type) {
             FIXED_CUSTOM_AMOUNT -> {
                 binding.editPrice.show()
                 binding.groupPercentage.hide()
+                binding.percentageLabel.hide()
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
                         binding.editPrice.value.filterNotNull().observe(
@@ -130,7 +183,8 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
             PERCENTAGE_CUSTOM_AMOUNT -> {
                 binding.editPrice.hide()
-                binding.percentageSymbolText.show()
+                binding.groupPercentage.show()
+                binding.percentageLabel.show()
             }
         }
     }
@@ -152,23 +206,10 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             }
         }
     }
-    private fun setupObservers(binding: DialogCustomAmountsBinding) {
-        if (arguments.customAmountType == PERCENTAGE_CUSTOM_AMOUNT) {
-            binding.editPercentage.addTextChangedListener {
-                if (it != null && it.toString().isNotEmpty()) {
-                    if (it.toString() != viewModel.currentPercentage.toString()) {
-                        viewModel.currentPercentage = BigDecimal(it.toString())
-                    }
-                    binding.updatedAmount.show()
-                } else {
-                    binding.updatedAmount.hide()
-                }
-            }
-        }
 
-        binding.customAmountNameText.addTextChangedListener {
-            viewModel.currentName = it.toString()
-        }
+    private fun setupObservers(binding: DialogCustomAmountsBinding) {
+        observePercentageView(binding)
+        observeCustomAmountNameView(binding)
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
@@ -184,7 +225,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                     binding.customAmountNameText.setText(it.name)
                     binding.customAmountNameText.setSelection(it.name.length)
                 }
-                when (arguments.customAmountType) {
+                when (arguments.customAmountUIModel.type) {
                     FIXED_CUSTOM_AMOUNT -> {
                         if (binding.editPrice.editText.text.toString() != it.currentPrice.toString()) {
                             binding.editPrice.setValue(it.currentPrice)
@@ -193,14 +234,29 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                     }
 
                     PERCENTAGE_CUSTOM_AMOUNT -> {
-                        if (binding.editPercentage.text.toString() != viewModel.currentPercentage.toString()) {
-                            binding.editPercentage.setText(
-                                viewModel.currentPercentage.setScale(0, RoundingMode.DOWN).toString()
-                            )
-                            binding.editPercentage.setSelection(binding.editPercentage.text?.length ?: 0)
-                            binding.updatedAmount.text = it.currentPrice.toString()
-                        }
+                        binding.updatedAmount.text = viewModel.currentPrice.toString()
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeCustomAmountNameView(binding: DialogCustomAmountsBinding) {
+        binding.customAmountNameText.addTextChangedListener {
+            viewModel.currentName = it.toString()
+        }
+    }
+
+    private fun observePercentageView(binding: DialogCustomAmountsBinding) {
+        if (arguments.customAmountUIModel.type == PERCENTAGE_CUSTOM_AMOUNT) {
+            binding.editPercentage.addTextChangedListener {
+                if (it != null && it.toString().isNotEmpty()) {
+                    if (it.toString() != viewModel.currentPercentage.toString()) {
+                        viewModel.currentPercentage = BigDecimal(it.toString())
+                    }
+                    binding.updatedAmount.show()
+                } else {
+                    binding.updatedAmount.hide()
                 }
             }
         }

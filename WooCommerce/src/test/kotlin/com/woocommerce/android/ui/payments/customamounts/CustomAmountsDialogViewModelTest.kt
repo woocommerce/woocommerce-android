@@ -4,8 +4,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTO
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -22,8 +20,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private var viewModel = CustomAmountsDialogViewModel(
         CustomAmountsDialogArgs(
-            customAmountUIModel = null,
-            customAmountType = FIXED_CUSTOM_AMOUNT,
+            customAmountUIModel = CustomAmountUIModel.EMPTY,
             orderTotal = null,
         ).toSavedStateHandle(),
         tracker
@@ -60,9 +57,9 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
-                    name = ""
+                    name = "",
+                    type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
                 ),
-                customAmountType = FIXED_CUSTOM_AMOUNT,
                 orderTotal = null
             ).toSavedStateHandle(),
             tracker
@@ -93,9 +90,9 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
-                    name = ""
+                    name = "",
+                    type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
                 ),
-                customAmountType = PERCENTAGE_CUSTOM_AMOUNT,
                 orderTotal = "200"
             ).toSavedStateHandle(),
             tracker
@@ -111,16 +108,16 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
-                    name = ""
+                    name = "",
+                    type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
                 ),
-                customAmountType = PERCENTAGE_CUSTOM_AMOUNT,
                 orderTotal = "200"
             ).toSavedStateHandle(),
             tracker
         )
         viewModel.currentPercentage = BigDecimal("20")
 
-        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40"))
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40.00"))
     }
 
     //endregion
