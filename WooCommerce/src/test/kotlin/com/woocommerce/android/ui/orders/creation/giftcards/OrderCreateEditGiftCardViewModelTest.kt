@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.orders.creation.giftcards
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 
-class OrderCreateEditGiftCardViewModelTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class OrderCreateEditGiftCardViewModelTest: BaseUnitTest() {
     private lateinit var sut: OrderCreateEditGiftCardViewModel
 
     @Before
@@ -17,7 +20,7 @@ class OrderCreateEditGiftCardViewModelTest {
     }
 
     @Test
-    fun `onGiftCardChanged should update giftCard`() {
+    fun `onGiftCardChanged should update giftCard`() = testBlocking {
         // Given
         val expectedGiftCardCode = "test gift card code"
         var lastGiftCardUpdate: String? = null
@@ -31,7 +34,7 @@ class OrderCreateEditGiftCardViewModelTest {
     }
 
     @Test
-    fun `when gift card code is valid, then isValidCode is true`() {
+    fun `when gift card code is valid, then isValidCode is true`() = testBlocking {
         // Given
         val expectedIsValidCode = true
         var lastIsValidCodeUpdate: Boolean? = null
