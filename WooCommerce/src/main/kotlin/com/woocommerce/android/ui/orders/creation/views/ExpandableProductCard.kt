@@ -588,17 +588,15 @@ private fun AmountPicker(
                 value = textFieldValue,
                 onValueChange = { value ->
                     try {
-                        textFieldValue =
-                            if (value.text.isNotBlank() && value.text.isNotEmpty()) {
-                                // try converting to int to validate that input is a number
-                                if (value.text.toInt() > MAX_PRODUCT_QUANTITY) {
-                                    TextFieldValue(MAX_PRODUCT_QUANTITY.toString())
-                                } else {
-                                    value
-                                }
-                            } else {
-                                value
+                        if (value.text.isNotBlank() && value.text.isNotEmpty()) {
+                            // try converting to int to validate that input is a number
+                            val intValue = value.text.toInt()
+                            if (intValue in 0..MAX_PRODUCT_QUANTITY) {
+                                textFieldValue = value
                             }
+                        } else {
+                            textFieldValue = value
+                        }
                     } catch (_: NumberFormatException) {
                         // no-op
                     }
