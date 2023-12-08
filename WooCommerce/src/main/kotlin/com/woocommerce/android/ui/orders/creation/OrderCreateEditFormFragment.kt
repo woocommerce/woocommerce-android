@@ -763,9 +763,6 @@ class OrderCreateEditFormFragment :
                             navigateToCustomAmountsDialog(
                                 customAmountUIModel = it,
                             )
-                        },
-                        onCustomAmountDeleteClick = {
-                            viewModel.onCustomAmountRemoved(it)
                         }
                     )
                     itemAnimator = animator
