@@ -485,7 +485,7 @@ class MainActivity :
 
     override fun setTitle(title: CharSequence?) {
         super.setTitle(title)
-        animatorHelper.animateTitleChange(binding.collapsingToolbar, title ?: "")
+        binding.collapsingToolbar.title = title
     }
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
