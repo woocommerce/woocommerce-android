@@ -94,7 +94,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -118,7 +119,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             whenever(
                 orderCreateEditRepository.createSimplePaymentOrder(
                     BigDecimal.valueOf(0.5),
-                    customerNote = "Test payment"
+                    customerNote = "Test payment",
+                    isTaxable = false,
                 )
             ).thenReturn(
                 Result.success(order)
@@ -138,7 +140,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -162,7 +165,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -184,7 +188,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -224,7 +229,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             // THEN
             verify(orderCreateEditRepository).createSimplePaymentOrder(
                 BigDecimal.valueOf(0.3),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         }
 
