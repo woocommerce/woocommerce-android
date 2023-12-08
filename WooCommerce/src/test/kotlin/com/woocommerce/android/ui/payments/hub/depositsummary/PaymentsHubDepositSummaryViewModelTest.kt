@@ -69,9 +69,10 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     fun `given repository returns cache, when viewmodel init, then success state emitted`() = testBlocking {
         // GIVEN
         val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        val mappedOverview = mock<PaymentsHubDepositSummaryState.Overview>()
+        val mapResult = PaymentsHubDepositSummaryStateMapper.Result.Success(mappedOverview)
         whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-            mappedOverview
+            mapResult
         )
         whenever(repository.retrieveDepositOverview()).thenAnswer {
             flow {
@@ -99,9 +100,10 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     fun `given repository returns remote, when viewmodel init, then success state emitted`() = testBlocking {
         // GIVEN
         val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        val mappedOverview = mock<PaymentsHubDepositSummaryState.Overview>()
+        val mapResult = PaymentsHubDepositSummaryStateMapper.Result.Success(mappedOverview)
         whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-            mappedOverview
+            mapResult
         )
         whenever(repository.retrieveDepositOverview()).thenAnswer {
             flow {
@@ -119,9 +121,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
 
         // THEN
         val values = viewModel.viewState.captureValues()
-        assertThat((values[0] as PaymentsHubDepositSummaryState.Success).overview).isEqualTo(
-            mappedOverview
-        )
+        assertThat((values[0] as PaymentsHubDepositSummaryState.Success).overview).isEqualTo(mappedOverview)
         assertThat((values[0] as PaymentsHubDepositSummaryState.Success).fromCache).isFalse()
     }
 
@@ -131,7 +131,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             // GIVEN
             val overview: WooPaymentsDepositsOverview = mock()
             whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-                null
+                PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate
             )
             whenever(repository.retrieveDepositOverview()).thenAnswer {
                 flow {
@@ -162,7 +162,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             // GIVEN
             val overview: WooPaymentsDepositsOverview = mock()
             whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-                null
+                PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate
             )
             whenever(repository.retrieveDepositOverview()).thenAnswer {
                 flow {
@@ -190,7 +190,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     fun `when learn more clicked, then openBrowserEvents emitted with correct url and tracked`() = testBlocking {
         // GIVEN
         val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        val mappedOverview = PaymentsHubDepositSummaryStateMapper.Result.Success(mock())
         whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
             mappedOverview
         )
@@ -230,7 +230,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     fun `when currency selected, then selected currency event tracked`() = testBlocking {
         // GIVEN
         val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        val mappedOverview = PaymentsHubDepositSummaryStateMapper.Result.Success(mock())
         whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
             mappedOverview
         )
@@ -263,7 +263,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val overview: WooPaymentsDepositsOverview = mock()
-            val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+            val mappedOverview = PaymentsHubDepositSummaryStateMapper.Result.Success(mock())
             whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
                 mappedOverview
             )
@@ -303,7 +303,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     fun `when expanded, then event tracked`() = testBlocking {
         // GIVEN
         val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        val mappedOverview = PaymentsHubDepositSummaryStateMapper.Result.Success(mock())
         whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
             mappedOverview
         )
@@ -330,7 +330,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     fun `when collapsed, then event is not tracked`() = testBlocking {
         // GIVEN
         val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock()
+        val mappedOverview = PaymentsHubDepositSummaryStateMapper.Result.Success(mock())
         whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
             mappedOverview
         )
@@ -354,79 +354,81 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given success state with 2 currencies, when onSummaryDepositShown, then event tracked with 2 currencies`() = testBlocking {
-        // GIVEN
-        val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock() {
-            on { infoPerCurrency }.thenReturn(
-                mapOf(
-                    "USD" to mock(),
-                    "EUR" to mock(),
-                )
-            )
-        }
-        whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-            mappedOverview
-        )
-        whenever(repository.retrieveDepositOverview()).thenAnswer {
-            flow {
-                emit(
-                    RetrieveDepositOverviewResult.Cache(
-                        overview
+    fun `given success state with 2 currencies, when onSummaryDepositShown, then event tracked with 2 currencies`() =
+        testBlocking {
+            // GIVEN
+            val overview: WooPaymentsDepositsOverview = mock()
+            val mappedOverview = mock<PaymentsHubDepositSummaryState.Overview> {
+                on { infoPerCurrency }.thenReturn(
+                    sortedMapOf(
+                        "USD" to mock(),
+                        "EUR" to mock(),
                     )
                 )
             }
-        }
-        val viewModel = initViewModel()
-        advanceUntilIdle()
 
-        // WHEN
-        viewModel.onSummaryDepositShown()
+            val mappedResult = PaymentsHubDepositSummaryStateMapper.Result.Success(mappedOverview)
+            whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(mappedResult)
+            whenever(repository.retrieveDepositOverview()).thenAnswer {
+                flow {
+                    emit(
+                        RetrieveDepositOverviewResult.Cache(
+                            overview
+                        )
+                    )
+                }
+            }
+            val viewModel = initViewModel()
+            advanceUntilIdle()
 
-        // THEN
-        verify(trackerWrapper).track(
-            AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_SHOWN,
-            properties = mapOf(
-                "number_of_currencies" to "2",
+            // WHEN
+            viewModel.onSummaryDepositShown()
+
+            // THEN
+            verify(trackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_SHOWN,
+                properties = mapOf(
+                    "number_of_currencies" to "2",
+                )
             )
-        )
-    }
+        }
 
     @Test
-    fun `given success state with 0 currencies, when onSummaryDepositShown, then event tracked with 0 currencies`() = testBlocking {
-        // GIVEN
-        val overview: WooPaymentsDepositsOverview = mock()
-        val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock() {
-            on { infoPerCurrency }.thenReturn(
-                mapOf()
-            )
-        }
-        whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-            mappedOverview
-        )
-        whenever(repository.retrieveDepositOverview()).thenAnswer {
-            flow {
-                emit(
-                    RetrieveDepositOverviewResult.Cache(
-                        overview
-                    )
+    fun `given success state with 0 currencies, when onSummaryDepositShown, then event tracked with 0 currencies`() =
+        testBlocking {
+            // GIVEN
+            val overview: WooPaymentsDepositsOverview = mock()
+            val mappedOverview: PaymentsHubDepositSummaryState.Overview = mock {
+                on { infoPerCurrency }.thenReturn(
+                    sortedMapOf()
                 )
             }
-        }
-        val viewModel = initViewModel()
-        advanceUntilIdle()
-
-        // WHEN
-        viewModel.onSummaryDepositShown()
-
-        // THEN
-        verify(trackerWrapper).track(
-            AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_SHOWN,
-            properties = mapOf(
-                "number_of_currencies" to "0",
+            whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
+                PaymentsHubDepositSummaryStateMapper.Result.Success(mappedOverview)
             )
-        )
-    }
+            whenever(repository.retrieveDepositOverview()).thenAnswer {
+                flow {
+                    emit(
+                        RetrieveDepositOverviewResult.Cache(
+                            overview
+                        )
+                    )
+                }
+            }
+            val viewModel = initViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onSummaryDepositShown()
+
+            // THEN
+            verify(trackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_HUB_DEPOSIT_SUMMARY_SHOWN,
+                properties = mapOf(
+                    "number_of_currencies" to "0",
+                )
+            )
+        }
 
     @Test
     fun `given error state, when onSummaryDepositShown, then event is not tracked`() = testBlocking {

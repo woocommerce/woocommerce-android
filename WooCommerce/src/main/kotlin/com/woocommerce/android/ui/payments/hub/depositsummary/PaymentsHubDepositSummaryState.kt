@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import java.util.SortedMap
 
 sealed class PaymentsHubDepositSummaryState {
     object Loading : PaymentsHubDepositSummaryState()
@@ -15,7 +16,7 @@ sealed class PaymentsHubDepositSummaryState {
 
     data class Overview(
         val defaultCurrency: String,
-        val infoPerCurrency: Map<String, Info>,
+        val infoPerCurrency: SortedMap<String, Info>,
     )
 
     data class Info(

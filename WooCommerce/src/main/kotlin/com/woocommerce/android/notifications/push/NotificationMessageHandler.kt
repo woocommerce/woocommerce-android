@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.push
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
@@ -13,7 +14,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.notifications.getChannelId
 import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
@@ -39,15 +39,15 @@ import kotlin.random.Random
 
 @Singleton
 class NotificationMessageHandler @Inject constructor(
+    private val notificationBuilder: WooNotificationBuilder,
+    private val analyticsTracker: NotificationAnalyticsTracker,
+    private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
     private val wooLogWrapper: WooLogWrapper,
     private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    private val notificationBuilder: WooNotificationBuilder,
-    private val analyticsTracker: NotificationAnalyticsTracker,
-    private val notificationsParser: NotificationsParser,
     private val selectedSite: SelectedSite,
     private val topPerformersStore: WCLeaderboardsStore
 ) {
@@ -55,7 +55,9 @@ class NotificationMessageHandler @Inject constructor(
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
-        private const val MAX_INBOX_ITEMS = 5
+
+        @VisibleForTesting
+        const val MAX_INBOX_ITEMS = 5
 
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
@@ -182,29 +184,36 @@ class NotificationMessageHandler @Inject constructor(
 
         val channelType = notification.channelType
         val defaults = channelType.getDefaults(appPrefsWrapper)
-        val channelId = resourceProvider.getString(channelType.getChannelId())
+
         val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
         with(notificationBuilder) {
             buildAndDisplayWooNotification(
-                localPushId, defaults, channelId, notification,
-                appPrefsWrapper.isOrderNotificationsChaChingEnabled(), isGroupNotification
+                pushId = localPushId,
+                defaults = defaults,
+                notification = notification,
+                addCustomNotificationSound = appPrefsWrapper.isOrderNotificationsChaChingEnabled(),
+                isGroupNotification = isGroupNotification
             )
 
             if (isGroupNotification) {
                 val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
-                val stringBuilder = StringBuilder()
-                for (note in notesMap.values.take(MAX_INBOX_ITEMS)) {
-                    stringBuilder.appendLine("${note.noteMessage}")
+                val message = notesMap.values.take(MAX_INBOX_ITEMS).joinToString("\n") {
+                    it.noteMessage.orEmpty()
                 }
 
-                val subject = String.format(resourceProvider.getString(R.string.new_notifications), notesMap.size)
-                val summaryText = String.format(
-                    resourceProvider.getString(R.string.more_notifications),
-                    notesMap.size - MAX_INBOX_ITEMS
-                )
+                val subject = resourceProvider.getString(R.string.new_notifications, notesMap.size)
+                val showGroupSummary = notesMap.size > MAX_INBOX_ITEMS
+                val summaryText = if (showGroupSummary) {
+                    resourceProvider.getString(
+                        R.string.more_notifications,
+                        notesMap.size - MAX_INBOX_ITEMS
+                    )
+                } else null
                 buildAndDisplayWooGroupNotification(
-                    channelId, stringBuilder.toString(), subject, summaryText, notification,
-                    notesMap.size > MAX_INBOX_ITEMS
+                    inboxMessage = message,
+                    subject = subject,
+                    summaryText = summaryText,
+                    notification = notification
                 )
             }
         }

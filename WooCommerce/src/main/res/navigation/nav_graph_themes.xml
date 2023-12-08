@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_themes"
+    app:startDestination="@id/themePickerFragment">
+    <fragment
+        android:id="@+id/themePickerFragment"
+        android:name="com.woocommerce.android.ui.themes.ThemePickerFragment"
+        android:label="ThemePickerFragment">
+        <argument
+            android:name="isFromStoreCreation"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_themePickerFragment_to_storeCreationInstallationFragment"
+            app:destination="@id/storeCreationInstallationFragment" />
+        <action
+            android:id="@+id/action_themePickerFragment_to_themePreviewFragment"
+            app:destination="@id/themePreviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/themePreviewFragment"
+        android:name="com.woocommerce.android.ui.themes.ThemePreviewFragment"
+        android:label="ThemePreviewFragment">
+        <argument
+            android:name="themeId"
+            app:argType="string" />
+        <argument
+            android:name="isFromStoreCreation"
+            app:argType="boolean" />
+    </fragment>
+</navigation>

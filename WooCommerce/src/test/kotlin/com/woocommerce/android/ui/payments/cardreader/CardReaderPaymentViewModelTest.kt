@@ -3144,7 +3144,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3163,7 +3163,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Unknown)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3195,7 +3195,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Unknown)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3228,7 +3228,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3248,7 +3248,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3268,7 +3268,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3288,7 +3288,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3308,7 +3308,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3328,7 +3328,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3348,7 +3348,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3368,7 +3368,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 }
             }
 
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3391,7 +3391,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when initializing interac refund, then ui updated to initializing refund state `() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
             }
 
@@ -3415,7 +3415,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when collecting interac refund, then ui updated to collecting refund state`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3428,7 +3428,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when processing interac refund, then ui updated to processing refund state`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
             }
 
@@ -3441,7 +3441,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when interac refund completed, then ui updated to refund successful state`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
             }
 
@@ -3459,7 +3459,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3489,7 +3489,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3576,7 +3576,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when collecting interac refund, then progress and cancel button is visible`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3593,7 +3593,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when collecting interac refund, then correct labels and illustration is shown`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
 
@@ -3618,7 +3618,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when processing interac refund, then progress and buttons are hidden`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
             }
 
@@ -3634,7 +3634,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when processing interac refund, then correct labels and illustration is shown`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
             }
 
@@ -3664,7 +3664,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3692,7 +3692,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given refund flow is initializing state, when user presses cancel, then cancel event is tracked`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
             }
             viewModel.start()
@@ -3706,7 +3706,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given refund flow is initializing state, when user presses cancel, then exit event emitted`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
             }
             viewModel.start()
@@ -3720,7 +3720,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given refund flow is collection state, when user presses cancel, then cancel event is tracked`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
             viewModel.start()
@@ -3734,7 +3734,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given refund flow is collection state, when user presses cancel, then exit event emitted`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
             viewModel.start()
@@ -3753,7 +3753,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3794,7 +3794,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(
                 interacRefundErrorMapper.mapRefundErrorToUiError(CardDeclined.InvalidAccount)
             ).thenReturn(InteracRefundFlowError.Declined.InvalidAmount)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3831,7 +3831,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when interac refund fails, then interac refund failed event is triggered`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3859,7 +3859,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val expectedOrderId = ORDER_ID
             val expectedErrorMessage = "Error Message"
             val expectedErrorType = CardInteracRefundStatus.RefundStatusErrorType.Cancelled
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -3960,7 +3960,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when interac refund succeeds, then correct labels, illustration and buttons are shown`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
             }
 
@@ -3982,7 +3982,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given interac refund flow already started, when start() is invoked, then flow is not restarted`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow<CardInteracRefundStatus> {}
             }
 
@@ -3992,7 +3992,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             verify(cardReaderManager, times(1))
-                .refundInteracPayment(anyOrNull())
+                .refundInteracPayment(anyOrNull(), anyOrNull())
         }
 
     @Test
@@ -4004,7 +4004,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -4026,14 +4026,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             // Times 2 because, refundInteracPayment() method gets called when refund is initiated
             // as well as when the refund is retried.
-            verify(cardReaderManager, times(2)).refundInteracPayment(any())
+            verify(cardReaderManager, times(2)).refundInteracPayment(any(), any())
         }
 
     @Test
     fun `given refund flow is loading, when user presses back button, then refund cancel event is tracked`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InitializingInteracRefund) }
             }
             viewModel.start()
@@ -4047,7 +4047,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given refund flow is collecting, when user presses back button, then refund cancel event is tracked`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.CollectingInteracRefund) }
             }
             viewModel.start()
@@ -4061,7 +4061,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given refund flow is processing, when user presses back button, then refund cancel event is tracked`() =
         testBlocking {
             setupViewModelForInteracRefund()
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.ProcessingInteracRefund) }
             }
             viewModel.start()
@@ -4086,7 +4086,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -4123,7 +4123,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(
@@ -4170,7 +4170,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(CardReaderStatus.Connected(cardReader))
             )
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
             }
             viewModel.start()
@@ -4189,7 +4189,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
                 )
             ).thenReturn(InteracRefundFlowError.Generic)
-            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+            whenever(cardReaderManager.refundInteracPayment(any(), any())).thenAnswer {
                 flow {
                     emit(
                         CardInteracRefundStatus.InteracRefundFailure(

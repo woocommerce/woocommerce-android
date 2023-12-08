@@ -528,6 +528,25 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given image uris when app opened, then a product creation is triggered using the images`() = testBlocking {
+        // GIVEN
+        createViewModel()
+
+        var event: MainActivityViewModel.CreateNewProductUsingImages? = null
+        viewModel.event.observeForever {
+            if (it is MainActivityViewModel.CreateNewProductUsingImages) event = it
+        }
+
+        val uri = "content://com.woocommerce.android.fileprovider/woocommerce/woocommerce_1.jpg"
+
+        // WHEN
+        viewModel.handleIncomingImages(listOf(uri))
+
+        // THEN
+        assertThat(event).isEqualTo(MainActivityViewModel.CreateNewProductUsingImages(listOf(uri)))
+    }
+
 //endregion
 
     private fun createViewModel() {

@@ -1,4 +1,23 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.7
+-----
+
+16.6
+-----
+- [**] Introduce ability to start creating a product by sharing images from other apps [https://github.com/woocommerce/woocommerce-android/pull/10331]
+- [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
+- [***] Custom Amounts M4.2: Redesigned UI, Percentage based custom amounts support [https://github.com/woocommerce/woocommerce-android/pull/10298]
+- [*] [Internal] Custom Amounts: Fix RTL issue in the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10316]
+- [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
+- [***] Added possibility to scan product's barcode in the Products page to update product's inventory quickly [https://github.com/woocommerce/woocommerce-android/pull/10250]
+
+16.5
+-----
+- [*] [Internal] Always use default currency as first choice to show in the deposits summary in the cases multiple currencies used [https://github.com/woocommerce/woocommerce-android/pull/10251]
+- [*] [Internal] Changes in the minSdkVersion from 24 to 26 and coroutines library update to version 1.7.3 [https://github.com/woocommerce/woocommerce-android/pull/10187]
+- [*] [Internal] Stripe SDK Migration to version 3.1.1 [https://github.com/woocommerce/woocommerce-android/pull/10103]
+- [*] [Internal] Send `store_id` in track events when available. [https://github.com/woocommerce/woocommerce-android/pull/10286]
+
 16.4
 -----
 - [***] [Internal] Usage of woocommerce.com replaced with woo.com, including universal links [https://github.com/woocommerce/woocommerce-android/pull/10177]

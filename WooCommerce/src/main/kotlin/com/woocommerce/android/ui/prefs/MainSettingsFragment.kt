@@ -242,6 +242,16 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToNameYourStoreDialogFragment()
                 )
         }
+
+        binding.optionSiteThemes.isVisible = presenter.isThemePickerOptionVisible
+        binding.optionSiteThemes.setOnClickListener {
+            findNavController()
+                .navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToThemePickerFragment(
+                        isFromStoreCreation = false
+                    )
+                )
+        }
     }
 
     private fun showDomainDashboard() {
