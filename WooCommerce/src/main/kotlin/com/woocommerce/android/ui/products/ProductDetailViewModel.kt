@@ -2149,6 +2149,15 @@ class ProductDetailViewModel @Inject constructor(
         return sortedList.toList()
     }
 
+    fun updateProductCategory(category: ProductCategory) {
+        launch {
+            val result = productCategoriesRepository.updateProductCategory(category)
+            if (result.isSuccess) {
+                refreshProductCategories()
+            }
+        }
+    }
+
     fun deleteProductCategory(category: ProductCategory) {
         launch {
             val result = productCategoriesRepository.deleteProductCategory(category)

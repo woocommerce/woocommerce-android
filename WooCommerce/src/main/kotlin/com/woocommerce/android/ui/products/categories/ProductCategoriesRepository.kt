@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_CATEGORY
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.TERM_EXISTS
@@ -109,6 +110,29 @@ class ProductCategoriesRepository @Inject constructor(
         return when (result) {
             is Cancellation -> RequestResult.NO_ACTION_NEEDED
             is Success -> result.value
+        }
+    }
+
+    suspend fun updateProductCategory(category: ProductCategory): Result<Unit> {
+        val result = productStore.updateProductCategory(
+            site = selectedSite.get(),
+            id = category.remoteCategoryId,
+            payload = ProductRestClient.UpdateProductCategoryPayload(
+                name = category.name,
+                parentId = category.parentId
+            )
+        )
+
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error updating product category: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(Unit)
         }
     }
 
