@@ -14,7 +14,6 @@ enum class FeatureFlag {
     AI_ORDER_DETAIL_THANK_YOU_NOTE,
     ORDER_CREATION_AUTO_TAX_RATE,
     CUSTOM_AMOUNTS_M1,
-    PRODUCT_CREATION_AI,
     PACKAGE_PHOTO_SCANNING,
     THEME_PICKER,
     ORDER_GIFT_CARD;
@@ -25,7 +24,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            PRODUCT_CREATION_AI,
             PACKAGE_PHOTO_SCANNING,
             CUSTOM_AMOUNTS_M1,
             AI_ORDER_DETAIL_THANK_YOU_NOTE -> true
