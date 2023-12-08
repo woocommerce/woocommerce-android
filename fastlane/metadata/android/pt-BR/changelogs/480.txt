@@ -1,2 +1,0 @@
-16.4:
-Temos o prazer de apresentar novas funcionalidades! Nossa atualização mais recente permite que você cobre impostos sobre valores personalizados e defina uma taxa de envio única para produtos de assinatura. Você pode também defini-los como "produtos virtuais". Além disso, adicionamos uma funcionalidade de IA que gera um texto de agradecimento na tela de detalhes do pedido concluído. Aproveite as novidades e melhorias do nosso aplicativo WooCommerce!

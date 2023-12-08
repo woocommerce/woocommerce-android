@@ -1,2 +1,0 @@
-16.4:
-Dengan bangga kami persembahkan beberapa fitur baru! Pada pembaruan terkini, Anda dapat mengenakan pajak dengan nilai yang dapat dikustomisasi dan mengatur pengiriman satu kali saja untuk produk berlangganan. Anda juga dapat mengatur produk berlangganan sebagai "produk virtual". Selain itu, kami menambahkan fitur AI untuk membuat ucapan terima kasih di layar detail pesanan yang telah selesai. Nikmati aplikasi WooCommerce terbaru yang makin optimal dari kami!
