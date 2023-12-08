@@ -112,12 +112,19 @@ class ProductCategoriesRepository @Inject constructor(
         }
     }
 
-    fun deleteProductCategory(category: ProductCategory) {
-        // todo just temporary implementation waiting for fluxc work
-        WooLog.d(
-            tag = WooLog.T.PRODUCTS,
-            message = "Deleting product category: ${category.name}"
-        )
+    suspend fun deleteProductCategory(category: ProductCategory): Result<Unit> {
+        val result = productStore.deleteProductCategory(selectedSite.get(), category.remoteCategoryId)
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error deleting product category: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(Unit)
+        }
     }
 
     suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {

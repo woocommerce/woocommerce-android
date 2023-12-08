@@ -2150,8 +2150,12 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun deleteProductCategory(category: ProductCategory) {
-        productCategoriesRepository.deleteProductCategory(category)
-        refreshProductCategories()
+        launch {
+            val result = productCategoriesRepository.deleteProductCategory(category)
+            if (result.isSuccess) {
+                refreshProductCategories()
+            }
+        }
     }
 
     fun onProductTagsBackButtonClicked() {
