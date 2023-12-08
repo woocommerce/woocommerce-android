@@ -269,6 +269,30 @@ interface UIMessageResolver {
         }
         snackbar.show()
     }
+
+    /**
+     * Shows a Snackbar with an action.
+     * The Snackbar will use a length: [BaseTransientBottomBar.LENGTH_LONG].
+     *
+     * @param message the message to display
+     * @param actionText the action text
+     * @param action the callback to invoke when the action is clicked
+     */
+    fun showActionSnack(
+        message: String,
+        actionText: String,
+        action: View.OnClickListener
+    ) {
+        val snackbar = getSnackbarWithAction(
+            view = snackbarRoot,
+            msg = message,
+            actionString = actionText,
+            actionListener = action,
+            anchorViewId = anchorViewId
+        )
+
+        snackbar.show()
+    }
 }
 private fun getIndefiniteSnackbarWithAction(
     view: View,

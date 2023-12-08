@@ -39,6 +39,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -54,6 +55,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -93,7 +95,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
-    private val mediaFileUploadHandler: MediaFileUploadHandler = mock {
+    private var mediaFileUploadHandler: MediaFileUploadHandler = mock {
         on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
         on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
@@ -941,6 +943,30 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.updateProductDraft(salePrice = null)
 
         assertThat(viewModel.getProduct().productDraft?.salePrice).isNull()
+    }
+
+    @Test
+    fun `given image uris when app opened, then a product creation is triggered using the images`() = testBlocking {
+        val uris = arrayOf("uri1", "uri2")
+        savedState = ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, images = uris)
+            .initSavedStateHandle()
+
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+
+        mediaFileUploadHandler = mock {
+            on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
+            on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
+            on { it.observeSuccessfulUploads(any()) } doReturn uris.map {
+                MediaModel(0, 0).apply {
+                    url = it
+                    uploadDate = "2022-09-27 18:00:00.000"
+                }
+            }.asFlow()
+        }
+
+        setup()
+
+        assertThat(productsDraft?.images?.map { it.source }).isEqualTo(uris.toList())
     }
 
     private val productsDraft

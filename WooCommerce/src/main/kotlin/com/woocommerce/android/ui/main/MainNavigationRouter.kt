@@ -28,7 +28,8 @@ interface MainNavigationRouter {
         sharedView: View
     )
 
-    fun showAddProduct()
+    fun showAddProduct(imageUris: List<String> = emptyList())
+
     fun showReviewDetail(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,

@@ -14,10 +14,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -31,6 +31,8 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
@@ -71,6 +73,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
@@ -98,6 +101,9 @@ class OrderListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
+    private val notificationChannelsHandler: NotificationChannelsHandler,
+    private val appPrefs: AppPrefsWrapper,
+    private val showTestNotification: ShowTestNotification
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -130,12 +136,7 @@ class OrderListViewModel @Inject constructor(
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
-    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage.map {
-        if (it == false) {
-            orderListTransactionLauncher.onListFetched()
-        }
-        it
-    }
+    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
@@ -189,6 +190,13 @@ class OrderListViewModel @Inject constructor(
         }
 
         displayOrdersBannerOrJitm()
+
+        isFetchingFirstPage.filter { !it }
+            .observeForever {
+                // When first page is fetched
+                orderListTransactionLauncher.onListFetched()
+                checkChaChingSoundSettings()
+            }
     }
 
     fun loadOrders() {
@@ -255,6 +263,7 @@ class OrderListViewModel @Inject constructor(
                 SUCCESS -> {
                     viewState = viewState.copy(arePaymentGatewaysFetched = true)
                 }
+
                 else -> {
                     /* do nothing */
                 }
@@ -300,6 +309,7 @@ class OrderListViewModel @Inject constructor(
                     }
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
                 triggerEvent(
@@ -451,6 +461,7 @@ class OrderListViewModel @Inject constructor(
                             EmptyViewType.ORDER_LIST_LOADING
                         }
                     }
+
                     isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
@@ -676,6 +687,48 @@ class OrderListViewModel @Inject constructor(
             )
         )
         refreshOrdersBannerVisibility()
+    }
+
+    private fun checkChaChingSoundSettings() {
+        fun recreateNotificationChannel() {
+            notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
+            triggerEvent(
+                Event.ShowActionSnackbar(
+                    message = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar),
+                    actionText = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar_action),
+                    action = {
+                        launch {
+                            showTestNotification(
+                                title = resourceProvider.getString(R.string.cha_ching_sound_test_notification_title),
+                                message = resourceProvider.getString(
+                                    R.string.cha_ching_sound_test_notification_message
+                                ),
+                                channelType = NotificationChannelType.NEW_ORDER,
+                                dismissDelay = 10.seconds
+                            )
+                        }
+                    }
+                )
+            )
+        }
+
+        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER) &&
+            !appPrefs.chaChingSoundIssueDialogDismissed
+        ) {
+            triggerEvent(
+                Event.ShowDialog(
+                    titleId = R.string.cha_ching_sound_issue_dialog_title,
+                    messageId = R.string.cha_ching_sound_issue_dialog_message,
+                    positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
+                    negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
+                    positiveBtnAction = { _, _ -> recreateNotificationChannel() },
+                    negativeBtnAction = { _, _ ->
+                        appPrefs.chaChingSoundIssueDialogDismissed = true
+                    },
+                    cancelable = false
+                )
+            )
+        }
     }
 
     sealed class OrderListEvent : Event() {
