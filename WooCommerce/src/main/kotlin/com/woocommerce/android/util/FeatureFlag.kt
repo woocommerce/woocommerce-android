@@ -10,7 +10,6 @@ enum class FeatureFlag {
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
     IAP_FOR_STORE_CREATION,
-    EU_SHIPPING_NOTIFICATION,
     PRIVACY_CHOICES,
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     BETTER_CUSTOMER_SEARCH_M2,
@@ -29,7 +28,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
             ORDER_CREATION_TAX_RATE_SELECTOR,
