@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.UiState
-import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
@@ -213,17 +212,15 @@ private fun ProductKeywordsTextFieldWithEmbeddedButton(
             )
         }
 
-        if (FeatureFlag.PACKAGE_PHOTO_SCANNING.isEnabled()) {
-            WCTextButton(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                onClick = onPackageImageButtonClicked,
-                icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera),
-                allCaps = false,
-                text = stringResource(id = R.string.ai_product_creation_photo_button),
-                colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.color_on_surface))
-            )
-        }
+        WCTextButton(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = onPackageImageButtonClicked,
+            icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera),
+            allCaps = false,
+            text = stringResource(id = R.string.ai_product_creation_photo_button),
+            colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.color_on_surface))
+        )
     }
 }
 
