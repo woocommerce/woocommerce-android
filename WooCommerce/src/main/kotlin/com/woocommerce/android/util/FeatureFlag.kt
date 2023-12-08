@@ -9,7 +9,6 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
-    UNIFIED_ORDER_EDITING,
     IAP_FOR_STORE_CREATION,
     STORE_CREATION_ONBOARDING,
     REST_API_I2,
@@ -33,7 +32,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            UNIFIED_ORDER_EDITING,
             STORE_CREATION_ONBOARDING,
             REST_API_I2,
             ANALYTICS_HUB_FEEDBACK_BANNER,

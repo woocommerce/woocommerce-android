@@ -194,7 +194,7 @@ class OrderDetailFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_detail, menu)
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
-        menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
+        menuEditOrder.isVisible = true
     }
 
     override fun onPrepareMenu(menu: Menu) {
