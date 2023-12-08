@@ -58,7 +58,7 @@ class MainSettingsPresenter @Inject constructor(
     override fun setupJetpackInstallOption() {
         val supportsJetpackInstallation = selectedSite.connectionType.let {
             it == SiteConnectionType.JetpackConnectionPackage ||
-                (FeatureFlag.REST_API_I2.isEnabled() && it == SiteConnectionType.ApplicationPasswords)
+                it == SiteConnectionType.ApplicationPasswords
         }
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
     }
