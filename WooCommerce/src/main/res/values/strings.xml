@@ -1696,6 +1696,14 @@
     <string name="more_notifications">and %d more.</string>
     <string name="notification_order_title">You have a new order! 🎉</string>
     <string name="notification_review_title">You have a new review! 🌟</string>
+    <string name="cha_ching_sound_issue_dialog_title">Cha-ching sound off</string>
+    <string name="cha_ching_sound_issue_dialog_message">Turn it back on to hear the \'cha-ching\' with every new sale. Keep in tune with your customers\' orders!</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ENABLE SOUND</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">KEEP SILENT</string>
+    <string name="cha_ching_sound_succcess_snackbar">All set! The \'cha-ching\' will now sound for every new order.</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TEST SOUND</string>
+    <string name="cha_ching_sound_test_notification_title">Test notification</string>
+    <string name="cha_ching_sound_test_notification_message">This is just a test notification to check the Cha-Ching sound.\nYou can swipe it away.</string>
     <!--
         Product Review Detail
     -->
