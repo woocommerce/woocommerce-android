@@ -509,9 +509,16 @@
     <string name="custom_amounts_enter_amount">Amount</string>
     <string name="custom_amounts_name">Name</string>
     <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_delete_custom_amount">Delete custom amount</string>
     <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
     <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
     <string name="custom_amounts_tax_label">Charge Taxes</string>
+    <string name="custom_amounts_percentage_label">Percentage of order total (%1$s)</string>
+    <string name="custom_amounts_bottom_sheet_heading">How do you want to add your custom amount?</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">A fixed amount</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
 
     <!--
          Taxes
@@ -531,6 +538,7 @@
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_price_after_discount">Price after discount</string>
+    <string name="order_creation_products_order_count">Order count</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
@@ -811,6 +819,7 @@
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
     <string name="orderdetail_view_custom_fields">View custom fields</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -2014,6 +2023,8 @@
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
+    <string name="product_filter_explore_plugin">Explore!</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -2258,6 +2269,7 @@
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
     <string name="settings_account">Account Settings</string>
+    <string name="settings_themes">Themes</string>
 
     <!--
         Developer Options Screen
@@ -3362,6 +3374,28 @@
     <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
+    <string name="store_creation_theme_activation_loading">Activating your store\'s theme…</string>
+    <string name="store_creation_theme_activation_error">An error occurred while activating the theme you selected, please retry again!</string>
+
+    <!--
+    Store theme
+    -->
+    <string name="theme_picker_title">Choose a theme</string>
+    <string name="theme_picker_description">You can always change it later in the settings.</string>
+    <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
+    <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
+    <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
+    <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
+    <string name="theme_picker_error_title">An error occurred</string>
+    <string name="theme_picker_error_message">Unable to load themes at this time.</string>
+    <string name="theme_preview_title">Preview</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
+    <string name="theme_preview_bottom_sheet_home_section">Home</string>
+    <string name="theme_preview_activate_theme_button">Use this theme</string>
+    <string name="theme_preview_theme_name">Theme: %1$s</string>
+    <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
     <!--
     Store onboarding
@@ -3699,6 +3733,17 @@
     <string name="ai_product_description_copy_error">Error copying product description to clipboard.</string>
 
     <!--
+    AI thank you note
+    -->
+    <string name="ai_order_thank_you_note_dialog_title">Thank-you note</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Creating a thank-you note for your order…</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Regenerate</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Share</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">Unable to create Thank-you note. Please use the button below to retry.</string>
+    <string name="ai_order_thank_you_note_copy_label">Thank-you note generated by AI</string>
+
+
+    <!--
     AI Product name description
     -->
     <string name="ai_product_name_sheet_title">Product name</string>
@@ -3727,6 +3772,7 @@
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_overflow_menu_hide_blaze">Hide Blaze</string>
 
     <!--
     Blaze campaign list
@@ -3817,13 +3863,26 @@
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 
+    <!--
+    Scan to update inventory
+    -->
+    <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU: %s not found. Please try again.</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Product with SKU: %s is not stock-managed. Please try again.</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantity + 1</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
+    <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantity</string>
+    <string name="scan_to_update_inventory_product_label">Product</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
     <string name="product_configuration_title">Configuration</string>
     <string name="save_configuration">Save configuration</string>
     <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
-    <string name="configuration_issues">Configuration issues</string>
+    <string name="configuration_required">Configuration required</string>
     <string name="configuration_quantity_item">%d item</string>
     <string name="configuration_quantity_item_plural">%d items</string>
     <string name="configuration_quantity_between"> between %1$s and %2$s items </string>
@@ -3834,7 +3893,8 @@
     <string name="configuration_quantity_items_selected"> %1$s item selected </string>
     <string name="configuration_quantity_items_selected_plural"> %1$s items selected </string>
     <string name="configuration_variable_selection"> please select a variation </string>
-    <string name="configuration_children_issue"> " %1$s " -&gt; %2$s </string>
-    <string name="configuration_variable_update">Update variation</string>
+    <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
+    <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+    <string name="store_creation_use_theme_button">Start with this theme</string>
 </resources>

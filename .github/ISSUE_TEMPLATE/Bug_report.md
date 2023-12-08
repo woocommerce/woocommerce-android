@@ -1,6 +1,9 @@
 ---
 name: "\U0001F41E Bug report"
 about: Report a bug if something isn't working as expected in the WooCommerce Android app.
+title: ''
+labels: 'type: bug'
+assignees: ''
 
 ---
 

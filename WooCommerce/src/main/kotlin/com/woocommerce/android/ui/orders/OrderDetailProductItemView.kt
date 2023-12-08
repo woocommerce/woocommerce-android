@@ -71,4 +71,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
                 .into(binding.productInfoIcon)
         } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
     }
+
+    fun hideProductTotal() {
+        binding.productInfoTotal.isVisible = false
+    }
 }

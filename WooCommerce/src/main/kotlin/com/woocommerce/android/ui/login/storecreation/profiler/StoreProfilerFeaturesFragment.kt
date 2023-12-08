@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,9 +44,26 @@ class StoreProfilerFeaturesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToNextStep -> navigateToStoreInstallationStep()
+                is NavigateToNextStep -> navigateToNextStep()
             }
         }
+    }
+
+    private fun navigateToNextStep() {
+        if (FeatureFlag.THEME_PICKER.isEnabled()) {
+            navigateToThemePicker()
+        } else {
+            navigateToStoreInstallationStep()
+        }
+    }
+
+    private fun navigateToThemePicker() {
+        findNavController().navigateSafely(
+            StoreProfilerFeaturesFragmentDirections
+                .actionStoreProfilerFeaturesFragmentToThemePickerFragment(
+                    isFromStoreCreation = true
+                )
+        )
     }
 
     private fun navigateToStoreInstallationStep() {

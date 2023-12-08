@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_store_creation"
     app:startDestination="@id/checkIapEligibilityFragment">
+    <include app:graph="@navigation/nav_graph_themes" />
 
     <fragment
         android:id="@+id/checkIapEligibilityFragment"
@@ -77,6 +78,13 @@
         <action
             android:id="@+id/action_storeProfilerFeaturesFragment_to_storeCreationInstallationFragment"
             app:destination="@id/storeCreationInstallationFragment" />
+        <action
+            android:id="@+id/action_storeProfilerFeaturesFragment_to_themePickerFragment"
+            app:destination="@id/nav_graph_themes" >
+            <argument
+                android:name="isFromStoreCreation"
+                app:argType="boolean" />
+        </action>
     </fragment>
 
     <fragment

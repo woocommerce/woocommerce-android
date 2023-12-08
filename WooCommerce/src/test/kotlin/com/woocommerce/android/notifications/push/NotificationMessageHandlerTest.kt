@@ -5,7 +5,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.getChannelId
 import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
@@ -61,7 +60,9 @@ class NotificationMessageHandlerTest {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
-        on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { invocationOnMock ->
+            "${invocationOnMock.arguments[0]}-${invocationOnMock.arguments[1]}"
+        }
     }
     private val notificationBuilder: WooNotificationBuilder = mock()
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker = mock()
@@ -271,49 +272,41 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
-        val orderChannelId = resourceProvider.getString(orderNotification.channelType.getChannelId())
 
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(orderDefaults),
-            channelId = eq(orderChannelId),
             notification = eq(orderNotification),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming review notification
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
         val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
-        val reviewChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
 
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(reviewDefaults),
-            channelId = eq(reviewChannelId),
             notification = eq(reviewNotification),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
         // verify that the contents for the group notification is correct
-        val groupChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            channelId = eq(groupChannelId),
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${reviewNotification.noteMessage!!}\n"),
+            inboxMessage = eq("${orderNotification.noteMessage!!}\n${reviewNotification.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(reviewNotification),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(reviewNotification)
         )
     }
 
@@ -325,20 +318,18 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
-        val orderChannelId = resourceProvider.getString(orderNotification.channelType.getChannelId())
 
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(orderDefaults),
-            channelId = eq(orderChannelId),
             notification = eq(orderNotification),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming order notification
@@ -350,27 +341,22 @@ class NotificationMessageHandlerTest {
         )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2)
 
-        // verify that the contents for a new review notification is correct
+        // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(orderDefaults),
-            channelId = eq(orderChannelId),
             notification = eq(orderNotification2),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
         // verify that the contents for the group notification is correct
-        val groupChannelId = resourceProvider.getString(orderNotification2.channelType.getChannelId())
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            channelId = eq(groupChannelId),
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(orderNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(orderNotification2)
         )
     }
 
@@ -382,20 +368,18 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
         val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
-        val reviewChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
 
-        // verify that the contents for a new order notification is correct
+        // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(reviewDefaults),
-            channelId = eq(reviewChannelId),
             notification = eq(reviewNotification),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming review notification
@@ -411,23 +395,18 @@ class NotificationMessageHandlerTest {
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(reviewDefaults),
-            channelId = eq(reviewChannelId),
             notification = eq(reviewNotification2),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
         // verify that the contents for the group notification is correct
-        val groupChannelId = resourceProvider.getString(reviewNotification2.channelType.getChannelId())
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            channelId = eq(groupChannelId),
-            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(reviewNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(reviewNotification2)
         )
     }
 
@@ -439,20 +418,18 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
         val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
-        val orderChannelId = resourceProvider.getString(orderNotification.channelType.getChannelId())
 
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(orderDefaults),
-            channelId = eq(orderChannelId),
             notification = eq(orderNotification),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming order notification for different store
@@ -464,27 +441,22 @@ class NotificationMessageHandlerTest {
         )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2)
 
-        // verify that the contents for a new review notification is correct
+        // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(orderDefaults),
-            channelId = eq(orderChannelId),
             notification = eq(orderNotification2),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
         // verify that the contents for the group notification is correct
-        val groupChannelId = resourceProvider.getString(orderNotification2.channelType.getChannelId())
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            channelId = eq(groupChannelId),
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(orderNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(orderNotification2)
         )
     }
 
@@ -496,20 +468,18 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
         val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
-        val reviewChannelId = resourceProvider.getString(reviewNotification.channelType.getChannelId())
 
-        // verify that the contents for a new order notification is correct
+        // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(reviewDefaults),
-            channelId = eq(reviewChannelId),
             notification = eq(reviewNotification),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any(), any(), any()
+            any(), any(), any(), any()
         )
 
         // new incoming review notification
@@ -525,23 +495,49 @@ class NotificationMessageHandlerTest {
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             defaults = eq(reviewDefaults),
-            channelId = eq(reviewChannelId),
             notification = eq(reviewNotification2),
             addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
         // verify that the contents for the group notification is correct
-        val groupChannelId = resourceProvider.getString(reviewNotification2.channelType.getChannelId())
-        val subject = resourceProvider.getString(R.string.new_notifications, 1)
-        val summaryText = resourceProvider.getString(R.string.more_notifications, 1)
+        val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            channelId = eq(groupChannelId),
-            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}\n"),
+            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(summaryText),
-            notification = eq(reviewNotification2),
-            shouldDisplaySummaryText = eq(false)
+            summaryText = eq(null),
+            notification = eq(reviewNotification2)
+        )
+    }
+
+    @Test
+    fun `when more than 5 notifications are received for same store, display the notification correctly`() {
+        // clear all notifications
+        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
+        val notificationsCount = NotificationMessageHandler.MAX_INBOX_ITEMS + 1
+        val notifications = List(notificationsCount) { orderNotification }
+
+        repeat(notificationsCount) {
+            notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        }
+
+        // verify that the contents for the group notification is correct
+        val subject = resourceProvider.getString(
+            R.string.new_notifications,
+            notificationsCount
+        )
+        val summary = resourceProvider.getString(
+            R.string.more_notifications,
+            notificationsCount - NotificationMessageHandler.MAX_INBOX_ITEMS
+        )
+        verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
+            inboxMessage = eq(
+                notifications.take(NotificationMessageHandler.MAX_INBOX_ITEMS)
+                    .joinToString(separator = "\n") { it.noteMessage.orEmpty() }
+            ),
+            subject = eq(subject),
+            summaryText = eq(summary),
+            notification = eq(orderNotification)
         )
     }
 

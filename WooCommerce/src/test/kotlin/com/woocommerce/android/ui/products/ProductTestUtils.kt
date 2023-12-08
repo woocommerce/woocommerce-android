@@ -24,7 +24,8 @@ object ProductTestUtils {
         productType: String? = null,
         amount: String = "20.00",
         productName: String = "product $productId",
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        isStockManaged: Boolean = false,
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -72,6 +73,7 @@ object ProductTestUtils {
             virtual = isVirtual
             stockQuantity = 4.2
             purchasable = isPurchasable
+            manageStock = isStockManaged
         }.toAppModel()
     }
 
@@ -109,7 +111,7 @@ object ProductTestUtils {
             .toMutableList()
             .apply { add(generateProduct(6, isVariable = true)) }
 
-    private fun generateProductVariation(
+    fun generateProductVariation(
         productId: Long = 1L,
         variationId: Long = 1L
     ): ProductVariation {

@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -114,6 +115,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
+    private val productDetailRepository: ProductDetailRepository = mock()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -175,7 +177,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
-                orderProductMapper
+                orderProductMapper,
+                productDetailRepository
             )
         )
     }
@@ -198,7 +201,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
-                orderProductMapper
+                orderProductMapper,
+                productDetailRepository
             )
         )
     }

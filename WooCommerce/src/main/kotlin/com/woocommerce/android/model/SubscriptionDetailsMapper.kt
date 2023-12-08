@@ -70,7 +70,7 @@ object SubscriptionDetailsMapper {
             isJsonObject -> asJsonObject.let {
                 val day = it["day"].asInt
                 val month = it["month"].asInt
-                if (month == 0) SubscriptionPaymentSyncDate.None
+                if (day == 0) SubscriptionPaymentSyncDate.None
                 else SubscriptionPaymentSyncDate.MonthDay(day, month)
             }
 
