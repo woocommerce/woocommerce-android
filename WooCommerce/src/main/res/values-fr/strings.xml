@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 11:54:05+0000
+Translation-Revision-Date: 2023-12-06 14:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="store_creation_use_theme_button">Commencer avec ce thème</string>
+    <string name="theme_activated_successfully">Thème activé avec succès</string>
+    <string name="theme_preview_theme_name">Thème : %1$s</string>
+    <string name="theme_preview_activate_theme_button">Utiliser ce thème</string>
+    <string name="theme_preview_bottom_sheet_home_section">Accueil</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Toucher pour prévisualiser</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Pages sur ce modèle</string>
+    <string name="theme_preview_title">Aperçu</string>
+    <string name="theme_picker_error_message">Impossible de charger des thèmes pour l’instant.</string>
+    <string name="theme_picker_error_title">Une erreur s’est produite</string>
+    <string name="theme_picker_carousel_placeholder_message">Appuyez pour une démo en direct.</string>
+    <string name="theme_picker_carousel_placeholder_title">Thème « %s »</string>
+    <string name="theme_picker_carousel_info_item_description">Lorsque votre boutique est configurée, trouvez le thème parfait dans la boutique de thèmes WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">Vous cherchez le truc en plus ?</string>
+    <string name="theme_picker_description">Vous pouvez toujours le changer plus tard dans les réglages.</string>
+    <string name="theme_picker_title">Choisir un thème</string>
+    <string name="store_creation_theme_activation_error">Une erreur s’est produite lors de l’activation du thème sélectionné, veuillez réessayer !</string>
+    <string name="store_creation_theme_activation_loading">Activation du thème de votre boutique…</string>
+    <string name="settings_themes">Thèmes</string>
+    <string name="product_filter_explore_plugin">Explorez !</string>
     <string name="configuration_required">Configuration requise</string>
     <string name="blaze_overflow_menu_hide_blaze">Masquer Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">Mot de remerciement généré par IA</string>
