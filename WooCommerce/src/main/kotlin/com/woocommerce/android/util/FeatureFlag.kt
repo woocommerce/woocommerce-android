@@ -7,7 +7,6 @@ import android.content.Context
  */
 enum class FeatureFlag {
     DB_DOWNGRADE,
-    JETPACK_CP,
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
@@ -34,7 +33,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            JETPACK_CP,
             UNIFIED_ORDER_EDITING,
             STORE_CREATION_ONBOARDING,
             REST_API_I2,
