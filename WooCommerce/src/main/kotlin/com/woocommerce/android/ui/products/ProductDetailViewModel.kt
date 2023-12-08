@@ -342,6 +342,13 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
+
+        if (!navArgs.images.isNullOrEmpty()) {
+            mediaFileUploadHandler.enqueueUpload(
+                remoteProductId = viewState.productDraft?.remoteId ?: 0L,
+                uris = navArgs.images!!.asList()
+            )
+        }
     }
 
     private fun initializeViewState() {
