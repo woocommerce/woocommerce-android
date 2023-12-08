@@ -11,7 +11,6 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
-    AI_ORDER_DETAIL_THANK_YOU_NOTE,
     ORDER_CREATION_AUTO_TAX_RATE,
     THEME_PICKER,
     ORDER_GIFT_CARD;
@@ -21,8 +20,6 @@ enum class FeatureFlag {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
-
-            AI_ORDER_DETAIL_THANK_YOU_NOTE -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
