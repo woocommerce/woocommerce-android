@@ -10,7 +10,6 @@ enum class FeatureFlag {
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
     IAP_FOR_STORE_CREATION,
-    STORE_CREATION_ONBOARDING,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
     EU_SHIPPING_NOTIFICATION,
@@ -32,7 +31,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            STORE_CREATION_ONBOARDING,
             REST_API_I2,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             EU_SHIPPING_NOTIFICATION,
