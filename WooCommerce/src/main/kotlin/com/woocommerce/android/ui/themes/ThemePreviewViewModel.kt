@@ -106,7 +106,7 @@ class ThemePreviewViewModel @Inject constructor(
 
     private suspend fun Theme.prepareThemeDemoPages(): Flow<List<ThemeDemoPage>> = flow {
         val homePage = ThemeDemoPage(
-            uri = demoUrl,
+            uri = requireNotNull(demoUrl),
             title = resourceProvider.getString(R.string.theme_preview_bottom_sheet_home_section),
             isLoaded = true
         )

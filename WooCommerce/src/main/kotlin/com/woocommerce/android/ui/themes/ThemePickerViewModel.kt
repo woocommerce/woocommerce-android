@@ -44,23 +44,26 @@ class ThemePickerViewModel @Inject constructor(
             onSuccess = { result ->
                 _viewState.update {
                     Success(
-                        carouselItems = result.map { theme ->
-                            CarouselItem.Theme(
-                                themeId = theme.id,
-                                name = theme.name,
-                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl),
-                                demoUri = theme.demoUrl
-                            )
-                        }.plus(
-                            CarouselItem.Message(
-                                title = resourceProvider.getString(
-                                    string.theme_picker_carousel_info_item_title
-                                ),
-                                description = resourceProvider.getString(
-                                    string.theme_picker_carousel_info_item_description
+                        carouselItems = result
+                            .filter { theme -> theme.demoUrl != null }
+                            .map { theme ->
+                                CarouselItem.Theme(
+                                    themeId = theme.id,
+                                    name = theme.name,
+                                    screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!),
+                                    demoUri = theme.demoUrl
+                                )
+                            }
+                            .plus(
+                                CarouselItem.Message(
+                                    title = resourceProvider.getString(
+                                        string.theme_picker_carousel_info_item_title
+                                    ),
+                                    description = resourceProvider.getString(
+                                        string.theme_picker_carousel_info_item_description
+                                    )
                                 )
                             )
-                        )
                     )
                 }
             },
