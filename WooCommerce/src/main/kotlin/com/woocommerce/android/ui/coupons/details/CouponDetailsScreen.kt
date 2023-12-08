@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponP
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Loading
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState.Success
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponSummaryUi
-import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun CouponDetailsScreen(
@@ -106,7 +105,7 @@ fun CouponDetailsScreen(
                         Text(stringResource(id = R.string.coupon_details_menu_share))
                     }
 
-                    if (FeatureFlag.COUPONS_M2.isEnabled() && state.couponSummary?.isEditable == true) {
+                    if (state.couponSummary?.isEditable == true) {
                         DropdownMenuItem(onClick = {
                             showMenu = false
                             onEditButtonClick()

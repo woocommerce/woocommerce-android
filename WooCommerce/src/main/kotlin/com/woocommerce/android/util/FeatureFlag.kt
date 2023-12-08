@@ -9,7 +9,6 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     JETPACK_CP,
     MORE_MENU_INBOX,
-    COUPONS_M2,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     IAP_FOR_STORE_CREATION,
@@ -35,7 +34,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            COUPONS_M2,
             JETPACK_CP,
             UNIFIED_ORDER_EDITING,
             STORE_CREATION_ONBOARDING,
