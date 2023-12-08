@@ -1,8 +1,1 @@
-- [**] Introduce ability to start creating a product by sharing images from other apps [https://github.com/woocommerce/woocommerce-android/pull/10331]
-- [*] [Internal] Improvements to the performance and internal logic of the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10307]
-- [*] Add helper actions to allow the user to restore the cha-ching sound in case it was disabled from the device settings [https://github.com/woocommerce/woocommerce-android/issues/10327]
-- [***] Custom Amounts M4.2: Redesigned UI, Percentage based custom amounts support [https://github.com/woocommerce/woocommerce-android/pull/10298]
-- [*] [Internal] Custom Amounts: Fix RTL issue in the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10316]
-- [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
-- [***] Added possibility to scan product's barcode in the Products page to update product's inventory quickly [https://github.com/woocommerce/woocommerce-android/pull/10250]
-
+Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!
