@@ -64,7 +64,6 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogView
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -90,9 +89,6 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var isCustomAmountsFeatureFlagEnabled: IsCustomAmountsFeatureFlagEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -273,29 +269,6 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        if (isCustomAmountsFeatureFlagEnabled()) {
-            initNewProductsSection()
-        } else {
-            initOldProductsSection()
-        }
-    }
-
-    private fun FragmentOrderCreateEditFormBinding.initOldProductsSection() {
-        productsSection.setProductSectionButtons(
-            addProductsButton = AddButton(
-                text = getString(R.string.order_creation_add_products),
-                onClickListener = {
-                    viewModel.onAddProductClicked()
-                }
-            ),
-            addProductsViaScanButton = AddButton(
-                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = { viewModel.onScanClicked() }
-            ),
-        )
-    }
-
-    private fun FragmentOrderCreateEditFormBinding.initNewProductsSection() {
         productsSection.hideHeader()
         productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
@@ -349,10 +322,8 @@ class OrderCreateEditFormFragment :
             bindProductsSection(binding.productsSection, viewModel.products)
         }
 
-        if (isCustomAmountsFeatureFlagEnabled()) {
-            viewModel.customAmounts.observe(viewLifecycleOwner) {
-                bindCustomAmountsSection(binding.customAmountsSection, it)
-            }
+        viewModel.customAmounts.observe(viewLifecycleOwner) {
+            bindCustomAmountsSection(binding.customAmountsSection, it)
         }
 
         observeViewStateChanges(binding)
@@ -584,11 +555,7 @@ class OrderCreateEditFormFragment :
             paymentSection.paymentsLayout.hide()
         } else {
             paymentSection.paymentsLayout.show()
-            if (isCustomAmountsFeatureFlagEnabled()) {
-                paymentSection.bindCustomAmountSubSection(newOrderData)
-            } else {
-                paymentSection.bindFeesSubSection(newOrderData)
-            }
+            paymentSection.bindCustomAmountSubSection(newOrderData)
             paymentSection.bindCouponsSubSection(newOrderData)
 
             val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
@@ -643,26 +610,6 @@ class OrderCreateEditFormFragment :
         }
         paymentSection.taxLines.setContent {
             TaxLines(taxLines)
-        }
-    }
-
-    // NOTE: The method below is replaced by custom amounts.
-    // When transitioning from fees to custom amounts, ensure to remove this method
-    // once the 'custom amounts M1' feature flag is deprecated.
-    private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
-        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
-
-        val currentFeeTotal = newOrderData.feesTotal
-
-        val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
-
-        if (hasFee) {
-            feeButton.setText(R.string.order_creation_payment_fee)
-            feeValue.isVisible = true
-            feeValue.text = bigDecimalFormatter(currentFeeTotal)
-        } else {
-            feeButton.setText(R.string.order_creation_add_fee)
-            feeValue.isVisible = false
         }
     }
 
@@ -723,7 +670,7 @@ class OrderCreateEditFormFragment :
         products: LiveData<List<OrderCreationProduct>>
     ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
-        if (products.value.isNullOrEmpty() && isCustomAmountsFeatureFlagEnabled()) {
+        if (products.value.isNullOrEmpty()) {
             productsSection.content = null
         }
         if (productsSection.content == null) {
@@ -731,13 +678,11 @@ class OrderCreateEditFormFragment :
                 bindExpandableProductsSection(products)
             }
         }
-        if (isCustomAmountsFeatureFlagEnabled()) {
-            productsSection.barcodeIcon.setOnClickListener {
-                viewModel.onScanClicked()
-            }
-            productsSection.addIcon.setOnClickListener {
-                viewModel.onAddProductClicked()
-            }
+        productsSection.barcodeIcon.setOnClickListener {
+            viewModel.onScanClicked()
+        }
+        productsSection.addIcon.setOnClickListener {
+            viewModel.onAddProductClicked()
         }
     }
 
