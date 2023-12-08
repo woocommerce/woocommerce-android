@@ -191,7 +191,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
-        taxRateSelectorSection.isVisible = FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+        taxRateSelectorSection.isVisible = true
         setTaxRateButton.setOnClickListener {
             viewModel.onSetTaxRateClicked()
         }

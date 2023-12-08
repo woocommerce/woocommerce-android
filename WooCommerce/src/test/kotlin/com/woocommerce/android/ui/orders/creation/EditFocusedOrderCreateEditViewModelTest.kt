@@ -303,8 +303,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             )
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
 
-            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(true)
-
             orderDetailRepository.stub {
                 onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
             }
@@ -327,8 +325,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             )
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
 
-            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(true)
-
             whenever(resourceProvider.getString(any())).thenReturn("label")
 
             orderDetailRepository.stub {
@@ -341,32 +337,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             createSut()
 
             assertTrue(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
-        }
-    }
-
-    @Test
-    fun `given order not paid, when feature flag disabled, tax rate button not shown`() {
-        testBlocking {
-            initMocksForAnalyticsWithOrder(defaultOrderValue)
-            val order = defaultOrderValue.copy(
-                datePaid = null
-            )
-            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
-
-            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(false)
-
-            whenever(resourceProvider.getString(any())).thenReturn("label")
-
-            orderDetailRepository.stub {
-                onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
-            }
-            createUpdateOrderUseCase = mock {
-                onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
-            }
-
-            createSut()
-
-            assertFalse(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
         }
     }
 

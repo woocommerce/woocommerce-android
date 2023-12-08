@@ -174,7 +174,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
-    private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
@@ -363,7 +362,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val isSetNewTaxRateButtonVisible: Boolean = when (it) {
                 BillingAddress, ShippingAddress -> true
                 else -> false
-            } && isTaxRateSelectorEnabled() && !_orderDraft.value.isOrderPaid
+            } && !_orderDraft.value.isOrderPaid
             viewState = viewState.copy(
                 taxBasedOnSettingLabel = it?.label ?: "",
                 taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(

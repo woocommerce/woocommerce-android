@@ -12,7 +12,6 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
     AI_ORDER_DETAIL_THANK_YOU_NOTE,
-    ORDER_CREATION_TAX_RATE_SELECTOR,
     ORDER_CREATION_AUTO_TAX_RATE,
     CUSTOM_AMOUNTS_M1,
     PRODUCT_CREATION_AI,
@@ -26,7 +25,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            ORDER_CREATION_TAX_RATE_SELECTOR,
             PRODUCT_CREATION_AI,
             PACKAGE_PHOTO_SCANNING,
             CUSTOM_AMOUNTS_M1,
