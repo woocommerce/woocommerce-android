@@ -101,6 +101,7 @@ class ProductListFragment :
     private val skeletonView = SkeletonView()
 
     private var searchMenuItem: MenuItem? = null
+    private var scanBarcodeMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
     private var trashProductUndoSnack: Snackbar? = null
@@ -252,6 +253,7 @@ class ProductListFragment :
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
+        scanBarcodeMenuItem = menu.findItem(R.id.menu_scan_barcode)
     }
 
     override fun onPrepareMenu(menu: Menu) {
@@ -278,6 +280,7 @@ class ProductListFragment :
                 }
             }
         }
+        scanBarcodeMenuItem?.isVisible = !productListViewModel.isSquarePluginActive()
     }
 
     private fun getSearchQueryHint(): String {
