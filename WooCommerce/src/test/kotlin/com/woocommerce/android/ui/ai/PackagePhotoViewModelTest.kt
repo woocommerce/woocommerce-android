@@ -5,7 +5,6 @@ import com.woocommerce.android.ai.AIRepository.AIProductDetailsResult
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragmentArgs
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
@@ -40,7 +39,7 @@ class PackagePhotoViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         val navArgs = PackagePhotoBottomSheetFragmentArgs("image_url")
         viewModel = PackagePhotoViewModel(
-            navArgs.initSavedStateHandle(),
+            navArgs.toSavedStateHandle(),
             aiRepository,
             textRecognitionEngine,
             tracker

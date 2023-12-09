@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
@@ -35,7 +34,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val repository: OrderDetailRepository = mock()
 
-    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+    private val savedState = AddOrderShipmentTrackingFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
 
     private lateinit var viewModel: AddOrderShipmentTrackingViewModel
 

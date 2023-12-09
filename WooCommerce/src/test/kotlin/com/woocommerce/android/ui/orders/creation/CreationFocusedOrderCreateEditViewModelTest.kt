@@ -18,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
@@ -1241,7 +1240,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 Creation, "123", BarcodeFormat.FormatUPCA,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1267,7 +1266,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 Creation, "123", BarcodeFormat.FormatUPCA,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1294,7 +1293,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "", null,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1320,7 +1319,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1362,7 +1361,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1398,7 +1397,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatQRCode,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1434,7 +1433,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -1480,7 +1479,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",

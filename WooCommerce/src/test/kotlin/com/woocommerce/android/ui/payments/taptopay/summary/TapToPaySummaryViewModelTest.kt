@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
@@ -520,6 +519,6 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             currencyFormatter,
             wooStore,
             cardReaderCountryConfigProvider,
-            TapToPaySummaryFragmentArgs(flow).initSavedStateHandle()
+            TapToPaySummaryFragmentArgs(flow).toSavedStateHandle()
         )
 }
