@@ -509,9 +509,16 @@
     <string name="custom_amounts_enter_amount">Amount</string>
     <string name="custom_amounts_name">Name</string>
     <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_delete_custom_amount">Delete custom amount</string>
     <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
     <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
     <string name="custom_amounts_tax_label">Charge Taxes</string>
+    <string name="custom_amounts_percentage_label">Percentage of order total (%1$s)</string>
+    <string name="custom_amounts_bottom_sheet_heading">How do you want to add your custom amount?</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">A fixed amount</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
 
     <!--
          Taxes
@@ -531,6 +538,7 @@
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_price_after_discount">Price after discount</string>
+    <string name="order_creation_products_order_count">Order count</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
@@ -1688,6 +1696,14 @@
     <string name="more_notifications">and %d more.</string>
     <string name="notification_order_title">You have a new order! 🎉</string>
     <string name="notification_review_title">You have a new review! 🌟</string>
+    <string name="cha_ching_sound_issue_dialog_title">Cha-ching sound off</string>
+    <string name="cha_ching_sound_issue_dialog_message">Turn it back on to hear the \'cha-ching\' with every new sale. Keep in tune with your customers\' orders!</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ENABLE SOUND</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">KEEP SILENT</string>
+    <string name="cha_ching_sound_succcess_snackbar">All set! The \'cha-ching\' will now sound for every new order.</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TEST SOUND</string>
+    <string name="cha_ching_sound_test_notification_title">Test notification</string>
+    <string name="cha_ching_sound_test_notification_message">This is just a test notification to check the Cha-Ching sound.\nYou can swipe it away.</string>
     <!--
         Product Review Detail
     -->
@@ -2016,6 +2032,7 @@
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -2237,6 +2254,8 @@
     <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
     <string name="settings_notifs_reviews">Product reviews</string>
     <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
+    <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -3386,6 +3405,7 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
     <!--
     Store onboarding
@@ -3853,6 +3873,19 @@
     <string name="login_error_security_key">There was some trouble with the Security key login</string>
     <string name="notification_security_key_needed">Please provide your security key to continue.</string>
 
+    <!--
+    Scan to update inventory
+    -->
+    <string name="scan_to_update_inventory_unable_to_find_product">Product with SKU: %s not found. Please try again.</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Product with SKU: %s is not stock-managed. Please try again.</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantity + 1</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
+    <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantity</string>
+    <string name="scan_to_update_inventory_product_label">Product</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
