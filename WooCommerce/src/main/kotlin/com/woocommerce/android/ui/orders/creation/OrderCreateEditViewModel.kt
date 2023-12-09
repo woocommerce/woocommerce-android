@@ -146,6 +146,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import kotlinx.coroutines.flow.combine
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -192,9 +193,16 @@ class OrderCreateEditViewModel @Inject constructor(
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
+    private val _selectedGiftCard = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = ""
+    )
+
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .asLiveData()
+        .combine(_selectedGiftCard) { order, giftCard ->
+            order.copy(selectedGiftCard = giftCard)
+        }.asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
@@ -581,7 +589,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
-                order.giftCards.isNullOrEmpty() &&
+                _selectedGiftCard.value.isEmpty() &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
     }
@@ -988,9 +996,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onGiftCardSelected(selectedGiftCard: String) {
-        _orderDraft.update { order ->
-            order.copy(giftCards = selectedGiftCard)
-        }
+        _selectedGiftCard.update { selectedGiftCard }
     }
 
     fun onShippingButtonClicked() {
@@ -1002,7 +1008,8 @@ class OrderCreateEditViewModel @Inject constructor(
             Mode.Creation -> viewModelScope.launch {
                 trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
-                orderCreateEditRepository.placeOrder(order).fold(
+                val giftCard = _selectedGiftCard.value
+                orderCreateEditRepository.placeOrder(order, giftCard).fold(
                     onSuccess = {
                         trackOrderCreationSuccess()
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
