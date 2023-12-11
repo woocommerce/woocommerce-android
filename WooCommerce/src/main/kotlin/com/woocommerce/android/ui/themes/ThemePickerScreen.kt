@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.themes
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -357,6 +358,52 @@ private fun PreviewThemePickerLoading() {
                 isFromStoreCreation = true,
                 carouselState = CarouselState.Error,
                 currentThemeState = CurrentThemeState.Hidden
+            ),
+            onThemeTapped = {}
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PreviewThemePickerStoreCreation() {
+    WooThemeWithBackground {
+        ThemePicker(
+            modifier = Modifier,
+            viewState = ThemePickerViewModel.ViewState(
+                isFromStoreCreation = true,
+                carouselState = CarouselState.Success(
+                    carouselItems = listOf(
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = "")
+                    )
+                ),
+                currentThemeState = CurrentThemeState.Hidden
+            ),
+            onThemeTapped = {}
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PreviewThemePickerSettings() {
+    WooThemeWithBackground {
+        ThemePicker(
+            modifier = Modifier,
+            viewState = ThemePickerViewModel.ViewState(
+                isFromStoreCreation = false,
+                carouselState = CarouselState.Success(
+                    carouselItems = listOf(
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = "")
+                    )
+                ),
+                currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki")
             ),
             onThemeTapped = {}
         )
