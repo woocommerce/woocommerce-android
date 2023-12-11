@@ -11,9 +11,9 @@ plugins {
 }
 
 measureBuilds {
-    enable.set((findProperty('tracksEnabled') ?: false).toBoolean())
-    automatticProject.set(MeasureBuildsExtension.AutomatticProject.WooCommerce)
-    attachGradleScanId.set(true)
+    enable = findProperty('tracksEnabled')?.toBoolean() ?: false
+    automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
+    attachGradleScanId = true
 }
 
 allprojects {
