@@ -122,6 +122,7 @@ ext {
     mlkitTextRecognitionVersion = '16.0.0'
     androidxCameraVersion = '1.2.3'
     guavaVersion = '31.0.1-android'
+    credentialManagerVersion = '1.2.0'
 
     // Apache
     commonsText = '1.10.0'

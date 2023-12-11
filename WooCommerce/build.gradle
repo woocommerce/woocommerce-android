@@ -289,6 +289,9 @@ dependencies {
 
     implementation "com.google.zxing:core:3.5.1"
 
+    implementation("androidx.credentials:credentials:$credentialManagerVersion")
+    implementation("androidx.credentials:credentials-play-services-auth:$credentialManagerVersion")
+
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.10.4"
