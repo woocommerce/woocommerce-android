@@ -39,7 +39,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingP
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -164,12 +163,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
         EXTERNAL,
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private val interacRefundSavedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
         CardReaderFlowParam.PaymentOrRefund.Refund(ORDER_ID, refundAmount = BigDecimal(10.72)),
         EXTERNAL,
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
@@ -4341,7 +4340,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             CardReaderPaymentDialogFragmentArgs(
                 CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
                 readerType,
-            ).initSavedStateHandle().also {
+            ).toSavedStateHandle().also {
                 if (savedStateValue != null) it[savedStateValue.first] = savedStateValue.second
             },
             cardReaderManager = cardReaderManager,

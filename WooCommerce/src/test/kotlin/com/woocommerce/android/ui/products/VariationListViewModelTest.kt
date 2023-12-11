@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
@@ -52,7 +51,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, false).copy(remoteId = productRemoteId)
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
-    private val savedState = VariationListFragmentArgs(remoteProductId = productRemoteId).initSavedStateHandle()
+    private val savedState = VariationListFragmentArgs(remoteProductId = productRemoteId).toSavedStateHandle()
 
     @Before
     fun setup() {
