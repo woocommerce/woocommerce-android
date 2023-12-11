@@ -217,6 +217,13 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     message = message,
                     undoAction = {
                         onQuantityUpdateUndo(oldQuantity, productInfo)
+                        triggerEvent(
+                            ShowUiStringSnackbar(
+                                UiString.UiStringText(
+                                    resourceProvider.getString(R.string.scan_to_update_inventory_undo_snackbar)
+                                )
+                            )
+                        )
                     },
                 )
             )
@@ -226,17 +233,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private fun onQuantityUpdateUndo(oldQuantity: String, productInfo: ProductInfo) {
         updateQuantity(productInfo.copy(quantity = oldQuantity.toInt()), isUndoAction = true)
         val result = productInfo.quantity == oldQuantity.toInt()
-        if (result) {
-            Result.success(Unit)
-            // Display Message post Undo Action to let user know the action has been reverted
-            triggerEvent(
-                ShowUiStringSnackbar(
-                    UiString.UiStringText(
-                        resourceProvider.getString(R.string.scan_to_update_inventory_undo_snackbar)
-                    )
-                )
-            )
-        } else {
+        if (!result) {
             handleQuantityUpdateError()
         }
     }
