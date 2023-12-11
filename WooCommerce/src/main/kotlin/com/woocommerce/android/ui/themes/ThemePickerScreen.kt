@@ -51,8 +51,8 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.ViewState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import okhttp3.OkHttpClient
 
 @Composable
@@ -64,8 +64,10 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                 navigationIcon = Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
                 actions = {
-                    TextButton(onClick = viewModel::onSkipPressed) {
-                        Text(text = stringResource(id = string.skip))
+                    if (viewState.isSkipButtonVisible) {
+                        TextButton(onClick = viewModel::onSkipPressed) {
+                            Text(text = stringResource(id = string.skip))
+                        }
                     }
                 }
             )
@@ -86,7 +88,7 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
 @Composable
 private fun ThemePicker(
     modifier: Modifier,
-    viewState: ViewState,
+    viewState: ThemePickerViewModel.ViewState,
     onThemeTapped: (String) -> Unit
 ) {
     Column(
@@ -110,17 +112,17 @@ private fun ThemePicker(
             modifier = Modifier.padding(dimensionResource(id = dimen.major_100))
         )
 
-        when (viewState) {
-            is ViewState.Loading -> {
+        when (viewState.carouselState) {
+            is CarouselState.Loading -> {
                 Loading()
             }
 
-            is ViewState.Error -> {
+            is CarouselState.Error -> {
                 Error()
             }
 
-            is ViewState.Success -> {
-                Carousel(viewState.carouselItems, onThemeTapped)
+            is CarouselState.Success -> {
+                Carousel(viewState.carouselState.carouselItems, onThemeTapped)
             }
         }
     }
@@ -263,7 +265,7 @@ private fun Theme(
 @Composable
 private fun PreviewThemePickerError() {
     WooThemeWithBackground {
-        ThemePicker(Modifier, ViewState.Error, {})
+        ThemePicker(Modifier, ThemePickerViewModel.ViewState(true, CarouselState.Error), {})
     }
 }
 
@@ -271,6 +273,6 @@ private fun PreviewThemePickerError() {
 @Composable
 private fun PreviewThemePickerLoading() {
     WooThemeWithBackground {
-        ThemePicker(Modifier, ViewState.Loading, {})
+        ThemePicker(Modifier, ThemePickerViewModel.ViewState(true, CarouselState.Error), {})
     }
 }

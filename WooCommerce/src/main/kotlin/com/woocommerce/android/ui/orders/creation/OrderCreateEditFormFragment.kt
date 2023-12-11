@@ -383,6 +383,8 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.addShippingButton.isEnabled =
                         new.isAddShippingButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
+                    binding.paymentSection.addGiftCardButton.isEnabled =
+                        new.isAddGiftCardButtonEnabled && idle
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -413,6 +415,9 @@ class OrderCreateEditFormFragment :
             }
             new.isAddShippingButtonEnabled.takeIfNotEqualTo(old?.isAddShippingButtonEnabled) {
                 binding.paymentSection.addShippingButton.isEnabled = it
+            }
+            new.isAddGiftCardButtonEnabled.takeIfNotEqualTo(old?.isAddGiftCardButtonEnabled) {
+                binding.paymentSection.addGiftCardButton.isEnabled = it
             }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
@@ -620,6 +625,7 @@ class OrderCreateEditFormFragment :
                 newOrderData
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
+            paymentSection.bindGiftCardSubSection()
         }
     }
 
@@ -700,6 +706,13 @@ class OrderCreateEditFormFragment :
             couponButton.isVisible = false
             couponValue.isVisible = false
             addCouponButton.isVisible = true
+        }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection() {
+        if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
+            giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked() }
+            addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
         }
     }
 
@@ -1080,6 +1093,8 @@ class OrderCreateEditFormFragment :
             lockIcon.isVisible = false
             couponButton.isEnabled = state.isCouponButtonEnabled
             addCouponButton.isEnabled = state.isCouponButtonEnabled
+            addGiftCardButton.isEnabled = state.isAddGiftCardButtonEnabled
+            giftCardButton.isEnabled = true
         }
         customAmountsSection.apply {
             isLocked = false
@@ -1098,6 +1113,8 @@ class OrderCreateEditFormFragment :
             lockIcon.isVisible = true
             couponButton.isEnabled = false
             addCouponButton.isEnabled = false
+            addGiftCardButton.isEnabled = false
+            giftCardButton.isEnabled = false
         }
         customAmountsSection.apply {
             isLocked = true

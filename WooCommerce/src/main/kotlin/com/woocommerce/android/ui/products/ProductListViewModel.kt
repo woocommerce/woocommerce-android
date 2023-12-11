@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MIL
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
@@ -54,6 +55,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,7 +64,9 @@ class ProductListViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
     mediaFileUploadHandler: MediaFileUploadHandler,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -638,6 +642,14 @@ class ProductListViewModel @Inject constructor(
             )
         )
         triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
+    }
+
+    fun isSquarePluginActive(): Boolean {
+        val plugin = wooCommerceStore.getSitePlugin(
+            site = selectedSite.get(),
+            plugin = WooCommerceStore.WooPlugin.WOO_SQUARE
+        )
+        return plugin != null && plugin.isActive
     }
 
     object OnProductSortingChanged

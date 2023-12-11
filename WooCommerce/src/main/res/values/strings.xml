@@ -555,6 +555,7 @@
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_add_gift_card">Add gift card</string>
     <string name="order_creation_select_coupon">Select a coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
@@ -2254,6 +2255,8 @@
     <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
     <string name="settings_notifs_reviews">Product reviews</string>
     <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
+    <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>

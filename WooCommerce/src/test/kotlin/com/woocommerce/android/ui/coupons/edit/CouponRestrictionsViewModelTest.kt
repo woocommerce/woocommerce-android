@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.coupons.edit
 
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -21,7 +20,7 @@ class CouponRestrictionsViewModelTest : BaseUnitTest() {
                 restrictions = storedRestrictions,
                 currencyCode = "USD",
                 showLimitUsageToXItems = true
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
         )
     }
 

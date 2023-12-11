@@ -97,6 +97,9 @@
         <action
             android:id="@+id/action_countryPickerFragment_to_countryListPickerFragment"
             app:destination="@id/countryListPickerFragment" />
+        <action
+            android:id="@+id/action_countryPickerFragment_to_nav_graph_themes"
+            app:destination="@id/nav_graph_themes" />
     </fragment>
 
     <fragment

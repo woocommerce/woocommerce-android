@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
@@ -23,7 +22,7 @@ import org.mockito.kotlin.verify
 internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: TaxRateSelectorViewModel
     private val tracker: AnalyticsTrackerWrapper = mock()
-    private val savedStateHandle: SavedStateHandle = TaxRateSelectorFragmentArgs(mock()).initSavedStateHandle()
+    private val savedStateHandle: SavedStateHandle = TaxRateSelectorFragmentArgs(mock()).toSavedStateHandle()
     private val taxRateListHandler: TaxRateListHandler = mock()
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText = mock()
     private val getTaxRateLabel: GetTaxRateLabel = mock()

@@ -11,7 +11,6 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,10 +30,10 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     private val supportedCountryCA: CardReaderConfigForSupportedCountry = CardReaderConfigForCanada
     private val savedStateHandleCA = CardReaderManualsFragmentArgs(
         supportedCountryCA
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
     private val savedStateHandleUS = CardReaderManualsFragmentArgs(
         supportedCountryUs
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Test
     fun `when screen shown, a manual list is displayed`() {
