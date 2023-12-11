@@ -55,7 +55,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         val shouldShowProgress: Boolean = false,
         val cashOnDeliveryEnabledSuccessfully: Boolean? = null
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
-        val cardIllustration = R.drawable.img_products_error
+        val cardIllustration = R.drawable.ic_woo_illustrated_icon
         val headerLabel = UiString.UiStringRes(
             R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header_text
         )
