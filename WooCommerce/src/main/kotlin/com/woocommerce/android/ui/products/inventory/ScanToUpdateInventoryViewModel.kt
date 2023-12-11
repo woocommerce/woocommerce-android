@@ -216,34 +216,24 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                 MultiLiveEvent.Event.ShowUndoSnackbar(
                     message = message,
                     undoAction = {
-                        launch { onQuantityUpdateUndo(oldQuantity, productInfo) }
-                    }
+                        onQuantityUpdateUndo(oldQuantity, productInfo)
+                    },
                 )
             )
         }
     }
 
-    private suspend fun onQuantityUpdateUndo(oldQuantity: String, productInfo: ProductInfo) {
-        val product = productRepository.getProduct(productInfo.id) ?: return
-        val result = if (product.isVariable()) {
-            product.updateVariation(productInfo)
-        } else {
-            product.updateProduct(productInfo)
-        }
-        if (result.isSuccess) {
-            updateQuantity(
-                ProductInfo(
-                    id = productInfo.id,
-                    name = productInfo.name,
-                    imageUrl = productInfo.imageUrl,
-                    sku = productInfo.sku,
-                    quantity = oldQuantity.toInt()
-                ),
-                isUndoAction = true
-            )
+    private fun onQuantityUpdateUndo(oldQuantity: String, productInfo: ProductInfo) {
+        updateQuantity(productInfo.copy(quantity = oldQuantity.toInt()), isUndoAction = true)
+        val result = productInfo.quantity == oldQuantity.toInt()
+        if (result) {
+            Result.success(Unit)
+            // Display Message post Undo Action to let user know the action has been reverted
             triggerEvent(
                 ShowUiStringSnackbar(
-                    UiString.UiStringRes(R.string.scan_to_update_inventory_undo_snackbar)
+                    UiString.UiStringText(
+                        resourceProvider.getString(R.string.scan_to_update_inventory_undo_snackbar)
+                    )
                 )
             )
         } else {
