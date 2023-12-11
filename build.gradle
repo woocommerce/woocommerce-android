@@ -14,6 +14,7 @@ measureBuilds {
     enable = findProperty('tracksEnabled')?.toBoolean() ?: false
     automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
     attachGradleScanId = true
+    authToken = findProperty('appsMetricsToken')
 }
 
 allprojects {
