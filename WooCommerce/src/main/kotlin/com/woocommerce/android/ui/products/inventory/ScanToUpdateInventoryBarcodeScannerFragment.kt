@@ -70,7 +70,6 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     override fun onStop() {
         undoSnackbar?.dismiss()
         super.onStop()
-
     }
 
     override fun onPause() {

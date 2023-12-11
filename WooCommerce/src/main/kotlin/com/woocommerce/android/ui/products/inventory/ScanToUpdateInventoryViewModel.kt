@@ -225,7 +225,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                             )
                         )
                     },
-                 )
+                )
             )
         }
     }
