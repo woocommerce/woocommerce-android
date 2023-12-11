@@ -51,15 +51,20 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         val onCashOnDeliveryEnabledSuccessfully: (() -> Unit),
         val onEnableCashOnDeliveryClicked: (() -> Unit),
         val onLearnMoreActionClicked: (() -> Unit),
+        val onContactSupportActionClicked: (() -> Unit),
         val shouldShowProgress: Boolean = false,
         val cashOnDeliveryEnabledSuccessfully: Boolean? = null
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
         val cardIllustration = R.drawable.img_products_error
         val headerLabel = UiString.UiStringRes(
-            R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
+            R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header_text
         )
         val cashOnDeliveryHintLabel = UiString.UiStringRes(
-            R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
+            R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint_text
+        )
+        val contactSupportLabel = UiString.UiStringRes(
+            R.string.card_reader_onboarding_contact_support,
+            containsHtml = true
         )
         val skipCashOnDeliveryButtonLabel = UiString.UiStringRes(
             R.string.skip
