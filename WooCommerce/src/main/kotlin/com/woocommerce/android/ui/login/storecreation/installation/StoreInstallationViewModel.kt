@@ -98,6 +98,7 @@ class StoreInstallationViewModel @Inject constructor(
         when (result) {
             is InstallationState.Success -> {
                 repository.selectSite(storeData.siteId!!)
+                appPrefsWrapper.createdStoreSiteId = null
 
                 val properties = mapOf(
                     AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
@@ -107,7 +108,12 @@ class StoreInstallationViewModel @Inject constructor(
                 )
                 installationTransactionLauncher.onStoreInstalled(properties)
 
-                _viewState.update { SuccessState(newStoreWpAdminUrl) }
+                appPrefsWrapper.getThemeIdForStoreCreation(storeData.siteId!!)?.let {
+                    // Launch theme activation flow, the installation will continue after the theme is activated
+                    triggerEvent(LaunchThemeActivation(it))
+                } ?: run {
+                    _viewState.update { SuccessState(newStoreWpAdminUrl) }
+                }
             }
 
             is InstallationState.Failure -> {
@@ -191,6 +197,10 @@ class StoreInstallationViewModel @Inject constructor(
         loadNewStore()
     }
 
+    fun onThemeActivationFinished() {
+        _viewState.update { SuccessState(newStoreUrl) }
+    }
+
     sealed interface ViewState : Parcelable {
         @Parcelize
         data class StoreCreationLoadingState(
@@ -210,6 +220,7 @@ class StoreInstallationViewModel @Inject constructor(
 
     data class OpenStore(val url: String) : Event()
     object NavigateToNewStore : Event()
+    data class LaunchThemeActivation(val themeId: String) : Event()
 
     companion object {
         const val TRIAL_LENGTH_IN_DAYS = 14L

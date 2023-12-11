@@ -25,7 +25,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             id = 1,
             amount = BigDecimal.TEN,
             name = "Test Amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
@@ -46,7 +47,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             id = 1,
             amount = BigDecimal.TEN,
             name = "Test Amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
@@ -67,7 +69,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             id = 1,
             amount = BigDecimal.TEN,
             name = "Test Amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true),
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
