@@ -280,7 +280,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onEditClicked() {
         tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
-        triggerEvent(OrderNavigationTarget.EditOrder(order.id))
+        triggerEvent(OrderNavigationTarget.EditOrder(order.id, giftCards.value?.firstOrNull()?.code))
     }
 
     fun orderNavigationIsEnabled() = navArgs.allOrderIds?.let {
