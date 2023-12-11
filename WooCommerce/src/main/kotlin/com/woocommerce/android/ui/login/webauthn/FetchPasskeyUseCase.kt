@@ -9,15 +9,28 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.GetPasswordOption
 import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.exceptions.GetCredentialException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class FetchPasskeyUseCase {
+    operator fun invoke(
+        context: Context,
+        requestJson: String
+    ): Flow<GetCredentialResponse?> = flow {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                emit(createPasskey(context, requestJson))
+            } else {
+                emit(null)
+            }
+        }
 
+    }
 
     @RequiresApi(34)
     private suspend fun CredentialManager.createPasskey(
         context: Context,
         requestJson: String
-    ) {
+    ): GetCredentialResponse? {
         val password = GetPasswordOption()
         val publicKeyCred = GetPublicKeyCredentialOption(requestJson)
         val getCredRequest = GetCredentialRequest(
@@ -25,14 +38,13 @@ class FetchPasskeyUseCase {
         )
 
         try {
-            val result: GetCredentialResponse = getCredential(
+            return getCredential(
                 request = getCredRequest,
                 context = context,
             )
-            result.apply { }
         } catch (e: GetCredentialException) {
             Log.e("Error", e.stackTraceToString())
-            // handle error
+            return null
         }
     }
 }
