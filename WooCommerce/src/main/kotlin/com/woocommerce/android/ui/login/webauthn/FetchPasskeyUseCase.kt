@@ -9,16 +9,19 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.GetPasswordOption
 import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.exceptions.GetCredentialException
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class FetchPasskeyUseCase {
+class FetchPasskeyUseCase @Inject constructor(
+    private val credentialManager: CredentialManager
+) {
     operator fun invoke(
         context: Context,
         requestJson: String
     ): Flow<GetCredentialResponse?> = flow {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                emit(createPasskey(context, requestJson))
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                emit(credentialManager.createPasskey(context, requestJson))
             } else {
                 emit(null)
             }
