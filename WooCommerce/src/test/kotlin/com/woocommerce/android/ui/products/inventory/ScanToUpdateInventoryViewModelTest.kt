@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.inventory
 
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
@@ -22,8 +23,10 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -305,6 +308,50 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         val expectedProduct = originalProduct.copy(stockQuantity = (999).toDouble())
         verify(productRepo).updateProduct(expectedProduct)
     }
+
+    @Test
+    fun `given quantity updated, when undo action triggered, then should set quantity back to original`() = testBlocking {
+        val originalQuantity = 5
+        val newQuantity = 10
+        val productId = 1L
+        val product = ProductTestUtils.generateProduct(
+            isStockManaged = true,
+        )
+
+        whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+        whenever(productRepo.getProduct(productId)).thenReturn(product)
+        whenever(productRepo.updateProduct(any())).thenReturn(true)
+        whenever(
+            resourceProvider.getString(
+                eq(R.string.scan_to_update_inventory_success_snackbar),
+                any()
+            )
+        ).thenReturn("Quantity updated from $originalQuantity to $newQuantity")
+        whenever(
+            resourceProvider.getString(
+                eq(R.string.scan_to_update_inventory_undo_snackbar)
+            )
+        ).thenReturn("Undo successful")
+
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        val observer = mock<Observer<MultiLiveEvent.Event>>()
+        doAnswer { invocation ->
+            val event = invocation.arguments[0] as MultiLiveEvent.Event
+            events.add(event)
+            null
+        }.whenever(observer).onChanged(any())
+        sut.event.observeForever(observer)
+
+        sut.onBarcodeScanningResult(CodeScannerStatus.Success(product.sku, GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8))
+
+        sut.onIncrementQuantityClicked()
+
+        val undoAction = (events.first { it is MultiLiveEvent.Event.ShowUndoSnackbar } as MultiLiveEvent.Event.ShowUndoSnackbar).undoAction
+        undoAction.onClick(null)
+
+        verify(productRepo).updateProduct(product.copy(stockQuantity = originalQuantity.toDouble()))
+    }
+
 
     @Test
     fun `given bottom sheet with variation shown, when increment quantity clicked, then should should update product`() = testBlocking {
