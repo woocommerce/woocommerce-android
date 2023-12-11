@@ -63,7 +63,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint_text
         )
         val contactSupportLabel = UiString.UiStringRes(
-            R.string.card_reader_onboarding_contact_support,
+            R.string.card_reader_onboarding_contact_us,
             containsHtml = true
         )
         val skipCashOnDeliveryButtonLabel = UiString.UiStringRes(
