@@ -275,6 +275,10 @@
                 android:name="barcodeFormat"
                 app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
                 app:nullable="true"/>
+            <argument
+                android:name="giftCard"
+                app:argType="string"
+                app:nullable="true"/>
         </action>
 
         <action
