@@ -2164,6 +2164,8 @@ class ProductDetailViewModel @Inject constructor(
             if (result.isSuccess) {
                 triggerEvent(ShowSnackbar(R.string.product_category_deleted))
                 refreshProductCategories()
+            } else {
+                triggerEvent(ShowSnackbar(R.string.product_category_deletion_failure))
             }
         }
     }
