@@ -195,7 +195,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val _selectedGiftCard = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = ""
+        initialValue = args.giftCard.orEmpty()
     )
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
@@ -1076,6 +1076,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val changes =
                 if (mode is Mode.Edit) {
                     _orderDraft.drop(1)
+                    //Combine with selected gift card here
                 } else {
                     // When we are in the order creation flow, we need to keep the order status as auto-draft.
                     // In this way, when the draft of the created order needs to synchronize the price modifiers,
