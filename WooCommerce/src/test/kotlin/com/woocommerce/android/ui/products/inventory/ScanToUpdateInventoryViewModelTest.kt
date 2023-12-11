@@ -280,7 +280,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given quantity updated, when undo action triggered, then should set quantity back to original`() = testBlocking {
-        // Arrange
         val originalQuantity = 5
         val newQuantity = 10
         val productId = 1L
@@ -303,7 +302,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
         ).thenReturn("Undo successful")
 
-        // Emulate live data event observer
         val events = mutableListOf<MultiLiveEvent.Event>()
         val observer = mock<Observer<MultiLiveEvent.Event>>()
         doAnswer { invocation ->
@@ -313,15 +311,12 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }.whenever(observer).onChanged(any())
         sut.event.observeForever(observer)
 
-        // Act: Simulate successful scan and quantity update
         sut.onBarcodeScanningResult(
             CodeScannerStatus.Success(product.sku, GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8)
         )
 
-        // Simulate user incrementing quantity
         sut.onIncrementQuantityClicked()
 
-        // Perform the undo action
         val undoAction = (
             events.first {
                 it is MultiLiveEvent.Event.ShowUndoSnackbar
@@ -329,11 +324,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             ).undoAction
         undoAction.onClick(null)
 
-        // Verify the product quantity is reverted back to the original quantity.
         verify(productRepo).updateProduct(product.copy(stockQuantity = originalQuantity.toDouble()))
-
-        // Clean up the observer
-        sut.event.removeObserver(observer)
     }
 
     @Test
