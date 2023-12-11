@@ -125,6 +125,7 @@ object AppPrefs {
         WC_STORE_ID,
         CREATED_STORE_SITE_ID,
         CREATED_STORE_THEME_ID,
+        CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
     }
 
     /**
@@ -291,6 +292,10 @@ object AppPrefs {
     var createdStoreSiteId: Long?
         get() = getLong(DeletablePrefKey.CREATED_STORE_SITE_ID, -1).takeIf { it != -1L }
         set(value) = setLong(DeletablePrefKey.CREATED_STORE_SITE_ID, value ?: -1)
+
+    var chaChingSoundIssueDialogDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

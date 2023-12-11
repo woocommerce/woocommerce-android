@@ -100,7 +100,8 @@ object OrderCreateEditNavigator {
 
             is OrderCreateEditNavigationTarget.CustomAmountDialog -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
-                    target.customAmountUIModel
+                    target.customAmountUIModel,
+                    target.orderTotal
                 )
             }
             is OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration -> {
@@ -110,6 +111,12 @@ object OrderCreateEditNavigator {
                     configuration = target.configuration
                 )
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToEditConfiguration(flow)
+            }
+            is OrderCreateEditNavigationTarget.AddGiftCard -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(giftCard = null)
+            }
+            is OrderCreateEditNavigationTarget.EditGiftCard -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment("")
             }
         }
         navController.navigate(action)

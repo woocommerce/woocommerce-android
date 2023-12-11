@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-29 09:54:04+0000
+Translation-Revision-Date: 2023-12-06 16:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_creation_use_theme_button">開始使用此佈景主題</string>
+    <string name="theme_activated_successfully">已成功啟用佈景主題</string>
+    <string name="theme_preview_theme_name">佈景主題：%1$s</string>
+    <string name="theme_preview_activate_theme_button">使用此佈景主題</string>
+    <string name="theme_preview_bottom_sheet_home_section">首頁</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">點選以檢視</string>
+    <string name="theme_preview_bottom_sheet_pages_title">此範本上的頁面</string>
+    <string name="theme_preview_title">預覽</string>
+    <string name="theme_picker_error_message">目前無法載入佈景主題。</string>
+    <string name="theme_picker_error_title">發生錯誤</string>
+    <string name="theme_picker_carousel_placeholder_message">點選查看即時示範。</string>
+    <string name="theme_picker_carousel_placeholder_title">佈景主題「%s」</string>
+    <string name="theme_picker_carousel_info_item_description">商店設定完畢後，請前往 WooCommerce 佈景主題商店，尋找最適合你的佈景主題。</string>
+    <string name="theme_picker_carousel_info_item_title">想探索更多選項嗎？</string>
+    <string name="theme_picker_description">你之後可以隨時在設定中變更。</string>
+    <string name="theme_picker_title">選擇佈景主題</string>
+    <string name="store_creation_theme_activation_error">啟用你選取的佈景主題時發生錯誤，請再試一次！</string>
+    <string name="store_creation_theme_activation_loading">正在啟用商店佈景主題…</string>
+    <string name="settings_themes">佈景主題</string>
+    <string name="product_filter_explore_plugin">立即探索！</string>
     <string name="configuration_required">需要設定</string>
     <string name="blaze_overflow_menu_hide_blaze">隱藏 Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">AI 產生的感謝信</string>

@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 09:54:04+0000
+Translation-Revision-Date: 2023-12-07 12:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_creation_use_theme_button">Börja med detta tema</string>
+    <string name="theme_activated_successfully">Temat har aktiverats</string>
+    <string name="theme_preview_theme_name">Tema: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Använd detta tema</string>
+    <string name="theme_preview_bottom_sheet_home_section">Hem</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Tryck för att visa</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Sidor på denna mall</string>
+    <string name="theme_preview_title">Förhandsgranska</string>
+    <string name="theme_picker_error_message">Kan inte att ladda teman just nu.</string>
+    <string name="theme_picker_error_title">Ett fel uppstod</string>
+    <string name="theme_picker_carousel_placeholder_message">Tryck för live-demo.</string>
+    <string name="theme_picker_carousel_placeholder_title">Tema ”%s”</string>
+    <string name="theme_picker_carousel_info_item_description">När din butik har konfigurerats kan du hitta ditt perfekta tema i WooCommerce-temabutiken.</string>
+    <string name="theme_picker_carousel_info_item_title">Letar du efter fler?</string>
+    <string name="theme_picker_description">Du kan alltid ändra det senare i inställningar</string>
+    <string name="theme_picker_title">Välj ett tema</string>
+    <string name="store_creation_theme_activation_error">Ett fel uppstod när du aktiverade det tema du valt, försök igen!</string>
+    <string name="store_creation_theme_activation_loading">Aktiverar din butiks tema …</string>
+    <string name="settings_themes">Teman</string>
+    <string name="product_filter_explore_plugin">Utforska!</string>
     <string name="configuration_required">Konfiguration krävs</string>
     <string name="blaze_overflow_menu_hide_blaze">Dölj Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">AI-genererat tackbrev</string>

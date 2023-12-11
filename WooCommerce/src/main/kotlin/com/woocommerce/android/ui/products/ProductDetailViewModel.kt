@@ -342,6 +342,13 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
+
+        if (!navArgs.images.isNullOrEmpty()) {
+            mediaFileUploadHandler.enqueueUpload(
+                remoteProductId = viewState.productDraft?.remoteId ?: 0L,
+                uris = navArgs.images!!.asList()
+            )
+        }
     }
 
     private fun initializeViewState() {
@@ -1971,9 +1978,11 @@ class ProductDetailViewModel @Inject constructor(
                             if (errorList.isEmpty()) {
                                 triggerEvent(HideImageUploadErrorSnackbar)
                             } else {
-                                val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
                                 triggerEvent(
-                                    ShowActionSnackbar(errorMsg) {
+                                    ShowActionSnackbar(
+                                        message = resources.getMediaUploadErrorMessage(errorList.size),
+                                        actionText = resources.getString(R.string.details)
+                                    ) {
                                         triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(productId))
                                     }
                                 )

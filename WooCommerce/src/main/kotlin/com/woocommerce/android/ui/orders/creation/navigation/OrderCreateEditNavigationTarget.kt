@@ -59,7 +59,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class CustomAmountDialog(
-        val customAmountUIModel: CustomAmountUIModel? = null
+        val customAmountUIModel: CustomAmountUIModel,
+        val orderTotal: String,
     ) : OrderCreateEditNavigationTarget()
 
     data class EditOrderCreationProductConfiguration(
@@ -67,4 +68,9 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val productId: Long,
         val configuration: ProductConfiguration
     ) : OrderCreateEditNavigationTarget()
+
+    data class EditGiftCard(
+        val giftCard: String
+    ) : OrderCreateEditNavigationTarget()
+    object AddGiftCard : OrderCreateEditNavigationTarget()
 }
