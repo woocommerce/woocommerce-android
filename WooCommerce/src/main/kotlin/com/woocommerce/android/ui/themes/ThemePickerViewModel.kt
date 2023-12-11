@@ -38,7 +38,7 @@ class ThemePickerViewModel @Inject constructor(
         loadThemes().stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = Loading),
     ) { isFromStoreCreation, carouselState ->
         ViewState(
-            isSkipButtonVisible = isFromStoreCreation,
+            isFromStoreCreation = isFromStoreCreation,
             carouselState = carouselState
         )
     }.asLiveData()
@@ -88,7 +88,7 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val isSkipButtonVisible: Boolean,
+        val isFromStoreCreation: Boolean,
         val carouselState: CarouselState
     )
 

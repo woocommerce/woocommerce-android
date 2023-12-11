@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,8 +48,6 @@ import coil.request.ImageRequest
 import coil.util.DebugLogger
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState
@@ -64,9 +63,9 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                 navigationIcon = Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
                 actions = {
-                    if (viewState.isSkipButtonVisible) {
+                    if (viewState.isFromStoreCreation) {
                         TextButton(onClick = viewModel::onSkipPressed) {
-                            Text(text = stringResource(id = string.skip))
+                            Text(text = stringResource(id = R.string.skip))
                         }
                     }
                 }
@@ -93,37 +92,67 @@ private fun ThemePicker(
 ) {
     Column(
         modifier = modifier
-            .padding(vertical = dimensionResource(id = dimen.major_100))
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
             .fillMaxSize()
     ) {
-        Text(
-            text = stringResource(id = string.theme_picker_title),
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = dimen.major_100),
-                    end = dimensionResource(id = dimen.major_100),
-                )
+        Header(
+            isFromStoreCreation = viewState.isFromStoreCreation,
+            modifier = Modifier.fillMaxWidth()
         )
-        Text(
-            text = stringResource(id = string.theme_picker_description),
-            style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = color.color_on_surface_medium),
-            modifier = Modifier.padding(dimensionResource(id = dimen.major_100))
-        )
+        Carousel(viewState.carouselState, onThemeTapped)
+    }
+}
 
-        when (viewState.carouselState) {
-            is CarouselState.Loading -> {
-                Loading()
-            }
+@Composable
+private fun Header(
+    isFromStoreCreation: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        if (isFromStoreCreation) {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Text(
+                text = stringResource(id = R.string.theme_picker_title),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
+            Text(
+                text = stringResource(id = R.string.theme_picker_description),
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = color.color_on_surface_medium),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
+        } else {
+            Text(
+                text = stringResource(id = R.string.theme_picker_settings_title),
+                style = MaterialTheme.typography.subtitle2,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        }
+    }
+}
 
-            is CarouselState.Error -> {
-                Error()
-            }
+@Composable
+private fun ColumnScope.Carousel(
+    state: CarouselState,
+    onThemeTapped: (String) -> Unit
+) {
+    when (state) {
+        is CarouselState.Loading -> {
+            Loading()
+        }
 
-            is CarouselState.Success -> {
-                Carousel(viewState.carouselState.carouselItems, onThemeTapped)
-            }
+        is CarouselState.Error -> {
+            Error()
+        }
+
+        is CarouselState.Success -> {
+            Carousel(state.carouselItems, onThemeTapped)
         }
     }
 }
@@ -149,8 +178,8 @@ private fun ColumnScope.Error() {
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        title = stringResource(id = string.theme_picker_error_title),
-        description = stringResource(id = string.theme_picker_error_message),
+        title = stringResource(id = R.string.theme_picker_error_title),
+        description = stringResource(id = R.string.theme_picker_error_message),
         color = color.color_error
     )
 }
@@ -159,11 +188,10 @@ private fun ColumnScope.Error() {
 private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit) {
     LazyRow(
         modifier = Modifier
-            .padding(top = dimensionResource(id = dimen.major_150))
             .height(480.dp)
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100)),
-        contentPadding = PaddingValues(start = dimensionResource(id = dimen.major_100))
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.major_100))
     ) {
         items(items) { item ->
             when (item) {
@@ -184,12 +212,12 @@ private fun Message(
     Box(
         modifier = modifier
             .fillMaxHeight()
-            .padding(dimensionResource(id = dimen.major_100)),
+            .padding(dimensionResource(id = R.dimen.major_100)),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
-                .padding(dimensionResource(id = dimen.major_100))
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = title,
@@ -198,7 +226,7 @@ private fun Message(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
-                    .padding(bottom = dimensionResource(id = dimen.major_100))
+                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth()
             )
             Text(
@@ -219,8 +247,8 @@ private fun Theme(
 ) {
     val themeModifier = Modifier.width(240.dp)
     Card(
-        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
-        elevation = dimensionResource(id = dimen.minor_50),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
+        elevation = dimensionResource(id = R.dimen.minor_50),
         modifier = themeModifier.clickable { onThemeTapped(theme.themeId) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
@@ -240,7 +268,7 @@ private fun Theme(
         SubcomposeAsyncImage(
             model = request,
             imageLoader = imageLoader,
-            contentDescription = stringResource(string.settings_app_theme_title),
+            contentDescription = stringResource(R.string.settings_app_theme_title),
             contentScale = ContentScale.FillHeight,
             modifier = Modifier.fillMaxHeight()
         ) {
@@ -248,8 +276,8 @@ private fun Theme(
                 is AsyncImagePainter.State.Error -> {
                     Message(
                         modifier = themeModifier,
-                        title = stringResource(id = string.theme_picker_carousel_placeholder_title, theme.name),
-                        description = stringResource(id = string.theme_picker_carousel_placeholder_message)
+                        title = stringResource(id = R.string.theme_picker_carousel_placeholder_title, theme.name),
+                        description = stringResource(id = R.string.theme_picker_carousel_placeholder_message)
                     )
                 }
 
