@@ -2162,6 +2162,7 @@ class ProductDetailViewModel @Inject constructor(
         launch {
             val result = productCategoriesRepository.deleteProductCategory(category)
             if (result.isSuccess) {
+                triggerEvent(ShowSnackbar(R.string.product_category_deleted))
                 refreshProductCategories()
             }
         }
