@@ -3883,6 +3883,7 @@
     <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
     <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
     <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Update quantity undone</string>
     <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
     <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
     <string name="scan_to_update_inventory_quantity_label">Quantity</string>
@@ -3908,5 +3909,4 @@
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
     <string name="store_creation_use_theme_button">Start with this theme</string>
-    <string name="scan_to_update_inventory_undo_snackbar">Update quantity undone</string>
 </resources>
