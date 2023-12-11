@@ -32,7 +32,7 @@ class ThemePickerViewModel @Inject constructor(
 
     private val _viewState = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState(navArgs.isFromStoreCreation, Loading)
+        initialValue = ViewState(isSkipButtonVisible = navArgs.isFromStoreCreation, carouselState = Loading)
     )
     val viewState = _viewState.asLiveData()
 
