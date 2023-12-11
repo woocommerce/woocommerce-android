@@ -3908,4 +3908,5 @@
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
     <string name="store_creation_use_theme_button">Start with this theme</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Update quantity undone</string>
 </resources>
