@@ -1345,6 +1345,24 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cash on delivery disabled state, when contact us clicked, then correct event is triggered`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            viewStateData.onContactSupportActionClicked.invoke()
+            assertThat(viewModel.event.value).isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
+        }
+
+    @Test
     fun `when cash on delivery disabled state, then skip button shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
