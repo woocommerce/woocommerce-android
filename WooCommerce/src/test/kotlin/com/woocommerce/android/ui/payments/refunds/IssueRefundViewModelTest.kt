@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.OrderMapper
@@ -73,7 +72,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     private val paymentChargeRepository: PaymentChargeRepository = mock()
 
-    private val savedState = IssueRefundFragmentArgs(ORDER_ID).initSavedStateHandle()
+    private val savedState = IssueRefundFragmentArgs(ORDER_ID).toSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
 

@@ -15,7 +15,6 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
@@ -2012,7 +2011,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         viewModel = PaymentsHubViewModel(
             PaymentsHubFragmentArgs(
                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(openInHub),
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
             appPrefsWrapper,
             selectedSite,
             analyticsTrackerWrapper,

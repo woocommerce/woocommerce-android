@@ -4,7 +4,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.DeltaPercentage.NotExist
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -82,7 +81,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private val updateStats: UpdateAnalyticsHubStats = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock()
-    private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
+    private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).toSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()

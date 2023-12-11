@@ -2,6 +2,7 @@
 16.7
 -----
 - [*] Pay in Person: Revise both the text and the illustration to clarify that enabling Pay in Person is an optional choice for our customers. [https://github.com/woocommerce/woocommerce-android/pull/10362]
+- [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
 
 16.6
 -----
