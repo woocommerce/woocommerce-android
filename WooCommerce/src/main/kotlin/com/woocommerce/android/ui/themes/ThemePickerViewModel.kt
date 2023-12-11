@@ -14,11 +14,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -30,54 +33,46 @@ class ThemePickerViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
-    private val _viewState = savedStateHandle.getStateFlow(
-        scope = viewModelScope,
-        initialValue = ViewState(isSkipButtonVisible = navArgs.isFromStoreCreation, carouselState = Loading)
-    )
-    val viewState = _viewState.asLiveData()
-
-    init {
-        viewModelScope.launch {
-            loadThemes()
-        }
-    }
-
-    private suspend fun loadThemes() {
-        themeRepository.fetchThemes().fold(
-            onSuccess = { result ->
-                _viewState.update {
-                    it.copy(
-                        carouselState = Success(
-                            carouselItems = result
-                                .filter { theme -> theme.demoUrl != null }
-                                .map { theme ->
-                                    CarouselItem.Theme(
-                                        themeId = theme.id,
-                                        name = theme.name,
-                                        screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!),
-                                        demoUri = theme.demoUrl
-                                    )
-                                }
-                                .plus(
-                                    CarouselItem.Message(
-                                        title = resourceProvider.getString(
-                                            string.theme_picker_carousel_info_item_title
-                                        ),
-                                        description = resourceProvider.getString(
-                                            string.theme_picker_carousel_info_item_description
-                                        )
-                                    )
-                                )
-                        )
-                    )
-                }
-            },
-            onFailure = {
-                _viewState.update {
-                    it.copy(carouselState = Error)
-                }
-            }
+    val viewState = combine(
+        flowOf(navArgs.isFromStoreCreation),
+        loadThemes().stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = Loading),
+    ) { isFromStoreCreation, carouselState ->
+        ViewState(
+            isSkipButtonVisible = isFromStoreCreation,
+            carouselState = carouselState
         )
+    }.asLiveData()
+
+    private fun loadThemes(): Flow<CarouselState> = flow {
+        emit(Loading)
+        val result = themeRepository.fetchThemes().fold(
+            onSuccess = { result ->
+                Success(
+                    carouselItems = result
+                        .filter { theme -> theme.demoUrl != null }
+                        .map { theme ->
+                            CarouselItem.Theme(
+                                themeId = theme.id,
+                                name = theme.name,
+                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!),
+                                demoUri = theme.demoUrl
+                            )
+                        }
+                        .plus(
+                            CarouselItem.Message(
+                                title = resourceProvider.getString(
+                                    string.theme_picker_carousel_info_item_title
+                                ),
+                                description = resourceProvider.getString(
+                                    string.theme_picker_carousel_info_item_description
+                                )
+                            )
+                        )
+                )
+            },
+            onFailure = { Error }
+        )
+        emit(result)
     }
 
     fun onArrowBackPressed() {
@@ -92,20 +87,16 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
     }
 
-    @Parcelize
     data class ViewState(
         val isSkipButtonVisible: Boolean,
         val carouselState: CarouselState
-    ) : Parcelable
+    )
 
-    sealed interface CarouselState : Parcelable {
-        @Parcelize
+    sealed interface CarouselState {
         object Loading : CarouselState
 
-        @Parcelize
         object Error : CarouselState
 
-        @Parcelize
         data class Success(
             val carouselItems: List<CarouselItem> = emptyList()
         ) : CarouselState {
