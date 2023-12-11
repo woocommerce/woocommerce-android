@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.content.Context
+import androidx.credentials.CredentialManager
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.FeedbackPrefs
@@ -44,4 +45,8 @@ class AppConfigModule {
     @Provides
     @Singleton
     fun provideStringUtils() = StringUtils
+
+    @Provides
+    @Singleton
+    fun provideCredentialManager(appContext: Context) = CredentialManager.create(appContext)
 }
