@@ -2034,6 +2034,10 @@
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
+    <string name="product_creation_survey_title">Start the Survey</string>
+    <string name="product_creation_survey_description">We value your input</string>
+    <string name="product_creation_survey_button_open">You\'ve used our AI-assisted feature to add products multiple times now. We\'d love to hear your thoughts to make it even better.</string>
+    <string name="product_creation_survey_button_skip">Skip</string>
 
     <!--
         Product Add more details Bottom sheet
