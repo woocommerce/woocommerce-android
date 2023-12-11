@@ -5,10 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Error
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Loading
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -35,19 +32,29 @@ class ThemePickerViewModel @Inject constructor(
 
     val viewState = combine(
         flowOf(navArgs.isFromStoreCreation),
-        loadThemes().stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = Loading),
-    ) { isFromStoreCreation, carouselState ->
+        loadThemes().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = CarouselState.Loading
+        ),
+        loadCurrentTheme().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = CurrentThemeState.Hidden
+        )
+    ) { isFromStoreCreation, carouselState, currentThemeState ->
         ViewState(
             isFromStoreCreation = isFromStoreCreation,
-            carouselState = carouselState
+            carouselState = carouselState,
+            currentThemeState = currentThemeState
         )
     }.asLiveData()
 
     private fun loadThemes(): Flow<CarouselState> = flow {
-        emit(Loading)
+        emit(CarouselState.Loading)
         val result = themeRepository.fetchThemes().fold(
             onSuccess = { result ->
-                Success(
+                CarouselState.Success(
                     carouselItems = result
                         .filter { theme -> theme.demoUrl != null }
                         .map { theme ->
@@ -61,16 +68,34 @@ class ThemePickerViewModel @Inject constructor(
                         .plus(
                             CarouselItem.Message(
                                 title = resourceProvider.getString(
-                                    string.theme_picker_carousel_info_item_title
+                                    R.string.theme_picker_carousel_info_item_title
                                 ),
                                 description = resourceProvider.getString(
-                                    string.theme_picker_carousel_info_item_description
+                                    R.string.theme_picker_carousel_info_item_description
                                 )
                             )
                         )
                 )
             },
-            onFailure = { Error }
+            onFailure = { CarouselState.Error }
+        )
+        emit(result)
+    }
+
+    private fun loadCurrentTheme(): Flow<CurrentThemeState> = flow {
+        if (navArgs.isFromStoreCreation) {
+            emit(CurrentThemeState.Hidden)
+            return@flow
+        }
+        emit(CurrentThemeState.Loading)
+        val result = themeRepository.fetchCurrentTheme().fold(
+            onSuccess = { theme ->
+                CurrentThemeState.Success(theme.name)
+            },
+            onFailure = {
+                triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
+                CurrentThemeState.Hidden
+            }
         )
         emit(result)
     }
@@ -89,7 +114,8 @@ class ThemePickerViewModel @Inject constructor(
 
     data class ViewState(
         val isFromStoreCreation: Boolean,
-        val carouselState: CarouselState
+        val carouselState: CarouselState,
+        val currentThemeState: CurrentThemeState
     )
 
     sealed interface CarouselState {
@@ -113,6 +139,17 @@ class ThemePickerViewModel @Inject constructor(
                 data class Message(val title: String, val description: String) : CarouselItem()
             }
         }
+    }
+
+    sealed interface CurrentThemeState : Parcelable {
+        @Parcelize
+        object Hidden : CurrentThemeState
+
+        @Parcelize
+        object Loading : CurrentThemeState
+
+        @Parcelize
+        data class Success(val themeName: String) : CurrentThemeState
     }
 
     object NavigateToNextStep : Event()

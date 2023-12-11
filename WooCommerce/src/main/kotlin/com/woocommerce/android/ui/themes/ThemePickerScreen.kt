@@ -48,10 +48,12 @@ import coil.request.ImageRequest
 import coil.util.DebugLogger
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CurrentThemeState
 import okhttp3.OkHttpClient
 
 @Composable
@@ -95,11 +97,51 @@ private fun ThemePicker(
             .padding(vertical = dimensionResource(id = R.dimen.major_100))
             .fillMaxSize()
     ) {
+        CurrentTheme(viewState.currentThemeState)
         Header(
             isFromStoreCreation = viewState.isFromStoreCreation,
             modifier = Modifier.fillMaxWidth()
         )
         Carousel(viewState.carouselState, onThemeTapped)
+    }
+}
+
+@Composable
+private fun CurrentTheme(
+    currentThemeState: CurrentThemeState,
+    modifier: Modifier = Modifier
+) {
+    if (currentThemeState == CurrentThemeState.Hidden) {
+        return
+    }
+
+    Column(modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
+        Text(
+            text = stringResource(id = R.string.theme_picker_current_theme_title),
+            style = MaterialTheme.typography.subtitle2,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        when (currentThemeState) {
+            is CurrentThemeState.Loading -> {
+                SkeletonView(
+                    width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                    height = dimensionResource(id = R.dimen.skeleton_text_height_100)
+                )
+            }
+
+            is CurrentThemeState.Success -> {
+                Text(
+                    text = currentThemeState.themeName,
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = color.color_on_surface_medium)
+                )
+            }
+
+            else -> {}
+        }
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     }
 }
 
@@ -293,7 +335,15 @@ private fun Theme(
 @Composable
 private fun PreviewThemePickerError() {
     WooThemeWithBackground {
-        ThemePicker(Modifier, ThemePickerViewModel.ViewState(true, CarouselState.Error), {})
+        ThemePicker(
+            modifier = Modifier,
+            viewState = ThemePickerViewModel.ViewState(
+                isFromStoreCreation = true,
+                carouselState = CarouselState.Error,
+                currentThemeState = CurrentThemeState.Hidden
+            ),
+            onThemeTapped = {}
+        )
     }
 }
 
@@ -301,6 +351,14 @@ private fun PreviewThemePickerError() {
 @Composable
 private fun PreviewThemePickerLoading() {
     WooThemeWithBackground {
-        ThemePicker(Modifier, ThemePickerViewModel.ViewState(true, CarouselState.Error), {})
+        ThemePicker(
+            modifier = Modifier,
+            viewState = ThemePickerViewModel.ViewState(
+                isFromStoreCreation = true,
+                carouselState = CarouselState.Error,
+                currentThemeState = CurrentThemeState.Hidden
+            ),
+            onThemeTapped = {}
+        )
     }
 }
