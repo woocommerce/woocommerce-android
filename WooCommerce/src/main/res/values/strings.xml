@@ -1663,12 +1663,15 @@
 
     <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_contact_us">Need some help? &lt;a href=\'\'&gt;Contact us&lt;/a&gt;</string>
 
     <string name="card_reader_onboarding_generic_error_header">Unable to verify In-Person Payments for this store</string>
     <string name="card_reader_onboarding_generic_error_hint">We\'re sorry, we were unable to verify In-Person Payments for this store</string>
 
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Add Pay in Person to your checkout</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header_text">Do you want to add Pay in Person to your web checkout?</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">A "Pay in Person" option on your checkout lets you accept card or cash payments on collection or delivery.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint_text">Enabling "Pay in Person" lets customer pay you for online orders at delivery via cash or card.\n\nOrders can still be created manually without enabling this feature.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay in Person</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Failed to enable cash on delivery. Please try again later.</string>
 
