@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -188,6 +189,14 @@ class ProductCategoriesFragment :
     }
 
     override fun onProductCategoryDeleteClick(productCategory: ProductCategory) {
-        viewModel.deleteProductCategory(productCategory)
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(getString(R.string.product_category_deletion_confirmation))
+            .setPositiveButton(R.string.delete) { _, _ ->
+                viewModel.deleteProductCategory(productCategory)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .setCancelable(true)
+            .create()
+            .show()
     }
 }

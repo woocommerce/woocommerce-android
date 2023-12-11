@@ -1925,6 +1925,7 @@
     <string name="product_category_parent">Parent category</string>
     <string name="product_add_category_dialog_title">Adding category</string>
     <string name="product_add_category_dialog_message">Please wait…</string>
+    <string name="product_category_deletion_confirmation">This will permanently delete the product category. Would you like to proceed?</string>
     <string name="product_category_deleted">Product category deleted.</string>
     <string name="product_category_deletion_failure">Product category deletion failed. Please try again.</string>
     <string name="product_tag_empty">Add tag</string>
