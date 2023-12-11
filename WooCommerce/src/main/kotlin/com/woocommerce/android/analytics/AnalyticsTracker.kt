@@ -643,6 +643,9 @@ class AnalyticsTracker private constructor(
         // -- Product subscriptions
         const val KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS = "is_eligible_for_subscriptions"
 
+        // -- Scan To Update Inventory
+        const val SCAN_TO_UPDATE_INVENTORY = "scan_to_update_inventory"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

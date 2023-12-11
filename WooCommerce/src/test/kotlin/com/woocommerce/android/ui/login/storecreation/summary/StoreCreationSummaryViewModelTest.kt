@@ -244,7 +244,8 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
             localNotificationScheduler = localNotificationScheduler,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
             accountStore = accountStore,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            appPrefs = mock()
         )
     }
 }

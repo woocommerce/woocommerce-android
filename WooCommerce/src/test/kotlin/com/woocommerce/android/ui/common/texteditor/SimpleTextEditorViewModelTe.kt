@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.common.texteditor
 
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -16,6 +15,6 @@ abstract class SimpleTextEditorViewModelTe : BaseUnitTest() {
     )
 
     protected fun setup(args: SimpleTextEditorFragmentArgs = defaultArgs) {
-        viewModel = SimpleTextEditorViewModel(args.initSavedStateHandle())
+        viewModel = SimpleTextEditorViewModel(args.toSavedStateHandle())
     }
 }

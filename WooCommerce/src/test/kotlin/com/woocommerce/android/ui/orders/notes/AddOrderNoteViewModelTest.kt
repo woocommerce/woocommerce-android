@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.notes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.tools.NetworkStatus
@@ -51,7 +50,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: AddOrderNoteViewModel
 
     private val savedState: SavedStateHandle =
-        AddOrderNoteFragmentArgs(orderId = ORDER_ID, orderNumber = "100").initSavedStateHandle()
+        AddOrderNoteFragmentArgs(orderId = ORDER_ID, orderNumber = "100").toSavedStateHandle()
 
     private fun initViewModel() {
         viewModel = AddOrderNoteViewModel(

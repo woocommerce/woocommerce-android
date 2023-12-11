@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -61,6 +62,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -171,6 +173,7 @@ class OrderCreateEditFormFragment :
                 viewModel.onCreateOrderClicked(viewModel.currentDraft)
                 true
             }
+
             else -> false
         }
     }
@@ -545,12 +548,28 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.hide()
     }
 
-    private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
-        OrderCreateEditNavigator.navigate(
-            this,
-            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel)
-        )
+    private fun navigateToCustomAmountsDialog(
+        customAmountUIModel: CustomAmountUIModel = CustomAmountUIModel.EMPTY,
+        orderTotal: String = viewModel.orderDraft.value?.total.toString(),
+    ) {
+        if (viewModel.orderContainsProductsOrCustomAmounts()) {
+            displayCustomAmountTypeBottomSheet()
+        } else {
+            OrderCreateEditNavigator.navigate(
+                this,
+                OrderCreateEditNavigationTarget.CustomAmountDialog(
+                    customAmountUIModel.copy(type = FIXED_CUSTOM_AMOUNT),
+                    orderTotal
+                )
+            )
+        }
     }
+
+    private fun displayCustomAmountTypeBottomSheet() {
+        val bottomSheet = CustomAmountTypeBottomSheetDialog()
+        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
+    }
+
     private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
@@ -764,9 +783,11 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = { navigateToCustomAmountsDialog(it) },
-                        onCustomAmountDeleteClick = {
-                            viewModel.onCustomAmountRemoved(it)
+                        onCustomAmountClick = {
+                            viewModel.selectCustomAmount(it)
+                            navigateToCustomAmountsDialog(
+                                customAmountUIModel = it,
+                            )
                         }
                     )
                     itemAnimator = animator
@@ -793,8 +814,7 @@ class OrderCreateEditFormFragment :
                             item,
                             onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                             onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
-                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
-                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
+                            onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
                             onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
                             onProductExpanded = viewModel::onProductExpanded
                         )
@@ -863,9 +883,11 @@ class OrderCreateEditFormFragment :
                 shouldHideCustomerAddressAndNotesSections(newOrderData) -> {
                     hideCustomerAddressAndNotesSections()
                 }
+
                 shouldShowCustomerSectionOnly(newOrderData) -> {
                     showCustomerSectionOnly(newOrderData)
                 }
+
                 shouldShowNotesSectionOnly(newOrderData) -> {
                     showNotesSectionOnly(newOrderData)
                 }
@@ -1005,6 +1027,18 @@ class OrderCreateEditFormFragment :
                 uiMessageResolver.getSnack(
                     stringResId = event.message
                 ).show()
+            }
+
+            is OnCustomAmountTypeSelected -> {
+                OrderCreateEditNavigator.navigate(
+                    this,
+                    OrderCreateEditNavigationTarget.CustomAmountDialog(
+                        customAmountUIModel = viewModel.selectedCustomAmount.value?.copy(
+                            type = event.type
+                        ) ?: CustomAmountUIModel.EMPTY.copy(type = event.type),
+                        orderTotal = viewModel.orderDraft.value?.total.toString(),
+                    )
+                )
             }
 
             is Exit -> findNavController().navigateUp()

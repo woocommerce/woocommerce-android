@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.OrderMapper
@@ -189,7 +188,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         isHighlighted = true
     )
 
-    private val savedState = CreateShippingLabelFragmentArgs(order.orderId).initSavedStateHandle()
+    private val savedState = CreateShippingLabelFragmentArgs(order.orderId).toSavedStateHandle()
 
     private lateinit var viewModel: CreateShippingLabelViewModel
 
