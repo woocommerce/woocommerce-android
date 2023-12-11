@@ -141,7 +141,12 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         updateQuantity(state.product.copy(quantity = newQuantityValue), isUndoUpdate = false)
     }
 
-    private fun updateQuantity(updatedProductInfo: ProductInfo, isUndoUpdate: Boolean) = launch {
+    private fun updateQuantity(
+        updatedProductInfo: ProductInfo,
+        isUndoUpdate: Boolean,
+        onSuccess: () -> Unit = {},
+        onError: () -> Unit = {}
+    ) = launch {
         _viewState.value = ViewState.Loading
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.UpdatingProduct
         val product = productRepository.getProduct(updatedProductInfo.id)
@@ -163,8 +168,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     updatedProductInfo,
                     isUndoUpdate
                 )
+                onSuccess()
             } else {
                 handleQuantityUpdateError()
+                onError()
             }
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             delay(SCANNER_RESTART_DEBOUNCE_MS)
@@ -217,13 +224,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     message = message,
                     undoAction = {
                         onUpdateQuantityUndo(oldQuantity, productInfo)
-                        triggerEvent(
-                            ShowUiStringSnackbar(
-                                UiString.UiStringText(
-                                    resourceProvider.getString(R.string.scan_to_update_inventory_undo_snackbar)
-                                )
-                            )
-                        )
                     },
                 )
             )
@@ -236,7 +236,24 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private fun onUpdateQuantityUndo(oldQuantity: String, productInfo: ProductInfo) {
-        updateQuantity(productInfo.copy(quantity = oldQuantity.toInt()), isUndoUpdate = true)
+        updateQuantity(
+            productInfo.copy(quantity = oldQuantity.toInt()),
+            isUndoUpdate = true,
+            onSuccess = {
+                triggerEvent(
+                    ShowUiStringSnackbar(
+                        UiString.UiStringText(
+                            resourceProvider.getString(R.string.scan_to_update_inventory_undo_snackbar)
+                        )
+                    )
+                )
+            },
+            onError = {
+                triggerEvent(
+                    ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_failure_snackbar))
+                )
+            }
+        )
     }
 
     fun onManualQuantityEntered(newQuantity: String) {
