@@ -162,7 +162,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             }
             if (result.isSuccess) {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_SUCCESS)
-                handleQuantityUpdateSuccess(
+                showQuantityUpdateSuccessSnackbar(
                     product.stockQuantity.toInt().toString(),
                     updatedProductInfo.quantity.toString(),
                     updatedProductInfo,
@@ -207,7 +207,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    private fun handleQuantityUpdateSuccess(
+    private fun showQuantityUpdateSuccessSnackbar(
         oldQuantity: String,
         updatedQuantity: String,
         productInfo: ProductInfo,
