@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -98,7 +97,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             addressType = addressType,
             validationResult = validationResult,
             isCustomsFormRequired = isPhoneRequired
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel
 

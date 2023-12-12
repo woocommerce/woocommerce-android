@@ -6,9 +6,20 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
@@ -40,6 +51,7 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -54,6 +66,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCard
+import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCardLoading
 import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
@@ -61,6 +75,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -171,6 +186,7 @@ class OrderCreateEditFormFragment :
                 viewModel.onCreateOrderClicked(viewModel.currentDraft)
                 true
             }
+
             else -> false
         }
     }
@@ -545,12 +561,28 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.hide()
     }
 
-    private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
-        OrderCreateEditNavigator.navigate(
-            this,
-            OrderCreateEditNavigationTarget.CustomAmountDialog(customAmountUIModel)
-        )
+    private fun navigateToCustomAmountsDialog(
+        customAmountUIModel: CustomAmountUIModel = CustomAmountUIModel.EMPTY,
+        orderTotal: String = viewModel.orderDraft.value?.total.toString(),
+    ) {
+        if (viewModel.orderContainsProductsOrCustomAmounts()) {
+            displayCustomAmountTypeBottomSheet()
+        } else {
+            OrderCreateEditNavigator.navigate(
+                this,
+                OrderCreateEditNavigationTarget.CustomAmountDialog(
+                    customAmountUIModel.copy(type = FIXED_CUSTOM_AMOUNT),
+                    orderTotal
+                )
+            )
+        }
     }
+
+    private fun displayCustomAmountTypeBottomSheet() {
+        val bottomSheet = CustomAmountTypeBottomSheetDialog()
+        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
+    }
+
     private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
@@ -694,16 +726,16 @@ class OrderCreateEditFormFragment :
 
     private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
-            if (newOrderData.giftCards.isNullOrEmpty()) {
+            if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
                 addGiftCardButton.isVisible = viewModel.isGiftCardExtensionEnabled
                 giftCardLayout.hide()
                 addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
             } else {
                 addGiftCardButton.isVisible = false
                 giftCardLayout.show()
-                giftCardCode.text = newOrderData.giftCards
+                giftCardCode.text = newOrderData.selectedGiftCard
                 selectedGiftCardButton.setOnClickListener {
-                    viewModel.onEditGiftCardButtonClicked(newOrderData.giftCards)
+                    viewModel.onEditGiftCardButtonClicked(newOrderData.selectedGiftCard)
                 }
             }
         }
@@ -764,9 +796,11 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = { navigateToCustomAmountsDialog(it) },
-                        onCustomAmountDeleteClick = {
-                            viewModel.onCustomAmountRemoved(it)
+                        onCustomAmountClick = {
+                            viewModel.selectCustomAmount(it)
+                            navigateToCustomAmountsDialog(
+                                customAmountUIModel = it,
+                            )
                         }
                     )
                     itemAnimator = animator
@@ -782,22 +816,107 @@ class OrderCreateEditFormFragment :
         }
     }
 
+    @Suppress("LongMethod")
     private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<OrderCreationProduct>>) {
         setContent {
             val state = items.observeAsState(emptyList())
             WooTheme {
                 Column {
                     state.value.forEach { item ->
-                        ExpandableProductCard(
-                            viewModel.viewStateData.liveData.observeAsState(),
-                            item,
-                            onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
-                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
-                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
-                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
-                            onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
-                            onProductExpanded = viewModel::onProductExpanded
-                        )
+                        var isExpanded by rememberSaveable { mutableStateOf(false) }
+                        when {
+                            item is OrderCreationProduct.ProductItemWithRules &&
+                                item.configuration.childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
+                                val modifier = if (isExpanded) {
+                                    Modifier.border(
+                                        1.dp,
+                                        colorResource(id = R.color.color_on_surface),
+                                        shape = RoundedCornerShape(
+                                            topStart = dimensionResource(id = R.dimen.corner_radius_large),
+                                            topEnd = dimensionResource(id = R.dimen.corner_radius_large)
+                                        )
+                                    )
+                                } else Modifier
+                                ExpandableGroupedProductCardLoading(
+                                    state = viewModel.viewStateData.liveData.observeAsState(),
+                                    product = item,
+                                    childrenSize = item.configuration.childrenConfiguration?.keys?.size ?: 0,
+                                    onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                                    onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
+                                    onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                                    onProductExpanded = { expanded, product ->
+                                        isExpanded = expanded
+                                        viewModel.onProductExpanded(isExpanded, product)
+                                    },
+                                    modifier = modifier,
+                                    isExpanded = isExpanded
+                                )
+                            }
+
+                            item is OrderCreationProduct.GroupedProductItemWithRules -> {
+                                val modifier = if (isExpanded) {
+                                    Modifier.border(
+                                        1.dp,
+                                        colorResource(id = R.color.color_on_surface),
+                                        shape = RoundedCornerShape(
+                                            topStart = dimensionResource(id = R.dimen.corner_radius_large),
+                                            topEnd = dimensionResource(id = R.dimen.corner_radius_large)
+                                        )
+                                    )
+                                } else Modifier
+                                ExpandableGroupedProductCard(
+                                    state = viewModel.viewStateData.liveData.observeAsState(),
+                                    product = item,
+                                    children = item.children,
+                                    onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                                    onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                                    onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                                    onProductExpanded = { expanded, product ->
+                                        isExpanded = expanded
+                                        viewModel.onProductExpanded(isExpanded, product)
+                                    },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
+                                    onChildProductExpanded = viewModel::onProductExpanded,
+                                    modifier = modifier,
+                                    isExpanded = isExpanded
+                                )
+                            }
+
+                            else -> {
+                                ExpandableProductCard(
+                                    viewModel.viewStateData.liveData.observeAsState(),
+                                    item,
+                                    onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                                    onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
+                                    onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                                    onProductExpanded = { expanded, product ->
+                                        isExpanded = expanded
+                                        viewModel.onProductExpanded(isExpanded, product)
+                                    },
+                                    modifier = Modifier
+                                        .padding(
+                                            horizontal = dimensionResource(id = R.dimen.major_100),
+                                            vertical = dimensionResource(id = R.dimen.minor_50)
+                                        )
+                                        .border(
+                                            1.dp,
+                                            colorResource(
+                                                id = if (isExpanded) {
+                                                    R.color.color_on_surface
+                                                } else {
+                                                    R.color.divider_color
+                                                }
+                                            ),
+                                            shape = RoundedCornerShape(
+                                                dimensionResource(id = R.dimen.corner_radius_large)
+                                            )
+                                        ),
+                                    isExpanded = isExpanded
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -1005,6 +1124,18 @@ class OrderCreateEditFormFragment :
                 uiMessageResolver.getSnack(
                     stringResId = event.message
                 ).show()
+            }
+
+            is OnCustomAmountTypeSelected -> {
+                OrderCreateEditNavigator.navigate(
+                    this,
+                    OrderCreateEditNavigationTarget.CustomAmountDialog(
+                        customAmountUIModel = viewModel.selectedCustomAmount.value?.copy(
+                            type = event.type
+                        ) ?: CustomAmountUIModel.EMPTY.copy(type = event.type),
+                        orderTotal = viewModel.orderDraft.value?.total.toString(),
+                    )
+                )
             }
 
             is Exit -> findNavController().navigateUp()

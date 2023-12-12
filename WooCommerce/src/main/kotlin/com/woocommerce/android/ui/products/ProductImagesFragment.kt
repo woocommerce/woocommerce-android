@@ -189,7 +189,11 @@ class ProductImagesFragment :
             when (event) {
                 is Exit -> findNavController().navigateUp()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(
+                    event.message,
+                    event.actionText,
+                    event.action
+                )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
@@ -214,12 +218,13 @@ class ProductImagesFragment :
 
     private fun displayProductImageUploadErrorSnackBar(
         message: String,
+        actionText: String,
         actionListener: View.OnClickListener
     ) {
         if (imageUploadErrorsSnackbar == null) {
             imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
-                actionText = getString(R.string.details),
+                actionText = actionText,
                 actionListener = actionListener
             )
         } else {

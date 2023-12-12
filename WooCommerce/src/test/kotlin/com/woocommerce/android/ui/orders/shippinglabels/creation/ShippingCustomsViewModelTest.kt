@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.ShippingLabelPackage.Item
@@ -64,7 +63,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
 
     fun setup(navArgs: ShippingCustomsFragmentArgs = defaultNavArgs) {
         viewModel = ShippingCustomsViewModel(
-            savedStateHandle = navArgs.initSavedStateHandle(),
+            savedStateHandle = navArgs.toSavedStateHandle(),
             selectedSide = selectedSite,
             parameterRepository = parameterRepository,
             dataStore = dataStore,

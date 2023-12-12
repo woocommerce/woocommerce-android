@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -96,7 +95,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     private fun givenTheScreenIsFromLogin(calledFromLogin: Boolean) {
-        savedState = SitePickerFragmentArgs(openedFromLogin = calledFromLogin).initSavedStateHandle()
+        savedState = SitePickerFragmentArgs(openedFromLogin = calledFromLogin).toSavedStateHandle()
     }
 
     private fun givenThatUserLoggedInFromEnteringSiteAddress(expectedSite: SiteModel? = null) {

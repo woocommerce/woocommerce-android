@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_DI
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_FIXED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
@@ -54,7 +53,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             )
         ),
         "usd"
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",
@@ -85,7 +84,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             val sut = createSut(savedStateHandle)
 
@@ -110,7 +109,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             val sut = createSut(savedStateHandle)
 
@@ -133,7 +132,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             val sut = createSut(savedStateHandle)
 
@@ -154,7 +153,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createSut(savedStateHandle)
         var lastEvent: MultiLiveEvent.Event? = null
@@ -182,7 +181,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val sut = createSut(savedStateHandle)
             sut.onDiscountAmountChange(99.toBigDecimal())
             sut.onPercentageDiscountSelected()
@@ -205,7 +204,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val sut = createSut(savedStateHandle)
             sut.onPercentageDiscountSelected()
             sut.onDiscountAmountChange(13.toBigDecimal())
@@ -229,7 +228,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val sut = createSut(savedStateHandle)
             sut.onDiscountAmountChange(4.29.toBigDecimal())
             sut.viewState.test {
@@ -249,7 +248,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 productItem,
                 "usd"
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
             val sut = createSut(savedStateHandle)
             sut.onPercentageDiscountSelected()
             sut.onDiscountAmountChange(13.toBigDecimal())
@@ -269,7 +268,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createSut(savedStateHandle)
         sut.onDiscountAmountChange(4.29.toBigDecimal())
         sut.viewState.test {
@@ -289,7 +288,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createSut(savedStateHandle)
         sut.viewState.test {
             val viewState = awaitItem()
@@ -308,7 +307,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createSut(savedStateHandle)
         sut.viewState.test {
             val viewState = awaitItem()
@@ -326,7 +325,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createSut(savedStateHandle)
         sut.onPercentageDiscountSelected()
         sut.onDoneClicked()
@@ -346,7 +345,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createSut(savedStateHandle)
         sut.onAmountDiscountSelected()
         sut.onDoneClicked()
@@ -366,7 +365,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             productItem,
             "usd"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
         val sut = createSut(savedStateHandle)
         sut.onDiscountRemoveClicked()
         verify(tracker).track(ORDER_PRODUCT_DISCOUNT_REMOVE)

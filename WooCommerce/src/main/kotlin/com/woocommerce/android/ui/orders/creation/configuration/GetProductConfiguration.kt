@@ -31,6 +31,15 @@ class GetProductConfiguration @Inject constructor(
                 saveVariableConfiguration(configuration, child)
             }
         }
+        if (children?.isNotEmpty() == true) {
+            val includedChildren =
+                filteredChildren?.mapNotNull { child -> child.item.configurationKey }?.toSet() ?: emptySet()
+            val notIncludedChildren = childrenConfiguration?.keys?.let { it - includedChildren }
+            notIncludedChildren?.forEach { key ->
+                childrenConfiguration[key]?.let { configuration -> removeFromOrder(configuration) }
+            }
+        }
+
         val configurationType = rules.productType.getConfigurationType()
         return ProductConfiguration(rules, configurationType, itemConfiguration, childrenConfiguration)
     }
@@ -50,6 +59,14 @@ class GetProductConfiguration @Inject constructor(
     ) {
         if (configuration.containsKey(OptionalRule.KEY)) {
             configuration[OptionalRule.KEY] = true.toString()
+        }
+    }
+
+    private fun removeFromOrder(configuration: MutableMap<String, String?>) {
+        if (configuration.containsKey(OptionalRule.KEY)) {
+            configuration[OptionalRule.KEY] = false.toString()
+        } else if (configuration.containsKey(QuantityRule.KEY)) {
+            configuration[QuantityRule.KEY] = 0f.toString()
         }
     }
     private suspend fun saveVariableConfiguration(
