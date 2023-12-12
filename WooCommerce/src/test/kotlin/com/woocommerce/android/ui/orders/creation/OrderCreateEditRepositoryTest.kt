@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -214,15 +215,28 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     @Test
     fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
         // Given
-        val pluginMock = mock<SitePluginModel> { on { isActive } doReturn true }
+        val pluginMock = mock<SitePluginModel> {
+            on { name } doReturn "test plugin"
+            on { isActive } doReturn true
+            on { version } doReturn "1.0.0"
+        }
         whenever(wooCommerceStore.getSitePlugins(defaultSiteModel, listOf(WOO_GIFT_CARDS)))
             .thenReturn(listOf(pluginMock))
 
         // When
-        val plugins = sut.fetchOrderCreateEditSupportedPlugins()
+        val plugins = sut.fetchOrderSupportedPlugins()
 
         // Then
         assertThat(plugins).isNotEmpty
-        assertThat(plugins).containsExactly(pluginMock)
+        assertThat(plugins).containsExactly(
+            Pair(
+                "test plugin",
+                WooPlugin(
+                    isInstalled = true,
+                    isActive = true,
+                    version = "1.0.0"
+                )
+            )
+        )
     }
 }
