@@ -71,7 +71,11 @@ class ThemePickerViewModel @Inject constructor(
                                     R.string.theme_picker_carousel_info_item_title
                                 ),
                                 description = resourceProvider.getString(
-                                    R.string.theme_picker_carousel_info_item_description
+                                    resourceId = if (navArgs.isFromStoreCreation) {
+                                        R.string.theme_picker_carousel_info_item_description
+                                    } else {
+                                        R.string.theme_picker_carousel_info_item_description_settings
+                                    }
                                 )
                             )
                         )
