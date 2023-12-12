@@ -48,14 +48,14 @@ enum class FeatureFlag {
             PRODUCT_CREATION_AI,
             PACKAGE_PHOTO_SCANNING,
             CUSTOM_AMOUNTS_M1,
-            AI_ORDER_DETAIL_THANK_YOU_NOTE -> true
+            AI_ORDER_DETAIL_THANK_YOU_NOTE,
+            ORDER_GIFT_CARD -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            THEME_PICKER,
-            ORDER_GIFT_CARD -> PackageUtils.isDebugBuild()
+            THEME_PICKER -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
