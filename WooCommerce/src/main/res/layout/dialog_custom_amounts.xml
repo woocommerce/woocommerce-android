@@ -35,6 +35,7 @@
     <View
         android:id="@+id/divider"
         style="@style/Woo.Divider"
+        android:background="@drawable/list_divider"
         android:layout_marginTop="@dimen/major_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,44 +52,128 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/captionText"
-                style="@style/Woo.TextView.Caption"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                android:gravity="center"
-                android:text="@string/custom_amounts_enter_amount"
-                android:textSize="@dimen/text_major_25"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
-                android:id="@+id/editPrice"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/captionText"
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:gravity="start"
+                    android:text="@string/custom_amounts_enter_amount"
+                    android:textSize="@dimen/text_major_25"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
+                    tools:visibility="gone" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/percentageLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_150"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:gravity="start"
+                    android:text="@string/custom_amounts_percentage_label"
+                    android:textSize="@dimen/text_major_25"
+                    android:textColor="@color/color_on_surface_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/currencyLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:imeOptions="flagNoFullscreen"
-                android:textSize="@dimen/line_height_major_100"
-                app:boxBackgroundMode="none"
-                app:editTextLayoutMode="wrap"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout">
+
+                <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                    android:id="@+id/editPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:imeOptions="flagNoFullscreen"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:boxBackgroundMode="none"
+                    app:editTextLayoutMode="wrap"
+                    app:supportsEmptyState="false"
+                    app:supportsNegativeValues="false"
+                    app:usesFullFormatting="true"
+                    tools:hint="0.00" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/groupPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="editPercentage, percentageSymbolText"/>
+
+                <EditText
+                    android:id="@+id/editPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/edit_percentage_max_width"
+                    android:gravity="start"
+                    android:imeOptions="flagNoFullscreen"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:inputType="numberDecimal"
+                    android:hint="@string/custom_amounts_percentage_hint"
+                    android:paddingBottom="@dimen/minor_00"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:hint="50"/>
+
+                <TextView
+                    android:id="@+id/percentageSymbolText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/editPercentage"
+                    app:layout_constraintBottom_toBottomOf="@id/editPercentage"
+                    android:textSize="@dimen/line_height_major_100"
+                    android:text="@string/custom_amounts_percentage_symbol"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/updatedAmount"
+                    style="@style/Woo.TextView.Headline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_major_25"
+                    android:paddingEnd="@dimen/minor_100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/editPercentage"
+                    tools:text="6.00"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/custom_amount_divider"
+                style="@style/Woo.Divider"
+                android:background="@drawable/list_divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/captionText"
-                app:supportsEmptyState="false"
-                app:supportsNegativeValues="false"
-                app:usesFullFormatting="true"
-                tools:hint="0.00" />
+                app:layout_constraintTop_toBottomOf="@+id/currencyLayout" />
 
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/taxToggleComposeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/major_100"
+                android:layout_margin="@dimen/minor_100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editPrice"/>
+                app:layout_constraintTop_toBottomOf="@id/custom_amount_divider" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customAmountNameCaptionText"
@@ -96,7 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_150"
-                android:gravity="center"
+                android:gravity="start"
                 android:text="@string/custom_amounts_name"
                 android:textSize="@dimen/text_major_25"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,13 +193,39 @@
                 style="@style/Woo.TextView.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_marginStart="@dimen/minor_00"
+                android:gravity="start"
                 android:hint="@string/custom_amounts_add_custom_name_hint"
-                android:inputType="text"
                 android:imeOptions="actionDone"
+                android:inputType="text"
+                android:paddingTop="@dimen/minor_00"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/customAmountNameCaptionText" />
+
+            <View
+                android:id="@+id/custom_amount_name_divider"
+                style="@style/Woo.Divider"
+                android:background="@drawable/list_divider"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customAmountNameText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDelete"
+                style="@style/Woo.Button.Outlined"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:text="@string/custom_amounts_delete_custom_amount"
+                android:textColor="@color/woo_red_50"
+                app:strokeColor="@color/woo_red_50"
+                app:layout_constraintTop_toBottomOf="@id/custom_amount_name_divider"
+                tools:visibility="visible"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

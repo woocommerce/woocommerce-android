@@ -69,3 +69,9 @@ val SiteModel?.isSitePublic: Boolean
 
 val SiteModel.isEligibleForAI: Boolean
     get() = isWPComAtomic || planActiveFeatures.orEmpty().contains("ai-assistant")
+
+val SiteModel?.isWooExpressSiteReadyToUse: Boolean
+    get() = this?.isJetpackInstalled == true &&
+        this.isJetpackConnected &&
+        this.isWpComStore &&
+        this.hasWooCommerce

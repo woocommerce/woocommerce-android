@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.barcodescanner
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
@@ -10,22 +11,33 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.CodeScanner
-import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun BarcodeScannerScreen(
-    codeScanner: CodeScanner,
+    onNewFrame: (ImageProxy) -> Unit,
+    onBindingException: (Exception) -> Unit,
+    permissionState: State<BarcodeScanningViewModel.PermissionState>,
+    onResult: (Boolean) -> Unit,
+) = BarcodeScannerScreen(
+    onNewFrame = onNewFrame,
+    onBindingException = onBindingException,
+    permissionState = permissionState.value,
+    onResult = onResult,
+)
+
+@Composable
+fun BarcodeScannerScreen(
+    onNewFrame: (ImageProxy) -> Unit,
+    onBindingException: (Exception) -> Unit,
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
-    onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -39,8 +51,8 @@ fun BarcodeScannerScreen(
     when (permissionState) {
         BarcodeScanningViewModel.PermissionState.Granted -> {
             BarcodeScanner(
-                codeScanner = codeScanner,
-                onScannedResult = onScannedResult
+                onNewFrame = onNewFrame,
+                onBindingException = onBindingException,
             )
         }
         is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {

@@ -268,6 +268,13 @@ class IssueRefundViewModel @Inject constructor(
             .filter { refundableFeeLineIds.contains(it.feeLine.id) }
         _refundFeeLines.value = feeLines
 
+        if (orderContainsOnlyCustomAmounts()) {
+            refundByItemsState = refundByItemsState.copy(
+                isFeesMainSwitchChecked = true,
+                isFeesRefundAvailable = true
+            )
+        }
+
         if (productsRefundLiveData.hasInitialValue) {
             val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
                 ?: DEFAULT_DECIMAL_PRECISION
@@ -277,6 +284,10 @@ class IssueRefundViewModel @Inject constructor(
                 decimals = decimals
             )
         }
+    }
+
+    private fun orderContainsOnlyCustomAmounts(): Boolean {
+        return order.items.isEmpty() && order.shippingLines.isEmpty() && order.feesLines.isNotEmpty()
     }
 
     private fun initRefundSummaryState() {

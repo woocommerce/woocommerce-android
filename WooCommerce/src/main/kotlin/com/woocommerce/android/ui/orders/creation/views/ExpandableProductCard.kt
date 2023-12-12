@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
@@ -12,17 +14,25 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -30,12 +40,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,12 +55,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,8 +79,10 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.MAX_PRODUCT_QUANTITY
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
+import com.woocommerce.android.ui.orders.creation.isSynced
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.getStockText
@@ -78,8 +98,7 @@ fun ExpandableProductCard(
     product: OrderCreationProduct,
     onRemoveProductClicked: () -> Unit,
     onDiscountButtonClicked: () -> Unit,
-    onIncreaseItemAmountClicked: () -> Unit,
-    onDecreaseItemAmountClicked: () -> Unit,
+    onItemAmountChanged: (ProductAmountEvent) -> Unit,
     onEditConfigurationClicked: () -> Unit,
     onProductExpanded: (isExpanded: Boolean, product: OrderCreationProduct) -> Unit,
     modifier: Modifier = Modifier,
@@ -241,9 +260,8 @@ fun ExpandableProductCard(
                 product,
                 onRemoveProductClicked,
                 onDiscountButtonClicked,
-                onIncreaseItemAmountClicked,
-                onDecreaseItemAmountClicked,
-                onEditConfigurationClicked
+                onItemAmountChanged,
+                onEditConfigurationClicked,
             )
         }
     }
@@ -255,8 +273,7 @@ fun ExtendedProductCardContent(
     product: OrderCreationProduct,
     onRemoveProductClicked: () -> Unit,
     onDiscountButtonClicked: () -> Unit,
-    onIncreaseItemAmountClicked: () -> Unit,
-    onDecreaseItemAmountClicked: () -> Unit,
+    onItemAmountChanged: (ProductAmountEvent) -> Unit,
     onEditConfigurationClicked: () -> Unit
 ) {
     ConstraintLayout(
@@ -309,15 +326,18 @@ fun ExtendedProductCardContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Order count",
+                text = stringResource(id = R.string.order_creation_products_order_count),
                 color = MaterialTheme.colors.onSurface
             )
+            val areAmountButtonsEnabled = if (isBundledProduct) {
+                editableControlsEnabled
+            } else {
+                product.item.isSynced()
+            }
             AmountPicker(
-                onIncreaseClicked = onIncreaseItemAmountClicked,
-                onDecreaseClicked = onDecreaseItemAmountClicked,
+                onItemAmountChanged = onItemAmountChanged,
                 product = product,
-                isDecreaseButtonEnabled = (editableControlsEnabled && isBundledProduct) || isBundledProduct.not(),
-                isIncreaseButtonEnabled = (editableControlsEnabled && isBundledProduct) || isBundledProduct.not()
+                isAmountChangeable = areAmountButtonsEnabled,
             )
         }
         Row(
@@ -491,40 +511,122 @@ fun ExtendedProductCardContent(
 @Composable
 private fun AmountPicker(
     modifier: Modifier = Modifier,
-    onIncreaseClicked: () -> Unit,
-    onDecreaseClicked: () -> Unit,
+    onItemAmountChanged: (ProductAmountEvent) -> Unit,
     product: OrderCreationProduct,
-    isDecreaseButtonEnabled: Boolean = true,
-    isIncreaseButtonEnabled: Boolean = true
+    isAmountChangeable: Boolean = true,
 ) {
-    Row(
-        modifier = modifier
-            .border(
-                1.dp,
-                colorResource(id = R.color.divider_color),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
-    ) {
-        val decreaseButtonTint = if (isDecreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
-        val increaseButtonTint = if (isIncreaseButtonEnabled) MaterialTheme.colors.primary else Color.Gray
-        IconButton(onClick = onDecreaseClicked, enabled = isDecreaseButtonEnabled) {
-            Icon(
-                imageVector = Icons.Filled.Remove,
-                contentDescription =
-                stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
-                tint = decreaseButtonTint
+    val amount = product.item.quantity.toInt().toString()
+    var textFieldValue by remember(amount) { mutableStateOf(TextFieldValue(amount)) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isAmountFieldInFocus by interactionSource.collectIsFocusedAsState()
+
+    val focusManager = LocalFocusManager.current
+
+    val elevation = animateDpAsState(
+        targetValue = if (isAmountFieldInFocus) 4.dp else 0.dp,
+        label = "elevation"
+    )
+
+    val fontStyleAnimation = animateFloatAsState(
+        targetValue = if (isAmountFieldInFocus) 1.0F else 0.0F,
+        label = "fontSize"
+    )
+
+    val nonFocusedFontStyle = MaterialTheme.typography.subtitle1
+    val focusedFontStyle = MaterialTheme.typography.h4
+    val textStyle by remember(fontStyleAnimation.value) {
+        derivedStateOf {
+            lerp(
+                nonFocusedFontStyle,
+                focusedFontStyle,
+                fontStyleAnimation.value
             )
         }
-        Text(text = product.item.quantity.toInt().toString(), color = MaterialTheme.colors.onSurface)
-        IconButton(onClick = onIncreaseClicked, enabled = isIncreaseButtonEnabled) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription =
-                stringResource(id = R.string.order_creation_increase_item_amount_content_description),
-                tint = increaseButtonTint
+    }
+
+    Card(
+        modifier = modifier,
+        elevation = elevation.value,
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large)),
+        border = BorderStroke(
+            width = 1.dp,
+            color = colorResource(id = R.color.divider_color),
+        )
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val isPlusMinusEnabled = isAmountChangeable && !isAmountFieldInFocus
+            val plusButtonTint = if (isPlusMinusEnabled) MaterialTheme.colors.primary else Color.Gray
+            val isLastItem = amount == "1"
+
+            val minusButtonTint = when {
+                !isPlusMinusEnabled -> Color.Gray
+                isLastItem -> MaterialTheme.colors.error
+                else -> MaterialTheme.colors.primary
+            }
+
+            val decreaseIcon = if (isLastItem) Icons.Filled.DeleteOutline else Icons.Filled.Remove
+            IconButton(
+                onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) },
+                enabled = isPlusMinusEnabled
+            ) {
+                Icon(
+                    imageVector = decreaseIcon,
+                    contentDescription =
+                    stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
+                    tint = minusButtonTint
+                )
+            }
+            BasicTextField(
+                value = textFieldValue,
+                onValueChange = { value ->
+                    try {
+                        if (value.text.isNotBlank() && value.text.isNotEmpty()) {
+                            // try converting to int to validate that input is a number
+                            val intValue = value.text.toInt()
+                            if (intValue in 0..MAX_PRODUCT_QUANTITY) {
+                                textFieldValue = value
+                            }
+                        } else {
+                            textFieldValue = value
+                        }
+                    } catch (_: NumberFormatException) {
+                        // no-op
+                    }
+                },
+                readOnly = !isAmountChangeable,
+                singleLine = true,
+                textStyle = textStyle.copy(color = MaterialTheme.colors.onSurface),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        onItemAmountChanged(ProductAmountEvent.Change(textFieldValue.text))
+                        focusManager.clearFocus()
+                    }
+                ),
+                interactionSource = interactionSource,
+                cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.minor_25))
+                    .widthIn(min = 12.dp, max = 128.dp)
+                    .width(IntrinsicSize.Min)
             )
+            IconButton(
+                onClick = { onItemAmountChanged(ProductAmountEvent.Increase) },
+                enabled = isPlusMinusEnabled
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription =
+                    stringResource(id = R.string.order_creation_increase_item_amount_content_description),
+                    tint = plusButtonTint
+                )
+            }
         }
     }
 }
@@ -532,6 +634,12 @@ private fun AmountPicker(
 @Composable
 fun getQuantityWithTotalText(product: OrderCreationProduct) =
     "${product.item.quantity.toInt()} $MULTIPLICATION_CHAR ${product.productInfo.pricePreDiscount}"
+
+sealed class ProductAmountEvent {
+    object Increase : ProductAmountEvent()
+    object Decrease : ProductAmountEvent()
+    data class Change(val newAmount: String) : ProductAmountEvent()
+}
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -556,7 +664,7 @@ fun AmountPickerPreview() {
         )
     )
     WooThemeWithBackground {
-        AmountPicker(Modifier, {}, {}, product)
+        AmountPicker(Modifier, {}, product)
     }
 }
 
@@ -588,7 +696,7 @@ fun ExpandableProductCardPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExpandableProductCard(state, product, {}, {}, {}, {}, {}, { _, _ -> })
+        ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
 
@@ -622,7 +730,7 @@ fun ExtendedProductCardContentPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExtendedProductCardContent(state, product, {}, {}, {}, {}) {}
+        ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
 
@@ -656,6 +764,6 @@ fun ExtendedConfigurableProductCardContentPreview() {
     )
     val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
     WooThemeWithBackground {
-        ExtendedProductCardContent(state, product, {}, {}, {}, {}) {}
+        ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
