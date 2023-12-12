@@ -350,12 +350,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
             sut.onIncrementQuantityClicked()
 
-            val undoAction = (
-                events.first {
-                    it is MultiLiveEvent.Event.ShowUndoSnackbar
-                } as MultiLiveEvent.Event.ShowUndoSnackbar
-                ).undoAction
-            undoAction.onClick(null)
+            (events.first() as MultiLiveEvent.Event.ShowUndoSnackbar).undoAction.onClick(null)
 
             verify(productRepo).updateProduct(product.copy(stockQuantity = originalQuantity.toDouble()))
         }
