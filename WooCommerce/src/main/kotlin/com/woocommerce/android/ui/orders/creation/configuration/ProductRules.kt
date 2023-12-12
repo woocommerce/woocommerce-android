@@ -103,6 +103,7 @@ class QuantityRule(val quantityMin: Float?, val quantityMax: Float?, val quantit
             childrenQuantity == 0f -> {
                 resourceProvider.getString(R.string.configuration_quantity_item, 1)
             }
+
             else -> StringUtils.EMPTY
         }
     }
@@ -149,6 +150,7 @@ class ProductConfiguration(
     companion object {
         const val PARENT_KEY = -1L
     }
+
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
         val issues = mutableMapOf<Long, String>()
 
@@ -158,18 +160,33 @@ class ProductConfiguration(
         return issues
     }
 
+    fun isMaxChildrenReached(): Boolean {
+        return if (rules.itemRules.containsKey(QuantityRule.KEY)) {
+            val itemQuantityRule = rules.itemRules[QuantityRule.KEY] as QuantityRule
+            val childrenQuantity = getChildrenQuantity()
+            val itemMax = itemQuantityRule.quantityMax ?: Float.MAX_VALUE
+            childrenQuantity == itemMax
+        } else {
+            false
+        }
+    }
+
+    private fun getChildrenQuantity(): Float {
+        return childrenConfiguration?.values
+            ?.filter { map ->
+                val containsQuantityRule = map.containsKey(QuantityRule.KEY)
+                val isOptional = map.containsKey(OptionalRule.KEY)
+                val optionalValue = map[OptionalRule.KEY]?.toBooleanStrict() ?: false
+                val isIncluded = isOptional && optionalValue || isOptional.not()
+                containsQuantityRule && isIncluded
+            }
+            ?.sumByFloat { map -> map[QuantityRule.KEY]?.toFloatOrNull() ?: 0f } ?: 0f
+    }
+
     private fun getParentConfigurationIssues(issues: MutableMap<Long, String>, resourceProvider: ResourceProvider) {
         if (rules.itemRules.containsKey(QuantityRule.KEY)) {
             val itemQuantityRule = rules.itemRules[QuantityRule.KEY] as QuantityRule
-            val childrenQuantity = childrenConfiguration?.values
-                ?.filter { map ->
-                    val containsQuantityRule = map.containsKey(QuantityRule.KEY)
-                    val isOptional = map.containsKey(OptionalRule.KEY)
-                    val optionalValue = map[OptionalRule.KEY]?.toBooleanStrict() ?: false
-                    val isIncluded = isOptional && optionalValue || isOptional.not()
-                    containsQuantityRule && isIncluded
-                }
-                ?.sumByFloat { map -> map[QuantityRule.KEY]?.toFloatOrNull() ?: 0f } ?: 0f
+            val childrenQuantity = getChildrenQuantity()
 
             val isMinimumOutOfBounds = childrenQuantity < (itemQuantityRule.quantityMin ?: Float.NEGATIVE_INFINITY)
             val isMaximumOutOfBounds = childrenQuantity > (itemQuantityRule.quantityMax ?: Float.MAX_VALUE)

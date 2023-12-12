@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -449,9 +450,11 @@ fun ExtendedProductCardContent(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = null
                 )
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = stringResource(id = R.string.order_creation_add_discount),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
         }
@@ -474,12 +477,14 @@ fun ExtendedProductCardContent(
                 enabled = editableControlsEnabled
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_configuration),
+                    imageVector = Icons.Filled.Tune,
                     contentDescription = null
                 )
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = stringResource(id = R.string.extension_configure_button),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
 
