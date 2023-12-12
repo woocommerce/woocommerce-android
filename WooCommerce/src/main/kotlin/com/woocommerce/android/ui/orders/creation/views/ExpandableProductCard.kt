@@ -602,7 +602,6 @@ private fun AmountPicker(
                         // no-op
                     }
                 },
-                readOnly = !isAmountChangeable,
                 singleLine = true,
                 textStyle = textStyle.copy(color = MaterialTheme.colors.onSurface),
                 keyboardOptions = KeyboardOptions(
