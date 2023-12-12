@@ -120,7 +120,7 @@ private fun CurrentTheme(
         Text(
             text = stringResource(id = R.string.theme_picker_current_theme_title),
             style = MaterialTheme.typography.subtitle2,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         when (currentThemeState) {
@@ -171,7 +171,7 @@ private fun Header(
             Text(
                 text = stringResource(id = R.string.theme_picker_settings_title),
                 style = MaterialTheme.typography.subtitle2,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
