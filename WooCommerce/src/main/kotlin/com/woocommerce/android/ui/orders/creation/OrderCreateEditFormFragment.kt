@@ -576,7 +576,6 @@ class OrderCreateEditFormFragment :
         }
     }
 
-
     private fun displayCustomAmountTypeBottomSheet() {
         val bottomSheet = CustomAmountTypeBottomSheetDialog()
         bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
@@ -832,8 +831,7 @@ class OrderCreateEditFormFragment :
                                     childrenSize = item.configuration.childrenConfiguration?.keys?.size ?: 0,
                                     onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                                     onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
-                                    onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
-                                    onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
                                     onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
                                     onProductExpanded = { expanded, product ->
                                         isExpanded = expanded
@@ -861,13 +859,12 @@ class OrderCreateEditFormFragment :
                                     children = item.children,
                                     onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                                     onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
-                                    onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
-                                    onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
                                     onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
                                     onProductExpanded = { expanded, product ->
                                         isExpanded = expanded
                                         viewModel.onProductExpanded(isExpanded, product)
                                     },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
                                     onChildProductExpanded = viewModel::onProductExpanded,
                                     modifier = modifier,
                                     isExpanded = isExpanded
@@ -880,8 +877,7 @@ class OrderCreateEditFormFragment :
                                     item,
                                     onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                                     onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
-                                    onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item) },
-                                    onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item) },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
                                     onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
                                     onProductExpanded = { expanded, product ->
                                         isExpanded = expanded
