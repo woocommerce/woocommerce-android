@@ -338,13 +338,9 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             ).thenReturn("Undo successful")
 
             val events = mutableListOf<MultiLiveEvent.Event>()
-            val observer = mock<Observer<MultiLiveEvent.Event>>()
-            doAnswer { invocation ->
-                val event = invocation.arguments[0] as MultiLiveEvent.Event
-                events.add(event)
-                null
-            }.whenever(observer).onChanged(any())
-            sut.event.observeForever(observer)
+            sut.event.observeForever {
+                events.add(it)
+            }
 
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
