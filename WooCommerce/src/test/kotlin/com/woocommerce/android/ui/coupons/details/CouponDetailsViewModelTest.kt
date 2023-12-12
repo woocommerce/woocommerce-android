@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.coupons.details
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponRepository
@@ -79,7 +78,7 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
         }
         mockSetup()
         viewModel = CouponDetailsViewModel(
-            savedState = CouponDetailsFragmentArgs(COUPON_ID).initSavedStateHandle(),
+            savedState = CouponDetailsFragmentArgs(COUPON_ID).toSavedStateHandle(),
             wooCommerceStore = wooCommerceStore,
             selectedSite = selectedSite,
             couponRepository = couponRepository,

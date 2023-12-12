@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -91,7 +90,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     private val savedState = VariationDetailFragmentArgs(
         TEST_VARIATION.remoteProductId,
         TEST_VARIATION.remoteVariationId
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Before
     fun setup() {

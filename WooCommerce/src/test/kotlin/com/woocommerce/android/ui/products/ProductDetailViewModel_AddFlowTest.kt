@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
@@ -87,7 +86,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         onBlocking { invoke() } doReturn false
     }
     private var savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
+        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",
@@ -400,7 +399,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+        savedState = ProductDetailFragmentArgs(isAddProduct = true).toSavedStateHandle()
 
         setup()
         viewModel.start()

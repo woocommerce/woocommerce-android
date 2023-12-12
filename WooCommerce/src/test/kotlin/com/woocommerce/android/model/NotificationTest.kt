@@ -34,11 +34,10 @@ class NotificationTest {
 
     @Test
     fun `new order notification return correct group_id and group_push_id`() {
-        val expectedOrderGroupId = "wooandroid_notification_channel_order_id $remoteSiteId"
+        val expectedOrderGroupId = "${NotificationChannelType.NEW_ORDER.name} $remoteSiteId"
         val expectedOrderGroupPushId = 30001 + remoteSiteId
 
-        val channelId = "wooandroid_notification_channel_order_id"
-        val actualGroupId = orderNotification.getGroup(channelId)
+        val actualGroupId = orderNotification.getGroup()
         assertThat(actualGroupId).isEqualTo(expectedOrderGroupId)
 
         val actualGroupPushId = orderNotification.getGroupPushId()
@@ -47,11 +46,10 @@ class NotificationTest {
 
     @Test
     fun `new review notification return correct group_id and group_push_id`() {
-        val expectedGroupId = "wooandroid_notification_channel_review_id $remoteSiteId"
+        val expectedGroupId = "${NotificationChannelType.REVIEW.name} $remoteSiteId"
         val expectedGroupPushId = 30002 + remoteSiteId
 
-        val channelId = "wooandroid_notification_channel_review_id"
-        val actualGroupId = reviewNotification.getGroup(channelId)
+        val actualGroupId = reviewNotification.getGroup()
         assertThat(actualGroupId).isEqualTo(expectedGroupId)
 
         val actualGroupPushId = reviewNotification.getGroupPushId()
@@ -60,11 +58,10 @@ class NotificationTest {
 
     @Test
     fun `new zendesk notification return correct group_id and group_push_id`() {
-        val expectedGroupId = "wooandroid_notification_channel_other_id $remoteSiteId"
+        val expectedGroupId = "${NotificationChannelType.OTHER.name} $remoteSiteId"
         val expectedGroupPushId = 30003 + remoteSiteId
 
-        val channelId = "wooandroid_notification_channel_other_id"
-        val actualGroupId = otherNotification.getGroup(channelId)
+        val actualGroupId = otherNotification.getGroup()
         assertThat(actualGroupId).isEqualTo(expectedGroupId)
 
         val actualGroupPushId = otherNotification.getGroupPushId()
@@ -78,21 +75,18 @@ class NotificationTest {
         val reviewNotification2 = reviewNotification.copy(remoteSiteId = siteId2)
         val otherNotification2 = otherNotification.copy(remoteSiteId = siteId2)
 
-        val expectedOrderGroupId = "wooandroid_notification_channel_order_id $siteId2"
+        val expectedOrderGroupId = "${NotificationChannelType.NEW_ORDER.name} $siteId2"
         val expectedOrderGroupPushId = 30001 + siteId2
-        val expectedReviewGroupId = "wooandroid_notification_channel_review_id $siteId2"
+        val expectedReviewGroupId = "${NotificationChannelType.REVIEW.name} $siteId2"
         val expectedReviewGroupPushId = 30002 + siteId2
-        val expectedZendeskGroupId = "wooandroid_notification_channel_other_id $siteId2"
+        val expectedZendeskGroupId = "${NotificationChannelType.OTHER.name} $siteId2"
         val expectedZendeskGroupPushId = 30003 + siteId2
 
-        val orderChannelId = "wooandroid_notification_channel_order_id"
-        val reviewChannelId = "wooandroid_notification_channel_review_id"
-        val zendeskChannelId = "wooandroid_notification_channel_other_id"
-        assertThat(orderNotification2.getGroup(orderChannelId)).isEqualTo(expectedOrderGroupId)
+        assertThat(orderNotification2.getGroup()).isEqualTo(expectedOrderGroupId)
         assertThat(orderNotification2.getGroupPushId()).isEqualTo(expectedOrderGroupPushId)
-        assertThat(reviewNotification2.getGroup(reviewChannelId)).isEqualTo(expectedReviewGroupId)
+        assertThat(reviewNotification2.getGroup()).isEqualTo(expectedReviewGroupId)
         assertThat(reviewNotification2.getGroupPushId()).isEqualTo(expectedReviewGroupPushId)
-        assertThat(otherNotification2.getGroup(zendeskChannelId)).isEqualTo(expectedZendeskGroupId)
+        assertThat(otherNotification2.getGroup()).isEqualTo(expectedZendeskGroupId)
         assertThat(otherNotification2.getGroupPushId()).isEqualTo(expectedZendeskGroupPushId)
     }
 }

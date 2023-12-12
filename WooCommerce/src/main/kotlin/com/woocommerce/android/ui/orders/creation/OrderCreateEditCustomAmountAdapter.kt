@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderCreationCustomAmountItemBinding
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomAmountAdapter.CustomAmountViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
@@ -15,7 +13,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 class OrderCreateEditCustomAmountAdapter(
     private val currencyFormatter: CurrencyFormatter,
     private val onCustomAmountClick: (CustomAmountUIModel) -> Unit,
-    private val onCustomAmountDeleteClick: (CustomAmountUIModel) -> Unit
 ) : ListAdapter<CustomAmountUIModel, CustomAmountViewHolder>(CustomAmountUIModelDiffCallback) {
 
     override fun onCreateViewHolder(
@@ -52,20 +49,6 @@ class OrderCreateEditCustomAmountAdapter(
             binding.customAmountLayout.customAmountAmount.text = currencyFormatter.formatCurrency(
                 customAmountUIModel.amount.toString()
             )
-            if (safePosition == 0 || currentList.size <= 1) {
-                binding.customAmountLayout.divider.hide()
-            } else {
-                binding.customAmountLayout.divider.show()
-            }
-            if (customAmountUIModel.isLocked) {
-                binding.customAmountLayout.customAmountEdit.hide()
-                binding.customAmountLayout.customAmountDeleteBtn.hide()
-            }
-            binding.customAmountLayout.customAmountDeleteBtn.setOnClickListener {
-                safePosition?.let {
-                    onCustomAmountDeleteClick(getItem(it))
-                }
-            }
         }
     }
 

@@ -2,11 +2,12 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.ShippingLabelCreateCustomPackageViewState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -40,7 +41,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
     )
 
     fun setup() {
-        val savedState = ShippingLabelCreatePackageFragmentArgs(0).initSavedStateHandle()
+        val savedState = ShippingLabelCreatePackageFragmentArgs(0).toSavedStateHandle()
         whenever(parameterRepository.getParameters(any(), any<SavedStateHandle>())).thenReturn(
             SiteParameters(
                 currencyCode = "USD",

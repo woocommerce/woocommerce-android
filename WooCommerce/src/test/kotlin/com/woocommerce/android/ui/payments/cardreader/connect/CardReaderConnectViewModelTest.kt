@@ -11,7 +11,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
@@ -1592,7 +1591,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
         cardReaderType: CardReaderType = EXTERNAL
     ): CardReaderConnectViewModel {
-        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).initSavedStateHandle()
+        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).toSavedStateHandle()
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,

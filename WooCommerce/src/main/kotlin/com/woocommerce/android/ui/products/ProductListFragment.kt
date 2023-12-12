@@ -101,6 +101,7 @@ class ProductListFragment :
     private val skeletonView = SkeletonView()
 
     private var searchMenuItem: MenuItem? = null
+    private var scanBarcodeMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
     private var trashProductUndoSnack: Snackbar? = null
@@ -252,6 +253,7 @@ class ProductListFragment :
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
+        scanBarcodeMenuItem = menu.findItem(R.id.menu_scan_barcode)
     }
 
     override fun onPrepareMenu(menu: Menu) {
@@ -278,6 +280,7 @@ class ProductListFragment :
                 }
             }
         }
+        scanBarcodeMenuItem?.isVisible = !productListViewModel.isSquarePluginActive()
     }
 
     private fun getSearchQueryHint(): String {
@@ -301,6 +304,14 @@ class ProductListFragment :
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
+                true
+            }
+            R.id.menu_scan_barcode -> {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+                ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
+                    findNavController().navigate(it)
+                }
+                searchMenuItem?.collapseActionView()
                 true
             }
 

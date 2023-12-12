@@ -1,6 +1,6 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
@@ -13,11 +13,8 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.notifications.getChannelId
-import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
-import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -39,15 +36,14 @@ import kotlin.random.Random
 
 @Singleton
 class NotificationMessageHandler @Inject constructor(
+    private val notificationBuilder: WooNotificationBuilder,
+    private val analyticsTracker: NotificationAnalyticsTracker,
+    private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
     private val wooLogWrapper: WooLogWrapper,
     private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    private val notificationBuilder: WooNotificationBuilder,
-    private val analyticsTracker: NotificationAnalyticsTracker,
-    private val notificationsParser: NotificationsParser,
     private val selectedSite: SelectedSite,
     private val topPerformersStore: WCLeaderboardsStore
 ) {
@@ -55,7 +51,9 @@ class NotificationMessageHandler @Inject constructor(
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
-        private const val MAX_INBOX_ITEMS = 5
+
+        @VisibleForTesting
+        const val MAX_INBOX_ITEMS = 5
 
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
@@ -150,28 +148,7 @@ class NotificationMessageHandler @Inject constructor(
         }
     }
 
-    /**
-     * Don't display the notification if user chose to disable this type of notification -
-     * note that we skip this for API 26+ since Oreo added per-app notification settings via channels
-     */
-    private fun isNotificationOptionEnabled(notification: Notification): Boolean {
-        return if (SystemVersionUtils.isAtLeastO()) {
-            true
-        } else {
-            when {
-                notification.isOrderNotification -> appPrefsWrapper.isOrderNotificationsEnabled()
-                notification.isReviewNotification -> appPrefsWrapper.isReviewNotificationsEnabled()
-                else -> true
-            }
-        }
-    }
-
     private fun handleWooNotification(notification: Notification) {
-        if (!isNotificationOptionEnabled(notification)) {
-            wooLogWrapper.i(NOTIFS, "Skipped ${notification.noteType.name} notification")
-            return
-        }
-
         val randomNumber = if (notification.noteType == NEW_ORDER) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
         ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
@@ -180,31 +157,33 @@ class NotificationMessageHandler @Inject constructor(
             analyticsTracker.flush()
         }
 
-        val channelType = notification.channelType
-        val defaults = channelType.getDefaults(appPrefsWrapper)
-        val channelId = resourceProvider.getString(channelType.getChannelId())
         val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
         with(notificationBuilder) {
             buildAndDisplayWooNotification(
-                localPushId, defaults, channelId, notification,
-                appPrefsWrapper.isOrderNotificationsChaChingEnabled(), isGroupNotification
+                pushId = localPushId,
+                notification = notification,
+                isGroupNotification = isGroupNotification
             )
 
             if (isGroupNotification) {
                 val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
-                val stringBuilder = StringBuilder()
-                for (note in notesMap.values.take(MAX_INBOX_ITEMS)) {
-                    stringBuilder.appendLine("${note.noteMessage}")
+                val message = notesMap.values.take(MAX_INBOX_ITEMS).joinToString("\n") {
+                    it.noteMessage.orEmpty()
                 }
 
-                val subject = String.format(resourceProvider.getString(R.string.new_notifications), notesMap.size)
-                val summaryText = String.format(
-                    resourceProvider.getString(R.string.more_notifications),
-                    notesMap.size - MAX_INBOX_ITEMS
-                )
+                val subject = resourceProvider.getString(R.string.new_notifications, notesMap.size)
+                val showGroupSummary = notesMap.size > MAX_INBOX_ITEMS
+                val summaryText = if (showGroupSummary) {
+                    resourceProvider.getString(
+                        R.string.more_notifications,
+                        notesMap.size - MAX_INBOX_ITEMS
+                    )
+                } else null
                 buildAndDisplayWooGroupNotification(
-                    channelId, stringBuilder.toString(), subject, summaryText, notification,
-                    notesMap.size > MAX_INBOX_ITEMS
+                    inboxMessage = message,
+                    subject = subject,
+                    summaryText = summaryText,
+                    notification = notification
                 )
             }
         }

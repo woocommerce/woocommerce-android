@@ -8,11 +8,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.NavigateToNextStep
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.NavigateToThemePreview
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,6 +39,7 @@ class ThemePickerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleResults()
     }
 
     private fun setupObservers() {
@@ -44,7 +47,14 @@ class ThemePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> navigateToStoreInstallationStep()
+                is NavigateToThemePreview -> navigateToThemePreviewFragment(event)
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleNotice(ThemePreviewFragment.THEME_SELECTED_NOTICE) {
+            navigateToStoreInstallationStep()
         }
     }
 
@@ -52,6 +62,16 @@ class ThemePickerFragment : BaseFragment() {
         findNavController().navigateSafely(
             ThemePickerFragmentDirections
                 .actionThemePickerFragmentToStoreCreationInstallationFragment()
+        )
+    }
+
+    private fun navigateToThemePreviewFragment(event: NavigateToThemePreview) {
+        findNavController().navigateSafely(
+            ThemePickerFragmentDirections
+                .actionThemePickerFragmentToThemePreviewFragment(
+                    themeId = event.themeId,
+                    isFromStoreCreation = event.isFromStoreCreation
+                )
         )
     }
 }
