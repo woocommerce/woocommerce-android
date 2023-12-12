@@ -27,12 +27,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.AppUrls.CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +43,12 @@ class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
             SurveyBottomSheetContent(
-                onStartSurveyClick = {},
+                onStartSurveyClick = {
+                    ChromeCustomTabUtils.launchUrl(
+                        requireContext(),
+                        CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY
+                    )
+                },
                 onSkipPressed = { findNavController().popBackStack() },
             )
         }
