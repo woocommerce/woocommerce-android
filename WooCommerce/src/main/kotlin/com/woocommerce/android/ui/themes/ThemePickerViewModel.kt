@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -31,7 +30,6 @@ class ThemePickerViewModel @Inject constructor(
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
     val viewState = combine(
-        flowOf(navArgs.isFromStoreCreation),
         loadThemes().stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
@@ -42,9 +40,9 @@ class ThemePickerViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = CurrentThemeState.Hidden
         )
-    ) { isFromStoreCreation, carouselState, currentThemeState ->
+    ) { carouselState, currentThemeState ->
         ViewState(
-            isFromStoreCreation = isFromStoreCreation,
+            isFromStoreCreation = navArgs.isFromStoreCreation,
             carouselState = carouselState,
             currentThemeState = currentThemeState
         )
