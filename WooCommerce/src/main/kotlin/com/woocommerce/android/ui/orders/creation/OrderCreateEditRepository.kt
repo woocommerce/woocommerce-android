@@ -10,6 +10,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
@@ -33,7 +34,6 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
-import com.woocommerce.android.model.WooPlugin
 
 class OrderCreateEditRepository @Inject constructor(
     private val selectedSite: SelectedSite,

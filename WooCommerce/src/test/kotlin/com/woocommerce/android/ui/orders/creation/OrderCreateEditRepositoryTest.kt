@@ -32,8 +32,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class OrderCreateEditRepositoryTest : BaseUnitTest() {
