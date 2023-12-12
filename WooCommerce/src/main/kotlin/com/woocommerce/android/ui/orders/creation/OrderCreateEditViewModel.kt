@@ -74,6 +74,7 @@ import com.woocommerce.android.model.Address.Companion.EMPTY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
@@ -142,12 +143,11 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.model.WooPlugin
-import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -195,6 +195,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
+    val isGiftCardExtensionEnabled
+        get() = pluginsInformation[WOO_GIFT_CARDS.pluginName]
+            ?.isOperational ?: false
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
@@ -586,12 +589,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
-        val isGiftCardExtensionAvailable = pluginsInformation[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
                 order.giftCards.isNullOrEmpty() &&
-                isGiftCardExtensionAvailable &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
     }
