@@ -27,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_IMAGE_OPTIMIZAT
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_LOGOUT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.hide
@@ -40,7 +39,6 @@ import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
-import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -53,9 +51,6 @@ import javax.inject.Inject
 class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSettingsContract.View {
     companion object {
         const val TAG = "main-settings"
-        private const val SETTING_NOTIFS_ORDERS = "notifications_orders"
-        private const val SETTING_NOTIFS_REVIEWS = "notifications_reviews"
-        private const val SETTING_NOTIFS_TONE = "notifications_tone"
     }
 
     @Inject
@@ -133,46 +128,18 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             startActivity(HelpActivity.createIntent(requireActivity(), HelpOrigin.SETTINGS, null))
         }
 
-        // on API 26+ we show the device notification settings, on older devices we have in-app settings
-        if (SystemVersionUtils.isAtLeastO()) {
-            binding.containerNotifsOld.visibility = View.GONE
-            binding.containerNotifsNew.visibility = View.VISIBLE
-            binding.optionNotifications.optionTitle = if (presenter.isChaChingSoundEnabled) {
-                getString(R.string.settings_notifs_device)
-            } else {
-                getString(R.string.settings_notifs)
-            }
-            binding.optionNotifications.optionValue = if (presenter.isChaChingSoundEnabled) {
-                getString(R.string.settings_notifs_device_detail)
-            } else {
-                null
-            }
-            binding.optionNotifications.setOnClickListener {
-                presenter.onNotificationsClicked()
-            }
+        binding.optionNotifications.optionTitle = if (presenter.isChaChingSoundEnabled) {
+            getString(R.string.settings_notifs_device)
         } else {
-            binding.containerNotifsOld.visibility = View.VISIBLE
-            binding.containerNotifsNew.visibility = View.GONE
-
-            binding.optionNotifsOrders.isChecked = AppPrefs.isOrderNotificationsEnabled()
-            binding.optionNotifsOrders.setOnCheckedChangeListener { _, isChecked ->
-                trackSettingToggled(SETTING_NOTIFS_ORDERS, isChecked)
-                AppPrefs.setOrderNotificationsEnabled(isChecked)
-                binding.optionNotifsTone.isEnabled = isChecked
-            }
-
-            binding.optionNotifsReviews.isChecked = AppPrefs.isReviewNotificationsEnabled()
-            binding.optionNotifsReviews.setOnCheckedChangeListener { _, isChecked ->
-                trackSettingToggled(SETTING_NOTIFS_REVIEWS, isChecked)
-                AppPrefs.setReviewNotificationsEnabled(isChecked)
-            }
-
-            binding.optionNotifsTone.isChecked = AppPrefs.isOrderNotificationsChaChingEnabled()
-            binding.optionNotifsTone.isEnabled = AppPrefs.isOrderNotificationsEnabled()
-            binding.optionNotifsTone.setOnCheckedChangeListener { _, isChecked ->
-                trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
-                AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
-            }
+            getString(R.string.settings_notifs)
+        }
+        binding.optionNotifications.optionValue = if (presenter.isChaChingSoundEnabled) {
+            getString(R.string.settings_notifs_device_detail)
+        } else {
+            null
+        }
+        binding.optionNotifications.setOnClickListener {
+            presenter.onNotificationsClicked()
         }
 
         if (PackageUtils.isDebugBuild()) {
@@ -285,12 +252,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
      * this on API 26+ devices (will do nothing on older devices)
      */
     override fun showDeviceAppNotificationSettings() {
-        if (SystemVersionUtils.isAtLeastO()) {
-            val intent = Intent()
-            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
-            intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
-            activity?.startActivity(intent)
-        }
+        val intent = Intent()
+        intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+        intent.putExtra("android.provider.extra.APP_PACKAGE", activity?.packageName)
+        activity?.startActivity(intent)
     }
 
     override fun showNotificationsSettingsScreen() {
@@ -353,20 +318,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
         }
-
-    /**
-     * Called when a boolean setting is changed so we can track it
-     */
-    private fun trackSettingToggled(keyName: String, newValue: Boolean) {
-        AnalyticsTracker.track(
-            SETTING_CHANGE,
-            mapOf(
-                AnalyticsTracker.KEY_NAME to keyName,
-                AnalyticsTracker.KEY_FROM to !newValue,
-                AnalyticsTracker.KEY_TO to newValue
-            )
-        )
-    }
 
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()

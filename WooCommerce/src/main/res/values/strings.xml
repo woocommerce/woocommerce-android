@@ -1211,9 +1211,11 @@
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
     <string name="order_refunds_fees_refund">Fees refund</string>
+    <string name="order_refunds_custom_amount_refund">Custom amount refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_fees">Refund fees</string>
+    <string name="order_refunds_refund_custom_amount">Refund Custom Amount</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
@@ -2250,12 +2252,6 @@
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
-    <string name="settings_notifs_orders">Orders</string>
-    <string name="settings_notifs_orders_detail">Get alerts when new orders come in</string>
-    <string name="settings_notifs_tone">Tone</string>
-    <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
-    <string name="settings_notifs_reviews">Product reviews</string>
-    <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_image_optimization_title">Image optimization</string>
@@ -3895,6 +3891,7 @@
     <string name="save_configuration">Save configuration</string>
     <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
     <string name="configuration_required">Configuration required</string>
+    <string name="configuration_complete">Configuration complete</string>
     <string name="configuration_quantity_item">%d item</string>
     <string name="configuration_quantity_item_plural">%d items</string>
     <string name="configuration_quantity_between"> between %1$s and %2$s items </string>
