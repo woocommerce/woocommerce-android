@@ -2975,12 +2975,6 @@ Language: id
     <string name="wc_approve">Setujui</string>
     <string name="wc_view_the_product_external">Tampilkan produk</string>
     <string name="support_help">Bantuan &amp; dukungan</string>
-    <string name="settings_notifs_reviews_detail">Dapatkan pemberitahuan untuk ulasan produk baru</string>
-    <string name="settings_notifs_reviews">Tinjauan produk</string>
-    <string name="settings_notifs_tone_detail">Mainkan suara Cha-Ching saat ada pesanan baru</string>
-    <string name="settings_notifs_tone">Nada</string>
-    <string name="settings_notifs_orders_detail">Dapatkan pemberitahuan saat ada pesanan baru</string>
-    <string name="settings_notifs_orders">Pesanan</string>
     <string name="settings_notifs_device_detail">Suara, tingkat kepentingan, dan titik pemberitahuan</string>
     <string name="settings_notifs_device">Kelola pemberitahuan</string>
     <string name="settings_notifs">Pemberitahuan</string>

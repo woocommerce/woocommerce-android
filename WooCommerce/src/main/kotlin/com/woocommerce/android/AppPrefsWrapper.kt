@@ -143,12 +143,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
-    fun isOrderNotificationsEnabled() = AppPrefs.isOrderNotificationsEnabled()
-
-    fun isReviewNotificationsEnabled() = AppPrefs.isReviewNotificationsEnabled()
-
-    fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
-
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }
