@@ -62,7 +62,12 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                title = { Text("") },
+                title = {
+                    Text(
+                        if (viewState.isFromStoreCreation) ""
+                        else stringResource(id = R.string.settings_themes)
+                    )
+                },
                 navigationIcon = Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
                 actions = {
