@@ -146,6 +146,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.model.WooPlugin
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -191,6 +192,8 @@ class OrderCreateEditViewModel @Inject constructor(
         Mode.Creation -> VALUE_FLOW_CREATION
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
+
+    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
@@ -266,6 +269,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
 
     init {
+        launch {
+            pluginsInformation = orderCreateEditRepository.fetchOrderSupportedPlugins()
+        }
+
         when (mode) {
             Mode.Creation -> {
                 _orderDraft.update {
