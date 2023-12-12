@@ -316,7 +316,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     fun `given quantity updated, when undo action triggered, then should set quantity back to original`() =
         testBlocking {
             val originalQuantity = 5
-            val newQuantity = 10
+            val newQuantity = 6
             val productId = 1L
             val product = ProductTestUtils.generateProduct(
                 isStockManaged = true,
