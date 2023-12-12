@@ -147,6 +147,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 import com.woocommerce.android.model.WooPlugin
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -585,10 +586,12 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
+        val isGiftCardExtensionAvailable = pluginsInformation[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
                 order.giftCards.isNullOrEmpty() &&
+                isGiftCardExtensionAvailable &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
     }
