@@ -375,9 +375,9 @@ private fun PreviewThemePickerStoreCreation() {
                 isFromStoreCreation = true,
                 carouselState = CarouselState.Success(
                     carouselItems = listOf(
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = "")
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "")
                     )
                 ),
                 currentThemeState = CurrentThemeState.Hidden
@@ -398,9 +398,9 @@ private fun PreviewThemePickerSettings() {
                 isFromStoreCreation = false,
                 carouselState = CarouselState.Success(
                     carouselItems = listOf(
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "", demoUri = "")
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "")
                     )
                 ),
                 currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki")

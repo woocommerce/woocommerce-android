@@ -61,8 +61,7 @@ class ThemePickerViewModel @Inject constructor(
                             CarouselItem.Theme(
                                 themeId = theme.id,
                                 name = theme.name,
-                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!),
-                                demoUri = theme.demoUrl
+                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
                             )
                         }
                         .plus(
@@ -135,8 +134,7 @@ class ThemePickerViewModel @Inject constructor(
                 data class Theme(
                     val themeId: String,
                     val name: String,
-                    val screenshotUrl: String,
-                    val demoUri: String
+                    val screenshotUrl: String
                 ) : CarouselItem()
 
                 @Parcelize
