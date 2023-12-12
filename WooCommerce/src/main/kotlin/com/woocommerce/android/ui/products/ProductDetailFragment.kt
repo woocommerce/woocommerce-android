@@ -331,6 +331,7 @@ class ProductDetailFragment :
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun observeEvents(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -351,6 +352,7 @@ class ProductDetailFragment :
                     event.actionText,
                     event.action
                 )
+
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)

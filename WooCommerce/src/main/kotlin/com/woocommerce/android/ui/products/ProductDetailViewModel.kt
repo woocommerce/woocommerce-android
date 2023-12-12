@@ -142,6 +142,7 @@ class ProductDetailViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
+        const val MINUM_NUMBER_OF_AI_CREATED_PRODUCTS_TO_SHOW_SURVEY = 3
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -354,9 +355,16 @@ class ProductDetailViewModel @Inject constructor(
     private fun initializeViewState() {
         when (isAddFlowEntryPoint) {
             true -> startAddNewProduct()
-            else -> loadRemoteProduct(navArgs.remoteProductId)
+            else -> {
+                loadRemoteProduct(navArgs.remoteProductId)
+                if (shouldShowAIProductCreationSurvey())
+                    triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
+            }
         }
     }
+
+    private fun shouldShowAIProductCreationSurvey() = navArgs.isAIContent &&
+        appPrefsWrapper.numberOfProductsCreatedUsingAi == MINUM_NUMBER_OF_AI_CREATED_PRODUCTS_TO_SHOW_SURVEY
 
     private fun startAddNewProduct() {
         val defaultProduct = createDefaultProductForAddFlow()
@@ -881,9 +889,6 @@ class ProductDetailViewModel @Inject constructor(
         when (isProductUnderCreation) {
             true -> startPublishProduct(productStatus = viewState.productDraft?.status ?: ProductStatus.PUBLISH)
             else -> startUpdateProduct(isPublish = false)
-        }
-        if (navArgs.isAIContent) {
-            triggerEvent(ShowAiProductCreationSurveyBottomSheet)
         }
     }
 
