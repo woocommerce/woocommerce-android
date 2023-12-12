@@ -145,7 +145,8 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         updatedProductInfo: ProductInfo,
         isUndoUpdate: Boolean,
         onSuccess: () -> Unit = {},
-        onError: () -> Unit = {}
+        onError: () -> Unit = {},
+        onUndoSuccess: () -> Unit = {}
     ) = launch {
         _viewState.value = ViewState.Loading
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.UpdatingProduct
@@ -162,13 +163,14 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             }
             if (result.isSuccess) {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_SUCCESS)
-                showQuantityUpdateSuccessSnackbar(
-                    product.stockQuantity.toInt().toString(),
-                    updatedProductInfo.quantity.toString(),
-                    updatedProductInfo,
-                    isUndoUpdate
-                )
-                onSuccess()
+                val oldQuantity = product.stockQuantity.toInt().toString()
+                val updatedQuantity = updatedProductInfo.quantity.toString()
+                if (!isUndoUpdate) {
+                    showQuantityUpdateSuccessSnackbar(oldQuantity, updatedQuantity, updatedProductInfo)
+                    onSuccess()
+                } else {
+                    onUndoSuccess()
+                }
             } else {
                 handleQuantityUpdateError()
                 onError()
@@ -210,24 +212,21 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     private fun showQuantityUpdateSuccessSnackbar(
         oldQuantity: String,
         updatedQuantity: String,
-        productInfo: ProductInfo,
-        isUndoUpdate: Boolean
+        productInfo: ProductInfo
     ) {
         val quantityChangeString = "$oldQuantity ➡ $updatedQuantity"
         val message = resourceProvider.getString(
             R.string.scan_to_update_inventory_success_snackbar,
             quantityChangeString
         )
-        if (!isUndoUpdate) {
-            triggerEvent(
-                MultiLiveEvent.Event.ShowUndoSnackbar(
-                    message = message,
-                    undoAction = {
-                        onUpdateQuantityUndo(oldQuantity, productInfo)
-                    },
-                )
+        triggerEvent(
+            MultiLiveEvent.Event.ShowUndoSnackbar(
+                message = message,
+                undoAction = {
+                    onUpdateQuantityUndo(oldQuantity, productInfo)
+                },
             )
-        }
+        )
     }
 
     private fun handleQuantityUpdateError() {
@@ -239,7 +238,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         updateQuantity(
             productInfo.copy(quantity = oldQuantity.toInt()),
             isUndoUpdate = true,
-            onSuccess = {
+            onUndoSuccess = {
                 triggerEvent(
                     ShowUiStringSnackbar(
                         UiString.UiStringText(
