@@ -2968,12 +2968,6 @@ Language: nl
     <string name="wc_approve">Goedkeuren</string>
     <string name="wc_view_the_product_external">Het product weergeven</string>
     <string name="support_help">Hulp en ondersteuning</string>
-    <string name="settings_notifs_reviews_detail">Meldingen voor nieuwe productbeoordelingen ontvangen</string>
-    <string name="settings_notifs_reviews">Productbeoordelingen</string>
-    <string name="settings_notifs_tone_detail">\'Cha-Ching\'-geluid afspelen bij nieuwe bestelling</string>
-    <string name="settings_notifs_tone">Pieptoon</string>
-    <string name="settings_notifs_orders_detail">Ontvang meldingen bij nieuwe bestellingen</string>
-    <string name="settings_notifs_orders">Bestellingen</string>
     <string name="settings_notifs_device_detail">Punt voor geluiden, urgentie en meldingen</string>
     <string name="settings_notifs_device">Meldingen beheren</string>
     <string name="settings_notifs">Meldingen</string>
