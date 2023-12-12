@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.barcodescanner
 
-import androidx.camera.core.Preview as CameraPreview
 import android.content.res.Configuration
 import android.util.Size
 import androidx.camera.core.CameraSelector
@@ -34,6 +33,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import androidx.camera.core.Preview as CameraPreview
 
 @Suppress("TooGenericExceptionCaught")
 @Composable
