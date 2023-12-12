@@ -215,12 +215,14 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
         // Given
         val pluginMock = mock<SitePluginModel> { on { isActive } doReturn true }
-        whenever(wooCommerceStore.getSitePlugin(defaultSiteModel, WOO_GIFT_CARDS)).thenReturn(pluginMock)
+        whenever(wooCommerceStore.getSitePlugins(defaultSiteModel, listOf(WOO_GIFT_CARDS)))
+            .thenReturn(listOf(pluginMock))
 
         // When
-        val result = sut.isGiftCardExtensionEnabled()
+        val plugins = sut.fetchOrderCreateEditSupportedPlugins()
 
         // Then
-        assertThat(result).isTrue
+        assertThat(plugins).isNotEmpty
+        assertThat(plugins).containsExactly(pluginMock)
     }
 }
