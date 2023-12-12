@@ -67,7 +67,7 @@ class PrivacySettingsFragment : BaseFragment() {
                 is MultiLiveEvent.Event.ShowActionSnackbar ->
                     snackbar = uiMessageResolver.getIndefiniteActionSnack(
                         event.message,
-                        actionText = getString(R.string.retry),
+                        actionText = event.actionText,
                         actionListener = event.action
                     ).apply {
                         show()

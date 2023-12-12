@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation.giftcards
 
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -114,8 +113,7 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
     }
 
     private fun createSutWith(initialGiftCardValue: String?) {
-        val savedState = OrderCreateEditGiftCardFragmentArgs(initialGiftCardValue)
-            .initSavedStateHandle()
+        val savedState = OrderCreateEditGiftCardFragmentArgs(initialGiftCardValue).toSavedStateHandle()
         sut = OrderCreateEditGiftCardViewModel(savedState)
     }
 }

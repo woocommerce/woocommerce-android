@@ -43,13 +43,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/simplePaymentsWIPcard" />
 
-        <com.woocommerce.android.ui.payments.feedback.ipp.FeedbackBanner
-            android:id="@+id/ippFeedbackBanner"
-            style="@style/Woo.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/order_filters_card"/>
-
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/jitmOrdersFragment"
             android:layout_width="match_parent"
@@ -61,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="ippFeedbackBanner, jitmOrdersFragment" />
+            app:constraint_referenced_ids="jitmOrdersFragment" />
 
         <com.woocommerce.android.ui.orders.list.OrderListView
             android:id="@+id/order_list_view"

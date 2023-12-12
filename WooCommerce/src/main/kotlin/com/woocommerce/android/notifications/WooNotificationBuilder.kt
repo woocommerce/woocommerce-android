@@ -1,15 +1,9 @@
 package com.woocommerce.android.notifications
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.net.Uri
 import android.os.RemoteException
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -17,7 +11,6 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
@@ -30,7 +23,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WooNotificationBuilder @Inject constructor(private val context: Context) {
+class WooNotificationBuilder @Inject constructor(
+    private val context: Context,
+    private val notificationChannelsHandler: NotificationChannelsHandler
+) {
     fun isNotificationsEnabled(): Boolean {
         return NotificationManagerCompat.from(context.applicationContext).areNotificationsEnabled()
     }
@@ -40,20 +36,22 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     fun cancelAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
     private fun getNotificationBuilder(
-        channelId: String,
         notification: Notification
-    ): NotificationCompat.Builder =
-        NotificationCompat.Builder(context, channelId)
+    ): NotificationCompat.Builder {
+        val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
+
+        return NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_woo_w_notification)
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
-            .setGroup(notification.getGroup(channelId))
+            .setGroup(notification.getGroup())
             .setContentTitle(notification.noteTitle)
             .setContentText(notification.noteMessage)
             .setTicker(notification.noteMessage)
             .setStyle(NotificationCompat.BigTextStyle().bigText(notification.noteMessage))
+    }
 
     private fun getResultIntent(
         pushId: Int,
@@ -68,13 +66,12 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     }
 
     fun buildAndDisplayLocalNotification(
-        channelId: String,
         notification: Notification,
         notificationTappedIntent: Intent,
         actions: List<Pair<String, Intent>> = emptyList()
     ) {
         val channelType = notification.channelType
-        getNotificationBuilder(channelId, notification).apply {
+        getNotificationBuilder(notification).apply {
             val notificationContentIntent =
                 buildPendingIntentForGivenIntent(notification.noteId, notificationTappedIntent)
             setContentIntent(notificationContentIntent)
@@ -101,19 +98,13 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
 
     fun buildAndDisplayWooNotification(
         pushId: Int,
-        defaults: Int,
-        channelId: String,
         notification: Notification,
-        addCustomNotificationSound: Boolean,
         isGroupNotification: Boolean
     ) {
         val channelType = notification.channelType
-        getNotificationBuilder(channelId, notification).apply {
+        getNotificationBuilder(notification).apply {
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
-            setDefaults(defaults)
-            if (addCustomNotificationSound) {
-                setSound(getChaChingUri(), AudioManager.STREAM_NOTIFICATION)
-            }
+            setDefaults(NotificationCompat.DEFAULT_ALL)
         }.apply {
             showNotification(pushId, notification, this)
 
@@ -128,23 +119,23 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     }
 
     fun buildAndDisplayWooGroupNotification(
-        channelId: String,
         inboxMessage: String,
         subject: String,
-        summaryText: String,
-        notification: Notification,
-        shouldDisplaySummaryText: Boolean,
+        summaryText: String?,
+        notification: Notification
     ) {
         val inboxStyle = NotificationCompat.InboxStyle().addLine(inboxMessage)
+        val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
 
-        if (shouldDisplaySummaryText) {
+        summaryText?.let {
             inboxStyle.setSummaryText(summaryText)
         }
+
         NotificationCompat.Builder(context, channelId)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
             .setSmallIcon(R.drawable.ic_woo_w_notification)
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
-            .setGroup(notification.getGroup(channelId))
+            .setGroup(notification.getGroup())
             .setGroupSummary(true)
             .setAutoCancel(true)
             .setTicker(notification.noteMessage)
@@ -189,46 +180,6 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             // see https://github.com/woocommerce/woocommerce-android/issues/920
             WooLog.e(WooLog.T.NOTIFS, e)
         }
-    }
-
-    fun createNotificationChannels() {
-        for (noteType in NotificationChannelType.values()) {
-            createNotificationChannel(
-                context.getString(noteType.getChannelId()),
-                context.getString(noteType.getChannelTitle()),
-                noteType == NEW_ORDER
-            )
-        }
-    }
-
-    /**
-     * Ensures the desired notification channel is created when on API 26+, does nothing otherwise since notification
-     * channels weren't added until API 26
-     */
-    private fun createNotificationChannel(channelId: String, channelName: String, addChaChingSound: Boolean) {
-        if (SystemVersionUtils.isAtLeastO()) {
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            // check for existing channel first
-            manager.getNotificationChannel(channelId)?.let {
-                WooLog.i(WooLog.T.NOTIFS, "Notification channel already created with the following attributes: $it")
-                return
-            }
-
-            // create the channel since it doesn't already exist
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            if (addChaChingSound) {
-                val attributes = AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                    .build()
-                channel.setSound(getChaChingUri(), attributes)
-            }
-            manager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun getChaChingUri(): Uri {
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + R.raw.cha_ching)
     }
 
     private fun buildPendingIntentForGivenIntent(notificationLocalId: Int, intent: Intent): PendingIntent {
