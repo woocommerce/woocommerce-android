@@ -33,6 +33,7 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
+import com.woocommerce.android.model.WooPlugin
 
 class OrderCreateEditRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -161,11 +162,18 @@ class OrderCreateEditRepository @Inject constructor(
         return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
     }
 
-    suspend fun fetchOrderCreateEditSupportedPlugins() =
+    suspend fun fetchOrderSupportedPlugins() =
         wooCommerceStore.getSitePlugins(
             site = selectedSite.get(),
             plugins = listOf(WooCommerceStore.WooPlugin.WOO_GIFT_CARDS)
-        )
+        ).associateBy { it.name }
+            .map { (name, plugin) ->
+                WooPlugin(
+                    isInstalled = true,
+                    isActive = plugin.isActive,
+                    version = plugin.version
+                ).let { Pair(name, it) }
+            }
 
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
         when (selectedOption) {
