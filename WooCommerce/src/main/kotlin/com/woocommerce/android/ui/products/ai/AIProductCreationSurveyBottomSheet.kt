@@ -20,6 +20,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -88,6 +90,7 @@ private fun SurveyBottomSheetContent(
                         .size(dimensionResource(id = R.dimen.major_175))
                         .align(Alignment.TopStart),
                     painter = painterResource(id = R.drawable.ic_ai),
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.color_primary)),
                     contentDescription = "",
                 )
             }
