@@ -67,13 +67,9 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
         scannerViewModel.startCodesRecognition()
     }
 
-    override fun onStop() {
-        undoSnackbar?.dismiss()
-        super.onStop()
-    }
-
     override fun onPause() {
         scannerViewModel.stopCodesRecognition()
+        undoSnackbar?.dismiss()
         super.onPause()
     }
 
