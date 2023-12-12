@@ -31,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls.CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -39,20 +41,28 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
+    @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_CONFIRMATION_VIEW_DISPLAYED)
         return composeView {
             SurveyBottomSheetContent(
                 onStartSurveyClick = {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_START_SURVEY_BUTTON_TAPPED)
                     ChromeCustomTabUtils.launchUrl(
                         requireContext(),
                         CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY
                     )
                     findNavController().popBackStack()
                 },
-                onSkipPressed = { findNavController().popBackStack() },
+                onSkipPressed = {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_SKIP_BUTTON_TAPPED)
+                    findNavController().popBackStack()
+                },
             )
         }
     }
