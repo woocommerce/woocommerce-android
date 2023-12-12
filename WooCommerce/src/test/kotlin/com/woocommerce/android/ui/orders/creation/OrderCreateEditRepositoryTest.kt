@@ -32,6 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 
 @ExperimentalCoroutinesApi
 class OrderCreateEditRepositoryTest : BaseUnitTest() {
@@ -208,5 +209,18 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             assertThat(setting).isNotNull
             assertThat(setting).isInstanceOf(TaxBasedOnSetting.BillingAddress::class.java)
         }
+    }
+
+    @Test
+    fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
+        // Given
+        val pluginMock = mock<SitePluginModel> { on { isActive } doReturn true }
+        whenever(wooCommerceStore.getSitePlugin(defaultSiteModel, WOO_GIFT_CARDS)).thenReturn(pluginMock)
+
+        // When
+        val result = sut.isGiftCardExtensionEnabled()
+
+        // Then
+        assertThat(result).isTrue
     }
 }
