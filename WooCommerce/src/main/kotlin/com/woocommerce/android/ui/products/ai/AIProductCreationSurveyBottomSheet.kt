@@ -48,6 +48,7 @@ class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
                         requireContext(),
                         CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY
                     )
+                    findNavController().popBackStack()
                 },
                 onSkipPressed = { findNavController().popBackStack() },
             )
