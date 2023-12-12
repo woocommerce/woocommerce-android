@@ -161,6 +161,12 @@ class OrderCreateEditRepository @Inject constructor(
         return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
     }
 
+    suspend fun isGiftCardExtensionEnabled() =
+        wooCommerceStore.getSitePlugin(
+            site = selectedSite.get(),
+            plugin = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
+        )?.isActive ?: false
+
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
         when (selectedOption) {
             "shipping" -> ShippingAddress
