@@ -796,6 +796,7 @@ class ProductDetailViewModel @Inject constructor(
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             ProductExitEvent.ExitProductSubscriptionExpiration -> {
                 eventName = AnalyticsEvent.PRODUCT_SUBSCRIPTION_EXPIRATION_DONE_BUTTON_TAPPED
                 hasChanges = hasSubscriptionExpirationChanges()
@@ -880,6 +881,9 @@ class ProductDetailViewModel @Inject constructor(
         when (isProductUnderCreation) {
             true -> startPublishProduct(productStatus = viewState.productDraft?.status ?: ProductStatus.PUBLISH)
             else -> startUpdateProduct(isPublish = false)
+        }
+        if (navArgs.isAIContent) {
+            triggerEvent(ShowAiProductCreationSurveyBottomSheet)
         }
     }
 
@@ -2452,6 +2456,8 @@ class ProductDetailViewModel @Inject constructor(
         val productTitle: String,
         val productDescription: String?
     ) : Event()
+
+    object ShowAiProductCreationSurveyBottomSheet : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
