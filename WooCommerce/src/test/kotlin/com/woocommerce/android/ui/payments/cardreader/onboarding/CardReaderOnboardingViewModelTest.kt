@@ -1242,7 +1242,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
             assertThat(viewStateData.headerLabel).isEqualTo(
                 UiString.UiStringRes(
-                    R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header_text
+                    R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
                 )
             )
         }
@@ -1280,7 +1280,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
             assertThat(viewStateData.cashOnDeliveryHintLabel).isEqualTo(
                 UiString.UiStringRes(
-                    R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint_text
+                    R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
                 )
             )
         }
