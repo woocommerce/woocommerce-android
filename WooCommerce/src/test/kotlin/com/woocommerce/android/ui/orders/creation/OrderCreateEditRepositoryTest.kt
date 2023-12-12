@@ -228,14 +228,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // Then
         assertThat(plugins).isNotEmpty
-        assertThat(plugins).containsExactly(
-            Pair(
-                "test plugin",
-                WooPlugin(
-                    isInstalled = true,
-                    isActive = true,
-                    version = "1.0.0"
-                )
+        assertThat(plugins["test plugin"]).isEqualTo(
+            WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = "1.0.0"
             )
         )
     }

@@ -167,12 +167,12 @@ class OrderCreateEditRepository @Inject constructor(
             site = selectedSite.get(),
             plugins = listOf(WooCommerceStore.WooPlugin.WOO_GIFT_CARDS)
         ).associateBy { it.name }
-            .map { (name, plugin) ->
+            .mapValues { (_, plugin) ->
                 WooPlugin(
                     isInstalled = true,
                     isActive = plugin.isActive,
                     version = plugin.version
-                ).let { Pair(name, it) }
+                )
             }
 
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
