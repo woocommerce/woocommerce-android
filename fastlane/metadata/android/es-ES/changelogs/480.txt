@@ -1,2 +1,0 @@
-16.4:
-Nos encanta presentar algunas funciones nuevas. Nuestra actualización más reciente te permite cobrar cantidades personalizadas de impuestos y configurar un envío único para los productos de suscripción. También puedes configurar productos de suscripción como "productos virtuales". Además, hemos añadido una función de IA que genera una nota de agradecimiento en la pantalla de detalles del pedido completado. Disfruta de nuestra aplicación WooCommerce nueva y mejorada.

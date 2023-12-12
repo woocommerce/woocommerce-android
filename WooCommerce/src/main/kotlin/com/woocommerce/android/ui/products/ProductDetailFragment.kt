@@ -345,7 +345,11 @@ class ProductDetailFragment :
                     )
                 }
 
-                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(
+                    event.message,
+                    event.actionText,
+                    event.action
+                )
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
@@ -432,12 +436,13 @@ class ProductDetailFragment :
 
     private fun displayProductImageUploadErrorSnackBar(
         message: String,
+        actionText: String,
         actionListener: View.OnClickListener
     ) {
         if (imageUploadErrorsSnackbar == null) {
             imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
-                actionText = getString(R.string.details),
+                actionText = actionText,
                 actionListener = actionListener
             )
         } else {

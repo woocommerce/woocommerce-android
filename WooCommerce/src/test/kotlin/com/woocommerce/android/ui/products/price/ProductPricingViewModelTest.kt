@@ -5,7 +5,6 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -70,7 +69,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     )
 
     private val savedState = ProductPricingFragmentArgs(RequestCodes.PRODUCT_DETAIL_PRICING, pricingData)
-        .initSavedStateHandle()
+        .toSavedStateHandle()
 
     private lateinit var viewModel: ProductPricingViewModel
 
@@ -170,7 +169,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     @Test
     fun `Hides the tax section for variation pricing`() = testBlocking {
         val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
 
         viewModel = spy(
             ProductPricingViewModel(

@@ -26,14 +26,12 @@ class NotificationChannelsHandler @Inject constructor(
         createChannels()
     }
 
-    @Suppress("unused")
     fun recreateNotificationChannel(channelType: NotificationChannelType) {
         notificationManagerCompat.deleteNotificationChannel(channelType.getChannelId())
         appPrefsWrapper.incrementNotificationChannelTypeSuffix(channelType)
         createChannel(channelType)
     }
 
-    @Suppress("unused")
     fun checkNotificationChannelSound(channelType: NotificationChannelType): Boolean {
         val channel = notificationManagerCompat.getNotificationChannel(channelType.getChannelId())
             ?: return true // If the notification is not created yet, then it'll have the correct sound when created

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.GetProductRules
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -37,7 +36,7 @@ class ProductConfigurationViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         sut = ProductConfigurationViewModel(
-            savedState = navArgs.initSavedStateHandle(),
+            savedState = navArgs.toSavedStateHandle(),
             getProductRules = getProductRules,
             resourceProvider = mock(),
             getProductConfiguration = getProductConfiguration,
