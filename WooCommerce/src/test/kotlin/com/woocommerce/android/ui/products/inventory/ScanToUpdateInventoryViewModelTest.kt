@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.inventory
 
-import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
@@ -26,7 +25,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
