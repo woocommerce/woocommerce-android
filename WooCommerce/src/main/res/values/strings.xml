@@ -3879,6 +3879,7 @@
     <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
     <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
     <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Update Quantity Undone</string>
     <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
     <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
     <string name="scan_to_update_inventory_quantity_label">Quantity</string>
