@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -422,6 +423,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product 2")
+
+            advanceTimeBy(501L)
+
             viewModel.onBackButtonClickedProductDetail()
 
             assertThat(isObservingEvents).isFalse()
@@ -441,6 +445,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
+            advanceTimeBy(501L)
             viewModel.onBackButtonClickedProductDetail()
             (viewModel.event.value as ShowDialog).negativeBtnAction!!.onClick(null, 0)
 
@@ -457,6 +462,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
+            advanceTimeBy(501L)
             viewModel.onBackButtonClickedProductDetail()
             (viewModel.event.value as ShowDialog).neutralBtnAction!!.onClick(null, 0)
 
