@@ -209,7 +209,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
         .combine(_selectedGiftCard) { order, giftCard ->
-            order.copy(selectedGiftCard = giftCard)
+            order.copy(
+                selectedGiftCard = giftCard,
+                giftCardDiscountedAmount = args.giftCardAmount
+            )
         }.asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
