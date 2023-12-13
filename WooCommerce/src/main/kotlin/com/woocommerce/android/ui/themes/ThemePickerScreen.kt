@@ -38,16 +38,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
-import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import coil.util.DebugLogger
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -311,7 +312,7 @@ private fun Theme(
                     .followRedirects(false)
                     .build()
             }
-            .logger(DebugLogger())
+            .logger(if (BuildConfig.DEBUG) DebugLogger() else null)
             .build()
 
         val request = ImageRequest.Builder(LocalContext.current)
@@ -323,23 +324,27 @@ private fun Theme(
             model = request,
             imageLoader = imageLoader,
             contentDescription = stringResource(R.string.settings_app_theme_title),
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxHeight()
-        ) {
-            when (painter.state) {
-                is AsyncImagePainter.State.Error -> {
-                    Message(
-                        title = stringResource(id = R.string.theme_picker_carousel_placeholder_title, theme.name),
-                        description = annotatedStringRes(stringResId = R.string.theme_picker_carousel_placeholder_message),
-                        modifier = themeModifier
+            error = {
+                val errorMessage = buildAnnotatedString {
+                    val ctaText = stringResource(id = R.string.theme_picker_carousel_error_placeholder_message_cta)
+                    val message = stringResource(id = R.string.theme_picker_carousel_error_placeholder_message, ctaText)
+                    append(message)
+                    addStyle(
+                        SpanStyle(color = MaterialTheme.colors.primary),
+                        message.indexOf(ctaText),
+                        message.indexOf(ctaText) + ctaText.length
                     )
                 }
 
-                else -> {
-                    SubcomposeAsyncImageContent()
-                }
-            }
-        }
+                Message(
+                    title = theme.name,
+                    description = errorMessage,
+                    modifier = themeModifier
+                )
+            },
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.fillMaxHeight()
+        )
     }
 }
 
