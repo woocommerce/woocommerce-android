@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -38,7 +40,8 @@ class ThemePreviewViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val themeRepository: ThemeRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val newStore: NewStore
+    private val newStore: NewStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
@@ -74,6 +77,12 @@ class ThemePreviewViewModel @Inject constructor(
             }
         )
     }.asLiveData()
+
+    init {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_SCREEN_DISPLAYED,
+        )
+    }
 
     fun onPageSelected(demoPage: ThemeDemoPage) {
         selectedPage.value = demoPage
