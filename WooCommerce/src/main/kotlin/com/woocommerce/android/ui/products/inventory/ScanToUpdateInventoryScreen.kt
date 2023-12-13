@@ -31,7 +31,9 @@ fun ScanToUpdateInventoryScreen(
     onIncrementQuantityClicked: () -> Unit,
     onUpdateQuantityClicked: () -> Unit,
     onViewProductDetailsClicked: () -> Unit,
-    onManualQuantityEntered: (String) -> Unit
+    onManualQuantityEntered: (String) -> Unit,
+    onManageStockClicked: () -> Unit,
+    onViewProductDetailsClickedFromStockManagement: () -> Unit,
 ) = WooThemeWithBackground {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -64,9 +66,17 @@ fun ScanToUpdateInventoryScreen(
                         onUpdateQuantityClicked = onUpdateQuantityClicked,
                         onViewProductDetailsClicked = onViewProductDetailsClicked,
                     )
+                } else if (state is ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible) {
+                    StockManagementBottomSheet(
+                        state = state,
+                        onManageStockClicked = onManageStockClicked,
+                        onViewProductDetailsClicked = onViewProductDetailsClickedFromStockManagement,
+                    )
                 }
                 LaunchedEffect(state) {
-                    if (state is ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible) {
+                    if (state is ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible ||
+                        state is ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible
+                    ) {
                         sheetState.show()
                     } else {
                         sheetState.hide()
