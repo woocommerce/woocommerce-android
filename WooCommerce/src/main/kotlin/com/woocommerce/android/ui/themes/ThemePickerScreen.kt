@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +51,7 @@ import coil.util.DebugLogger
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState
@@ -227,7 +229,7 @@ private fun ColumnScope.Error() {
             .fillMaxWidth()
             .weight(1f),
         title = stringResource(id = R.string.theme_picker_error_title),
-        description = stringResource(id = R.string.theme_picker_error_message),
+        description = annotatedStringRes(stringResId = R.string.theme_picker_error_message),
         color = color.color_error
     )
 }
@@ -244,7 +246,11 @@ private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit)
         items(items) { item ->
             when (item) {
                 is CarouselItem.Theme -> Theme(item, onThemeTapped)
-                is CarouselItem.Message -> Message(modifier = Modifier.width(320.dp), item.title, item.description)
+                is CarouselItem.Message -> Message(
+                    title = item.title,
+                    description = AnnotatedString(item.description),
+                    modifier = Modifier.width(320.dp)
+                )
             }
         }
     }
@@ -252,9 +258,9 @@ private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit)
 
 @Composable
 private fun Message(
-    modifier: Modifier = Modifier,
     title: String,
-    description: String,
+    description: AnnotatedString,
+    modifier: Modifier = Modifier,
     color: Int = R.color.color_on_surface_medium
 ) {
     Box(
@@ -323,9 +329,9 @@ private fun Theme(
             when (painter.state) {
                 is AsyncImagePainter.State.Error -> {
                     Message(
-                        modifier = themeModifier,
                         title = stringResource(id = R.string.theme_picker_carousel_placeholder_title, theme.name),
-                        description = stringResource(id = R.string.theme_picker_carousel_placeholder_message)
+                        description = annotatedStringRes(stringResId = R.string.theme_picker_carousel_placeholder_message),
+                        modifier = themeModifier
                     )
                 }
 
