@@ -211,7 +211,7 @@ class OrderCreateEditViewModel @Inject constructor(
         .combine(_selectedGiftCard) { order, giftCard ->
             order.copy(
                 selectedGiftCard = giftCard,
-                giftCardDiscountedAmount = args.giftCardAmount
+                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
             )
         }.asLiveData()
 
