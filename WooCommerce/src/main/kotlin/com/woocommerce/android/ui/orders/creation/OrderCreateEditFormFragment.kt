@@ -725,20 +725,40 @@ class OrderCreateEditFormFragment :
     }
 
     private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
-        if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
-            if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
-                addGiftCardButton.isVisible = true
-                giftCardLayout.hide()
-                addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
-            } else {
-                addGiftCardButton.isVisible = false
-                giftCardLayout.show()
-                giftCardCode.text = newOrderData.selectedGiftCard
-                selectedGiftCardButton.setOnClickListener {
-                    viewModel.onEditGiftCardButtonClicked(newOrderData.selectedGiftCard)
-                }
+        when (viewModel.mode) {
+            OrderCreateEditViewModel.Mode.Creation -> {
+                bindGiftCardForOrderCreation(newOrderData)
+            }
+
+            is OrderCreateEditViewModel.Mode.Edit -> {
+                bindGiftCardForOrderEdit(newOrderData)
             }
         }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindGiftCardForOrderCreation(
+        newOrderData: Order
+    ) {
+        if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
+
+        if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
+            addGiftCardButton.isVisible = true
+            giftCardLayout.hide()
+            addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
+        } else {
+            addGiftCardButton.isVisible = false
+            giftCardLayout.show()
+            giftCardCode.text = newOrderData.selectedGiftCard
+            selectedGiftCardButton.setOnClickListener {
+                viewModel.onEditGiftCardButtonClicked(newOrderData.selectedGiftCard)
+            }
+        }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindGiftCardForOrderEdit(
+        newOrderData: Order
+    ) {
+
     }
 
     private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
