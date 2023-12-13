@@ -205,11 +205,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="@dimen/major_300"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
             android:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_edit_gift_card_code"
-                style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -222,7 +223,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintBottom_toBottomOf="@+id/order_edit_gift_card_code"
                 app:layout_constraintRight_toRightOf="parent"
