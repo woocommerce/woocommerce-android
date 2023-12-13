@@ -99,6 +99,22 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given order has only custom amt, when refund button clicked, then refund custom amount toggle is enabled`() {
+        testBlocking {
+            val orderWithCustomAmount = OrderTestUtils.generateOrderWithCustomAmount()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithCustomAmount)
+
+            initViewModel()
+
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+
+            viewState!!.isFeesRefundAvailable?.let { assertTrue(it) }
+            assertTrue(viewState!!.isFeesMainSwitchChecked)
+        }
+    }
+
+    @Test
     fun `when order has no shipping, then refund notice is not visible`() {
         testBlocking {
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(OrderTestUtils.generateOrder())

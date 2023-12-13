@@ -2975,12 +2975,6 @@ Language: ko_KR
     <string name="wc_approve">승인하기</string>
     <string name="wc_view_the_product_external">제품 보기</string>
     <string name="support_help">도움 및 지원</string>
-    <string name="settings_notifs_reviews_detail">새 제품 리뷰 알림 받기</string>
-    <string name="settings_notifs_reviews">제품 리뷰</string>
-    <string name="settings_notifs_tone_detail">새 주문에 대해 금전 등록기 소리 재생</string>
-    <string name="settings_notifs_tone">톤</string>
-    <string name="settings_notifs_orders_detail">새 주문이 들어올 때 알림 받기</string>
-    <string name="settings_notifs_orders">주문</string>
     <string name="settings_notifs_device_detail">소리, 긴급 및 알림 점</string>
     <string name="settings_notifs_device">알림 관리</string>
     <string name="settings_notifs">알림</string>

@@ -15,7 +15,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -44,13 +43,13 @@ import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,8 +88,8 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.getStockText
 import java.math.BigDecimal
 
-private const val ANIM_DURATION_MILLIS = 128
-private const val MULTIPLICATION_CHAR = "×"
+const val ANIM_DURATION_MILLIS = 128
+const val MULTIPLICATION_CHAR = "×"
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
@@ -101,9 +100,10 @@ fun ExpandableProductCard(
     onDiscountButtonClicked: () -> Unit,
     onItemAmountChanged: (ProductAmountEvent) -> Unit,
     onEditConfigurationClicked: () -> Unit,
-    onProductExpanded: (isExpanded: Boolean, product: OrderCreationProduct) -> Unit
+    onProductExpanded: (isExpanded: Boolean, product: OrderCreationProduct) -> Unit,
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean = false,
 ) {
-    var isExpanded by rememberSaveable { mutableStateOf(false) }
     val transitionState = remember {
         MutableTransitionState(isExpanded).apply { targetState = !isExpanded }
     }
@@ -116,22 +116,13 @@ fun ExpandableProductCard(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.minor_50)
-            )
-            .border(
-                1.dp,
-                colorResource(id = if (isExpanded) R.color.color_on_surface else R.color.divider_color),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
-            )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
-                isExpanded = !isExpanded
-                onProductExpanded(isExpanded, product)
+                onProductExpanded(!isExpanded, product)
             }
+            .then(modifier)
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
         val collapsedStateBottomBarrier = createBottomBarrier(sku, quantity)
@@ -142,8 +133,8 @@ fun ExpandableProductCard(
                     start.linkTo(parent.start)
                     bottom.linkTo(collapsedStateBottomBarrier)
                 }
-                .size(dimensionResource(R.dimen.major_375))
-                .padding(dimensionResource(id = R.dimen.major_100)),
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .size(dimensionResource(R.dimen.major_300)),
             imageUrl = product.productInfo.imageUrl
         )
         Text(
@@ -237,8 +228,7 @@ fun ExpandableProductCard(
         }
         IconButton(
             onClick = {
-                isExpanded = !isExpanded
-                onProductExpanded(isExpanded, product)
+                onProductExpanded(!isExpanded, product)
             },
             modifier = Modifier.constrainAs(chevron) {
                 top.linkTo(parent.top)
@@ -449,9 +439,11 @@ fun ExtendedProductCardContent(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = null
                 )
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = stringResource(id = R.string.order_creation_add_discount),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
         }
@@ -474,12 +466,14 @@ fun ExtendedProductCardContent(
                 enabled = editableControlsEnabled
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_configuration),
+                    imageVector = Icons.Filled.Tune,
                     contentDescription = null
                 )
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = stringResource(id = R.string.extension_configure_button),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
 
@@ -638,7 +632,7 @@ private fun AmountPicker(
 }
 
 @Composable
-private fun getQuantityWithTotalText(product: OrderCreationProduct) =
+fun getQuantityWithTotalText(product: OrderCreationProduct) =
     "${product.item.quantity.toInt()} $MULTIPLICATION_CHAR ${product.productInfo.pricePreDiscount}"
 
 sealed class ProductAmountEvent {

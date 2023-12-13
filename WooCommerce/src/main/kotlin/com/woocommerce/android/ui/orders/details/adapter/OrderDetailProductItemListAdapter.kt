@@ -68,8 +68,10 @@ class OrderDetailProductItemListAdapter(
                 }
             }
             binding.productInfoGroupedProduct.hideProductTotal()
-            val orderTotal = formatCurrencyForDisplay(item.total)
-            binding.groupedProductTotal.text = orderTotal
+            val itemTotal = formatCurrencyForDisplay(item.total)
+            val productTotal = formatCurrencyForDisplay(groupedItem.groupedProductTotal)
+            binding.groupedProductItemTotal.text = itemTotal
+            binding.groupedProductTotal.text = productTotal
 
             binding.root.setOnClickListener {
                 groupedItem.isExpanded = groupedItem.isExpanded.not()

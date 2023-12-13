@@ -1,8 +1,6 @@
 package com.woocommerce.android.notifications
 
 import androidx.annotation.StringRes
-import androidx.core.app.NotificationCompat
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
@@ -30,13 +28,5 @@ fun NotificationChannelType.shouldCircularizeNoteIcon(): Boolean {
     return when (this) {
         REVIEW -> true
         else -> false
-    }
-}
-
-fun NotificationChannelType.getDefaults(appPrefsWrapper: AppPrefsWrapper): Int {
-    return when {
-        this == NEW_ORDER && appPrefsWrapper.isOrderNotificationsChaChingEnabled() -> {
-            NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE
-        } else -> NotificationCompat.DEFAULT_ALL
     }
 }

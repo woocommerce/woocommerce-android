@@ -35,7 +35,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
@@ -62,9 +62,8 @@ class MoreMenuViewModel @Inject constructor(
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            loadSitePlanName(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-        ) { count, selectedSite, sitePlanName, paymentsFeatureWasClicked ->
+        ) { count, selectedSite, paymentsFeatureWasClicked ->
             MoreMenuViewState(
                 generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
@@ -73,10 +72,14 @@ class MoreMenuViewModel @Inject constructor(
                 settingsMenuItems = generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
-                sitePlan = sitePlanName,
                 userAvatarUrl = accountStore.account.avatarUrl,
                 isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             )
+        }.transform { viewState ->
+            // to avoid showing empty screen when plan is fetched
+            emit(viewState)
+            val sitePlanName = loadSitePlanName()
+            emit(viewState.copy(sitePlan = sitePlanName))
         }.asLiveData()
 
     fun onViewResumed() {
@@ -273,11 +276,9 @@ class MoreMenuViewModel @Inject constructor(
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
-    private fun loadSitePlanName() = flow {
+    private suspend fun loadSitePlanName() =
         planRepository.fetchCurrentPlanDetails(selectedSite.get())
             ?.formattedPlanName.orEmpty()
-            .let { emit(it) }
-    }
 
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)
