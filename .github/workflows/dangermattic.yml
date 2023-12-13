@@ -1,98 +1,17 @@
-name: Danger on GitHub PR events
+name: ☢️ Trigger Danger Rerun
 
 on:
   pull_request:
-    types: [review_requested, review_request_removed, labeled, unlabeled, milestoned, demilestoned]
+    types: [edited, review_requested, review_request_removed, labeled, unlabeled, milestoned, demilestoned]
 
 jobs:
   dangermattic:
-    runs-on: ubuntu-latest
     if: github.event.number > 0
-    steps:
-      - name: "☢️ Danger: Trigger on CI"
-        run: |
-          ORG_SLUG="automattic"
-          PIPELINE_SLUG="woocommerce-android"
-          RETRY_STEP_KEY="danger"
-          BUILDKITE_API_ACCESS_TOKEN="${{ secrets.TRIGGER_BK_BUILD_TOKEN }}"
-          LATEST_COMMIT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
-
-          # Performs a Buildkite request using a http method ($1) and an api path ($2)
-          perform_buildkite_request() {
-            local METHOD=$1
-            local BUILDKITE_API_PATH=$2
-
-            local BUILDKITE_API_URL="https://api.buildkite.com/v2/organizations/$ORG_SLUG/pipelines/$PIPELINE_SLUG/$BUILDKITE_API_PATH"
-
-            local RAW_RESPONSE=$(
-              curl \
-                --fail-with-body \
-                --silent \
-                --show-error \
-                -X "$METHOD" \
-                -H "Authorization: Bearer $BUILDKITE_API_ACCESS_TOKEN" \
-                "$BUILDKITE_API_URL"
-            )
-
-            echo "$RAW_RESPONSE" | tr -d '\n' | jq -R -r
-          }
-
-          # Gets the build(s) associated with the latest commit
-          get_buildkite_build() {
-            perform_buildkite_request "GET" "builds?commit=$LATEST_COMMIT_SHA"
-          }
-
-          # Given a build id ($1) and a job id ($2), retry the given job
-          retry_buildkite_job() {
-            local BUILD_ID=$1
-            local JOB_ID=$2
-
-            perform_buildkite_request "PUT" "builds/$BUILD_ID/jobs/$JOB_ID/retry"
-          }
-
-          # Validates a Buildkite response ($1)
-          check_buildkite_error() {
-            local RESPONSE=$1
-
-            # Check if the response is empty
-            if [ -z "$RESPONSE" ] || [ "$(echo "$RESPONSE" | jq 'length')" -eq 0 ]; then
-              echo "❌ Buildkite API call returned an empty response."
-              exit 1
-            fi
-
-            # Check if the response contains an error message
-            RESPONSE_ERROR=$(echo "$RESPONSE" | jq .message 2>/dev/null || true)
-            # if [[ -n "$RESPONSE_ERROR" ]]; then
-            if [[ -n "$RESPONSE_ERROR" && "$RESPONSE_ERROR" != 'null' ]]; then
-              echo "❌ Buildkite API call failed: $RESPONSE_ERROR"
-              exit 1
-            fi
-          }
-
-          BUILDKITE_GET_BUILD_RESPONSE=$(get_buildkite_build)
-          check_buildkite_error "$BUILDKITE_GET_BUILD_RESPONSE"
-
-          LATEST_BUILD=$(echo "$BUILDKITE_GET_BUILD_RESPONSE" | jq -r '.[0]')
-          LATEST_BUILD_NUMBER=$(echo "$LATEST_BUILD" | jq -r '.number')
-
-          DANGER_JOB=$(echo "$LATEST_BUILD" | jq -r --arg step_key "$RETRY_STEP_KEY" '.jobs[] | select(.step_key == $step_key)')
-          DANGER_JOB_ID=$(echo "$DANGER_JOB" | jq -r '.id')
-          DANGER_JOB_STATE=$(echo "$DANGER_JOB" | jq -r '.state')
-
-          echo "ℹ️ Build Number: $LATEST_BUILD_NUMBER"
-          echo "ℹ️ Job ID for step '$RETRY_STEP_KEY': $DANGER_JOB_ID"
-          echo "ℹ️ Job state for step '$RETRY_STEP_KEY': $DANGER_JOB_STATE"
-
-          # all states: running, scheduled, passed, failing, failed, blocked, canceled, canceling, skipped, not_run, finished
-          allowed_job_states=("passed" "failed" "canceled" "finished")
-          if [[ " ${allowed_job_states[@]} " =~ " $DANGER_JOB_STATE " ]]; then
-            BUILDKITE_RETRY_JOB_RESPONSE=$(retry_buildkite_job "$LATEST_BUILD_NUMBER" "$DANGER_JOB_ID")
-            check_buildkite_error "$BUILDKITE_RETRY_JOB_RESPONSE"
-
-            JOB_WEB_URL=$(echo "$BUILDKITE_RETRY_JOB_RESPONSE" | jq -r '.web_url')
-            echo "✅ Job succesfully retried: $JOB_WEB_URL"
-          elif [[ "$DANGER_JOB_STATE" == "running" || "$DANGER_JOB_STATE" == "scheduled" ]]; then
-            echo "⚠️ Job is already in state '$DANGER_JOB_STATE', no need to retry."
-          else
-            echo "❌ Cannot retry job in state '$DANGER_JOB_STATE'"
-          fi
+    uses: Automattic/dangermattic/.github/workflows/reusable-retry-buildkite-step-on-events.yml@iangmaia/gha-triggering-danger
+    with:
+      org-slug: "automattic"
+      pipeline-slug: "woocommerce-android"
+      retry-step-key: "danger"
+      commit-sha: "${{ github.event.pull_request.head.sha }}"
+    secrets:
+      buildkite-api-token: ${{ secrets.TRIGGER_BK_BUILD_TOKEN }}
