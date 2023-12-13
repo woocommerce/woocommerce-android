@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.themes
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -127,28 +125,23 @@ class ThemePickerViewModel @Inject constructor(
         data class Success(
             val carouselItems: List<CarouselItem> = emptyList()
         ) : CarouselState {
-            sealed class CarouselItem : Parcelable {
-                @Parcelize
+            sealed class CarouselItem {
                 data class Theme(
                     val themeId: String,
                     val name: String,
                     val screenshotUrl: String
                 ) : CarouselItem()
 
-                @Parcelize
                 data class Message(val title: String, val description: String) : CarouselItem()
             }
         }
     }
 
-    sealed interface CurrentThemeState : Parcelable {
-        @Parcelize
+    sealed interface CurrentThemeState {
         object Hidden : CurrentThemeState
 
-        @Parcelize
         object Loading : CurrentThemeState
 
-        @Parcelize
         data class Success(val themeName: String) : CurrentThemeState
     }
 
