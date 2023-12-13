@@ -142,6 +142,7 @@ class ProductDetailViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
+        const val MINUM_NUMBER_OF_AI_CREATED_PRODUCTS_TO_SHOW_SURVEY = 3
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -354,9 +355,16 @@ class ProductDetailViewModel @Inject constructor(
     private fun initializeViewState() {
         when (isAddFlowEntryPoint) {
             true -> startAddNewProduct()
-            else -> loadRemoteProduct(navArgs.remoteProductId)
+            else -> {
+                loadRemoteProduct(navArgs.remoteProductId)
+                if (shouldShowAIProductCreationSurvey())
+                    triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
+            }
         }
     }
+
+    private fun shouldShowAIProductCreationSurvey() = navArgs.isAIContent &&
+        appPrefsWrapper.numberOfProductsCreatedUsingAi == MINUM_NUMBER_OF_AI_CREATED_PRODUCTS_TO_SHOW_SURVEY
 
     private fun startAddNewProduct() {
         val defaultProduct = createDefaultProductForAddFlow()
@@ -796,6 +804,7 @@ class ProductDetailViewModel @Inject constructor(
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             ProductExitEvent.ExitProductSubscriptionExpiration -> {
                 eventName = AnalyticsEvent.PRODUCT_SUBSCRIPTION_EXPIRATION_DONE_BUTTON_TAPPED
                 hasChanges = hasSubscriptionExpirationChanges()
@@ -2452,6 +2461,8 @@ class ProductDetailViewModel @Inject constructor(
         val productTitle: String,
         val productDescription: String?
     ) : Event()
+
+    object ShowAiProductCreationSurveyBottomSheet : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

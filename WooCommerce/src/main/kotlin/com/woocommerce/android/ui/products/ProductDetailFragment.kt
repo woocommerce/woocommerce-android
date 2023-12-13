@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlaz
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
@@ -330,6 +331,7 @@ class ProductDetailFragment :
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun observeEvents(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -350,6 +352,7 @@ class ProductDetailFragment :
                     event.actionText,
                     event.action
                 )
+
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
@@ -365,9 +368,16 @@ class ProductDetailFragment :
                     event.productDescription
                 )
 
+                is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun openAIProductCreationSurveyBottomSheet() {
+        findNavController().navigateSafely(
+            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductCreationSurveyBottomSheet()
+        )
     }
 
     private fun showAIProductDescriptionBottomSheet(title: String, description: String?) {
