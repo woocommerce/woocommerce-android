@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun StockManagementBottomSheet(
-    state: ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible,
+    state: ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible,
     onManageStockClicked: () -> Unit = {},
     onViewProductDetailsClicked: () -> Unit = {},
 ) {
@@ -112,7 +112,7 @@ fun StockManagementBottomSheetPreview() {
         sku = "123-SKU-456",
         quantity = 10,
     )
-    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
+    val state = ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible(product)
     WooThemeWithBackground {
         StockManagementBottomSheet(state)
     }
