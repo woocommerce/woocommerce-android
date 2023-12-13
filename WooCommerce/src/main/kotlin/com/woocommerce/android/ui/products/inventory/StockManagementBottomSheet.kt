@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun StockManagementBottomSheet(
     state: ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible,
     onManageStockClicked: () -> Unit = {},
-    onViewProductDetailsClicked: () -> Unit = {},
+    onViewProductDetailsClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -114,6 +114,6 @@ fun StockManagementBottomSheetPreview() {
     )
     val state = ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible(product)
     WooThemeWithBackground {
-        StockManagementBottomSheet(state)
+        StockManagementBottomSheet(state, {}, {})
     }
 }
