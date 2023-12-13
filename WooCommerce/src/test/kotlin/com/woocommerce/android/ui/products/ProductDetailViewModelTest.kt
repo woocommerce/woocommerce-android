@@ -970,6 +970,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         assertThat(productsDraft?.images?.map { it.source }).isEqualTo(uris.toList())
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `when the product title updates quickly, then consume only the last value`() = testBlocking {
         doReturn(
