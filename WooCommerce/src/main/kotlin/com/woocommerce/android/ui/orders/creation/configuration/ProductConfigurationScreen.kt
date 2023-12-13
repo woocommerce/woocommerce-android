@@ -4,11 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,7 +51,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -131,6 +127,7 @@ fun ProductConfigurationScreen(
 ) {
     Surface {
         Column(modifier = modifier) {
+            val isMaxChildrenReached = productConfiguration.isMaxChildrenReached()
             LazyColumn(Modifier.weight(1f)) {
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
                 items(configurationItems) { childMapEntry ->
@@ -161,22 +158,26 @@ fun ProductConfigurationScreen(
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
 
+                            val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+                            val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
+
                             OptionalVariableQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                quantity = quantity,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                                 },
                                 minValue = quantityRule?.quantityMin,
-                                maxValue = quantityRule?.quantityMax,
+                                maxValue = if (isMaxChildrenReached) quantity else quantityRule?.quantityMax,
                                 onSelectAttributes = { onSelectChildrenAttributes(item.id) },
-                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                isIncluded = isIncluded,
                                 onSwitchChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                                 },
-                                attributes = attributes
+                                attributes = attributes,
+                                isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
 
@@ -188,18 +189,22 @@ fun ProductConfigurationScreen(
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
 
+                            val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+                            val isIncluded = quantity > 0f
+
                             VariableQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                quantity = quantity,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                                 },
                                 minValue = quantityRule?.quantityMin,
-                                maxValue = quantityRule?.quantityMax,
+                                maxValue = if (isMaxChildrenReached) quantity else quantityRule?.quantityMax,
                                 onSelectAttributes = { onSelectChildrenAttributes(item.id) },
-                                attributes = attributes
+                                attributes = attributes,
+                                isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
 
@@ -208,20 +213,24 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
+                            val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+                            val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
+
                             OptionalQuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                quantity = quantity,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                                 },
-                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                isIncluded = isIncluded,
                                 onSwitchChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                                 },
                                 minValue = quantityRule?.quantityMin,
-                                maxValue = quantityRule?.quantityMax
+                                maxValue = if (isMaxChildrenReached) quantity else quantityRule?.quantityMax,
+                                isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
 
@@ -229,28 +238,35 @@ fun ProductConfigurationScreen(
                             val quantityRule = productRules.childrenRules
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
+
+                            val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
+                            val isIncluded = quantity > 0f
+
                             QuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
+                                quantity = quantity,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                                 },
                                 minValue = quantityRule?.quantityMin,
-                                maxValue = quantityRule?.quantityMax
+                                maxValue = if (isMaxChildrenReached) quantity else quantityRule?.quantityMax,
+                                isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
 
                         hasOptionalRule -> {
+                            val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
                             OptionalProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                isIncluded = isIncluded,
                                 onSwitchChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                                }
+                                },
+                                isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
 
@@ -263,23 +279,10 @@ fun ProductConfigurationScreen(
                 }
             }
 
-            val density = LocalDensity.current
-            AnimatedVisibility(
-                visible = configurationIssues.isEmpty().not(),
-                enter = slideInVertically {
-                    with(density) { -40.dp.roundToPx() }
-                } + expandVertically(
-                    expandFrom = Alignment.Top
-                ) + fadeIn(initialAlpha = 0.3f),
-                exit = slideOutVertically {
-                    with(density) { 10.dp.roundToPx() }
-                } + fadeOut()
-            ) {
-                ConfigurationIssues(
-                    issues = configurationIssues,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            ConfigurationIssues(
+                issues = configurationIssues,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Divider(
                 color = colorResource(id = R.color.divider_color),
@@ -308,18 +311,22 @@ fun OptionalQuantityProductItem(
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
-    minValue: Float? = null
+    minValue: Float? = null,
+    isSelectionEnabled: Boolean = true
 ) {
     ConfigurableListItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(vertical = 16.dp, horizontal = 8.dp),
+        modifier = modifier
+            .clickable { if (isSelectionEnabled) { onSwitchChanged(!isIncluded) } }
+            .padding(vertical = 16.dp, horizontal = 8.dp),
         configurableControlStart = {
             SelectionCheck(
                 isSelected = isIncluded,
                 onSelectionChange = onSwitchChanged,
-                modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+                modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target)),
+                isEnabled = isSelectionEnabled
             )
         },
         configurableControlEnd = {
@@ -349,17 +356,20 @@ fun QuantityProductItem(
     onQuantityChanged: (Float) -> Unit,
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
-    minValue: Float? = null
+    minValue: Float? = null,
+    isSelectionEnabled: Boolean = true
 ) {
     ConfigurableListItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
+        modifier = modifier
+            .clickable { if (isSelectionEnabled) { onQuantityChanged(if (quantity == 0f) 1f else 0f) } }
+            .padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
         configurableControlStart = {
             SelectionCheck(
                 isSelected = quantity > 0f,
-                isEnabled = minValue == null || minValue <= 0f,
+                isEnabled = (minValue == null || minValue <= 0f) && isSelectionEnabled,
                 onSelectionChange = { selected ->
                     onQuantityChanged(if (selected) 1f else 0f)
                 },
@@ -405,6 +415,7 @@ fun OptionalProductItem(
     isIncluded: Boolean,
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    isSelectionEnabled: Boolean = true
 ) {
     ConfigurableListItem(
         title = title,
@@ -415,7 +426,8 @@ fun OptionalProductItem(
             SelectionCheck(
                 isSelected = isIncluded,
                 onSelectionChange = onSwitchChanged,
-                modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+                modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target)),
+                isEnabled = isSelectionEnabled
             )
         }
     )
@@ -451,7 +463,9 @@ fun SelectionCheck(
     val colorFilter = if (isEnabled) null else ColorFilter.tint(Color.Gray)
 
     Box(
-        modifier = modifier.clickable { onSelectionChange(!isSelected) },
+        modifier = modifier.clickable {
+            if (isEnabled) { onSelectionChange(!isSelected) }
+        },
         contentAlignment = Alignment.Center
     ) {
         Crossfade(
@@ -696,28 +710,41 @@ fun ConfigurationIssues(
     issues: List<String>,
     modifier: Modifier = Modifier
 ) {
+    val text = if (issues.isEmpty()) {
+        stringResource(id = R.string.configuration_complete)
+    } else {
+        stringResource(id = R.string.configuration_required)
+    }
+    val color = if (issues.isEmpty()) {
+        colorResource(id = R.color.woo_green_5)
+    } else {
+        colorResource(id = R.color.woo_blue_5)
+    }
     Column(
         modifier = modifier
             .padding(all = 16.dp)
             .background(
                 shape = RoundedCornerShape(8.dp),
-                color = colorResource(id = R.color.woo_blue_5)
+                color = color
             )
             .padding(all = 16.dp)
             .animateContentSize()
     ) {
         Text(
-            text = stringResource(id = R.string.configuration_required),
+            text = text,
             style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
-        LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
-            items(issues) { issue ->
-                Text(
-                    text = issue,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface
-                )
+        if (issues.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
+                items(issues) { issue ->
+                    Text(
+                        text = issue,
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Black
+                    )
+                }
             }
         }
     }
@@ -742,14 +769,15 @@ fun VariableQuantityProductItem(
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
     minValue: Float? = null,
-    attributes: List<VariantOption>? = null
+    attributes: List<VariantOption>? = null,
+    isSelectionEnabled: Boolean = true
 ) {
     Column(
         modifier = modifier
             .clickable {
                 if (quantity > 0f) {
                     onSelectAttributes()
-                } else {
+                } else if (isSelectionEnabled) {
                     onQuantityChanged(1f)
                 }
             }
@@ -762,7 +790,7 @@ fun VariableQuantityProductItem(
             configurableControlStart = {
                 SelectionCheck(
                     isSelected = quantity > 0f,
-                    isEnabled = minValue == null || minValue <= 0f,
+                    isEnabled = (minValue == null || minValue <= 0f) && isSelectionEnabled,
                     onSelectionChange = { selected ->
                         onQuantityChanged(if (selected) 1f else 0f)
                     },
@@ -814,14 +842,15 @@ fun OptionalVariableQuantityProductItem(
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
     minValue: Float? = null,
-    attributes: List<VariantOption>? = null
+    attributes: List<VariantOption>? = null,
+    isSelectionEnabled: Boolean = true
 ) {
     Column(
         modifier = modifier
             .clickable {
                 if (isIncluded) {
                     onSelectAttributes()
-                } else {
+                } else if (isSelectionEnabled) {
                     onSwitchChanged(true)
                 }
             }
@@ -835,7 +864,8 @@ fun OptionalVariableQuantityProductItem(
                 SelectionCheck(
                     isSelected = isIncluded,
                     onSelectionChange = onSwitchChanged,
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target)),
+                    isEnabled = isSelectionEnabled
                 )
             },
             modifier = Modifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 0.dp)
