@@ -634,6 +634,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_THEME_PICKER_SOURCE_PROFILER = "profiler"
         const val VALUE_THEME_PICKER_SOURCE_SETTINGS = "settings"
         const val KEY_THEME_PICKER_THEME = "theme"
+        const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"
 
         var sendUsageStats: Boolean = true
             set(value) {
