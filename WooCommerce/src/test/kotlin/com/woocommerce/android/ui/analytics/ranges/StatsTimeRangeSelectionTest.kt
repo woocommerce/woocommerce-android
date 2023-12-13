@@ -60,7 +60,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YEAR_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -85,7 +86,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_YEAR.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -113,7 +115,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -138,7 +141,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_QUARTER.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -166,7 +170,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -191,7 +196,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_MONTH.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -219,7 +225,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -244,7 +251,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -272,7 +280,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = TODAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -297,7 +306,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YESTERDAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -322,7 +332,8 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = midDayFrom("2022-12-05"),
             referenceEndDate = midDayFrom("2022-12-07"),
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // Then
@@ -337,7 +348,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YEAR_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -356,7 +368,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_YEAR.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -375,7 +388,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -394,7 +408,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_QUARTER.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -413,7 +428,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -432,7 +448,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -451,7 +468,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_MONTH.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -470,7 +488,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -489,7 +508,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -508,7 +528,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -527,7 +548,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -546,7 +568,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = TODAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -565,7 +588,8 @@ internal class StatsTimeRangeSelectionTest {
         val sut = YESTERDAY.generateSelectionData(
             referenceStartDate = today,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When
@@ -586,7 +610,8 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = start,
             referenceEndDate = end,
             calendar = testCalendar,
-            locale = testLocale
+            locale = testLocale,
+            siteModel = null
         )
 
         // When

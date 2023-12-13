@@ -32,6 +32,7 @@ class GetTopPerformersTest : BaseUnitTest() {
         statsRepository,
         coroutinesTestRule.testDispatchers,
         analyticsUpdateDataStore,
+        mock(),
         mock()
     )
 
