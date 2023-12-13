@@ -276,6 +276,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onViewProductDetailsClicked() {
+        tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
         val productId: Long? = when (val state = viewState.value) {
             is ViewState.QuickInventoryBottomSheetVisible -> state.product.id
             is ViewState.StockManagementBottomSheetVisible -> state.product.id
