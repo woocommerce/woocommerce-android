@@ -89,7 +89,8 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                     .verticalScroll(rememberScrollState())
                     .background(MaterialTheme.colors.surface),
                 viewState = viewState,
-                onThemeTapped = viewModel::onThemeTapped
+                onThemeTapped = viewModel::onThemeTapped,
+                onThemeScreenshotFailure = viewModel::onThemeScreenshotFailure
             )
         }
     }
@@ -99,7 +100,8 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
 private fun ThemePicker(
     modifier: Modifier,
     viewState: ThemePickerViewModel.ViewState,
-    onThemeTapped: (String) -> Unit
+    onThemeTapped: (String) -> Unit,
+    onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -111,7 +113,7 @@ private fun ThemePicker(
             isFromStoreCreation = viewState.isFromStoreCreation,
             modifier = Modifier.fillMaxWidth()
         )
-        Carousel(viewState.carouselState, onThemeTapped)
+        Carousel(viewState.carouselState, onThemeTapped, onThemeScreenshotFailure)
     }
 }
 
@@ -191,7 +193,8 @@ private fun Header(
 @Composable
 private fun ColumnScope.Carousel(
     state: CarouselState,
-    onThemeTapped: (String) -> Unit
+    onThemeTapped: (String) -> Unit,
+    onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
     when (state) {
         is CarouselState.Loading -> {
@@ -203,7 +206,7 @@ private fun ColumnScope.Carousel(
         }
 
         is CarouselState.Success -> {
-            Carousel(state.carouselItems, onThemeTapped)
+            Carousel(state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
         }
     }
 }
@@ -236,7 +239,11 @@ private fun ColumnScope.Error() {
 }
 
 @Composable
-private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit) {
+private fun Carousel(
+    items: List<CarouselItem>,
+    onThemeTapped: (String) -> Unit,
+    onThemeScreenshotFailure: (String, Throwable) -> Unit
+) {
     LazyRow(
         modifier = Modifier
             .height(480.dp)
@@ -246,7 +253,7 @@ private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit)
     ) {
         items(items) { item ->
             when (item) {
-                is CarouselItem.Theme -> Theme(item, onThemeTapped)
+                is CarouselItem.Theme -> Theme(item, onThemeTapped, onThemeScreenshotFailure)
                 is CarouselItem.Message -> Message(
                     title = item.title,
                     description = AnnotatedString(item.description),
@@ -298,7 +305,8 @@ private fun Message(
 @Composable
 private fun Theme(
     theme: CarouselItem.Theme,
-    onThemeTapped: (String) -> Unit
+    onThemeTapped: (String) -> Unit,
+    onScreenShotFailed: (String, Throwable) -> Unit
 ) {
     val themeModifier = Modifier.width(240.dp)
     Card(
@@ -318,6 +326,11 @@ private fun Theme(
         val request = ImageRequest.Builder(LocalContext.current)
             .data(theme.screenshotUrl)
             .crossfade(true)
+            .listener(
+                onError = { _, result ->
+                    onScreenShotFailed(theme.name, result.throwable)
+                }
+            )
             .build()
 
         SubcomposeAsyncImage(
@@ -359,7 +372,8 @@ private fun PreviewThemePickerError() {
                 carouselState = CarouselState.Error,
                 currentThemeState = CurrentThemeState.Hidden
             ),
-            onThemeTapped = {}
+            onThemeTapped = {},
+            onThemeScreenshotFailure = { _, _ -> }
         )
     }
 }
@@ -375,7 +389,8 @@ private fun PreviewThemePickerLoading() {
                 carouselState = CarouselState.Error,
                 currentThemeState = CurrentThemeState.Hidden
             ),
-            onThemeTapped = {}
+            onThemeTapped = {},
+            onThemeScreenshotFailure = { _, _ -> }
         )
     }
 }
@@ -398,7 +413,8 @@ private fun PreviewThemePickerStoreCreation() {
                 ),
                 currentThemeState = CurrentThemeState.Hidden
             ),
-            onThemeTapped = {}
+            onThemeTapped = {},
+            onThemeScreenshotFailure = { _, _ -> }
         )
     }
 }
@@ -421,7 +437,8 @@ private fun PreviewThemePickerSettings() {
                 ),
                 currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki")
             ),
-            onThemeTapped = {}
+            onThemeTapped = {},
+            onThemeScreenshotFailure = { _, _ -> }
         )
     }
 }
