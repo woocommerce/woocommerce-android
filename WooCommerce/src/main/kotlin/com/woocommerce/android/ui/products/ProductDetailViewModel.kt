@@ -84,13 +84,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
@@ -145,7 +143,6 @@ class ProductDetailViewModel @Inject constructor(
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
         const val MINUM_NUMBER_OF_AI_CREATED_PRODUCTS_TO_SHOW_SURVEY = 3
-        private const val TEXT_CHANGES_DELAY = 500L
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
@@ -334,8 +331,6 @@ class ProductDetailViewModel @Inject constructor(
     private var imageUploadsJob: Job? = null
     private val mutex = Mutex()
 
-    private val _productTitle = MutableStateFlow("")
-
     init {
         start()
     }
@@ -355,7 +350,6 @@ class ProductDetailViewModel @Inject constructor(
                 uris = navArgs.images!!.asList()
             )
         }
-        observeTitleChanges()
     }
 
     private fun initializeViewState() {
@@ -1121,16 +1115,10 @@ class ProductDetailViewModel @Inject constructor(
             triggerEvent(LaunchUrlInChromeTab(url))
         }
     }
-    fun onProductTitleChanged(title: String) { _productTitle.value = title }
 
-    @OptIn(FlowPreview::class)
-    private fun observeTitleChanges() {
-        launch {
-            _productTitle
-                .filter { title -> title != viewState.productDraft?.name?.fastStripHtml() }
-                // Delay changes to consume only the latest value and prevent race conditions
-                .debounce(TEXT_CHANGES_DELAY)
-                .collectLatest { title -> updateProductDraft(title = title) }
+    fun onProductTitleChanged(title: String) {
+        if (title != viewState.productDraft?.name?.fastStripHtml()) {
+            updateProductDraft(title = title)
         }
     }
 
