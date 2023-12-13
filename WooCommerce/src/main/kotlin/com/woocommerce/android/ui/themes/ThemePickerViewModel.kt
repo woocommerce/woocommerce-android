@@ -5,6 +5,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,6 +27,7 @@ class ThemePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val themeRepository: ThemeRepository,
     private val resourceProvider: ResourceProvider,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
@@ -45,6 +49,18 @@ class ThemePickerViewModel @Inject constructor(
             currentThemeState = currentThemeState
         )
     }.asLiveData()
+
+    init {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PICKER_SCREEN_DISPLAYED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_SOURCE to when (navArgs.isFromStoreCreation) {
+                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_PROFILER
+                    false -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_SETTINGS
+                }
+            )
+        )
+    }
 
     private fun loadThemes(): Flow<CarouselState> = flow {
         emit(CarouselState.Loading)

@@ -629,6 +629,11 @@ class AnalyticsTracker private constructor(
         // -- Scan To Update Inventory
         const val SCAN_TO_UPDATE_INVENTORY = "scan_to_update_inventory"
 
+        // Theme picker
+        const val KEY_THEME_PICKER_SOURCE = "source"
+        const val VALUE_THEME_PICKER_SOURCE_PROFILER = "profiler"
+        const val VALUE_THEME_PICKER_SOURCE_SETTINGS = "settings"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
