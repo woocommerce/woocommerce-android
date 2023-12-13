@@ -737,7 +737,7 @@ class OrderCreateEditFormFragment :
         newOrderData: Order
     ) {
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
-
+        orderEditGiftCardLayout.hide()
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
             addGiftCardButton.isVisible = true
             giftCardSelectionLayout.hide()
@@ -756,12 +756,12 @@ class OrderCreateEditFormFragment :
         newOrderData: Order
     ) {
         addGiftCardButton.isVisible = false
+        giftCardSelectionLayout.hide()
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
-            giftCardSelectionLayout.hide()
+            orderEditGiftCardLayout.hide()
         } else {
-            giftCardSelectionLayout.show()
-            giftCardCode.text = newOrderData.selectedGiftCard
-            giftCardSelectionLayout.isClickable = false
+            orderEditGiftCardLayout.show()
+            orderEditGiftCardCode.text = newOrderData.selectedGiftCard
         }
     }
 
