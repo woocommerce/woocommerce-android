@@ -55,6 +55,8 @@ import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
@@ -124,8 +126,8 @@ class OrderCreateEditFormFragment :
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
-                OrderCreateEditViewModel.Mode.Creation -> R.drawable.ic_back_24dp
-                is OrderCreateEditViewModel.Mode.Edit -> null
+                Creation -> R.drawable.ic_back_24dp
+                is Edit -> null
             }
         )
 
@@ -172,8 +174,8 @@ class OrderCreateEditFormFragment :
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
             title = resources.getString(
                 when (viewModel.mode) {
-                    OrderCreateEditViewModel.Mode.Creation -> R.string.create
-                    is OrderCreateEditViewModel.Mode.Edit -> R.string.done
+                    Creation -> R.string.create
+                    is Edit -> R.string.done
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -214,8 +216,8 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
         val mode = when (viewModel.mode) {
-            OrderCreateEditViewModel.Mode.Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
-            is OrderCreateEditViewModel.Mode.Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
+            Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
+            is Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
         }
         orderStatusView.initView(
             mode = mode,
@@ -588,11 +590,11 @@ class OrderCreateEditFormFragment :
         shouldShowProgressBars: Boolean
     ) {
         when (viewModel.mode) {
-            OrderCreateEditViewModel.Mode.Creation -> {
+            Creation -> {
                 binding.paymentSection.loadingProgress.isVisible = shouldShowProgressBars
             }
 
-            is OrderCreateEditViewModel.Mode.Edit -> {
+            is Edit -> {
                 binding.loadingProgress.isVisible = shouldShowProgressBars
             }
         }
@@ -726,13 +728,8 @@ class OrderCreateEditFormFragment :
 
     private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
         when (viewModel.mode) {
-            OrderCreateEditViewModel.Mode.Creation -> {
-                bindGiftCardForOrderCreation(newOrderData)
-            }
-
-            is OrderCreateEditViewModel.Mode.Edit -> {
-                bindGiftCardForOrderEdit(newOrderData)
-            }
+            is Creation -> bindGiftCardForOrderCreation(newOrderData)
+            is Edit -> bindGiftCardForOrderEdit(newOrderData)
         }
     }
 
@@ -743,11 +740,11 @@ class OrderCreateEditFormFragment :
 
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
             addGiftCardButton.isVisible = true
-            giftCardLayout.hide()
+            giftCardSelectionLayout.hide()
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
         } else {
             addGiftCardButton.isVisible = false
-            giftCardLayout.show()
+            giftCardSelectionLayout.show()
             giftCardCode.text = newOrderData.selectedGiftCard
             selectedGiftCardButton.setOnClickListener {
                 viewModel.onEditGiftCardButtonClicked(newOrderData.selectedGiftCard)
@@ -760,11 +757,11 @@ class OrderCreateEditFormFragment :
     ) {
         addGiftCardButton.isVisible = false
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
-            giftCardLayout.hide()
+            giftCardSelectionLayout.hide()
         } else {
-            giftCardLayout.show()
+            giftCardSelectionLayout.show()
             giftCardCode.text = newOrderData.selectedGiftCard
-            giftCardLayout.isClickable = false
+            giftCardSelectionLayout.isClickable = false
         }
     }
 
@@ -1205,9 +1202,9 @@ class OrderCreateEditFormFragment :
     }
 
     override fun getFragmentTitle() = when (viewModel.mode) {
-        OrderCreateEditViewModel.Mode.Creation -> getString(R.string.order_creation_fragment_title)
-        is OrderCreateEditViewModel.Mode.Edit -> {
-            val orderId = (viewModel.mode as OrderCreateEditViewModel.Mode.Edit).orderId.toString()
+        Creation -> getString(R.string.order_creation_fragment_title)
+        is Edit -> {
+            val orderId = (viewModel.mode as Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }
