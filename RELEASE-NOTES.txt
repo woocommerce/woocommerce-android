@@ -2,6 +2,7 @@
 16.7
 -----
 - [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
+- [*][Internal] Replace "Edit" text with Pencil icon for Customer and Customer notes section [https://github.com/woocommerce/woocommerce-android/pull/10381]
 
 
 
