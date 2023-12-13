@@ -762,6 +762,10 @@ class OrderCreateEditFormFragment :
         } else {
             orderEditGiftCardLayout.show()
             orderEditGiftCardCode.text = newOrderData.selectedGiftCard
+            orderEditGiftCardDiscount.text = newOrderData
+                .giftCardDiscountedAmount
+                ?.let(bigDecimalFormatter)
+                .orEmpty()
         }
     }
 
