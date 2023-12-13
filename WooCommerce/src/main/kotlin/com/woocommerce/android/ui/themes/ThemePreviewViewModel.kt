@@ -100,6 +100,12 @@ class ThemePreviewViewModel @Inject constructor(
     }
 
     fun onActivateThemeClicked() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_START_WITH_THEME_BUTTON_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+            )
+        )
         if (viewState.value?.isFromStoreCreation == true) {
             appPrefsWrapper.saveThemeIdForStoreCreation(newStore.data.siteId!!, navArgs.themeId)
             triggerEvent(ContinueStoreCreationWithTheme)
