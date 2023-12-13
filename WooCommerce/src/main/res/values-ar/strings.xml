@@ -2975,12 +2975,6 @@ Language: ar
     <string name="wc_approve">موافقة</string>
     <string name="wc_view_the_product_external">عرض المنتج</string>
     <string name="support_help">المساعدة والدعم</string>
-    <string name="settings_notifs_reviews_detail">اتسالم تنبيهات لمراجعات المنتجات الجديدة</string>
-    <string name="settings_notifs_reviews">مراجعات المنتجات</string>
-    <string name="settings_notifs_tone_detail">تشغيل صوت \"تشا تشينج\" عند وصول طلب جديد</string>
-    <string name="settings_notifs_tone">نغمة</string>
-    <string name="settings_notifs_orders_detail">استلام التنبيهات عندما تظهر طلبات جديدة</string>
-    <string name="settings_notifs_orders">الطلبات</string>
     <string name="settings_notifs_device_detail">الأصوات والضرورة ونقطة الإخطار</string>
     <string name="settings_notifs_device">إدارة الإخطارات</string>
     <string name="settings_notifs">الإخطارات</string>

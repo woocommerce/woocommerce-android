@@ -12,7 +12,6 @@ import com.bumptech.glide.load.engine.cache.DiskCache
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
-import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.EntryPoint
@@ -63,30 +62,28 @@ class WooCommerceGlideModule : AppGlideModule() {
      */
     @OptIn(DelicateCoroutinesApi::class)
     private fun initGlideCache(context: Context, builder: GlideBuilder) {
-        if (SystemVersionUtils.isAtLeastO()) {
-            val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
-            try {
-                // can't do this on the main thread - docs for getCacheQuoteBytes() state:
-                //     "This method may take several seconds to complete, so it
-                //      should only be called from a worker thread."
-                GlobalScope.launch {
-                    val uuid = storageManager.getUuidForPath(context.cacheDir)
-                    val quota = storageManager.getCacheQuotaBytes(uuid)
+        val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+        try {
+            // can't do this on the main thread - docs for getCacheQuoteBytes() state:
+            //     "This method may take several seconds to complete, so it
+            //      should only be called from a worker thread."
+            GlobalScope.launch {
+                val uuid = storageManager.getUuidForPath(context.cacheDir)
+                val quota = storageManager.getCacheQuotaBytes(uuid)
 
-                    if (quota > 0 && quota < DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE) {
-                        val cacheFactory = InternalCacheDiskCacheFactory(context, quota)
-                        builder.setDiskCache(cacheFactory)
+                if (quota > 0 && quota < DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE) {
+                    val cacheFactory = InternalCacheDiskCacheFactory(context, quota)
+                    builder.setDiskCache(cacheFactory)
 
-                        val quotaStr = NumberFormat.getInstance().format(quota / 1024) + "MB"
-                        val diffStr = NumberFormat.getInstance().format(
-                            (DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE - quota) / 1024
-                        ) + "MB"
-                        WooLog.d(T.UTILS, "Reduced image disk cache to $quotaStr ($diffStr smaller)")
-                    }
+                    val quotaStr = NumberFormat.getInstance().format(quota / 1024) + "MB"
+                    val diffStr = NumberFormat.getInstance().format(
+                        (DiskCache.Factory.DEFAULT_DISK_CACHE_SIZE - quota) / 1024
+                    ) + "MB"
+                    WooLog.d(T.UTILS, "Reduced image disk cache to $quotaStr ($diffStr smaller)")
                 }
-            } catch (e: IOException) {
-                WooLog.e(T.UTILS, "Unable to change image cache size", e)
             }
+        } catch (e: IOException) {
+            WooLog.e(T.UTILS, "Unable to change image cache size", e)
         }
     }
 }

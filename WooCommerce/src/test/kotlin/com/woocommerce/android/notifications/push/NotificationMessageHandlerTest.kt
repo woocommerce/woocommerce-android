@@ -1,11 +1,9 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
@@ -57,7 +55,6 @@ class NotificationMessageHandlerTest {
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLogWrapper: WooLogWrapper = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock ->
@@ -97,7 +94,6 @@ class NotificationMessageHandlerTest {
             wooLogWrapper = wooLogWrapper,
             dispatcher = dispatcher,
             siteStore = siteStore,
-            appPrefsWrapper = appPrefsWrapper,
             resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
@@ -108,10 +104,6 @@ class NotificationMessageHandlerTest {
 
         doReturn(true).whenever(accountStore).hasAccessToken()
         doReturn(accountModel).whenever(accountStore).account
-        doReturn(true).whenever(appPrefsWrapper).isOrderNotificationsEnabled()
-        doReturn(true).whenever(appPrefsWrapper).isOrderNotificationsEnabled()
-        doReturn(true).whenever(appPrefsWrapper).isReviewNotificationsEnabled()
-        doReturn(true).whenever(appPrefsWrapper).isOrderNotificationsChaChingEnabled()
         doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
     }
 
@@ -243,42 +235,16 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when order notification is received but not enabled, then do not display notification`() {
-        doReturn(false).whenever(appPrefsWrapper).isOrderNotificationsEnabled()
-
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-        verify(wooLogWrapper, only()).i(
-            eq(WooLog.T.NOTIFS),
-            eq("Skipped ${orderNotification.noteType.name} notification")
-        )
-    }
-
-    @Test
-    fun `when review notification is received but not enabled, then do not display notification`() {
-        doReturn(false).whenever(appPrefsWrapper).isReviewNotificationsEnabled()
-
-        notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
-        verify(wooLogWrapper, only()).i(
-            eq(WooLog.T.NOTIFS),
-            eq("Skipped ${reviewNotification.noteType.name} notification")
-        )
-    }
-
-    @Test
     fun `when order and review notifications are received together, then display notification details correctly`() {
         // clear all notifications
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
 
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
-        val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
-
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(orderDefaults),
             notification = eq(orderNotification),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
@@ -289,14 +255,10 @@ class NotificationMessageHandlerTest {
         // new incoming review notification
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
-        val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
-
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(reviewDefaults),
             notification = eq(reviewNotification),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
@@ -317,14 +279,10 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
-        val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
-
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(orderDefaults),
             notification = eq(orderNotification),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
@@ -344,9 +302,7 @@ class NotificationMessageHandlerTest {
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(orderDefaults),
             notification = eq(orderNotification2),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
@@ -367,14 +323,10 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
-        val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
-
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(reviewDefaults),
             notification = eq(reviewNotification),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
@@ -394,9 +346,7 @@ class NotificationMessageHandlerTest {
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(reviewDefaults),
             notification = eq(reviewNotification2),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
@@ -417,14 +367,10 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
-        val orderDefaults = orderNotification.channelType.getDefaults(appPrefsWrapper)
-
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(orderDefaults),
             notification = eq(orderNotification),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
@@ -444,9 +390,7 @@ class NotificationMessageHandlerTest {
         // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(orderDefaults),
             notification = eq(orderNotification2),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
@@ -467,14 +411,10 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
-        val reviewDefaults = reviewNotification.channelType.getDefaults(appPrefsWrapper)
-
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(reviewDefaults),
             notification = eq(reviewNotification),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(false)
         )
 
@@ -494,9 +434,7 @@ class NotificationMessageHandlerTest {
         // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            defaults = eq(reviewDefaults),
             notification = eq(reviewNotification2),
-            addCustomNotificationSound = eq(true),
             isGroupNotification = eq(true)
         )
 
