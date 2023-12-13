@@ -76,7 +76,6 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
-                    _viewState.value = ViewState.QuickInventoryBottomSheetHidden
                 }
             } else {
                 handleProductNotFound(status.code)
@@ -93,18 +92,17 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleProductIsNotStockManaged(product: Product) {
-        triggerProductNotStockManagedSnackBar(product)
-        delay(SCANNER_RESTART_DEBOUNCE_MS)
-        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
-    }
-
-    private fun triggerProductNotStockManagedSnackBar(product: Product) {
-        val message = resourceProvider.getString(
-            R.string.scan_to_update_inventory_product_not_stock_managed,
-            product.sku
+    private fun handleProductIsNotStockManaged(product: Product) {
+        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.FetchingProduct
+        _viewState.value = ViewState.StockManagementBottomSheetVisible(
+            product = ProductInfo(
+                id = product.remoteId,
+                name = product.name,
+                imageUrl = product.firstImageUrl.orEmpty(),
+                sku = product.sku,
+                quantity = product.stockQuantity.toInt(),
+            )
         )
-        triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
     }
 
     private suspend fun handleProductNotFound(barcode: String) {
@@ -278,10 +276,37 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onViewProductDetailsClicked() {
-        tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
+        val productId: Long? = when (val state = viewState.value) {
+            is ViewState.QuickInventoryBottomSheetVisible -> state.product.id
+            is ViewState.StockManagementBottomSheetVisible -> state.product.id
+            else -> null
+        }
+
+        productId?.let { id ->
+            triggerEvent(NavigateToProductDetailsEvent(id))
+        }
+    }
+
+    fun onManageStockClicked() = launch {
         val state = viewState.value
-        if (state !is ViewState.QuickInventoryBottomSheetVisible) return
-        triggerEvent(NavigateToProductDetailsEvent(state.product.id))
+        if (state is ViewState.StockManagementBottomSheetVisible) {
+            val updatedProduct = productRepository.getProduct(state.product.id)?.copy(
+                isStockManaged = true
+            )
+
+            if (updatedProduct != null) {
+                productRepository.updateProduct(updatedProduct)
+                _viewState.value = ViewState.QuickInventoryBottomSheetHidden
+            } else {
+                triggerEvent(
+                    ShowUiStringSnackbar(
+                        UiString.UiStringRes(
+                            R.string.scan_to_update_inventory_failure_snackbar
+                        )
+                    )
+                )
+            }
+        }
     }
 
     @Parcelize
@@ -303,6 +328,9 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         ) : ViewState()
         object QuickInventoryBottomSheetHidden : ViewState()
         object Loading : ViewState()
+        data class StockManagementBottomSheetVisible(
+            val product: ProductInfo
+        ) : ViewState()
     }
 
     enum class ScanToUpdateInventoryState {
