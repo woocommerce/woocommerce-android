@@ -41,10 +41,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -966,6 +968,74 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         setup()
 
         assertThat(productsDraft?.images?.map { it.source }).isEqualTo(uris.toList())
+    }
+
+    @Test
+    fun `when the product title updates quickly, then consume only the last value`() = testBlocking {
+        doReturn(
+            product.copy(
+                regularPrice = BigDecimal(99)
+            )
+        ).whenever(productRepository).getProductAsync(any())
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        viewModel.start()
+
+        viewModel.onProductTitleChanged("this")
+        viewModel.onProductTitleChanged("this is")
+        viewModel.onProductTitleChanged("this is the title")
+
+        advanceTimeBy(1600L)
+
+        verify(
+            viewModel,
+            times(1)
+        ).updateProductDraft(
+            description = anyOrNull(),
+            shortDescription = anyOrNull(),
+            title = anyOrNull(),
+            sku = anyOrNull(),
+            slug = anyOrNull(),
+            manageStock = anyOrNull(),
+            stockStatus = anyOrNull(),
+            soldIndividually = anyOrNull(),
+            stockQuantity = anyOrNull(),
+            backorderStatus = anyOrNull(),
+            regularPrice = anyOrNull(),
+            salePrice = anyOrNull(),
+            isVirtual = anyOrNull(),
+            isSaleScheduled = anyOrNull(),
+            saleStartDate = anyOrNull(),
+            saleEndDate = anyOrNull(),
+            taxStatus = anyOrNull(),
+            taxClass = anyOrNull(),
+            length = anyOrNull(),
+            width = anyOrNull(),
+            height = anyOrNull(),
+            weight = anyOrNull(),
+            shippingClass = anyOrNull(),
+            images = anyOrNull(),
+            shippingClassId = anyOrNull(),
+            productStatus = anyOrNull(),
+            catalogVisibility = anyOrNull(),
+            isFeatured = anyOrNull(),
+            reviewsAllowed = anyOrNull(),
+            purchaseNote = anyOrNull(),
+            externalUrl = anyOrNull(),
+            buttonText = anyOrNull(),
+            menuOrder = anyOrNull(),
+            categories = anyOrNull(),
+            tags = anyOrNull(),
+            type = anyOrNull(),
+            groupedProductIds = anyOrNull(),
+            upsellProductIds = anyOrNull(),
+            crossSellProductIds = anyOrNull(),
+            downloads = anyOrNull(),
+            downloadLimit = anyOrNull(),
+            downloadExpiry = anyOrNull(),
+            isDownloadable = anyOrNull(),
+            attributes = anyOrNull(),
+            numVariation = anyOrNull()
+        )
     }
 
     private val productsDraft
