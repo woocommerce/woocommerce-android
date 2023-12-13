@@ -282,11 +282,13 @@ class OrderDetailViewModel @Inject constructor(
     fun onEditClicked() {
         tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
         val firstGiftCard = giftCards.value?.firstOrNull()
-        triggerEvent(EditOrder(
-            orderId = order.id,
-            giftCard = firstGiftCard?.code,
-            appliedDiscount = firstGiftCard?.used
-        ))
+        triggerEvent(
+            EditOrder(
+                orderId = order.id,
+                giftCard = firstGiftCard?.code,
+                appliedDiscount = firstGiftCard?.used
+            )
+        )
     }
 
     fun orderNavigationIsEnabled() = navArgs.allOrderIds?.let {
