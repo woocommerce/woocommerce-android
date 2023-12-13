@@ -5,14 +5,12 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetHidden
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible
@@ -21,10 +19,7 @@ import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
@@ -160,17 +155,44 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123"))
             )
-                sut.onBarcodeScanningResult(
-                    CodeScannerStatus.Success(
-                        "123",
-                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                    )
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
-                sut.viewState.test {
-                    awaitItem().apply {
-                        assertIs<StockManagementBottomSheetVisible>(this)
-                    }
+            )
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<StockManagementBottomSheetVisible>(this)
                 }
+            }
+        }
+
+    @Test
+    fun `given product not stock-managed, when manage stock btn cliked, then should set product as stock-managed`() =
+        testBlocking {
+            val product = ProductTestUtils.generateProduct(isStockManaged = false)
+            val productId = 1L
+
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+            whenever(productRepo.getProduct(productId)).thenReturn(product)
+            whenever(productRepo.updateProduct(any())).thenReturn(true)
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku, GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<StockManagementBottomSheetVisible>(this)
+                }
+            }
+
+            sut.onManageStockClicked()
+
+            verify(productRepo).updateProduct(product.copy(isStockManaged = true))
         }
 
     @Test
