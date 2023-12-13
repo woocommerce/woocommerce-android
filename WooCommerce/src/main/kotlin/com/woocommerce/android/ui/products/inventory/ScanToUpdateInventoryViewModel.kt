@@ -296,7 +296,15 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
             if (updatedProduct != null) {
                 productRepository.updateProduct(updatedProduct)
-                _viewState.value = ViewState.QuickInventoryBottomSheetHidden
+                _viewState.value = ViewState.QuickInventoryBottomSheetVisible(
+                    product = ProductInfo(
+                        id = updatedProduct.remoteId,
+                        name = updatedProduct.name,
+                        imageUrl = updatedProduct.firstImageUrl.orEmpty(),
+                        sku = updatedProduct.sku,
+                        quantity = updatedProduct.stockQuantity.toInt(),
+                    )
+                )
             } else {
                 triggerEvent(
                     ShowUiStringSnackbar(
