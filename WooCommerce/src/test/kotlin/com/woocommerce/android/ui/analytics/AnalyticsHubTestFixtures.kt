@@ -20,12 +20,14 @@ import java.util.Locale
 
 val testRangeSelection = TODAY.generateSelectionData(
     calendar = Calendar.getInstance(),
-    locale = Locale.getDefault()
+    locale = Locale.getDefault(),
+    siteModel = null
 )
 
 val testCustomRangeSelection = CUSTOM.generateSelectionData(
     calendar = Calendar.getInstance(),
-    locale = Locale.getDefault()
+    locale = Locale.getDefault(),
+    siteModel = null
 )
 
 val testRevenueStat = RevenueStat(

@@ -13,6 +13,7 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -71,6 +73,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
     private val dateUtils: DateUtils,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -80,7 +83,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val rangeSelectionState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
+        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData(selectedSite.getOrNull())
     )
 
     private val mutableState = MutableStateFlow(
@@ -132,11 +135,14 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
-        rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
+        rangeSelectionState.value = selectionType.generateLocalizedSelectionData(
+            siteModel = selectedSite.getOrNull()
+        )
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
         rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
+            siteModel = selectedSite.getOrNull(),
             startDate = startDate,
             endDate = endDate
         )
@@ -395,9 +401,11 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun SelectionType.generateLocalizedSelectionData(
+        siteModel: SiteModel?,
         startDate: Date = Date(),
         endDate: Date = Date()
     ) = generateSelectionData(
+        siteModel = siteModel,
         referenceStartDate = startDate,
         referenceEndDate = endDate,
         calendar = Calendar.getInstance(),
