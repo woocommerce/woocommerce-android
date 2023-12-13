@@ -203,7 +203,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val _selectedGiftCard = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = args.giftCard.orEmpty()
+        initialValue = args.giftCardCode.orEmpty()
     )
 
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
