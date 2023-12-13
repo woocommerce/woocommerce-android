@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
@@ -85,6 +86,12 @@ class ThemePreviewViewModel @Inject constructor(
     }
 
     fun onPageSelected(demoPage: ThemeDemoPage) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_PAGE_SELECTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_PAGE_PREVIEW to demoPage.title
+            )
+        )
         selectedPage.value = demoPage
     }
 
