@@ -133,8 +133,13 @@
             app:nullable="true"
             android:defaultValue="@null"/>
         <argument
-            android:name="giftCard"
+            android:name="giftCardCode"
             app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="giftCardAmount"
+            app:argType="java.math.BigDecimal"
             app:nullable="true"
             android:defaultValue="@null"/>
         <action
