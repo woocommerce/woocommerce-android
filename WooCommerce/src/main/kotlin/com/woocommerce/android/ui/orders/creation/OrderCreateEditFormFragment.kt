@@ -758,7 +758,14 @@ class OrderCreateEditFormFragment :
     private fun OrderCreationPaymentSectionBinding.bindGiftCardForOrderEdit(
         newOrderData: Order
     ) {
-
+        addGiftCardButton.isVisible = false
+        if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
+            giftCardLayout.hide()
+        } else {
+            giftCardLayout.show()
+            giftCardCode.text = newOrderData.selectedGiftCard
+            giftCardLayout.isClickable = false
+        }
     }
 
     private fun bindNotesSection(notesSection: OrderCreateEditSectionView, customerNote: String) {
