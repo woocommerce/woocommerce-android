@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Theme
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -71,7 +72,7 @@ class ThemePickerViewModel @Inject constructor(
                         .filter { theme -> theme.demoUrl != null }
                         .map { theme ->
                             CarouselItem.Theme(
-                                themeId = theme.id,
+                                uri = theme.id,
                                 name = theme.name,
                                 screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
                             )
@@ -123,8 +124,12 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-    fun onThemeTapped(themeUri: String) {
-        triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
+    fun onThemeTapped(theme: Theme) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
+            properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
+        )
+        triggerEvent(NavigateToThemePreview(theme.uri, navArgs.isFromStoreCreation))
     }
 
     data class ViewState(
@@ -143,7 +148,7 @@ class ThemePickerViewModel @Inject constructor(
         ) : CarouselState {
             sealed class CarouselItem {
                 data class Theme(
-                    val themeId: String,
+                    val uri: String,
                     val name: String,
                     val screenshotUrl: String
                 ) : CarouselItem()

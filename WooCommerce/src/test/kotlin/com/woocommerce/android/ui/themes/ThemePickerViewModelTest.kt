@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.themes
 
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.util.getOrAwaitValue
@@ -26,6 +27,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val sampleTheme = Theme(
         id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
@@ -44,7 +46,8 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         viewModel = ThemePickerViewModel(
             savedStateHandle = ThemePickerFragmentArgs(isFromStoreCreation).toSavedStateHandle(),
             themeRepository = themeRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -163,12 +166,12 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         assertThat((viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems.dropLast(1))
             .containsExactly(
                 CarouselItem.Theme(
-                    themeId = sampleTheme.id,
+                    uri = sampleTheme.id,
                     name = sampleTheme.name,
                     screenshotUrl = AppUrls.getScreenshotUrl(sampleTheme.demoUrl!!)
                 ),
                 CarouselItem.Theme(
-                    themeId = sampleTheme2.id,
+                    uri = sampleTheme2.id,
                     name = sampleTheme2.name,
                     screenshotUrl = AppUrls.getScreenshotUrl(sampleTheme2.demoUrl!!)
                 )

@@ -96,7 +96,7 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
 private fun ThemePicker(
     modifier: Modifier,
     viewState: ThemePickerViewModel.ViewState,
-    onThemeTapped: (String) -> Unit
+    onThemeTapped: (CarouselItem.Theme) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -188,7 +188,7 @@ private fun Header(
 @Composable
 private fun ColumnScope.Carousel(
     state: CarouselState,
-    onThemeTapped: (String) -> Unit
+    onThemeTapped: (CarouselItem.Theme) -> Unit
 ) {
     when (state) {
         is CarouselState.Loading -> {
@@ -233,7 +233,7 @@ private fun ColumnScope.Error() {
 }
 
 @Composable
-private fun Carousel(items: List<CarouselItem>, onThemeTapped: (String) -> Unit) {
+private fun Carousel(items: List<CarouselItem>, onThemeTapped: (CarouselItem.Theme) -> Unit) {
     LazyRow(
         modifier = Modifier
             .height(480.dp)
@@ -291,13 +291,13 @@ private fun Message(
 @Composable
 private fun Theme(
     theme: CarouselItem.Theme,
-    onThemeTapped: (String) -> Unit
+    onThemeTapped: (CarouselItem.Theme) -> Unit
 ) {
     val themeModifier = Modifier.width(240.dp)
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
         elevation = dimensionResource(id = R.dimen.minor_50),
-        modifier = themeModifier.clickable { onThemeTapped(theme.themeId) }
+        modifier = themeModifier.clickable { onThemeTapped(theme) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
@@ -380,9 +380,9 @@ private fun PreviewThemePickerStoreCreation() {
                 isFromStoreCreation = true,
                 carouselState = CarouselState.Success(
                     carouselItems = listOf(
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "")
+                        CarouselItem.Theme(uri = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(uri = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(uri = "tsubaki", name = "Tsubaki", screenshotUrl = "")
                     )
                 ),
                 currentThemeState = CurrentThemeState.Hidden
@@ -403,9 +403,9 @@ private fun PreviewThemePickerSettings() {
                 isFromStoreCreation = false,
                 carouselState = CarouselState.Success(
                     carouselItems = listOf(
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "")
+                        CarouselItem.Theme(uri = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(uri = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
+                        CarouselItem.Theme(uri = "tsubaki", name = "Tsubaki", screenshotUrl = "")
                     )
                 ),
                 currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki")
