@@ -5,6 +5,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -14,12 +15,16 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetHidden
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
+import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
+import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
@@ -150,64 +155,22 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should show snackbar with error`() =
+    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should display correct bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123"))
             )
-            whenever(
-                resourceProvider.getString(
-                    R.string.scan_to_update_inventory_product_not_stock_managed,
-                    "123"
-                )
-            ).thenReturn("Product with SKU: 123 is not stock-managed. Please try again.")
-            sut.event.observeForTesting {
                 sut.onBarcodeScanningResult(
                     CodeScannerStatus.Success(
                         "123",
                         GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                     )
                 )
-                sut.event.value.apply {
-                    assertIs<MultiLiveEvent.Event.ShowUiStringSnackbar>(this)
-                    assertEquals(
-                        "Product with SKU: 123 is not stock-managed. Please try again.",
-                        (message as UiString.UiStringText).text
-                    )
+                sut.viewState.test {
+                    awaitItem().apply {
+                        assertIs<StockManagementBottomSheetVisible>(this)
+                    }
                 }
-            }
-        }
-
-    @Test
-    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should start scanning again`() =
-        testBlocking {
-            whenever(
-                resourceProvider.getString(
-                    R.string.scan_to_update_inventory_product_not_stock_managed,
-                    "123"
-                )
-            ).thenReturn("Product with SKU: 123 is not stock-managed. Please try again.")
-            val product = ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123")
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
-
-            sut.viewState.test {
-                sut.onBarcodeScanningResult(
-                    CodeScannerStatus.Success(
-                        "123",
-                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                    )
-                )
-                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
-                assertEquals(Loading, awaitItem())
-                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
-            }
-            sut.onBarcodeScanningResult(
-                CodeScannerStatus.Success(
-                    "123",
-                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                )
-            )
-            verify(fetchProductBySKU, times(1)).invoke(any(), any())
         }
 
     @Test
