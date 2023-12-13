@@ -71,7 +71,11 @@
             app:destination="@id/countryListPickerFragment" />
         <action
             android:id="@+id/action_countryPickerFragment_to_nav_graph_themes"
-            app:destination="@id/nav_graph_themes" />
+            app:destination="@id/nav_graph_themes" >
+            <argument
+                android:name="isFromStoreCreation"
+                app:argType="boolean" />
+        </action>
     </fragment>
 
     <fragment
