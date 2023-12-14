@@ -5,7 +5,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Theme
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -38,9 +40,10 @@ class ThemePickerViewModel @Inject constructor(
         ),
         currentTheme
     ) { carouselState, currentThemeState ->
+        val updatedCarouseState = removeCurrentThemeFromCarouselItems(carouselState, currentThemeState)
         ViewState(
             isFromStoreCreation = navArgs.isFromStoreCreation,
-            carouselState = carouselState,
+            carouselState = updatedCarouseState,
             currentThemeState = currentThemeState
         )
     }.asLiveData()
@@ -93,7 +96,7 @@ class ThemePickerViewModel @Inject constructor(
         launch {
             val result = themeRepository.fetchCurrentTheme().fold(
                 onSuccess = { theme ->
-                    CurrentThemeState.Success(theme.name)
+                    CurrentThemeState.Success(theme.name, theme.id)
                 },
                 onFailure = {
                     triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
@@ -103,6 +106,17 @@ class ThemePickerViewModel @Inject constructor(
             currentTheme.value = result
         }
     }
+
+    private fun removeCurrentThemeFromCarouselItems(
+        carouselState: CarouselState,
+        currentThemeState: CurrentThemeState
+    ) = if (carouselState is Success && currentThemeState is CurrentThemeState.Success) {
+        carouselState.copy(
+            carouselItems = carouselState.carouselItems
+                .filter { it is Theme && it.themeId != currentThemeState.themeId }
+        )
+    } else carouselState
+
 
     fun onArrowBackPressed() {
         triggerEvent(Exit)
@@ -151,7 +165,7 @@ class ThemePickerViewModel @Inject constructor(
 
         object Loading : CurrentThemeState
 
-        data class Success(val themeName: String) : CurrentThemeState
+        data class Success(val themeName: String, val themeId: String) : CurrentThemeState
     }
 
     object NavigateToNextStep : Event()
