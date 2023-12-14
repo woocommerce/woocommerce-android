@@ -3410,6 +3410,7 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_already_activated_on_site">This theme is already activated on your site</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
     <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
 

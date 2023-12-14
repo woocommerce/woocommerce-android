@@ -89,17 +89,22 @@ class ThemePreviewViewModel @Inject constructor(
             triggerEvent(ContinueStoreCreationWithTheme)
         } else {
             launch {
-                isActivatingTheme.value = true
-                themeRepository.activateTheme(navArgs.themeId).fold(
-                    onSuccess = {
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
-                        triggerEvent(ThemeUpdatedSuccess)
-                    },
-                    onFailure = {
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
-                    }
-                )
-                isActivatingTheme.value = false
+                if (navArgs.isThemeAlreadyInstalled) {
+                    triggerEvent(MultiLiveEvent.Event.Exit)
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_already_activated_on_site))
+                } else {
+                    isActivatingTheme.value = true
+                    themeRepository.activateTheme(navArgs.themeId).fold(
+                        onSuccess = {
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
+                            triggerEvent(ThemeUpdatedSuccess)
+                        },
+                        onFailure = {
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
+                        }
+                    )
+                    isActivatingTheme.value = false
+                }
             }
         }
     }

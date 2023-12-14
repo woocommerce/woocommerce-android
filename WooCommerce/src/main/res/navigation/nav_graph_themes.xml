@@ -25,6 +25,9 @@
             android:name="themeId"
             app:argType="string" />
         <argument
+            android:name="isThemeAlreadyInstalled"
+            app:argType="boolean" />
+        <argument
             android:name="isFromStoreCreation"
             app:argType="boolean" />
     </fragment>
