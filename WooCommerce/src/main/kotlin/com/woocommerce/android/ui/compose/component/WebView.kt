@@ -54,6 +54,7 @@ fun WCWebView(
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
     activityRegistry: ActivityResultRegistry? = null,
     loadWithOverviewMode: Boolean = false,
+    useWideViewPort: Boolean = false,
     isJavaScriptEnabled: Boolean = true,
     isDomStorageEnabled: Boolean = true,
     isReadOnly: Boolean = false,
@@ -65,17 +66,9 @@ fun WCWebView(
     var progress by remember { mutableStateOf(0) }
     var lastLoadedUrl by remember { mutableStateOf("") }
     var canGoBack by remember { mutableStateOf(false) }
-    var scale by remember { mutableStateOf(initialScale) }
 
     BackHandler(captureBackPresses && canGoBack) {
         webView?.goBack()
-    }
-
-    if (scale != initialScale) {
-        scale = initialScale
-
-        webView?.setInitialScale(scale)
-        webView?.reload()
     }
 
     LaunchedEffect(webView, webViewNavigator) {
@@ -158,6 +151,7 @@ fun WCWebView(
                     }
 
                     this.setInitialScale(initialScale)
+                    this.settings.useWideViewPort = useWideViewPort
                     this.settings.loadWithOverviewMode = loadWithOverviewMode
                     this.settings.javaScriptEnabled = isJavaScriptEnabled
                     this.settings.domStorageEnabled = isDomStorageEnabled
