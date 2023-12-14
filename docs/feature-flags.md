@@ -47,4 +47,4 @@ if (!FeatureFlag.SHIPPING_LABELS_M4.isEnabled()) {
 }
 ```
 
-Once a feature is ready for release, you can remove the feature flag and the old code path.
+Once a feature is ready for release, **please remove the feature flag** and the old code path.
