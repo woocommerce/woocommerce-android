@@ -10,6 +10,5 @@ sealed class AppBarStatus {
         val navigationIcon: Int? = R.drawable.ic_back_24dp,
         val hasShadow: Boolean = true,
         val hasDivider: Boolean = false,
-        val animateAppearance: Boolean = false,
     ) : AppBarStatus()
 }

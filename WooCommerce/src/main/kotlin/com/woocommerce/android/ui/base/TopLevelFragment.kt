@@ -17,7 +17,6 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
         get() = AppBarStatus.Visible(
             navigationIcon = null,
             hasShadow = false,
-            animateAppearance = true,
         )
 
     /**

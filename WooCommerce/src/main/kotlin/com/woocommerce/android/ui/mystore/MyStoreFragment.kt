@@ -150,7 +150,6 @@ class MyStoreFragment :
         get() = AppBarStatus.Visible(
             navigationIcon = null,
             hasShadow = true,
-            animateAppearance = true,
         )
 
     private var isEmptyViewVisible: Boolean = false
