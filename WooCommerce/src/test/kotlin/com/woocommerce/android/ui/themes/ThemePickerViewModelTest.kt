@@ -166,12 +166,12 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         assertThat((viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems.dropLast(1))
             .containsExactly(
                 CarouselItem.Theme(
-                    uri = sampleTheme.id,
+                    themeId = sampleTheme.id,
                     name = sampleTheme.name,
                     screenshotUrl = AppUrls.getScreenshotUrl(sampleTheme.demoUrl!!)
                 ),
                 CarouselItem.Theme(
-                    uri = sampleTheme2.id,
+                    themeId = sampleTheme2.id,
                     name = sampleTheme2.name,
                     screenshotUrl = AppUrls.getScreenshotUrl(sampleTheme2.demoUrl!!)
                 )

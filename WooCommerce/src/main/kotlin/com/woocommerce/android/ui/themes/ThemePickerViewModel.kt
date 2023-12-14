@@ -72,7 +72,7 @@ class ThemePickerViewModel @Inject constructor(
                         .filter { theme -> theme.demoUrl != null }
                         .map { theme ->
                             CarouselItem.Theme(
-                                uri = theme.id,
+                                themeId = theme.id,
                                 name = theme.name,
                                 screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
                             )
@@ -129,7 +129,7 @@ class ThemePickerViewModel @Inject constructor(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
         )
-        triggerEvent(NavigateToThemePreview(theme.uri, navArgs.isFromStoreCreation))
+        triggerEvent(NavigateToThemePreview(theme.themeId, navArgs.isFromStoreCreation))
     }
 
     data class ViewState(
@@ -148,7 +148,7 @@ class ThemePickerViewModel @Inject constructor(
         ) : CarouselState {
             sealed class CarouselItem {
                 data class Theme(
-                    val uri: String,
+                    val themeId: String,
                     val name: String,
                     val screenshotUrl: String
                 ) : CarouselItem()
