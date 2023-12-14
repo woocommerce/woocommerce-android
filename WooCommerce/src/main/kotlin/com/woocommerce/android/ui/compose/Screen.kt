@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.compose
 
-import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Desktop
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Mobile
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Tablet
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Large
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Medium
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Small
 
 @Composable
 fun rememberScreen(): Screen {
@@ -15,18 +14,10 @@ fun rememberScreen(): Screen {
     return Screen(
         width = configuration.screenWidthDp.dp,
         height = configuration.screenHeightDp.dp,
-        type = if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            when {
-                configuration.screenWidthDp <= Mobile.width -> Mobile
-                configuration.screenWidthDp <= Tablet.width -> Tablet
-                else -> Desktop
-            }
-        } else {
-            when {
-                configuration.screenWidthDp <= Mobile.height -> Mobile
-                configuration.screenWidthDp <= Tablet.height -> Tablet
-                else -> Desktop
-            }
+        type = when {
+            configuration.screenWidthDp <= Small.width -> Small
+            configuration.screenWidthDp <= Medium.width -> Medium
+            else -> Large
         }
     )
 }
@@ -37,8 +28,8 @@ data class Screen(
     val type: ScreenType,
 ) {
     sealed class ScreenType(val width: Int, val height: Int) {
-        object Mobile : ScreenType(width = 420, height = 960)
-        object Tablet : ScreenType(width = 840, height = 1280)
-        object Desktop : ScreenType(width = 1280, height = 960)
+        object Small : ScreenType(width = 420, height = 960)
+        object Medium : ScreenType(width = 840, height = 1280)
+        object Large : ScreenType(width = 1280, height = 960)
     }
 }
