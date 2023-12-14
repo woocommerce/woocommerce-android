@@ -33,8 +33,7 @@ class ThemePreviewFragment : BaseFragment() {
                     ThemePreviewScreen(
                         viewModel = viewModel,
                         userAgent = viewModel.userAgent,
-                        wpComWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
-                        activityRegistry = requireActivity().activityResultRegistry,
+                        wpComWebViewAuthenticator = viewModel.wpComWebViewAuthenticator
                     )
                 }
             }
