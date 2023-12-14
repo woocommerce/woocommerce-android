@@ -400,14 +400,9 @@ private fun ThemeDemoPagesBottomSheet(
 @Composable
 private fun PreviewType.initialScale(screen: Screen): Int {
     return when (screen.type) {
-        Small -> when (this) {
+        Small, Medium -> when (this) {
             MOBILE -> 0
             TABLET -> (260 * screen.width.value / Medium.width).toInt()
-            DESKTOP -> (260 * screen.width.value / Large.width).toInt()
-        }
-        Medium -> when (this) {
-            MOBILE -> 0
-            TABLET -> 0
             DESKTOP -> (260 * screen.width.value / Large.width).toInt()
         }
         Large -> 0
