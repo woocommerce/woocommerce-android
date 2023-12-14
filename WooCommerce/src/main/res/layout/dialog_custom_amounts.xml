@@ -8,45 +8,14 @@
     android:paddingVertical="@dimen/major_100"
     tools:context="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog">
 
-    <ImageView
-        android:id="@+id/imageClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:contentDescription="@string/close"
-        android:paddingStart="@dimen/major_100"
-        android:paddingEnd="@dimen/major_100"
-        app:layout_constraintBottom_toBottomOf="@+id/titleText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titleText"
-        app:srcCompat="@drawable/ic_gridicons_cross_24dp" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/titleText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/custom_amounts_dialog_title"
-        android:textAppearance="@style/TextAppearance.Woo.CollapsingToolbar.Collapsed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:background="@drawable/list_divider"
-        android:layout_marginTop="@dimen/major_100"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleText" />
-
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/buttonDone"
-        app:layout_constraintTop_toBottomOf="@id/divider">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
