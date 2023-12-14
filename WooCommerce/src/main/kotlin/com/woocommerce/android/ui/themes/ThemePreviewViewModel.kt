@@ -114,10 +114,22 @@ class ThemePreviewViewModel @Inject constructor(
                 isActivatingTheme.value = true
                 themeRepository.activateTheme(navArgs.themeId).fold(
                     onSuccess = {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                            )
+                        )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
                         triggerEvent(MultiLiveEvent.Event.Exit)
                     },
                     onFailure = {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                            )
+                        )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
                     }
                 )
