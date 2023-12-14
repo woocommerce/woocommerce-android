@@ -2975,12 +2975,6 @@ Language: fr
     <string name="wc_approve">Approuver</string>
     <string name="wc_view_the_product_external">Voir le produit</string>
     <string name="support_help">Aide et assistance</string>
-    <string name="settings_notifs_reviews_detail">Obtenir des alertes concernant les nouveaux avis sur les produits</string>
-    <string name="settings_notifs_reviews">Avis sur le produit</string>
-    <string name="settings_notifs_tone_detail">Exécuter le son Cha-Ching lors d’une nouvelle commande</string>
-    <string name="settings_notifs_tone">Tonalité</string>
-    <string name="settings_notifs_orders_detail">Obtenir des alertes à l’arrivée de nouvelles commandes</string>
-    <string name="settings_notifs_orders">Commandes</string>
     <string name="settings_notifs_device_detail">Sons, urgence et point de notification</string>
     <string name="settings_notifs_device">Gérer les notifications</string>
     <string name="settings_notifs">Notifications</string>
