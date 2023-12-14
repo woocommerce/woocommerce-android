@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.ThemeCoroutineStore
 import javax.inject.Inject
@@ -144,8 +145,17 @@ class ThemePreviewViewModel @Inject constructor(
         val isActivatingTheme: Boolean,
         val previewType: PreviewType = PreviewType.MOBILE
     ) {
-        val currentPage: ThemeDemoPage
+        private val currentPage: ThemeDemoPage
             get() = themePages.first { it.isLoaded }
+
+        val currentPageUri: String
+            get() = currentPage.uri.toHttpUrl().newBuilder()
+                .addQueryParameter("demo", "true")
+                .build()
+                .toString()
+
+        val currentPageTitle: String
+            get() = currentPage.title
 
         enum class PreviewType {
             DESKTOP,

@@ -154,7 +154,7 @@ fun ThemePreviewScreen(
             ) {
 
                 ThemePreviewWebView(
-                    url = state.currentPage.uri,
+                    url = state.currentPageUri,
                     userAgent = userAgent,
                     wpComAuthenticator = wpComWebViewAuthenticator,
                     modifier = Modifier
@@ -253,7 +253,7 @@ private fun DemoSectionsToolbar(
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = state.currentPage.title,
+                text = state.currentPageTitle,
                 style = MaterialTheme.typography.caption,
             )
             Icon(
