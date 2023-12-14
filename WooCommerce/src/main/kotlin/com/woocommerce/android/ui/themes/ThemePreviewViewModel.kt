@@ -147,6 +147,12 @@ class ThemePreviewViewModel @Inject constructor(
 
     fun onPreviewTypeChanged(type: PreviewType) {
         previewType.update { type }
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_LAYOUT_SELECTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_LAYOUT_PREVIEW to type.name.lowercase()
+            )
+        )
     }
 
     private suspend fun Theme.prepareThemeDemoPages(): Flow<List<ThemeDemoPage>> = flow {
@@ -171,16 +177,6 @@ class ThemePreviewViewModel @Inject constructor(
             }
         )
     }
-
-// TODO enable this tracking when this is merged https://github.com/woocommerce/woocommerce-android/pull/10294
-//    fun onLayoutSelected(layoutName: String) {
-//        analyticsTrackerWrapper.track(
-//            stat = AnalyticsEvent.THEME_PREVIEW_LAYOUT_SELECTED,
-//            properties = mapOf(
-//                AnalyticsTracker.KEY_THEME_PICKER_LAYOUT_PREVIEW to layoutName
-//            )
-//        )
-//    }
 
     data class ViewState(
         val themeName: String,
