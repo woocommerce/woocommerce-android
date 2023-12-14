@@ -53,10 +53,9 @@ class PlansViewModelTest : BaseUnitTest() {
     }
 
     private val siteData = SiteCreationData(
-        siteDesign = PlansViewModel.NEW_SITE_THEME,
+        segmentId = null,
         domain = "woocommerce.com",
-        title = "WooCommerce",
-        segmentId = null
+        title = "WooCommerce"
     )
 
     private val plan = Plan(
