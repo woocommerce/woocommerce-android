@@ -94,6 +94,7 @@ fun ThemePreviewWebView(
     }
 }
 
+@Suppress("MagicNumber")
 private fun PreviewType.initialScale(screen: Screen): Int {
     return when (screen.type) {
         ScreenType.Small, ScreenType.Medium -> when (this) {
@@ -105,4 +106,3 @@ private fun PreviewType.initialScale(screen: Screen): Int {
         ScreenType.Large -> 0
     }
 }
-
