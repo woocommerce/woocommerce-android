@@ -131,6 +131,9 @@ class CustomAmountsDialogViewModel @Inject constructor(
     }
 
     fun isInCreateMode() = args.customAmountUIModel.amount.compareTo(BigDecimal.ZERO) == 0
+    fun triggerExitEvent() {
+        triggerEvent(Event.Exit)
+    }
 
     @Parcelize
     data class ViewState(
