@@ -27,9 +27,9 @@ data class Screen(
     val height: Dp,
     val type: ScreenType,
 ) {
-    sealed class ScreenType(val width: Int, val height: Int) {
-        object Small : ScreenType(width = 420, height = 960)
-        object Medium : ScreenType(width = 840, height = 1280)
-        object Large : ScreenType(width = 1280, height = 960)
+    sealed class ScreenType(val width: Int) {
+        object Small : ScreenType(width = 420)
+        object Medium : ScreenType(width = 840)
+        object Large : ScreenType(width = 1280)
     }
 }
