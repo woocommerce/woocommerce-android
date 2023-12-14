@@ -509,7 +509,7 @@
     <string name="custom_amounts_enter_amount">Amount</string>
     <string name="custom_amounts_name">Name</string>
     <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
-    <string name="custom_amounts_delete_custom_amount">Delete custom amount</string>
+    <string name="custom_amounts_delete_custom_amount">Delete Custom Amount</string>
     <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
     <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
     <string name="custom_amounts_tax_label">Charge Taxes</string>
