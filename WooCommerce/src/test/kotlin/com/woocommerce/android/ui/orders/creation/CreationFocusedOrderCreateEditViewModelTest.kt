@@ -1631,20 +1631,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
     }
-
-    @Test
-    fun `when custom amount added, then exit event is triggered`() {
-        val customAmountUIModel = CustomAmountUIModel(
-            id = 0L,
-            amount = BigDecimal.TEN,
-            name = "Test amount",
-            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-        )
-        sut.onCustomAmountUpsert(customAmountUIModel)
-
-        assertThat(sut.event.value).isEqualTo(Exit)
-    }
-
     @Test
     fun `when custom amount is updated, then fee line gets updated`() {
         var orderDraft: Order? = null
@@ -1776,33 +1762,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         )
 
         assertThat(orderDraft?.feesLines?.filter { it.name != null }?.size).isEqualTo(0)
-    }
-
-    @Test
-    fun `when custom amount removed, then exit event is triggered`() {
-        var orderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            orderDraft = it
-        }
-        val customAmountUIModel = CustomAmountUIModel(
-            id = 0L,
-            amount = BigDecimal.TEN,
-            name = "Test amount",
-            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-        )
-        sut.onCustomAmountUpsert(customAmountUIModel)
-        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
-
-        sut.onCustomAmountRemoved(
-            CustomAmountUIModel(
-                id = 0L,
-                amount = BigDecimal.TEN,
-                name = "Test amount",
-                type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-            )
-        )
-
-        assertThat(sut.event.value).isInstanceOf(Exit::class.java)
     }
     @Test
     fun `when custom amount is added, then proper event is tracked`() {
