@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.themes
 
-import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -58,14 +57,13 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.Screen.ScreenType
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Desktop
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Mobile
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Tablet
+import com.woocommerce.android.ui.compose.Screen
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Large
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Medium
+import com.woocommerce.android.ui.compose.Screen.ScreenType.Small
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.rememberScreen
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
@@ -81,15 +79,13 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun ThemePreviewScreen(
     viewModel: ThemePreviewViewModel,
     userAgent: UserAgent,
-    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
-    activityRegistry: ActivityResultRegistry,
+    wpComWebViewAuthenticator: WPComWebViewAuthenticator
 ) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         ThemePreviewScreen(
             state = viewState,
             userAgent = userAgent,
             wpComWebViewAuthenticator = wpComWebViewAuthenticator,
-            activityRegistry = activityRegistry,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
             viewModel::onActivateThemeClicked,
@@ -104,7 +100,6 @@ fun ThemePreviewScreen(
     state: ViewState,
     userAgent: UserAgent,
     wpComWebViewAuthenticator: WPComWebViewAuthenticator,
-    activityRegistry: ActivityResultRegistry,
     onPageSelected: (ThemeDemoPage) -> Unit,
     onBackNavigationClicked: () -> Unit,
     onActivateThemeClicked: () -> Unit,
@@ -164,25 +159,24 @@ fun ThemePreviewScreen(
             ) {
                 val screen = rememberScreen()
 
-                WCWebView(
+                ThemePreviewWebView(
                     url = state.currentPage.uri,
                     userAgent = userAgent,
                     wpComAuthenticator = wpComWebViewAuthenticator,
-                    initialScale = state.previewType.initialScale(screen.type),
-                    loadWithOverviewMode = true,
-                    activityRegistry = activityRegistry,
+                    initialScale = state.previewType.initialScale(screen),
                     modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterHorizontally)
                         .then(
-                            if (state.previewType == MOBILE && screen.type != Mobile) {
-                                Modifier.widthIn(max = Mobile.width.dp)
-                            } else if (state.previewType == TABLET && screen.type == Desktop) {
-                                Modifier.widthIn(max = Tablet.width.dp)
+                            if (state.previewType == MOBILE && screen.type != Small) {
+                                Modifier.widthIn(max = Small.width.dp)
+                            } else if (state.previewType == TABLET && screen.type == Large) {
+                                Modifier.widthIn(max = Medium.width.dp)
                             } else {
                                 Modifier.fillMaxWidth()
                             }
-                        )
-                        .weight(1f)
-                        .align(Alignment.CenterHorizontally)
+                        ),
+                    previewType = state.previewType
                 )
 
                 ThemePreviewBottomSection(
@@ -214,8 +208,8 @@ private fun ThemePreviewBottomSection(
         WCColoredButton(
             onClick = onActivateThemeClicked,
             text = stringResource(
-                id = if (isFromStoreCreation) R.string.store_creation_use_theme_button
-                else R.string.theme_preview_activate_theme_button
+                id = if (isFromStoreCreation) string.store_creation_use_theme_button
+                else string.theme_preview_activate_theme_button
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -223,7 +217,7 @@ private fun ThemePreviewBottomSection(
         )
 
         Text(
-            text = stringResource(id = R.string.theme_preview_theme_name, themeName),
+            text = stringResource(id = string.theme_preview_theme_name, themeName),
             style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -354,7 +348,7 @@ private fun ThemeDemoPagesBottomSheet(
                     start = dimensionResource(id = dimen.major_100),
                     top = dimensionResource(id = dimen.minor_100)
                 ),
-            text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_title),
+            text = stringResource(id = string.theme_preview_bottom_sheet_pages_title),
             style = MaterialTheme.typography.h6,
         )
         Text(
@@ -363,7 +357,7 @@ private fun ThemeDemoPagesBottomSheet(
                     start = dimensionResource(id = dimen.major_100),
                     bottom = dimensionResource(id = dimen.minor_100)
                 ),
-            text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_subtitle),
+            text = stringResource(id = string.theme_preview_bottom_sheet_pages_subtitle),
             style = MaterialTheme.typography.subtitle2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
@@ -390,28 +384,22 @@ private fun ThemeDemoPagesBottomSheet(
 }
 
 @Composable
-private fun PreviewType.initialScale(screenType: ScreenType): Int {
-    return when (screenType) {
-        Mobile -> {
-            when (this) {
-                MOBILE -> 0
-                TABLET -> 160
-                DESKTOP -> 110
-            }
+private fun PreviewType.initialScale(screen: Screen): Int {
+    return when (screen.type) {
+        Small -> when (this) {
+            MOBILE -> 0
+            TABLET -> (260 * screen.width.value / Medium.width).toInt()
+            DESKTOP -> (260 * screen.width.value / Large.width).toInt()
         }
-        Tablet -> {
-            when (this) {
-                MOBILE -> 160
-                TABLET -> 0
-                DESKTOP -> 110
-            }
+        Medium -> when (this) {
+            MOBILE -> 0
+            TABLET -> 0
+            DESKTOP -> (260 * screen.width.value / Large.width).toInt()
         }
-        Desktop -> {
-            when (this) {
-                MOBILE -> 160
-                TABLET -> 0
-                DESKTOP -> 0
-            }
+        Large -> when (this) {
+            MOBILE -> 0
+            TABLET -> 0
+            DESKTOP -> 0
         }
     }
 }
