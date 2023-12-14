@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-29 09:54:04+0000
+Translation-Revision-Date: 2023-12-06 19:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_creation_use_theme_button">Начать с этой темой</string>
+    <string name="theme_activated_successfully">Тема успешно активирована</string>
+    <string name="theme_preview_theme_name">Тема: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Использовать эту тему</string>
+    <string name="theme_preview_bottom_sheet_home_section">Главная страница</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Коснитесь для просмотра</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Страницы в этом шаблоне</string>
+    <string name="theme_preview_title">Предварительный просмотр</string>
+    <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
+    <string name="theme_picker_error_title">Произошла ошибка</string>
+    <string name="theme_picker_carousel_placeholder_message">Нажмите, чтобы просмотреть демонстрацию в реальном времени.</string>
+    <string name="theme_picker_carousel_placeholder_title">Тема «%s»</string>
+    <string name="theme_picker_carousel_info_item_description">Настроив магазин, найдите для него самую подходящую тему в магазине тем WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">Ищете что-то другое?</string>
+    <string name="theme_picker_description">Вы можете изменить настройки в любой момент.</string>
+    <string name="theme_picker_title">Выберите тему</string>
+    <string name="store_creation_theme_activation_error">Во время активации выбранной вами темы произошла ошибка. Пожалуйста, повторите попытку.</string>
+    <string name="store_creation_theme_activation_loading">Выполняется активация темы магазина…</string>
+    <string name="settings_themes">Темы</string>
+    <string name="product_filter_explore_plugin">Узнайте больше!</string>
     <string name="configuration_required">Требуется настройка</string>
     <string name="blaze_overflow_menu_hide_blaze">Скрыть Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">Благодарственная записка, созданная ИИ</string>
@@ -2955,12 +2975,6 @@ Language: ru
     <string name="wc_approve">Одобрить</string>
     <string name="wc_view_the_product_external">Просмотреть товар</string>
     <string name="support_help">Помощь и техническая поддержка</string>
-    <string name="settings_notifs_reviews_detail">Получение оповещений о новых обзорах товаров</string>
-    <string name="settings_notifs_reviews">Обзоры товаров</string>
-    <string name="settings_notifs_tone_detail">Звук сыплющихся монет при новом заказе</string>
-    <string name="settings_notifs_tone">Звук</string>
-    <string name="settings_notifs_orders_detail">Получение оповещений при появлении новых заказов</string>
-    <string name="settings_notifs_orders">Заказы</string>
     <string name="settings_notifs_device_detail">Звуки, значки срочности и уведомлений</string>
     <string name="settings_notifs_device">Управление уведомлениями</string>
     <string name="settings_notifs">Уведомления</string>

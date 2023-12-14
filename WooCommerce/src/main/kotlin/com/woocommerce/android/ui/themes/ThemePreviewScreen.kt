@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
@@ -182,6 +184,7 @@ fun ThemePreviewScreen(
                 ThemePreviewBottomSection(
                     isFromStoreCreation = state.isFromStoreCreation,
                     themeName = state.themeName,
+                    isActivatingTheme = state.isActivatingTheme,
                     onActivateThemeClicked = onActivateThemeClicked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -195,6 +198,7 @@ fun ThemePreviewScreen(
 private fun ThemePreviewBottomSection(
     isFromStoreCreation: Boolean,
     themeName: String,
+    isActivatingTheme: Boolean,
     onActivateThemeClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -207,14 +211,24 @@ private fun ThemePreviewBottomSection(
         Divider()
         WCColoredButton(
             onClick = onActivateThemeClicked,
-            text = stringResource(
-                id = if (isFromStoreCreation) string.store_creation_use_theme_button
-                else string.theme_preview_activate_theme_button
-            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = dimen.major_100))
-        )
+        ) {
+            if (isActivatingTheme) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size = dimensionResource(id = dimen.major_150)),
+                    color = LocalContentColor.current,
+                )
+            } else {
+                Text(
+                    text = stringResource(
+                        id = if (isFromStoreCreation) R.string.store_creation_use_theme_button
+                        else R.string.theme_preview_activate_theme_button
+                    )
+                )
+            }
+        }
 
         Text(
             text = stringResource(id = string.theme_preview_theme_name, themeName),

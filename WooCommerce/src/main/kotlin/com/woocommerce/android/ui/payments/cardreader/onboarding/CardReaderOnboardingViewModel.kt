@@ -277,7 +277,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             state.version
                         )
                     },
-                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                    onLearnMoreActionClicked = ::onLearnMoreClicked,
+                    onContactSupportActionClicked = ::onContactSupportClicked
                 )
         }.exhaustive
     }
@@ -332,6 +333,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 )
             },
             onLearnMoreActionClicked = ::onLearnMoreClicked,
+            onContactSupportActionClicked = ::onContactSupportClicked,
             shouldShowProgress = true
         )
         launch {
@@ -365,6 +367,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                         },
                         onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        onContactSupportActionClicked = ::onContactSupportClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = true
                     )
@@ -392,6 +395,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                             )
                         },
                         onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        onContactSupportActionClicked = ::onContactSupportClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = false
                     )

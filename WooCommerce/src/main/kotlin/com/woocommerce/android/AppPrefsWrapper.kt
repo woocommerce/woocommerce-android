@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
@@ -34,6 +35,10 @@ class AppPrefsWrapper @Inject constructor() {
     var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
+
+    var numberOfProductsCreatedUsingAi by AppPrefs::numberOfProductsCreatedUsingAi
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -139,12 +144,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun setCardReaderWelcomeDialogShown() = AppPrefs.setCardReaderWelcomeDialogShown()
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
-
-    fun isOrderNotificationsEnabled() = AppPrefs.isOrderNotificationsEnabled()
-
-    fun isReviewNotificationsEnabled() = AppPrefs.isReviewNotificationsEnabled()
-
-    fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
@@ -388,4 +387,10 @@ class AppPrefsWrapper @Inject constructor() {
     fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
 
     fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
+
+    fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) =
+        AppPrefs.incrementNotificationChannelTypeSuffix(channel)
+
+    fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
+        AppPrefs.getNotificationChannelTypeSuffix(channel)
 }

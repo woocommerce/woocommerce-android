@@ -192,7 +192,14 @@
         <action
             android:id="@+id/action_products_to_addProductWithAIBottomSheet"
             app:destination="@id/addProductWithAIBottomSheet" />
+        <action
+            android:id="@+id/action_productListFragment_to_scanToUpdateInventory"
+            app:destination="@id/scanToUpdateInventory" />
     </fragment>
+    <fragment
+        android:id="@+id/scanToUpdateInventory"
+        android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
+        android:label="scan_to_update_inventory"/>
     <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
@@ -327,6 +334,11 @@
             android:name="isAIContent"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="images"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="string[]" />
         <argument
             android:name="source"
             android:defaultValue="PRODUCT_TAB"

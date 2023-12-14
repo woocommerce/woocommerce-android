@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.ThemeCoroutineStore
@@ -58,18 +59,21 @@ class ThemePreviewViewModel @Inject constructor(
         ThemeDemoPage::class.java,
         "selectedPage"
     )
+    private val isActivatingTheme = savedStateHandle.getStateFlow(viewModelScope, false, "isActivatingTheme")
 
     private val previewType = savedStateHandle.getStateFlow(viewModelScope, PreviewType.MOBILE, "previewType")
 
     val viewState = combine(
         theme,
         selectedPage,
+        isActivatingTheme,
         themePages,
         previewType
-    ) { theme, selectedPage, demoPages, previewType ->
+    ) { theme, selectedPage, isActivatingTheme, demoPages, previewType ->
         ViewState(
             themeName = theme.name,
-            isFromStoreCreation = true, // TODO Pass this from the previous screen
+            isFromStoreCreation = navArgs.isFromStoreCreation,
+            isActivatingTheme = isActivatingTheme,
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
             },
@@ -90,7 +94,19 @@ class ThemePreviewViewModel @Inject constructor(
             appPrefsWrapper.saveThemeIdForStoreCreation(newStore.data.siteId!!, navArgs.themeId)
             triggerEvent(ContinueStoreCreationWithTheme)
         } else {
-            TODO()
+            launch {
+                isActivatingTheme.value = true
+                themeRepository.activateTheme(navArgs.themeId).fold(
+                    onSuccess = {
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
+                        triggerEvent(MultiLiveEvent.Event.Exit)
+                    },
+                    onFailure = {
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
+                    }
+                )
+                isActivatingTheme.value = false
+            }
         }
     }
 
@@ -100,7 +116,7 @@ class ThemePreviewViewModel @Inject constructor(
 
     private suspend fun Theme.prepareThemeDemoPages(): Flow<List<ThemeDemoPage>> = flow {
         val homePage = ThemeDemoPage(
-            uri = demoUrl,
+            uri = requireNotNull(demoUrl),
             title = resourceProvider.getString(R.string.theme_preview_bottom_sheet_home_section),
             isLoaded = true
         )
@@ -125,6 +141,7 @@ class ThemePreviewViewModel @Inject constructor(
         val themeName: String,
         val isFromStoreCreation: Boolean,
         val themePages: List<ThemeDemoPage>,
+        val isActivatingTheme: Boolean,
         val previewType: PreviewType = PreviewType.MOBILE
     ) {
         val currentPage: ThemeDemoPage

@@ -63,36 +63,19 @@
     </fragment>
 
     <fragment
-        android:id="@+id/storeProfilerChallengesFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerChallengesFragment"
-        android:label="fragment_store_profiler_challenges">
-        <action
-            android:id="@+id/action_storeProfilerChallengesFragment_to_storeProfilerFeaturesFragment"
-            app:destination="@id/storeProfilerFeaturesFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/storeProfilerFeaturesFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerFeaturesFragment"
-        android:label="fragment_store_profiler_features">
-        <action
-            android:id="@+id/action_storeProfilerFeaturesFragment_to_storeCreationInstallationFragment"
-            app:destination="@id/storeCreationInstallationFragment" />
-        <action
-            android:id="@+id/action_storeProfilerFeaturesFragment_to_themePickerFragment"
-            app:destination="@id/nav_graph_themes" />
-    </fragment>
-
-    <fragment
         android:id="@+id/countryPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerFragment"
         android:label="fragment_country_picker">
         <action
-            android:id="@+id/action_countryPickerFragment_to_storeProfilerChallengesFragment"
-            app:destination="@id/storeProfilerChallengesFragment" />
-        <action
             android:id="@+id/action_countryPickerFragment_to_countryListPickerFragment"
             app:destination="@id/countryListPickerFragment" />
+        <action
+            android:id="@+id/action_countryPickerFragment_to_nav_graph_themes"
+            app:destination="@id/nav_graph_themes" >
+            <argument
+                android:name="isFromStoreCreation"
+                app:argType="boolean" />
+        </action>
     </fragment>
 
     <fragment

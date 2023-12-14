@@ -1,2 +1,0 @@
-16.4:
-Bazı yeni özellikleri tanıtmaktan heyecan duyuyoruz! En yeni güncellememiz özel tutarlar için vergi almanızı ve abonelik ürünleri için tek seferlik kargo ayarlamanızı sağlıyor. Abonelik ürünlerini "sanal ürünler" olarak da ayarlayabilirsiniz. Ayrıca tamamlanan siparişin ayrıntılar ekranında teşekkür notu oluşturan bir Yapay Zeka özelliği ekledik. Yeni ve iyileştirilmiş WooCommerce uygulamamızın keyfini çıkarın!

@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.coupons.CouponRepository
@@ -94,7 +93,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
         prepareMocks()
 
         viewModel = EditCouponViewModel(
-            savedStateHandle = EditCouponFragmentArgs(mode).initSavedStateHandle(),
+            savedStateHandle = EditCouponFragmentArgs(mode).toSavedStateHandle(),
             couponRepository = couponRepository,
             couponUtils = couponUtils,
             parameterRepository = mock {
