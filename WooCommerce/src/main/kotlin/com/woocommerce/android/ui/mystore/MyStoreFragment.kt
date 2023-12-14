@@ -149,7 +149,8 @@ class MyStoreFragment :
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = null,
-            hasShadow = true
+            hasShadow = true,
+            animateAppearance = true,
         )
 
     private var isEmptyViewVisible: Boolean = false
