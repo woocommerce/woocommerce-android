@@ -30,7 +30,7 @@ class ThemePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val themeRepository: ThemeRepository,
     private val resourceProvider: ResourceProvider,
-    private val crashLogger: CrashLogging
+    private val crashLogger: CrashLogging,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
