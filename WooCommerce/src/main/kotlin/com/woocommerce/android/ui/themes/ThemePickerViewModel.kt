@@ -117,7 +117,6 @@ class ThemePickerViewModel @Inject constructor(
         )
     } else carouselState
 
-
     fun onArrowBackPressed() {
         triggerEvent(Exit)
     }

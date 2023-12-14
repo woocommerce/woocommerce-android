@@ -196,7 +196,6 @@ class ThemePickerViewModelTest : BaseUnitTest() {
                 whenever(themeRepository.fetchThemes())
                     .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
                 whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(sampleTheme))
-
             }
 
             val viewState = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
