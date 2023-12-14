@@ -88,7 +88,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(viewState.currentThemeState)
-            .isEqualTo(ThemePickerViewModel.CurrentThemeState.Success(sampleTheme.name))
+            .isEqualTo(ThemePickerViewModel.CurrentThemeState.Success(sampleTheme.name, sampleTheme.id))
         verify(themeRepository).fetchCurrentTheme()
     }
 
@@ -188,4 +188,20 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
         assertThat(viewState.carouselState).isEqualTo(ThemePickerViewModel.CarouselState.Error)
     }
+
+    @Test
+    fun `given current theme is loaded, when showing themes, then remove current theme from the list of items`() =
+        testBlocking {
+            setup(isFromStoreCreation = false) {
+                whenever(themeRepository.fetchThemes())
+                    .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
+                whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(sampleTheme))
+
+            }
+
+            val viewState = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+            val carouseItems = (viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems
+
+            assertThat((carouseItems.first() as CarouselItem.Theme).themeId).isEqualTo(sampleTheme2.id)
+        }
 }
