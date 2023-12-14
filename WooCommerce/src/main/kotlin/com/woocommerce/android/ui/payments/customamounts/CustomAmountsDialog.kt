@@ -157,6 +157,7 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
                         viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toString()
                     )
                 }
+                is Exit -> findNavController().navigateUp()
             }
         }
     }
@@ -235,11 +236,6 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
                         binding.updatedAmount.text = viewModel.currentPrice.toString()
                     }
                 }
-            }
-        }
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is Exit -> findNavController().navigateUp()
             }
         }
     }
