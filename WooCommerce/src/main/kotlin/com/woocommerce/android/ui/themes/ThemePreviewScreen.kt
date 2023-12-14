@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -52,21 +51,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.Screen
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Large
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Medium
-import com.woocommerce.android.ui.compose.Screen.ScreenType.Small
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.rememberScreen
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
@@ -159,25 +152,14 @@ fun ThemePreviewScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
             ) {
-                val screen = rememberScreen()
 
                 ThemePreviewWebView(
                     url = state.currentPage.uri,
                     userAgent = userAgent,
                     wpComAuthenticator = wpComWebViewAuthenticator,
-                    initialScale = state.previewType.initialScale(screen),
                     modifier = Modifier
                         .weight(1f)
-                        .align(Alignment.CenterHorizontally)
-                        .then(
-                            if (state.previewType == MOBILE && screen.type != Small) {
-                                Modifier.widthIn(max = Small.width.dp)
-                            } else if (state.previewType == TABLET && screen.type == Large) {
-                                Modifier.widthIn(max = Medium.width.dp)
-                            } else {
-                                Modifier.fillMaxWidth()
-                            }
-                        ),
+                        .align(Alignment.CenterHorizontally),
                     previewType = state.previewType
                 )
 
@@ -394,17 +376,5 @@ private fun ThemeDemoPagesBottomSheet(
                 Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_150)))
             }
         }
-    }
-}
-
-@Composable
-private fun PreviewType.initialScale(screen: Screen): Int {
-    return when (screen.type) {
-        Small, Medium -> when (this) {
-            MOBILE -> 0
-            TABLET -> (260 * screen.width.value / Medium.width).toInt()
-            DESKTOP -> (260 * screen.width.value / Large.width).toInt()
-        }
-        Large -> 0
     }
 }
