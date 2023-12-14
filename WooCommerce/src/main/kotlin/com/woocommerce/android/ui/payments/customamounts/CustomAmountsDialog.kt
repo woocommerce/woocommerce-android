@@ -143,6 +143,7 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
                     type = viewModel.viewState.customAmountUIModel.type
                 )
             )
+            viewModel.triggerExitEvent()
         }
         binding.imageClose.setOnClickListener {
             cancelDialog()
