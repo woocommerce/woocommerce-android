@@ -1317,8 +1317,48 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
             assertThat(viewStateData.cardIllustration).isEqualTo(
-                R.drawable.img_products_error
+                R.drawable.ic_woo_illustrated_icon
             )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then correct contact us label shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.contactSupportLabel).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_contact_us,
+                    containsHtml = true
+                )
+            )
+        }
+
+    @Test
+    fun `given cash on delivery disabled state, when contact us clicked, then correct event is triggered`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            viewStateData.onContactSupportActionClicked.invoke()
+            assertThat(viewModel.event.value).isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
