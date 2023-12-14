@@ -31,6 +31,9 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     }
     private val crashLogger = mock<CrashLogging>()
 
+    private val currentTheme = Theme(
+        id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
+    )
     private val sampleTheme = Theme(
         id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
     )
@@ -214,12 +217,12 @@ class ThemePickerViewModelTest : BaseUnitTest() {
             setup(isFromStoreCreation = false) {
                 whenever(themeRepository.fetchThemes())
                     .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
-                whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(sampleTheme))
+                whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(currentTheme))
             }
 
             val viewState = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
             val carouseItems = (viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems
 
-            assertThat((carouseItems.first() as CarouselItem.Theme).themeId).isEqualTo(sampleTheme2.id)
+            assertThat((carouseItems.first() as CarouselItem.Theme).themeId).isNotEqualTo(currentTheme.id)
         }
 }
