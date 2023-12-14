@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.theme
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.themes.ThemeRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -23,6 +24,7 @@ class ThemeActivationViewModelTests : BaseUnitTest() {
     private val themeRepository: ThemeRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private lateinit var viewModel: ThemeActivationViewModel
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val themeId: String = "tsubaki"
 
@@ -32,7 +34,8 @@ class ThemeActivationViewModelTests : BaseUnitTest() {
         viewModel = ThemeActivationViewModel(
             savedStateHandle = ThemeActivationFragmentDialogArgs(themeId).toSavedStateHandle(),
             themeRepository = themeRepository,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
