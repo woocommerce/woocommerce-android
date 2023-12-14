@@ -21,9 +21,9 @@ class ProductPropertiesDiffCallback(
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val newItem = newList[newItemPosition]
         val oldItem = oldList[oldItemPosition]
-        return if (oldItem is Editable && newItem is Editable && oldItem.text.isNotEmpty()){
+        return if (oldItem is Editable && newItem is Editable && oldItem.text.isNotEmpty()) {
             true
-        }else {
+        } else {
             oldItem == newItem
         }
     }
