@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -74,6 +76,13 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
         )
 
         verify(tracker).track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
+    }
+
+    @Test
+    fun `when trigger exit event method is called, then trigger proper event`() {
+        viewModel.triggerExitEvent()
+
+        assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
     }
 
     // region Percentage based custom amounts
