@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.themes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import coil.network.HttpException
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -28,6 +30,7 @@ class ThemePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val themeRepository: ThemeRepository,
     private val resourceProvider: ResourceProvider,
+    private val crashLogger: CrashLogging
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
@@ -130,6 +133,17 @@ class ThemePickerViewModel @Inject constructor(
             properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
         )
         triggerEvent(NavigateToThemePreview(theme.themeId, navArgs.isFromStoreCreation))
+    }
+
+    fun onThemeScreenshotFailure(themeName: String, throwable: Throwable) {
+        @Suppress("MagicNumber")
+        fun Int.isRedirect() = this in 300..399
+
+        if (throwable is HttpException && throwable.response.code.isRedirect()) {
+            // A redirect means that the screenshot is not cached by MShot
+            val message = "Screenshot for theme $themeName is unavailable"
+            crashLogger.sendReport(Exception(message))
+        }
     }
 
     data class ViewState(

@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.themes
 
+import coil.network.HttpException
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -15,6 +17,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -28,6 +31,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val crashLogger = mock<CrashLogging>()
 
     private val sampleTheme = Theme(
         id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
@@ -47,7 +51,8 @@ class ThemePickerViewModelTest : BaseUnitTest() {
             savedStateHandle = ThemePickerFragmentArgs(isFromStoreCreation).toSavedStateHandle(),
             themeRepository = themeRepository,
             resourceProvider = resourceProvider,
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            crashLogger = crashLogger
         )
     }
 
@@ -190,5 +195,19 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(viewState.carouselState).isEqualTo(ThemePickerViewModel.CarouselState.Error)
+    }
+
+    @Test
+    fun `when a theme screenshot is unavailable, then report a Sentry error`() = testBlocking {
+        setup(isFromStoreCreation = true)
+
+        viewModel.onThemeScreenshotFailure(
+            themeName = "tsubaki",
+            throwable = HttpException(
+                response = mock { on { code } doAnswer { 307 } }
+            )
+        )
+
+        verify(crashLogger).sendReport(any(), anyOrNull(), anyOrNull())
     }
 }
