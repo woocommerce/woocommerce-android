@@ -54,6 +54,7 @@ fun WCWebView(
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
     activityRegistry: ActivityResultRegistry? = null,
     loadWithOverviewMode: Boolean = false,
+    useWideViewPort: Boolean = false,
     isJavaScriptEnabled: Boolean = true,
     isDomStorageEnabled: Boolean = true,
     isReadOnly: Boolean = false,
@@ -150,6 +151,7 @@ fun WCWebView(
                     }
 
                     this.setInitialScale(initialScale)
+                    this.settings.useWideViewPort = useWideViewPort
                     this.settings.loadWithOverviewMode = loadWithOverviewMode
                     this.settings.javaScriptEnabled = isJavaScriptEnabled
                     this.settings.domStorageEnabled = isDomStorageEnabled
