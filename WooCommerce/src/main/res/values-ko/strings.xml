@@ -16,8 +16,6 @@ Language: ko_KR
     <string name="theme_preview_title">미리보기</string>
     <string name="theme_picker_error_message">지금은 테마를 로드할 수 없습니다.</string>
     <string name="theme_picker_error_title">오류 발생</string>
-    <string name="theme_picker_carousel_placeholder_message">실시간 데모를 눌러보세요.</string>
-    <string name="theme_picker_carousel_placeholder_title">\"%s\" 테마</string>
     <string name="theme_picker_carousel_info_item_description">스토어를 설정했으면 우커머스 테마 스토어에서 완벽한 테마를 찾아보세요.</string>
     <string name="theme_picker_carousel_info_item_title">자세한 정보를 원하시나요?</string>
     <string name="theme_picker_description">나중에 언제든지 설정에서 변경하실 수 있습니다.</string>

@@ -16,8 +16,6 @@ Language: id
     <string name="theme_preview_title">Pratinjau</string>
     <string name="theme_picker_error_message">Tidak dapat memuat tema saat ini.</string>
     <string name="theme_picker_error_title">Terjadi kesalahan</string>
-    <string name="theme_picker_carousel_placeholder_message">Ketuk untuk demo langsung.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema \"%s\"</string>
     <string name="theme_picker_carousel_info_item_description">Setelah menyiapkan toko Anda, temukan tema yang ideal di Toko Tema WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Mencari lainnya?</string>
     <string name="theme_picker_description">Anda bebas mengubahnya di pengaturan kapan saja.</string>
