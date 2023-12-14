@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -10,16 +11,21 @@ import com.woocommerce.android.ui.compose.Screen.ScreenType.Small
 
 @Composable
 fun rememberScreen(): Screen {
-    val configuration = LocalConfiguration.current
-    return Screen(
-        width = configuration.screenWidthDp.dp,
-        height = configuration.screenHeightDp.dp,
-        type = when {
-            configuration.screenWidthDp <= Small.width -> Small
-            configuration.screenWidthDp <= Medium.width -> Medium
-            else -> Large
-        }
-    )
+    val (screenWidth, screenHeight) = LocalConfiguration.current.let {
+        Pair(it.screenWidthDp, it.screenHeightDp)
+    }
+
+    return remember(screenWidth, screenHeight) {
+        Screen(
+            width = screenWidth.dp,
+            height = screenHeight.dp,
+            type = when {
+                screenWidth <= Small.width -> Small
+                screenWidth <= Medium.width -> Medium
+                else -> Large
+            }
+        )
+    }
 }
 
 data class Screen(
