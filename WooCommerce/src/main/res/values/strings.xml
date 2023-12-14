@@ -646,6 +646,8 @@
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+
     <!--
         Domains
     -->
@@ -3399,8 +3401,8 @@
     <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
     <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
-    <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
-    <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
     <string name="theme_picker_error_title">An error occurred</string>
     <string name="theme_picker_error_message">Unable to load themes at this time.</string>
     <string name="theme_preview_title">Preview</string>
@@ -3410,6 +3412,9 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_preview_type_mobile">Mobile</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
     <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
 

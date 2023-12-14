@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -22,8 +23,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.ThemeCoroutineStore
 import javax.inject.Inject
@@ -59,19 +62,23 @@ class ThemePreviewViewModel @Inject constructor(
     )
     private val isActivatingTheme = savedStateHandle.getStateFlow(viewModelScope, false, "isActivatingTheme")
 
+    private val previewType = savedStateHandle.getStateFlow(viewModelScope, PreviewType.MOBILE, "previewType")
+
     val viewState = combine(
         theme,
         selectedPage,
         isActivatingTheme,
-        themePages
-    ) { theme, selectedPage, isActivatingTheme, demoPages ->
+        themePages,
+        previewType
+    ) { theme, selectedPage, isActivatingTheme, demoPages, previewType ->
         ViewState(
             themeName = theme.name,
             isFromStoreCreation = navArgs.isFromStoreCreation,
             isActivatingTheme = isActivatingTheme,
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
-            }
+            },
+            previewType = previewType
         )
     }.asLiveData()
 
@@ -104,6 +111,10 @@ class ThemePreviewViewModel @Inject constructor(
         }
     }
 
+    fun onPreviewTypeChanged(type: PreviewType) {
+        previewType.update { type }
+    }
+
     private suspend fun Theme.prepareThemeDemoPages(): Flow<List<ThemeDemoPage>> = flow {
         val homePage = ThemeDemoPage(
             uri = requireNotNull(demoUrl),
@@ -131,10 +142,26 @@ class ThemePreviewViewModel @Inject constructor(
         val themeName: String,
         val isFromStoreCreation: Boolean,
         val themePages: List<ThemeDemoPage>,
-        val isActivatingTheme: Boolean
+        val isActivatingTheme: Boolean,
+        val previewType: PreviewType = PreviewType.MOBILE
     ) {
-        val currentPage: ThemeDemoPage
+        private val currentPage: ThemeDemoPage
             get() = themePages.first { it.isLoaded }
+
+        val currentPageUri: String
+            get() = currentPage.uri.toHttpUrl().newBuilder()
+                .addQueryParameter("demo", "true")
+                .build()
+                .toString()
+
+        val currentPageTitle: String
+            get() = currentPage.title
+
+        enum class PreviewType {
+            DESKTOP,
+            TABLET,
+            MOBILE
+        }
     }
 
     @Parcelize
