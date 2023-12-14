@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
@@ -43,7 +44,7 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_amounts) {
+class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
 
@@ -53,36 +54,15 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     private val viewModel: CustomAmountsDialogViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val arguments: CustomAmountsDialogArgs by navArgs()
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = ComponentDialog(requireContext(), theme)
-        dialog.onBackPressedDispatcher.addCallback(dialog) {
-            cancelDialog()
-        }
-        return dialog
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val isLandscape = DisplayUtils.isLandscape(requireContext())
-        setWindowLayout(isLandscape)
         val binding = DialogCustomAmountsBinding.bind(view)
         bindViews(binding)
         setupClickListeners(binding)
         showKeyboard(isLandscape, binding)
         setupObservers(binding)
         setupEventObservers(binding)
-    }
-
-    private fun setWindowLayout(isLandscape: Boolean) {
-        requireDialog().window?.let { window ->
-            window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
-            val widthRatio = if (isLandscape) WIDTH_RATIO_LANDSCAPE else WIDTH_RATIO
-            val heightRatio = if (isLandscape) HEIGHT_RATIO_LANDSCAPE else HEIGHT_RATIO
-
-            window.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * widthRatio).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * heightRatio).toInt()
-            )
-        }
     }
 
     private fun showKeyboard(
