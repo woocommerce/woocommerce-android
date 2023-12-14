@@ -52,6 +52,8 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val arguments: CustomAmountsDialogArgs by navArgs()
 
+    override fun getFragmentTitle() = getString(R.string.custom_amounts)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val isLandscape = DisplayUtils.isLandscape(requireContext())
         val binding = DialogCustomAmountsBinding.bind(view)
@@ -145,9 +147,6 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
             )
             viewModel.triggerExitEvent()
         }
-        binding.imageClose.setOnClickListener {
-            cancelDialog()
-        }
     }
 
     private fun setupEventObservers(binding: DialogCustomAmountsBinding) {
@@ -171,7 +170,7 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
                         binding.editPrice.value.filterNotNull().observe(
-                            this
+                            viewLifecycleOwner
                         ) {
                             viewModel.currentPrice = it
                         }
@@ -264,10 +263,6 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
                 }
             }
         }
-    }
-
-    private fun cancelDialog() {
-        findNavController().navigateUp()
     }
 
     companion object {
