@@ -6,9 +6,20 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -54,6 +65,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCard
+import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCardLoading
 import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
@@ -793,21 +806,107 @@ class OrderCreateEditFormFragment :
         }
     }
 
+    @Suppress("LongMethod")
     private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<OrderCreationProduct>>) {
         setContent {
             val state = items.observeAsState(emptyList())
             WooTheme {
                 Column {
                     state.value.forEach { item ->
-                        ExpandableProductCard(
-                            viewModel.viewStateData.liveData.observeAsState(),
-                            item,
-                            onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
-                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
-                            onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
-                            onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
-                            onProductExpanded = viewModel::onProductExpanded
-                        )
+                        var isExpanded by rememberSaveable { mutableStateOf(false) }
+                        when {
+                            item is OrderCreationProduct.ProductItemWithRules &&
+                                item.configuration.childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
+                                val modifier = if (isExpanded) {
+                                    Modifier.border(
+                                        1.dp,
+                                        colorResource(id = R.color.color_on_surface),
+                                        shape = RoundedCornerShape(
+                                            topStart = dimensionResource(id = R.dimen.corner_radius_large),
+                                            topEnd = dimensionResource(id = R.dimen.corner_radius_large)
+                                        )
+                                    )
+                                } else Modifier
+                                ExpandableGroupedProductCardLoading(
+                                    state = viewModel.viewStateData.liveData.observeAsState(),
+                                    product = item,
+                                    childrenSize = item.configuration.childrenConfiguration?.keys?.size ?: 0,
+                                    onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                                    onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
+                                    onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                                    onProductExpanded = { expanded, product ->
+                                        isExpanded = expanded
+                                        viewModel.onProductExpanded(isExpanded, product)
+                                    },
+                                    modifier = modifier,
+                                    isExpanded = isExpanded
+                                )
+                            }
+
+                            item is OrderCreationProduct.GroupedProductItemWithRules -> {
+                                val modifier = if (isExpanded) {
+                                    Modifier.border(
+                                        1.dp,
+                                        colorResource(id = R.color.color_on_surface),
+                                        shape = RoundedCornerShape(
+                                            topStart = dimensionResource(id = R.dimen.corner_radius_large),
+                                            topEnd = dimensionResource(id = R.dimen.corner_radius_large)
+                                        )
+                                    )
+                                } else Modifier
+                                ExpandableGroupedProductCard(
+                                    state = viewModel.viewStateData.liveData.observeAsState(),
+                                    product = item,
+                                    children = item.children,
+                                    onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                                    onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                                    onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                                    onProductExpanded = { expanded, product ->
+                                        isExpanded = expanded
+                                        viewModel.onProductExpanded(isExpanded, product)
+                                    },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
+                                    onChildProductExpanded = viewModel::onProductExpanded,
+                                    modifier = modifier,
+                                    isExpanded = isExpanded
+                                )
+                            }
+
+                            else -> {
+                                ExpandableProductCard(
+                                    viewModel.viewStateData.liveData.observeAsState(),
+                                    item,
+                                    onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
+                                    onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
+                                    onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
+                                    onEditConfigurationClicked = { viewModel.onEditConfiguration(item) },
+                                    onProductExpanded = { expanded, product ->
+                                        isExpanded = expanded
+                                        viewModel.onProductExpanded(isExpanded, product)
+                                    },
+                                    modifier = Modifier
+                                        .padding(
+                                            horizontal = dimensionResource(id = R.dimen.major_100),
+                                            vertical = dimensionResource(id = R.dimen.minor_50)
+                                        )
+                                        .border(
+                                            1.dp,
+                                            colorResource(
+                                                id = if (isExpanded) {
+                                                    R.color.color_on_surface
+                                                } else {
+                                                    R.color.divider_color
+                                                }
+                                            ),
+                                            shape = RoundedCornerShape(
+                                                dimensionResource(id = R.dimen.corner_radius_large)
+                                            )
+                                        ),
+                                    isExpanded = isExpanded
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -873,11 +972,9 @@ class OrderCreateEditFormFragment :
                 shouldHideCustomerAddressAndNotesSections(newOrderData) -> {
                     hideCustomerAddressAndNotesSections()
                 }
-
                 shouldShowCustomerSectionOnly(newOrderData) -> {
                     showCustomerSectionOnly(newOrderData)
                 }
-
                 shouldShowNotesSectionOnly(newOrderData) -> {
                     showNotesSectionOnly(newOrderData)
                 }

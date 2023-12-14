@@ -68,7 +68,6 @@ import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
-@ExperimentalFoundationApi
 @Composable
 fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
@@ -78,7 +77,6 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
     )
 }
 
-@ExperimentalFoundationApi
 @Composable
 fun MoreMenuScreen(
     state: MoreMenuViewState,
@@ -283,7 +281,6 @@ private fun HeaderAvatar(
     )
 }
 
-@ExperimentalFoundationApi
 @Composable
 private fun MoreMenuSection(
     title: String,

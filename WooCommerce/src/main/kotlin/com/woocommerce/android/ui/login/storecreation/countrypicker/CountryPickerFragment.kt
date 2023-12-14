@@ -73,7 +73,9 @@ class CountryPickerFragment : BaseFragment() {
 
     private fun navigateToNextStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToNavGraphThemes()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToNavGraphThemes(
+                isFromStoreCreation = true
+            )
         )
     }
 }
