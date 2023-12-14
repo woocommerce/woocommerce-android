@@ -93,7 +93,7 @@ class ThemePreviewViewModel @Inject constructor(
                 themeRepository.activateTheme(navArgs.themeId).fold(
                     onSuccess = {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
-                        triggerEvent(MultiLiveEvent.Event.Exit)
+                        triggerEvent(ThemeUpdatedSuccess)
                     },
                     onFailure = {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
@@ -145,4 +145,5 @@ class ThemePreviewViewModel @Inject constructor(
     ) : Parcelable
 
     object ContinueStoreCreationWithTheme : MultiLiveEvent.Event()
+    object ThemeUpdatedSuccess : MultiLiveEvent.Event()
 }

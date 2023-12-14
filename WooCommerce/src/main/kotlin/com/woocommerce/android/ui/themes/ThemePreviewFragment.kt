@@ -22,7 +22,9 @@ class ThemePreviewFragment : BaseFragment() {
     companion object {
         const val THEME_SELECTED_NOTICE = "theme-selected"
     }
+
     private val viewModel: ThemePreviewViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -53,7 +55,9 @@ class ThemePreviewFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ThemePreviewViewModel.ContinueStoreCreationWithTheme -> continueStoreCreation()
+                is ThemePreviewViewModel.ContinueStoreCreationWithTheme,
+                is ThemePreviewViewModel.ThemeUpdatedSuccess -> continueStoreCreation()
+
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
             }

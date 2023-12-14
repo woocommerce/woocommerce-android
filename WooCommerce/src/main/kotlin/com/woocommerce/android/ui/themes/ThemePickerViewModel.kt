@@ -13,10 +13,12 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,17 +29,14 @@ class ThemePickerViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
+    private val currentTheme = MutableStateFlow<CurrentThemeState>(CurrentThemeState.Hidden)
     val viewState = combine(
         loadThemes().stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = CarouselState.Loading
         ),
-        loadCurrentTheme().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Lazily,
-            initialValue = CurrentThemeState.Hidden
-        )
+        currentTheme
     ) { carouselState, currentThemeState ->
         ViewState(
             isFromStoreCreation = navArgs.isFromStoreCreation,
@@ -45,6 +44,10 @@ class ThemePickerViewModel @Inject constructor(
             currentThemeState = currentThemeState
         )
     }.asLiveData()
+
+    init {
+        loadCurrentTheme()
+    }
 
     private fun loadThemes(): Flow<CarouselState> = flow {
         emit(CarouselState.Loading)
@@ -81,22 +84,24 @@ class ThemePickerViewModel @Inject constructor(
         emit(result)
     }
 
-    private fun loadCurrentTheme(): Flow<CurrentThemeState> = flow {
+    private fun loadCurrentTheme() {
         if (navArgs.isFromStoreCreation) {
-            emit(CurrentThemeState.Hidden)
-            return@flow
+            currentTheme.value = CurrentThemeState.Hidden
+            return
         }
-        emit(CurrentThemeState.Loading)
-        val result = themeRepository.fetchCurrentTheme().fold(
-            onSuccess = { theme ->
-                CurrentThemeState.Success(theme.name)
-            },
-            onFailure = {
-                triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
-                CurrentThemeState.Hidden
-            }
-        )
-        emit(result)
+        currentTheme.value = CurrentThemeState.Loading
+        launch {
+            val result = themeRepository.fetchCurrentTheme().fold(
+                onSuccess = { theme ->
+                    CurrentThemeState.Success(theme.name)
+                },
+                onFailure = {
+                    triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
+                    CurrentThemeState.Hidden
+                }
+            )
+            currentTheme.value = result
+        }
     }
 
     fun onArrowBackPressed() {
@@ -109,6 +114,10 @@ class ThemePickerViewModel @Inject constructor(
 
     fun onThemeTapped(themeUri: String) {
         triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
+    }
+
+    fun updateCurrentTheme() {
+        loadCurrentTheme()
     }
 
     data class ViewState(
