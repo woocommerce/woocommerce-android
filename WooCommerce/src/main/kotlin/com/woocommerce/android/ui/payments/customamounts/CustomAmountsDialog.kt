@@ -262,10 +262,6 @@ class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
     }
 
     companion object {
-        private const val HEIGHT_RATIO = 0.6
-        private const val WIDTH_RATIO = 0.9
-        private const val HEIGHT_RATIO_LANDSCAPE = 0.9
-        private const val WIDTH_RATIO_LANDSCAPE = 0.6
         private const val KEYBOARD_DELAY = 500L
 
         const val CUSTOM_AMOUNT = "Custom Amount"
