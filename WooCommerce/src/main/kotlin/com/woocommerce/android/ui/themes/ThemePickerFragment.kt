@@ -82,8 +82,7 @@ class ThemePickerFragment : BaseFragment() {
             ThemePickerFragmentDirections
                 .actionThemePickerFragmentToThemePreviewFragment(
                     themeId = event.themeId,
-                    isFromStoreCreation = event.isFromStoreCreation,
-                    isThemeAlreadyInstalled = event.isThemeAlreadyInstalled
+                    isFromStoreCreation = event.isFromStoreCreation
                 )
         )
     }

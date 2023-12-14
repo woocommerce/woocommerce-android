@@ -93,7 +93,7 @@ class ThemePickerViewModel @Inject constructor(
         launch {
             val result = themeRepository.fetchCurrentTheme().fold(
                 onSuccess = { theme ->
-                    CurrentThemeState.Success(theme.name, theme.id)
+                    CurrentThemeState.Success(theme.name)
                 },
                 onFailure = {
                     triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
@@ -113,13 +113,7 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     fun onThemeTapped(themeUri: String) {
-        triggerEvent(
-            NavigateToThemePreview(
-                themeId = themeUri,
-                isFromStoreCreation = navArgs.isFromStoreCreation,
-                isThemeAlreadyInstalled = (currentTheme.value as? CurrentThemeState.Success)?.themeId == themeUri
-            )
-        )
+        triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
     }
 
     fun updateCurrentTheme() {
@@ -157,13 +151,9 @@ class ThemePickerViewModel @Inject constructor(
 
         object Loading : CurrentThemeState
 
-        data class Success(val themeName: String, val themeId: String) : CurrentThemeState
+        data class Success(val themeName: String) : CurrentThemeState
     }
 
     object NavigateToNextStep : Event()
-    data class NavigateToThemePreview(
-        val themeId: String,
-        val isFromStoreCreation: Boolean,
-        val isThemeAlreadyInstalled: Boolean
-    ) : Event()
+    data class NavigateToThemePreview(val themeId: String, val isFromStoreCreation: Boolean) : Event()
 }
