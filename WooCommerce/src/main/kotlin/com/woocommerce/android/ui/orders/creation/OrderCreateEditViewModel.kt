@@ -1323,7 +1323,6 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
-        triggerEvent(Exit)
     }
 
     private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
