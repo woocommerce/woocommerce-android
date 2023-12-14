@@ -410,10 +410,6 @@ private fun PreviewType.initialScale(screen: Screen): Int {
             TABLET -> 0
             DESKTOP -> (260 * screen.width.value / Large.width).toInt()
         }
-        Large -> when (this) {
-            MOBILE -> 0
-            TABLET -> 0
-            DESKTOP -> 0
-        }
+        Large -> 0
     }
 }
