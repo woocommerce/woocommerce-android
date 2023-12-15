@@ -72,14 +72,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     sku = product.sku,
                     quantity = product.stockQuantity.toInt(),
                 )
-                val isStockManaged = if (product.isVariation()) {
-                    variationRepository.getVariationOrNull(product.parentId, product.remoteId).let {
-                        it?.isStockManaged ?: return@launch
-                    }
-                } else {
-                    product.isStockManaged
-                }
-                if (isStockManaged) {
+                if (isItemStockManaged(product)) {
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
@@ -99,6 +92,15 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             handleProductNotFound(status.code)
         }
     }
+
+    private suspend fun isItemStockManaged(product: Product): Boolean =
+        if (product.isVariation()) {
+            variationRepository.getVariationOrNull(product.parentId, product.remoteId).let {
+                it?.isStockManaged == true
+            }
+        } else {
+            product.isStockManaged
+        }
 
     private suspend fun handleProductIsNotStockManaged(product: Product) {
         triggerProductNotStockManagedSnackBar(product)
