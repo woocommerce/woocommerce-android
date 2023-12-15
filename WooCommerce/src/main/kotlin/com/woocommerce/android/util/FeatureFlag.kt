@@ -26,7 +26,6 @@ enum class FeatureFlag {
     CUSTOM_AMOUNTS_M1,
     PRODUCT_CREATION_AI,
     PACKAGE_PHOTO_SCANNING,
-    THEME_PICKER,
     ORDER_GIFT_CARD;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -54,7 +53,6 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            THEME_PICKER,
             ORDER_GIFT_CARD -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
