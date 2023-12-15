@@ -7,7 +7,6 @@ import coil.network.HttpException
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
