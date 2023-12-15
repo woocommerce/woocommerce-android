@@ -47,7 +47,7 @@ fun EditGiftCardScreen(
             stringResource(id = R.string.order_creation_gift_card_text_error)
         }
         WCOutlinedTextField(
-            value = giftCardValue,
+            value = giftCardValue.toUpperCase(Locale.current),
             onValueChange = onTextChanged,
             isError = isValidCode.not(),
             label = textFieldLabel,
