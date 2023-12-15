@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 16:54:05+0000
+Translation-Revision-Date: 2023-12-13 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produto</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantidade</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Quantidade original</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Ocorreu um erro. Tente novamente</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantidade atualizada: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Visualizar detalhes do produto</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Atualizar quantidade</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantidade + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Produto com SKU: %s não é gerenciado com base no estoque. Tente novamente.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Produto com SKU: %s não encontrado. Tente novamente.</string>
+    <string name="theme_activation_failed">Falha na ativação do tema. Tente novamente!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">O som das notificações de pedidos foi desativado. Ative-o novamente para saber sempre que houver uma nova venda.</string>
+    <string name="settings_notifs_enable_chaching_sound">Ativar o som de nova venda</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Ler código de barras para atualizar o inventário</string>
+    <string name="cha_ching_sound_test_notification_message">Isso é apenas uma notificação de teste para verificar o som de nova venda.\nVocê pode pular.</string>
+    <string name="cha_ching_sound_test_notification_title">Notificação de teste</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TESTAR SOM</string>
+    <string name="cha_ching_sound_succcess_snackbar">Tudo pronto! Agora você ouvirá um som para cada novo pedido.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">MANTER EM SILÊNCIO</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ATIVAR SOM</string>
+    <string name="cha_ching_sound_issue_dialog_message">Ative-o novamente para saber sempre que houver uma nova venda. Fique por dentro dos pedidos dos seus clientes!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Som de nova venda desativado</string>
+    <string name="order_creation_products_order_count">Contagem de pedidos</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Uma porcentagem do total do pedido</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Um valor fixo</string>
+    <string name="custom_amounts_bottom_sheet_heading">Como deseja adicionar seu valor personalizado?</string>
+    <string name="custom_amounts_percentage_label">Porcentagem do total do pedido (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Excluir valor personalizado</string>
     <string name="store_creation_use_theme_button">Começar com este tema</string>
     <string name="theme_activated_successfully">Tema ativado com sucesso</string>
     <string name="theme_preview_theme_name">Tema: %1$s</string>
