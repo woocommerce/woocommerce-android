@@ -7,4 +7,4 @@ git config --global user.email "mobile+wpmobilebot@automattic.com"
 git config --global user.name "Automattic Release Bot"
 
 # Buildkite is currently using the https url to checkout. We need to override it to be able to use the deploy key.
-git remote set-url origin git@github.com:wordpress-mobile/WordPress-Android.git
+git remote set-url origin git@github.com:wordpress-mobile/woocommerce-android.git
