@@ -48,6 +48,10 @@ class ThemePreviewViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        const val MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN = 1
+    }
+
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
     private val theme = flow {

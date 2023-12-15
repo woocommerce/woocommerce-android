@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.themes.ThemePreviewViewModel.Companion.MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
@@ -235,14 +236,14 @@ private fun DemoSectionsToolbar(
         modifier = Modifier
             .wrapContentHeight()
             .padding(start = dimensionResource(id = dimen.major_150))
-            .clickable {
-                if (state.themePages.isNotEmpty()) {
-                    coroutineScope.launch {
-                        if (modalSheetState.isVisible)
-                            modalSheetState.hide()
-                        else {
-                            modalSheetState.show()
-                        }
+            .clickable(
+                enabled = state.themePages.size > MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN,
+            ) {
+                coroutineScope.launch {
+                    if (modalSheetState.isVisible)
+                        modalSheetState.hide()
+                    else {
+                        modalSheetState.show()
                     }
                 }
             }
@@ -251,23 +252,24 @@ private fun DemoSectionsToolbar(
             text = stringResource(id = string.theme_preview_title),
             style = MaterialTheme.typography.body1,
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = state.currentPageTitle,
-                style = MaterialTheme.typography.caption,
-            )
-            Icon(
-                modifier = Modifier
-                    .size(dimensionResource(id = dimen.major_100))
-                    .padding(
-                        start = dimensionResource(id = dimen.minor_50),
-                        top = dimensionResource(id = dimen.minor_75),
-                    ),
-                painter = painterResource(drawable.ic_arrow_down),
-                contentDescription = "",
-                tint = colorResource(id = color.color_on_surface)
-            )
-        }
+        if (state.themePages.size > MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = state.currentPageTitle,
+                    style = MaterialTheme.typography.caption,
+                )
+                Icon(
+                    modifier = Modifier
+                        .size(dimensionResource(id = dimen.major_100))
+                        .padding(
+                            start = dimensionResource(id = dimen.minor_50),
+                            top = dimensionResource(id = dimen.minor_75),
+                        ),
+                    painter = painterResource(drawable.ic_arrow_down),
+                    contentDescription = "",
+                    tint = colorResource(id = color.color_on_surface)
+                )
+            }
     }
 }
 
