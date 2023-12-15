@@ -435,7 +435,7 @@ private fun PreviewThemePickerSettings() {
                         CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "")
                     )
                 ),
-                currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki")
+                currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki", themeId = "tsubaki")
             ),
             onThemeTapped = {},
             onThemeScreenshotFailure = { _, _ -> }

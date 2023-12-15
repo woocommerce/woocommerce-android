@@ -8,7 +8,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -23,6 +25,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ThemePickerFragment : BaseFragment() {
     private val viewModel: ThemePickerViewModel by viewModels()
+    val navArgs: ThemePickerFragmentArgs by navArgs()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -58,8 +62,11 @@ class ThemePickerFragment : BaseFragment() {
     }
 
     private fun handleResults() {
-        handleNotice(ThemePreviewFragment.THEME_SELECTED_NOTICE) {
-            navigateToStoreInstallationStep()
+        handleNotice(ThemePreviewFragment.STORE_CREATION_THEME_SELECTED_NOTICE) { navigateToStoreInstallationStep() }
+        handleResult<ThemePreviewViewModel.SelectedTheme>(
+            key = ThemePreviewFragment.CURRENT_THEME_UPDATED
+        ) {
+            viewModel.onCurrentThemeUpdated(it.themeId, it.themeName)
         }
     }
 
