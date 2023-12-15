@@ -235,14 +235,14 @@ private fun DemoSectionsToolbar(
         modifier = Modifier
             .wrapContentHeight()
             .padding(start = dimensionResource(id = dimen.major_150))
-            .clickable {
-                if (state.themePages.isNotEmpty()) {
-                    coroutineScope.launch {
-                        if (modalSheetState.isVisible)
-                            modalSheetState.hide()
-                        else {
-                            modalSheetState.show()
-                        }
+            .clickable(
+                enabled = state.shouldShowPagesDropdown,
+            ) {
+                coroutineScope.launch {
+                    if (modalSheetState.isVisible)
+                        modalSheetState.hide()
+                    else {
+                        modalSheetState.show()
                     }
                 }
             }
@@ -251,23 +251,24 @@ private fun DemoSectionsToolbar(
             text = stringResource(id = string.theme_preview_title),
             style = MaterialTheme.typography.body1,
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = state.currentPageTitle,
-                style = MaterialTheme.typography.caption,
-            )
-            Icon(
-                modifier = Modifier
-                    .size(dimensionResource(id = dimen.major_100))
-                    .padding(
-                        start = dimensionResource(id = dimen.minor_50),
-                        top = dimensionResource(id = dimen.minor_75),
-                    ),
-                painter = painterResource(drawable.ic_arrow_down),
-                contentDescription = "",
-                tint = colorResource(id = color.color_on_surface)
-            )
-        }
+        if (state.shouldShowPagesDropdown)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = state.currentPageTitle,
+                    style = MaterialTheme.typography.caption,
+                )
+                Icon(
+                    modifier = Modifier
+                        .size(dimensionResource(id = dimen.major_100))
+                        .padding(
+                            start = dimensionResource(id = dimen.minor_50),
+                            top = dimensionResource(id = dimen.minor_75),
+                        ),
+                    painter = painterResource(drawable.ic_arrow_down),
+                    contentDescription = "",
+                    tint = colorResource(id = color.color_on_surface)
+                )
+            }
     }
 }
 

@@ -48,6 +48,10 @@ class ThemePreviewViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN = 1
+    }
+
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
     private val theme = flow {
@@ -83,6 +87,7 @@ class ThemePreviewViewModel @Inject constructor(
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
             },
+            shouldShowPagesDropdown = demoPages.size > MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN,
             previewType = previewType
         )
     }.asLiveData()
@@ -187,6 +192,7 @@ class ThemePreviewViewModel @Inject constructor(
         val themeName: String,
         val isFromStoreCreation: Boolean,
         val themePages: List<ThemeDemoPage>,
+        val shouldShowPagesDropdown: Boolean,
         val isActivatingTheme: Boolean,
         val previewType: PreviewType = PreviewType.MOBILE
     ) {
