@@ -223,6 +223,6 @@ class ThemePickerViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
             val carouseItems = (viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems
 
-            assertThat((carouseItems.first() as CarouselItem.Theme).themeId).isNotEqualTo(currentTheme.id)
+            assertThat((carouseItems)).noneMatch { it is CarouselItem.Theme && it.themeId == currentTheme.id }
         }
 }
