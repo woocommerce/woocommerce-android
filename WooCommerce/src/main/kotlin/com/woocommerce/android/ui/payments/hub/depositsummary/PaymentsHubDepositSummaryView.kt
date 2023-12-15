@@ -330,7 +330,7 @@ private fun DepositsInfo(
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
                     end = dimensionResource(id = R.dimen.major_100),
-                    top = 10.dp,
+                    top = dimensionResource(id = R.dimen.major_100),
                     bottom = dimensionResource(id = R.dimen.major_125)
                 )
         ) {
@@ -394,8 +394,6 @@ private fun NextAndLastDeposit(
     nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
     lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
 ) {
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
-
     Text(
         style = MaterialTheme.typography.body2,
         text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
