@@ -334,13 +334,7 @@ private fun DepositsInfo(
                     bottom = dimensionResource(id = R.dimen.major_125)
                 )
         ) {
-            if (currencyInfo.nextDeposit != null || currencyInfo.lastDeposit != null) {
-                NextAndLastDeposit(
-                    currencyInfo.nextDeposit,
-                    currencyInfo.lastDeposit
-                )
-                Divider(modifier = Modifier.fillMaxWidth())
-            }
+            LastDeposit(currencyInfo.lastDeposit)
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
@@ -390,40 +384,29 @@ private fun DepositsInfo(
 }
 
 @Composable
-private fun NextAndLastDeposit(
-    nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
-    lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
-) {
-    Text(
-        style = MaterialTheme.typography.body2,
-        text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
-        color = colorResource(id = R.color.color_on_surface_medium),
-    )
-
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-
-    nextDeposit?.let {
-        Deposit(
-            depositType = R.string.card_reader_hub_deposit_summary_next,
-            deposit = it,
-            textColor = R.color.color_on_surface
-        )
-        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
-    }
-
+private fun LastDeposit(lastDeposit: PaymentsHubDepositSummaryState.Deposit?) {
     lastDeposit?.let {
+        Text(
+            style = MaterialTheme.typography.body2,
+            text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
+            color = colorResource(id = R.color.color_on_surface_medium),
+        )
+
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
         Deposit(
-            depositType = R.string.card_reader_hub_deposit_summary_last,
             deposit = it,
             textColor = R.color.color_on_surface_medium
         )
+
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+
+        Divider(modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
 private fun Deposit(
-    depositType: Int,
     deposit: PaymentsHubDepositSummaryState.Deposit,
     textColor: Int
 ) {
@@ -431,13 +414,6 @@ private fun Deposit(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
-            modifier = Modifier.weight(.5f),
-            style = MaterialTheme.typography.body1,
-            text = stringResource(id = depositType),
-            color = colorResource(id = textColor),
-        )
-
         Text(
             modifier = Modifier.weight(1.2f),
             style = MaterialTheme.typography.body1,

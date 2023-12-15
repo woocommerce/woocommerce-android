@@ -1331,9 +1331,7 @@
     <string name="card_reader_hub_deposit_summary_pending_funds">Pending funds</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Funds become available after pending for %d day.</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Deposits</string>
-    <string name="card_reader_hub_deposit_summary_next">Next</string>
-    <string name="card_reader_hub_deposit_summary_last">Last</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">LAST DEPOSIT</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Available funds are deposited automatically, every day.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Available funds are deposited automatically, every %s.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Available funds are deposited automatically, every month on the %s.</string>
