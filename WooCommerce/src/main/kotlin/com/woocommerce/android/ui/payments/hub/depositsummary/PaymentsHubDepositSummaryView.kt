@@ -334,24 +334,7 @@ private fun DepositsInfo(
                     bottom = dimensionResource(id = R.dimen.major_125)
                 )
         ) {
-            LastDeposit(currencyInfo.lastDeposit)
-
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-
-            currencyInfo.fundsDepositInterval?.let { interval ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
-                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                    Text(
-                        style = MaterialTheme.typography.caption,
-                        text = interval.buildText(),
-                        color = colorResource(id = R.color.color_on_surface_medium),
-                    )
-                }
-            }
+            LastDeposit(currencyInfo)
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_75)))
 
@@ -384,8 +367,8 @@ private fun DepositsInfo(
 }
 
 @Composable
-private fun LastDeposit(lastDeposit: PaymentsHubDepositSummaryState.Deposit?) {
-    lastDeposit?.let {
+private fun LastDeposit(currencyInfo: PaymentsHubDepositSummaryState.Info) {
+    currencyInfo.lastDeposit?.let {
         Text(
             style = MaterialTheme.typography.body2,
             text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
@@ -395,6 +378,16 @@ private fun LastDeposit(lastDeposit: PaymentsHubDepositSummaryState.Deposit?) {
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
         Deposit(deposit = it)
+
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+
+        currencyInfo.fundsDepositInterval?.let { interval ->
+            Text(
+                style = MaterialTheme.typography.caption,
+                text = interval.buildText(),
+                color = colorResource(id = R.color.color_on_surface_medium),
+            )
+        }
 
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
 
