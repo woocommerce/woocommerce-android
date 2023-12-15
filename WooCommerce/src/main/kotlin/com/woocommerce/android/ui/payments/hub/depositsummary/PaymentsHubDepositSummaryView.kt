@@ -394,10 +394,7 @@ private fun LastDeposit(lastDeposit: PaymentsHubDepositSummaryState.Deposit?) {
 
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
-        Deposit(
-            deposit = it,
-            textColor = R.color.color_on_surface_medium
-        )
+        Deposit(deposit = it)
 
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
 
@@ -406,19 +403,23 @@ private fun LastDeposit(lastDeposit: PaymentsHubDepositSummaryState.Deposit?) {
 }
 
 @Composable
-private fun Deposit(
-    deposit: PaymentsHubDepositSummaryState.Deposit,
-    textColor: Int
-) {
+private fun Deposit(deposit: PaymentsHubDepositSummaryState.Deposit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+        Icon(painter = painterResource(
+            id = R.drawable.ic_calendar_16),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface)
+        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
         Text(
             modifier = Modifier.weight(1.2f),
             style = MaterialTheme.typography.body1,
             text = deposit.date,
-            color = colorResource(id = textColor),
         )
 
         Box(modifier = Modifier.weight(1f)) {
@@ -480,8 +481,6 @@ private fun Deposit(
             Text(
                 style = MaterialTheme.typography.body1,
                 text = deposit.amount,
-                color = colorResource(id = textColor),
-                fontWeight = FontWeight(600),
             )
         }
     }
