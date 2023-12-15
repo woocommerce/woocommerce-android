@@ -305,23 +305,16 @@ private fun DepositsInfo(
                 )
         ) {
             currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
-                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                    Text(
-                        style = MaterialTheme.typography.caption,
-                        text = StringUtils.getQuantityString(
-                            context = LocalContext.current,
-                            quantity = fundsAvailableInDays,
-                            default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
-                            one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
-                        ),
-                        color = colorResource(id = R.color.color_on_surface_medium),
-                    )
-                }
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = StringUtils.getQuantityString(
+                        context = LocalContext.current,
+                        quantity = fundsAvailableInDays,
+                        default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
+                        one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
+                    ),
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                )
             }
 
             if (currencyInfo.nextDeposit != null || currencyInfo.lastDeposit != null) {
