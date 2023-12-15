@@ -1,2 +1,0 @@
-16.5 :
-La dernière version de l’application WooCommerce se concentre sur l’amélioration de la stabilité ! En outre, les utilisateurs de WooPayments peuvent dorénavant changer de devise en toute fluidité sur l’aperçu Récapitulatif des dépôts. Mettez à niveau WooCommerce dès maintenant pour profiter d’une expérience plus fluide !
