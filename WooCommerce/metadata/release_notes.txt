@@ -1,1 +1,9 @@
-Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!
+- [*] [Internal] Fixed disabling editable controls in product cards in order edit screen in case order is not editable [https://github.com/woocommerce/woocommerce-android/pull/10345]
+- [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
+- [*] Pay in Person: Revise both the text and the illustration to clarify that enabling Pay in Person is an optional choice for our customers. [https://github.com/woocommerce/woocommerce-android/pull/10362]
+- [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
+- [*] [Internal] Faster opening of the "more" screen. Animation of showing/hiding toolbar [https://github.com/woocommerce/woocommerce-android/pull/10346]
+- [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
+- [*][Internal] Replace "Edit" text with Pencil icon for Customer and Customer notes section [https://github.com/woocommerce/woocommerce-android/pull/10381]
+- [***] Themes: the merchants can now choose a theme for their stores during store creation and from the app's settings (only for WPCom stores) [https://github.com/woocommerce/woocommerce-android/issues/10224]
+
