@@ -11,6 +11,10 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
@@ -273,6 +277,32 @@ private fun FundsOverview(
             }
         }
     }
+
+    AnimatedVisibility(
+        visible = isExpanded,
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
+            Text(
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100),
+                ),
+                style = MaterialTheme.typography.caption,
+                text = StringUtils.getQuantityString(
+                    context = LocalContext.current,
+                    quantity = fundsAvailableInDays,
+                    default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
+                    one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
+                ),
+                color = colorResource(id = R.color.color_on_surface_medium),
+            )
+        }
+    }
+
     val dividerPaddingAnimation by animateDpAsState(
         targetValue = if (isExpanded) {
             dimensionResource(id = R.dimen.major_100)
@@ -304,19 +334,6 @@ private fun DepositsInfo(
                     bottom = dimensionResource(id = R.dimen.major_125)
                 )
         ) {
-            currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
-                Text(
-                    style = MaterialTheme.typography.caption,
-                    text = StringUtils.getQuantityString(
-                        context = LocalContext.current,
-                        quantity = fundsAvailableInDays,
-                        default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
-                        one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
-                    ),
-                    color = colorResource(id = R.color.color_on_surface_medium),
-                )
-            }
-
             if (currencyInfo.nextDeposit != null || currencyInfo.lastDeposit != null) {
                 NextAndLastDeposit(
                     currencyInfo.nextDeposit,
