@@ -125,7 +125,7 @@ class ThemePickerViewModel @Inject constructor(
     private fun removeCurrentThemeFromCarouselItems(
         carouselState: CarouselState,
         currentThemeState: CurrentThemeState
-    ) = if (carouselState is Success && currentThemeState is CurrentThemeState.Success) {
+    ) = if (carouselState is CarouselState.Success && currentThemeState is CurrentThemeState.Success) {
         carouselState.copy(
             carouselItems = carouselState.carouselItems
                 .filter { it is Theme && it.themeId != currentThemeState.themeId }
