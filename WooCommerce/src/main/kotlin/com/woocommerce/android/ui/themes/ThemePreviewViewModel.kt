@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -100,7 +101,11 @@ class ThemePreviewViewModel @Inject constructor(
                 themeRepository.activateTheme(navArgs.themeId).fold(
                     onSuccess = {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
-                        triggerEvent(ThemeUpdatedSuccess)
+                        triggerEvent(
+                            ExitWithResult(
+                                SelectedTheme(navArgs.themeId, viewState.value?.themeName ?: "")
+                            )
+                        )
                     },
                     onFailure = {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
@@ -171,6 +176,11 @@ class ThemePreviewViewModel @Inject constructor(
         val isLoaded: Boolean
     ) : Parcelable
 
+    @Parcelize
+    data class SelectedTheme(
+        val themeId: String,
+        val themeName: String
+    ) : Parcelable
+
     object ContinueStoreCreationWithTheme : MultiLiveEvent.Event()
-    object ThemeUpdatedSuccess : MultiLiveEvent.Event()
 }

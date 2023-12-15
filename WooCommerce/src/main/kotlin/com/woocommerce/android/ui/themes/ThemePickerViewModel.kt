@@ -132,8 +132,8 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
     }
 
-    fun updateCurrentTheme() {
-        loadCurrentTheme()
+    fun onCurrentThemeUpdated(themeId: String, themeName: String) {
+        currentTheme.value = CurrentThemeState.Success(themeId, themeName)
     }
 
     fun onThemeScreenshotFailure(themeName: String, throwable: Throwable) {
