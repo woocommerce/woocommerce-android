@@ -1,0 +1,9 @@
+steps:
+  - label: "Finalize Release"
+    plugins:
+      - automattic/a8c-ci-toolkit#3.0.1
+    command: |
+      .buildkite/commands/configure-environment.sh
+
+      echo '--- :shipit: Finalize release'
+      bundle exec fastlane finalize_release skip_confirm:true

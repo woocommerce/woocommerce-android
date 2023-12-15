@@ -1,0 +1,9 @@
+steps:
+  - label: "Complete Code Freeze"
+    plugins:
+      - automattic/a8c-ci-toolkit#3.0.1
+    command: |
+      .buildkite/commands/configure-environment.sh
+
+      echo '--- :snowflake: Complete code freeze'
+      bundle exec fastlane complete_code_freeze skip_confirm:true
