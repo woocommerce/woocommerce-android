@@ -221,7 +221,7 @@ private fun FundsOverview(
             .padding(
                 start = dimensionResource(id = R.dimen.major_100),
                 end = dimensionResource(id = R.dimen.major_100),
-                top = dimensionResource(id = R.dimen.major_150),
+                top = dimensionResource(id = R.dimen.major_100),
                 bottom = dimensionResource(id = R.dimen.major_100)
             )
     ) {
@@ -327,12 +327,7 @@ private fun DepositsInfo(
     Column {
         Column(
             modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.major_125)
-                )
+                .padding(all = dimensionResource(id = R.dimen.major_100))
         ) {
             LastDeposit(currencyInfo)
 
@@ -402,8 +397,8 @@ private fun Deposit(deposit: PaymentsHubDepositSummaryState.Deposit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(painter = painterResource(
-            id = R.drawable.ic_calendar_16),
+        Icon(
+            painter = painterResource(id = R.drawable.ic_calendar_16),
             contentDescription = null,
             tint = colorResource(id = R.color.color_on_surface)
         )
