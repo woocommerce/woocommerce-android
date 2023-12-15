@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 14:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Ürün</string>
+    <string name="scan_to_update_inventory_quantity_label">Miktar</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Orijinal miktar</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Bir sorun oluştu. Lütfen tekrar deneyin</string>
+    <string name="scan_to_update_inventory_success_snackbar">Miktar güncellendi: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Ürün Ayrıntılarını Görüntüle</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Miktarı Güncelle</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Miktar + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Stok kodlu ürün: %s stok yönetimli değil. Lütfen tekrar deneyin.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Stok kodlu ürün: %s bulunamadı. Lütfen tekrar deneyin.</string>
+    <string name="theme_activation_failed">Tema etkinleştirilemedi, lütfen tekrar deneyin.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Sipariş bildirimleri sesi devre dışı bırakıldı, her yeni satışta \"yazar kasa\" sesini duymak için geri açın.</string>
+    <string name="settings_notifs_enable_chaching_sound">Yazar kasa sesini etkinleştir</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Envanteri güncellemek için barkodu tarayın</string>
+    <string name="cha_ching_sound_test_notification_message">Bu, yazar kasa sesini kontrol etmek için gönderilen test bildirimidir.\nBunu yoksayabilirsiniz.</string>
+    <string name="cha_ching_sound_test_notification_title">Test bildirimi</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TEST SESİ</string>
+    <string name="cha_ching_sound_succcess_snackbar">Her şey hazır! Artık her yeni siparişte \"yazar kasa\" sesini duyacaksınız.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">SESSİZ KALSIN</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">SESİ ETKİNLEŞTİR</string>
+    <string name="cha_ching_sound_issue_dialog_message">Her yeni satışta \"yazar kasa\" sesini duymak için geri açın. Müşterilerinizden gelen siparişlerin bildirimlerini duyun.</string>
+    <string name="cha_ching_sound_issue_dialog_title">Yazar kasa sesi kapalı</string>
+    <string name="order_creation_products_order_count">Sipariş sayısı</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Sipariş toplamının yüzdesi</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Sabit bir tutar</string>
+    <string name="custom_amounts_bottom_sheet_heading">Özel tutarınızı nasıl eklemek istersiniz?</string>
+    <string name="custom_amounts_percentage_label">Sipariş toplamının yüzdesi (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Özel tutarı sil</string>
     <string name="store_creation_use_theme_button">Bu tema ile başla</string>
     <string name="theme_activated_successfully">Tema başarıyla etkinleştirildi</string>
     <string name="theme_preview_theme_name">Tema: %1$s</string>

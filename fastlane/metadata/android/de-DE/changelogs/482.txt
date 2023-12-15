@@ -1,2 +1,0 @@
-16.5:
-In der neuesten Version der WooCommerce-App stehen Stabilitätsverbesserungen im Vordergrund! Außerdem können WooPayments-Benutzer in der Zusammenfassung für Auszahlungen ab sofort nahtlos zwischen Währungen hin- und herwechseln. Führe jetzt ein Upgrade durch und profitiere von einem reibungsloseren WooCommerce-Erlebnis!
