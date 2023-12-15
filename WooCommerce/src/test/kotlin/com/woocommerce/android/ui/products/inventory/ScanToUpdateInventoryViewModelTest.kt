@@ -365,12 +365,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 Result.success(originalProduct)
             )
             whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
-            sut.onBarcodeScanningResult(
-                CodeScannerStatus.Success(
-                    "123",
-                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                )
-            )
             val originalVariation =
                 ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
                     .copy(stockQuantity = originalProduct.stockQuantity, isStockManaged = true)
@@ -388,6 +382,12 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
                 )
             ).thenReturn("Quantity updated")
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
             sut.viewState.test {
                 awaitItem().apply {
                     assertIs<QuickInventoryBottomSheetVisible>(this)
@@ -421,7 +421,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     "${originalProduct.stockQuantity.toInt()} ➡ 999"
                 )
             ).thenReturn("Quantity updated")
-            whenever(variationRepo.getVariationOrNull(any(), any())).thenReturn(originalVariation)
 
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
