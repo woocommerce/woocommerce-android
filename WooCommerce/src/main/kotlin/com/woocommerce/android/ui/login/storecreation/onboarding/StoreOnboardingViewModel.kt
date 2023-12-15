@@ -17,8 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isEligibleForAI
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
@@ -39,7 +37,6 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val selectedSite: SelectedSite,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val shouldShowOnboarding: ShouldShowOnboarding
@@ -81,18 +78,8 @@ class StoreOnboardingViewModel @Inject constructor(
             CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
             WC_PAYMENTS -> OnboardingTaskUi(SetupWooPaymentsTaskRes, isCompleted = task.isComplete)
             PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
-
-            ADD_FIRST_PRODUCT -> OnboardingTaskUi(
-                taskUiResources = AddProductTaskRes,
-                isCompleted = task.isComplete,
-                isLabelVisible = selectedSite.get().isEligibleForAI
-            )
-
-            LOCAL_NAME_STORE -> OnboardingTaskUi(
-                taskUiResources = NameYourStoreTaskRes,
-                isCompleted = task.isComplete
-            )
-
+            ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTaskRes, isCompleted = task.isComplete)
+            LOCAL_NAME_STORE -> OnboardingTaskUi(NameYourStoreTaskRes, isCompleted = task.isComplete)
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -178,7 +165,6 @@ class StoreOnboardingViewModel @Inject constructor(
     data class OnboardingTaskUi(
         val taskUiResources: OnboardingTaskUiResources,
         val isCompleted: Boolean,
-        val isLabelVisible: Boolean = false,
     )
 
     sealed class OnboardingTaskUiResources(
