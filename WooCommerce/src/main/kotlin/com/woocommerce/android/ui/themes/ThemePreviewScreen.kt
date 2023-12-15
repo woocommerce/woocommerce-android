@@ -60,7 +60,6 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.themes.ThemePreviewViewModel.Companion.MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
@@ -237,7 +236,7 @@ private fun DemoSectionsToolbar(
             .wrapContentHeight()
             .padding(start = dimensionResource(id = dimen.major_150))
             .clickable(
-                enabled = state.themePages.size > MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN,
+                enabled = state.shouldShowPagesDropdown,
             ) {
                 coroutineScope.launch {
                     if (modalSheetState.isVisible)
@@ -252,7 +251,7 @@ private fun DemoSectionsToolbar(
             text = stringResource(id = string.theme_preview_title),
             style = MaterialTheme.typography.body1,
         )
-        if (state.themePages.size > MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN)
+        if (state.shouldShowPagesDropdown)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = state.currentPageTitle,
