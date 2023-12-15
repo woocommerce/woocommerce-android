@@ -6,6 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -42,7 +45,8 @@ class ThemePreviewViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val themeRepository: ThemeRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val newStore: NewStore
+    private val newStore: NewStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
@@ -83,7 +87,19 @@ class ThemePreviewViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    init {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_SCREEN_DISPLAYED,
+        )
+    }
+
     fun onPageSelected(demoPage: ThemeDemoPage) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_PAGE_SELECTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_PAGE_PREVIEW to demoPage.title
+            )
+        )
         selectedPage.value = demoPage
     }
 
@@ -92,6 +108,12 @@ class ThemePreviewViewModel @Inject constructor(
     }
 
     fun onActivateThemeClicked() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_START_WITH_THEME_BUTTON_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+            )
+        )
         if (viewState.value?.isFromStoreCreation == true) {
             appPrefsWrapper.saveThemeIdForStoreCreation(newStore.data.siteId!!, navArgs.themeId)
             triggerEvent(ContinueStoreCreationWithTheme)
@@ -100,6 +122,12 @@ class ThemePreviewViewModel @Inject constructor(
                 isActivatingTheme.value = true
                 themeRepository.activateTheme(navArgs.themeId).fold(
                     onSuccess = {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                            )
+                        )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
                         triggerEvent(
                             ExitWithResult(
@@ -108,6 +136,12 @@ class ThemePreviewViewModel @Inject constructor(
                         )
                     },
                     onFailure = {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                            )
+                        )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
                     }
                 )
@@ -118,6 +152,12 @@ class ThemePreviewViewModel @Inject constructor(
 
     fun onPreviewTypeChanged(type: PreviewType) {
         previewType.update { type }
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PREVIEW_LAYOUT_SELECTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_LAYOUT_PREVIEW to type.name.lowercase()
+            )
+        )
     }
 
     private suspend fun Theme.prepareThemeDemoPages(): Flow<List<ThemeDemoPage>> = flow {

@@ -4,6 +4,7 @@ import coil.network.HttpException
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.util.getOrAwaitValue
@@ -29,6 +30,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val crashLogger = mock<CrashLogging>()
 
     private val currentTheme = Theme(
@@ -52,6 +54,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
             savedStateHandle = ThemePickerFragmentArgs(isFromStoreCreation).toSavedStateHandle(),
             themeRepository = themeRepository,
             resourceProvider = resourceProvider,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
             crashLogger = crashLogger
         )
     }
