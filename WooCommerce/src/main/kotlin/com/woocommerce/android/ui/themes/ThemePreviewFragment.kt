@@ -55,15 +55,11 @@ class ThemePreviewFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ThemePreviewViewModel.ContinueStoreCreationWithTheme,
-                is ThemePreviewViewModel.ThemeUpdatedSuccess -> continueStoreCreation()
+                is ThemePreviewViewModel.ThemeUpdatedSuccess -> navigateBackWithNotice(THEME_SELECTED_NOTICE)
 
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
             }
         }
-    }
-
-    private fun continueStoreCreation() {
-        navigateBackWithNotice(THEME_SELECTED_NOTICE)
     }
 }
