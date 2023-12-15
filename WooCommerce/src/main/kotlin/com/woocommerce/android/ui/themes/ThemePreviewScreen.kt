@@ -84,7 +84,7 @@ fun ThemePreviewScreen(
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
             viewModel::onActivateThemeClicked,
-            viewModel::onPreviewTypeChanged
+            viewModel::onPreviewTypeChanged,
         )
     }
 }
@@ -98,7 +98,7 @@ fun ThemePreviewScreen(
     onPageSelected: (ThemeDemoPage) -> Unit,
     onBackNavigationClicked: () -> Unit,
     onActivateThemeClicked: () -> Unit,
-    onPreviewTypeChanged: (PreviewType) -> Unit
+    onPreviewTypeChanged: (PreviewType) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(

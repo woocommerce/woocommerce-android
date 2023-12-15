@@ -7,7 +7,11 @@ import coil.network.HttpException
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Theme
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -26,7 +30,8 @@ class ThemePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val themeRepository: ThemeRepository,
     private val resourceProvider: ResourceProvider,
-    private val crashLogger: CrashLogging
+    private val crashLogger: CrashLogging,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
@@ -48,6 +53,18 @@ class ThemePickerViewModel @Inject constructor(
             currentThemeState = currentThemeState
         )
     }.asLiveData()
+
+    init {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PICKER_SCREEN_DISPLAYED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_THEME_PICKER_SOURCE to when (navArgs.isFromStoreCreation) {
+                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_PROFILER
+                    false -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_SETTINGS
+                }
+            )
+        )
+    }
 
     private fun loadThemes(): Flow<CarouselState> = flow {
         emit(CarouselState.Loading)
@@ -110,8 +127,12 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-    fun onThemeTapped(themeUri: String) {
-        triggerEvent(NavigateToThemePreview(themeUri, navArgs.isFromStoreCreation))
+    fun onThemeTapped(theme: Theme) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
+            properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
+        )
+        triggerEvent(NavigateToThemePreview(theme.themeId, navArgs.isFromStoreCreation))
     }
 
     fun onThemeScreenshotFailure(themeName: String, throwable: Throwable) {

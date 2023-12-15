@@ -100,7 +100,7 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
 private fun ThemePicker(
     modifier: Modifier,
     viewState: ThemePickerViewModel.ViewState,
-    onThemeTapped: (String) -> Unit,
+    onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
     Column(
@@ -193,7 +193,7 @@ private fun Header(
 @Composable
 private fun ColumnScope.Carousel(
     state: CarouselState,
-    onThemeTapped: (String) -> Unit,
+    onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
     when (state) {
@@ -241,7 +241,7 @@ private fun ColumnScope.Error() {
 @Composable
 private fun Carousel(
     items: List<CarouselItem>,
-    onThemeTapped: (String) -> Unit,
+    onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
     LazyRow(
@@ -305,14 +305,14 @@ private fun Message(
 @Composable
 private fun Theme(
     theme: CarouselItem.Theme,
-    onThemeTapped: (String) -> Unit,
+    onThemeTapped: (CarouselItem.Theme) -> Unit,
     onScreenShotFailed: (String, Throwable) -> Unit
 ) {
     val themeModifier = Modifier.width(240.dp)
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
         elevation = dimensionResource(id = R.dimen.minor_50),
-        modifier = themeModifier.clickable { onThemeTapped(theme.themeId) }
+        modifier = themeModifier.clickable { onThemeTapped(theme) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
