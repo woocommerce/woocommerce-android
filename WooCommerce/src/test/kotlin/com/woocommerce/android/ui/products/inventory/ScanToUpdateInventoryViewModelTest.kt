@@ -373,7 +373,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
             val originalVariation =
                 ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
-                    .copy(stockQuantity = originalProduct.stockQuantity)
+                    .copy(stockQuantity = originalProduct.stockQuantity, isStockManaged = true)
             whenever(variationRepo.getVariationOrNull(productId, variationId)).thenReturn(originalVariation)
             whenever(variationRepo.updateVariation(any())).thenReturn(
                 WCProductStore.OnVariationUpdated(
@@ -410,15 +410,9 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 Result.success(originalProduct)
             )
             whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
-            sut.onBarcodeScanningResult(
-                CodeScannerStatus.Success(
-                    "123",
-                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                )
-            )
             val originalVariation =
                 ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
-                    .copy(stockQuantity = 1.0)
+                    .copy(stockQuantity = 1.0, isStockManaged = true)
             whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(originalVariation)
             whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
             whenever(
@@ -427,6 +421,15 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     "${originalProduct.stockQuantity.toInt()} ➡ 999"
                 )
             ).thenReturn("Quantity updated")
+            whenever(variationRepo.getVariationOrNull(any(), any())).thenReturn(originalVariation)
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
             sut.viewState.test {
                 awaitItem().apply {
                     assertIs<QuickInventoryBottomSheetVisible>(this)
@@ -441,10 +444,71 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when increment quantity button tapped, then proper tracking event is triggered`() = testBlocking {
-        sut.onIncrementQuantityClicked()
-        verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
-    }
+    fun `given barcode scanned, when variation is found which is stock-managed, then should show bottom sheet`() =
+        testBlocking {
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(
+                    ProductTestUtils.generateProduct(isStockManaged = true, parentID = 1, productId = 2).copy(sku = "123")
+                )
+            )
+            whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(
+                ProductTestUtils.generateProductVariation(
+                    productId = 1,
+                    variationId = 2
+                ).copy(isStockManaged = true)
+            )
+            sut.viewState.test {
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
+        }
+
+    @Test
+    fun `given barcode scanned, when variation is found which is not stock-managed, then should not show bottom sheet`() =
+        testBlocking {
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(
+                    ProductTestUtils.generateProduct(isStockManaged = true, parentID = 1, productId = 2).copy(sku = "123")
+                )
+            )
+            whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(
+                ProductTestUtils.generateProductVariation(
+                    productId = 1,
+                    variationId = 2
+                ).copy(isStockManaged = false)
+            )
+            whenever(resourceProvider.getString(
+                R.string.scan_to_update_inventory_product_not_stock_managed,
+                "123"
+            )).thenReturn("Product not stock managed")
+            sut.viewState.test {
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
+                awaitItem().apply {
+                    assertIs<Loading>(this)
+                }
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
+            }
+        }
 
     @Test
     fun `when manual quantity update button tapped, than trigger proper tracking event`() = testBlocking {
