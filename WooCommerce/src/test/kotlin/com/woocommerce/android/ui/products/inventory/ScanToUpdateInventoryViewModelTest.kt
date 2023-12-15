@@ -447,7 +447,11 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(
-                    ProductTestUtils.generateProduct(isStockManaged = true, parentID = 1, productId = 2).copy(sku = "123")
+                    ProductTestUtils.generateProduct(
+                        isStockManaged = true,
+                        parentID = 1,
+                        productId = 2
+                    ).copy(sku = "123")
                 )
             )
             whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(
@@ -473,11 +477,15 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given barcode scanned, when variation is found which is not stock-managed, then should not show bottom sheet`() =
+    fun `when variation is found which is not stock-managed, then should not show bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(
-                    ProductTestUtils.generateProduct(isStockManaged = true, parentID = 1, productId = 2).copy(sku = "123")
+                    ProductTestUtils.generateProduct(
+                        isStockManaged = true,
+                        parentID = 1,
+                        productId = 2
+                    ).copy(sku = "123")
                 )
             )
             whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(
@@ -486,10 +494,12 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     variationId = 2
                 ).copy(isStockManaged = false)
             )
-            whenever(resourceProvider.getString(
-                R.string.scan_to_update_inventory_product_not_stock_managed,
-                "123"
-            )).thenReturn("Product not stock managed")
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_product_not_stock_managed,
+                    "123"
+                )
+            ).thenReturn("Product not stock managed")
             sut.viewState.test {
                 sut.onBarcodeScanningResult(
                     CodeScannerStatus.Success(
