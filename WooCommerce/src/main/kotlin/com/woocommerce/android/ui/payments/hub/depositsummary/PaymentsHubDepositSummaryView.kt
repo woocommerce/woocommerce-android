@@ -252,17 +252,6 @@ private fun FundsOverview(
                 fromCache,
                 pageIndex
             )
-
-            Text(
-                style = MaterialTheme.typography.caption,
-                text = StringUtils.getQuantityString(
-                    context = LocalContext.current,
-                    quantity = currencyInfo.pendingBalanceDepositsCount,
-                    default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
-                    one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
-                ),
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
         }
 
         Column(
