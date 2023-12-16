@@ -5,5 +5,5 @@ steps:
     command: |
       .buildkite/commands/configure-environment.sh
 
-      echo '--- :fire: Start new hotfix release'
+      echo '--- :fire: Start New Hotfix Release'
       bundle exec fastlane new_hotfix_release version:${VERSION} skip_confirm:true

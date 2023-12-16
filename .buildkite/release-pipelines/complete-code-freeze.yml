@@ -5,5 +5,8 @@ steps:
     command: |
       .buildkite/commands/configure-environment.sh
 
-      echo '--- :snowflake: Complete code freeze'
+      echo '--- :git: Checkout Release Branch'
+      .buildkite/commands/checkout-release-branch.sh
+
+      echo '--- :snowflake: Complete Code Freeze'
       bundle exec fastlane complete_code_freeze skip_confirm:true
