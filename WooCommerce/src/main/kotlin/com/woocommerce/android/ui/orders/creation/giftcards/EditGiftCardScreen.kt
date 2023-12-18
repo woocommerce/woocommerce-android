@@ -33,10 +33,11 @@ fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
 fun EditGiftCardScreen(
     giftCardValue: String,
     onTextChanged: (String) -> Unit,
-    onDoneClicked: () -> Unit
+    onDoneClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         WCOutlinedTextField(
@@ -44,11 +45,11 @@ fun EditGiftCardScreen(
             onValueChange = onTextChanged,
             label = stringResource(id = R.string.order_creation_gift_card_text_field_hint),
             colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         )
 
         Button(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth(),
             onClick = onDoneClicked
         ) {
