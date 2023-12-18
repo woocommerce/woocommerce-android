@@ -179,19 +179,23 @@ class MainActivityViewModel @Inject constructor(
 
     private fun handlePostStoreCreationTasks() = launch(dispatchers.io) {
         suspend fun showSiteReadyDialog(siteId: Long) = withContext(dispatchers.main) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_DISPLAYED)
             triggerEvent(
                 Event.ShowDialog(
                     titleId = R.string.store_creation_installation_async_dialog_title,
                     messageId = R.string.store_creation_installation_async_dialog_message,
                     positiveButtonId = R.string.store_creation_installation_async_dialog_switch_store,
                     positiveBtnAction = { _, _ ->
+                        analyticsTrackerWrapper.track(
+                            AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_SWITCH_STORE_TAPPED
+                        )
                         changeSiteAndRestart(siteId, RestartActivityForStoreCreation)
                     },
                     negativeButtonId = R.string.cancel
                 )
             )
 
-             prefs.createdStoreSiteId = null
+            prefs.createdStoreSiteId = null
         }
 
         val createdStoreSiteId = prefs.createdStoreSiteId
@@ -202,10 +206,12 @@ class MainActivityViewModel @Inject constructor(
                     // The user has already switched to the new store, so we can clear the createdStoreSiteId
                     prefs.createdStoreSiteId = null
                 }
+
                 siteStore.getSiteBySiteId(createdStoreSiteId).isWooExpressSiteReadyToUse -> {
                     showSiteReadyDialog(createdStoreSiteId)
                     return@launch
                 }
+
                 else -> {
                     observeSiteInstallation(createdStoreSiteId, skipInitialDelay = true)
                         .filter { it is ObserveSiteInstallation.InstallationState.Success }
