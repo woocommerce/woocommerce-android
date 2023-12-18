@@ -1,17 +1,23 @@
-name: ☢️ Trigger Danger Rerun
+name: ☢️ Danger on GHA
 
 on:
   pull_request:
-    types: [edited, review_requested, review_request_removed, labeled, unlabeled, milestoned, demilestoned]
+    types: [opened, edited, review_requested, review_request_removed, labeled, unlabeled, milestoned, demilestoned, synchronize]
 
 jobs:
   dangermattic:
-    if: github.event.number > 0
-    uses: Automattic/dangermattic/.github/workflows/reusable-retry-buildkite-step-on-events.yml@iangmaia/gha-triggering-danger
-    with:
-      org-slug: "automattic"
-      pipeline-slug: "woocommerce-android"
-      retry-step-key: "danger"
-      commit-sha: "${{ github.event.pull_request.head.sha }}"
-    secrets:
-      buildkite-api-token: ${{ secrets.TRIGGER_BK_BUILD_TOKEN }}
+    runs-on: ubuntu-latest
+    env:
+      DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: "📥 Checkout Repo"
+        uses: actions/checkout@v4
+      - name: "💎 Ruby Setup"
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: "☢️ Danger on GHA"
+        run: |
+          echo "--- 🏃 Running Danger: PR Check"
+          bundle exec danger --fail-on-errors=true --remove-previous-comments --danger_id=pr-check
+
