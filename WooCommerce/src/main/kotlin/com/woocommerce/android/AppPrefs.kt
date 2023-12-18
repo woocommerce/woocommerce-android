@@ -126,6 +126,7 @@ object AppPrefs {
         CREATED_STORE_SITE_ID,
         CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
+        NUMBER_OF_PRODUCTS_CREATED_WITH_AI,
     }
 
     /**
@@ -287,6 +288,10 @@ object AppPrefs {
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
+
+    var numberOfProductsCreatedUsingAi: Int
+        get() = getInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, 0)
+        set(value) = setInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

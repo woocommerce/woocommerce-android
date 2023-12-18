@@ -18,17 +18,18 @@
         app:layout_constraintHorizontal_weight="2"
         tools:ignore="UnusedAttribute" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/edit_button"
-        style="@style/Woo.Button.TextButton.Secondary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/edit"
+        android:layout_width="@dimen/major_150"
+        android:layout_height="@dimen/major_150"
+        android:layout_margin="@dimen/major_100"
+        android:padding="@dimen/minor_25"
         android:visibility="gone"
+        android:src="@drawable/ic_edit_pencil"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/barcode_icon"
