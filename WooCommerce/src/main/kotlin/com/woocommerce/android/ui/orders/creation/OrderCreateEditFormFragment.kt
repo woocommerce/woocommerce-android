@@ -10,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -65,6 +67,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsView
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCard
 import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCardLoading
 import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
@@ -364,7 +368,17 @@ class OrderCreateEditFormFragment :
         }
 
         viewModel.totalsData.observe(viewLifecycleOwner) {
-
+            when (it) {
+                TotalsSectionsState.Hidden -> binding.totalsSection.hide()
+                is TotalsSectionsState.Shown -> {
+                    binding.totalsSection.show()
+                    binding.totalsSection.apply {
+                        setContent {
+                            OrderCreateEditTotalsView(state = it)
+                        }
+                    }
+                }
+            }
         }
 
         if (isCustomAmountsFeatureFlagEnabled()) {

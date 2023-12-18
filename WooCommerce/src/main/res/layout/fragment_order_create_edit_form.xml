@@ -111,7 +111,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/totals_section"
-        tools:composableName="com.woocommerce.android.ui.orders.creation.views.OrderCreateEditTotalsSectionViewKt"
+        tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsViewKt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:visibility="visible"
