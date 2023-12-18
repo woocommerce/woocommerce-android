@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -52,7 +51,7 @@ class SimplePaymentsViewModelTests : BaseUnitTest() {
         SimplePaymentsFragmentArgs(
             order = testOrder,
             paymentType = PaymentType.SIMPLE
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
     private fun initViewModel() {
         viewModel = SimplePaymentsViewModel(savedState, simplePaymentsRepository, networkStatus, mock())

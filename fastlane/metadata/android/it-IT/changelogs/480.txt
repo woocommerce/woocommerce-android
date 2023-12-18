@@ -1,2 +1,0 @@
-16.4:
-Siamo felici di presentare alcune nuove funzionalità. Il nostro ultimo aggiornamento permette di addebitare le imposte per gli importi personalizzati e di impostare la spedizione singola per i prodotti in abbonamento. Puoi anche impostare i prodotti in abbonamento come "prodotti virtuali". Inoltre, abbiamo aggiunto una funzionalità dell'IA che genera un messaggio di ringraziamento sulla schermata dei dettagli dell'ordine completato. Goditi la nostra nuova e migliorata app WooCommerce.

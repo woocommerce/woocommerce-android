@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.RequestResult
@@ -64,7 +63,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     }
 
     private var savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = false).initSavedStateHandle()
+        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = false).toSavedStateHandle()
 
     private val parameterRepository: ParameterRepository = mock()
     private val generateVariationCandidates: GenerateVariationCandidates = mock()

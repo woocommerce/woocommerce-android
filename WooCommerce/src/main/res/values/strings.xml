@@ -555,6 +555,7 @@
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_add_gift_card">Add gift card</string>
     <string name="order_creation_select_coupon">Select a coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
@@ -645,6 +646,8 @@
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+
     <!--
         Domains
     -->
@@ -1209,9 +1212,11 @@
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
     <string name="order_refunds_fees_refund">Fees refund</string>
+    <string name="order_refunds_custom_amount_refund">Custom amount refund</string>
     <string name="order_refunds_select_quantity">Select quantity</string>
     <string name="order_refunds_refund_shipping">Refund shipping</string>
     <string name="order_refunds_refund_fees">Refund fees</string>
+    <string name="order_refunds_refund_custom_amount">Refund Custom Amount</string>
     <string name="order_refunds_refund_in_progress">Refund in progress, please wait…</string>
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
@@ -1301,8 +1306,8 @@
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_settings_header">SETTINGS</string>
-    <string name="card_reader_enable_pay_in_person">Pay in Person</string>
-    <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pay In Person</string>
+    <string name="card_reader_enable_pay_in_person_description">The Pay In Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1662,13 +1667,14 @@
 
     <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_contact_us">Need some help? &lt;a href=\'\'&gt;Contact us&lt;/a&gt;</string>
 
     <string name="card_reader_onboarding_generic_error_header">Unable to verify In-Person Payments for this store</string>
     <string name="card_reader_onboarding_generic_error_hint">We\'re sorry, we were unable to verify In-Person Payments for this store</string>
 
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Add Pay in Person to your checkout</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">A "Pay in Person" option on your checkout lets you accept card or cash payments on collection or delivery.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay in Person</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Do you want to add Pay In Person to your web checkout?</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Enabling Pay In Person lets customer pay you for online orders at delivery via cash or card.\n\nOrders can still be created manually without enabling this feature.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay In Person</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Failed to enable cash on delivery. Please try again later.</string>
 
     <!--
@@ -2033,6 +2039,10 @@
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
+    <string name="product_creation_survey_title">We value your input!</string>
+    <string name="product_creation_survey_description">You\'ve used our AI-assisted feature to add products multiple times now. We\'d love to hear your thoughts to make it even better.</string>
+    <string name="product_creation_survey_button_open">Start the Survey</string>
+    <string name="product_creation_survey_button_skip">Skip</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -2248,12 +2258,8 @@
     <string name="settings_notifs">Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
-    <string name="settings_notifs_orders">Orders</string>
-    <string name="settings_notifs_orders_detail">Get alerts when new orders come in</string>
-    <string name="settings_notifs_tone">Tone</string>
-    <string name="settings_notifs_tone_detail">Play Cha-Ching sound on new order</string>
-    <string name="settings_notifs_reviews">Product reviews</string>
-    <string name="settings_notifs_reviews_detail">Get alerts for new product reviews</string>
+    <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -3389,11 +3395,14 @@
     Store theme
     -->
     <string name="theme_picker_title">Choose a theme</string>
+    <string name="theme_picker_settings_title">Try a new look</string>
+    <string name="theme_picker_current_theme_title">Current theme</string>
     <string name="theme_picker_description">You can always change it later in the settings.</string>
     <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
     <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
-    <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
-    <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
     <string name="theme_picker_error_title">An error occurred</string>
     <string name="theme_picker_error_message">Unable to load themes at this time.</string>
     <string name="theme_preview_title">Preview</string>
@@ -3403,7 +3412,11 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_preview_type_mobile">Mobile</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
+    <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
 
     <!--
     Store onboarding
@@ -3880,6 +3893,7 @@
     <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
     <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
     <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Update Quantity Undone</string>
     <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
     <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
     <string name="scan_to_update_inventory_quantity_label">Quantity</string>
@@ -3891,6 +3905,7 @@
     <string name="save_configuration">Save configuration</string>
     <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
     <string name="configuration_required">Configuration required</string>
+    <string name="configuration_complete">Configuration complete</string>
     <string name="configuration_quantity_item">%d item</string>
     <string name="configuration_quantity_item_plural">%d items</string>
     <string name="configuration_quantity_between"> between %1$s and %2$s items </string>

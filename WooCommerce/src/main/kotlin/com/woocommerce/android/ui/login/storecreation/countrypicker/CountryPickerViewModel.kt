@@ -86,7 +86,7 @@ class CountryPickerViewModel @Inject constructor(
             profilerAnswers = newStore.data.profilerData
         )
 
-        triggerEvent(NavigateToSummaryStep)
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onCurrentCountryClicked() {
@@ -102,5 +102,5 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
-    object NavigateToSummaryStep : MultiLiveEvent.Event()
+    object NavigateToNextStep : MultiLiveEvent.Event()
 }

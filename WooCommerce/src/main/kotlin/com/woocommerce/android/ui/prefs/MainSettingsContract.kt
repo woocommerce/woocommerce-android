@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.base.BaseView
 
 interface MainSettingsContract {
     interface Presenter : BasePresenter<View> {
+        val isChaChingSoundEnabled: Boolean
         fun getUserDisplayName(): String
         fun getStoreDomainName(): String
         fun hasMultipleStores(): Boolean
@@ -13,6 +14,7 @@ interface MainSettingsContract {
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
         fun setupOnboardingListVisibilitySetting()
+        fun onNotificationsClicked()
 
         val isDomainOptionVisible: Boolean
         val isCloseAccountOptionVisible: Boolean
@@ -21,6 +23,7 @@ interface MainSettingsContract {
 
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
+        fun showNotificationsSettingsScreen()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()

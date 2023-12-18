@@ -58,7 +58,5 @@ class NewStore @Inject constructor() {
         val industryGroupKey: String? = null,
         val userCommerceJourneyKey: String? = null,
         val eCommercePlatformKeys: List<String> = emptyList(),
-        val challengeKey: String? = null,
-        val featuresKey: String? = null,
     ) : Parcelable
 }

@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
@@ -39,6 +40,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class ProductListViewModelTest : BaseUnitTest() {
@@ -48,6 +50,8 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val wooCommerceStore: WooCommerceStore = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -65,7 +69,9 @@ class ProductListViewModelTest : BaseUnitTest() {
                 productRepository,
                 networkStatus,
                 mediaFileUploadHandler,
-                analyticsTracker
+                analyticsTracker,
+                selectedSite,
+                wooCommerceStore
             )
         )
     }

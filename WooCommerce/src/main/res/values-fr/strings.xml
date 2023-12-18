@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 11:54:05+0000
+Translation-Revision-Date: 2023-12-13 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produit</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantité</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Quantité initiale</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Un problème est survenu. Veuillez réessayer</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantité mise à jour : %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Voir les détails du produit</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Mettre à jour la quantité</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantité + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Produit avec UGS : %s n’est pas géré en stock. Veuillez réessayer.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Le produit avec l’UGS « %s » n’a pas été trouvé. Veuillez réessayer.</string>
+    <string name="theme_activation_failed">Échec de l’activation du thème, veuillez réessayer !</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Le son des notifications de commandes a été désactivé, réactivez-le pour entendre « Ke-tching » à chaque nouvelle vente.</string>
+    <string name="settings_notifs_enable_chaching_sound">Activer le son Ke-tching</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scanner le code-barres pour mettre à jour l’inventaire</string>
+    <string name="cha_ching_sound_test_notification_message">Ceci est une notification test pour vérifier le son Ke-tching.\nVous pouvez l’effacer.</string>
+    <string name="cha_ching_sound_test_notification_title">Notification test</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">SON TEST</string>
+    <string name="cha_ching_sound_succcess_snackbar">Tout est prêt ! Le « Ke-tching » retentira à chaque nouvelle commande.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">MODE SILENCIEUX</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ACTIVER LE SON</string>
+    <string name="cha_ching_sound_issue_dialog_message">Réactivez-le pour entendre « Ke-tching » à chaque nouvelle vente. Soyez en phase avec les commandes de vos clients !</string>
+    <string name="cha_ching_sound_issue_dialog_title">Son Ke-tching désactivé</string>
+    <string name="order_creation_products_order_count">Nombre de commandes</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Pourcentage du total de la commande</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Montant fixe</string>
+    <string name="custom_amounts_bottom_sheet_heading">Comment souhaitez-vous ajouter votre montant personnalisé ?</string>
+    <string name="custom_amounts_percentage_label">Pourcentage du total de la commande (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Supprimer le montant personnalisé</string>
+    <string name="store_creation_use_theme_button">Commencer avec ce thème</string>
+    <string name="theme_activated_successfully">Thème activé avec succès</string>
+    <string name="theme_preview_theme_name">Thème : %1$s</string>
+    <string name="theme_preview_activate_theme_button">Utiliser ce thème</string>
+    <string name="theme_preview_bottom_sheet_home_section">Accueil</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Toucher pour prévisualiser</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Pages sur ce modèle</string>
+    <string name="theme_preview_title">Aperçu</string>
+    <string name="theme_picker_error_message">Impossible de charger des thèmes pour l’instant.</string>
+    <string name="theme_picker_error_title">Une erreur s’est produite</string>
+    <string name="theme_picker_carousel_info_item_description">Lorsque votre boutique est configurée, trouvez le thème parfait dans la boutique de thèmes WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">Vous cherchez le truc en plus ?</string>
+    <string name="theme_picker_description">Vous pouvez toujours le changer plus tard dans les réglages.</string>
+    <string name="theme_picker_title">Choisir un thème</string>
+    <string name="store_creation_theme_activation_error">Une erreur s’est produite lors de l’activation du thème sélectionné, veuillez réessayer !</string>
+    <string name="store_creation_theme_activation_loading">Activation du thème de votre boutique…</string>
+    <string name="settings_themes">Thèmes</string>
+    <string name="product_filter_explore_plugin">Explorez !</string>
     <string name="configuration_required">Configuration requise</string>
     <string name="blaze_overflow_menu_hide_blaze">Masquer Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">Mot de remerciement généré par IA</string>
@@ -2955,12 +3003,6 @@ Language: fr
     <string name="wc_approve">Approuver</string>
     <string name="wc_view_the_product_external">Voir le produit</string>
     <string name="support_help">Aide et assistance</string>
-    <string name="settings_notifs_reviews_detail">Obtenir des alertes concernant les nouveaux avis sur les produits</string>
-    <string name="settings_notifs_reviews">Avis sur le produit</string>
-    <string name="settings_notifs_tone_detail">Exécuter le son Cha-Ching lors d’une nouvelle commande</string>
-    <string name="settings_notifs_tone">Tonalité</string>
-    <string name="settings_notifs_orders_detail">Obtenir des alertes à l’arrivée de nouvelles commandes</string>
-    <string name="settings_notifs_orders">Commandes</string>
     <string name="settings_notifs_device_detail">Sons, urgence et point de notification</string>
     <string name="settings_notifs_device">Gérer les notifications</string>
     <string name="settings_notifs">Notifications</string>

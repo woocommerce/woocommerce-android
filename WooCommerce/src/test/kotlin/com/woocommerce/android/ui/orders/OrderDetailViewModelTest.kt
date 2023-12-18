@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -110,7 +109,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
@@ -1921,7 +1920,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val newSavedState = OrderDetailFragmentArgs(
                 orderId = ORDER_ID,
                 allOrderIds = arrayOf(ORDER_ID, 2).toLongArray()
-            ).initSavedStateHandle()
+            ).toSavedStateHandle()
 
             createViewModel(newSavedState)
 
@@ -1936,7 +1935,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newSavedState = OrderDetailFragmentArgs(
             orderId = ORDER_ID,
             allOrderIds = arrayOf(2, ORDER_ID).toLongArray()
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         createViewModel(newSavedState)
 
@@ -1951,7 +1950,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newSavedState = OrderDetailFragmentArgs(
             orderId = ORDER_ID,
             allOrderIds = arrayOf(2, ORDER_ID, 3).toLongArray()
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         createViewModel(newSavedState)
 
@@ -1966,7 +1965,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newSavedState = OrderDetailFragmentArgs(
             orderId = ORDER_ID,
             allOrderIds = arrayOf(2L, 3L).toLongArray()
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         createViewModel(newSavedState)
 
@@ -1980,7 +1979,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val newSavedState = OrderDetailFragmentArgs(
             orderId = ORDER_ID,
             allOrderIds = arrayOf(ORDER_ID).toLongArray()
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         createViewModel(newSavedState)
 

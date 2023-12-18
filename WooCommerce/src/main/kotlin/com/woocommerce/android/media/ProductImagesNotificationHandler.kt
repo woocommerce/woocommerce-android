@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploa
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
 import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.SystemVersionUtils
 import org.wordpress.android.util.SystemServiceFactory
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -198,16 +197,14 @@ class ProductImagesNotificationHandler @Inject constructor(
      * Ensures the notification channel for image uploads is created - only required for Android O+
      */
     private fun createChannel() {
-        if (SystemVersionUtils.isAtLeastO()) {
-            // first check if the channel already exists
-            notificationManager.getNotificationChannel(CHANNEL_ID)?.let {
-                return
-            }
-
-            val channelName = context.getString(R.string.product_images_upload_channel_title)
-            val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
+        // first check if the channel already exists
+        notificationManager.getNotificationChannel(CHANNEL_ID)?.let {
+            return
         }
+
+        val channelName = context.getString(R.string.product_images_upload_channel_title)
+        val channel = NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun removeForegroundNotification() {

@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 13:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">المنتج</string>
+    <string name="scan_to_update_inventory_quantity_label">الكمية</string>
+    <string name="scan_to_update_inventory_original_quantity_label">الكمية الأصلية</string>
+    <string name="scan_to_update_inventory_failure_snackbar">حدث خطأ. ترجى المحاولة مجددًا</string>
+    <string name="scan_to_update_inventory_success_snackbar">تم تحديث الكمية: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">عرض تفاصيل المنتج</string>
+    <string name="scan_to_update_inventory_update_quantity_button">تحديث الكمية</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">الكمية + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">المنتج المزوّد بوحدة SKU: لا تتم إدارة %s في المخزون. ترجى المحاولة مجددًا.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">المنتج المزوّد بوحدة SKU: لم يتم العثور على %s. ترجى المحاولة مجددًا.</string>
+    <string name="theme_activation_failed">فشل تفعيل القالب. ترجى المحاولة مجددًا!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">تم تعطيل صوت تنبيهات الطلبات، أعد تشغيله لسماع \"تشا تشينغ\" مع كل عملية بيع جديدة.</string>
+    <string name="settings_notifs_enable_chaching_sound">تمكين صوت تشا تشينغ</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">مسح الرمز الشريطي ضوئيًا لتحديث المخزون</string>
+    <string name="cha_ching_sound_test_notification_message">هذا مجرد تنبيه اختباري للتحقق من صوت تشا تشينغ.\nيمكنك سحبه بعيدًا.</string>
+    <string name="cha_ching_sound_test_notification_title">تنبيه اختباري</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">صوت اختباري</string>
+    <string name="cha_ching_sound_succcess_snackbar">كل شيء جاهز! سيصدر صوت \"تشا تشينغ\" الآن مع كل طلب جديد.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">البقاء صامت</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">تمكين الصوت</string>
+    <string name="cha_ching_sound_issue_dialog_message">أعد تشغيله لسماع \"تشا تشينغ\" مع كل عملية بيع جديدة. ابق على دراية بطلبات عملائك! </string>
+    <string name="cha_ching_sound_issue_dialog_title">تم إيقاف تشغيل صوت تشا تشينغ</string>
+    <string name="order_creation_products_order_count">عدد الطلبات</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">نسبة مئوية من إجمالي الطلبات</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">مبلغ ثابت</string>
+    <string name="custom_amounts_bottom_sheet_heading">كيف تريد إضافة مبلغك المخصص؟</string>
+    <string name="custom_amounts_percentage_label">نسبة مئوية من إجمالي الطلبات (⁦%1$s⁩)</string>
+    <string name="custom_amounts_delete_custom_amount">حذف المبلغ المخصص</string>
+    <string name="store_creation_use_theme_button">البدء باستخدام هذا القالب</string>
+    <string name="theme_activated_successfully">تم تفعيل القالب بنجاح</string>
+    <string name="theme_preview_theme_name">القالب: ⁦%1$s⁩</string>
+    <string name="theme_preview_activate_theme_button">استخدام هذا القالب</string>
+    <string name="theme_preview_bottom_sheet_home_section">الصفحة الرئيسية</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">الضغط للعرض</string>
+    <string name="theme_preview_bottom_sheet_pages_title">الصحفات الموجودة على هذا القالب</string>
+    <string name="theme_preview_title">معاينة</string>
+    <string name="theme_picker_error_message">يتعذر تحميل القوالب في الوقت الحالي.</string>
+    <string name="theme_picker_error_title">حدث خطأ</string>
+    <string name="theme_picker_carousel_info_item_description">بمجرد إعداد متجرك، اعثر على قالبك المثالي في متجر قوالب WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">هل تبحث عن المزيد؟</string>
+    <string name="theme_picker_description">يمكنك دومًا تغييره لاحقًا ضمن الإعدادات.</string>
+    <string name="theme_picker_title">اختيار قالب</string>
+    <string name="store_creation_theme_activation_error">حدث خطأ في أثناء تفعيل القالب الذي حددته، يرجى المحاولة مجددًا!</string>
+    <string name="store_creation_theme_activation_loading">جارٍ تفعيل قالب متجرك…</string>
+    <string name="settings_themes">القوالب</string>
+    <string name="product_filter_explore_plugin">استكشاف!</string>
     <string name="configuration_required">التكوين مطلوب</string>
     <string name="blaze_overflow_menu_hide_blaze">إخفاء Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">أنشأ الذكاء الاصطناعي ملحوظة \"تقديم الشكر إليك\"</string>
@@ -2955,12 +3003,6 @@ Language: ar
     <string name="wc_approve">موافقة</string>
     <string name="wc_view_the_product_external">عرض المنتج</string>
     <string name="support_help">المساعدة والدعم</string>
-    <string name="settings_notifs_reviews_detail">اتسالم تنبيهات لمراجعات المنتجات الجديدة</string>
-    <string name="settings_notifs_reviews">مراجعات المنتجات</string>
-    <string name="settings_notifs_tone_detail">تشغيل صوت \"تشا تشينج\" عند وصول طلب جديد</string>
-    <string name="settings_notifs_tone">نغمة</string>
-    <string name="settings_notifs_orders_detail">استلام التنبيهات عندما تظهر طلبات جديدة</string>
-    <string name="settings_notifs_orders">الطلبات</string>
     <string name="settings_notifs_device_detail">الأصوات والضرورة ونقطة الإخطار</string>
     <string name="settings_notifs_device">إدارة الإخطارات</string>
     <string name="settings_notifs">الإخطارات</string>

@@ -211,6 +211,42 @@ object OrderTestUtils {
         )
     }
 
+    fun generateOrderWithCustomAmount(): OrderEntity {
+        val feeLine =
+            "[{\n" +
+                "    \"id\":1,\n" +
+                "    \"name\":\"A test\",\n" +
+                "    \"product_id\":15,\n" +
+                "    \"quantity\":1,\n" +
+                "    \"tax_class\":\"\",\n" +
+                "    \"subtotal\":\"10.00\",\n" +
+                "    \"subtotal_tax\":\"0.00\",\n" +
+                "    \"total\":\"10.00\",\n" +
+                "    \"total_tax\":\"0.00\",\n" +
+                "    \"taxes\":[],\n" +
+                "    \"meta_data\":[],\n" +
+                "    \"sku\":null,\n" +
+                "    \"price\":10\n" +
+                "  }]"
+
+        return OrderEntity(
+            billingFirstName = "Carissa",
+            billingLastName = "King",
+            currency = "USD",
+            dateCreated = "2018-02-02T16:11:13Z",
+            localSiteId = LocalOrRemoteId.LocalId(1),
+            orderId = 1,
+            number = "55",
+            status = "complete",
+            total = "106.00",
+            shippingTotal = "10.00",
+            lineItems = "",
+            refundTotal = -BigDecimal.TEN,
+            feeLines = feeLine,
+            shippingLines = ""
+        )
+    }
+
     fun generateOrderWithMultipleShippingLines(): OrderEntity {
         return OrderEntity(
             billingFirstName = "Carissa",

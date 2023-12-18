@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionViewModel.ViewState
@@ -27,7 +26,7 @@ class ShippingLabelAddressSuggestionViewModelTest : BaseUnitTest() {
     )
 
     private val savedState = ShippingLabelAddressSuggestionFragmentArgs(enteredAddress, suggestedAddress, ORIGIN)
-        .initSavedStateHandle()
+        .toSavedStateHandle()
 
     private lateinit var viewModel: ShippingLabelAddressSuggestionViewModel
 

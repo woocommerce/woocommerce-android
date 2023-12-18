@@ -1,2 +1,0 @@
-16.4:
-Wir freuen uns, einige neue Funktionen vorstellen zu können! Mit unserem neuesten Update kannst du Steuern auf individuelle Beträge erheben und eine einmalige Versandgebühr für Abonnementprodukte festlegen. Du kannst Abonnementprodukte auch als „virtuelle Produkte“ definieren. Außerdem haben wir eine KI-Funktion hinzugefügt, die eine Dankeschön-Nachricht auf dem Bildschirm nach Abschluss der Bestellung erstellt. Viel Spaß mit unseren neuen und verbesserten WooCommerce-App!

@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 09:54:04+0000
+Translation-Revision-Date: 2023-12-13 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produk</string>
+    <string name="scan_to_update_inventory_quantity_label">Jumlah</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Jumlah awal</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Terjadi masalah. Coba lagi</string>
+    <string name="scan_to_update_inventory_success_snackbar">Jumlah diperbarui: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Lihat Rincian Produk</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Perbarui Jumlah</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Jumlah + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Produk dengan SKU: %s tidak dikelola dalam stok. Coba lagi.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Produk dengan SKU: %s tidak ditemukan. Coba lagi.</string>
+    <string name="theme_activation_failed">Gagal mengaktifkan tema, coba lagi.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Bunyi pemberitahuan pesanan telah dinonaktifkan. Hidupkan kembali supaya bunyi \'cring cring\' terdengar setiap kali ada penjualan baru.</string>
+    <string name="settings_notifs_enable_chaching_sound">Aktifkan bunyi Cring Cring</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Pindai barcode untuk memperbarui inventaris</string>
+    <string name="cha_ching_sound_test_notification_message">Ini hanyalah pemberitahuan uji coba untuk memeriksa bunyi Cring Cring.\nAnda dapat menggesernya.</string>
+    <string name="cha_ching_sound_test_notification_title">Pemberitahuan uji coba</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">BUNYI UJI COBA</string>
+    <string name="cha_ching_sound_succcess_snackbar">Semua sudah siap! Bunyi \'cring cring\' akan terdengar setiap kali ada pesanan baru.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">TETAP SENYAP</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">AKTIFKAN BUNYI</string>
+    <string name="cha_ching_sound_issue_dialog_message">Hidupkan kembali supaya bunyi \'cring cring\' terdengar setiap kali ada penjualan baru. Teruslah seirama dengan pesanan pelanggan Anda!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Bunyi cring cring mati</string>
+    <string name="order_creation_products_order_count">Jumlah pesanan</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Persentase dari total pesanan</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Jumlah tetap</string>
+    <string name="custom_amounts_bottom_sheet_heading">Bagaimana Anda ingin menambahkan jumlah kustom?</string>
+    <string name="custom_amounts_percentage_label">Persentase dari total pesanan (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Hapus jumlah kustom</string>
+    <string name="store_creation_use_theme_button">Memulai dengan tema ini</string>
+    <string name="theme_activated_successfully">Tema berhasil diaktifkan</string>
+    <string name="theme_preview_theme_name">Tema: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Gunakan tema ini</string>
+    <string name="theme_preview_bottom_sheet_home_section">Beranda</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Ketuk untuk melihat</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Halaman dengan templat ini</string>
+    <string name="theme_preview_title">Pratinjau</string>
+    <string name="theme_picker_error_message">Tidak dapat memuat tema saat ini.</string>
+    <string name="theme_picker_error_title">Terjadi kesalahan</string>
+    <string name="theme_picker_carousel_info_item_description">Setelah menyiapkan toko Anda, temukan tema yang ideal di Toko Tema WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">Mencari lainnya?</string>
+    <string name="theme_picker_description">Anda bebas mengubahnya di pengaturan kapan saja.</string>
+    <string name="theme_picker_title">Pilih tema</string>
+    <string name="store_creation_theme_activation_error">Terjadi kesalahan saat mengaktifkan tema yang dipilih. Coba lagi.</string>
+    <string name="store_creation_theme_activation_loading">Mengaktifkan tema toko Anda…</string>
+    <string name="settings_themes">Tema</string>
+    <string name="product_filter_explore_plugin">Telusuri!</string>
     <string name="configuration_required">Konfigurasi diperlukan</string>
     <string name="blaze_overflow_menu_hide_blaze">Sembunyikan Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">Ucapan terima kasih yang dibuat AI</string>
@@ -2955,12 +3003,6 @@ Language: id
     <string name="wc_approve">Setujui</string>
     <string name="wc_view_the_product_external">Tampilkan produk</string>
     <string name="support_help">Bantuan &amp; dukungan</string>
-    <string name="settings_notifs_reviews_detail">Dapatkan pemberitahuan untuk ulasan produk baru</string>
-    <string name="settings_notifs_reviews">Tinjauan produk</string>
-    <string name="settings_notifs_tone_detail">Mainkan suara Cha-Ching saat ada pesanan baru</string>
-    <string name="settings_notifs_tone">Nada</string>
-    <string name="settings_notifs_orders_detail">Dapatkan pemberitahuan saat ada pesanan baru</string>
-    <string name="settings_notifs_orders">Pesanan</string>
     <string name="settings_notifs_device_detail">Suara, tingkat kepentingan, dan titik pemberitahuan</string>
     <string name="settings_notifs_device">Kelola pemberitahuan</string>
     <string name="settings_notifs">Pemberitahuan</string>

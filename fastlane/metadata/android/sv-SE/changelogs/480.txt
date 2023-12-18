@@ -1,2 +1,0 @@
-16.4:
-Vi är glada över att kunna presentera några nya funktioner! Med vår senaste uppdatering kan du debitera moms för anpassade belopp och ange engångsfrakt för prenumerationsprodukter. Du kan också ange prenumerationsprodukter som "virtuella produkter". Dessutom har vi lagt till en AI-funktion som genererar ett tackbrev på skärmen med uppgifter om den slutförda ordern. Mycket nöje med vår nya och förbättrade WooCommerce-app!

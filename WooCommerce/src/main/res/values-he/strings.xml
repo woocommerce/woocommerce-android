@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 15:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">מוצר</string>
+    <string name="scan_to_update_inventory_quantity_label">כמות</string>
+    <string name="scan_to_update_inventory_original_quantity_label">כמות מקורית</string>
+    <string name="scan_to_update_inventory_failure_snackbar">משהו השתבש. יש לנסות שוב</string>
+    <string name="scan_to_update_inventory_success_snackbar">הכמות עודכנה: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">להציג פרטי המוצר</string>
+    <string name="scan_to_update_inventory_update_quantity_button">לעדכן כמות</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">כמות + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">מוצר עם SKU: ‏%s לא מנוהל במלאי. יש לנסות שוב.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">מוצר עם SKU: ‏%s לא נמצא. יש לנסות שוב.</string>
+    <string name="theme_activation_failed">הפעלתה של ערכת העיצוב נכשלה, יש לנסות שוב!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">צליל ההודעות של ההזמנות הושבת. יש להפעיל אותו מחדש כדי לשמוע צליל של קופה רושמת כל פעם שמבוצעת מכירה חדשה.</string>
+    <string name="settings_notifs_enable_chaching_sound">להפעיל את צליל הקופה הרושמת</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">לסרוק את הברקוד לעדכון המלאי</string>
+    <string name="cha_ching_sound_test_notification_message">זהו רק ניסיון כדי לבדוק את צליל הקופה הרושמת.\nאפשר להחליק כדי להפסיק את הצליל.</string>
+    <string name="cha_ching_sound_test_notification_title">הודעת בדיקה</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">לבדוק את הצליל</string>
+    <string name="cha_ching_sound_succcess_snackbar">הכול מוכן! צליל הקופה הרושמת יופעל כעת בכל הזמנה חדשה.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">להשאיר על שקט</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">להפעיל את הצליל</string>
+    <string name="cha_ching_sound_issue_dialog_message">יש להפעיל את הצליל מחדש כדי לשמוע צליל של קופה רושמת כל פעם שמבוצעת מכירה חדשה. להפעיל צליל משמח בכל פעם שהלקוחות מבצעים הזמנה!</string>
+    <string name="cha_ching_sound_issue_dialog_title">צליל הקופה הרושמת מושבת</string>
+    <string name="order_creation_products_order_count">מספר הזמנות</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">אחוז מהסכום הכולל של ההזמנה</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">סכום קבוע</string>
+    <string name="custom_amounts_bottom_sheet_heading">איך ברצונך להוסיף את הסכום בהתאמה אישית?</string>
+    <string name="custom_amounts_percentage_label">אחוז מהסכום הכולל של ההזמנה (⁦%1$s⁩)</string>
+    <string name="custom_amounts_delete_custom_amount">למחוק סכום בהתאמה אישית</string>
+    <string name="store_creation_use_theme_button">להתחיל עם ערכת עיצוב זאת</string>
+    <string name="theme_activated_successfully">הפעלת ערכת העיצוב בוצעה בהצלחה</string>
+    <string name="theme_preview_theme_name">ערכת עיצוב: ⁦%1$s⁩</string>
+    <string name="theme_preview_activate_theme_button">להשתמש בערכת עיצוב זו</string>
+    <string name="theme_preview_bottom_sheet_home_section">עמוד הבית</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">להקיש כדי להציג</string>
+    <string name="theme_preview_bottom_sheet_pages_title">עמודים בתבנית זו</string>
+    <string name="theme_preview_title">תצוגה מקדימה</string>
+    <string name="theme_picker_error_message">כרגע לא ניתן לטעון ערכות עיצוב.</string>
+    <string name="theme_picker_error_title">אירעה שגיאה</string>
+    <string name="theme_picker_carousel_info_item_description">לאחר הגדרת החנות אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">יש משהו נוסף שמעניין אותך?</string>
+    <string name="theme_picker_description">תמיד אפשר להחליף ערכה בהמשך, דרך ההגדרות.</string>
+    <string name="theme_picker_title">לבחור ערכת עיצוב</string>
+    <string name="store_creation_theme_activation_error">שגיאה בעת ההפעלה של ערכת העיצוב שבחרת, נא לנסות שוב!</string>
+    <string name="store_creation_theme_activation_loading">הפעלת ערכת העיצוב של החנות שלך בביצוע…</string>
+    <string name="settings_themes">ערכות עיצוב</string>
+    <string name="product_filter_explore_plugin">לחקור!</string>
     <string name="configuration_required">נדרשת הגדרת תצורה</string>
     <string name="blaze_overflow_menu_hide_blaze">להסתיר את Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">פתק תודות שמופק על ידי בינה מלאכותית</string>
@@ -2955,12 +3003,6 @@ Language: he_IL
     <string name="wc_approve">אישור</string>
     <string name="wc_view_the_product_external">הצגת המוצר</string>
     <string name="support_help">עזרה ותמיכה</string>
-    <string name="settings_notifs_reviews_detail">קבלת התראות על ביקורות חדשות למוצר</string>
-    <string name="settings_notifs_reviews">ביקורות על מוצר</string>
-    <string name="settings_notifs_tone_detail">הפעלת אפקט קולי של קופה רושמת בביצוע הזמנה חדשה</string>
-    <string name="settings_notifs_tone">צליל</string>
-    <string name="settings_notifs_orders_detail">קבלת התראות בביצוע של הזמנות חדשות</string>
-    <string name="settings_notifs_orders">הזמנות</string>
     <string name="settings_notifs_device_detail">קולות, דחיפות ונקודה לציון הודעות</string>
     <string name="settings_notifs_device">ניהול הודעות</string>
     <string name="settings_notifs">הודעות</string>

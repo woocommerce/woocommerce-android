@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-28 13:54:04+0000
+Translation-Revision-Date: 2023-12-13 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Producto</string>
+    <string name="scan_to_update_inventory_quantity_label">Cantidad</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Cantidad original</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Se ha producido un error. Inténtalo de nuevo.</string>
+    <string name="scan_to_update_inventory_success_snackbar">Cantidad actualizada: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Ver detalles del producto</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Actualizar cantidad</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Cantidad + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">El producto con SKU: %s no se gestiona en inventario. Inténtalo de nuevo.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">No se ha encontrado el producto con el SKU: %s. Inténtalo de nuevo.</string>
+    <string name="theme_activation_failed">La activación del tema ha fallado, inténtalo de nuevo.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">El sonido de las notificaciones de los pedidos se ha desactivado, vuelve a activarlo para escuchar el «clin, clin» con cada nueva compra.</string>
+    <string name="settings_notifs_enable_chaching_sound">Activar sonido clin-clin</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Escanear código de barras para actualizar el inventario</string>
+    <string name="cha_ching_sound_test_notification_message">Esto solo es una notificación de prueba para comprobar el sonido.\nPuedes controlar el sonido.</string>
+    <string name="cha_ching_sound_test_notification_title">Notificación de prueba</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">PROBAR SONIDO</string>
+    <string name="cha_ching_sound_succcess_snackbar">¡Todo listo! El «clin, clin» sonará ahora con cada nuevo pedido.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">MANTENER EN SILENCIO</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ACTIVAR SONIDO</string>
+    <string name="cha_ching_sound_issue_dialog_message">Vuelve a activarlo para escuchar el «clin, clin» con cada nueva venta. ¡Mantente al día de los nuevos pedidos de tus clientes!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Sonido «clin, clin» apagado</string>
+    <string name="order_creation_products_order_count">Recuento de pedidos</string>
+    <string name="custom_amounts_percentage_symbol"> %</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Porcentaje del total del pedido</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Importe fijo</string>
+    <string name="custom_amounts_bottom_sheet_heading">¿Cómo deseas añadir el importe personalizado?</string>
+    <string name="custom_amounts_percentage_label">Porcentaje del total del pedido (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Eliminar importe personalizado</string>
+    <string name="store_creation_use_theme_button">Comenzar con este tema</string>
+    <string name="theme_activated_successfully">El tema se ha activado correctamente</string>
+    <string name="theme_preview_theme_name">Tema: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Usar este tema</string>
+    <string name="theme_preview_bottom_sheet_home_section">Inicio</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Toca para ver</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Páginas de esta plantilla</string>
+    <string name="theme_preview_title">Vista previa</string>
+    <string name="theme_picker_error_message">No se han podido cargar los temas en este momento.</string>
+    <string name="theme_picker_error_title">Se ha producido un error</string>
+    <string name="theme_picker_carousel_info_item_description">Cuando hayas configurado tu tienda, busca el tema perfecto en la tienda de temas de WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">¿Quieres más opciones?</string>
+    <string name="theme_picker_description">Podrás cambiarlo más tarde en la configuración.</string>
+    <string name="theme_picker_title">Elegir un tema</string>
+    <string name="store_creation_theme_activation_error">Se ha producido un error al activar el tema que has seleccionado. Vuelve a intentarlo.</string>
+    <string name="store_creation_theme_activation_loading">Activando el tema de la tienda…</string>
+    <string name="settings_themes">Temas</string>
+    <string name="product_filter_explore_plugin">¡Descúbrelos!</string>
     <string name="configuration_required">Se necesita configuración</string>
     <string name="blaze_overflow_menu_hide_blaze">Ocultar Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">Nota de agradecimiento generada mediante IA</string>
@@ -2955,12 +3003,6 @@ Language: es
     <string name="wc_approve">Aprobar</string>
     <string name="wc_view_the_product_external">Ver el producto</string>
     <string name="support_help">Ayuda y soporte</string>
-    <string name="settings_notifs_reviews_detail">Recibir alertas para las nuevas reseñas de productos</string>
-    <string name="settings_notifs_reviews">Reseñas de productos</string>
-    <string name="settings_notifs_tone_detail">Reproducir sonido cuando haya un nuevo pedido</string>
-    <string name="settings_notifs_tone">Tono</string>
-    <string name="settings_notifs_orders_detail">Recibir alertas cuando lleguen nuevos pedidos</string>
-    <string name="settings_notifs_orders">Pedidos</string>
     <string name="settings_notifs_device_detail">Sonidos, urgencia y punto de notificación</string>
     <string name="settings_notifs_device">Gestionar notificaciones</string>
     <string name="settings_notifs">Notificaciones</string>

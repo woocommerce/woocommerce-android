@@ -1,2 +1,0 @@
-16.4 :
-De nouvelles fonctionnalités font leur apparition ! Notre dernière mise à jour vous permet de facturer des taxes sur des montants personnalisés et de configurer l’expédition unique pour les abonnements. Vous pouvez aussi configurer les abonnements en tant que « produits virtuels ». Enfin, nous avons ajouté une fonctionnalité d’IA qui génère un message de remerciement sur l’écran récapitulatif de la commande passée. Profitez de notre nouvelle application WooCommerce améliorée !

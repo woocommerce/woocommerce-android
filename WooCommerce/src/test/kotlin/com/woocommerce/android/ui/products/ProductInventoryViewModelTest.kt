@@ -5,7 +5,6 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductBackorderStatus.No
 import com.woocommerce.android.ui.products.ProductBackorderStatus.Yes
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -68,7 +67,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     private fun createViewModel(requestCode: Int, initData: InventoryData = initialData): ProductInventoryViewModel {
-        val savedState = ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!).initSavedStateHandle()
+        val savedState = ProductInventoryFragmentArgs(requestCode, initData, initData.sku!!).toSavedStateHandle()
         return spy(
             ProductInventoryViewModel(
                 savedState,

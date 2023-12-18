@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.OrderMapper
@@ -73,7 +72,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     private val paymentChargeRepository: PaymentChargeRepository = mock()
 
-    private val savedState = IssueRefundFragmentArgs(ORDER_ID).initSavedStateHandle()
+    private val savedState = IssueRefundFragmentArgs(ORDER_ID).toSavedStateHandle()
 
     private lateinit var viewModel: IssueRefundViewModel
 
@@ -97,6 +96,22 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             orderMapper,
             analyticsTrackerWrapper,
         )
+    }
+
+    @Test
+    fun `given order has only custom amt, when refund button clicked, then refund custom amount toggle is enabled`() {
+        testBlocking {
+            val orderWithCustomAmount = OrderTestUtils.generateOrderWithCustomAmount()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithCustomAmount)
+
+            initViewModel()
+
+            var viewState: RefundByItemsViewState? = null
+            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+
+            viewState!!.isFeesRefundAvailable?.let { assertTrue(it) }
+            assertTrue(viewState!!.isFeesMainSwitchChecked)
+        }
     }
 
     @Test

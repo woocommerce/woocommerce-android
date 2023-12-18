@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload
 import org.wordpress.android.fluxc.store.ThemeStore.ThemeErrorType
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
 class ThemeRepository @Inject constructor(
     private val themeStore: ThemeStore,
     private val dispatcher: Dispatcher,
@@ -108,6 +109,8 @@ class ThemeRepository @Inject constructor(
     private suspend fun installThemeIfNeeded(themeId: String): Result<Unit> {
         val installationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newInstallThemeAction(
+                // The Default constructor ThemeModel() is deprecated.
+                // We should add a new method to ThemeStore install a theme by themeId
                 SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
             )
         )

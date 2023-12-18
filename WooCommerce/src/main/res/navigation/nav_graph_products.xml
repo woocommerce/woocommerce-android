@@ -23,8 +23,8 @@
         <argument
             android:name="images"
             android:defaultValue="@null"
-            app:nullable="true"
-            app:argType="string[]" />
+            app:argType="string[]"
+            app:nullable="true" />
         <argument
             android:name="source"
             android:defaultValue="PRODUCT_TAB"
@@ -134,6 +134,9 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productSubscriptionFreeTrialFragment"
             app:destination="@id/productSubscriptionFreeTrialFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_AIProductCreationSurveyBottomSheet"
+            app:destination="@id/AIProductCreationSurveyBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -773,9 +776,13 @@
     <fragment
         android:id="@+id/productSubscriptionFreeTrialFragment"
         android:name="com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragment"
-        android:label="ProductSubscriptionFreeTrialFragment" >
+        android:label="ProductSubscriptionFreeTrialFragment">
         <argument
             android:name="subscription"
             app:argType="com.woocommerce.android.model.SubscriptionDetails" />
     </fragment>
+    <dialog
+        android:id="@+id/AIProductCreationSurveyBottomSheet"
+        android:name="com.woocommerce.android.ui.products.ai.AIProductCreationSurveyBottomSheet"
+        android:label="AIProductCreationSurveyBottomSheet" />
 </navigation>

@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -113,7 +112,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.event.value)
@@ -135,7 +134,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     ),
                     cardReaderType = CardReaderType.BUILT_IN
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.event.value)
@@ -165,7 +164,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StoreCountryNotSupported(""),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             verify(onboardingChecker, never()).getOnboardingState()
@@ -181,7 +180,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StoreCountryNotSupported(""),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.Country::class.java)
@@ -216,7 +215,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         ),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.WcPayInCountry::class.java)
@@ -251,7 +250,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         ),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.StripeInCountry::class.java)
@@ -267,7 +266,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = WcpayNotInstalled,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotInstalledState::class.java)
@@ -287,7 +286,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = WcpayNotInstalled,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             whenever(onboardingChecker.getOnboardingState())
@@ -322,7 +321,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotSetupState)
@@ -347,7 +346,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotSetupState)
@@ -373,7 +372,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
@@ -398,7 +397,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
@@ -422,7 +421,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = WcpayNotInstalled,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             whenever(onboardingChecker.getOnboardingState())
@@ -453,7 +452,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = WcpayNotActivated,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             whenever(onboardingChecker.getOnboardingState())
@@ -487,7 +486,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = WcpayNotActivated,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             whenever(onboardingChecker.getOnboardingState())
@@ -527,7 +526,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountCountryNotSupported(mock(), ""),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -568,7 +567,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         ),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(UnsupportedErrorState.WcPayInCountry::class.java)
@@ -599,7 +598,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StoreCountryNotSupported("US"),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             val countryName = (
@@ -768,7 +767,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = WcpayNotActivated
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotActivatedState::class.java)
@@ -795,7 +794,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayError.WCPayNotSetupState::class.java)
@@ -873,7 +872,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = PluginInTestModeWithLiveStripeAccount(mock()),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -909,7 +908,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         )
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -934,7 +933,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
@@ -1002,7 +1001,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
@@ -1070,7 +1069,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
@@ -1092,7 +1091,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         ),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertFalse((viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress)
@@ -1318,8 +1317,48 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
             assertThat(viewStateData.cardIllustration).isEqualTo(
-                R.drawable.img_products_error
+                R.drawable.ic_woo_illustrated_icon
             )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then correct contact us label shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.contactSupportLabel).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_contact_us,
+                    containsHtml = true
+                )
+            )
+        }
+
+    @Test
+    fun `given cash on delivery disabled state, when contact us clicked, then correct event is triggered`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            viewStateData.onContactSupportActionClicked.invoke()
+            assertThat(viewModel.event.value).isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -1719,7 +1758,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountRejected(mock()),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value)
@@ -1785,7 +1824,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
@@ -1810,7 +1849,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         )
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
@@ -1911,7 +1950,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountOverdueRequirement(mock()),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -1942,7 +1981,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountUnderReview(mock()),
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -1971,7 +2010,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = GenericError,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(GenericErrorState::class.java)
@@ -1998,7 +2037,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = NoConnectionError,
                     ),
                     cardReaderType = CardReaderType.EXTERNAL
-                ).initSavedStateHandle()
+                ).toSavedStateHandle()
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(NoConnectionErrorState::class.java)
@@ -2174,7 +2213,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
             cardReaderOnboardingParam = CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub()),
             cardReaderType = CardReaderType.EXTERNAL
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
     ) = CardReaderOnboardingViewModel(
         savedState,
         onboardingChecker,

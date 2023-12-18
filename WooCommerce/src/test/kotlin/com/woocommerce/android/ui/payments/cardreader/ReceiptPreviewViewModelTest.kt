@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
@@ -42,7 +41,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         receiptUrl = "testing url",
         billingEmail = "testing email",
         orderId = 999L
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     @Before
     fun setUp() {

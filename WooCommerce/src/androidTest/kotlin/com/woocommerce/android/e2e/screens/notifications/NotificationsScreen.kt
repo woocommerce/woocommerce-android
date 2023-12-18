@@ -24,7 +24,6 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
     private fun displayNotification() {
         wooNotificationBuilder.buildAndDisplayWooNotification(
             0,
-            0,
             notification = Notification(
                 noteId = 1,
                 uniqueId = 1L,
@@ -36,7 +35,6 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
                 noteType = NEW_ORDER,
                 channelType = NotificationChannelType.NEW_ORDER
             ),
-            addCustomNotificationSound = false,
             isGroupNotification = false
         )
     }
