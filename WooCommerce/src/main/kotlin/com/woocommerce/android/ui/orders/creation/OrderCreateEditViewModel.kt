@@ -81,7 +81,6 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
-import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
@@ -99,6 +98,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
+import com.woocommerce.android.ui.orders.creation.paymentcollection.OrderCreateEditPaymentCollectionHelper
+import com.woocommerce.android.ui.orders.creation.paymentcollection.PaymentCollectionSectionsState
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -180,7 +181,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
-    private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
+    private val paymentCollectionHelper: OrderCreateEditPaymentCollectionHelper,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -214,6 +215,11 @@ class OrderCreateEditViewModel @Inject constructor(
                 orderDetailRepository.getOrderStatus(status.value)
             }
         }.asLiveData()
+
+    val collectPaymentData: LiveData<PaymentCollectionSectionsState> = _orderDraft
+        .map { paymentCollectionHelper.mapToPaymentCollectionSectionsState(it) }
+        .distinctUntilChanged()
+        .asLiveData()
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
