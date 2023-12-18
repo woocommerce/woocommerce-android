@@ -140,9 +140,6 @@ class MyStoreFragment :
     private val tabLayout
         get() = _tabLayout!!
 
-    private val appBarLayout
-        get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
@@ -502,7 +499,6 @@ class MyStoreFragment :
             appPrefsWrapper.setJetpackInstallationIsFromBanner(true)
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
-        val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
         viewLifecycleOwner.lifecycleScope.launch {
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
@@ -510,13 +506,14 @@ class MyStoreFragment :
             // the scope will not get cancelled.
             // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
+            val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
             withCreated {
-                appBarLayout.verticalOffsetChanges()
-                    .onEach { verticalOffset ->
+                appBarLayout?.verticalOffsetChanges()
+                    ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =
                             (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
                     }
-                    .launchIn(this)
+                    ?.launchIn(this)
             }
         }
     }
@@ -729,10 +726,7 @@ class MyStoreFragment :
     }
 
     private fun removeTabLayoutFromAppBar() {
-        appBarLayout?.let { appBar ->
-            appBar.removeView(tabLayout)
-            appBar.elevation = 0f
-        }
+        binding.myStoreStatsContainer.removeView(tabLayout)
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
