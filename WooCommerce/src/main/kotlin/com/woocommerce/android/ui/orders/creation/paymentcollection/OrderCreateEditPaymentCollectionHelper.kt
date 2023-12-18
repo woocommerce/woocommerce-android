@@ -10,6 +10,7 @@ class OrderCreateEditPaymentCollectionHelper @Inject constructor(
     private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     private val resourceProvider: ResourceProvider,
 ) {
+    @Suppress("UNUSED_PARAMETER")
     fun mapToPaymentCollectionSectionsState(order: Order): PaymentCollectionSectionsState {
         return if (isTabletOrdersM1Enabled()) {
             PaymentCollectionSectionsState.Shown(
@@ -29,7 +30,7 @@ class OrderCreateEditPaymentCollectionHelper @Inject constructor(
 sealed class PaymentCollectionSectionsState {
     data class Shown(
         val button: Button
-    ): PaymentCollectionSectionsState()
+    ) : PaymentCollectionSectionsState()
 
     object Hidden : PaymentCollectionSectionsState()
 
