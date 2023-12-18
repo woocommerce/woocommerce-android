@@ -98,8 +98,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
-import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
-import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -111,6 +109,8 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
@@ -487,6 +487,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     onIncreaseProductsQuantity(product)
                 }
             }
+
             is ProductAmountEvent.Change -> {
                 when (val newAmountInt = amountChangeEvent.newAmount.toIntOrNull()) {
                     null, 0 -> onRemoveProduct(product)
@@ -1339,6 +1340,7 @@ class OrderCreateEditViewModel @Inject constructor(
             CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
                 tracker.track(ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED)
             }
+
             CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
                 // no -op
             }
