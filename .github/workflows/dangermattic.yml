@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, edited, review_requested, review_request_removed, labeled, unlabeled, milestoned, demilestoned, synchronize]
 
+concurrency:
+  group: danger-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dangermattic:
     runs-on: ubuntu-latest
