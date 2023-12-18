@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.paymentcollection
+package com.woocommerce.android.ui.orders.creation.totals
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
@@ -6,15 +6,15 @@ import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
-class OrderCreateEditPaymentCollectionHelper @Inject constructor(
+class OrderCreateEditTotalsHelper @Inject constructor(
     private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     private val resourceProvider: ResourceProvider,
 ) {
     @Suppress("UNUSED_PARAMETER")
-    fun mapToPaymentCollectionSectionsState(order: Order): PaymentCollectionSectionsState {
+    fun mapToPaymentTotalsState(order: Order): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
-            PaymentCollectionSectionsState.Shown(
-                button = PaymentCollectionSectionsState.Button(
+            TotalsSectionsState.Shown(
+                button = TotalsSectionsState.Button(
                     text = resourceProvider.getString(R.string.order_creation_collect_payment_button),
                     onClick = {
                         // TODO
@@ -22,17 +22,17 @@ class OrderCreateEditPaymentCollectionHelper @Inject constructor(
                 )
             )
         } else {
-            PaymentCollectionSectionsState.Hidden
+            TotalsSectionsState.Hidden
         }
     }
 }
 
-sealed class PaymentCollectionSectionsState {
+sealed class TotalsSectionsState {
     data class Shown(
         val button: Button
-    ) : PaymentCollectionSectionsState()
+    ) : TotalsSectionsState()
 
-    object Hidden : PaymentCollectionSectionsState()
+    object Hidden : TotalsSectionsState()
 
     data class Button(
         val text: String,

@@ -98,8 +98,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
-import com.woocommerce.android.ui.orders.creation.paymentcollection.OrderCreateEditPaymentCollectionHelper
-import com.woocommerce.android.ui.orders.creation.paymentcollection.PaymentCollectionSectionsState
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -181,7 +181,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
-    private val paymentCollectionHelper: OrderCreateEditPaymentCollectionHelper,
+    private val paymentCollectionHelper: OrderCreateEditTotalsHelper,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -216,8 +216,8 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    val collectPaymentData: LiveData<PaymentCollectionSectionsState> = _orderDraft
-        .map { paymentCollectionHelper.mapToPaymentCollectionSectionsState(it) }
+    val totalsData: LiveData<TotalsSectionsState> = _orderDraft
+        .map { paymentCollectionHelper.mapToPaymentTotalsState(it) }
         .distinctUntilChanged()
         .asLiveData()
 

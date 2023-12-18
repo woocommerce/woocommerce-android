@@ -363,6 +363,9 @@ class OrderCreateEditFormFragment :
             bindProductsSection(binding.productsSection, viewModel.products)
         }
 
+        viewModel.totalsData.observe(viewLifecycleOwner) {
+        }
+
         if (isCustomAmountsFeatureFlagEnabled()) {
             viewModel.customAmounts.observe(viewLifecycleOwner) {
                 bindCustomAmountsSection(binding.customAmountsSection, it)
