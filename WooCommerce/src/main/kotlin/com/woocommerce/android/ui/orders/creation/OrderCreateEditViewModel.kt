@@ -81,6 +81,7 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
@@ -179,6 +180,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
+    private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
