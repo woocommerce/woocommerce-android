@@ -174,7 +174,6 @@ class MyStoreFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initTabLayout()
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentMyStoreBinding.bind(view)
@@ -189,6 +188,7 @@ class MyStoreFragment :
         }
 
         // Create tabs and add to appbar
+        initTabLayout()
         StatsGranularity.values().forEach { granularity ->
             val tab = tabLayout.newTab().apply {
                 setText(binding.myStoreStats.getStringForGranularity(granularity))
@@ -717,17 +717,15 @@ class MyStoreFragment :
     }
 
     private fun addTabLayoutToAppBar() {
-        appBarLayout
-            ?.takeIf { !it.children.contains(tabLayout) }
+        val indexOfMyStoreStatsView = binding.myStoreStatsContainer.indexOfChild(binding.myStoreStats)
+        binding.myStoreStatsContainer
+            .takeIf { !it.children.contains(tabLayout) }
             ?.takeIf { AppPrefs.isV4StatsSupported() }
-            ?.let { appBar ->
-                appBar.addView(tabLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
-                appBar.post {
-                    if (context != null) {
-                        appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-                    }
-                }
-            }
+            ?.addView(
+                tabLayout,
+                indexOfMyStoreStatsView,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            )
     }
 
     private fun removeTabLayoutFromAppBar() {
