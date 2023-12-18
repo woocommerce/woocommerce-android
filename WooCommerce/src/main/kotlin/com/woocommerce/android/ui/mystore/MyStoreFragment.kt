@@ -520,7 +520,7 @@ class MyStoreFragment :
 
     private fun initTabLayout() {
         _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
-        addTabLayoutToAppBar()
+        addStatsGranularityTabs()
     }
 
     override fun onResume() {
@@ -555,7 +555,7 @@ class MyStoreFragment :
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
-        addTabLayoutToAppBar()
+        addStatsGranularityTabs()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
 
@@ -713,7 +713,7 @@ class MyStoreFragment :
         isEmptyViewVisible = show
     }
 
-    private fun addTabLayoutToAppBar() {
+    private fun addStatsGranularityTabs() {
         val indexOfMyStoreStatsView = binding.myStoreStatsContainer.indexOfChild(binding.myStoreStats)
         binding.myStoreStatsContainer
             .takeIf { !it.children.contains(tabLayout) }
