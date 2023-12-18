@@ -105,6 +105,18 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.core.widget.NestedScrollView>
+
+    <androidx.compose.ui.platform.ComposeView
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/totals_section"
+        tools:composableName="com.woocommerce.android.ui.orders.creation.views.OrderCreateEditTotalsSectionViewKt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:visibility="visible"
+        android:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

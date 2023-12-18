@@ -364,6 +364,7 @@ class OrderCreateEditFormFragment :
         }
 
         viewModel.totalsData.observe(viewLifecycleOwner) {
+
         }
 
         if (isCustomAmountsFeatureFlagEnabled()) {
