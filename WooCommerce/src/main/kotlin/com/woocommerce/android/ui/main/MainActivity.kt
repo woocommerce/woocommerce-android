@@ -109,6 +109,7 @@ import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -797,6 +798,7 @@ class MainActivity :
                 is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
+                is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
             }
         }
 
