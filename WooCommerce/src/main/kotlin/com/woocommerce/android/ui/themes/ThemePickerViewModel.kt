@@ -128,7 +128,7 @@ class ThemePickerViewModel @Inject constructor(
     ) = if (carouselState is CarouselState.Success && currentThemeState is CurrentThemeState.Success) {
         carouselState.copy(
             carouselItems = carouselState.carouselItems
-                .filter { it is Theme && it.themeId != currentThemeState.themeId }
+                .filterNot { it is Theme && it.themeId == currentThemeState.themeId }
         )
     } else carouselState
 
