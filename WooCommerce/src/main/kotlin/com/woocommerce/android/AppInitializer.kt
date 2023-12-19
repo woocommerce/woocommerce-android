@@ -154,6 +154,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         Thread.setDefaultUncaughtExceptionHandler(
             UncaughtErrorsHandler(
+                context = application,
                 baseHandler = Thread.getDefaultUncaughtExceptionHandler(),
                 crashLogger = crashLogging
             )
