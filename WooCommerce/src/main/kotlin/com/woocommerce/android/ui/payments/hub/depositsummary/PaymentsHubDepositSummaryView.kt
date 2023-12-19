@@ -11,6 +11,10 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
@@ -217,7 +221,7 @@ private fun FundsOverview(
             .padding(
                 start = dimensionResource(id = R.dimen.major_100),
                 end = dimensionResource(id = R.dimen.major_100),
-                top = dimensionResource(id = R.dimen.major_150),
+                top = dimensionResource(id = R.dimen.major_100),
                 bottom = dimensionResource(id = R.dimen.major_100)
             )
     ) {
@@ -252,17 +256,6 @@ private fun FundsOverview(
                 fromCache,
                 pageIndex
             )
-
-            Text(
-                style = MaterialTheme.typography.caption,
-                text = StringUtils.getQuantityString(
-                    context = LocalContext.current,
-                    quantity = currencyInfo.pendingBalanceDepositsCount,
-                    default = R.string.card_reader_hub_deposit_summary_pending_deposits_plural,
-                    one = R.string.card_reader_hub_deposit_summary_pending_deposits_one,
-                ),
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
         }
 
         Column(
@@ -284,6 +277,32 @@ private fun FundsOverview(
             }
         }
     }
+
+    AnimatedVisibility(
+        visible = isExpanded,
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
+            Text(
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100),
+                ),
+                style = MaterialTheme.typography.caption,
+                text = StringUtils.getQuantityString(
+                    context = LocalContext.current,
+                    quantity = fundsAvailableInDays,
+                    default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
+                    one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
+                ),
+                color = colorResource(id = R.color.color_on_surface_medium),
+            )
+        }
+    }
+
     val dividerPaddingAnimation by animateDpAsState(
         targetValue = if (isExpanded) {
             dimensionResource(id = R.dimen.major_100)
@@ -308,57 +327,9 @@ private fun DepositsInfo(
     Column {
         Column(
             modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    top = 10.dp,
-                    bottom = dimensionResource(id = R.dimen.major_125)
-                )
+                .padding(all = dimensionResource(id = R.dimen.major_100))
         ) {
-            currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_calendar_gray_16), contentDescription = null)
-                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                    Text(
-                        style = MaterialTheme.typography.caption,
-                        text = StringUtils.getQuantityString(
-                            context = LocalContext.current,
-                            quantity = fundsAvailableInDays,
-                            default = R.string.card_reader_hub_deposit_summary_funds_available_after_plural,
-                            one = R.string.card_reader_hub_deposit_summary_funds_available_after_one,
-                        ),
-                        color = colorResource(id = R.color.color_on_surface_medium),
-                    )
-                }
-            }
-
-            if (currencyInfo.nextDeposit != null || currencyInfo.lastDeposit != null) {
-                NextAndLastDeposit(
-                    currencyInfo.nextDeposit,
-                    currencyInfo.lastDeposit
-                )
-                Divider(modifier = Modifier.fillMaxWidth())
-            }
-
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-
-            currencyInfo.fundsDepositInterval?.let { interval ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_acropolis_gray_15), contentDescription = null)
-                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                    Text(
-                        style = MaterialTheme.typography.caption,
-                        text = interval.buildText(),
-                        color = colorResource(id = R.color.color_on_surface_medium),
-                    )
-                }
-            }
+            LastDeposit(currencyInfo)
 
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_75)))
 
@@ -391,61 +362,52 @@ private fun DepositsInfo(
 }
 
 @Composable
-private fun NextAndLastDeposit(
-    nextDeposit: PaymentsHubDepositSummaryState.Deposit?,
-    lastDeposit: PaymentsHubDepositSummaryState.Deposit?,
-) {
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)))
-
-    Text(
-        style = MaterialTheme.typography.body2,
-        text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
-        color = colorResource(id = R.color.color_on_surface_medium),
-    )
-
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-
-    nextDeposit?.let {
-        Deposit(
-            depositType = R.string.card_reader_hub_deposit_summary_next,
-            deposit = it,
-            textColor = R.color.color_on_surface
+private fun LastDeposit(currencyInfo: PaymentsHubDepositSummaryState.Info) {
+    currencyInfo.lastDeposit?.let {
+        Text(
+            style = MaterialTheme.typography.body2,
+            text = stringResource(id = R.string.card_reader_hub_deposit_funds_deposits_title).uppercase(),
+            color = colorResource(id = R.color.color_on_surface_medium),
         )
-        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
-    }
 
-    lastDeposit?.let {
-        Deposit(
-            depositType = R.string.card_reader_hub_deposit_summary_last,
-            deposit = it,
-            textColor = R.color.color_on_surface_medium
-        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
+        Deposit(deposit = it)
+
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+
+        currencyInfo.fundsDepositInterval?.let { interval ->
+            Text(
+                style = MaterialTheme.typography.caption,
+                text = interval.buildText(),
+                color = colorResource(id = R.color.color_on_surface_medium),
+            )
+        }
+
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+
+        Divider(modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-private fun Deposit(
-    depositType: Int,
-    deposit: PaymentsHubDepositSummaryState.Deposit,
-    textColor: Int
-) {
+private fun Deposit(deposit: PaymentsHubDepositSummaryState.Deposit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            modifier = Modifier.weight(.5f),
-            style = MaterialTheme.typography.body1,
-            text = stringResource(id = depositType),
-            color = colorResource(id = textColor),
+        Icon(
+            painter = painterResource(id = R.drawable.ic_calendar_16),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface)
         )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
 
         Text(
             modifier = Modifier.weight(1.2f),
             style = MaterialTheme.typography.body1,
             text = deposit.date,
-            color = colorResource(id = textColor),
         )
 
         Box(modifier = Modifier.weight(1f)) {
@@ -507,8 +469,6 @@ private fun Deposit(
             Text(
                 style = MaterialTheme.typography.body1,
                 text = deposit.amount,
-                color = colorResource(id = textColor),
-                fontWeight = FontWeight(600),
             )
         }
     }

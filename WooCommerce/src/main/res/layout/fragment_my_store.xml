@@ -27,6 +27,7 @@
                 android:transitionGroup="true">
 
                 <LinearLayout
+                    android:id="@+id/my_store_stats_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"

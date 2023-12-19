@@ -18,11 +18,11 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onGiftCardChanged should update giftCard`() {
+    fun `onGiftCardChanged should update giftCard`() = testBlocking {
         // Given
         val expectedGiftCardCode = "test gift card code"
         var lastGiftCardUpdate: String? = null
-        sut.giftCard.observeForever { lastGiftCardUpdate = it }
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
 
         // When
         sut.onGiftCardChanged("test gift card code")
@@ -37,7 +37,7 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
         val expectedGiftCardCode = "test gift card code"
         createSutWith(initialGiftCardValue = expectedGiftCardCode)
         var lastGiftCardUpdate: String? = null
-        sut.giftCard.observeForever { lastGiftCardUpdate = it }
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
 
         // Then
         assertThat(lastGiftCardUpdate).isEqualTo(expectedGiftCardCode)
@@ -48,7 +48,7 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
         // Given
         createSutWith(initialGiftCardValue = null)
         var lastGiftCardUpdate: String? = null
-        sut.giftCard.observeForever { lastGiftCardUpdate = it }
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
 
         // Then
         assertThat(lastGiftCardUpdate).isEqualTo("")
@@ -71,6 +71,45 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
         assertThat(lastEvent?.data).isInstanceOf(GiftCardResult::class.java)
         val giftCardResult = lastEvent?.data as GiftCardResult
         assertThat(giftCardResult.selectedGiftCard).isEqualTo("test-gift-card-code")
+    }
+
+    @Test
+    fun `when gift card code is valid, then isValidCode is true`() = testBlocking {
+        // Given
+        var lastIsValidCodeUpdate: Boolean? = null
+        sut.viewState.observeForever { lastIsValidCodeUpdate = it.isValidCode }
+
+        // When
+        sut.onGiftCardChanged("T3ST-W1TH-L33T-C0D3")
+
+        // Then
+        assertThat(lastIsValidCodeUpdate).isTrue
+    }
+
+    @Test
+    fun `when gift card code is empty, then isValidCode is true`() = testBlocking {
+        // Given
+        var lastIsValidCodeUpdate: Boolean? = null
+        sut.viewState.observeForever { lastIsValidCodeUpdate = it.isValidCode }
+
+        // When
+        sut.onGiftCardChanged("")
+
+        // Then
+        assertThat(lastIsValidCodeUpdate).isTrue
+    }
+
+    @Test
+    fun `when gift card code is invalid, then isValidCode is false`() = testBlocking {
+        // Given
+        var lastIsValidCodeUpdate: Boolean? = null
+        sut.viewState.observeForever { lastIsValidCodeUpdate = it.isValidCode }
+
+        // When
+        sut.onGiftCardChanged("invalid gift card code")
+
+        // Then
+        assertThat(lastIsValidCodeUpdate).isFalse
     }
 
     private fun createSutWith(initialGiftCardValue: String?) {

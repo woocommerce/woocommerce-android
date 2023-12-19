@@ -146,9 +146,9 @@ class StoreOnboardingRepository @Inject constructor(
     )
 
     enum class OnboardingTaskType(val id: String, val order: Int) {
-        LOCAL_NAME_STORE(id = "local_name_store", order = 1),
-        ABOUT_YOUR_STORE(id = "store_details", order = 2),
-        ADD_FIRST_PRODUCT(id = "products", order = 3),
+        ADD_FIRST_PRODUCT(id = "products", order = 1),
+        LOCAL_NAME_STORE(id = "local_name_store", order = 2),
+        ABOUT_YOUR_STORE(id = "store_details", order = 3),
         WC_PAYMENTS(id = "woocommerce-payments", order = 4),
         LAUNCH_YOUR_STORE(id = "launch_site", order = 5),
         CUSTOMIZE_DOMAIN(id = "add_domain", order = 6),

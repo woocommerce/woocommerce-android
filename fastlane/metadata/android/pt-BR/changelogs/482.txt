@@ -1,2 +1,0 @@
-16.5:
-A versão mais recente do app do WooCommerce é voltada para melhorias na estabilidade. Usuários do WooPayments agora podem trocar tranquilamente de moeda na visualização Resumo de depósitos. Faça upgrade agora mesmo para ter uma experiência melhor no WooCommerce!

@@ -15,15 +15,18 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 
 @Composable
 fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
-    val giftCardValue by viewModel.giftCard.observeAsState()
+    val viewState by viewModel.viewState.observeAsState()
     EditGiftCardScreen(
-        giftCardValue = giftCardValue.orEmpty(),
+        giftCardValue = viewState?.giftCard.orEmpty(),
+        isValidCode = viewState?.isValidCode ?: false,
         onTextChanged = viewModel::onGiftCardChanged,
         onDoneClicked = viewModel::onDoneButtonClicked
     )
@@ -32,25 +35,34 @@ fun EditGiftCardScreen(viewModel: OrderCreateEditGiftCardViewModel) {
 @Composable
 fun EditGiftCardScreen(
     giftCardValue: String,
+    isValidCode: Boolean,
     onTextChanged: (String) -> Unit,
-    onDoneClicked: () -> Unit
+    onDoneClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
+        val textFieldLabel = if (isValidCode) {
+            stringResource(id = R.string.order_creation_gift_card_text_field_hint)
+        } else {
+            stringResource(id = R.string.order_creation_gift_card_text_error)
+        }
         WCOutlinedTextField(
-            value = giftCardValue,
+            value = giftCardValue.toUpperCase(Locale.current),
             onValueChange = onTextChanged,
-            label = stringResource(id = R.string.order_creation_gift_card_text_field_hint),
+            isError = isValidCode.not(),
+            label = textFieldLabel,
             colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         )
 
         Button(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth(),
-            onClick = onDoneClicked
+            onClick = onDoneClicked,
+            enabled = isValidCode
         ) {
             Text(stringResource(id = R.string.apply))
         }
@@ -61,5 +73,5 @@ fun EditGiftCardScreen(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun EditGiftCardScreenPreview() {
-    EditGiftCardScreen("XPTO-1234-ABCD-XPTO", {}, {})
+    EditGiftCardScreen("XPTO-1234-ABCD-XPTO", true, {}, {})
 }

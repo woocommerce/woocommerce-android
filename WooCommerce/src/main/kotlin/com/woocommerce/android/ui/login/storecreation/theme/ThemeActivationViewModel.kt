@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.theme.ThemeActivationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.themes.ThemeRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -18,7 +21,8 @@ import javax.inject.Inject
 class ThemeActivationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val themeRepository: ThemeRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
@@ -33,11 +37,23 @@ class ThemeActivationViewModel @Inject constructor(
         _viewState.value = LoadingState
         themeRepository.activateTheme(args.themeId).fold(
             onSuccess = {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
+                    properties = mapOf(
+                        AnalyticsTracker.KEY_THEME_PICKER_THEME to themeRepository.getTheme(args.themeId)?.name
+                    )
+                )
                 appPrefsWrapper.clearThemeIdForStoreCreation()
                 triggerEvent(Event.ShowSnackbar(R.string.theme_activated_successfully))
                 triggerEvent(Event.Exit)
             },
             onFailure = {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
+                    properties = mapOf(
+                        AnalyticsTracker.KEY_THEME_PICKER_THEME to themeRepository.getTheme(args.themeId)?.name
+                    )
+                )
                 _viewState.value = ViewState.ErrorState(
                     onRetry = ::startThemeInstallation,
                     onDismiss = {

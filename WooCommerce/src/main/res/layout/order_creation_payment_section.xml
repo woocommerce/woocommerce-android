@@ -172,18 +172,21 @@
             android:id="@+id/gift_card_selection_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:minHeight="@dimen/major_300"
             android:visibility="gone"
             tools:visibility="visible">
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/selected_gift_card_button"
-                style="@style/Woo.Button.TextButton.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:text="@string/order_gift_card"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/order_gift_card"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="Gift Card" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -192,10 +195,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
+                android:gravity="center_vertical"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
-                app:layout_constraintBottom_toBottomOf="@+id/selected_gift_card_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/selected_gift_card_button"
                 tools:text="XPTO-GIFT-CODE" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
