@@ -49,7 +49,8 @@ data class Order(
     val shippingPhone: String,
     val paymentUrl: String,
     val isEditable: Boolean,
-    val selectedGiftCard: String?
+    val selectedGiftCard: String?,
+    val giftCardDiscountedAmount: BigDecimal?
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -384,7 +385,8 @@ data class Order(
                 shippingPhone = "",
                 paymentUrl = "",
                 isEditable = true,
-                selectedGiftCard = ""
+                selectedGiftCard = "",
+                giftCardDiscountedAmount = BigDecimal(0)
             )
         }
 
