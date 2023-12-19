@@ -1,2 +1,0 @@
-16.5：
-最新版 WooCommerce 应用程序重点提升了稳定性！ 此外，WooPayments 用户现在可以在“存款摘要”视图中无缝切换货币。 立即升级，享受更顺畅的 WooCommerce 体验！

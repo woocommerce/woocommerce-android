@@ -273,36 +273,6 @@ private fun TaskItem(
                 text = stringResource(id = task.taskUiResources.description),
                 style = MaterialTheme.typography.body1,
             )
-
-            if (task.isLabelVisible) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = colorResource(id = R.color.tag_task_label),
-                            shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
-                        )
-                        .padding(dimensionResource(id = dimen.minor_50))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(
-                            vertical = dimensionResource(id = dimen.minor_25),
-                            horizontal = dimensionResource(id = dimen.minor_100)
-                        ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(task.taskUiResources.labelIcon),
-                            contentDescription = ""
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_25)),
-                            text = stringResource(id = task.taskUiResources.labelText),
-                            style = MaterialTheme.typography.body2,
-                            color = colorResource(id = R.color.tag_task_label_text)
-                        )
-                    }
-                }
-            }
         }
         if (!task.isCompleted) {
             Image(

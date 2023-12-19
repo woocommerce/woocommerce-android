@@ -1,2 +1,0 @@
-16.5:
-Den senaste versionen av WooCommerce-appen fokuserar på stabilitetsförbättringar. Dessutom kan WooPayments-användare nu smidigt växla mellan valutor i vyn Insättningsöversikt. Uppgradera nu för en smidigare WooCommerce-upplevelse.

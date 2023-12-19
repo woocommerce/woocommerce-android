@@ -17,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
@@ -732,9 +733,9 @@ class OrderCreateEditFormFragment :
                 addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
             } else {
                 addGiftCardButton.isVisible = false
-                giftCardLayout.show()
                 giftCardCode.text = newOrderData.selectedGiftCard
-                selectedGiftCardButton.setOnClickListener {
+                giftCardLayout.show()
+                giftCardLayout.setOnClickListener {
                     viewModel.onEditGiftCardButtonClicked(newOrderData.selectedGiftCard)
                 }
             }
@@ -766,6 +767,7 @@ class OrderCreateEditFormFragment :
         }
         if (productsSection.content == null) {
             productsSection.content = ComposeView(requireContext()).apply {
+                setViewCompositionStrategy(DisposeOnLifecycleDestroyed(viewLifecycleOwner))
                 bindExpandableProductsSection(products)
             }
         }

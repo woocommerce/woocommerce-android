@@ -1,2 +1,0 @@
-16.5:
-La versión más reciente de la aplicación WooCommerce se centra en mejoras en la estabilidad. Además, ahora los usuarios de WooPayments pueden cambiar fácilmente entre divisas en la vista Resumen de depósitos. Actualiza ahora para disfrutar de una mejor experiencia con WooCommerce.
