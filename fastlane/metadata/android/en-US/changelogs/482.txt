@@ -1,1 +1,0 @@
-The latest WooCommerce app version focuses on stability improvements! Additionally, WooPayments users can now seamlessly switch between currencies on the Deposits Summary view. Upgrade now for a smoother WooCommerce experience!

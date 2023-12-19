@@ -1,6 +1,8 @@
 # Tracking Events
 
-To add a new event, the event name has to be added as an `enum` in the [`AnalyticsTracker`](../WooCommerce/src/main/kotlin/com/woocommerce/android/analytics/AnalyticsTracker.kt). Tracking the event looks like this:
+To add a new event, the event name has to be added as an `enum` in the [AnalyticsEvent](../WooCommerce/src/main/kotlin/com/woocommerce/android/analytics/AnalyticsEvent.kt).
+
+Tracking the event looks like this:
 
 ```kotlin
 class OrderDetailViewModel {
@@ -14,7 +16,7 @@ Having the values in the `AnalyticsTracker` enum helps us with comparing the eve
 
 ## Custom Properties
 
-If the event has custom properties, tracking the event would now look like this:
+If the event has custom properties, New key and value constant for the property has to be added as a constant in the [`AnalyticsTracker`](../WooCommerce/src/main/kotlin/com/woocommerce/android/analytics/AnalyticsTracker.kt). Tracking the event would now look like this:
 
 ```kotlin
 class OrderDetailViewModel {

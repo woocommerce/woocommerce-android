@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.Si
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_THEME
 import kotlinx.coroutines.flow.flow
 import java.util.TimeZone
 import javax.inject.Inject
@@ -35,7 +34,6 @@ class CreateFreeTrialStore @Inject constructor(
         val result = repository.createNewFreeTrialSite(
             SiteCreationData(
                 segmentId = null,
-                siteDesign = NEW_SITE_THEME,
                 domain = storeDomain,
                 title = storeName,
                 profilerData = profilerData,

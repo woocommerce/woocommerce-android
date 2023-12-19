@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 19:54:04+0000
+Translation-Revision-Date: 2023-12-13 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Товар</string>
+    <string name="scan_to_update_inventory_quantity_label">Количество</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Исходное количество</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Что-то пошло не так. Повторите попытку</string>
+    <string name="scan_to_update_inventory_success_snackbar">Количество обновлено: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Показать сведения о товаре</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Обновить количество</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Количество + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Товар с артикулом %s не значится в складских запасах. Повторите попытку.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Товар с артикулом %s не найден. Повторите попытку.</string>
+    <string name="theme_activation_failed">Не удалось активировать тему, повторите попытку.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Звуковое оповещение о новых заказах отключено. Включите его заново, чтобы слышать «дзинь» всякий раз при очередной продаже.</string>
+    <string name="settings_notifs_enable_chaching_sound">Включить «дзинь»</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Сканировать штрихкод, чтобы обновить запас</string>
+    <string name="cha_ching_sound_test_notification_message">Это тестовое оповещение для проверки звука «дзинь».\nМожете его удалить.</string>
+    <string name="cha_ching_sound_test_notification_title">Тестировать уведомление</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">ТЕСТИРОВАТЬ ЗВУК</string>
+    <string name="cha_ching_sound_succcess_snackbar">Всё готово! Теперь звук «дзинь» будет раздаваться при каждом заказе.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">ОТКЛЮЧИТЬ ЗВУК</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ВКЛЮЧИТЬ ЗВУК</string>
+    <string name="cha_ching_sound_issue_dialog_message">Включите заново, чтобы слышать «дзинь» при каждой новой продаже. Отслеживайте заказы ваших клиентов!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Звук «дзинь» отключён</string>
+    <string name="order_creation_products_order_count">Количество заказов</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Процент от общей суммы заказа</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Фиксированная сумма</string>
+    <string name="custom_amounts_bottom_sheet_heading">Как вы хотите добавить индивидуальную сумму?</string>
+    <string name="custom_amounts_percentage_label">Процент от общей суммы заказа (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Удалить индивидуальную сумму</string>
     <string name="store_creation_use_theme_button">Начать с этой темой</string>
     <string name="theme_activated_successfully">Тема успешно активирована</string>
     <string name="theme_preview_theme_name">Тема: %1$s</string>
@@ -16,8 +46,6 @@ Language: ru
     <string name="theme_preview_title">Предварительный просмотр</string>
     <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
     <string name="theme_picker_error_title">Произошла ошибка</string>
-    <string name="theme_picker_carousel_placeholder_message">Нажмите, чтобы просмотреть демонстрацию в реальном времени.</string>
-    <string name="theme_picker_carousel_placeholder_title">Тема «%s»</string>
     <string name="theme_picker_carousel_info_item_description">Настроив магазин, найдите для него самую подходящую тему в магазине тем WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Ищете что-то другое?</string>
     <string name="theme_picker_description">Вы можете изменить настройки в любой момент.</string>

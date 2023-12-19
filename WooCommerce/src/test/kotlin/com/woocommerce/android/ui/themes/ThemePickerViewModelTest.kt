@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.themes
 
+import coil.network.HttpException
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.util.getOrAwaitValue
@@ -14,6 +17,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -26,7 +30,12 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val crashLogger = mock<CrashLogging>()
 
+    private val currentTheme = Theme(
+        id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
+    )
     private val sampleTheme = Theme(
         id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
     )
@@ -44,7 +53,9 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         viewModel = ThemePickerViewModel(
             savedStateHandle = ThemePickerFragmentArgs(isFromStoreCreation).toSavedStateHandle(),
             themeRepository = themeRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            crashLogger = crashLogger
         )
     }
 
@@ -88,7 +99,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(viewState.currentThemeState)
-            .isEqualTo(ThemePickerViewModel.CurrentThemeState.Success(sampleTheme.name))
+            .isEqualTo(ThemePickerViewModel.CurrentThemeState.Success(sampleTheme.name, sampleTheme.id))
         verify(themeRepository).fetchCurrentTheme()
     }
 
@@ -188,4 +199,33 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
         assertThat(viewState.carouselState).isEqualTo(ThemePickerViewModel.CarouselState.Error)
     }
+
+    @Test
+    fun `when a theme screenshot is unavailable, then report a Sentry error`() = testBlocking {
+        setup(isFromStoreCreation = true)
+
+        viewModel.onThemeScreenshotFailure(
+            themeName = "tsubaki",
+            throwable = HttpException(
+                response = mock { on { code } doAnswer { 307 } }
+            )
+        )
+
+        verify(crashLogger).sendReport(any(), anyOrNull(), anyOrNull())
+    }
+
+    @Test
+    fun `given current theme is loaded, when showing themes, then remove current theme from the list of items`() =
+        testBlocking {
+            setup(isFromStoreCreation = false) {
+                whenever(themeRepository.fetchThemes())
+                    .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
+                whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(currentTheme))
+            }
+
+            val viewState = viewModel.viewState.runAndCaptureValues { advanceUntilIdle() }.last()
+            val carouseItems = (viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems
+
+            assertThat((carouseItems)).noneMatch { it is CarouselItem.Theme && it.themeId == currentTheme.id }
+        }
 }

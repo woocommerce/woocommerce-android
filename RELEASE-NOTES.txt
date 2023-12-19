@@ -1,9 +1,19 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.8
+-----
+- [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
+
+
 16.7
 -----
+- [*] [Internal] Fixed disabling editable controls in product cards in order edit screen in case order is not editable [https://github.com/woocommerce/woocommerce-android/pull/10345]
+- [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
+- [*] Pay in Person: Revise both the text and the illustration to clarify that enabling Pay in Person is an optional choice for our customers. [https://github.com/woocommerce/woocommerce-android/pull/10362]
+- [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
 - [*] [Internal] Faster opening of the "more" screen. Animation of showing/hiding toolbar [https://github.com/woocommerce/woocommerce-android/pull/10346]
 - [*] Tap To Pay test payments are not taxable by default [https://github.com/woocommerce/woocommerce-android/pull/10353]
 - [*][Internal] Replace "Edit" text with Pencil icon for Customer and Customer notes section [https://github.com/woocommerce/woocommerce-android/pull/10381]
+- [***] Themes: the merchants can now choose a theme for their stores during store creation and from the app's settings (only for WPCom stores) [https://github.com/woocommerce/woocommerce-android/issues/10224]
 
 16.6
 -----

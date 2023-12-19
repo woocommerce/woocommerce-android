@@ -208,7 +208,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar()
+                    showToolbar(f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -484,11 +484,17 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar() {
+    private fun showToolbar(animate: Boolean) {
         if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
-        animatorHelper.animateToolbarHeight(show = true) {
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = true) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
             binding.collapsingToolbar.updateLayoutParams {
-                height = it
+                height = animatorHelper.toolbarHeight
             }
         }
     }
