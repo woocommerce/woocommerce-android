@@ -147,7 +147,7 @@ class ThemePickerViewModel @Inject constructor(
     fun onThemeTapped(theme: CarouselItem.Theme) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
-            properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
+            properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.themeId)
         )
         triggerEvent(NavigateToThemePreview(theme.themeId, navArgs.isFromStoreCreation))
     }
