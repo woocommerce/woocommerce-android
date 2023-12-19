@@ -557,7 +557,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     @Test
     fun `given app opened after store creation, when store gets installed, then show dialog`() = testBlocking {
         whenever(prefs.createdStoreSiteId).thenReturn(TEST_REMOTE_SITE_ID_1)
-        whenever(observeSiteInstallation.invoke(any(), anyOrNull(), any())).thenReturn(flowOf(InstallationState.Success))
+        whenever(observeSiteInstallation.invoke(any(), anyOrNull(), any()))
+            .thenReturn(flowOf(InstallationState.Success))
 
         createViewModel()
         val event = viewModel.event.captureValues().last()
