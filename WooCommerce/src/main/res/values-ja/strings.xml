@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-22 09:54:04+0000
+Translation-Revision-Date: 2023-12-14 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">商品</string>
+    <string name="scan_to_update_inventory_quantity_label">数量</string>
+    <string name="scan_to_update_inventory_original_quantity_label">元の数量</string>
+    <string name="scan_to_update_inventory_failure_snackbar">問題が発生しました。 もう一度お試しください</string>
+    <string name="scan_to_update_inventory_success_snackbar">数量が更新されました: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">商品情報を表示</string>
+    <string name="scan_to_update_inventory_update_quantity_button">数量を更新</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">数量 + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">SKU の商品: %s の在庫が管理されていません。 もう一度お試しください。</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">SKU の商品: %s が見つかりません。 もう一度お試しください。</string>
+    <string name="theme_activation_failed">テーマのアクティベーションに失敗しました。もう一度お試しください。</string>
+    <string name="settings_notifs_enable_chaching_sound_description">注文の通知音が無効になっています。再度オンにすると、商品が売れるたびに通知音 (キャッシュレジスターの効果音) がします。</string>
+    <string name="settings_notifs_enable_chaching_sound">通知音を有効化</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">バーコードをスキャンして在庫を更新</string>
+    <string name="cha_ching_sound_test_notification_message">これは通知音を確認するためのテスト通知です。\nスワイプして消すことができます。</string>
+    <string name="cha_ching_sound_test_notification_title">通知をテスト</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">テスト音</string>
+    <string name="cha_ching_sound_succcess_snackbar">準備完了 !  新しい注文が発生する度に通知音 (キャッシュレジスターの効果音) が鳴ります。</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">サイレントにする</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">音を鳴らす</string>
+    <string name="cha_ching_sound_issue_dialog_message">再びオンにすると、商品が売れるたびに通知音 (キャッシュレジスターの効果音) がします。 お客様から注文を常にお待ちしています !</string>
+    <string name="cha_ching_sound_issue_dialog_title">通知音オフ</string>
+    <string name="order_creation_products_order_count">注文数</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">注文合計に対するパーセンテージ</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">定額</string>
+    <string name="custom_amounts_bottom_sheet_heading">カスタム金額をどのように追加しますか ?</string>
+    <string name="custom_amounts_percentage_label">注文合計に対するパーセンテージ (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">カスタム金額を削除</string>
+    <string name="store_creation_use_theme_button">このテーマで始める</string>
+    <string name="theme_activated_successfully">テーマが正常に有効化されました</string>
+    <string name="theme_preview_theme_name">テーマ: %1$s</string>
+    <string name="theme_preview_activate_theme_button">このテーマを使用</string>
+    <string name="theme_preview_bottom_sheet_home_section">ホーム</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">タップして表示</string>
+    <string name="theme_preview_bottom_sheet_pages_title">このテンプレートのページ</string>
+    <string name="theme_preview_title">プレビュー</string>
+    <string name="theme_picker_error_message">現時点ではテーマを読み込むことができません。</string>
+    <string name="theme_picker_error_title">エラーが発生しました</string>
+    <string name="theme_picker_carousel_info_item_description">ストアをセットアップしたら、WooCommerce テーマストアでご自身にぴったりなテーマを見つけましょう。</string>
+    <string name="theme_picker_carousel_info_item_title">もっと知りたいですか ?</string>
+    <string name="theme_picker_description">設定で後でいつでも変更できます。</string>
+    <string name="theme_picker_title">テーマを選択</string>
+    <string name="store_creation_theme_activation_error">選択したテーマをアクティブ化するときにエラーが発生しました。もう一度やり直してください。</string>
+    <string name="store_creation_theme_activation_loading">ストアのテーマを有効化中…</string>
+    <string name="settings_themes">テーマ</string>
+    <string name="product_filter_explore_plugin">探索しましょう !</string>
+    <string name="configuration_required">設定が必要です</string>
+    <string name="blaze_overflow_menu_hide_blaze">Blaze を非表示</string>
+    <string name="ai_order_thank_you_note_copy_label">AI が生成したお礼状</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">お礼状を作成できません。 下のボタンを使用して再試行してください。</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">共有</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">再生成</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ ご注文へのお礼状を作成しています…</string>
+    <string name="ai_order_thank_you_note_dialog_title">お礼状</string>
+    <string name="subscription_one_time_shipping_note">注: この設定を有効にするには、定期購入に無料お試しや同期された更新日が含まれていない必要があります。</string>
+    <string name="subscription_one_time_shipping_description">これを有効にすると、初回注文でのみ送料を請求します。</string>
+    <string name="subscription_one_time_shipping_enabled">有効</string>
+    <string name="subscription_one_time_shipping">1回限りの発送</string>
+    <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメントとその他のファイル</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨お礼状を作成できません</string>
+    <string name="custom_amounts_tax_label">税金を請求</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">利用可能な資金は毎%s自動で入金されます。</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">利用可能な資金は毎日自動で入金されます。</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">資金は%d日間保留された後に利用可能になります。</string>
     <string name="product_variation_picker_title">バリエーションを選択する</string>
-    <string name="configuration_variable_update">バリエーションを更新する</string>
+    <string name="configuration_variable_update">バリエーションを選択</string>
     <string name="configuration_children_issue"> 「%1$s」-&gt; %2$s </string>
     <string name="configuration_variable_selection"> バリエーションを選択してください </string>
     <string name="configuration_quantity_items_selected_plural"> %1$s個のアイテムを選択済み </string>
@@ -22,7 +85,6 @@ Language: ja_JP
     <string name="configuration_quantity_between"> %1$s～%2$s個のアイテム </string>
     <string name="configuration_quantity_item_plural">%d個のアイテム</string>
     <string name="configuration_quantity_item">%d個のアイテム</string>
-    <string name="configuration_issues">設定に関する問題</string>
     <string name="order_configuration_change_product_quantity">商品数量を%1$fから%2$fに変更</string>
     <string name="save_configuration">設定を保存する</string>
     <string name="product_configuration_title">設定</string>
@@ -207,8 +269,7 @@ Language: ja_JP
     <string name="tax_rate_selector_empty_list_title">税率が見つかりませんでした</string>
     <string name="store_onboarding_payments_setup_description">その他の決済サービス業者を探し\n決済サービス業者を選択します。</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">お支払い方法</string>
-    <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメント</string>
-    <string name="product_downloadable_files_add_media_from_device">端末上のメディアファイル</string>
+    <string name="product_downloadable_files_add_media_from_device">端末上の画像と動画</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">今すぐ解決</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">設定完了</string>
     <string name="tax_rate_selector_title">税率を設定する</string>
@@ -500,7 +561,7 @@ Language: ja_JP
     <string name="settings_privacy_header">プライバシー</string>
     <string name="settings_usage_tracking_description">ストアに関して当社が収集しているデータと、このデータ共有をコントロールするオプションについて、詳細をご確認ください。</string>
     <string name="settings_usage_tracking">使用状況の追跡</string>
-    <string name="settings_web_options_description">WooCommerce.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
+    <string name="settings_web_options_description">woo.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
     <string name="settings_web_options">ウェブオプション</string>
     <string name="settings_more_privacy_options_header">その他のプライバシーオプション</string>
     <string name="settings_tracking_analytics_error_update">プライバシー設定の更新でエラーが発生しました</string>
@@ -2942,12 +3003,6 @@ Language: ja_JP
     <string name="wc_approve">承認</string>
     <string name="wc_view_the_product_external">製品を表示する</string>
     <string name="support_help">ヘルプ &amp; サポート</string>
-    <string name="settings_notifs_reviews_detail">新しい製品レビューのアラートを有効にする</string>
-    <string name="settings_notifs_reviews">製品レビュー</string>
-    <string name="settings_notifs_tone_detail">新しい注文が入った際の効果音を有効にする</string>
-    <string name="settings_notifs_tone">トーン</string>
-    <string name="settings_notifs_orders_detail">新しい注文が入った際のアラートを有効にする</string>
-    <string name="settings_notifs_orders">注文</string>
     <string name="settings_notifs_device_detail">サウンド、緊急性、通知ドット</string>
     <string name="settings_notifs_device">通知の管理</string>
     <string name="settings_notifs">通知</string>

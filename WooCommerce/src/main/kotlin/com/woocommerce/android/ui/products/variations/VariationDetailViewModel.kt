@@ -447,9 +447,11 @@ class VariationDetailViewModel @Inject constructor(
                 if (errorList.isEmpty()) {
                     triggerEvent(HideImageUploadErrorSnackbar)
                 } else {
-                    val errorMsg = resources.getMediaUploadErrorMessage(errorList.size)
                     triggerEvent(
-                        Event.ShowActionSnackbar(errorMsg) {
+                        Event.ShowActionSnackbar(
+                            message = resources.getMediaUploadErrorMessage(errorList.size),
+                            actionText = resources.getString(string.details),
+                        ) {
                             triggerEvent(ViewMediaUploadErrors(navArgs.remoteVariationId))
                         }
                     )

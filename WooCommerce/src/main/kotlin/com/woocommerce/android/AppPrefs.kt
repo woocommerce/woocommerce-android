@@ -36,6 +36,7 @@ import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -122,6 +123,10 @@ object AppPrefs {
         BLAZE_CELEBRATION_SCREEN_SHOWN,
         MY_STORE_BLAZE_VIEW_DISMISSED,
         WC_STORE_ID,
+        CREATED_STORE_SITE_ID,
+        CREATED_STORE_THEME_ID,
+        CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
+        NUMBER_OF_PRODUCTS_CREATED_WITH_AI,
     }
 
     /**
@@ -144,15 +149,6 @@ object AppPrefs {
 
         // Whether or not automatic crash reporting is enabled
         ENABLE_CRASH_REPORTING,
-
-        // Enable notifications for new orders
-        NOTIFS_ORDERS_ENABLED,
-
-        // Enable notifications for new reviews
-        NOTIFS_REVIEWS_ENABLED,
-
-        // Play cha-ching sound on new order notifications
-        NOTIFS_ORDERS_CHA_CHING_ENABLED,
 
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
@@ -280,6 +276,22 @@ object AppPrefs {
                 remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
             }
         }
+
+    /**
+     * Persists the ID of the last created site in case the app was closed while the site was being created.
+     * This allows to switch to the newly created site when the app is opened again.
+     */
+    var createdStoreSiteId: Long?
+        get() = getLong(DeletablePrefKey.CREATED_STORE_SITE_ID, -1).takeIf { it != -1L }
+        set(value) = setLong(DeletablePrefKey.CREATED_STORE_SITE_ID, value ?: -1)
+
+    var chaChingSoundIssueDialogDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
+
+    var numberOfProductsCreatedUsingAi: Int
+        get() = getInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, 0)
+        set(value) = setInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -486,24 +498,6 @@ object AppPrefs {
 
     fun setCrashReportingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
-    }
-
-    fun isOrderNotificationsEnabled() = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, true)
-
-    fun setOrderNotificationsEnabled(enabled: Boolean) {
-        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, enabled)
-    }
-
-    fun isReviewNotificationsEnabled() = getBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, true)
-
-    fun setReviewNotificationsEnabled(enabled: Boolean) {
-        setBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, enabled)
-    }
-
-    fun isOrderNotificationsChaChingEnabled() = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, true)
-
-    fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
-        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =
@@ -1160,6 +1154,35 @@ object AppPrefs {
 
     fun disableAutoTaxRate() {
         remove(AUTO_TAX_RATE_ID)
+    }
+
+    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) {
+        setString(DeletablePrefKey.CREATED_STORE_THEME_ID, "$siteId:$themeId")
+    }
+
+    fun clearThemeIdForStoreCreation() {
+        remove(DeletablePrefKey.CREATED_STORE_THEME_ID)
+    }
+
+    fun getThemeIdForStoreCreation(siteId: Long): String? {
+        return getString(DeletablePrefKey.CREATED_STORE_THEME_ID).orNullIfEmpty()?.let {
+            val split = it.split(":")
+            if (split.size == 2 && split[0].toLong() == siteId) {
+                split[1]
+            } else {
+                null
+            }
+        }
+    }
+
+    fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) {
+        val prefKey = PrefKeyString(channel.name)
+        val currentSuffix = getInt(prefKey, 0)
+        setInt(prefKey, currentSuffix + 1)
+    }
+
+    fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? {
+        return getInt(PrefKeyString(channel.name), 0).takeIf { it != 0 }
     }
 
     /**

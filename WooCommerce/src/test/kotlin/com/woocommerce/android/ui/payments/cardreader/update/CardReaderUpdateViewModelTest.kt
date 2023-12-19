@@ -9,7 +9,6 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -464,6 +463,6 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     ) = CardReaderUpdateViewModel(
         cardReaderManager,
         tracker,
-        CardReaderUpdateDialogFragmentArgs(requiredUpdate).initSavedStateHandle()
+        CardReaderUpdateDialogFragmentArgs(requiredUpdate).toSavedStateHandle()
     )
 }

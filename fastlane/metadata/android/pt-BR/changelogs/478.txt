@@ -1,2 +1,0 @@
-16.3:
-Nesta atualização, simplificamos ainda mais o gerenciamento da sua loja do WooCommerce. Agora você pode ver seus saldos e depósitos diretamente na tela Pagamentos se for usuário do WooCommerce Payments. Além disso, adicionamos a capacidade de criar ou editar produtos de assinatura. E para tornar a criação de pedidos mais tranquila, agora aceitamos produtos agrupados. Aproveite as melhorias de funcionalidade e continue mandando feedback!

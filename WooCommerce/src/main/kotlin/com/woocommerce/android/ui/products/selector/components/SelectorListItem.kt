@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -119,10 +123,10 @@ fun SelectorListItem(
         }
 
         if (isArrowVisible || isCogwheelVisible) {
-            val painter = if (isArrowVisible) {
-                painterResource(id = drawable.ic_arrow_right)
+            val image = if (isArrowVisible) {
+                Icons.Filled.ChevronRight
             } else {
-                painterResource(id = drawable.ic_configuration)
+                Icons.Filled.Tune
             }
 
             val contentDescription = if (isArrowVisible) {
@@ -131,13 +135,26 @@ fun SelectorListItem(
                 stringResource(id = string.extension_configure_button)
             }
 
-            Image(
-                painter = painter,
-                contentDescription = contentDescription,
-                modifier = Modifier
+            val color = if (isArrowVisible) {
+                MaterialTheme.colors.onSurface
+            } else {
+                MaterialTheme.colors.primary
+            }
+
+            val iconModifier = if (isArrowVisible) {
+                Modifier
                     .size(dimensionResource(id = dimen.major_200))
-                    .align(Alignment.CenterVertically),
-                contentScale = ContentScale.FillWidth
+            } else {
+                Modifier
+                    .padding(end = 8.dp)
+                    .size(dimensionResource(id = dimen.major_150))
+            }
+
+            Icon(
+                imageVector = image,
+                contentDescription = contentDescription,
+                modifier = iconModifier.align(Alignment.CenterVertically),
+                tint = color
             )
         }
     }

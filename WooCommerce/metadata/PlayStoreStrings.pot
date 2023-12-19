@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_164"
+msgctxt "release_note_167"
 msgid ""
-"16.4:\n"
-"We're excited to introduce some new features! Our latest update allows you to charge tax for custom amounts and set one-time shipping for subscription products. You can also set subscription products as "virtual products". Plus, we've added an AI feature that generates a thank-you note on the completed order's details screen. Enjoy our new and improved WooCommerce app!\n"
+"16.7:\n"
+"Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!\n"
 msgstr ""
 
-msgctxt "release_note_163"
+msgctxt "release_note_166"
 msgid ""
-"16.3:\n"
-"In this update, we've made managing your WooCommerce store even easier! You can now view your balances and deposits directly on the Payments screen if you're a WooCommerce Payments user. Additionally, we've added the ability to create or edit subscription products. And, to make order creation smoother, we now support bundle products. Enjoy the improved functionality and keep your feedback coming!\n"
+"16.6:\n"
+"Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

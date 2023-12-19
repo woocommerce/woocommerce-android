@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
@@ -1199,7 +1198,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
-            SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
+            SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).toSavedStateHandle(),
             selectedSite,
             orderStore,
             coroutinesTestRule.testDispatchers,

@@ -7,23 +7,25 @@
         android:id="@+id/themePickerFragment"
         android:name="com.woocommerce.android.ui.themes.ThemePickerFragment"
         android:label="ThemePickerFragment">
+        <argument
+            android:name="isFromStoreCreation"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_themePickerFragment_to_storeCreationInstallationFragment"
             app:destination="@id/storeCreationInstallationFragment" />
         <action
             android:id="@+id/action_themePickerFragment_to_themePreviewFragment"
-            app:destination="@id/themePreviewFragment">
-            <argument
-                android:name="themeDemoUri"
-                app:argType="string" />
-        </action>
+            app:destination="@id/themePreviewFragment" />
     </fragment>
     <fragment
         android:id="@+id/themePreviewFragment"
         android:name="com.woocommerce.android.ui.themes.ThemePreviewFragment"
         android:label="ThemePreviewFragment">
         <argument
-            android:name="themeDemoUri"
+            android:name="themeId"
             app:argType="string" />
+        <argument
+            android:name="isFromStoreCreation"
+            app:argType="boolean" />
     </fragment>
 </navigation>

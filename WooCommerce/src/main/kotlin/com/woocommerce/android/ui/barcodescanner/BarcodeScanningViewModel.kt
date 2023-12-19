@@ -2,22 +2,66 @@ package com.woocommerce.android.ui.barcodescanner
 
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.annotation.StringRes
+import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class BarcodeScanningViewModel @Inject constructor(
+    private val codeScanner: GoogleMLKitCodeScanner,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private val _permissionState = MutableLiveData<PermissionState>()
     val permissionState: LiveData<PermissionState> = _permissionState
 
+    private var frameChannel = createChannel()
+
+    private var processingJob: Job? = null
+
     init {
         _permissionState.value = PermissionState.Unknown
+    }
+
+    fun startCodesRecognition() {
+        frameChannel = createChannel()
+        processingJob = launch {
+            for (frame in frameChannel) {
+                codeScanner.recogniseCode(frame).let { status ->
+                    when (status) {
+                        is CodeScannerStatus.Success -> {
+                            triggerEvent(ScanningEvents.OnScanningResult(status))
+                        }
+
+                        is CodeScannerStatus.Failure -> {
+                            triggerEvent(ScanningEvents.OnScanningResult(status))
+                        }
+
+                        CodeScannerStatus.NotFound -> {
+                            // do nothing
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun stopCodesRecognition() {
+        processingJob?.cancel()
+        frameChannel.close()
     }
 
     fun updatePermissionState(
@@ -62,6 +106,34 @@ class BarcodeScanningViewModel @Inject constructor(
         }
     }
 
+    fun onNewFrame(imageProxy: ImageProxy) {
+        @OptIn(DelicateCoroutinesApi::class)
+        if (!frameChannel.isClosedForSend) {
+            frameChannel.trySend(imageProxy)
+        }
+    }
+
+    fun onBindingException(exception: Exception) {
+        triggerEvent(
+            ScanningEvents.OnScanningResult(
+                CodeScannerStatus.Failure(
+                    error = exception.message,
+                    type = CodeScanningErrorType.Other(exception)
+                )
+            )
+        )
+        stopCodesRecognition()
+    }
+
+    private fun createChannel() = Channel<ImageProxy>(
+        capacity = BUFFER_SIZE,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+
+    override fun onCleared() {
+        stopCodesRecognition()
+    }
+
     sealed class ScanningEvents : Event() {
         data class LaunchCameraPermission(
             val cameraLauncher: ManagedActivityResultLauncher<String, Boolean>
@@ -69,6 +141,10 @@ class BarcodeScanningViewModel @Inject constructor(
 
         data class OpenAppSettings(
             val cameraLauncher: ManagedActivityResultLauncher<String, Boolean>
+        ) : ScanningEvents()
+
+        data class OnScanningResult(
+            val status: CodeScannerStatus
         ) : ScanningEvents()
     }
 
@@ -94,5 +170,9 @@ class BarcodeScanningViewModel @Inject constructor(
         ) : PermissionState()
 
         object Unknown : PermissionState()
+    }
+
+    private companion object {
+        private const val BUFFER_SIZE = 30
     }
 }

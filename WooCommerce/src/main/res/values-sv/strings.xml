@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-22 09:54:04+0000
+Translation-Revision-Date: 2023-12-13 13:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produkt</string>
+    <string name="scan_to_update_inventory_quantity_label">Antal</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Ursprungligt antal</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Något gick fel. Försök igen</string>
+    <string name="scan_to_update_inventory_success_snackbar">Antal uppdaterat: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Visa produktdetaljer</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Uppdatera antal</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Antal + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Produkt med SKU: %s är inte lagerhanterad. Försök igen.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Produkt med SKU: %s hittades inte. Försök igen.</string>
+    <string name="theme_activation_failed">Temaaktivering misslyckades, försök igen!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Ljudet för beställningsnotiser har inaktiverats. Slå på det igen för att höra \"ka-ching\" vid varje ny försäljning.</string>
+    <string name="settings_notifs_enable_chaching_sound">Aktivera ka-ching-ljud</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Skanna streckkoden för att uppdatera lagret</string>
+    <string name="cha_ching_sound_test_notification_message">Detta är bara en testnotis för att kontrollera ka-ching-ljudet.\nDu kan svepa bort den.</string>
+    <string name="cha_ching_sound_test_notification_title">Testnotis</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TESTA LJUD</string>
+    <string name="cha_ching_sound_succcess_snackbar">Klart! \"Ka-ching\"-ljudet kommer nu att höras för varje ny beställning.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">BEHÅLL TYST</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">AKTIVERA LJUD</string>
+    <string name="cha_ching_sound_issue_dialog_message">Aktivera det igen för att höra \"ka-ching\" vid varje ny försäljning. Håll koll på dina kunders beställningar.</string>
+    <string name="cha_ching_sound_issue_dialog_title">Ka-ching-ljud av</string>
+    <string name="order_creation_products_order_count">Antal beställningar</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">En procentandel av beställningens totala belopp</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Ett fast belopp</string>
+    <string name="custom_amounts_bottom_sheet_heading">Hur vill du lägga till ditt anpassade belopp?</string>
+    <string name="custom_amounts_percentage_label">Procentandel av beställningens totala belopp %1$s</string>
+    <string name="custom_amounts_delete_custom_amount">Ta bort anpassat belopp</string>
+    <string name="store_creation_use_theme_button">Börja med detta tema</string>
+    <string name="theme_activated_successfully">Temat har aktiverats</string>
+    <string name="theme_preview_theme_name">Tema: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Använd detta tema</string>
+    <string name="theme_preview_bottom_sheet_home_section">Hem</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Tryck för att visa</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Sidor på denna mall</string>
+    <string name="theme_preview_title">Förhandsgranska</string>
+    <string name="theme_picker_error_message">Kan inte att ladda teman just nu.</string>
+    <string name="theme_picker_error_title">Ett fel uppstod</string>
+    <string name="theme_picker_carousel_info_item_description">När din butik har konfigurerats kan du hitta ditt perfekta tema i WooCommerce-temabutiken.</string>
+    <string name="theme_picker_carousel_info_item_title">Letar du efter fler?</string>
+    <string name="theme_picker_description">Du kan alltid ändra det senare i inställningar</string>
+    <string name="theme_picker_title">Välj ett tema</string>
+    <string name="store_creation_theme_activation_error">Ett fel uppstod när du aktiverade det tema du valt, försök igen!</string>
+    <string name="store_creation_theme_activation_loading">Aktiverar din butiks tema …</string>
+    <string name="settings_themes">Teman</string>
+    <string name="product_filter_explore_plugin">Utforska!</string>
+    <string name="configuration_required">Konfiguration krävs</string>
+    <string name="blaze_overflow_menu_hide_blaze">Dölj Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">AI-genererat tackbrev</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">Kan inte skapa tackbrev. Använd knappen nedan för att försöka igen.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Dela</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Generera igen</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Skapa ett tackbrev för din order …</string>
+    <string name="ai_order_thank_you_note_dialog_title">Tackbrev</string>
+    <string name="subscription_one_time_shipping_note">Obs! För att den här inställningen ska kunna aktiveras får prenumerationen inte ha en gratis provperiod eller ett synkroniserat förnyelsedatum.</string>
+    <string name="subscription_one_time_shipping_description">Aktivera detta för att endast debitera frakt en gång vid den första ordern.</string>
+    <string name="subscription_one_time_shipping_enabled">Aktiverad</string>
+    <string name="subscription_one_time_shipping">Engångsfrakt</string>
+    <string name="product_downloadable_files_add_documents_from_device">Dokument och andra filer på enhet</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨ Skapa tackbrev</string>
+    <string name="custom_amounts_tax_label">Debitera moms</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Tillgängliga medel sätts in automatiskt, varje %s.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Tillgängliga medel sätts in automatiskt, varje dag.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Medlen blir tillgängliga efter att ha inväntat granskning i %d dagar.</string>
     <string name="product_variation_picker_title">Välj en variant</string>
-    <string name="configuration_variable_update">Uppdatera variant</string>
+    <string name="configuration_variable_update">Välj variant</string>
     <string name="configuration_children_issue"> ”%1$s” -&gt; %2$s </string>
     <string name="configuration_variable_selection">välj en variant</string>
     <string name="configuration_quantity_items_selected_plural"> %1$s objekt valda </string>
@@ -22,7 +85,6 @@ Language: sv_SE
     <string name="configuration_quantity_between"> mellan %1$s och %2$s objekt </string>
     <string name="configuration_quantity_item_plural">%d objekt</string>
     <string name="configuration_quantity_item">%d objekt</string>
-    <string name="configuration_issues">Konfigurationsproblem</string>
     <string name="order_configuration_change_product_quantity">Ändra produktantalet från %1$f till %2$f</string>
     <string name="save_configuration">Spara konfiguration</string>
     <string name="product_configuration_title">Konfiguration</string>
@@ -207,8 +269,7 @@ Language: sv_SE
     <string name="tax_rate_selector_empty_list_title">Vi kunde inte hitta några momssatser</string>
     <string name="store_onboarding_payments_setup_description">Upptäck andra betalningsleverantörer och \nvälj en betalningsleverantör.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Betalningsmetoder</string>
-    <string name="product_downloadable_files_add_documents_from_device">Dokument på enheten</string>
-    <string name="product_downloadable_files_add_media_from_device">Mediafiler på enheten</string>
+    <string name="product_downloadable_files_add_media_from_device">Bilder och videoklipp på enhet</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Lös nu</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Slutför inställning</string>
     <string name="tax_rate_selector_title">Ange momssats</string>
@@ -500,7 +561,7 @@ Language: sv_SE
     <string name="settings_privacy_header">Integritet</string>
     <string name="settings_usage_tracking_description">Läs mer om vilka data vi samlar in om din butik och dina möjligheter att styra vilka data som delas.</string>
     <string name="settings_usage_tracking">Användningsspårning</string>
-    <string name="settings_web_options_description">Fler integritetsinställningar finns tillgängliga för WooCommerce.com-användare. Mer information finns här.</string>
+    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för woo.com-användare. Kolla in här för att lära dig mer.</string>
     <string name="settings_web_options">Webbalternativ</string>
     <string name="settings_more_privacy_options_header">Fler integritetsalternativ</string>
     <string name="settings_tracking_analytics_error_update">Det uppstod ett fel vid uppdateringen av dina integritetsinställningar</string>
@@ -2942,12 +3003,6 @@ Language: sv_SE
     <string name="wc_approve">Godkänn</string>
     <string name="wc_view_the_product_external">Visa produkten</string>
     <string name="support_help">Hjälp och support</string>
-    <string name="settings_notifs_reviews_detail">Få aviseringar om nya produktrecensioner</string>
-    <string name="settings_notifs_reviews">Produktrecensioner</string>
-    <string name="settings_notifs_tone_detail">Spela upp ka-ching-ljud vid ny order</string>
-    <string name="settings_notifs_tone">Ton</string>
-    <string name="settings_notifs_orders_detail">Få aviseringar när nya ordrar kommer in</string>
-    <string name="settings_notifs_orders">Ordrar</string>
     <string name="settings_notifs_device_detail">Ljud, brådskande och aviseringspunkt</string>
     <string name="settings_notifs_device">Hantera notifikationer</string>
     <string name="settings_notifs">Aviseringar</string>

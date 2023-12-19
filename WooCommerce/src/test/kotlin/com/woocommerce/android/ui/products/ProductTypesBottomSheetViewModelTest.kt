@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -18,7 +17,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     @Test
     fun `given is Add Product flow, when loading product types, then product types not filtered`() = testBlocking {
         viewModel = ProductTypesBottomSheetViewModel(
-            ProductTypesBottomSheetFragmentArgs(isAddProduct = true).initSavedStateHandle(),
+            ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
             appPrefs, bottomSheetBuilder
         )
         whenever(bottomSheetBuilder.buildBottomSheetList()).thenReturn(uiItems)
@@ -35,7 +34,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 isAddProduct = false,
                 currentProductType = "simple",
                 isCurrentProductVirtual = false
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
             appPrefs, bottomSheetBuilder
         )
         whenever(bottomSheetBuilder.buildBottomSheetList()).thenReturn(uiItems)
@@ -52,7 +51,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 isAddProduct = false,
                 currentProductType = "simple",
                 isCurrentProductVirtual = true
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
             appPrefs, bottomSheetBuilder
         )
         whenever(bottomSheetBuilder.buildBottomSheetList()).thenReturn(uiItems)

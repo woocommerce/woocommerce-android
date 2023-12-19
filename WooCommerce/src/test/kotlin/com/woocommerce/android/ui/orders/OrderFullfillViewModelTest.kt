@@ -5,7 +5,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -55,7 +54,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val savedState =
-        OrderFulfillFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+        OrderFulfillFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val testOrderShipmentTrackings = OrderTestUtils.generateTestOrderShipmentTrackings(

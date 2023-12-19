@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:importantForAccessibility="no"
-                    android:text="@string/order_refunds_refund_fees" />
+                    android:text="@string/order_refunds_refund_custom_amount" />
 
                 <include
                     android:id="@+id/issueRefund_feesSection"

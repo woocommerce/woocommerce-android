@@ -3,11 +3,10 @@ package com.woocommerce.android.ui.orders.creation
 import android.os.Parcelable
 import androidx.camera.core.ImageProxy
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 interface CodeScanner {
-    fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus>
+    suspend fun recogniseCode(imageProxy: ImageProxy): CodeScannerStatus
 }
 
 sealed class CodeScannerStatus : Parcelable {
@@ -18,6 +17,9 @@ sealed class CodeScannerStatus : Parcelable {
         val error: String?,
         val type: CodeScanningErrorType
     ) : CodeScannerStatus()
+
+    @Parcelize
+    object NotFound : CodeScannerStatus()
 }
 
 sealed class CodeScanningErrorType : Parcelable {

@@ -62,7 +62,11 @@ open class BaseFragment : Fragment, BaseFragmentView {
             positiveButtonId = this.positiveButtonId,
             posBtnAction = this.positiveBtnAction,
             negativeButtonId = this.negativeButtonId,
-            negBtnAction = this.negativeBtnAction
+            negBtnAction = this.negativeBtnAction,
+            neutralButtonId = this.neutralButtonId,
+            neutBtAction = this.neutralBtnAction,
+            cancellable = this.cancelable,
+            onDismiss = this.onDismiss
         )
     }
 }

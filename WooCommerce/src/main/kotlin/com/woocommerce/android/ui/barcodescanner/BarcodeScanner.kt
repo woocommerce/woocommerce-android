@@ -8,88 +8,116 @@ import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.CodeScanner
-import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
-import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import androidx.camera.core.Preview as CameraPreview
 
+@Suppress("TooGenericExceptionCaught")
 @Composable
 fun BarcodeScanner(
-    codeScanner: CodeScanner,
-    onScannedResult: (Flow<CodeScannerStatus>) -> Unit
+    onNewFrame: (ImageProxy) -> Unit,
+    onBindingException: (Exception) -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
     val cameraProviderFuture = remember {
         ProcessCameraProvider.getInstance(context)
     }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        AndroidView(
-            factory = { context ->
-                val previewView = PreviewView(context)
-                val preview = CameraPreview.Builder().build()
-                preview.setSurfaceProvider(previewView.surfaceProvider)
-                val selector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
-                val imageAnalysis = ImageAnalysis.Builder().setTargetResolution(
-                    Size(
-                        previewView.width,
-                        previewView.height
-                    )
-                )
-                    .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                    onScannedResult(codeScanner.startScan(imageProxy))
-                }
+    val previewView = remember { PreviewView(context) }
+    val cameraPreview = remember {
+        CameraPreview.Builder().build().apply {
+            setSurfaceProvider(previewView.surfaceProvider)
+        }
+    }
+    val selector = remember {
+        CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
                 try {
-                    cameraProviderFuture.get().bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
-                } catch (e: IllegalStateException) {
-                    onScannedResult(
-                        flowOf(
-                            CodeScannerStatus.Failure(
-                                e.message
-                                    ?: "Illegal state exception while binding camera provider to lifecycle",
-                                CodeScanningErrorType.Other(e)
+                    val cameraProvider = cameraProviderFuture.get()
+                    val imageAnalysisUseCase = ImageAnalysis.Builder()
+                        .setTargetResolution(
+                            Size(
+                                previewView.width,
+                                previewView.height
                             )
-                        )
-                    )
-                } catch (e: IllegalArgumentException) {
-                    onScannedResult(
-                        flowOf(
-                            CodeScannerStatus.Failure(
-                                e.message
-                                    ?: "Illegal argument exception while binding camera provider to lifecycle",
-                                CodeScanningErrorType.Other(e)
-                            )
-                        )
-                    )
+                        ).setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
+                        .build()
+                        .apply {
+                            setAnalyzer(ContextCompat.getMainExecutor(context), onNewFrame)
+                        }
+
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(lifecycleOwner, selector, cameraPreview, imageAnalysisUseCase)
+                } catch (e: Exception) {
+                    onBindingException(e)
                 }
-                previewView
-            },
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    Box {
+        AndroidView(
+            factory = { previewView },
             modifier = Modifier.fillMaxSize()
         )
+        ScannerOverlay()
     }
 }
 
-class DummyCodeScanner : CodeScanner {
-    override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
-        return flowOf(CodeScannerStatus.Success("", BarcodeFormat.FormatUPCA))
+@Composable
+private fun ScannerOverlay() {
+    Column {
+        Box(
+            modifier = Modifier
+                .weight(0.24F)
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.color_scrim_background))
+        )
+        Spacer(modifier = Modifier.weight(0.52F))
+        Box(
+            modifier = Modifier
+                .weight(0.24F)
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.color_scrim_background)),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Text(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                text = stringResource(R.string.barcode_scanning_scan_product_barcode_label)
+            )
+        }
     }
 }
 
@@ -98,6 +126,9 @@ class DummyCodeScanner : CodeScanner {
 @Composable
 private fun BarcodeScannerScreenPreview() {
     WooThemeWithBackground {
-        BarcodeScanner(codeScanner = DummyCodeScanner(), onScannedResult = {})
+        BarcodeScanner(
+            onNewFrame = {},
+            onBindingException = {}
+        )
     }
 }

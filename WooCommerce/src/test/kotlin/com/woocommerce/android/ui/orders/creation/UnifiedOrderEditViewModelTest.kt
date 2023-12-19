@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationTyp
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
+import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
@@ -95,6 +96,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
     val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
+    val currencySymbolFinder: CurrencySymbolFinder = mock()
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
@@ -2410,7 +2412,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             orderCreationProductMapper = orderCreationProductMapper,
             isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
             adjustProductQuantity = AdjustProductQuantity(),
-            mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel
+            mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
+            currencySymbolFinder = currencySymbolFinder
         )
     }
 

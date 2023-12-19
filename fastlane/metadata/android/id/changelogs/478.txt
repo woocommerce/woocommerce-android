@@ -1,2 +1,0 @@
-16.3:
-Dalam pembaruan ini, pengelolaan toko WooCommerce Anda kini makin mudah! Saldo dan deposit kini dapat langsung dilihat di layar Pembayaran jika Anda adalah pengguna WooCommerce Payments. Selain itu, kami menambahkan kemampuan untuk membuat atau mengedit produk langganan. Untuk memperlancar pembuatan pesanan, sekarang kami juga mendukung produk bundel.  Nikmati peningkatan fungsionalitas dan kirimkan terus feedback Anda!

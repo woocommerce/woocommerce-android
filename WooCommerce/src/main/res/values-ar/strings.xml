@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-23 14:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">المنتج</string>
+    <string name="scan_to_update_inventory_quantity_label">الكمية</string>
+    <string name="scan_to_update_inventory_original_quantity_label">الكمية الأصلية</string>
+    <string name="scan_to_update_inventory_failure_snackbar">حدث خطأ. ترجى المحاولة مجددًا</string>
+    <string name="scan_to_update_inventory_success_snackbar">تم تحديث الكمية: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">عرض تفاصيل المنتج</string>
+    <string name="scan_to_update_inventory_update_quantity_button">تحديث الكمية</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">الكمية + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">المنتج المزوّد بوحدة SKU: لا تتم إدارة %s في المخزون. ترجى المحاولة مجددًا.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">المنتج المزوّد بوحدة SKU: لم يتم العثور على %s. ترجى المحاولة مجددًا.</string>
+    <string name="theme_activation_failed">فشل تفعيل القالب. ترجى المحاولة مجددًا!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">تم تعطيل صوت تنبيهات الطلبات، أعد تشغيله لسماع \"تشا تشينغ\" مع كل عملية بيع جديدة.</string>
+    <string name="settings_notifs_enable_chaching_sound">تمكين صوت تشا تشينغ</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">مسح الرمز الشريطي ضوئيًا لتحديث المخزون</string>
+    <string name="cha_ching_sound_test_notification_message">هذا مجرد تنبيه اختباري للتحقق من صوت تشا تشينغ.\nيمكنك سحبه بعيدًا.</string>
+    <string name="cha_ching_sound_test_notification_title">تنبيه اختباري</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">صوت اختباري</string>
+    <string name="cha_ching_sound_succcess_snackbar">كل شيء جاهز! سيصدر صوت \"تشا تشينغ\" الآن مع كل طلب جديد.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">البقاء صامت</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">تمكين الصوت</string>
+    <string name="cha_ching_sound_issue_dialog_message">أعد تشغيله لسماع \"تشا تشينغ\" مع كل عملية بيع جديدة. ابق على دراية بطلبات عملائك! </string>
+    <string name="cha_ching_sound_issue_dialog_title">تم إيقاف تشغيل صوت تشا تشينغ</string>
+    <string name="order_creation_products_order_count">عدد الطلبات</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">نسبة مئوية من إجمالي الطلبات</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">مبلغ ثابت</string>
+    <string name="custom_amounts_bottom_sheet_heading">كيف تريد إضافة مبلغك المخصص؟</string>
+    <string name="custom_amounts_percentage_label">نسبة مئوية من إجمالي الطلبات (⁦%1$s⁩)</string>
+    <string name="custom_amounts_delete_custom_amount">حذف المبلغ المخصص</string>
+    <string name="store_creation_use_theme_button">البدء باستخدام هذا القالب</string>
+    <string name="theme_activated_successfully">تم تفعيل القالب بنجاح</string>
+    <string name="theme_preview_theme_name">القالب: ⁦%1$s⁩</string>
+    <string name="theme_preview_activate_theme_button">استخدام هذا القالب</string>
+    <string name="theme_preview_bottom_sheet_home_section">الصفحة الرئيسية</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">الضغط للعرض</string>
+    <string name="theme_preview_bottom_sheet_pages_title">الصحفات الموجودة على هذا القالب</string>
+    <string name="theme_preview_title">معاينة</string>
+    <string name="theme_picker_error_message">يتعذر تحميل القوالب في الوقت الحالي.</string>
+    <string name="theme_picker_error_title">حدث خطأ</string>
+    <string name="theme_picker_carousel_info_item_description">بمجرد إعداد متجرك، اعثر على قالبك المثالي في متجر قوالب WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">هل تبحث عن المزيد؟</string>
+    <string name="theme_picker_description">يمكنك دومًا تغييره لاحقًا ضمن الإعدادات.</string>
+    <string name="theme_picker_title">اختيار قالب</string>
+    <string name="store_creation_theme_activation_error">حدث خطأ في أثناء تفعيل القالب الذي حددته، يرجى المحاولة مجددًا!</string>
+    <string name="store_creation_theme_activation_loading">جارٍ تفعيل قالب متجرك…</string>
+    <string name="settings_themes">القوالب</string>
+    <string name="product_filter_explore_plugin">استكشاف!</string>
+    <string name="configuration_required">التكوين مطلوب</string>
+    <string name="blaze_overflow_menu_hide_blaze">إخفاء Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">أنشأ الذكاء الاصطناعي ملحوظة \"تقديم الشكر إليك\"</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">يتعذر إنشاء ملحوظة \"تقديم الشكر إليك\". يرجى استخدام الزر أدناه للمحاولة مجددًا.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">مشاركة</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">إعادة الإنشاء</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ جارٍ إنشاء ملحوظة \"تقديم الشكر إليك\" لطلبك…</string>
+    <string name="ai_order_thank_you_note_dialog_title">ملحوظة \"تقديم الشكر إليك\"</string>
+    <string name="subscription_one_time_shipping_note">ملحوظة: لتمكين هذا الإعداد، يجب ألا يحتوي الاشتراك على إصدار تجريبي مجاني أو تاريخ تجديد متزامن.</string>
+    <string name="subscription_one_time_shipping_description">قم بتمكين هذا لتحصيل رسوم الشحن مرة واحدة فقط في الطلب المبدئي.</string>
+    <string name="subscription_one_time_shipping_enabled">ممكّن</string>
+    <string name="subscription_one_time_shipping">الشحن لمرة واحدة</string>
+    <string name="product_downloadable_files_add_documents_from_device">الوثائق والملفات الأخرى على الجهاز</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨ إنشاء ملحوظة \"تقديم الشكر إليك\"</string>
+    <string name="custom_amounts_tax_label">فرض الضرائب</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">يتم إيداع الأموال المتوافرة تلقائيًا في كل %s.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">يتم إيداع الأموال المتوافرة تلقائيًا في كل يوم.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">تصبح الأموال متوافرة بعد تعليقها لمدة %d من الأيام.</string>
     <string name="product_variation_picker_title">تحديد شكل</string>
-    <string name="configuration_variable_update">تحديث الشكل</string>
+    <string name="configuration_variable_update">اختيار الشكل</string>
     <string name="configuration_children_issue"> \" %1$s \" -&gt; %2$s </string>
     <string name="configuration_variable_selection"> يرجى تحديد شكل </string>
     <string name="configuration_quantity_items_selected_plural"> تم تحديد ⁦%1$s⁩ من العناصر </string>
@@ -22,7 +85,6 @@ Language: ar
     <string name="configuration_quantity_between"> يتراوح بين ⁦%1$s⁩ و⁦%2$s⁩ من العناصر </string>
     <string name="configuration_quantity_item_plural">%d من العناصر</string>
     <string name="configuration_quantity_item">%d من العناصر</string>
-    <string name="configuration_issues">مشكلات التكوين</string>
     <string name="order_configuration_change_product_quantity">تغيير كمية المنتج من ⁦%1$f⁩ إلى ⁦%2$f⁩</string>
     <string name="save_configuration">حفظ التكوين</string>
     <string name="product_configuration_title">التكوين</string>
@@ -207,8 +269,7 @@ Language: ar
     <string name="tax_rate_selector_empty_list_title">يتعذر علينا إيجاد أي معدلات ضرائب</string>
     <string name="store_onboarding_payments_setup_description">اكتشاف مزوِّدي الدفع الآخرين و\nاختر مزوِّد الدفع.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">طرق الدفع</string>
-    <string name="product_downloadable_files_add_documents_from_device">المستندات على الجهاز</string>
-    <string name="product_downloadable_files_add_media_from_device">ملفات الوسائط على الجهاز</string>
+    <string name="product_downloadable_files_add_media_from_device">الصور والفيديوهات على الجهاز</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">الحل الآن</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">إنهاء الإعداد</string>
     <string name="tax_rate_selector_title">تعيين معدل الضريبة</string>
@@ -500,7 +561,7 @@ Language: ar
     <string name="settings_privacy_header">الخصوصية</string>
     <string name="settings_usage_tracking_description">تعرّف على المزيد حول البيانات التي نجمعها حول متجرك وخياراتك للتحكم في مشاركة البيانات هذه.</string>
     <string name="settings_usage_tracking">تعقب الاستخدام</string>
-    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
+    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woo.com. تحقق هنا للتعرف على المزيد.</string>
     <string name="settings_web_options">خيارات الويب</string>
     <string name="settings_more_privacy_options_header">مزيد من خيارات الخصوصية</string>
     <string name="settings_tracking_analytics_error_update">كان هناك خطأ في أثناء تحديث إعدادات الخصوصية لديك</string>
@@ -2942,12 +3003,6 @@ Language: ar
     <string name="wc_approve">موافقة</string>
     <string name="wc_view_the_product_external">عرض المنتج</string>
     <string name="support_help">المساعدة والدعم</string>
-    <string name="settings_notifs_reviews_detail">اتسالم تنبيهات لمراجعات المنتجات الجديدة</string>
-    <string name="settings_notifs_reviews">مراجعات المنتجات</string>
-    <string name="settings_notifs_tone_detail">تشغيل صوت \"تشا تشينج\" عند وصول طلب جديد</string>
-    <string name="settings_notifs_tone">نغمة</string>
-    <string name="settings_notifs_orders_detail">استلام التنبيهات عندما تظهر طلبات جديدة</string>
-    <string name="settings_notifs_orders">الطلبات</string>
     <string name="settings_notifs_device_detail">الأصوات والضرورة ونقطة الإخطار</string>
     <string name="settings_notifs_device">إدارة الإخطارات</string>
     <string name="settings_notifs">الإخطارات</string>

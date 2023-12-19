@@ -18,7 +18,6 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -98,7 +97,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
     @Inject lateinit var zendeskSettings: ZendeskSettings
-    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
@@ -167,8 +165,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()
-
-        wooNotificationBuilder.createNotificationChannels()
 
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
@@ -389,7 +385,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         with(event) {
             // Replace numeric IDs with a placeholder so events can be aggregated
             val genericPath = apiPath?.replace(REGEX_API_NUMERIC_PARAM, "/ID/")
-            val protocol = REGEX_API_JETPACK_TUNNEL_METHOD.find(apiPath)?.groups?.get(1)?.value ?: ""
+            val protocol = REGEX_API_JETPACK_TUNNEL_METHOD.find(apiPath ?: "")?.groups?.get(1)?.value ?: ""
 
             val properties = mapOf(
                 "path" to genericPath,

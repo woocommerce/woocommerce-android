@@ -14,12 +14,14 @@ import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.store.ThemeStore
 import org.wordpress.android.fluxc.store.ThemeStore.FetchWPComThemesPayload
 import org.wordpress.android.fluxc.store.ThemeStore.OnCurrentThemeFetched
+import org.wordpress.android.fluxc.store.ThemeStore.OnThemeActivated
 import org.wordpress.android.fluxc.store.ThemeStore.OnThemeInstalled
 import org.wordpress.android.fluxc.store.ThemeStore.OnWpComThemesChanged
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload
 import org.wordpress.android.fluxc.store.ThemeStore.ThemeErrorType
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
 class ThemeRepository @Inject constructor(
     private val themeStore: ThemeStore,
     private val dispatcher: Dispatcher,
@@ -80,18 +82,18 @@ class ThemeRepository @Inject constructor(
         }
     }
 
-    suspend fun activateTheme(theme: Theme): Result<Unit> {
-        installThemeIfNeeded(theme).onFailure { return Result.failure(it) }
+    suspend fun activateTheme(themeId: String): Result<Unit> {
+        installThemeIfNeeded(themeId).onFailure { return Result.failure(it) }
 
-        val activationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
+        val activationResult: OnThemeActivated = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newActivateThemeAction(
-                SiteThemePayload(selectedSite.get(), theme.toThemeModel())
+                SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
             )
         )
 
         return when {
             !activationResult.isError -> {
-                WooLog.d(WooLog.T.THEMES, "Theme activated successfully: ${theme.id}")
+                WooLog.d(WooLog.T.THEMES, "Theme activated successfully: $themeId")
                 Result.success(Unit)
             }
 
@@ -104,19 +106,21 @@ class ThemeRepository @Inject constructor(
         }
     }
 
-    private suspend fun installThemeIfNeeded(theme: Theme): Result<Unit> {
+    private suspend fun installThemeIfNeeded(themeId: String): Result<Unit> {
         val installationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newInstallThemeAction(
-                SiteThemePayload(selectedSite.get(), theme.toThemeModel())
+                // The Default constructor ThemeModel() is deprecated.
+                // We should add a new method to ThemeStore install a theme by themeId
+                SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
             )
         )
 
         return when {
             !installationResult.isError || installationResult.error.type == ThemeErrorType.THEME_ALREADY_INSTALLED -> {
                 if (installationResult.isError) {
-                    WooLog.w(WooLog.T.THEMES, "Theme already installed: ${theme.id}")
+                    WooLog.w(WooLog.T.THEMES, "Theme already installed: $themeId")
                 } else {
-                    WooLog.d(WooLog.T.THEMES, "Theme installed successfully: ${theme.id}")
+                    WooLog.d(WooLog.T.THEMES, "Theme installed successfully: $themeId")
                 }
 
                 Result.success(Unit)
@@ -128,14 +132,6 @@ class ThemeRepository @Inject constructor(
                 }
                 Result.failure(OnChangedException(installationResult.error))
             }
-        }
-    }
-
-    private fun Theme.toThemeModel(): ThemeModel {
-        return ThemeModel().apply {
-            themeId = this@toThemeModel.id
-            name = this@toThemeModel.name
-            demoUrl = this@toThemeModel.demoUrl
         }
     }
 }

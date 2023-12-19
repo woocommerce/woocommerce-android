@@ -53,7 +53,14 @@
             app:destination="@id/nameYourStoreDialogFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_themePickerFragment"
-            app:destination="@id/nav_graph_themes" />
+            app:destination="@id/nav_graph_themes" >
+            <argument
+                android:name="isFromStoreCreation"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_notificationSettingsFragment"
+            app:destination="@id/notificationSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -184,4 +191,8 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+    <fragment
+        android:id="@+id/notificationSettingsFragment"
+        android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
+        android:label="NotificationSettingsFragment" />
 </navigation>

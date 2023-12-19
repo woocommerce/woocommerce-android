@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -22,8 +26,13 @@ class MainSettingsPresenter @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val shouldShowOnboarding: ShouldShowOnboarding,
     private val accountRepository: AccountRepository,
+    private val notificationChannelsHandler: NotificationChannelsHandler,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
+
+    override val isChaChingSoundEnabled: Boolean
+        get() = notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
@@ -83,6 +92,15 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
+    override fun onNotificationsClicked() {
+        if (isChaChingSoundEnabled) {
+            analyticsTracker.track(AnalyticsEvent.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
+            appSettingsFragmentView?.showDeviceAppNotificationSettings()
+        } else {
+            appSettingsFragmentView?.showNotificationsSettingsScreen()
+        }
+    }
+
     override val isDomainOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
 
@@ -90,5 +108,5 @@ class MainSettingsPresenter @Inject constructor(
         get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
             accountRepository.getUserAccount()?.userName != null
     override val isThemePickerOptionVisible: Boolean
-        get() = selectedSite.get().isWPComAtomic && FeatureFlag.THEME_PICKER.isEnabled()
+        get() = selectedSite.get().isWPComAtomic
 }

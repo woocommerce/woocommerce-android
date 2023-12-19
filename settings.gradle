@@ -4,10 +4,10 @@ pluginManagement {
     gradle.ext.daggerVersion = '2.45'
     gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.8.21'
+    gradle.ext.measureBuildsVersion = '2.0.3'
     gradle.ext.navigationVersion = '2.5.3'
     gradle.ext.sentryVersion = '3.5.0'
     gradle.ext.violationCommentsVersion = '1.69.0'
-    gradle.ext.wziebaTracksVersion = '1.2.1'
 
     repositories {
         google()
@@ -19,6 +19,7 @@ pluginManagement {
             }
             filter {
                 includeGroup "com.automattic.android"
+                includeGroup "com.automattic.android.measure-builds"
             }
         }
         gradlePluginPortal()
@@ -28,8 +29,8 @@ pluginManagement {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
+        id 'com.automattic.android.measure-builds' version gradle.ext.measureBuildsVersion
         id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
-        id 'io.github.wzieba.tracks.plugin' version gradle.ext.wziebaTracksVersion
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
         id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion

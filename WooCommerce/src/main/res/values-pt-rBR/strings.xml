@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-21 16:54:25+0000
+Translation-Revision-Date: 2023-12-13 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produto</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantidade</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Quantidade original</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Ocorreu um erro. Tente novamente</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantidade atualizada: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Visualizar detalhes do produto</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Atualizar quantidade</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantidade + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Produto com SKU: %s não é gerenciado com base no estoque. Tente novamente.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Produto com SKU: %s não encontrado. Tente novamente.</string>
+    <string name="theme_activation_failed">Falha na ativação do tema. Tente novamente!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">O som das notificações de pedidos foi desativado. Ative-o novamente para saber sempre que houver uma nova venda.</string>
+    <string name="settings_notifs_enable_chaching_sound">Ativar o som de nova venda</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Ler código de barras para atualizar o inventário</string>
+    <string name="cha_ching_sound_test_notification_message">Isso é apenas uma notificação de teste para verificar o som de nova venda.\nVocê pode pular.</string>
+    <string name="cha_ching_sound_test_notification_title">Notificação de teste</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TESTAR SOM</string>
+    <string name="cha_ching_sound_succcess_snackbar">Tudo pronto! Agora você ouvirá um som para cada novo pedido.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">MANTER EM SILÊNCIO</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ATIVAR SOM</string>
+    <string name="cha_ching_sound_issue_dialog_message">Ative-o novamente para saber sempre que houver uma nova venda. Fique por dentro dos pedidos dos seus clientes!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Som de nova venda desativado</string>
+    <string name="order_creation_products_order_count">Contagem de pedidos</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Uma porcentagem do total do pedido</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Um valor fixo</string>
+    <string name="custom_amounts_bottom_sheet_heading">Como deseja adicionar seu valor personalizado?</string>
+    <string name="custom_amounts_percentage_label">Porcentagem do total do pedido (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Excluir valor personalizado</string>
+    <string name="store_creation_use_theme_button">Começar com este tema</string>
+    <string name="theme_activated_successfully">Tema ativado com sucesso</string>
+    <string name="theme_preview_theme_name">Tema: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Usar este tema</string>
+    <string name="theme_preview_bottom_sheet_home_section">Início</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Toque para visualizar</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Páginas neste modelo</string>
+    <string name="theme_preview_title">Visualizar</string>
+    <string name="theme_picker_error_message">Não é possível carregar os temas no momento.</string>
+    <string name="theme_picker_error_title">Ocorreu um erro</string>
+    <string name="theme_picker_carousel_info_item_description">Assim que sua loja estiver configurada, encontre o tema perfeito na loja de temas do WooCommerce.</string>
+    <string name="theme_picker_carousel_info_item_title">Quer mais?</string>
+    <string name="theme_picker_description">Você pode mudar isso depois nas configurações.</string>
+    <string name="theme_picker_title">Escolher um tema</string>
+    <string name="store_creation_theme_activation_error">Ocorreu um erro ao ativar o tema selecionado. Tente novamente.</string>
+    <string name="store_creation_theme_activation_loading">Ativando o tema da sua loja…</string>
+    <string name="settings_themes">Temas</string>
+    <string name="product_filter_explore_plugin">Explore!</string>
+    <string name="configuration_required">Configuração necessária</string>
+    <string name="blaze_overflow_menu_hide_blaze">Ocultar Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">Texto de agradecimento gerado por IA</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">Não foi possível criar o texto de agradecimento. Use o botão abaixo para tentar novamente.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Compartilhar</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Gerar novamente</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Criando um texto de agradecimento para seu pedido…</string>
+    <string name="ai_order_thank_you_note_dialog_title">Texto de agradecimento</string>
+    <string name="subscription_one_time_shipping_note">Observação: para que essa configuração seja ativada, a assinatura não pode ter um teste gratuito ou uma data de renovação sincronizada.</string>
+    <string name="subscription_one_time_shipping_description">Ative essa opção para que o envio seja cobrado uma vez no pedido inicial.</string>
+    <string name="subscription_one_time_shipping_enabled">Ativado</string>
+    <string name="subscription_one_time_shipping">Taxa de envio única</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documentos e outros arquivos no dispositivo</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨Criar texto de agradecimento</string>
+    <string name="custom_amounts_tax_label">Cobrar impostos</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">O dinheiro disponível é depositado automaticamente a cada %s.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">O dinheiro disponível é depositado automaticamente todo dia.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">O dinheiro fica disponível após %d dias pendente.</string>
     <string name="product_variation_picker_title">Selecionar uma variação</string>
-    <string name="configuration_variable_update">Atualizar variação</string>
+    <string name="configuration_variable_update">Escolher variação</string>
     <string name="configuration_children_issue"> \"%1$s\" -&gt; %2$s </string>
     <string name="configuration_variable_selection"> selecione uma variação </string>
     <string name="configuration_quantity_items_selected_plural"> %1$s itens selecionados </string>
@@ -22,7 +85,6 @@ Language: pt_BR
     <string name="configuration_quantity_between"> entre %1$s e %2$s itens </string>
     <string name="configuration_quantity_item_plural">%d itens</string>
     <string name="configuration_quantity_item">%d item</string>
-    <string name="configuration_issues">Problemas na configuração</string>
     <string name="order_configuration_change_product_quantity">Mude a quantidade de produtos de %1$f para %2$f</string>
     <string name="save_configuration">Salvar configuração</string>
     <string name="product_configuration_title">Configuração</string>
@@ -207,8 +269,7 @@ Language: pt_BR
     <string name="tax_rate_selector_empty_list_title">Não foi possível localizar nenhum imposto</string>
     <string name="store_onboarding_payments_setup_description">Descubra outros provedores de pagamento e \nescolha um deles.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Formas de pagamento</string>
-    <string name="product_downloadable_files_add_documents_from_device">Documentos no dispositivo</string>
-    <string name="product_downloadable_files_add_media_from_device">Arquivos de mídia no dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">Imagens e vídeos no dispositivo</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolver agora</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Concluir configuração</string>
     <string name="tax_rate_selector_title">Definir imposto</string>
@@ -500,7 +561,7 @@ Language: pt_BR
     <string name="settings_privacy_header">Privacidade</string>
     <string name="settings_usage_tracking_description">Saiba mais sobre os dados que coletamos da sua loja e suas opções para controlar esse compartilhamento.</string>
     <string name="settings_usage_tracking">Rastreamento de uso</string>
-    <string name="settings_web_options_description">Mais opções de privacidade disponíveis para usuários do woocommerce.com. Clique aqui para saber mais.</string>
+    <string name="settings_web_options_description">Mais opções de privacidade disponíveis para usuários do woo.com. Clique aqui para saber mais.</string>
     <string name="settings_web_options">Opções da Web</string>
     <string name="settings_more_privacy_options_header">Mais opções de privacidade</string>
     <string name="settings_tracking_analytics_error_update">Ocorreu um erro ao atualizar suas configurações de privacidade</string>
@@ -2942,12 +3003,6 @@ Language: pt_BR
     <string name="wc_approve">Aprovar</string>
     <string name="wc_view_the_product_external">Visualizar o produto</string>
     <string name="support_help">Ajuda e suporte</string>
-    <string name="settings_notifs_reviews_detail">Receba alertas de novas avaliações de produtos</string>
-    <string name="settings_notifs_reviews">Avaliações de produto</string>
-    <string name="settings_notifs_tone_detail">Reproduzir o som da caixa registradora ao receber um novo pedido</string>
-    <string name="settings_notifs_tone">Tom</string>
-    <string name="settings_notifs_orders_detail">Receba alertas sobre o recebimento de novos pedidos</string>
-    <string name="settings_notifs_orders">Pedidos</string>
     <string name="settings_notifs_device_detail">Sons, urgência e ponto de notificação</string>
     <string name="settings_notifs_device">Gerenciar notificações</string>
     <string name="settings_notifs">Notificações</string>

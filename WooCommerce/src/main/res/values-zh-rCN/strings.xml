@@ -1,15 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-22 15:54:05+0000
+Translation-Revision-Date: 2023-12-13 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">产品</string>
+    <string name="scan_to_update_inventory_quantity_label">数量</string>
+    <string name="scan_to_update_inventory_original_quantity_label">原始数量</string>
+    <string name="scan_to_update_inventory_failure_snackbar">出错了。 请重试</string>
+    <string name="scan_to_update_inventory_success_snackbar">已更新数量：%s</string>
+    <string name="scan_to_update_inventory_product_details_button">查看产品详情</string>
+    <string name="scan_to_update_inventory_update_quantity_button">更新数量</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">数量 + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">SKU 为 %s 的产品不在库存管理范围内。 请重试。</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">未找到 SKU 为 %s 的产品。 请重试。</string>
+    <string name="theme_activation_failed">主题激活失败，请重试！</string>
+    <string name="settings_notifs_enable_chaching_sound_description">订单通知声音已禁用，重新启用即可在完成每笔新销售时听到“咔-亲”提示音。</string>
+    <string name="settings_notifs_enable_chaching_sound">启用“咔-亲”提示音</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">扫描条形码以更新库存</string>
+    <string name="cha_ching_sound_test_notification_message">这只是一条旨在检查“咔-亲”提示音的测试通知。\n您可以一扫而过。</string>
+    <string name="cha_ching_sound_test_notification_title">测试通知</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">测试声音</string>
+    <string name="cha_ching_sound_succcess_snackbar">一切就绪！ 现在，每完成一笔新订单都会听到“咔-亲”提示音。</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">静音</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">启用声音</string>
+    <string name="cha_ching_sound_issue_dialog_message">重新启用即可在完成每笔新销售时听到“咔-亲”提示音。 及时跟进客户订单！</string>
+    <string name="cha_ching_sound_issue_dialog_title">关闭“咔-亲”提示音</string>
+    <string name="order_creation_products_order_count">订单数</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">订单总额百分比</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">固定金额</string>
+    <string name="custom_amounts_bottom_sheet_heading">您想怎样添加自定义金额？</string>
+    <string name="custom_amounts_delete_custom_amount">删除自定义金额</string>
+    <string name="custom_amounts_percentage_label">订单总额百分比 (%1$s)</string>
+    <string name="store_creation_use_theme_button">从此主题开始</string>
+    <string name="theme_activated_successfully">主题激活成功</string>
+    <string name="theme_preview_theme_name">主题：%1$s</string>
+    <string name="theme_preview_activate_theme_button">使用此主题</string>
+    <string name="theme_preview_bottom_sheet_home_section">主页</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">轻点以查看</string>
+    <string name="theme_preview_bottom_sheet_pages_title">此模板上的页面</string>
+    <string name="theme_preview_title">预览</string>
+    <string name="theme_picker_error_message">暂时无法加载主题。</string>
+    <string name="theme_picker_error_title">出现错误</string>
+    <string name="theme_picker_carousel_info_item_description">完成商店设置后，请在 WooCommerce 主题商店中找到最适合您的主题。</string>
+    <string name="theme_picker_carousel_info_item_title">想要获得更多信息？</string>
+    <string name="theme_picker_description">之后您可以随时在设置中进行更改。</string>
+    <string name="theme_picker_title">选择主题</string>
+    <string name="store_creation_theme_activation_error">激活您选择的主题时出错，请重试！</string>
+    <string name="store_creation_theme_activation_loading">正在激活您的商店主题…</string>
+    <string name="settings_themes">主题</string>
+    <string name="product_filter_explore_plugin">尽情探索吧！</string>
+    <string name="configuration_required">需要配置</string>
+    <string name="blaze_overflow_menu_hide_blaze">隐藏 Blaze</string>
+    <string name="ai_order_thank_you_note_copy_label">AI 生成的感谢信</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">无法创建感谢信。 请使用下面的按钮重试。</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">共享</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">重新生成</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ 正在为您的订单生成感谢信…</string>
+    <string name="ai_order_thank_you_note_dialog_title">感谢信</string>
+    <string name="subscription_one_time_shipping_note">注意：要启用此设置，订阅不能具有免费试用期或同步的续订日期。</string>
+    <string name="subscription_one_time_shipping_description">启用此功能可仅对初始订单收取一次配送费用。</string>
+    <string name="subscription_one_time_shipping_enabled">已启用</string>
+    <string name="subscription_one_time_shipping">一次性配送费用</string>
+    <string name="product_downloadable_files_add_documents_from_device">设备上的文档及其他文件</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨ 创建感谢信</string>
+    <string name="custom_amounts_tax_label">收取税费</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">可用资金每 %s 自动存入。</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">可用资金每天自动存入。</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">资金将在等待 %d 天后到账。</string>
-    <string name="configuration_variable_update">更新变体</string>
     <string name="configuration_children_issue"> “%1$s”-&gt; %2$s </string>
     <string name="configuration_variable_selection"> 请选择一个变体 </string>
     <string name="configuration_quantity_items_selected_plural"> 已选择 %1$s 个项目 </string>
@@ -21,9 +83,9 @@ Language: zh_CN
     <string name="configuration_quantity_between"> %1$s 至 %2$s 个项目 </string>
     <string name="configuration_quantity_item_plural">%d 个项目</string>
     <string name="configuration_quantity_item">%d 个项目</string>
-    <string name="configuration_issues">配置问题</string>
     <string name="order_configuration_change_product_quantity">将产品数量从 %1$f 更改为 %2$f</string>
     <string name="product_variation_picker_title">选择一个变体</string>
+    <string name="configuration_variable_update">选择变体</string>
     <string name="save_configuration">保存配置</string>
     <string name="product_configuration_title">配置</string>
     <string name="default_product_title">产品 %s</string>
@@ -207,8 +269,7 @@ Language: zh_CN
     <string name="tax_rate_selector_empty_list_title">无法找到任何税率</string>
     <string name="store_onboarding_payments_setup_description">探索其他付款提供商和 \n选择付款提供商。</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">付款方式</string>
-    <string name="product_downloadable_files_add_documents_from_device">设备上的文档</string>
-    <string name="product_downloadable_files_add_media_from_device">设备上的媒体文件</string>
+    <string name="product_downloadable_files_add_media_from_device">设备上的图像和视频</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">立即解决</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">完成设置</string>
     <string name="tax_rate_selector_title">设置税率</string>
@@ -500,7 +561,6 @@ Language: zh_CN
     <string name="settings_privacy_header">隐私</string>
     <string name="settings_usage_tracking_description">详细了解我们收集的有关您商店的数据，以及您用于控制此数据共享的选项。</string>
     <string name="settings_usage_tracking">使用情況跟踪</string>
-    <string name="settings_web_options_description">WooCommerce.com 用户可用的更多隐私选项。 点击此处了解更多详情。</string>
     <string name="settings_web_options">Web 选项</string>
     <string name="settings_more_privacy_options_header">更多隐私选项</string>
     <string name="settings_tracking_analytics_error_update">更新隐私设置时出错</string>
@@ -513,6 +573,7 @@ Language: zh_CN
     <string name="settings_tracking_analytics_description">允许我们收集与用户跟我们的移动应用程序互动情况相关的信息，从而优化性能。</string>
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">当 Woo 应用程序在后台运行时，系统会将其终止。 您可以尝试再次使用它。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">未找到 SKU 为 %s 的产品。 无法添加到订单</string>
+    <string name="settings_web_options_description">为 woo.com 用户提供更多隐私选项。 点击此处了解更多详情。</string>
     <string name="order_list_barcode_scanning_scanning_failed">扫描失败。 请稍后再试</string>
     <string name="scan_barcode">扫描条形码</string>
     <string name="shipping_notice_banner_instructions_content">现在，当运输到遵守欧盟 (EU) 海关规定的国家/地区时，您需要清楚地描述每一件商品。 例如，假设您发送衣服，您的描述中需要指出是哪种类型的衣服（例如，男士衬衫、女孩背心、男孩夹克）才可被接受。 否则货物可能会在海关滞留或被扣留。</string>
@@ -2942,12 +3003,6 @@ Language: zh_CN
     <string name="wc_approve">批准</string>
     <string name="wc_view_the_product_external">查看产品</string>
     <string name="support_help">帮助与支持</string>
-    <string name="settings_notifs_reviews_detail">有新的产品评论时收到提醒</string>
-    <string name="settings_notifs_reviews">产品评论</string>
-    <string name="settings_notifs_tone_detail">有新订单时播放收银机打开的声音</string>
-    <string name="settings_notifs_tone">音调</string>
-    <string name="settings_notifs_orders_detail">有新订单时收到提醒</string>
-    <string name="settings_notifs_orders">订单</string>
     <string name="settings_notifs_device_detail">声音、紧急和通知点</string>
     <string name="settings_notifs_device">管理通知</string>
     <string name="settings_notifs">通知</string>

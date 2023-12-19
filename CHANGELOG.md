@@ -1,6 +1,15 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.7
+In our latest update, we've fine-tuned the In Person Payments onboarding flow for a more seamless and intuitive experience. Additionally, we've addressed various fixes to enhance the stability and performance of animations. Update now to enjoy a smoother and more reliable WooCommerce experience! 
+
+## 16.6
+Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!
+
+## 16.5
+The latest WooCommerce app version focuses on stability improvements! Additionally, WooPayments users can now seamlessly switch between currencies on the Deposits Summary view. Upgrade now for a smoother WooCommerce experience!
+
 ## 16.4
 We're excited to introduce some new features! Our latest update allows you to charge tax for custom amounts and set one-time shipping for subscription products. You can also set subscription products as "virtual products". Plus, we've added an AI feature that generates a thank-you note on the completed order's details screen. Enjoy our new and improved WooCommerce app!
 

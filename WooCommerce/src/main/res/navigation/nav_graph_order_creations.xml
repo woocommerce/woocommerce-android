@@ -132,6 +132,16 @@
             app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
             app:nullable="true"
             android:defaultValue="@null"/>
+        <argument
+            android:name="giftCardCode"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="giftCardAmount"
+            app:argType="java.math.BigDecimal"
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <action
             android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
             app:destination="@id/barcodeScanningFragment"/>
@@ -175,7 +185,10 @@
         android:label="CustomAmountsDialog">
         <argument
             android:name="customAmountUIModel"
-            app:argType="com.woocommerce.android.ui.orders.CustomAmountUIModel"
+            app:argType="com.woocommerce.android.ui.orders.CustomAmountUIModel"/>
+        <argument
+            android:name="orderTotal"
+            app:argType="string"
             android:defaultValue="@null"
             app:nullable="true"/>
     </dialog>

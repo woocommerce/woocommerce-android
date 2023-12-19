@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import junit.framework.TestCase.assertEquals
@@ -428,5 +430,60 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             AnalyticsEvent.ORDER_COUPON_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
         )
+    }
+
+    @Test
+    fun `given 100_001 quantity, when onItemAmountChanged with increase, then do nothing`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val item = Order.Item(
+            1L,
+            1L,
+            "name",
+            BigDecimal(1),
+            "",
+            1f,
+            BigDecimal(1),
+            BigDecimal(1),
+            BigDecimal(1),
+            1L,
+            listOf()
+        )
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(item)
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        val productInfo: ProductInfo = mock {
+            on { productType }.thenReturn(ProductType.SIMPLE)
+        }
+        sut.onItemAmountChanged(
+            OrderCreationProduct.ProductItem(
+                item = item,
+                productInfo = productInfo
+            ),
+            ProductAmountEvent.Change("100000")
+        )
+
+        sut.onItemAmountChanged(
+            OrderCreationProduct.ProductItem(
+                item = item.copy(quantity = 100_000f),
+                productInfo = productInfo
+            ),
+            ProductAmountEvent.Increase
+        )
+
+        assertThat(orderDraft!!.items[0].quantity).isEqualTo(100_000f)
     }
 }

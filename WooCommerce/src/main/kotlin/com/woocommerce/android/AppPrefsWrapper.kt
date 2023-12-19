@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
@@ -12,6 +13,32 @@ import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
     var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
+
+    /**
+     * Persists the ID of the last created site in case the app was closed while the site was being created.
+     * This allows to switch to the newly created site when the app is opened again.
+     */
+    var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
+
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
+
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
+    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+
+    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
+
+    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
+    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
+
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
+
+    var numberOfProductsCreatedUsingAi by AppPrefs::numberOfProductsCreatedUsingAi
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -117,12 +144,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun setCardReaderWelcomeDialogShown() = AppPrefs.setCardReaderWelcomeDialogShown()
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
-
-    fun isOrderNotificationsEnabled() = AppPrefs.isOrderNotificationsEnabled()
-
-    fun isReviewNotificationsEnabled() = AppPrefs.isReviewNotificationsEnabled()
-
-    fun isOrderNotificationsChaChingEnabled() = AppPrefs.isOrderNotificationsChaChingEnabled()
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
@@ -338,20 +359,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
-    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
-
-    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
-
-    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
-
-    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
-
-    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
-
-    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
-
-    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
-
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 
@@ -374,5 +381,16 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setWCStoreID(siteID, storeID)
     }
 
-    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
+        AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
+
+    fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
+
+    fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
+
+    fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) =
+        AppPrefs.incrementNotificationChannelTypeSuffix(channel)
+
+    fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
+        AppPrefs.getNotificationChannelTypeSuffix(channel)
 }

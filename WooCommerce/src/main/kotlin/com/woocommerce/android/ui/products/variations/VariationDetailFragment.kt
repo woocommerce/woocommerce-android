@@ -67,8 +67,10 @@ class VariationDetailFragment :
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var navigator: VariationNavigator
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var navigator: VariationNavigator
 
     private var doneOrUpdateMenuItem: MenuItem? = null
 
@@ -261,7 +263,12 @@ class VariationDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(
+                    event.message,
+                    event.actionText,
+                    event.action
+                )
+
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is VariationNavigationTarget -> {
                     navigator.navigate(this, event)
@@ -338,12 +345,13 @@ class VariationDetailFragment :
 
     private fun displayProductImageUploadErrorSnackBar(
         message: String,
+        actionText: String,
         actionListener: View.OnClickListener
     ) {
         if (imageUploadErrorsSnackbar == null) {
             imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
                 message = message,
-                actionText = getString(R.string.details),
+                actionText = actionText,
                 actionListener = actionListener
             )
         } else {

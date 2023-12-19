@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderWelcomeViewModel.CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,7 +54,7 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
             CardReaderWelcomeDialogFragmentArgs(
                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                 cardReaderType = cardReaderType,
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
             appPrefsWrapper
         )
     }

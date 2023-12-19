@@ -1,2 +1,0 @@
-16.3:
-Durch dieses Update wird die Verwaltung deines WooCommerce-Shops noch einfacher! Als Benutzer von WooCommerce Payments kannst du deine Guthaben und Auszahlungen ab sofort direkt auf dem Bildschirm für Zahlungen anzeigen. Außerdem hast du nun die Möglichkeit, Abonnementprodukte zu erstellen und zu bearbeiten. Und damit die Bestellerstellung noch reibungsloser funktioniert, unterstützen wir ab sofort Produktpakete. Genieße die verbesserten Funktionen und sende uns weiterhin Feedback!

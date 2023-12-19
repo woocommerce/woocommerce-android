@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.summary
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -44,7 +45,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
     private val accountStore: AccountStore,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _isLoading = savedStateHandle.getStateFlow(scope = this, initialValue = false)
     val isLoading = _isLoading.asLiveData()
@@ -77,6 +79,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 when (creationState) {
                     is Finished -> {
                         newStore.update(siteId = creationState.siteId)
+                        appPrefs.createdStoreSiteId = creationState.siteId
                         tracker.track(
                             stat = AnalyticsEvent.SITE_CREATION_FREE_TRIAL_CREATED_SUCCESS,
                             properties = mapOf(

@@ -11,17 +11,18 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -100,92 +101,113 @@ private fun DomainSearchForm(
     val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
     val textColor = colorResource(id = R.color.color_on_surface_medium_selector)
 
-    Column(
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_125)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-    ) {
-        if (state.freeUrl != null) {
-            Text(
-                text = stringResource(id = string.domains_search_domains),
-                style = MaterialTheme.typography.h5,
-            )
-            val redirectNotice = stringResource(id = string.domains_redirect_notice)
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                        withStyle(style = SpanStyle(color = textColor)) {
-                            append(redirectNotice)
-                        }
-                        append(" ")
-                        withStyle(style = SpanStyle(color = textHighlightedColor, fontWeight = FontWeight.Bold)) {
-                            append(state.freeUrl)
-                        }
+    BoxWithConstraints {
+        val hasEnoughHeight = maxHeight > 500.dp
+        Column(
+            modifier = modifier
+                .background(MaterialTheme.colors.surface)
+                .padding(dimensionResource(id = R.dimen.major_125))
+                .fillMaxSize()
+                .then(
+                    if (hasEnoughHeight) {
+                        Modifier
+                    } else {
+                        Modifier.verticalScroll(rememberScrollState())
                     }
-                },
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-        } else {
-            Text(
-                text = stringResource(id = string.store_creation_domain_picker_title),
-                style = MaterialTheme.typography.h5,
-            )
-            Text(
-                text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-        }
-
-        WCSearchField(
-            value = domainQuery,
-            onValueChange = onDomainQueryChanged,
-            hint = stringResource(id = R.string.store_creation_domain_picker_hint),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-                .border(
-                    BorderStroke(
-                        width = dimensionResource(id = R.dimen.minor_10),
-                        color = colorResource(id = R.color.woo_gray_5)
-                    ),
-                    RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
                 ),
-            backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
-        )
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(top = dimensionResource(id = R.dimen.minor_100))
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         ) {
-            when {
-                state.loadingState == Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                state.domainSuggestionsUi.isEmpty() && domainQuery.isBlank() ->
-                    ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
-                state.domainSuggestionsUi.isEmpty() ->
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions)
-                    )
-                else -> DomainSuggestionList(
-                    suggestions = state.domainSuggestionsUi,
-                    onDomainSuggestionSelected = onDomainSuggestionSelected,
-                    keyboardController = keyboardController
+            if (state.freeUrl != null) {
+                Text(
+                    text = stringResource(id = string.domains_search_domains),
+                    style = MaterialTheme.typography.h5,
+                )
+                val redirectNotice = stringResource(id = string.domains_redirect_notice)
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                            withStyle(style = SpanStyle(color = textColor)) {
+                                append(redirectNotice)
+                            }
+                            append(" ")
+                            withStyle(style = SpanStyle(color = textHighlightedColor, fontWeight = FontWeight.Bold)) {
+                                append(state.freeUrl)
+                            }
+                        }
+                    },
+                    style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.color_on_surface_medium)
+                )
+            } else {
+                Text(
+                    text = stringResource(id = string.store_creation_domain_picker_title),
+                    style = MaterialTheme.typography.h5,
+                )
+                Text(
+                    text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.color_on_surface_medium)
                 )
             }
-        }
-        WCColoredButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onContinueClicked,
-            enabled = state.loadingState == Idle && state.selectedDomain.isNotEmpty(),
-        ) {
-            Text(text = stringResource(id = state.confirmButtonTitle))
+
+            WCSearchField(
+                value = domainQuery,
+                onValueChange = onDomainQueryChanged,
+                hint = stringResource(id = R.string.store_creation_domain_picker_hint),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .border(
+                        BorderStroke(
+                            width = dimensionResource(id = R.dimen.minor_10),
+                            color = colorResource(id = R.color.woo_gray_5)
+                        ),
+                        RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                    ),
+                backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dimensionResource(id = R.dimen.minor_100))
+                    .then(
+                        if (hasEnoughHeight) {
+                            Modifier.weight(1f)
+                        } else {
+                            Modifier
+                        }
+                    )
+            ) {
+                when {
+                    state.loadingState == Loading -> CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    state.domainSuggestionsUi.isEmpty() && domainQuery.isBlank() ->
+                        ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
+
+                    state.domainSuggestionsUi.isEmpty() ->
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions)
+                        )
+
+                    else -> DomainSuggestionList(
+                        suggestions = state.domainSuggestionsUi,
+                        onDomainSuggestionSelected = onDomainSuggestionSelected,
+                        keyboardController = keyboardController,
+                        hasEnoughHeight = hasEnoughHeight,
+                    )
+                }
+            }
+            WCColoredButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onContinueClicked,
+                enabled = state.loadingState == Idle && state.selectedDomain.isNotEmpty(),
+            ) {
+                Text(text = stringResource(id = state.confirmButtonTitle))
+            }
         }
     }
 }
@@ -203,34 +225,29 @@ private fun DomainSuggestionList(
     suggestions: List<DomainSuggestionUi>,
     onDomainSuggestionSelected: (String) -> Unit,
     keyboardController: SoftwareKeyboardController?,
-    modifier: Modifier = Modifier,
+    hasEnoughHeight: Boolean
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
-    ) {
+    Column(modifier = if (hasEnoughHeight) Modifier.verticalScroll(rememberScrollState()) else Modifier) {
         Text(
             text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
-        LazyColumn {
-            itemsIndexed(suggestions) { index, suggestion ->
-                DomainSuggestionItem(
-                    domainSuggestion = suggestion,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            keyboardController?.hide()
-                            onDomainSuggestionSelected(suggestion.domain)
-                        }
+        suggestions.forEachIndexed { index, suggestion ->
+            DomainSuggestionItem(
+                domainSuggestion = suggestion,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        keyboardController?.hide()
+                        onDomainSuggestionSelected(suggestion.domain)
+                    }
+            )
+            if (index < suggestions.lastIndex)
+                Divider(
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = dimensionResource(id = R.dimen.minor_10)
                 )
-                if (index < suggestions.lastIndex)
-                    Divider(
-                        color = colorResource(id = R.color.divider_color),
-                        thickness = dimensionResource(id = R.dimen.minor_10)
-                    )
-            }
         }
     }
 }
@@ -365,7 +382,7 @@ private fun DomainSuggestionItem(
 fun DomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
-            domainQuery = "White Christmas Tress",
+            domainQuery = "White Christmas Trees",
             state = DomainSearchState(
                 confirmButtonTitle = R.string.domains_select_domain,
                 freeUrl = "www.cnn.com",

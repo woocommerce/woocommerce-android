@@ -3,7 +3,6 @@
 package com.woocommerce.android.ui.main
 
 import NotificationsPermissionCard
-import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -18,7 +17,6 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -117,6 +115,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -157,19 +156,27 @@ class MainActivity :
         }
     }
 
-    @Inject lateinit var presenter: MainContract.Presenter
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var crashLogging: CrashLogging
-    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
-    @Inject lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
-    @Inject lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+    @Inject
+    lateinit var presenter: MainContract.Presenter
+    @Inject
+    lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    lateinit var selectedSite: SelectedSite
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var crashLogging: CrashLogging
+    @Inject
+    lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject
+    lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+    @Inject
+    lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+    @Inject lateinit var animatorHelper: MainAnimatorHelper
 
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
-    private var restoreToolbarHeight = 0
     private var menu: Menu? = null
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
@@ -186,29 +193,14 @@ class MainActivity :
         }
     }
 
-    private val showSubtitleAnimator by lazy {
-        createCollapsingToolbarMarginBottomAnimator(
-            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
-            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
-            duration = 200L
-        )
-    }
-
-    private val hideSubtitleAnimator by lazy {
-        createCollapsingToolbarMarginBottomAnimator(
-            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
-            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
-            duration = 200L
-        )
-    }
-
     private val handler = Handler(Looper.getMainLooper())
     private val notificationPermissionBarRunnable = Runnable {
         animateBottomBar(binding.notificationsPermissionBar, show = true)
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION")
+    private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
@@ -216,7 +208,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar()
+                    showToolbar(f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -283,6 +275,8 @@ class MainActivity :
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
+        animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         val graphInflater = navHostFragment.navController.navInflater
 
@@ -321,10 +315,18 @@ class MainActivity :
 
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
-            viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+            viewModel.handleShortcutAction(intent?.action?.toLowerCase(Locale.ROOT))
+            handleIncomingImages()
         }
     }
 
+    private fun handleIncomingImages() {
+        viewModel.handleIncomingImages(
+            intent?.clipData?.let {
+                (0 until it.itemCount).map { index -> it.getItemAt(index).uri.toString() }
+            }
+        )
+    }
     override fun hideProgressDialog() {
         progressDialog?.apply {
             if (isShowing) {
@@ -374,6 +376,7 @@ class MainActivity :
         initFragment(null)
 
         viewModel.handleIncomingAppLink(intent?.data)
+        handleIncomingImages()
     }
 
     public override fun onDestroy() {
@@ -481,16 +484,28 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar() {
-        if (restoreToolbarHeight > 0) {
-            binding.collapsingToolbar.updateLayoutParams { height = restoreToolbarHeight }
+    private fun showToolbar(animate: Boolean) {
+        if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = true) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
+            binding.collapsingToolbar.updateLayoutParams {
+                height = animatorHelper.toolbarHeight
+            }
         }
     }
 
     private fun hideToolbar() {
         if (binding.collapsingToolbar.layoutParams.height == 0) return
-        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-        binding.collapsingToolbar.updateLayoutParams { height = 0 }
+        animatorHelper.animateToolbarHeight(show = false) {
+            binding.collapsingToolbar.updateLayoutParams {
+                height = it
+            }
+        }
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -510,23 +525,14 @@ class MainActivity :
         }
     }
 
-    private fun createCollapsingToolbarMarginBottomAnimator(from: Int, to: Int, duration: Long): ValueAnimator {
-        return ValueAnimator.ofInt(from, to)
-            .also { valueAnimator ->
-                valueAnimator.duration = duration
-                valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-                valueAnimator.addUpdateListener {
-                    binding.collapsingToolbar.expandedTitleMarginBottom = it.animatedValue as Int
-                }
-            }
-    }
-
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.visibility == View.GONE) return
         if (binding.collapsingToolbar.layoutParams.height != 0) {
             binding.toolbarSubtitle.collapse(duration = 200L)
-            hideSubtitleAnimator.start()
+            animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
+                binding.collapsingToolbar.expandedTitleMarginBottom = it
+            }
         } else {
             binding.toolbarSubtitle.hide()
         }
@@ -537,7 +543,9 @@ class MainActivity :
         binding.toolbarSubtitle.text = subtitle
         if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
         binding.toolbarSubtitle.expand(duration = 200L)
-        showSubtitleAnimator.start()
+        animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
+            binding.collapsingToolbar.expandedTitleMarginBottom = it
+        }
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
@@ -759,9 +767,7 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForPushNotification -> onRestartActivityEvent(event)
-                is RestartActivityForLocalNotification -> onRestartActivityEvent(event)
-                is RestartActivityForAppLink -> onRestartActivityEvent(event)
+                is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
@@ -788,6 +794,9 @@ class MainActivity :
                 }
 
                 is OpenFreeTrialSurvey -> openFreeTrialSurvey()
+                is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
+
+                is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
             }
         }
 
@@ -896,6 +905,12 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
+    private fun startThemeActivation(themeId: String) {
+        navController.navigateSafely(
+            NavGraphMainDirections.actionGlobalThemeActivationFragmentDialog(themeId)
+        )
+    }
+
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
         intent.apply {
             when (event) {
@@ -905,6 +920,10 @@ class MainActivity :
                     putExtra(FIELD_OPENED_FROM_PUSH, true)
                     putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     putExtra(FIELD_PUSH_ID, event.pushId)
+                }
+
+                else -> {
+                    // continue to restart the activity
                 }
             }
         }
@@ -938,9 +957,12 @@ class MainActivity :
         navController.navigate(Uri.parse(deeplink))
     }
 
-    override fun showAddProduct() {
+    override fun showAddProduct(imageUris: List<String>) {
         showBottomNav()
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+            isAddProduct = true,
+            images = imageUris.toTypedArray()
+        )
         navController.navigateSafely(action)
     }
 

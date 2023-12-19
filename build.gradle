@@ -1,18 +1,20 @@
-import io.github.wzieba.tracks.plugin.TracksExtension
+import com.automattic.android.measure.MeasureBuildsExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id 'io.gitlab.arturbosch.detekt'
-    id 'io.github.wzieba.tracks.plugin'
+    id 'com.automattic.android.measure-builds'
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
     id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
 }
 
-tracks {
-    automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
-    enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
+measureBuilds {
+    enable = findProperty('tracksEnabled')?.toBoolean() ?: false
+    automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
+    attachGradleScanId = true
+    authToken = findProperty('appsMetricsToken')
 }
 
 allprojects {
@@ -94,7 +96,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2905-d1b9fbb46305eaa8e32598c178fbc95b4bc97a21'
+    fluxCVersion = '2905-2b74181efde031cb4722737a157d019800d3888e'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'

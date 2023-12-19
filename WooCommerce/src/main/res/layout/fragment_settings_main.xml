@@ -99,46 +99,7 @@
         </LinearLayout>
 
         <!--
-            Notifications (pre- API 26)
-        -->
-        <LinearLayout
-            android:id="@+id/container_notifs_old"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:visibility="visible">
-
-            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_notifs" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-                android:id="@+id/option_notifs_orders"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:toggleOptionDesc="@string/settings_notifs_orders_detail"
-                app:toggleOptionTitle="@string/settings_notifs_orders" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-                android:id="@+id/option_notifs_tone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:toggleOptionDesc="@string/settings_notifs_tone_detail"
-                app:toggleOptionTitle="@string/settings_notifs_tone" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-                android:id="@+id/option_notifs_reviews"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
-                app:toggleOptionTitle="@string/settings_notifs_reviews" />
-
-            <View style="@style/Woo.Divider" />
-        </LinearLayout>
-
-        <!--
-            Notifications (API 26+)
+            Notifications
         -->
         <LinearLayout
             android:id="@+id/container_notifs_new"

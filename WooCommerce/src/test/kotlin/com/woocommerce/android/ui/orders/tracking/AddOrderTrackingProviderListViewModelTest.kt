@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListViewModel.ViewState
@@ -37,7 +36,7 @@ class AddOrderTrackingProviderListViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: AddOrderTrackingProviderListViewModel
 
-    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+    private val savedState = AddOrderTrackingProviderListFragmentArgs(orderId = ORDER_ID).toSavedStateHandle()
 
     fun setupViewModel() {
         viewModel = AddOrderTrackingProviderListViewModel(

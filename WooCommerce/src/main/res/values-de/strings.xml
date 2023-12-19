@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-11-22 22:54:04+0000
+Translation-Revision-Date: 2023-12-13 13:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produkt</string>
+    <string name="scan_to_update_inventory_quantity_label">Menge</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Ursprüngliche Menge</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Etwas ist schiefgegangen. Bitte versuche es erneut</string>
+    <string name="scan_to_update_inventory_success_snackbar">Menge aktualisiert: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Produktdetails anzeigen</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Menge aktualisieren</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Menge + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Das Produkt mit der SKU %s wird nicht im Lager verwaltet. Bitte versuche es erneut.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Das Produkt mit der SKU %s wurde nicht gefunden. Bitte versuche es erneut.</string>
+    <string name="theme_activation_failed">Theme konnte nicht aktiviert werden. Bitte versuche es erneut!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Der Benachrichtigungston für Bestellungen wurde deaktiviert. Aktiviere ihn wieder, um bei jedem neuen Verkauf den typischen Ka-tsching-Ton zu hören.</string>
+    <string name="settings_notifs_enable_chaching_sound">Ka-tsching-Ton aktivieren</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scanne den Barcode, um den Lagerbestand zu aktualisieren</string>
+    <string name="cha_ching_sound_test_notification_message">Dies ist nur eine Testbenachrichtigung, um den Ka-tsching-Ton zu überprüfen.\nDu kannst sie einfach wegwischen.</string>
+    <string name="cha_ching_sound_test_notification_title">Testbenachrichtigung</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TON TESTEN</string>
+    <string name="cha_ching_sound_succcess_snackbar">Fertig! Der Ka-tsching-Ton erklingt jetzt bei jeder neuen Bestellung.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">STUMMSCHALTEN</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">TON AKTIVIEREN</string>
+    <string name="cha_ching_sound_issue_dialog_message">Aktiviere ihn wieder, um bei jedem neuen Verkauf das Ka-tsching-Geräusch zu hören. Bleibe bei Kundenbestellungen auf dem Laufenden!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Ka-tsching-Ton deaktiviert</string>
+    <string name="order_creation_products_order_count">Bestell-Zähler</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Prozentsatz der Gesamtbestellung</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Fester Betrag</string>
+    <string name="custom_amounts_bottom_sheet_heading">Wie möchtest du deinen individuellen Betrag hinzufügen?</string>
+    <string name="custom_amounts_percentage_label">Prozentsatz der Gesamtbestellung (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Individuellen Betrag löschen</string>
+    <string name="store_creation_use_theme_button">Mit diesem Theme starten</string>
+    <string name="theme_activated_successfully">Theme erfolgreich aktiviert</string>
+    <string name="theme_preview_theme_name">Theme: %1$s</string>
+    <string name="theme_preview_activate_theme_button">Dieses Theme verwenden</string>
+    <string name="theme_preview_bottom_sheet_home_section">Startseite</string>
+    <string name="theme_preview_bottom_sheet_pages_subtitle">Zum Anzeigen tippen</string>
+    <string name="theme_preview_bottom_sheet_pages_title">Seiten auf diesem Template</string>
+    <string name="theme_preview_title">Vorschau</string>
+    <string name="theme_picker_error_message">Derzeit können keine Themes geladen werden.</string>
+    <string name="theme_picker_error_title">Ein Fehler ist aufgetreten</string>
+    <string name="theme_picker_carousel_info_item_description">Sobald dein Shop eingerichtet ist, kannst du dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
+    <string name="theme_picker_carousel_info_item_title">Du suchst mehr?</string>
+    <string name="theme_picker_description">In deinen Einstellungen kannst du dein Theme später jederzeit ändern.</string>
+    <string name="theme_picker_title">Theme auswählen</string>
+    <string name="store_creation_theme_activation_error">Beim Aktivieren deines ausgewählten Themes ist ein Fehler aufgetreten. Bitte versuche es erneut!</string>
+    <string name="store_creation_theme_activation_loading">Dein Shop-Theme wird aktiviert …</string>
+    <string name="settings_themes">Themes</string>
+    <string name="product_filter_explore_plugin">Sieh dich um!</string>
+    <string name="configuration_required">Konfiguration erforderlich</string>
+    <string name="blaze_overflow_menu_hide_blaze">Blaze ausblenden</string>
+    <string name="ai_order_thank_you_note_copy_label">Von KI erstellte Dankeschön-Nachricht</string>
+    <string name="ai_order_thank_you_note_dialog_failed_title">Die Dankeschön-Nachricht konnte nicht erstellt werden. Bitte verwende den Button unten, um es noch einmal zu versuchen.</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Teilen</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Neu generieren</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Die Dankeschön-Nachricht für deine Bestellung wird erstellt …</string>
+    <string name="ai_order_thank_you_note_dialog_title">Dankeschön-Nachricht</string>
+    <string name="subscription_one_time_shipping_note">Hinweis: Wenn diese Einstellung aktiviert werden soll, darf das Abonnement keinen Gratis-Test oder synchronisiertes Verlängerungsdatum haben.</string>
+    <string name="subscription_one_time_shipping_description">Aktiviere diese Option, um die Versandkosten nur einmal bei der ursprünglichen Bestellung zu berechnen.</string>
+    <string name="subscription_one_time_shipping_enabled">Aktiviert</string>
+    <string name="subscription_one_time_shipping">Einmaliger Versand</string>
+    <string name="product_downloadable_files_add_documents_from_device">Dokumente und andere Dateien auf dem Gerät</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨ Dankeschön-Nachricht erstellen</string>
+    <string name="custom_amounts_tax_label">Steuern erheben</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Verfügbares Guthaben wird automatisch an jedem %s ausgezahlt.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Verfügbares Guthaben wird automatisch jeden Tag ausgezahlt.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Guthaben, das seit %d Tagen aussteht, wird zur Verfügung gestellt.</string>
     <string name="product_variation_picker_title">Variante auswählen</string>
-    <string name="configuration_variable_update">Variante aktualisieren</string>
+    <string name="configuration_variable_update">Variante wählen</string>
     <string name="configuration_children_issue"> „%1$s“ -&gt; %2$s </string>
     <string name="configuration_variable_selection"> Bitte wähle eine Variante aus </string>
     <string name="configuration_quantity_items_selected_plural"> %1$s Artikel ausgewählt </string>
@@ -22,7 +85,6 @@ Language: de
     <string name="configuration_quantity_between"> zwischen %1$s und %2$s Artikeln </string>
     <string name="configuration_quantity_item_plural">%d Artikel</string>
     <string name="configuration_quantity_item">%d Artikel</string>
-    <string name="configuration_issues">Konfigurationsprobleme</string>
     <string name="order_configuration_change_product_quantity">Ändere die Produktmenge von %1$f zu %2$f</string>
     <string name="save_configuration">Konfiguration speichern</string>
     <string name="product_configuration_title">Konfiguration</string>
@@ -207,8 +269,7 @@ Language: de
     <string name="tax_rate_selector_empty_list_title">Es konnten keine Steuersätze gefunden werden</string>
     <string name="store_onboarding_payments_setup_description">Entdecke weitere Zahlungsanbieter und \nwähle einen Zahlungsanbieter aus.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Zahlungsmethoden</string>
-    <string name="product_downloadable_files_add_documents_from_device">Dokumente auf Gerät</string>
-    <string name="product_downloadable_files_add_media_from_device">Mediendateien auf Gerät</string>
+    <string name="product_downloadable_files_add_media_from_device">Bilder und Videos auf dem Gerät</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Jetzt lösen</string>
     <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Einrichtung abschließen</string>
     <string name="tax_rate_selector_title">Steuersatz festlegen</string>
@@ -500,7 +561,7 @@ Language: de
     <string name="settings_privacy_header">Datenschutz</string>
     <string name="settings_usage_tracking_description">Weitere Informationen zu den Daten, die wir über deinen Shop erfassen, sowie deinen Optionen zum Kontrollieren dieser Datenfreigabe.</string>
     <string name="settings_usage_tracking">Nutzungsaufzeichnung</string>
-    <string name="settings_web_options_description">Weitere Datenschutz-Optionen für woocommerce.com-Benutzer verfügbar. Hier erfährst du mehr.</string>
+    <string name="settings_web_options_description">Weitere Datenschutz-Optionen für woo.com-Benutzer verfügbar. Hier erfährst du mehr.</string>
     <string name="settings_web_options">Web-Optionen</string>
     <string name="settings_more_privacy_options_header">Mehr Datenschutz-Optionen</string>
     <string name="settings_tracking_analytics_error_update">Beim Aktualisieren deiner Privatsphäre-Einstellungen ist ein Fehler aufgetreten</string>
@@ -2942,12 +3003,6 @@ Language: de
     <string name="wc_approve">Genehmigen</string>
     <string name="wc_view_the_product_external">Produkt anzeigen</string>
     <string name="support_help">Hilfe und Support</string>
-    <string name="settings_notifs_reviews_detail">Benachrichtigungen bei neuen Produktbewertungen</string>
-    <string name="settings_notifs_reviews">Produktbewertungen</string>
-    <string name="settings_notifs_tone_detail">Bei neuer Bestellung Ka-tsching-Geräusch abspielen </string>
-    <string name="settings_notifs_tone">Ton</string>
-    <string name="settings_notifs_orders_detail">Benachrichtigungen beim Eingang neuer Bestellungen</string>
-    <string name="settings_notifs_orders">Bestellungen</string>
     <string name="settings_notifs_device_detail">Töne, Priorität und Benachrichtigungspunkt</string>
     <string name="settings_notifs_device">Verwalten von Benachrichtigungen</string>
     <string name="settings_notifs">Benachrichtigungen</string>

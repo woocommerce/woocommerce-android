@@ -70,6 +70,14 @@
                 <data android:path="/mobile/payments/tap-to-pay"/>
                 <data android:pathPrefix="/products/hardware/"/>
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
