@@ -59,6 +59,7 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
             paymentUrl = databaseEntity.paymentUrl,
             isEditable = databaseEntity.isEditable,
+            selectedGiftCard = databaseEntity.giftCardCode
         )
     }
 

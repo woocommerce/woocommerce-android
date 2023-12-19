@@ -60,6 +60,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
+import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment.Companion.GIFT_CARD_RESULT
+import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
@@ -639,7 +641,7 @@ class OrderCreateEditFormFragment :
                 newOrderData
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
-            paymentSection.bindGiftCardSubSection()
+            paymentSection.bindGiftCardSubSection(newOrderData)
         }
     }
 
@@ -723,10 +725,20 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection() {
+    private fun OrderCreationPaymentSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled()) {
-            giftCardButton.setOnClickListener { viewModel.onEditGiftCardButtonClicked() }
-            addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
+            if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
+                addGiftCardButton.isVisible = true
+                giftCardLayout.hide()
+                addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
+            } else {
+                addGiftCardButton.isVisible = false
+                giftCardCode.text = newOrderData.selectedGiftCard
+                giftCardLayout.show()
+                giftCardLayout.setOnClickListener {
+                    viewModel.onEditGiftCardButtonClicked(newOrderData.selectedGiftCard)
+                }
+            }
         }
     }
 
@@ -1072,6 +1084,9 @@ class OrderCreateEditFormFragment :
         ) { result ->
             viewModel.onConfigurationChanged(result.itemId, result.productConfiguration)
         }
+        handleResult<GiftCardResult>(GIFT_CARD_RESULT) { result ->
+            viewModel.onGiftCardSelected(result.selectedGiftCard)
+        }
     }
 
     private fun handleViewModelEvents(event: Event) {
@@ -1193,7 +1208,7 @@ class OrderCreateEditFormFragment :
             couponButton.isEnabled = state.isCouponButtonEnabled
             addCouponButton.isEnabled = state.isCouponButtonEnabled
             addGiftCardButton.isEnabled = state.isAddGiftCardButtonEnabled
-            giftCardButton.isEnabled = true
+            selectedGiftCardButton.isEnabled = true
         }
         customAmountsSection.apply {
             isLocked = false
@@ -1213,7 +1228,7 @@ class OrderCreateEditFormFragment :
             couponButton.isEnabled = false
             addCouponButton.isEnabled = false
             addGiftCardButton.isEnabled = false
-            giftCardButton.isEnabled = false
+            selectedGiftCardButton.isEnabled = false
         }
         customAmountsSection.apply {
             isLocked = true
