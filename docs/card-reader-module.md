@@ -5,8 +5,11 @@ If reading this you find anything is not up-to-date, please fix it or report to 
 * **Stripe** - Third party company we use as payments processing for In-Person Payments
 * **WCPay** - Or WooCommerce Payments is a plugin for WooCommerce (which itself is a plugin for Wordpress) that contains integrations with different payments platform including Stripe
 * **Stripe Extension/Plugin** - is another plugin for WooCommerce which can be used to accept payments using Stripe Payment Gateway.
-* **Card Reader** - At the moment the app supports *BBPOS Chipper 2X BT*. We are working on adding support for *Stripe M2* (ask Aaron to order your own reader)
-* **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷 (Cash On Delivery option can be renamed to "Pay On Delivery" on the site, but internally COD is used for both)
+* **Card Reader** - At the moment
+1. For the  **US**, we support the  [WooCommerce In-Person Payments M2](https://href.li/?https://woocommerce.com/products/m2-card-reader/).
+2. In  **Canada**  and  **UK**, we support the  [WooCommerce In-Person Payments WisePad 3](https://href.li/?https://woocommerce.com/products/wisepad3-card-reader/).
+To Order card reader for development and testing purpose, read [this post](https://wcpayoperations.wordpress.com/2022/06/01/card-reader-ad-hoc-requests/).
+* **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷 (Cash On Delivery option can be renamed to "Pay On Delivery" on the site, but internally COD is used for both). In the app, we call it as "Pay In Person"
 * **POS** - Point Of Sale
 * **KYC** - Know Your Customer
 * **Card Present Payments (CPP) / In-Person Payments (IPP) / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-Person Payments” is used in user facing features.
