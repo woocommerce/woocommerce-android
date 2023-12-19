@@ -181,7 +181,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
-    private val paymentCollectionHelper: OrderCreateEditTotalsHelper,
+    private val totalsHelper: OrderCreateEditTotalsHelper,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -217,7 +217,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }.asLiveData()
 
     val totalsData: LiveData<TotalsSectionsState> = _orderDraft
-        .map { paymentCollectionHelper.mapToPaymentTotalsState(it) }
+        .map { totalsHelper.mapToPaymentTotalsState(it) }
         .distinctUntilChanged()
         .asLiveData()
 

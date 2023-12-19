@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -99,7 +100,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
     val currencySymbolFinder: CurrencySymbolFinder = mock()
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
-    private lateinit var paymentCollectionHelper: OrderCreateEditTotalsHelper
+    private lateinit var totalsHelper: OrderCreateEditTotalsHelper
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -185,7 +186,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         getTaxRateLabel = mock()
         prefs = mock()
         mapFeeLineToCustomAmountUiModel = mock()
-        paymentCollectionHelper = mock()
+        totalsHelper = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2381,6 +2382,34 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given totals helper returns hidden, when totals checked, then return hidden`() {
+        testBlocking {
+            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(TotalsSectionsState.Hidden)
+            var totalsData: TotalsSectionsState? = null
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
+            createSut()
+
+            assertThat(totalsData).isEqualTo(TotalsSectionsState.Hidden)
+        }
+    }
+
+    @Test
+    fun `given totals helper returns shown, when totals checked, then return shown`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Shown>()
+            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(totalsSectionsState)
+            var totalsData: TotalsSectionsState? = null
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
+            createSut()
+
+            assertThat(totalsData).isEqualTo(totalsSectionsState)
+        }
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
@@ -2417,7 +2446,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             adjustProductQuantity = AdjustProductQuantity(),
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
             currencySymbolFinder = currencySymbolFinder,
-            paymentCollectionHelper = paymentCollectionHelper,
+            totalsHelper = totalsHelper,
         )
     }
 
