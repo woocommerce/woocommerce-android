@@ -1,2 +1,0 @@
-16.5:
-Aplikasi WooCommerce versi terbaru mengutamakan perbaikan stabilitas! Selain itu, pengguna WooPayments kini dapat mengganti mata uang dengan mudah pada tampilan Ringkasan Deposit. Upgrade sekarang untuk menikmati pengalaman WooCommerce yang lebih lancar!

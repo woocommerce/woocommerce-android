@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-07 12:54:05+0000
+Translation-Revision-Date: 2023-12-13 13:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Produkt</string>
+    <string name="scan_to_update_inventory_quantity_label">Antal</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Ursprungligt antal</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Något gick fel. Försök igen</string>
+    <string name="scan_to_update_inventory_success_snackbar">Antal uppdaterat: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Visa produktdetaljer</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Uppdatera antal</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Antal + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Produkt med SKU: %s är inte lagerhanterad. Försök igen.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Produkt med SKU: %s hittades inte. Försök igen.</string>
+    <string name="theme_activation_failed">Temaaktivering misslyckades, försök igen!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Ljudet för beställningsnotiser har inaktiverats. Slå på det igen för att höra \"ka-ching\" vid varje ny försäljning.</string>
+    <string name="settings_notifs_enable_chaching_sound">Aktivera ka-ching-ljud</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Skanna streckkoden för att uppdatera lagret</string>
+    <string name="cha_ching_sound_test_notification_message">Detta är bara en testnotis för att kontrollera ka-ching-ljudet.\nDu kan svepa bort den.</string>
+    <string name="cha_ching_sound_test_notification_title">Testnotis</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TESTA LJUD</string>
+    <string name="cha_ching_sound_succcess_snackbar">Klart! \"Ka-ching\"-ljudet kommer nu att höras för varje ny beställning.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">BEHÅLL TYST</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">AKTIVERA LJUD</string>
+    <string name="cha_ching_sound_issue_dialog_message">Aktivera det igen för att höra \"ka-ching\" vid varje ny försäljning. Håll koll på dina kunders beställningar.</string>
+    <string name="cha_ching_sound_issue_dialog_title">Ka-ching-ljud av</string>
+    <string name="order_creation_products_order_count">Antal beställningar</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">En procentandel av beställningens totala belopp</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Ett fast belopp</string>
+    <string name="custom_amounts_bottom_sheet_heading">Hur vill du lägga till ditt anpassade belopp?</string>
+    <string name="custom_amounts_percentage_label">Procentandel av beställningens totala belopp %1$s</string>
+    <string name="custom_amounts_delete_custom_amount">Ta bort anpassat belopp</string>
     <string name="store_creation_use_theme_button">Börja med detta tema</string>
     <string name="theme_activated_successfully">Temat har aktiverats</string>
     <string name="theme_preview_theme_name">Tema: %1$s</string>

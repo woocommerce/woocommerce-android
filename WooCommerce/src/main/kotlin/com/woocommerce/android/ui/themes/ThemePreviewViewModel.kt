@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -47,6 +48,10 @@ class ThemePreviewViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN = 1
+    }
+
     private val navArgs: ThemePreviewFragmentArgs by savedStateHandle.navArgs()
 
     private val theme = flow {
@@ -82,6 +87,7 @@ class ThemePreviewViewModel @Inject constructor(
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
             },
+            shouldShowPagesDropdown = demoPages.size > MINIMUM_NUMBER_OF_PAGE_SECTIONS_TO_DISPLAY_DROPDOWN,
             previewType = previewType
         )
     }.asLiveData()
@@ -128,7 +134,11 @@ class ThemePreviewViewModel @Inject constructor(
                             )
                         )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
-                        triggerEvent(MultiLiveEvent.Event.Exit)
+                        triggerEvent(
+                            ExitWithResult(
+                                SelectedTheme(navArgs.themeId, viewState.value?.themeName ?: "")
+                            )
+                        )
                     },
                     onFailure = {
                         analyticsTrackerWrapper.track(
@@ -182,6 +192,7 @@ class ThemePreviewViewModel @Inject constructor(
         val themeName: String,
         val isFromStoreCreation: Boolean,
         val themePages: List<ThemeDemoPage>,
+        val shouldShowPagesDropdown: Boolean,
         val isActivatingTheme: Boolean,
         val previewType: PreviewType = PreviewType.MOBILE
     ) {
@@ -209,6 +220,12 @@ class ThemePreviewViewModel @Inject constructor(
         val uri: String,
         val title: String,
         val isLoaded: Boolean
+    ) : Parcelable
+
+    @Parcelize
+    data class SelectedTheme(
+        val themeId: String,
+        val themeName: String
     ) : Parcelable
 
     object ContinueStoreCreationWithTheme : MultiLiveEvent.Event()
