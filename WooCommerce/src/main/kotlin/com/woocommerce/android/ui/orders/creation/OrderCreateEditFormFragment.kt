@@ -367,14 +367,16 @@ class OrderCreateEditFormFragment :
 
         viewModel.totalsData.observe(viewLifecycleOwner) {
             when (it) {
-                TotalsSectionsState.Hidden -> binding.totalsSection.hide()
-                is TotalsSectionsState.Shown -> {
+                is TotalsSectionsState.Shown, TotalsSectionsState.Hidden -> {
                     binding.totalsSection.show()
                     binding.totalsSection.apply {
                         setContent {
                             OrderCreateEditTotalsView(state = it)
                         }
                     }
+                }
+                is TotalsSectionsState.Disabled -> {
+                    binding.totalsSection.hide()
                 }
             }
         }

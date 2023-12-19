@@ -25,7 +25,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 )
             }
         } else {
-            TotalsSectionsState.Hidden
+            TotalsSectionsState.Disabled
         }
     }
 }
@@ -36,6 +36,8 @@ sealed class TotalsSectionsState {
     ) : TotalsSectionsState()
 
     object Hidden : TotalsSectionsState()
+
+    object Disabled : TotalsSectionsState()
 
     data class Button(
         val text: String,

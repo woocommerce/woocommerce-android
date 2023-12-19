@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +19,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,35 +29,49 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun OrderCreateEditTotalsView(state: TotalsSectionsState.Shown) {
+fun OrderCreateEditTotalsView(
+    state: TotalsSectionsState,
+    isPreview: Boolean = LocalInspectionMode.current,
+) {
     WooThemeWithBackground {
-        Card(
-            shape = RoundedCornerShape(0.dp),
-            elevation = 0.dp
+        val visible = state is TotalsSectionsState.Shown
+        AnimatedVisibility(
+            visible = visible || isPreview,
+            enter = expandVertically(expandFrom = Alignment.Bottom),
+            exit = shrinkVertically(shrinkTowards = Alignment.Bottom),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Card(
+                shape = RoundedCornerShape(0.dp),
+                elevation = 2.dp
             ) {
-                Divider(modifier = Modifier.fillMaxWidth())
-
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowUp,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.color_primary)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                WCColoredButton(
-                    onClick = { state.button.onClick },
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                        .wrapContentHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = state.button.text)
+                    Divider(modifier = Modifier.fillMaxWidth())
+
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowUp,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.color_primary)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    WCColoredButton(
+                        onClick = {
+                            (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                    ) {
+                        Text(
+                            text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
+                        )
+                    }
                 }
             }
         }
