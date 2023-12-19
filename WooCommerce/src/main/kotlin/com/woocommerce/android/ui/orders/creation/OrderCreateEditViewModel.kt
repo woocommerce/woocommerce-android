@@ -216,9 +216,8 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    val _totalsData = MutableLiveData<TotalsSectionsState>(TotalsSectionsState.Disabled)
+    private val _totalsData = MutableLiveData<TotalsSectionsState>(TotalsSectionsState.Disabled)
     val totalsData: LiveData<TotalsSectionsState> = _totalsData
-
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
