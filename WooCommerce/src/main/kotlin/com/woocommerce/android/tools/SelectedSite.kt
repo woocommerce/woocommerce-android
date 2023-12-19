@@ -2,9 +2,7 @@ package com.woocommerce.android.tools
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.PreferenceUtils
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.greenrobot.eventbus.EventBus
@@ -20,8 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class SelectedSite @Inject constructor(
     private val context: Context,
-    private val siteStore: SiteStore,
-    @AppCoroutineScope private val scope: CoroutineScope
+    private val siteStore: SiteStore
 ) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
