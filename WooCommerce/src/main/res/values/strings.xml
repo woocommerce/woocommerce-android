@@ -3412,7 +3412,6 @@
     <string name="theme_preview_type_tablet">Tablet</string>
     <string name="theme_preview_type_desktop">Desktop</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
-    <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
 
     <!--
     Store onboarding

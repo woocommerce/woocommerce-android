@@ -114,7 +114,6 @@ class ThemePickerViewModel @Inject constructor(
                     CurrentThemeState.Success(theme.name, theme.id)
                 },
                 onFailure = {
-                    triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
                     CurrentThemeState.Hidden
                 }
             )
