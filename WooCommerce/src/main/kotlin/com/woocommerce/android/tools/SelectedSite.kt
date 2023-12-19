@@ -2,6 +2,7 @@ package com.woocommerce.android.tools
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.PreferenceUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
@@ -18,10 +20,10 @@ import javax.inject.Singleton
  * Persists and restores the selected site to/from the app preferences.
  */
 @Singleton
-class SelectedSite(
+class SelectedSite @Inject constructor(
     private val context: Context,
     private val siteStore: SiteStore,
-    private val scope: CoroutineScope
+    @AppCoroutineScope private val scope: CoroutineScope
 ) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
