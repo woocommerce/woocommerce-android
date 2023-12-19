@@ -369,12 +369,11 @@ class OrderCreateEditFormFragment :
             when (it) {
                 is TotalsSectionsState.Shown, TotalsSectionsState.Hidden -> {
                     binding.totalsSection.show()
-                    binding.totalsSection.apply {
-                        setContent {
-                            OrderCreateEditTotalsView(state = it)
-                        }
+                    binding.totalsSection.setContent {
+                        OrderCreateEditTotalsView(state = it)
                     }
                 }
+
                 is TotalsSectionsState.Disabled -> {
                     binding.totalsSection.hide()
                 }
@@ -990,9 +989,11 @@ class OrderCreateEditFormFragment :
                 shouldHideCustomerAddressAndNotesSections(newOrderData) -> {
                     hideCustomerAddressAndNotesSections()
                 }
+
                 shouldShowCustomerSectionOnly(newOrderData) -> {
                     showCustomerSectionOnly(newOrderData)
                 }
+
                 shouldShowNotesSectionOnly(newOrderData) -> {
                     showNotesSectionOnly(newOrderData)
                 }
