@@ -12,7 +12,7 @@ class UncaughtErrorsHandler(
     private val crashLogger: CrashLogging
 ) : UncaughtExceptionHandler {
     override fun uncaughtException(t: Thread, e: Throwable) {
-        when (e) {
+        when (e.getOriginalCause()) {
             is SelectedSiteResetException -> {
                 // This might thrown on specific cases when the user can't access the site:
                 // - The user has been removed from the site
@@ -24,5 +24,9 @@ class UncaughtErrorsHandler(
             }
             else -> baseHandler?.uncaughtException(t, e) ?: throw e
         }
+    }
+
+    private fun Throwable.getOriginalCause(): Throwable {
+        return cause?.getOriginalCause() ?: this
     }
 }
