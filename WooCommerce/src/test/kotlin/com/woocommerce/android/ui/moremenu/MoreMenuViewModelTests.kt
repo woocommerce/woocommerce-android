@@ -237,6 +237,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given site plan is free trial, then free trial name is configured`() = testBlocking {
         // GIVEN
         setup {
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                }
+            }
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
                     name = "Test Plan",
@@ -257,6 +263,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given site plan is not free trial, then SitePlan name is used`() = testBlocking {
         // GIVEN
         setup {
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                }
+            }
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
                     name = "Test Plan",
@@ -277,6 +289,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given site plan is WPcom, then SitePlan name is formatted`() = testBlocking {
         // GIVEN
         setup {
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                }
+            }
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
                     name = "WordPress.com Test Plan",
@@ -345,6 +363,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given site plan is paid Woo Express, then SitePlan name is formatted`() = testBlocking {
         // GIVEN
         setup {
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                }
+            }
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
                     name = "Woo Express: Test Plan",
@@ -365,6 +389,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given site plan is null, then SitePlan name is empty`() = testBlocking {
         // GIVEN
         setup {
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                }
+            }
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(null)
         }
 
