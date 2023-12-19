@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
@@ -280,7 +281,14 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onEditClicked() {
         tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
-        triggerEvent(OrderNavigationTarget.EditOrder(order.id))
+        val firstGiftCard = giftCards.value?.firstOrNull()
+        triggerEvent(
+            EditOrder(
+                orderId = order.id,
+                giftCard = firstGiftCard?.code,
+                appliedDiscount = firstGiftCard?.used
+            )
+        )
     }
 
     fun orderNavigationIsEnabled() = navArgs.allOrderIds?.let {
