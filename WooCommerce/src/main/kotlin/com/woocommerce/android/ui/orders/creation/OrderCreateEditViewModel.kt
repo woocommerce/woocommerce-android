@@ -1128,19 +1128,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     _orderDraft.map { order -> order.copy(status = orderCreationStatus) }
                 }
                     .map {
-                        it.copy(
-                            items = it.items.map { item ->
-                                if (!item.isSynced()) {
-                                    item.copy(
-                                        itemId = 0L,
-                                        subtotal = EMPTY_BIG_DECIMAL,
-                                        total = EMPTY_BIG_DECIMAL,
-                                    )
-                                } else {
-                                    item
-                                }
-                            }
-                        )
+                        sanitizeUnsyncedOrderItemsData(it)
                     }
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
@@ -1186,6 +1174,20 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun sanitizeUnsyncedOrderItemsData(it: Order) = it.copy(
+        items = it.items.map { item ->
+            if (!item.isSynced()) {
+                item.copy(
+                    itemId = 0L,
+                    subtotal = EMPTY_BIG_DECIMAL,
+                    total = EMPTY_BIG_DECIMAL,
+                )
+            } else {
+                item
+            }
+        }
+    )
 
     private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
         (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
