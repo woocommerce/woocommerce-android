@@ -59,7 +59,7 @@ class ThemePickerViewModel @Inject constructor(
             stat = AnalyticsEvent.THEME_PICKER_SCREEN_DISPLAYED,
             properties = mapOf(
                 AnalyticsTracker.KEY_THEME_PICKER_SOURCE to when (navArgs.isFromStoreCreation) {
-                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_PROFILER
+                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_STORE_CREATION
                     false -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_SETTINGS
                 }
             )
