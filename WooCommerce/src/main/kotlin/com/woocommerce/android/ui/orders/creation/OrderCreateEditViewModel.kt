@@ -302,21 +302,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
 
     init {
-        launch {
-            pluginsInformation
-                .onEach {
-                    val isGiftCardExtensionEnabled = pluginsInformation
-                        .value[WOO_GIFT_CARDS.pluginName]
-                        ?.isOperational ?: false
-                    viewState = viewState.copy(
-                        shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled
-                    )
-                }.launchIn(viewModelScope)
-
-            pluginsInformation.update {
-                orderCreateEditRepository.fetchOrderSupportedPlugins()
-            }
-        }
+        monitorPluginAvailabilityChanges()
 
         when (mode) {
             Mode.Creation -> {
@@ -1215,6 +1201,24 @@ class OrderCreateEditViewModel @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    private fun monitorPluginAvailabilityChanges() {
+        launch {
+            pluginsInformation
+                .onEach {
+                    val isGiftCardExtensionEnabled = pluginsInformation
+                        .value[WOO_GIFT_CARDS.pluginName]
+                        ?.isOperational ?: false
+                    viewState = viewState.copy(
+                        shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled
+                    )
+                }.launchIn(viewModelScope)
+
+            pluginsInformation.update {
+                orderCreateEditRepository.fetchOrderSupportedPlugins()
+            }
         }
     }
 
