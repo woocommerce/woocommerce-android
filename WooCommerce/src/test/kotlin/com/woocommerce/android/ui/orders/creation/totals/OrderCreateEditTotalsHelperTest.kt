@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
@@ -17,7 +18,7 @@ class OrderCreateEditTotalsHelperTest {
     )
 
     @Test
-    fun `given ff disabled, when mapToPaymentTotalsState, then hidden returned`() {
+    fun `given ff disabled, when mapToPaymentTotalsState, then disabled returned`() {
         // GIVEN
         whenever(isTabletOrdersM1Enabled()).thenReturn(false)
 
@@ -25,21 +26,58 @@ class OrderCreateEditTotalsHelperTest {
         val actual = helper.mapToPaymentTotalsState(mock())
 
         // THEN
-        assertThat(actual).isEqualTo(TotalsSectionsState.Hidden)
+        assertThat(actual).isEqualTo(TotalsSectionsState.Disabled)
     }
 
     @Test
-    fun `given ff enabled, when mapToPaymentTotalsState, then shown returned`() {
+    fun `given ff enabled and items not empty, when mapToPaymentTotalsState, then shown returned`() {
         // GIVEN
         whenever(isTabletOrdersM1Enabled()).thenReturn(true)
         whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
             "Collect Payment"
         )
+        val order = mock<Order> {
+            whenever(it.items).thenReturn(listOf(mock()))
+        }
 
         // WHEN
-        val actual = helper.mapToPaymentTotalsState(mock())
+        val actual = helper.mapToPaymentTotalsState(order)
 
         // THEN
         assertThat((actual as TotalsSectionsState.Shown).button.text).isEqualTo("Collect Payment")
+    }
+
+    @Test
+    fun `given ff enabled and fee lines not empty, when mapToPaymentTotalsState, then shown returned`() {
+        // GIVEN
+        whenever(isTabletOrdersM1Enabled()).thenReturn(true)
+        whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
+            "Collect Payment"
+        )
+        val order = mock<Order> {
+            whenever(it.feesLines).thenReturn(listOf(mock()))
+        }
+
+        // WHEN
+        val actual = helper.mapToPaymentTotalsState(order)
+
+        // THEN
+        assertThat((actual as TotalsSectionsState.Shown).button.text).isEqualTo("Collect Payment")
+    }
+
+    @Test
+    fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then hidden returned`() {
+        // GIVEN
+        whenever(isTabletOrdersM1Enabled()).thenReturn(true)
+        val order = mock<Order> {
+            whenever(it.items).thenReturn(emptyList())
+            whenever(it.feesLines).thenReturn(emptyList())
+        }
+
+        // WHEN
+        val actual = helper.mapToPaymentTotalsState(order)
+
+        // THEN
+        assertThat(actual).isEqualTo(TotalsSectionsState.Hidden)
     }
 }
