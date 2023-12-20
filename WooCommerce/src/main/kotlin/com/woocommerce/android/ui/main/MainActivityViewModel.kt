@@ -30,6 +30,7 @@ import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
+import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
 import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
@@ -49,6 +50,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,6 +72,7 @@ class MainActivityViewModel @Inject constructor(
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
     private val storeProfilerRepository: StoreProfilerRepository,
+    private val observeSiteInstallation: ObserveSiteInstallation,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -176,16 +179,48 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun handlePostStoreCreationTasks() = launch(dispatchers.io) {
-        val createdStoreSiteId = prefs.createdStoreSiteId
-        if (createdStoreSiteId != null &&
-            siteStore.getSiteBySiteId(createdStoreSiteId).isWooExpressSiteReadyToUse
-        ) {
+        suspend fun showSiteReadyDialog(siteId: Long) = withContext(dispatchers.main) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_DISPLAYED)
+            triggerEvent(
+                Event.ShowDialog(
+                    titleId = R.string.store_creation_installation_async_dialog_title,
+                    messageId = R.string.store_creation_installation_async_dialog_message,
+                    positiveButtonId = R.string.store_creation_installation_async_dialog_switch_store,
+                    positiveBtnAction = { _, _ ->
+                        analyticsTrackerWrapper.track(
+                            AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_SWITCH_STORE_TAPPED
+                        )
+                        changeSiteAndRestart(siteId, RestartActivityForStoreCreation)
+                    },
+                    negativeButtonId = R.string.cancel
+                )
+            )
+
             prefs.createdStoreSiteId = null
-            if (selectedSite.get().siteId != createdStoreSiteId) {
-                withContext(dispatchers.main) {
-                    changeSiteAndRestart(createdStoreSiteId, RestartActivityForStoreCreation)
+        }
+
+        val createdStoreSiteId = prefs.createdStoreSiteId
+
+        if (createdStoreSiteId != null) {
+            when {
+                selectedSite.getOrNull()?.siteId == createdStoreSiteId -> {
+                    // The user has already switched to the new store, so we can clear the createdStoreSiteId
+                    prefs.createdStoreSiteId = null
                 }
-                return@launch
+
+                siteStore.getSiteBySiteId(createdStoreSiteId).isWooExpressSiteReadyToUse -> {
+                    showSiteReadyDialog(createdStoreSiteId)
+                    return@launch
+                }
+
+                else -> {
+                    observeSiteInstallation(createdStoreSiteId, skipInitialDelay = true)
+                        .filter { it is ObserveSiteInstallation.InstallationState.Success }
+                        .collect {
+                            showSiteReadyDialog(createdStoreSiteId)
+                        }
+                    return@launch
+                }
             }
         }
 

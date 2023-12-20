@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -14,6 +15,8 @@ import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.notifications.push.NotificationTestUtils
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
+import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState
 import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -32,7 +35,10 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -41,6 +47,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -115,6 +122,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         on { observeUnseenCount() } doReturn MutableStateFlow(1)
     }
     private val storeProfilerRepository: StoreProfilerRepository = mock()
+    private val observeSiteInstallation: ObserveSiteInstallation = mock()
 
     private val testAnnouncement = FeatureAnnouncement(
         appVersionName = "14.2",
@@ -453,7 +461,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
     }
 
-    // region Shortcuts
     @Test
     fun `given payments shortcut, when app opened, then trigger ViewPayments event`() {
         testBlocking {
@@ -567,7 +574,73 @@ class MainActivityViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(MainActivityViewModel.CreateNewProductUsingImages(listOf(uri)))
     }
 
-//endregion
+    @Test
+    fun `given app opened after store creation, when store gets installed, then show dialog`() = testBlocking {
+        whenever(prefs.createdStoreSiteId).thenReturn(TEST_REMOTE_SITE_ID_1)
+        whenever(observeSiteInstallation.invoke(any(), anyOrNull(), any()))
+            .thenReturn(flowOf(InstallationState.Success))
+
+        createViewModel()
+        val event = viewModel.event.captureValues().last()
+
+        assertThat(event).matches {
+            it is MultiLiveEvent.Event.ShowDialog &&
+                it.titleId == R.string.store_creation_installation_async_dialog_title &&
+                it.messageId == R.string.store_creation_installation_async_dialog_message &&
+                it.positiveButtonId == R.string.store_creation_installation_async_dialog_switch_store &&
+                it.negativeButtonId == R.string.cancel
+        }
+        verify(prefs).createdStoreSiteId = null
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_DISPLAYED)
+    }
+
+    @Test
+    fun `given app opened after store creation, when store is installed, then show dialog`() = testBlocking {
+        whenever(prefs.createdStoreSiteId).thenReturn(TEST_REMOTE_SITE_ID_1)
+        whenever(siteStore.getSiteBySiteId(TEST_REMOTE_SITE_ID_1)).thenReturn(
+            siteModel.apply {
+                setIsJetpackInstalled(true)
+                setIsJetpackConnected(true)
+                setIsWpComStore(true)
+                hasWooCommerce = true
+            }
+        )
+
+        createViewModel()
+        val event = viewModel.event.captureValues().last()
+
+        assertThat(event).matches {
+            it is MultiLiveEvent.Event.ShowDialog &&
+                it.titleId == R.string.store_creation_installation_async_dialog_title &&
+                it.messageId == R.string.store_creation_installation_async_dialog_message &&
+                it.positiveButtonId == R.string.store_creation_installation_async_dialog_switch_store &&
+                it.negativeButtonId == R.string.cancel
+        }
+        verify(prefs).createdStoreSiteId = null
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_DISPLAYED)
+    }
+
+    @Test
+    fun `given app opened after store creation, when switch store is clicked, then change store and restart`() =
+        testBlocking {
+            whenever(prefs.createdStoreSiteId).thenReturn(TEST_REMOTE_SITE_ID_1)
+            whenever(
+                observeSiteInstallation.invoke(
+                    any(),
+                    anyOrNull(),
+                    any()
+                )
+            ).thenReturn(flowOf(InstallationState.Success))
+
+            createViewModel()
+            val showDialogEvent = viewModel.event.captureValues().last() as MultiLiveEvent.Event.ShowDialog
+            val event = viewModel.event.runAndCaptureValues {
+                showDialogEvent.positiveBtnAction!!.onClick(null, 0)
+            }.last()
+
+            assertThat(event).isEqualTo(MainActivityViewModel.RestartActivityForStoreCreation)
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_SWITCH_STORE_TAPPED)
+        }
 
     private fun createViewModel() {
         viewModel = spy(
@@ -584,6 +657,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 resolveAppLink = resolveAppLink,
                 privacyRepository = mock(),
                 storeProfilerRepository = storeProfilerRepository,
+                observeSiteInstallation = observeSiteInstallation,
                 moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {

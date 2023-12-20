@@ -3327,6 +3327,9 @@
     <string name="store_creation_installation_manage_store_button">Manage my store</string>
     <string name="store_creation_installation_show_preview_button">Store preview</string>
     <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
+    <string name="store_creation_installation_async_dialog_title">Your new store is ready</string>
+    <string name="store_creation_installation_async_dialog_message">Do you want to start managing it now?</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Switch Store</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
