@@ -102,12 +102,15 @@ internal class ConnectionManager(
     private fun checkIfNecessaryPermissionsAreGranted() {
         val isAtLeastAndroidS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         val permissionsToCheck = mutableMapOf(
-            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is required to discover external readers"
+            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is " +
+                "required to discover external readers"
         )
 
         if (isAtLeastAndroidS) {
-            permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is required to discover external readers"
-            permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is required to discover external readers"
+            permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is " +
+                "required to discover external readers"
+            permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is " +
+                "required to discover external readers"
         }
 
         permissionsToCheck.forEach { (permission, errorMessage) ->
