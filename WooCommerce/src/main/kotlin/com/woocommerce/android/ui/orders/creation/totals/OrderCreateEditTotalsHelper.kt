@@ -34,7 +34,9 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 
     private fun OrderCreateEditViewModel.Mode.toButtonText() =
         when (this) {
-            OrderCreateEditViewModel.Mode.Creation -> resourceProvider.getString(R.string.order_creation_collect_payment_button)
+            OrderCreateEditViewModel.Mode.Creation -> resourceProvider.getString(
+                R.string.order_creation_collect_payment_button
+            )
             is OrderCreateEditViewModel.Mode.Edit -> resourceProvider.getString(R.string.save)
         }
 }
