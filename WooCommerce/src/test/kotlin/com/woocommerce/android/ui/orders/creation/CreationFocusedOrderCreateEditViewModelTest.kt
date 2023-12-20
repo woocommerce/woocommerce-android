@@ -1818,6 +1818,32 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when custom amount removed, then disable the custom amount section until the operation is complete`() {
+        var viewState: MutableList<ViewState> = mutableListOf()
+        sut.viewStateData.liveData.observeForever {
+            viewState.add(it)
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount",
+                type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            )
+        )
+
+        assertFalse(viewState[viewState.size - 2].isEditable)
+    }
+
+    @Test
     fun `when custom amount removed, then exit event is triggered`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
