@@ -136,7 +136,11 @@ private fun TotalsView(
                 ) { expanded ->
                     IconButton(interactionSource = totalsIs, onClick = {}) {
                         Icon(
-                            imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                            imageVector = if (expanded) {
+                                Icons.Default.KeyboardArrowDown
+                            } else {
+                                Icons.Default.KeyboardArrowUp
+                            },
                             contentDescription = null,
                             tint = colorResource(id = R.color.color_primary),
                             modifier =
