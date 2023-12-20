@@ -116,7 +116,7 @@ class ThemePreviewViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PREVIEW_START_WITH_THEME_BUTTON_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
             )
         )
         if (viewState.value?.isFromStoreCreation == true) {
@@ -130,7 +130,7 @@ class ThemePreviewViewModel @Inject constructor(
                         analyticsTrackerWrapper.track(
                             stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
                             properties = mapOf(
-                                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                                AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
                             )
                         )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
@@ -144,7 +144,7 @@ class ThemePreviewViewModel @Inject constructor(
                         analyticsTrackerWrapper.track(
                             stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
                             properties = mapOf(
-                                AnalyticsTracker.KEY_THEME_PICKER_THEME to viewState.value?.themeName
+                                AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
                             )
                         )
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))

@@ -59,7 +59,7 @@ class ThemePickerViewModel @Inject constructor(
             stat = AnalyticsEvent.THEME_PICKER_SCREEN_DISPLAYED,
             properties = mapOf(
                 AnalyticsTracker.KEY_THEME_PICKER_SOURCE to when (navArgs.isFromStoreCreation) {
-                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_PROFILER
+                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_STORE_CREATION
                     false -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_SETTINGS
                 }
             )
@@ -147,7 +147,7 @@ class ThemePickerViewModel @Inject constructor(
     fun onThemeTapped(theme: CarouselItem.Theme) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
-            properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
+            properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.themeId)
         )
         triggerEvent(NavigateToThemePreview(theme.themeId, navArgs.isFromStoreCreation))
     }
