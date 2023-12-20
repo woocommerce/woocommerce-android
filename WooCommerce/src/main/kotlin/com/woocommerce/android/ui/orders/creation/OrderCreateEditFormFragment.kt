@@ -437,6 +437,9 @@ class OrderCreateEditFormFragment :
             new.isAddGiftCardButtonEnabled.takeIfNotEqualTo(old?.isAddGiftCardButtonEnabled) {
                 binding.paymentSection.addGiftCardButton.isEnabled = it
             }
+            new.shouldDisplayAddGiftCardButton.takeIfNotEqualTo(old?.shouldDisplayAddGiftCardButton) {
+                binding.paymentSection.addGiftCardButton.isVisible = it
+            }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
             }
