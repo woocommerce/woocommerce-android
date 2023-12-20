@@ -465,4 +465,20 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
     }
+
+    @Test fun `given item is stock-managed, when bottom sheet is shown, then track proper event`() =
+        testBlocking {
+            val product = ProductTestUtils.generateProduct(isStockManaged = true)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+            whenever(productRepo.getProduct(any())).thenReturn(product)
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku,
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN)
+        }
 }

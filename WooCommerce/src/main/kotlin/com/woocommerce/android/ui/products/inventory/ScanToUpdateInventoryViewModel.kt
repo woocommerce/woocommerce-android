@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ITEM_STOCK_MANAGED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
@@ -73,6 +74,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     quantity = product.stockQuantity.toInt(),
                 )
                 if (product.isStockManaged) {
+                    tracker.track(
+                        AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+                        mapOf(KEY_ITEM_STOCK_MANAGED to true)
+                    )
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
@@ -94,6 +99,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private suspend fun handleProductIsNotStockManaged(product: Product) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+            mapOf(KEY_ITEM_STOCK_MANAGED to false)
+        )
         triggerProductNotStockManagedSnackBar(product)
         delay(SCANNER_RESTART_DEBOUNCE_MS)
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle

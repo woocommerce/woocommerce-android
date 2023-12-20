@@ -152,6 +152,7 @@ class AnalyticsTracker private constructor(
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
+        const val KEY_ITEM_STOCK_MANAGED = "item_stock_managed"
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
         const val KEY_PRODUCT_COUNT = "product_count"
