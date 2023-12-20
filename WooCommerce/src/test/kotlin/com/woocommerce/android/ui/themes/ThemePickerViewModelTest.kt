@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Succ
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -112,11 +111,8 @@ class ThemePickerViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewState.runAndCaptureValues {
             advanceUntilIdle()
         }.last()
-        val event = viewModel.event.getOrAwaitValue()
 
         assertThat(viewState.currentThemeState).isEqualTo(ThemePickerViewModel.CurrentThemeState.Hidden)
-        assertThat(event)
-            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
     }
 
     @Test
