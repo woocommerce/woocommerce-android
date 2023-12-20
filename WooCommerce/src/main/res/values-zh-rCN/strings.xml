@@ -46,8 +46,6 @@ Language: zh_CN
     <string name="theme_preview_title">预览</string>
     <string name="theme_picker_error_message">暂时无法加载主题。</string>
     <string name="theme_picker_error_title">出现错误</string>
-    <string name="theme_picker_carousel_placeholder_message">点击观看实时演示。</string>
-    <string name="theme_picker_carousel_placeholder_title">主题“%s”</string>
     <string name="theme_picker_carousel_info_item_description">完成商店设置后，请在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_carousel_info_item_title">想要获得更多信息？</string>
     <string name="theme_picker_description">之后您可以随时在设置中进行更改。</string>
@@ -3005,12 +3003,6 @@ Language: zh_CN
     <string name="wc_approve">批准</string>
     <string name="wc_view_the_product_external">查看产品</string>
     <string name="support_help">帮助与支持</string>
-    <string name="settings_notifs_reviews_detail">有新的产品评论时收到提醒</string>
-    <string name="settings_notifs_reviews">产品评论</string>
-    <string name="settings_notifs_tone_detail">有新订单时播放收银机打开的声音</string>
-    <string name="settings_notifs_tone">音调</string>
-    <string name="settings_notifs_orders_detail">有新订单时收到提醒</string>
-    <string name="settings_notifs_orders">订单</string>
     <string name="settings_notifs_device_detail">声音、紧急和通知点</string>
     <string name="settings_notifs_device">管理通知</string>
     <string name="settings_notifs">通知</string>

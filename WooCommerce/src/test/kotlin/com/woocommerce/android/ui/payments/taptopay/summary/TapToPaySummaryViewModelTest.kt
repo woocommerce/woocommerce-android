@@ -5,7 +5,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
@@ -94,7 +93,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -118,7 +118,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             whenever(
                 orderCreateEditRepository.createSimplePaymentOrder(
                     BigDecimal.valueOf(0.5),
-                    customerNote = "Test payment"
+                    customerNote = "Test payment",
+                    isTaxable = false,
                 )
             ).thenReturn(
                 Result.success(order)
@@ -138,7 +139,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -162,7 +164,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -184,7 +187,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(
             orderCreateEditRepository.createSimplePaymentOrder(
                 BigDecimal.valueOf(0.5),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         ).thenReturn(
             Result.failure(Exception())
@@ -224,7 +228,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             // THEN
             verify(orderCreateEditRepository).createSimplePaymentOrder(
                 BigDecimal.valueOf(0.3),
-                customerNote = "Test payment"
+                customerNote = "Test payment",
+                isTaxable = false,
             )
         }
 
@@ -520,6 +525,6 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             currencyFormatter,
             wooStore,
             cardReaderCountryConfigProvider,
-            TapToPaySummaryFragmentArgs(flow).initSavedStateHandle()
+            TapToPaySummaryFragmentArgs(flow).toSavedStateHandle()
         )
 }

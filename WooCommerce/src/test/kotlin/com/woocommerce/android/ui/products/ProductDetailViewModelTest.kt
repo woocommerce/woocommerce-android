@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
@@ -109,7 +108,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     private var savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).initSavedStateHandle()
+        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",
@@ -949,7 +948,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `given image uris when app opened, then a product creation is triggered using the images`() = testBlocking {
         val uris = arrayOf("uri1", "uri2")
         savedState = ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, images = uris)
-            .initSavedStateHandle()
+            .toSavedStateHandle()
 
         doReturn(product).whenever(productRepository).getProductAsync(any())
 

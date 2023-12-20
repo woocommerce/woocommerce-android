@@ -11,7 +11,6 @@ import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -694,7 +693,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         tracker,
         appPrefsWrapper,
         selectedSite,
-        CardReaderDetailFragmentArgs(cardReaderFlowParam = CardReaderFlowParam.CardReadersHub()).initSavedStateHandle(),
+        CardReaderDetailFragmentArgs(cardReaderFlowParam = CardReaderFlowParam.CardReadersHub()).toSavedStateHandle(),
     )
 
     private companion object {

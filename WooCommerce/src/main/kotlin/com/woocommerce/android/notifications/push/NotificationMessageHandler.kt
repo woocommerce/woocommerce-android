@@ -1,7 +1,6 @@
 package com.woocommerce.android.notifications.push
 
 import androidx.annotation.VisibleForTesting
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
@@ -14,10 +13,8 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
-import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -46,7 +43,6 @@ class NotificationMessageHandler @Inject constructor(
     private val wooLogWrapper: WooLogWrapper,
     private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     private val topPerformersStore: WCLeaderboardsStore
@@ -152,28 +148,7 @@ class NotificationMessageHandler @Inject constructor(
         }
     }
 
-    /**
-     * Don't display the notification if user chose to disable this type of notification -
-     * note that we skip this for API 26+ since Oreo added per-app notification settings via channels
-     */
-    private fun isNotificationOptionEnabled(notification: Notification): Boolean {
-        return if (SystemVersionUtils.isAtLeastO()) {
-            true
-        } else {
-            when {
-                notification.isOrderNotification -> appPrefsWrapper.isOrderNotificationsEnabled()
-                notification.isReviewNotification -> appPrefsWrapper.isReviewNotificationsEnabled()
-                else -> true
-            }
-        }
-    }
-
     private fun handleWooNotification(notification: Notification) {
-        if (!isNotificationOptionEnabled(notification)) {
-            wooLogWrapper.i(NOTIFS, "Skipped ${notification.noteType.name} notification")
-            return
-        }
-
         val randomNumber = if (notification.noteType == NEW_ORDER) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
         ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
@@ -182,16 +157,11 @@ class NotificationMessageHandler @Inject constructor(
             analyticsTracker.flush()
         }
 
-        val channelType = notification.channelType
-        val defaults = channelType.getDefaults(appPrefsWrapper)
-
         val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
         with(notificationBuilder) {
             buildAndDisplayWooNotification(
                 pushId = localPushId,
-                defaults = defaults,
                 notification = notification,
-                addCustomNotificationSound = appPrefsWrapper.isOrderNotificationsChaChingEnabled(),
                 isGroupNotification = isGroupNotification
             )
 

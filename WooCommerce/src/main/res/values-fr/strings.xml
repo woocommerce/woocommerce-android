@@ -46,8 +46,6 @@ Language: fr
     <string name="theme_preview_title">Aperçu</string>
     <string name="theme_picker_error_message">Impossible de charger des thèmes pour l’instant.</string>
     <string name="theme_picker_error_title">Une erreur s’est produite</string>
-    <string name="theme_picker_carousel_placeholder_message">Appuyez pour une démo en direct.</string>
-    <string name="theme_picker_carousel_placeholder_title">Thème « %s »</string>
     <string name="theme_picker_carousel_info_item_description">Lorsque votre boutique est configurée, trouvez le thème parfait dans la boutique de thèmes WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Vous cherchez le truc en plus ?</string>
     <string name="theme_picker_description">Vous pouvez toujours le changer plus tard dans les réglages.</string>
@@ -3005,12 +3003,6 @@ Language: fr
     <string name="wc_approve">Approuver</string>
     <string name="wc_view_the_product_external">Voir le produit</string>
     <string name="support_help">Aide et assistance</string>
-    <string name="settings_notifs_reviews_detail">Obtenir des alertes concernant les nouveaux avis sur les produits</string>
-    <string name="settings_notifs_reviews">Avis sur le produit</string>
-    <string name="settings_notifs_tone_detail">Exécuter le son Cha-Ching lors d’une nouvelle commande</string>
-    <string name="settings_notifs_tone">Tonalité</string>
-    <string name="settings_notifs_orders_detail">Obtenir des alertes à l’arrivée de nouvelles commandes</string>
-    <string name="settings_notifs_orders">Commandes</string>
     <string name="settings_notifs_device_detail">Sons, urgence et point de notification</string>
     <string name="settings_notifs_device">Gérer les notifications</string>
     <string name="settings_notifs">Notifications</string>

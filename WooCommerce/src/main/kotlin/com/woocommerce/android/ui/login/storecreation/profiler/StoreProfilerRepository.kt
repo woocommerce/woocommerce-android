@@ -82,9 +82,7 @@ class StoreProfilerRepository @Inject constructor(
                             AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to storedAnswers.answers?.userCommerceJourneyKey,
                             AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to
                                 storedAnswers.answers?.eCommercePlatformKeys?.joinToString(),
-                            AnalyticsTracker.KEY_COUNTRY_CODE to storedAnswers.countryCode,
-                            AnalyticsTracker.KEY_CHALLENGE to storedAnswers.answers?.challengeKey,
-                            AnalyticsTracker.KEY_FEATURES to storedAnswers.answers?.featuresKey,
+                            AnalyticsTracker.KEY_COUNTRY_CODE to storedAnswers.countryCode
                         )
                     )
                     appPrefs.storeCreationProfilerAnswers = null

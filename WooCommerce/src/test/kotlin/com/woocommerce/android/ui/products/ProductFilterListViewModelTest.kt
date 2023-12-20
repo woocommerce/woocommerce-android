@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -57,7 +56,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
                 selectedProductType = "any",
                 selectedProductCategoryId = "1",
                 selectedProductCategoryName = "any",
-            ).initSavedStateHandle(),
+            ).toSavedStateHandle(),
             resourceProvider = resourceProvider,
             productCategoriesRepository = productCategoriesRepository,
             networkStatus = networkStatus,

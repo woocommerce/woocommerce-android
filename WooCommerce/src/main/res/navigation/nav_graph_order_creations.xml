@@ -149,6 +149,9 @@
         <action
             android:id="@+id/action_orderCreationFragment_to_editConfiguration"
             app:destination="@id/productConfigurationFragment" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_giftCardFragment"
+            app:destination="@id/giftCardFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -371,5 +374,15 @@
             android:name="itemId"
             app:argType="long"
             android:defaultValue="-1L" />
+    </fragment>
+    <fragment
+        android:id="@+id/giftCardFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment"
+        android:label="OrderCreateEditGiftCardFragment" >
+        <argument
+            android:name="giftCard"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>

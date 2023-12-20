@@ -126,6 +126,7 @@ object AppPrefs {
         CREATED_STORE_SITE_ID,
         CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
+        NUMBER_OF_PRODUCTS_CREATED_WITH_AI,
     }
 
     /**
@@ -148,15 +149,6 @@ object AppPrefs {
 
         // Whether or not automatic crash reporting is enabled
         ENABLE_CRASH_REPORTING,
-
-        // Enable notifications for new orders
-        NOTIFS_ORDERS_ENABLED,
-
-        // Enable notifications for new reviews
-        NOTIFS_REVIEWS_ENABLED,
-
-        // Play cha-ching sound on new order notifications
-        NOTIFS_ORDERS_CHA_CHING_ENABLED,
 
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
@@ -296,6 +288,10 @@ object AppPrefs {
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
+
+    var numberOfProductsCreatedUsingAi: Int
+        get() = getInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, 0)
+        set(value) = setInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -502,24 +498,6 @@ object AppPrefs {
 
     fun setCrashReportingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
-    }
-
-    fun isOrderNotificationsEnabled() = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, true)
-
-    fun setOrderNotificationsEnabled(enabled: Boolean) {
-        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_ENABLED, enabled)
-    }
-
-    fun isReviewNotificationsEnabled() = getBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, true)
-
-    fun setReviewNotificationsEnabled(enabled: Boolean) {
-        setBoolean(UndeletablePrefKey.NOTIFS_REVIEWS_ENABLED, enabled)
-    }
-
-    fun isOrderNotificationsChaChingEnabled() = getBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, true)
-
-    fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
-        setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =

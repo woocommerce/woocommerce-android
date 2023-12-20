@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Unknown
@@ -28,6 +29,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     private val viewModel: ScanToUpdateInventoryViewModel by viewModels()
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+    private var undoSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +69,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
 
     override fun onPause() {
         scannerViewModel.stopCodesRecognition()
+        undoSnackbar?.dismiss()
         super.onPause()
     }
 
@@ -95,10 +98,31 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 is MultiLiveEvent.Event.ShowUiStringSnackbar -> {
                     uiMessageResolver.showSnack(it.message)
                 }
+                is MultiLiveEvent.Event.ShowUndoSnackbar -> {
+                    showUndoSnackbar(
+                        message = it.message,
+                        actionListener = it.undoAction,
+                        dismissCallback = it.dismissAction
+                    )
+                }
                 is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> {
                     (requireActivity() as? MainNavigationRouter)?.showProductDetail(it.productId)
                 }
             }
+        }
+    }
+
+    private fun showUndoSnackbar(
+        message: String,
+        actionListener: View.OnClickListener,
+        dismissCallback: Snackbar.Callback
+    ) {
+        undoSnackbar = uiMessageResolver.getUndoSnack(
+            message = message,
+            actionListener = actionListener,
+        ).also {
+            it.addCallback(dismissCallback)
+            it.show()
         }
     }
 

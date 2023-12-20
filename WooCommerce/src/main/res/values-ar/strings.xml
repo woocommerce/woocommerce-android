@@ -46,8 +46,6 @@ Language: ar
     <string name="theme_preview_title">معاينة</string>
     <string name="theme_picker_error_message">يتعذر تحميل القوالب في الوقت الحالي.</string>
     <string name="theme_picker_error_title">حدث خطأ</string>
-    <string name="theme_picker_carousel_placeholder_message">اضغط للحصول على عرض توضيحي فوري.</string>
-    <string name="theme_picker_carousel_placeholder_title">القالب \"%s\" </string>
     <string name="theme_picker_carousel_info_item_description">بمجرد إعداد متجرك، اعثر على قالبك المثالي في متجر قوالب WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">هل تبحث عن المزيد؟</string>
     <string name="theme_picker_description">يمكنك دومًا تغييره لاحقًا ضمن الإعدادات.</string>
@@ -3005,12 +3003,6 @@ Language: ar
     <string name="wc_approve">موافقة</string>
     <string name="wc_view_the_product_external">عرض المنتج</string>
     <string name="support_help">المساعدة والدعم</string>
-    <string name="settings_notifs_reviews_detail">اتسالم تنبيهات لمراجعات المنتجات الجديدة</string>
-    <string name="settings_notifs_reviews">مراجعات المنتجات</string>
-    <string name="settings_notifs_tone_detail">تشغيل صوت \"تشا تشينج\" عند وصول طلب جديد</string>
-    <string name="settings_notifs_tone">نغمة</string>
-    <string name="settings_notifs_orders_detail">استلام التنبيهات عندما تظهر طلبات جديدة</string>
-    <string name="settings_notifs_orders">الطلبات</string>
     <string name="settings_notifs_device_detail">الأصوات والضرورة ونقطة الإخطار</string>
     <string name="settings_notifs_device">إدارة الإخطارات</string>
     <string name="settings_notifs">الإخطارات</string>

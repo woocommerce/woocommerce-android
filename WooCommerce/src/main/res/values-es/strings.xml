@@ -46,8 +46,6 @@ Language: es
     <string name="theme_preview_title">Vista previa</string>
     <string name="theme_picker_error_message">No se han podido cargar los temas en este momento.</string>
     <string name="theme_picker_error_title">Se ha producido un error</string>
-    <string name="theme_picker_carousel_placeholder_message">Toca para ver una demostración en directo.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema \"%s\"</string>
     <string name="theme_picker_carousel_info_item_description">Cuando hayas configurado tu tienda, busca el tema perfecto en la tienda de temas de WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">¿Quieres más opciones?</string>
     <string name="theme_picker_description">Podrás cambiarlo más tarde en la configuración.</string>
@@ -3005,12 +3003,6 @@ Language: es
     <string name="wc_approve">Aprobar</string>
     <string name="wc_view_the_product_external">Ver el producto</string>
     <string name="support_help">Ayuda y soporte</string>
-    <string name="settings_notifs_reviews_detail">Recibir alertas para las nuevas reseñas de productos</string>
-    <string name="settings_notifs_reviews">Reseñas de productos</string>
-    <string name="settings_notifs_tone_detail">Reproducir sonido cuando haya un nuevo pedido</string>
-    <string name="settings_notifs_tone">Tono</string>
-    <string name="settings_notifs_orders_detail">Recibir alertas cuando lleguen nuevos pedidos</string>
-    <string name="settings_notifs_orders">Pedidos</string>
     <string name="settings_notifs_device_detail">Sonidos, urgencia y punto de notificación</string>
     <string name="settings_notifs_device">Gestionar notificaciones</string>
     <string name="settings_notifs">Notificaciones</string>

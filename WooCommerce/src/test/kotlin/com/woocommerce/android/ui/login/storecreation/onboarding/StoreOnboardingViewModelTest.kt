@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_TASK_TA
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ONBOARDING_TASK_KEY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
@@ -17,12 +16,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class StoreOnboardingViewModelTest : BaseUnitTest() {
@@ -70,9 +67,6 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingRepository: StoreOnboardingRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val shouldShowOnboarding: ShouldShowOnboarding = mock()
-    private val selectedSite: SelectedSite = mock {
-        on { get() } doReturn SiteModel()
-    }
 
     private lateinit var viewModel: StoreOnboardingViewModel
 
@@ -167,7 +161,6 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     private fun whenViewModelIsCreated() {
         viewModel = StoreOnboardingViewModel(
             savedState,
-            selectedSite,
             onboardingRepository,
             analyticsTrackerWrapper,
             shouldShowOnboarding,

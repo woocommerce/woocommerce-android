@@ -46,8 +46,6 @@ Language: id
     <string name="theme_preview_title">Pratinjau</string>
     <string name="theme_picker_error_message">Tidak dapat memuat tema saat ini.</string>
     <string name="theme_picker_error_title">Terjadi kesalahan</string>
-    <string name="theme_picker_carousel_placeholder_message">Ketuk untuk demo langsung.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema \"%s\"</string>
     <string name="theme_picker_carousel_info_item_description">Setelah menyiapkan toko Anda, temukan tema yang ideal di Toko Tema WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Mencari lainnya?</string>
     <string name="theme_picker_description">Anda bebas mengubahnya di pengaturan kapan saja.</string>
@@ -3005,12 +3003,6 @@ Language: id
     <string name="wc_approve">Setujui</string>
     <string name="wc_view_the_product_external">Tampilkan produk</string>
     <string name="support_help">Bantuan &amp; dukungan</string>
-    <string name="settings_notifs_reviews_detail">Dapatkan pemberitahuan untuk ulasan produk baru</string>
-    <string name="settings_notifs_reviews">Tinjauan produk</string>
-    <string name="settings_notifs_tone_detail">Mainkan suara Cha-Ching saat ada pesanan baru</string>
-    <string name="settings_notifs_tone">Nada</string>
-    <string name="settings_notifs_orders_detail">Dapatkan pemberitahuan saat ada pesanan baru</string>
-    <string name="settings_notifs_orders">Pesanan</string>
     <string name="settings_notifs_device_detail">Suara, tingkat kepentingan, dan titik pemberitahuan</string>
     <string name="settings_notifs_device">Kelola pemberitahuan</string>
     <string name="settings_notifs">Pemberitahuan</string>

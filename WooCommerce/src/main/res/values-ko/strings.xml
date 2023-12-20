@@ -46,8 +46,6 @@ Language: ko_KR
     <string name="theme_preview_title">미리보기</string>
     <string name="theme_picker_error_message">지금은 테마를 로드할 수 없습니다.</string>
     <string name="theme_picker_error_title">오류 발생</string>
-    <string name="theme_picker_carousel_placeholder_message">실시간 데모를 눌러보세요.</string>
-    <string name="theme_picker_carousel_placeholder_title">\"%s\" 테마</string>
     <string name="theme_picker_carousel_info_item_description">스토어를 설정했으면 우커머스 테마 스토어에서 완벽한 테마를 찾아보세요.</string>
     <string name="theme_picker_carousel_info_item_title">자세한 정보를 원하시나요?</string>
     <string name="theme_picker_description">나중에 언제든지 설정에서 변경하실 수 있습니다.</string>
@@ -3005,12 +3003,6 @@ Language: ko_KR
     <string name="wc_approve">승인하기</string>
     <string name="wc_view_the_product_external">제품 보기</string>
     <string name="support_help">도움 및 지원</string>
-    <string name="settings_notifs_reviews_detail">새 제품 리뷰 알림 받기</string>
-    <string name="settings_notifs_reviews">제품 리뷰</string>
-    <string name="settings_notifs_tone_detail">새 주문에 대해 금전 등록기 소리 재생</string>
-    <string name="settings_notifs_tone">톤</string>
-    <string name="settings_notifs_orders_detail">새 주문이 들어올 때 알림 받기</string>
-    <string name="settings_notifs_orders">주문</string>
     <string name="settings_notifs_device_detail">소리, 긴급 및 알림 점</string>
     <string name="settings_notifs_device">알림 관리</string>
     <string name="settings_notifs">알림</string>

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.R
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
@@ -48,7 +47,7 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
     )
 
     fun setup() {
-        val savedState = ShippingLabelCreatePackageFragmentArgs(0).initSavedStateHandle()
+        val savedState = ShippingLabelCreatePackageFragmentArgs(0).toSavedStateHandle()
         viewModel = ShippingLabelCreateServicePackageViewModel(
             savedState,
             resourceProvider,

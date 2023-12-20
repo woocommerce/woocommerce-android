@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.coupon
 
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragmentArgs
@@ -19,7 +18,7 @@ class OrderCreateCouponDetailsViewModelTest : BaseUnitTest() {
         val navArgs = OrderCreateCouponEditFragmentArgs(
             OrderCreateEditViewModel.Mode.Edit(1L),
             "coupon_code"
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = OrderCreateCouponDetailsViewModel(navArgs)
 
@@ -34,7 +33,7 @@ class OrderCreateCouponDetailsViewModelTest : BaseUnitTest() {
         val navArgs = OrderCreateCouponEditFragmentArgs(
             OrderCreateEditViewModel.Mode.Edit(1L),
             initialCouponCode
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = OrderCreateCouponDetailsViewModel(navArgs)
 
@@ -56,7 +55,7 @@ class OrderCreateCouponDetailsViewModelTest : BaseUnitTest() {
         val navArgs = OrderCreateCouponEditFragmentArgs(
             OrderCreateEditViewModel.Mode.Edit(1L),
             initialCouponCode
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = OrderCreateCouponDetailsViewModel(navArgs)
 

@@ -123,6 +123,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -319,6 +320,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
                         updateAddShippingButtonVisibility(order)
+                        updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
                     }
@@ -625,6 +627,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
+    }
+
+    private fun updateAddGiftCardButtonVisibility(order: Order) {
+        viewState = viewState.copy(
+            isAddGiftCardButtonEnabled = order.hasProducts() &&
+                order.isEditable &&
+                FeatureFlag.ORDER_GIFT_CARD.isEnabled()
+        )
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1026,6 +1036,14 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddCoupon)
     }
 
+    fun onEditGiftCardButtonClicked(currentGiftCard: String? = null) {
+        triggerEvent(OrderCreateEditNavigationTarget.EditGiftCard(currentGiftCard.orEmpty()))
+    }
+
+    fun onAddGiftCardButtonClicked() {
+        triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
@@ -1145,6 +1163,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             }.also {
                                 updateCouponButtonVisibility(it)
                                 updateAddShippingButtonVisibility(it)
+                                updateAddGiftCardButtonVisibility(it)
                             }
                         }
                     }
@@ -1542,6 +1561,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
+        val isAddGiftCardButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",

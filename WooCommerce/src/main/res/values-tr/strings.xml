@@ -46,8 +46,6 @@ Language: tr
     <string name="theme_preview_title">Önizleme</string>
     <string name="theme_picker_error_message">Temalar şu anda yüklenemiyor.</string>
     <string name="theme_picker_error_title">Bir hata oluştu</string>
-    <string name="theme_picker_carousel_placeholder_message">Canlı demo için dokunun.</string>
-    <string name="theme_picker_carousel_placeholder_title">\"%s\" teması</string>
     <string name="theme_picker_carousel_info_item_description">Mağazanız kurulduğunda WooCommerce Tema Mağazasından mükemmel temanızı bulun.</string>
     <string name="theme_picker_carousel_info_item_title">Daha fazlasını mı arıyorsunuz?</string>
     <string name="theme_picker_description">Daha sonra ayarlardan değiştirebilirsiniz.</string>
@@ -3005,12 +3003,6 @@ Language: tr
     <string name="wc_approve">Onayla</string>
     <string name="wc_view_the_product_external">Ürünü görüntüle</string>
     <string name="support_help">Yardım ve destek</string>
-    <string name="settings_notifs_reviews_detail">Yeni ürün incelemeleri için uyarı al</string>
-    <string name="settings_notifs_reviews">Ürün incelemeleri</string>
-    <string name="settings_notifs_tone_detail">Yeni siparişte Cha-Ching sesini çal</string>
-    <string name="settings_notifs_tone">Bildirim sesi</string>
-    <string name="settings_notifs_orders_detail">Yeni sipariş alındığında uyarı al</string>
-    <string name="settings_notifs_orders">Siparişler</string>
     <string name="settings_notifs_device_detail">Sesler, acil durum ve bildirim noktası</string>
     <string name="settings_notifs_device">Bildirimleri yönet</string>
     <string name="settings_notifs">Bildirimler</string>

@@ -46,8 +46,6 @@ Language: sv_SE
     <string name="theme_preview_title">Förhandsgranska</string>
     <string name="theme_picker_error_message">Kan inte att ladda teman just nu.</string>
     <string name="theme_picker_error_title">Ett fel uppstod</string>
-    <string name="theme_picker_carousel_placeholder_message">Tryck för live-demo.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema ”%s”</string>
     <string name="theme_picker_carousel_info_item_description">När din butik har konfigurerats kan du hitta ditt perfekta tema i WooCommerce-temabutiken.</string>
     <string name="theme_picker_carousel_info_item_title">Letar du efter fler?</string>
     <string name="theme_picker_description">Du kan alltid ändra det senare i inställningar</string>
@@ -3005,12 +3003,6 @@ Language: sv_SE
     <string name="wc_approve">Godkänn</string>
     <string name="wc_view_the_product_external">Visa produkten</string>
     <string name="support_help">Hjälp och support</string>
-    <string name="settings_notifs_reviews_detail">Få aviseringar om nya produktrecensioner</string>
-    <string name="settings_notifs_reviews">Produktrecensioner</string>
-    <string name="settings_notifs_tone_detail">Spela upp ka-ching-ljud vid ny order</string>
-    <string name="settings_notifs_tone">Ton</string>
-    <string name="settings_notifs_orders_detail">Få aviseringar när nya ordrar kommer in</string>
-    <string name="settings_notifs_orders">Ordrar</string>
     <string name="settings_notifs_device_detail">Ljud, brådskande och aviseringspunkt</string>
     <string name="settings_notifs_device">Hantera notifikationer</string>
     <string name="settings_notifs">Aviseringar</string>

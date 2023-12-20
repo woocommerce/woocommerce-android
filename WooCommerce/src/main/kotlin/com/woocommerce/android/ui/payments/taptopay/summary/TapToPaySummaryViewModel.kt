@@ -80,7 +80,8 @@ class TapToPaySummaryViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(isProgressVisible = true)
             val result = orderCreateEditRepository.createSimplePaymentOrder(
                 countryConfig.minimumAllowedChargeAmount,
-                customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note)
+                customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note),
+                isTaxable = false,
             )
             result.fold(
                 onSuccess = {

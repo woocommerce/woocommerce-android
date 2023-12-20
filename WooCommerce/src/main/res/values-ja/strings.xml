@@ -46,8 +46,6 @@ Language: ja_JP
     <string name="theme_preview_title">プレビュー</string>
     <string name="theme_picker_error_message">現時点ではテーマを読み込むことができません。</string>
     <string name="theme_picker_error_title">エラーが発生しました</string>
-    <string name="theme_picker_carousel_placeholder_message">タップするとライブデモが表示されます。</string>
-    <string name="theme_picker_carousel_placeholder_title">テーマ「%s」</string>
     <string name="theme_picker_carousel_info_item_description">ストアをセットアップしたら、WooCommerce テーマストアでご自身にぴったりなテーマを見つけましょう。</string>
     <string name="theme_picker_carousel_info_item_title">もっと知りたいですか ?</string>
     <string name="theme_picker_description">設定で後でいつでも変更できます。</string>
@@ -3005,12 +3003,6 @@ Language: ja_JP
     <string name="wc_approve">承認</string>
     <string name="wc_view_the_product_external">製品を表示する</string>
     <string name="support_help">ヘルプ &amp; サポート</string>
-    <string name="settings_notifs_reviews_detail">新しい製品レビューのアラートを有効にする</string>
-    <string name="settings_notifs_reviews">製品レビュー</string>
-    <string name="settings_notifs_tone_detail">新しい注文が入った際の効果音を有効にする</string>
-    <string name="settings_notifs_tone">トーン</string>
-    <string name="settings_notifs_orders_detail">新しい注文が入った際のアラートを有効にする</string>
-    <string name="settings_notifs_orders">注文</string>
     <string name="settings_notifs_device_detail">サウンド、緊急性、通知ドット</string>
     <string name="settings_notifs_device">通知の管理</string>
     <string name="settings_notifs">通知</string>

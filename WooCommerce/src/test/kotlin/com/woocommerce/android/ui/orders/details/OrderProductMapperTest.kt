@@ -15,9 +15,9 @@ class OrderProductMapperTest : BaseUnitTest() {
     private val groupedItemCondition: Condition<OrderProduct> =
         Condition({ item -> item is OrderProduct.GroupedProductItem }, "Grouped item")
 
-    private val groupedItemExpandedCondition: Condition<OrderProduct> =
+    private val groupedItemCollapsedCondition: Condition<OrderProduct> =
         Condition(
-            { item -> item is OrderProduct.GroupedProductItem && item.isExpanded },
+            { item -> item is OrderProduct.GroupedProductItem && item.isExpanded.not() },
             "Grouped item expanded"
         )
 
@@ -72,11 +72,11 @@ class OrderProductMapperTest : BaseUnitTest() {
         val numberOfParentsExpanded = numberOfParents - 1
         val items = createItemsList(numberOfItems, numberOfParents)
         val current = sut.toOrderProducts(emptyList(), items)
-        expandItems(current, numberOfParentsExpanded)
+        collapseItems(current, numberOfParentsExpanded)
 
         val result = sut.toOrderProducts(current, items)
 
-        assertThat(result).areExactly(numberOfParentsExpanded, groupedItemExpandedCondition)
+        assertThat(result).areExactly(numberOfParentsExpanded, groupedItemCollapsedCondition)
     }
 
     private fun createItemsList(items: Int, parents: Int = 0): List<Order.Item> {
@@ -109,13 +109,13 @@ class OrderProductMapperTest : BaseUnitTest() {
         )
     }
 
-    private fun expandItems(products: List<OrderProduct>, numberOfItemsToExpand: Int) {
+    private fun collapseItems(products: List<OrderProduct>, numberOfItemsToCollapse: Int) {
         var parentsExpandedCount = 0
         var i = 0
-        while (i <= products.lastIndex && parentsExpandedCount < numberOfItemsToExpand) {
+        while (i <= products.lastIndex && parentsExpandedCount < numberOfItemsToCollapse) {
             val item = products[i]
             if (item is OrderProduct.GroupedProductItem) {
-                item.isExpanded = true
+                item.isExpanded = false
                 parentsExpandedCount++
             }
             i++

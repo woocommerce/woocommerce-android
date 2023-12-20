@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -38,7 +37,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         remoteProductId = PRODUCT_REMOTE_ID,
         groupedProductListType = GroupedProductListType.GROUPED,
         excludedProductIds = excludedProductIdsNavArgs.toLongArray()
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
 
     private lateinit var viewModel: ProductSelectionListViewModel
 

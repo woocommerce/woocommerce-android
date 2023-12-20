@@ -60,7 +60,6 @@ class PlansViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
-        const val NEW_SITE_THEME = "premium/tsubaki"
         const val CART_URL = "https://wordpress.com/checkout"
         const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
         const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woo.com/"
@@ -240,10 +239,9 @@ class PlansViewModel @Inject constructor(
 
         return repository.createNewSite(
             siteData = SiteCreationData(
-                siteDesign = NEW_SITE_THEME,
+                segmentId = null,
                 domain = newStore.data.domain,
-                title = newStore.data.name,
-                segmentId = null
+                title = newStore.data.name
             ),
             languageWordPressId = NEW_SITE_LANGUAGE_ID,
             timeZoneId = TimeZone.getDefault().id,

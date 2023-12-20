@@ -13,11 +13,8 @@ class SystemVersionUtilsWrapper @Inject constructor() {
     fun isAtMostR() = SystemVersionUtils.isAtMostR()
 
     fun isAtLeastQ() = SystemVersionUtils.isAtLeastQ()
-    fun isAtMostQ() = SystemVersionUtils.isAtMostO()
+    fun isAtMostQ() = SystemVersionUtils.isAtMostQ()
 
     fun isAtLeastP() = SystemVersionUtils.isAtLeastP()
     fun isAtMostP() = SystemVersionUtils.isAtMostP()
-
-    fun isAtLeastO() = SystemVersionUtils.isAtLeastO()
-    fun isAtMostO() = SystemVersionUtils.isAtMostO()
 }

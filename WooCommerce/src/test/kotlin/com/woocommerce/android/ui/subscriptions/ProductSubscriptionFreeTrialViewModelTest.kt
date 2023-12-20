@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.subscriptions
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialFragmentArgs
 import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFreeTrialViewModel
@@ -21,7 +20,7 @@ class ProductSubscriptionFreeTrialViewModelTest : BaseUnitTest() {
         com.woocommerce.android.ui.products.ProductHelper.getDefaultSubscriptionDetails().copy(
             length = 10
         )
-    ).initSavedStateHandle()
+    ).toSavedStateHandle()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Before

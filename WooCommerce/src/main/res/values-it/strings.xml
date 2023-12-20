@@ -46,8 +46,6 @@ Language: it
     <string name="theme_preview_title">Anteprima</string>
     <string name="theme_picker_error_message">Impossibile caricare i temi in questo momento.</string>
     <string name="theme_picker_error_title">Si è verificato un errore</string>
-    <string name="theme_picker_carousel_placeholder_message">Tocca per la demo live.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema \"%s\"</string>
     <string name="theme_picker_carousel_info_item_description">Una volta configurato il negozio, trova il tema perfetto nel negozio di temi WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Cerchi altro?</string>
     <string name="theme_picker_description">Puoi sempre modificare il tema nelle impostazioni in un secondo momento.</string>
@@ -3005,12 +3003,6 @@ Language: it
     <string name="wc_approve">Approva</string>
     <string name="wc_view_the_product_external">Visualizza il prodotto</string>
     <string name="support_help">Aiuto e supporto</string>
-    <string name="settings_notifs_reviews_detail">Ottieni avvisi relativi alle nuove recensioni del prodotto</string>
-    <string name="settings_notifs_reviews">Recensioni del prodotto</string>
-    <string name="settings_notifs_tone_detail">Riproduci Cha-Ching per il nuovo ordine</string>
-    <string name="settings_notifs_tone">Tono</string>
-    <string name="settings_notifs_orders_detail">Ottieni avvisi quando arrivano nuovi ordini</string>
-    <string name="settings_notifs_orders">Ordini</string>
     <string name="settings_notifs_device_detail">Suoni, urgenza e punto di notifica</string>
     <string name="settings_notifs_device">Gestisci notifiche</string>
     <string name="settings_notifs">Notifiche</string>

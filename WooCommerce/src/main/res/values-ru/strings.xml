@@ -46,8 +46,6 @@ Language: ru
     <string name="theme_preview_title">Предварительный просмотр</string>
     <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
     <string name="theme_picker_error_title">Произошла ошибка</string>
-    <string name="theme_picker_carousel_placeholder_message">Нажмите, чтобы просмотреть демонстрацию в реальном времени.</string>
-    <string name="theme_picker_carousel_placeholder_title">Тема «%s»</string>
     <string name="theme_picker_carousel_info_item_description">Настроив магазин, найдите для него самую подходящую тему в магазине тем WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Ищете что-то другое?</string>
     <string name="theme_picker_description">Вы можете изменить настройки в любой момент.</string>
@@ -3005,12 +3003,6 @@ Language: ru
     <string name="wc_approve">Одобрить</string>
     <string name="wc_view_the_product_external">Просмотреть товар</string>
     <string name="support_help">Помощь и техническая поддержка</string>
-    <string name="settings_notifs_reviews_detail">Получение оповещений о новых обзорах товаров</string>
-    <string name="settings_notifs_reviews">Обзоры товаров</string>
-    <string name="settings_notifs_tone_detail">Звук сыплющихся монет при новом заказе</string>
-    <string name="settings_notifs_tone">Звук</string>
-    <string name="settings_notifs_orders_detail">Получение оповещений при появлении новых заказов</string>
-    <string name="settings_notifs_orders">Заказы</string>
     <string name="settings_notifs_device_detail">Звуки, значки срочности и уведомлений</string>
     <string name="settings_notifs_device">Управление уведомлениями</string>
     <string name="settings_notifs">Уведомления</string>

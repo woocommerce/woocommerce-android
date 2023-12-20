@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.variations.selector
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -41,7 +40,7 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             productId = 1L,
             variationIds = longArrayOf(2L, 3L),
             productSource = ProductSourceForTracking.ALPHABETICAL
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
         val listItem = VariationSelectorViewModel.VariationListItem(1, "")
@@ -58,7 +57,7 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             productId = 1L,
             variationIds = longArrayOf(2L, 3L),
             productSource = ProductSourceForTracking.ALPHABETICAL
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
         val listItem = VariationSelectorViewModel.VariationListItem(1, "")
@@ -74,7 +73,7 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             productId = 1L,
             variationIds = longArrayOf(2L, 3L),
             productSource = ProductSourceForTracking.ALPHABETICAL
-        ).initSavedStateHandle()
+        ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
         sut.onClearButtonClick()

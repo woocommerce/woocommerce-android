@@ -55,8 +55,12 @@ class ListItemMapper @Inject constructor(
                                 when (rule.key) {
                                     QuantityRule.KEY -> putIfNotNull("quantity" to rule.value)
                                     OptionalRule.KEY -> putIfNotNull(
-                                        "optional_selected" to rule.value?.toBooleanStrictOrNull()
+                                        "optional_selected" to getOptionalValue(
+                                            isVariable = item.isVariable,
+                                            value = rule.value?.toBooleanStrictOrNull() ?: false
+                                        )
                                     )
+
                                     VariableProductRule.KEY -> {
                                         if (rule.value != null) {
                                             gson.fromJson<Map<String, JsonElement>>(rule.value, mapType).forEach {
@@ -72,7 +76,22 @@ class ListItemMapper @Inject constructor(
                 }
                 Pair("bundle_configuration", result)
             }
+
             ConfigurationType.UNKNOWN -> null
+        }
+    }
+
+    /**
+     * The API requires a valid variation ID for non-optional variable products. When the product is not
+     * included in the bundle, we don't always have a valid variation ID, and this causes the configuration to fail.
+     * As a workaround, we are passing "no" instead of false for optional variable products not included in the bundle.
+     * https://github.com/woocommerce/woocommerce-product-bundles/issues/1283
+     * **/
+    private fun getOptionalValue(isVariable: Boolean, value: Boolean): Any {
+        return if (isVariable) {
+            if (value.not()) "no" else value
+        } else {
+            value
         }
     }
 }

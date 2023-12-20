@@ -46,8 +46,6 @@ Language: he_IL
     <string name="theme_preview_title">תצוגה מקדימה</string>
     <string name="theme_picker_error_message">כרגע לא ניתן לטעון ערכות עיצוב.</string>
     <string name="theme_picker_error_title">אירעה שגיאה</string>
-    <string name="theme_picker_carousel_placeholder_message">יש להקיש כדי להציג הדגמה חיה.</string>
-    <string name="theme_picker_carousel_placeholder_title">ערכת העיצוב \'%s\'</string>
     <string name="theme_picker_carousel_info_item_description">לאחר הגדרת החנות אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">יש משהו נוסף שמעניין אותך?</string>
     <string name="theme_picker_description">תמיד אפשר להחליף ערכה בהמשך, דרך ההגדרות.</string>
@@ -3005,12 +3003,6 @@ Language: he_IL
     <string name="wc_approve">אישור</string>
     <string name="wc_view_the_product_external">הצגת המוצר</string>
     <string name="support_help">עזרה ותמיכה</string>
-    <string name="settings_notifs_reviews_detail">קבלת התראות על ביקורות חדשות למוצר</string>
-    <string name="settings_notifs_reviews">ביקורות על מוצר</string>
-    <string name="settings_notifs_tone_detail">הפעלת אפקט קולי של קופה רושמת בביצוע הזמנה חדשה</string>
-    <string name="settings_notifs_tone">צליל</string>
-    <string name="settings_notifs_orders_detail">קבלת התראות בביצוע של הזמנות חדשות</string>
-    <string name="settings_notifs_orders">הזמנות</string>
     <string name="settings_notifs_device_detail">קולות, דחיפות ונקודה לציון הודעות</string>
     <string name="settings_notifs_device">ניהול הודעות</string>
     <string name="settings_notifs">הודעות</string>

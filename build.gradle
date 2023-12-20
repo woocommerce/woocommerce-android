@@ -1,18 +1,20 @@
-import io.github.wzieba.tracks.plugin.TracksExtension
+import com.automattic.android.measure.MeasureBuildsExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id 'io.gitlab.arturbosch.detekt'
-    id 'io.github.wzieba.tracks.plugin'
+    id 'com.automattic.android.measure-builds'
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
     id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
 }
 
-tracks {
-    automatticProject.set(TracksExtension.AutomatticProject.WooCommerce)
-    enabled.set((findProperty('tracksEnabled') ?: false).toBoolean())
+measureBuilds {
+    enable = findProperty('tracksEnabled')?.toBoolean() ?: false
+    automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
+    attachGradleScanId = true
+    authToken = findProperty('appsMetricsToken')
 }
 
 allprojects {
