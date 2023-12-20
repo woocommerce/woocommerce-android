@@ -155,6 +155,9 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -203,9 +206,13 @@ class OrderCreateEditViewModel @Inject constructor(
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
-    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
+    private val pluginsInformation: MutableStateFlow<Map<String, WooPlugin>> =
+        savedState.getStateFlow(
+            scope = viewModelScope,
+            initialValue = HashMap()
+        )
     val isGiftCardExtensionEnabled
-        get() = pluginsInformation[WOO_GIFT_CARDS.pluginName]
+        get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
             ?.isOperational ?: false
 
     private val _selectedGiftCard = savedState.getStateFlow(
@@ -296,7 +303,19 @@ class OrderCreateEditViewModel @Inject constructor(
 
     init {
         launch {
-            pluginsInformation = orderCreateEditRepository.fetchOrderSupportedPlugins()
+            pluginsInformation
+                .onEach {
+                    val isGiftCardExtensionEnabled = pluginsInformation
+                        .value[WOO_GIFT_CARDS.pluginName]
+                        ?.isOperational ?: false
+                    viewState = viewState.copy(
+                        shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled
+                    )
+                }.launchIn(viewModelScope)
+
+            pluginsInformation.update {
+                orderCreateEditRepository.fetchOrderSupportedPlugins()
+            }
         }
 
         when (mode) {
@@ -1590,6 +1609,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isCouponButtonEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
         val isAddGiftCardButtonEnabled: Boolean = false,
+        val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
