@@ -118,15 +118,13 @@ fun JetpackBenefitsScreen(
             }
         }
 
-        if (viewState.isNativeJetpackActivationAvailable) {
-            WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(
-                        id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
-                        else R.string.jetpack_benefits_modal_login
-                    )
+        WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(
+                    id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
+                    else R.string.jetpack_benefits_modal_login
                 )
-            }
+            )
         }
 
         WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
@@ -177,7 +175,6 @@ private fun JetpackBenefitsScreenPreview() {
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
                 isLoadingDialogShown = false,
-                isNativeJetpackActivationAvailable = true
             )
         )
     }
@@ -191,7 +188,6 @@ private fun JetpackBenefitsScreenWithoutNativeInstallPreview() {
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
                 isLoadingDialogShown = false,
-                isNativeJetpackActivationAvailable = false
             )
         )
     }

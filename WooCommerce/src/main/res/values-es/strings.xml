@@ -44,8 +44,6 @@ Language: es
     <string name="theme_preview_bottom_sheet_pages_subtitle">Toca para ver</string>
     <string name="theme_preview_bottom_sheet_pages_title">Páginas de esta plantilla</string>
     <string name="theme_preview_title">Vista previa</string>
-    <string name="theme_picker_error_message">No se han podido cargar los temas en este momento.</string>
-    <string name="theme_picker_error_title">Se ha producido un error</string>
     <string name="theme_picker_carousel_info_item_description">Cuando hayas configurado tu tienda, busca el tema perfecto en la tienda de temas de WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">¿Quieres más opciones?</string>
     <string name="theme_picker_description">Podrás cambiarlo más tarde en la configuración.</string>

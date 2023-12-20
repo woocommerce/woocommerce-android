@@ -57,12 +57,15 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
             old.customerNote == new.customerNote &&
             old.shippingPhone == new.shippingPhone
 
+        val hasSameGiftCard = old.selectedGiftCard == new.selectedGiftCard
+
         return hasSameItems &&
             hasSameShippingLines &&
             hasSameFeeLines &&
             hasSameCouponLines &&
             hasSameStatus &&
-            hasSameCustomerInfo
+            hasSameCustomerInfo &&
+            hasSameGiftCard
     }
 
     override fun syncOrderChanges(

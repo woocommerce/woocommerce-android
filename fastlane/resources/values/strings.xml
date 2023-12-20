@@ -3403,8 +3403,7 @@
     <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
     <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
-    <string name="theme_picker_error_title">An error occurred</string>
-    <string name="theme_picker_error_message">Unable to load themes at this time.</string>
+    <string name="theme_picker_error_message">Failed to load themes.</string>
     <string name="theme_preview_title">Preview</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
