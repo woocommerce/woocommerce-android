@@ -458,6 +458,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     fun `given payments shortcut, when app opened, then trigger ViewPayments event`() {
         testBlocking {
             // GIVEN
+            whenever(selectedSite.exists()).thenReturn(true)
             createViewModel()
 
             // WHEN
@@ -472,6 +473,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     fun `given order creation shortcut, when app opened, then trigger OpenOrderCreation event`() {
         testBlocking {
             // GIVEN
+            whenever(selectedSite.exists()).thenReturn(true)
             createViewModel()
 
             // WHEN
@@ -486,6 +488,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     fun `given irrelevant shortcut, when app opened, then do not trigger any event`() {
         testBlocking {
             // GIVEN
+            whenever(selectedSite.exists()).thenReturn(true)
             createViewModel()
 
             // WHEN
@@ -500,6 +503,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     fun `given payments shortcut, when app opened, then track payments opened event`() {
         testBlocking {
             // GIVEN
+            whenever(selectedSite.exists()).thenReturn(true)
             createViewModel()
 
             // WHEN
@@ -516,6 +520,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     fun `given order creation shortcut, when app opened, then track orders add new event`() {
         testBlocking {
             // GIVEN
+            whenever(selectedSite.exists()).thenReturn(true)
             createViewModel()
 
             // WHEN
@@ -525,6 +530,21 @@ class MainActivityViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
             )
+        }
+    }
+
+    @Test
+    fun `given no selected site, when shortcut used, then skip it`() {
+        testBlocking {
+            // GIVEN
+            whenever(selectedSite.exists()).thenReturn(false)
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.ordercreation")
+
+            // THEN
+            assertThat(viewModel.event.value).isNull()
         }
     }
 
