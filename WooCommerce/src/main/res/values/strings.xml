@@ -634,6 +634,8 @@
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
     <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
+    <string name="order_creation_gift_card_text_field_hint">Enter code</string>
+    <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
 
     <!--
          Barcode Scanning
@@ -3325,6 +3327,9 @@
     <string name="store_creation_installation_manage_store_button">Manage my store</string>
     <string name="store_creation_installation_show_preview_button">Store preview</string>
     <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
+    <string name="store_creation_installation_async_dialog_title">Your new store is ready</string>
+    <string name="store_creation_installation_async_dialog_message">Do you want to start managing it now?</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Switch Store</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
