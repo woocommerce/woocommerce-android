@@ -138,7 +138,10 @@ private fun TotalsView(
                     targetState = isExpanded,
                     label = "totals_icon",
                 ) { expanded ->
-                    IconButton(interactionSource = totalsIs, onClick = {}) {
+                    IconButton(
+                        interactionSource = totalsIs,
+                        onClick = { isExpanded = !isExpanded }
+                    ) {
                         Icon(
                             imageVector = if (expanded) {
                                 Icons.Default.KeyboardArrowDown
@@ -147,8 +150,9 @@ private fun TotalsView(
                             },
                             contentDescription = null,
                             tint = colorResource(id = R.color.color_primary),
-                            modifier =
-                            Modifier.padding(all = dimensionResource(id = R.dimen.minor_100))
+                            modifier = Modifier.padding(
+                                all = dimensionResource(id = R.dimen.minor_100)
+                            )
                         )
                     }
                 }
