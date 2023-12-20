@@ -645,7 +645,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateTotals(order: Order) {
-        _totalsData.value = totalsHelper.mapToPaymentTotalsState(order)
+        _totalsData.value = totalsHelper.mapToPaymentTotalsState(mode, order) {
+            // TODO
+        }
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
