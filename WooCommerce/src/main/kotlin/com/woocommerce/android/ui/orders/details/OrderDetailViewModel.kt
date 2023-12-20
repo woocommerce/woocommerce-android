@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -765,10 +764,10 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private fun shouldShowThankYouNoteButton() = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
+    private fun shouldShowThankYouNoteButton() =
         selectedSite.getIfExists()?.isWPComAtomic == true &&
-        order.status == Order.Status.Completed &&
-        productList.value?.isNotEmpty() == true
+            order.status == Order.Status.Completed &&
+            productList.value?.isNotEmpty() == true
 
     private fun displayCustomAmounts() {
         _feeLineList.value = order.feesLines

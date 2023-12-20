@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -160,9 +159,7 @@ class SitePickerViewModel @Inject constructor(
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
         val sitesInDb = repository.getSites()
-        return if (!FeatureFlag.JETPACK_CP.isEnabled() ||
-            sitesInDb.none { it.isJetpackCPConnected }
-        ) {
+        return if (sitesInDb.none { it.isJetpackCPConnected }) {
             sitesInDb
         } else {
             emptyList()
@@ -190,9 +187,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun onSitesLoaded(sites: List<SiteModel>) {
-        val filteredSites = sites.filter {
-            FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
-        }
+        val filteredSites = sites.filter { !it.isJetpackCPConnected }
 
         if (filteredSites.isEmpty()) {
             when {
@@ -268,9 +263,7 @@ class SitePickerViewModel @Inject constructor(
      * - Has WooCommerce installed
      */
     private fun processLoginSiteAddress(url: String) {
-        val site = repository.getSiteBySiteUrl(url)?.takeIf {
-            FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
-        }
+        val site = repository.getSiteBySiteUrl(url)?.takeIf { !it.isJetpackCPConnected }
         when {
             site == null -> {
                 // The url doesn't match any sites for this account.
