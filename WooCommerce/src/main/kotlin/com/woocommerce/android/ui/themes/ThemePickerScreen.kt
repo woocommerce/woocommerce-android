@@ -110,11 +110,7 @@ private fun ThemePicker(
             .fillMaxSize()
     ) {
         CurrentTheme(viewState.currentThemeState)
-        Header(
-            isFromStoreCreation = viewState.isFromStoreCreation,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Carousel(viewState.carouselState, onThemeTapped, onThemeScreenshotFailure)
+        Carousel(viewState.isFromStoreCreation, viewState.carouselState, onThemeTapped, onThemeScreenshotFailure)
     }
 }
 
@@ -193,6 +189,7 @@ private fun Header(
 
 @Composable
 private fun ColumnScope.Carousel(
+    isFromStoreCreation: Boolean,
     state: CarouselState,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
@@ -207,7 +204,7 @@ private fun ColumnScope.Carousel(
         }
 
         is CarouselState.Success -> {
-            Carousel(state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
+            Carousel(isFromStoreCreation, state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
         }
     }
 }
@@ -254,25 +251,34 @@ private fun ColumnScope.Error() {
 
 @Composable
 private fun Carousel(
+    isFromStoreCreation: Boolean,
     items: List<CarouselItem>,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
-    LazyRow(
-        modifier = Modifier
-            .height(480.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.major_100))
+    Column(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        items(items) { item ->
-            when (item) {
-                is CarouselItem.Theme -> Theme(item, onThemeTapped, onThemeScreenshotFailure)
-                is CarouselItem.Message -> Message(
-                    title = item.title,
-                    description = AnnotatedString(item.description),
-                    modifier = Modifier.width(320.dp)
-                )
+        Header(
+            isFromStoreCreation = isFromStoreCreation,
+            modifier = Modifier.fillMaxWidth()
+        )
+        LazyRow(
+            modifier = Modifier
+                .height(480.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.major_100))
+        ) {
+            items(items) { item ->
+                when (item) {
+                    is CarouselItem.Theme -> Theme(item, onThemeTapped, onThemeScreenshotFailure)
+                    is CarouselItem.Message -> Message(
+                        title = item.title,
+                        description = AnnotatedString(item.description),
+                        modifier = Modifier.width(320.dp)
+                    )
+                }
             }
         }
     }
