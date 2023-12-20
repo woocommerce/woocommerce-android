@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.themes
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +23,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -137,7 +138,7 @@ private fun CurrentTheme(
             is CurrentThemeState.Loading -> {
                 SkeletonView(
                     width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
-                    height = dimensionResource(id = R.dimen.skeleton_text_height_100)
+                    height = 22.dp
                 )
             }
 
@@ -212,17 +213,30 @@ private fun ColumnScope.Carousel(
 }
 
 @Composable
-private fun ColumnScope.Loading() {
-    Box(
+private fun Loading() {
+    Row(
         modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxWidth()
-            .weight(1f)
+            .height(480.dp)
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .align(Alignment.Center)
-        )
+        repeat(6) {
+            val startPadding = if (it == 0) dimensionResource(id = R.dimen.major_100) else 0.dp
+            val endPadding = if (it == 5) dimensionResource(id = R.dimen.major_100) else 0.dp
+            Card(
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
+                elevation = dimensionResource(id = R.dimen.minor_50),
+                modifier = Modifier
+                    .width(256.dp)
+                    .height(480.dp)
+                    .padding(start = startPadding, end = endPadding)
+            ) {
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+        }
     }
 }
 
@@ -312,7 +326,6 @@ private fun Theme(
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
         elevation = dimensionResource(id = R.dimen.minor_50),
-        modifier = themeModifier.clickable { onThemeTapped(theme) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
@@ -355,8 +368,16 @@ private fun Theme(
                     modifier = themeModifier
                 )
             },
+            loading = {
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            },
             contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
+                .clickable { onThemeTapped(theme) }
         )
     }
 }
@@ -386,7 +407,7 @@ private fun PreviewThemePickerLoading() {
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
                 isFromStoreCreation = true,
-                carouselState = CarouselState.Error,
+                carouselState = CarouselState.Loading,
                 currentThemeState = CurrentThemeState.Hidden
             ),
             onThemeTapped = {},
