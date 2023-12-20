@@ -615,7 +615,8 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty()) {
+        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty()
+            || FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
             paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
             paymentSection.paymentsLayout.hide()
         } else {
