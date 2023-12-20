@@ -253,7 +253,7 @@ private fun Error(onRetryClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(id = R.string.theme_picker_error_title),
+            text = stringResource(id = R.string.theme_picker_error_message),
             textAlign = TextAlign.Center,
             color = colorResource(id = color.color_on_surface_medium),
             modifier = Modifier
