@@ -13,17 +13,22 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.NavigateToThemePreview
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ThemePickerFragment : BaseFragment() {
     private val viewModel: ThemePickerViewModel by viewModels()
     val navArgs: ThemePickerFragmentArgs by navArgs()
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -51,6 +56,7 @@ class ThemePickerFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> navigateToStoreInstallationStep()
                 is NavigateToThemePreview -> navigateToThemePreviewFragment(event)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }
