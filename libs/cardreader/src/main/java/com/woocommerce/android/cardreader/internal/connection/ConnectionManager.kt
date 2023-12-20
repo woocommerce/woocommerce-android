@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.connection
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
+import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
@@ -58,36 +59,14 @@ internal class ConnectionManager(
                     }
 
                     is ExternalReaders -> {
-                        if (application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED ||
-                            application.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
-                            != PackageManager.PERMISSION_GRANTED ||
-                            application.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            error(
-                                "ACCESS_FINE_LOCATION, BLUETOOTH_CONNECT, BLUETOOTH_SCAN " +
-                                    "permission is required to discover external readers"
-                            )
-                        }
+                        checkIfNecessaryPermissionsAreGranted()
                         discoverReadersAction.discoverExternalReaders(isSimulated)
                     }
                 }
             }
 
             UnspecifiedReaders -> {
-                if (application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED ||
-                    application.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
-                    != PackageManager.PERMISSION_GRANTED ||
-                    application.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    error(
-                        "ACCESS_FINE_LOCATION, BLUETOOTH_CONNECT, BLUETOOTH_SCAN " +
-                            "permission is required to discover external readers"
-                    )
-                }
+                checkIfNecessaryPermissionsAreGranted()
                 merge(
                     discoverReadersAction.discoverBuildInReaders(isSimulated),
                     discoverReadersAction.discoverExternalReaders(isSimulated)
@@ -119,6 +98,24 @@ internal class ConnectionManager(
                 }
             }
         }
+
+    private fun checkIfNecessaryPermissionsAreGranted() {
+        val isAtLeastAndroidS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        val permissionsToCheck = mutableMapOf(
+            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is required to discover external readers"
+        )
+
+        if (isAtLeastAndroidS) {
+            permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is required to discover external readers"
+            permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is required to discover external readers"
+        }
+
+        permissionsToCheck.forEach { (permission, errorMessage) ->
+            if (application.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                error(errorMessage)
+            }
+        }
+    }
 
     fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         (cardReader as CardReaderImpl).let {
