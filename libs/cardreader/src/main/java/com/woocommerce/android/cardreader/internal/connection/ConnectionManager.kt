@@ -43,8 +43,6 @@ internal class ConnectionManager(
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
     val batteryStatus = bluetoothReaderListener.batteryStatusEvents
     val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvents
-
-    @Suppress("ComplexMethod", "LongMethod")
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         when (cardReaderTypesToDiscover) {
             is SpecificReaders -> {
