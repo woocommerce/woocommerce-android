@@ -278,8 +278,7 @@ class MoreMenuViewModel @Inject constructor(
     private fun loadSitePlanName(): Flow<String> = selectedSite.observe()
         .filterNotNull()
         .map { site ->
-            if (site.connectionType == SiteConnectionType.ApplicationPasswords) return@map ""
-            planRepository.fetchCurrentPlanDetails(selectedSite.get())
+            planRepository.fetchCurrentPlanDetails(site)
                 ?.formattedPlanName.orEmpty()
         }
         .onStart { emit("") }
