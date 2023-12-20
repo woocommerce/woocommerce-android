@@ -10,19 +10,22 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Message
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Theme
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,12 +40,9 @@ class ThemePickerViewModel @Inject constructor(
     private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
 
     private val currentTheme = MutableStateFlow<CurrentThemeState>(CurrentThemeState.Hidden)
+    private val carouselState = MutableStateFlow<CarouselState>(CarouselState.Loading)
     val viewState = combine(
-        loadThemes().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Lazily,
-            initialValue = CarouselState.Loading
-        ),
+        carouselState,
         currentTheme
     ) { carouselState, currentThemeState ->
         val updatedCarouseState = removeCurrentThemeFromCarouselItems(carouselState, currentThemeState)
@@ -54,7 +54,7 @@ class ThemePickerViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        loadCurrentTheme()
+        loadData()
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_SCREEN_DISPLAYED,
             properties = mapOf(
@@ -66,39 +66,41 @@ class ThemePickerViewModel @Inject constructor(
         )
     }
 
-    private fun loadThemes(): Flow<CarouselState> = flow {
-        emit(CarouselState.Loading)
-        val result = themeRepository.fetchThemes().fold(
-            onSuccess = { result ->
-                CarouselState.Success(
-                    carouselItems = result
-                        .filter { theme -> theme.demoUrl != null }
-                        .map { theme ->
-                            CarouselItem.Theme(
-                                themeId = theme.id,
-                                name = theme.name,
-                                screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
-                            )
-                        }
-                        .plus(
-                            CarouselItem.Message(
-                                title = resourceProvider.getString(
-                                    R.string.theme_picker_carousel_info_item_title
-                                ),
-                                description = resourceProvider.getString(
-                                    resourceId = if (navArgs.isFromStoreCreation) {
-                                        R.string.theme_picker_carousel_info_item_description
-                                    } else {
-                                        R.string.theme_picker_carousel_info_item_description_settings
-                                    }
+    private fun loadThemes() {
+        viewModelScope.launch {
+            carouselState.update { CarouselState.Loading }
+            val result = themeRepository.fetchThemes().fold(
+                onSuccess = { result ->
+                    CarouselState.Success(
+                        carouselItems = result
+                            .filter { theme -> theme.demoUrl != null }
+                            .map { theme ->
+                                Theme(
+                                    themeId = theme.id,
+                                    name = theme.name,
+                                    screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
+                                )
+                            }
+                            .plus(
+                                Message(
+                                    title = resourceProvider.getString(
+                                        R.string.theme_picker_carousel_info_item_title
+                                    ),
+                                    description = resourceProvider.getString(
+                                        resourceId = if (navArgs.isFromStoreCreation) {
+                                            R.string.theme_picker_carousel_info_item_description
+                                        } else {
+                                            R.string.theme_picker_carousel_info_item_description_settings
+                                        }
+                                    )
                                 )
                             )
-                        )
-                )
-            },
-            onFailure = { CarouselState.Error }
-        )
-        emit(result)
+                    )
+                },
+                onFailure = { CarouselState.Error }
+            )
+            carouselState.update { result }
+        }
     }
 
     private fun loadCurrentTheme() {
@@ -106,18 +108,26 @@ class ThemePickerViewModel @Inject constructor(
             currentTheme.value = CurrentThemeState.Hidden
             return
         }
-        currentTheme.value = CurrentThemeState.Loading
-        launch {
-            val result = themeRepository.fetchCurrentTheme().fold(
+        viewModelScope.launch {
+            currentTheme.value = CurrentThemeState.Loading
+            themeRepository.fetchCurrentTheme().fold(
                 onSuccess = { theme ->
-                    CurrentThemeState.Success(theme.name, theme.id)
+                    currentTheme.value = CurrentThemeState.Success(theme.name, theme.id)
                 },
                 onFailure = {
-                    triggerEvent(Event.ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
-                    CurrentThemeState.Hidden
+                    // Wait for the carousel to load
+                    carouselState.filter { it !is CarouselState.Loading }
+                        .take(1)
+                        .onEach {
+                            if (it is CarouselState.Success) {
+                                // If the carousel loaded successfully, show a snackbar
+                                triggerEvent(ShowSnackbar(R.string.theme_picker_loading_current_theme_failed))
+                            }
+                            currentTheme.value = CurrentThemeState.Hidden
+                        }
+                        .launchIn(viewModelScope)
                 }
             )
-            currentTheme.value = result
         }
     }
 
@@ -129,7 +139,7 @@ class ThemePickerViewModel @Inject constructor(
             carouselItems = carouselState.carouselItems
                 .filter {
                     when (it) {
-                        is CarouselItem.Theme -> it.themeId != currentThemeState.themeId
+                        is Theme -> it.themeId != currentThemeState.themeId
                         else -> true
                     }
                 }
@@ -144,7 +154,7 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-    fun onThemeTapped(theme: CarouselItem.Theme) {
+    fun onThemeTapped(theme: Theme) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
@@ -165,6 +175,15 @@ class ThemePickerViewModel @Inject constructor(
             val message = "Screenshot for theme $themeName is unavailable"
             crashLogger.sendReport(Exception(message))
         }
+    }
+
+    fun onRetryTapped() {
+        loadData()
+    }
+
+    private fun loadData() {
+        loadCurrentTheme()
+        loadThemes()
     }
 
     data class ViewState(

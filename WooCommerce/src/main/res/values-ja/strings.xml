@@ -44,8 +44,6 @@ Language: ja_JP
     <string name="theme_preview_bottom_sheet_pages_subtitle">タップして表示</string>
     <string name="theme_preview_bottom_sheet_pages_title">このテンプレートのページ</string>
     <string name="theme_preview_title">プレビュー</string>
-    <string name="theme_picker_error_message">現時点ではテーマを読み込むことができません。</string>
-    <string name="theme_picker_error_title">エラーが発生しました</string>
     <string name="theme_picker_carousel_info_item_description">ストアをセットアップしたら、WooCommerce テーマストアでご自身にぴったりなテーマを見つけましょう。</string>
     <string name="theme_picker_carousel_info_item_title">もっと知りたいですか ?</string>
     <string name="theme_picker_description">設定で後でいつでも変更できます。</string>
