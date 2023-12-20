@@ -72,37 +72,42 @@ fun OrderCreateEditTotalsView(
                         .height(shadowHeight)
                 )
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .background(
-                            color = colorResource(id = R.color.color_surface)
-                        )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.color_primary)
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    WCColoredButton(
-                        onClick = {
-                            (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                    ) {
-                        Text(
-                            text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
-                        )
-                    }
-                }
+                TotalsView(state)
             }
+        }
+    }
+}
+
+@Composable
+private fun TotalsView(state: TotalsSectionsState) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(
+                color = colorResource(id = R.color.color_surface)
+            )
+    ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowUp,
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_primary)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        WCColoredButton(
+            onClick = {
+                (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+        ) {
+            Text(
+                text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
+            )
         }
     }
 }
