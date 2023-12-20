@@ -279,6 +279,7 @@ private fun Carousel(
 ) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         Header(
