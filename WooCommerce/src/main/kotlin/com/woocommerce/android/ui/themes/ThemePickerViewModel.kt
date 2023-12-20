@@ -10,8 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Message
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Theme
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -75,14 +74,14 @@ class ThemePickerViewModel @Inject constructor(
                     carouselItems = result
                         .filter { theme -> theme.demoUrl != null }
                         .map { theme ->
-                            Theme(
+                            CarouselItem.Theme(
                                 themeId = theme.id,
                                 name = theme.name,
                                 screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
                             )
                         }
                         .plus(
-                            Message(
+                            CarouselItem.Message(
                                 title = resourceProvider.getString(
                                     R.string.theme_picker_carousel_info_item_title
                                 ),
@@ -128,7 +127,12 @@ class ThemePickerViewModel @Inject constructor(
     ) = if (carouselState is CarouselState.Success && currentThemeState is CurrentThemeState.Success) {
         carouselState.copy(
             carouselItems = carouselState.carouselItems
-                .filter { it is Theme && it.themeId != currentThemeState.themeId }
+                .filter {
+                    when (it) {
+                        is CarouselItem.Theme -> it.themeId != currentThemeState.themeId
+                        else -> true
+                    }
+                }
         )
     } else carouselState
 
@@ -140,7 +144,7 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-    fun onThemeTapped(theme: Theme) {
+    fun onThemeTapped(theme: CarouselItem.Theme) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
