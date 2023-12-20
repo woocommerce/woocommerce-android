@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
@@ -26,15 +26,12 @@ class UnseenReviewsCountHandler @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val unseenReviewsCount: SharedFlow<Int> =
         selectedSite.observe()
+            .filterNotNull()
             .flatMapLatest { site ->
-                if (site != null) {
-                    notificationStore.observeNotificationsForSite(
-                        site = site,
-                        filterBySubtype = listOf(STORE_REVIEW.toString())
-                    )
-                } else {
-                    flowOf(emptyList())
-                }
+                notificationStore.observeNotificationsForSite(
+                    site = site,
+                    filterBySubtype = listOf(STORE_REVIEW.toString())
+                )
             }
             .map { it.count { notification -> !notification.read } }
             .distinctUntilChanged()

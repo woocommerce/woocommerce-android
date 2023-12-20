@@ -10,7 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
+import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Message
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem.Theme
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -75,14 +75,14 @@ class ThemePickerViewModel @Inject constructor(
                     carouselItems = result
                         .filter { theme -> theme.demoUrl != null }
                         .map { theme ->
-                            CarouselItem.Theme(
+                            Theme(
                                 themeId = theme.id,
                                 name = theme.name,
                                 screenshotUrl = AppUrls.getScreenshotUrl(theme.demoUrl!!)
                             )
                         }
                         .plus(
-                            CarouselItem.Message(
+                            Message(
                                 title = resourceProvider.getString(
                                     R.string.theme_picker_carousel_info_item_title
                                 ),

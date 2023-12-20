@@ -169,20 +169,24 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/gift_card_layout"
+            android:id="@+id/gift_card_selection_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:minHeight="@dimen/major_300"
             android:visibility="gone"
             tools:visibility="visible">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/gift_card_button"
-                style="@style/Woo.Button.TextButton.Secondary"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/selected_gift_card_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:text="@string/order_gift_card"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="Gift Card" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -191,11 +195,43 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
+                android:gravity="center_vertical"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
-                app:layout_constraintBottom_toBottomOf="@+id/gift_card_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/gift_card_button"
                 tools:text="XPTO-GIFT-CODE" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/order_edit_gift_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/major_300"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/order_edit_gift_card_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="XPTO-GIFT-CODE" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/order_edit_gift_card_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintBottom_toBottomOf="@+id/order_edit_gift_card_code"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/order_edit_gift_card_code"
+                tools:text="-$60.00" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

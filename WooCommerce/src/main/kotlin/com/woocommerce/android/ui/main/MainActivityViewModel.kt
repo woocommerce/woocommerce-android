@@ -103,6 +103,7 @@ class MainActivityViewModel @Inject constructor(
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
     fun handleShortcutAction(action: String?) {
+        if (!selectedSite.exists()) return
         when (action) {
             SHORTCUT_PAYMENTS -> {
                 analyticsTrackerWrapper.track(
