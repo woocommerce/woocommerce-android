@@ -33,9 +33,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
@@ -63,7 +65,8 @@ class MoreMenuViewModel @Inject constructor(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-        ) { count, selectedSite, paymentsFeatureWasClicked ->
+            loadSitePlanName()
+        ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName ->
             MoreMenuViewState(
                 generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
@@ -72,14 +75,10 @@ class MoreMenuViewModel @Inject constructor(
                 settingsMenuItems = generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
+                sitePlan = sitePlanName,
                 userAvatarUrl = accountStore.account.avatarUrl,
-                isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
+                isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords,
             )
-        }.transform { viewState ->
-            // to avoid showing empty screen when plan is fetched
-            emit(viewState)
-            val sitePlanName = loadSitePlanName()
-            emit(viewState.copy(sitePlan = sitePlanName))
         }.asLiveData()
 
     fun onViewResumed() {
@@ -276,9 +275,13 @@ class MoreMenuViewModel @Inject constructor(
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
-    private suspend fun loadSitePlanName() =
-        planRepository.fetchCurrentPlanDetails(selectedSite.get())
-            ?.formattedPlanName.orEmpty()
+    private fun loadSitePlanName(): Flow<String> = selectedSite.observe()
+        .filterNotNull()
+        .map { site ->
+            planRepository.fetchCurrentPlanDetails(site)
+                ?.formattedPlanName.orEmpty()
+        }
+        .onStart { emit("") }
 
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)

@@ -2,7 +2,7 @@
 16.8
 -----
 - [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
-
+- [*] [Internal] Fixed crashes after resetting the Selected Site [https://github.com/woocommerce/woocommerce-android/pull/10444]
 
 16.7
 -----

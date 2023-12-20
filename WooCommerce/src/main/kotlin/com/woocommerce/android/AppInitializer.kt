@@ -152,6 +152,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun init(application: Application) {
         this.application = application
 
+        Thread.setDefaultUncaughtExceptionHandler(
+            UncaughtErrorsHandler(
+                context = application,
+                baseHandler = Thread.getDefaultUncaughtExceptionHandler(),
+                crashLogger = crashLogging
+            )
+        )
+
         // Apply Theme
         AppThemeUtils.setAppTheme()
 
