@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
@@ -50,6 +51,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
@@ -98,6 +100,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(orderCreateEditRepository).fetchTaxBasedOnSetting()
     }
 
+    @Test
     fun `given tax based on store when initializing the view model, then update view state with current tax setting`() =
         testBlocking {
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(
@@ -1804,6 +1807,34 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(sut.event.value).isInstanceOf(Exit::class.java)
     }
+
+    @Test
+    fun `given totals helper returns hidden, when totals updated, then return hidden`() {
+        testBlocking {
+            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(TotalsSectionsState.Hidden)
+
+            createSut()
+
+            advanceUntilIdle()
+
+            assertThat(sut.totalsData.value).isEqualTo(TotalsSectionsState.Hidden)
+        }
+    }
+
+    @Test
+    fun `given totals helper returns shown, when totals checked, then return shown`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Shown>()
+            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(totalsSectionsState)
+
+            createSut()
+
+            advanceUntilIdle()
+
+            assertThat(sut.totalsData.value).isEqualTo(totalsSectionsState)
+        }
+    }
+
     @Test
     fun `when custom amount is added, then proper event is tracked`() {
         val customAmountUIModel = CustomAmountUIModel(
