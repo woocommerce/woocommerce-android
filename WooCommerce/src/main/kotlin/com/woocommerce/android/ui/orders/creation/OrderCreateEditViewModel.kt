@@ -1305,6 +1305,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
@@ -1337,6 +1338,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
@@ -1395,6 +1397,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val feesList = draft.feesLines.map {
                 if (customAmountUIModel.id == it.id) {
@@ -1405,6 +1408,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
         triggerEvent(Exit)
     }
