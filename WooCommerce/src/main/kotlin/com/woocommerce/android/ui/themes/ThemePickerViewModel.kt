@@ -139,7 +139,7 @@ class ThemePickerViewModel @Inject constructor(
             carouselItems = carouselState.carouselItems
                 .filter {
                     when (it) {
-                        is CarouselItem.Theme -> it.themeId != currentThemeState.themeId
+                        is Theme -> it.themeId != currentThemeState.themeId
                         else -> true
                     }
                 }
@@ -154,7 +154,7 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-    fun onThemeTapped(theme: CarouselItem.Theme) {
+    fun onThemeTapped(theme: Theme) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.name)
