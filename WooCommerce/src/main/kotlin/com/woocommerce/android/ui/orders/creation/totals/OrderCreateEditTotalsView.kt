@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.totals
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -92,54 +93,103 @@ fun OrderCreateEditTotalsView(
 }
 
 @Composable
-private fun TotalsView(state: TotalsSectionsState) {
-    var isExpanded by remember { mutableStateOf(false) }
+private fun TotalsView(
+    state: TotalsSectionsState,
+    isPreview: Boolean = LocalInspectionMode.current,
+) {
+    var isExpanded by remember { mutableStateOf(isPreview) }
+
     val totalsIs = remember { MutableInteractionSource() }
     val topRowCoroutineScope = rememberCoroutineScope()
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = colorResource(id = R.color.color_surface)
-            )
-            .clickable(
-                interactionSource = totalsIs,
-                indication = null
-            ) {
-                val press = PressInteraction.Press(Offset.Zero)
-                topRowCoroutineScope.launch {
-                    totalsIs.emit(press)
-                    totalsIs.emit(PressInteraction.Release(press))
-                }
-                isExpanded = !isExpanded
-            }
+            .background(color = colorResource(id = R.color.color_surface))
+            .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
     ) {
-        Crossfade(
-            targetState = isExpanded,
-            label = "totals_icon"
-        ) { expanded ->
-            IconButton(interactionSource = totalsIs, onClick = {}) {
-                Icon(
-                    imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.color_primary),
-                    modifier = Modifier.padding(all = dimensionResource(id = R.dimen.minor_100))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .clickable(
+                    interactionSource = totalsIs,
+                    indication = null
+                ) {
+                    val press = PressInteraction.Press(Offset.Zero)
+                    topRowCoroutineScope.launch {
+                        totalsIs.emit(press)
+                        totalsIs.emit(PressInteraction.Release(press))
+                    }
+                    isExpanded = !isExpanded
+                }
+                .animateContentSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Crossfade(
+                    targetState = isExpanded,
+                    label = "totals_icon",
+                ) { expanded ->
+                    IconButton(interactionSource = totalsIs, onClick = {}) {
+                        Icon(
+                            imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.color_primary),
+                            modifier =
+                            Modifier.padding(all = dimensionResource(id = R.dimen.minor_100))
+                        )
+                    }
+                }
+            }
+
+            // Fake data for now to test the animation
+            if (isExpanded) {
+                Text(
+                    text = "Totals 1.01",
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100)),
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Totals 2",
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100)),
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Totals 3",
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100)),
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Totals 4",
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100)),
+                )
+            } else {
+                Text(
+                    text = "Totals 1.01",
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100)),
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         WCColoredButton(
             onClick = {
                 (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke()
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
