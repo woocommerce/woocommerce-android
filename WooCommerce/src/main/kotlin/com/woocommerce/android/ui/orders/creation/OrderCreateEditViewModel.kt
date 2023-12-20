@@ -137,6 +137,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
@@ -199,9 +200,19 @@ class OrderCreateEditViewModel @Inject constructor(
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
+    private val _selectedGiftCard = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = args.giftCardCode.orEmpty()
+    )
+
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .asLiveData()
+        .combine(_selectedGiftCard) { order, giftCard ->
+            order.copy(
+                selectedGiftCard = giftCard,
+                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
+            )
+        }.asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
@@ -632,6 +643,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
+                _selectedGiftCard.value.isEmpty() &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
     }
@@ -1043,6 +1055,10 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
     }
 
+    fun onGiftCardSelected(selectedGiftCard: String) {
+        _selectedGiftCard.update { selectedGiftCard }
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
@@ -1052,7 +1068,8 @@ class OrderCreateEditViewModel @Inject constructor(
             Mode.Creation -> viewModelScope.launch {
                 trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
-                orderCreateEditRepository.placeOrder(order).fold(
+                val giftCard = _selectedGiftCard.value
+                orderCreateEditRepository.placeOrder(order, giftCard).fold(
                     onSuccess = {
                         trackOrderCreationSuccess()
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
