@@ -1559,6 +1559,25 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when custom amount added, then enable the custom amount section after the operation is complete`() {
+        var viewState: MutableList<ViewState> = mutableListOf()
+        sut.viewStateData.liveData.observeForever {
+            viewState.add(it)
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        // The first state will be triggered for updating the progress, second state for disabling the custom amount. Hence we need to verify the third state
+        assertTrue(viewState[2].isEditable)
+    }
+
+    @Test
     fun `when custom amount added with tax status as taxable, then fee line gets updated with proper tax status`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
