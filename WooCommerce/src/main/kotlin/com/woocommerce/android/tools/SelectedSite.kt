@@ -61,7 +61,7 @@ class SelectedSite @Inject constructor(
         if (wasReset) {
             throw SelectedSiteResetException()
         } else {
-            throw SelectedSiteMissingException(localSiteId)
+            throw SelectedSiteUninitializedException(localSiteId)
         }
     }
 
@@ -102,7 +102,7 @@ class SelectedSite @Inject constructor(
 
     open class SelectedSiteException(message: String? = null) : Exception(message)
     class SelectedSiteResetException : SelectedSiteException()
-    class SelectedSiteMissingException(
+    class SelectedSiteUninitializedException(
         val siteId: Int
     ) : SelectedSiteException("Selected Site is missing, id: $siteId")
 }
