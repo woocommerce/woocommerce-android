@@ -161,7 +161,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         notificationChannelsHandler = notificationChannelsHandler,
         appPrefs = appPrefs,
         showTestNotification = showTestNotification,
-        localeProvider = mock(),
         dateUtils = mock()
     )
 
