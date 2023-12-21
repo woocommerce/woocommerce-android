@@ -11,6 +11,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     private val resourceProvider: ResourceProvider,
 ) {
+    @Suppress("LongMethod")
     fun mapToPaymentTotalsState(
         mode: OrderCreateEditViewModel.Mode,
         order: Order,
@@ -63,7 +64,9 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                                     value = "$6.25"
                                 ),
                                 TotalsSectionsState.Line.LearnMore(
-                                    text = resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address),
+                                    text = resourceProvider.getString(
+                                        R.string.order_creation_tax_based_on_billing_address
+                                    ),
                                     buttonText = resourceProvider.getString(R.string.learn_more),
                                     onClick = {}
                                 )
