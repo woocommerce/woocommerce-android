@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.base
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -54,19 +53,5 @@ open class BaseFragment : Fragment, BaseFragmentView {
      */
     override fun getFragmentSubtitle(): String = ""
 
-    protected fun ShowDialog.showDialog() {
-        WooDialog.showDialog(
-            activity = requireActivity(),
-            titleId = this.titleId,
-            messageId = this.messageId,
-            positiveButtonId = this.positiveButtonId,
-            posBtnAction = this.positiveBtnAction,
-            negativeButtonId = this.negativeButtonId,
-            negBtnAction = this.negativeBtnAction,
-            neutralButtonId = this.neutralButtonId,
-            neutBtAction = this.neutralBtnAction,
-            cancellable = this.cancelable,
-            onDismiss = this.onDismiss
-        )
-    }
+    protected fun ShowDialog.showDialog() = showIn(requireActivity())
 }

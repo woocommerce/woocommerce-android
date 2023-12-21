@@ -44,8 +44,6 @@ Language: sv_SE
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tryck för att visa</string>
     <string name="theme_preview_bottom_sheet_pages_title">Sidor på denna mall</string>
     <string name="theme_preview_title">Förhandsgranska</string>
-    <string name="theme_picker_error_message">Kan inte att ladda teman just nu.</string>
-    <string name="theme_picker_error_title">Ett fel uppstod</string>
     <string name="theme_picker_carousel_info_item_description">När din butik har konfigurerats kan du hitta ditt perfekta tema i WooCommerce-temabutiken.</string>
     <string name="theme_picker_carousel_info_item_title">Letar du efter fler?</string>
     <string name="theme_picker_description">Du kan alltid ändra det senare i inställningar</string>

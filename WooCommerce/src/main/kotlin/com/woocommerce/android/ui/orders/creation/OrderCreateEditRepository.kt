@@ -10,6 +10,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
@@ -161,6 +162,19 @@ class OrderCreateEditRepository @Inject constructor(
     suspend fun getTaxBasedOnSetting(): TaxBasedOnSetting? {
         return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
     }
+
+    suspend fun fetchOrderSupportedPlugins() =
+        wooCommerceStore.getSitePlugins(
+            site = selectedSite.get(),
+            plugins = listOf(WooCommerceStore.WooPlugin.WOO_GIFT_CARDS)
+        ).associateBy { it.name }
+            .mapValues { (_, plugin) ->
+                WooPlugin(
+                    isInstalled = true,
+                    isActive = plugin.isActive,
+                    version = plugin.version
+                )
+            }
 
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
         when (selectedOption) {

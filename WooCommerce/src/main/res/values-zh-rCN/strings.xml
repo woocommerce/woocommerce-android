@@ -44,8 +44,6 @@ Language: zh_CN
     <string name="theme_preview_bottom_sheet_pages_subtitle">轻点以查看</string>
     <string name="theme_preview_bottom_sheet_pages_title">此模板上的页面</string>
     <string name="theme_preview_title">预览</string>
-    <string name="theme_picker_error_message">暂时无法加载主题。</string>
-    <string name="theme_picker_error_title">出现错误</string>
     <string name="theme_picker_carousel_info_item_description">完成商店设置后，请在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_carousel_info_item_title">想要获得更多信息？</string>
     <string name="theme_picker_description">之后您可以随时在设置中进行更改。</string>
