@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
-import com.woocommerce.android.util.DateUtils
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
@@ -75,11 +74,9 @@ class StatsTimeRangeSelection private constructor(
             selectionType: SelectionType,
             referenceDate: Date,
             calendar: Calendar,
-            locale: Locale,
-            dateUtils: DateUtils
+            locale: Locale
         ): StatsTimeRangeSelection {
-            val referenceDateWithTimeZone = dateUtils.transformDateToSiteDate(referenceDate) ?: referenceDate
-            val rangeData = generateTimeRangeData(selectionType, referenceDateWithTimeZone, locale, calendar)
+            val rangeData = generateTimeRangeData(selectionType, referenceDate, locale, calendar)
             return StatsTimeRangeSelection(
                 selectionType = selectionType,
                 currentRange = rangeData.currentRange,
@@ -125,11 +122,10 @@ class StatsTimeRangeSelection private constructor(
         CUSTOM(R.string.date_timeframe_custom);
 
         fun generateSelectionData(
-            referenceStartDate: Date = Date(),
-            referenceEndDate: Date = Date(),
+            referenceStartDate: Date,
+            referenceEndDate: Date,
             calendar: Calendar,
-            locale: Locale,
-            dateUtils: DateUtils
+            locale: Locale
         ): StatsTimeRangeSelection {
             return if (this == CUSTOM) {
                 build(
@@ -143,8 +139,7 @@ class StatsTimeRangeSelection private constructor(
                     selectionType = this,
                     referenceDate = referenceStartDate,
                     calendar = calendar,
-                    locale = locale,
-                    dateUtils = dateUtils
+                    locale = locale
                 )
             }
         }

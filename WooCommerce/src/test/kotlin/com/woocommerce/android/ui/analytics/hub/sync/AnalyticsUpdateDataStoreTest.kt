@@ -35,7 +35,8 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     private val defaultSelectionData = LAST_MONTH.generateSelectionData(
         calendar = Calendar.getInstance(),
         locale = Locale.getDefault(),
-        dateUtils = mock()
+        referenceStartDate = Date(),
+        referenceEndDate = Date()
     )
 
     @Test

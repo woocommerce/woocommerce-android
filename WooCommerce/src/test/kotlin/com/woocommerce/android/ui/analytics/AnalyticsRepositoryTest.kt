@@ -962,8 +962,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         referenceStartDate = referenceStartDate,
         referenceEndDate = referenceEndDate,
         calendar = testCalendar,
-        locale = testLocale,
-        dateUtils = mock()
+        locale = testLocale
     )
 
     companion object {
