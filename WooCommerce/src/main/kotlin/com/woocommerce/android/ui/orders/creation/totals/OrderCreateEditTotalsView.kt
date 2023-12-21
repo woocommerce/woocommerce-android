@@ -162,6 +162,10 @@ private fun TotalsView(
 
             if (isExpanded) {
                 Lines(lines = state.lines, smallGaps = false)
+
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+                Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
             }
         }
 
@@ -171,8 +175,8 @@ private fun TotalsView(
 
 @Composable
 fun Lines(lines: List<TotalsSectionsState.Line>, smallGaps: Boolean) {
-    lines.forEach { line ->
-        LineGap(smallGaps)
+    lines.forEachIndexed { index, line ->
+        if (index != 0) LineGap(smallGaps)
 
         when (line) {
             is TotalsSectionsState.Line.Simple -> RowWithData(
@@ -191,7 +195,7 @@ fun Lines(lines: List<TotalsSectionsState.Line>, smallGaps: Boolean) {
             is TotalsSectionsState.Line.LearnMore -> LearnMore(line)
         }
 
-        LineGap(smallGaps)
+        if (index != lines.size - 1) LineGap(smallGaps)
     }
 }
 
@@ -209,13 +213,6 @@ private fun TotalsSummary(
     orderTotal: TotalsSectionsState.OrderTotal,
     mainButton: TotalsSectionsState.Button,
 ) {
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-
-    Divider(
-        modifier = Modifier
-            .padding(start = dimensionResource(id = R.dimen.major_100))
-    )
-
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
     RowWithData(
