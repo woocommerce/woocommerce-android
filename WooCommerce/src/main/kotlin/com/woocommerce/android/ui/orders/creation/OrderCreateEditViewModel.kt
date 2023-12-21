@@ -1208,12 +1208,8 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             pluginsInformation
                 .onEach {
-                    val isGiftCardExtensionEnabled = pluginsInformation
-                        .value[WOO_GIFT_CARDS.pluginName]
-                        ?.isOperational ?: false
-                    viewState = viewState.copy(
-                        shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled
-                    )
+                    val isGiftCardExtensionEnabled = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
+                    viewState = viewState.copy(shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled)
                 }.launchIn(viewModelScope)
 
             pluginsInformation.update {
