@@ -72,7 +72,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     sku = product.sku,
                     quantity = product.stockQuantity.toInt(),
                 )
-                if (product.isStockManaged) {
+                if (isItemStockManaged(product)) {
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
@@ -92,6 +92,15 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             handleProductNotFound(status.code)
         }
     }
+
+    private suspend fun isItemStockManaged(product: Product): Boolean =
+        if (product.isVariation()) {
+            variationRepository.getVariationOrNull(product.parentId, product.remoteId).let {
+                it?.isStockManaged == true
+            }
+        } else {
+            product.isStockManaged
+        }
 
     private suspend fun handleProductIsNotStockManaged(product: Product) {
         triggerProductNotStockManagedSnackBar(product)
@@ -129,7 +138,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
         val state = viewState.value
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
-        updateQuantity(state.product.copy(quantity = state.product.quantity + 1))
+        updateQuantity(state.product.copy(quantity = state.product.quantity + 1), isUndoUpdate = false)
     }
 
     fun onUpdateQuantityClicked() {
@@ -138,10 +147,16 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         if (state !is ViewState.QuickInventoryBottomSheetVisible) return
         // if user input is empty or invalid, do nothing
         val newQuantityValue = state.newQuantity.toIntOrNull() ?: return
-        updateQuantity(state.product.copy(quantity = newQuantityValue))
+        updateQuantity(state.product.copy(quantity = newQuantityValue), isUndoUpdate = false)
     }
 
-    private fun updateQuantity(updatedProductInfo: ProductInfo) = launch {
+    private fun updateQuantity(
+        updatedProductInfo: ProductInfo,
+        isUndoUpdate: Boolean,
+        onSuccess: () -> Unit = {},
+        onError: () -> Unit = {},
+        onUndoSuccess: () -> Unit = {}
+    ) = launch {
         _viewState.value = ViewState.Loading
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.UpdatingProduct
         val product = productRepository.getProduct(updatedProductInfo.id)
@@ -150,19 +165,24 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         } else {
-            val result = if (product.isVariable()) {
+            val result = if (product.isVariation()) {
                 product.updateVariation(updatedProductInfo)
             } else {
                 product.updateProduct(updatedProductInfo)
             }
             if (result.isSuccess) {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_SUCCESS)
-                handleQuantityUpdateSuccess(
-                    product.stockQuantity.toInt().toString(),
-                    updatedProductInfo.quantity.toString()
-                )
+                val oldQuantity = product.stockQuantity.toInt().toString()
+                val updatedQuantity = updatedProductInfo.quantity.toString()
+                if (!isUndoUpdate) {
+                    showQuantityUpdateSuccessSnackbar(oldQuantity, updatedQuantity, updatedProductInfo)
+                    onSuccess()
+                } else {
+                    onUndoSuccess()
+                }
             } else {
                 handleQuantityUpdateError()
+                onError()
             }
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             delay(SCANNER_RESTART_DEBOUNCE_MS)
@@ -198,18 +218,50 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    private fun handleQuantityUpdateSuccess(oldQuantity: String, updatedQuantity: String) {
+    private fun showQuantityUpdateSuccessSnackbar(
+        oldQuantity: String,
+        updatedQuantity: String,
+        productInfo: ProductInfo
+    ) {
         val quantityChangeString = "$oldQuantity ➡ $updatedQuantity"
         val message = resourceProvider.getString(
             R.string.scan_to_update_inventory_success_snackbar,
             quantityChangeString
         )
-        triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
+        triggerEvent(
+            MultiLiveEvent.Event.ShowUndoSnackbar(
+                message = message,
+                undoAction = {
+                    onUpdateQuantityUndo(oldQuantity, productInfo)
+                },
+            )
+        )
     }
 
     private fun handleQuantityUpdateError() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_QUANTITY_UPDATE_FAILURE)
         triggerEvent(ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_failure_snackbar)))
+    }
+
+    private fun onUpdateQuantityUndo(oldQuantity: String, productInfo: ProductInfo) {
+        updateQuantity(
+            productInfo.copy(quantity = oldQuantity.toInt()),
+            isUndoUpdate = true,
+            onUndoSuccess = {
+                triggerEvent(
+                    ShowUiStringSnackbar(
+                        UiString.UiStringText(
+                            resourceProvider.getString(R.string.scan_to_update_inventory_undo_snackbar)
+                        )
+                    )
+                )
+            },
+            onError = {
+                triggerEvent(
+                    ShowUiStringSnackbar(UiString.UiStringRes(R.string.scan_to_update_inventory_failure_snackbar))
+                )
+            }
+        )
     }
 
     fun onManualQuantityEntered(newQuantity: String) {
@@ -230,7 +282,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         } catch (_: NumberFormatException) {}
     }
 
-    private fun Product.isVariable(): Boolean {
+    private fun Product.isVariation(): Boolean {
         return this.parentId != 0L
     }
 

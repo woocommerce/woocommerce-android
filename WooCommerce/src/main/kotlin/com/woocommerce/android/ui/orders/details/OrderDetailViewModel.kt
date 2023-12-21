@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
@@ -51,7 +52,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -280,7 +280,14 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onEditClicked() {
         tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
-        triggerEvent(OrderNavigationTarget.EditOrder(order.id))
+        val firstGiftCard = giftCards.value?.firstOrNull()
+        triggerEvent(
+            EditOrder(
+                orderId = order.id,
+                giftCard = firstGiftCard?.code,
+                appliedDiscount = firstGiftCard?.used
+            )
+        )
     }
 
     fun orderNavigationIsEnabled() = navArgs.allOrderIds?.let {
@@ -757,10 +764,10 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private fun shouldShowThankYouNoteButton() = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
+    private fun shouldShowThankYouNoteButton() =
         selectedSite.getIfExists()?.isWPComAtomic == true &&
-        order.status == Order.Status.Completed &&
-        productList.value?.isNotEmpty() == true
+            order.status == Order.Status.Completed &&
+            productList.value?.isNotEmpty() == true
 
     private fun displayCustomAmounts() {
         _feeLineList.value = order.feesLines

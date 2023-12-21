@@ -140,16 +140,13 @@ class MyStoreFragment :
     private val tabLayout
         get() = _tabLayout!!
 
-    private val appBarLayout
-        get() = activity?.findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = null,
-            hasShadow = true
+            hasShadow = true,
         )
 
     private var isEmptyViewVisible: Boolean = false
@@ -174,7 +171,6 @@ class MyStoreFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initTabLayout()
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentMyStoreBinding.bind(view)
@@ -189,6 +185,7 @@ class MyStoreFragment :
         }
 
         // Create tabs and add to appbar
+        initTabLayout()
         StatsGranularity.values().forEach { granularity ->
             val tab = tabLayout.newTab().apply {
                 setText(binding.myStoreStats.getStringForGranularity(granularity))
@@ -502,7 +499,6 @@ class MyStoreFragment :
             appPrefsWrapper.setJetpackInstallationIsFromBanner(true)
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
-        val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
         viewLifecycleOwner.lifecycleScope.launch {
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
@@ -510,20 +506,21 @@ class MyStoreFragment :
             // the scope will not get cancelled.
             // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
+            val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
             withCreated {
-                appBarLayout.verticalOffsetChanges()
-                    .onEach { verticalOffset ->
+                appBarLayout?.verticalOffsetChanges()
+                    ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =
                             (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
                     }
-                    .launchIn(this)
+                    ?.launchIn(this)
             }
         }
     }
 
     private fun initTabLayout() {
         _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
-        addTabLayoutToAppBar()
+        addStatsGranularityTabs()
     }
 
     override fun onResume() {
@@ -558,7 +555,7 @@ class MyStoreFragment :
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
-        addTabLayoutToAppBar()
+        addStatsGranularityTabs()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
 
@@ -716,25 +713,20 @@ class MyStoreFragment :
         isEmptyViewVisible = show
     }
 
-    private fun addTabLayoutToAppBar() {
-        appBarLayout
-            ?.takeIf { !it.children.contains(tabLayout) }
+    private fun addStatsGranularityTabs() {
+        val indexOfMyStoreStatsView = binding.myStoreStatsContainer.indexOfChild(binding.myStoreStats)
+        binding.myStoreStatsContainer
+            .takeIf { !it.children.contains(tabLayout) }
             ?.takeIf { AppPrefs.isV4StatsSupported() }
-            ?.let { appBar ->
-                appBar.addView(tabLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
-                appBar.post {
-                    if (context != null) {
-                        appBar.elevation = resources.getDimensionPixelSize(R.dimen.appbar_elevation).toFloat()
-                    }
-                }
-            }
+            ?.addView(
+                tabLayout,
+                indexOfMyStoreStatsView,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            )
     }
 
     private fun removeTabLayoutFromAppBar() {
-        appBarLayout?.let { appBar ->
-            appBar.removeView(tabLayout)
-            appBar.elevation = 0f
-        }
+        binding.myStoreStatsContainer.removeView(tabLayout)
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0

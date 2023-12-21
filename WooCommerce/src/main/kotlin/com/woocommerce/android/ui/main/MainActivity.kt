@@ -3,7 +3,6 @@
 package com.woocommerce.android.ui.main
 
 import NotificationsPermissionCard
-import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -18,7 +17,6 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -111,6 +109,7 @@ import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -174,11 +173,11 @@ class MainActivity :
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
     @Inject
     lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+    @Inject lateinit var animatorHelper: MainAnimatorHelper
 
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
-    private var restoreToolbarHeight = 0
     private var menu: Menu? = null
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
@@ -193,22 +192,6 @@ class MainActivity :
         AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
             binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
         }
-    }
-
-    private val showSubtitleAnimator by lazy {
-        createCollapsingToolbarMarginBottomAnimator(
-            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
-            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
-            duration = 200L
-        )
-    }
-
-    private val hideSubtitleAnimator by lazy {
-        createCollapsingToolbarMarginBottomAnimator(
-            from = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin_with_subtitle),
-            to = resources.getDimensionPixelSize(dimen.expanded_toolbar_bottom_margin),
-            duration = 200L
-        )
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -226,7 +209,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar()
+                    showToolbar(f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -292,6 +275,8 @@ class MainActivity :
         toolbar = binding.toolbar.toolbar
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
+
+        animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         val graphInflater = navHostFragment.navController.navInflater
@@ -500,16 +485,28 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar() {
-        if (restoreToolbarHeight > 0) {
-            binding.collapsingToolbar.updateLayoutParams { height = restoreToolbarHeight }
+    private fun showToolbar(animate: Boolean) {
+        if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = true) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
+            binding.collapsingToolbar.updateLayoutParams {
+                height = animatorHelper.toolbarHeight
+            }
         }
     }
 
     private fun hideToolbar() {
         if (binding.collapsingToolbar.layoutParams.height == 0) return
-        restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
-        binding.collapsingToolbar.updateLayoutParams { height = 0 }
+        animatorHelper.animateToolbarHeight(show = false) {
+            binding.collapsingToolbar.updateLayoutParams {
+                height = it
+            }
+        }
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -529,23 +526,14 @@ class MainActivity :
         }
     }
 
-    private fun createCollapsingToolbarMarginBottomAnimator(from: Int, to: Int, duration: Long): ValueAnimator {
-        return ValueAnimator.ofInt(from, to)
-            .also { valueAnimator ->
-                valueAnimator.duration = duration
-                valueAnimator.interpolator = AccelerateDecelerateInterpolator()
-                valueAnimator.addUpdateListener {
-                    binding.collapsingToolbar.expandedTitleMarginBottom = it.animatedValue as Int
-                }
-            }
-    }
-
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.visibility == View.GONE) return
         if (binding.collapsingToolbar.layoutParams.height != 0) {
             binding.toolbarSubtitle.collapse(duration = 200L)
-            hideSubtitleAnimator.start()
+            animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
+                binding.collapsingToolbar.expandedTitleMarginBottom = it
+            }
         } else {
             binding.toolbarSubtitle.hide()
         }
@@ -556,7 +544,9 @@ class MainActivity :
         binding.toolbarSubtitle.text = subtitle
         if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
         binding.toolbarSubtitle.expand(duration = 200L)
-        showSubtitleAnimator.start()
+        animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
+            binding.collapsingToolbar.expandedTitleMarginBottom = it
+        }
     }
 
     fun enableToolbarExpansion(enable: Boolean) {
@@ -808,6 +798,7 @@ class MainActivity :
                 is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
+                is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
             }
         }
 

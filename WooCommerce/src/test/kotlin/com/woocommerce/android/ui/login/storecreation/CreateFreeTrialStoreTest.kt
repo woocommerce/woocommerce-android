@@ -34,10 +34,9 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
         val siteTitle = "test title"
         val expectedCreationResult = StoreCreationResult.Success(123L)
         val expectedSiteCreationData = SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            segmentId = null,
             domain = siteDomain,
-            title = siteTitle,
-            segmentId = null
+            title = siteTitle
         )
         createSut(siteDomain, siteTitle, expectedCreationResult)
 
@@ -70,10 +69,9 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
             StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
         )
         val expectedSiteCreationData = SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            segmentId = null,
             domain = siteDomain,
-            title = siteTitle,
-            segmentId = null
+            title = siteTitle
         )
 
         createSut(siteDomain, siteTitle, expectedCreationResult)
@@ -106,10 +104,9 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
         val siteDomain = "test existent domain"
         val siteTitle = "test existent title"
         val expectedSiteCreationData = SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            segmentId = null,
             domain = siteDomain,
-            title = siteTitle,
-            segmentId = null
+            title = siteTitle
         )
 
         createSut(
@@ -143,10 +140,9 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
         expectedCreationResult: StoreCreationResult<Long> = StoreCreationResult.Success(123)
     ) {
         val expectedSiteCreationData = SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            segmentId = null,
             domain = siteDomain,
-            title = siteTitle,
-            segmentId = null
+            title = siteTitle
         )
 
         val siteModel = SiteModel().apply { siteId = expectedSiteId }

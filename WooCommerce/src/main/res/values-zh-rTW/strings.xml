@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 16:54:05+0000
+Translation-Revision-Date: 2023-12-14 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">產品</string>
+    <string name="scan_to_update_inventory_quantity_label">數量</string>
+    <string name="scan_to_update_inventory_original_quantity_label">原始數量</string>
+    <string name="scan_to_update_inventory_failure_snackbar">發生錯誤。 請再試一次</string>
+    <string name="scan_to_update_inventory_success_snackbar">更新後數量：%s</string>
+    <string name="scan_to_update_inventory_product_details_button">檢視產品詳細資訊</string>
+    <string name="scan_to_update_inventory_update_quantity_button">更新數量</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">數量 + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">貨號為 %s 的產品並不受庫存管理。 請再試一次。</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">找不到貨號為 %s 的產品。 請再試一次。</string>
+    <string name="theme_activation_failed">佈景主題啟用失敗，請再試一次！</string>
+    <string name="settings_notifs_enable_chaching_sound_description">已停用訂單通知音效，若想在每次有新銷售時聽到「咔鏗」音效，請重新開啟。</string>
+    <string name="settings_notifs_enable_chaching_sound">啟用「咔鏗」音效</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">掃描條碼即可更新庫存</string>
+    <string name="cha_ching_sound_test_notification_message">這只是檢查「咔鏗」音效的測試通知。\n滑動即可關閉通知。</string>
+    <string name="cha_ching_sound_test_notification_title">測試通知</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">測試音效</string>
+    <string name="cha_ching_sound_succcess_snackbar">一切都準備好了！ 現在每出現一筆新訂單，都會聽到「咔鏗」音效。</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">保持靜音</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">啟用音效</string>
+    <string name="cha_ching_sound_issue_dialog_message">重新開啟，就會在每次有新銷售時，聽到「咔鏗」音效。 掌握最新客戶訂單！</string>
+    <string name="cha_ching_sound_issue_dialog_title">關閉「咔鏗」音效</string>
+    <string name="order_creation_products_order_count">訂單數</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">訂單總計的百分比</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">固定金額</string>
+    <string name="custom_amounts_bottom_sheet_heading">你想要如何新增自訂金額？</string>
+    <string name="custom_amounts_percentage_label">訂單總計的百分比 (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">刪除自訂金額</string>
     <string name="store_creation_use_theme_button">開始使用此佈景主題</string>
     <string name="theme_activated_successfully">已成功啟用佈景主題</string>
     <string name="theme_preview_theme_name">佈景主題：%1$s</string>
@@ -14,10 +44,6 @@ Language: zh_TW
     <string name="theme_preview_bottom_sheet_pages_subtitle">點選以檢視</string>
     <string name="theme_preview_bottom_sheet_pages_title">此範本上的頁面</string>
     <string name="theme_preview_title">預覽</string>
-    <string name="theme_picker_error_message">目前無法載入佈景主題。</string>
-    <string name="theme_picker_error_title">發生錯誤</string>
-    <string name="theme_picker_carousel_placeholder_message">點選查看即時示範。</string>
-    <string name="theme_picker_carousel_placeholder_title">佈景主題「%s」</string>
     <string name="theme_picker_carousel_info_item_description">商店設定完畢後，請前往 WooCommerce 佈景主題商店，尋找最適合你的佈景主題。</string>
     <string name="theme_picker_carousel_info_item_title">想探索更多選項嗎？</string>
     <string name="theme_picker_description">你之後可以隨時在設定中變更。</string>

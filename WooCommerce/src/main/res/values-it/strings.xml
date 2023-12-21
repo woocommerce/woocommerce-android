@@ -1,11 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 16:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="scan_to_update_inventory_product_label">Prodotto</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantità</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Quantità originale</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Si è verificato un problema. Riprova</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantità aggiornata: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Visualizza dettagli del prodotto</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Aggiorna quantità</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantità + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Prodotto con SKU: %s non è gestito dal magazzino. Riprova.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Prodotto con SKU: %s non trovato. Riprova.</string>
+    <string name="theme_activation_failed">Attivazione del tema non riuscita, riprova!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">I suoni delle notifiche degli ordini sono state disattivate, riattivale per sentire il \"din din\" per ogni nuova vendita.</string>
+    <string name="settings_notifs_enable_chaching_sound">Attiva il suono della cassa</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Esegui scansione del codice a barre per aggiornare l\'inventario</string>
+    <string name="cha_ching_sound_test_notification_message">Questa è solo una notifica di prova per controllare il suono della cassa.\nPuoi cancellarla.</string>
+    <string name="cha_ching_sound_test_notification_title">Notifica di prova</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">PROVA IL SUONO</string>
+    <string name="cha_ching_sound_succcess_snackbar">Tutto impostato! Il suono della cassa verrà riprodotto per ogni nuovo ordine.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">MANTIENI SILENZIOSO</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ATTIVA IL SUONO</string>
+    <string name="cha_ching_sound_issue_dialog_message">Riattivalo per sentire il suono della cassa per ogni nuova vendita. Resta aggiornato con gli ordini dei tuoi clienti!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Suono della casa disattivato</string>
+    <string name="order_creation_products_order_count">Conteggio dell\'ordine</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Una percentuale del totale dell\'ordine</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Un importo fisso</string>
+    <string name="custom_amounts_bottom_sheet_heading">Come desideri aggiungere l\'importo personalizzato?</string>
+    <string name="custom_amounts_percentage_label">Percentuale del totale dell\'ordine (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Elimina importo personalizzato</string>
     <string name="store_creation_use_theme_button">Inizia scegliendo questo tema</string>
     <string name="theme_activated_successfully">Tema attivato correttamente</string>
     <string name="theme_preview_theme_name">Tema: %1$s</string>
@@ -14,10 +44,6 @@ Language: it
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tocca per visualizzare</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagine su questo template</string>
     <string name="theme_preview_title">Anteprima</string>
-    <string name="theme_picker_error_message">Impossibile caricare i temi in questo momento.</string>
-    <string name="theme_picker_error_title">Si è verificato un errore</string>
-    <string name="theme_picker_carousel_placeholder_message">Tocca per la demo live.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema \"%s\"</string>
     <string name="theme_picker_carousel_info_item_description">Una volta configurato il negozio, trova il tema perfetto nel negozio di temi WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Cerchi altro?</string>
     <string name="theme_picker_description">Puoi sempre modificare il tema nelle impostazioni in un secondo momento.</string>

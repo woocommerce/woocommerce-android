@@ -1,2 +1,0 @@
-16.5:
-De nieuwste versie van de WooCommerce-app richt zich op verbeteringen van de stabiliteit! Daarnaast kunnen gebruikers van WooPayments nu genieten van naadloos schakelen tussen valuta's in de weergave Overzicht van stortingen. Upgrade nu voor een vloeiendere WooCommerce-ervaring!

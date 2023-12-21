@@ -634,6 +634,8 @@
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
     <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
+    <string name="order_creation_gift_card_text_field_hint">Enter code</string>
+    <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
 
     <!--
          Barcode Scanning
@@ -646,6 +648,8 @@
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Scan Product Barcode</string>
+
     <!--
         Domains
     -->
@@ -1304,8 +1308,8 @@
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_settings_header">SETTINGS</string>
-    <string name="card_reader_enable_pay_in_person">Pay in Person</string>
-    <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pay In Person</string>
+    <string name="card_reader_enable_pay_in_person_description">The Pay In Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1327,13 +1331,9 @@
     <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Available funds</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Pending funds</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d deposits</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d deposit</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Funds become available after pending for %d day.</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Deposits</string>
-    <string name="card_reader_hub_deposit_summary_next">Next</string>
-    <string name="card_reader_hub_deposit_summary_last">Last</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">LAST DEPOSIT</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">Available funds are deposited automatically, every day.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">Available funds are deposited automatically, every %s.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Available funds are deposited automatically, every month on the %s.</string>
@@ -1665,13 +1665,14 @@
 
     <string name="card_reader_onboarding_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
     <string name="card_reader_onboarding_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_contact_us">Need some help? &lt;a href=\'\'&gt;Contact us&lt;/a&gt;</string>
 
     <string name="card_reader_onboarding_generic_error_header">Unable to verify In-Person Payments for this store</string>
     <string name="card_reader_onboarding_generic_error_hint">We\'re sorry, we were unable to verify In-Person Payments for this store</string>
 
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Add Pay in Person to your checkout</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">A "Pay in Person" option on your checkout lets you accept card or cash payments on collection or delivery.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay in Person</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Do you want to add Pay In Person to your web checkout?</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Enabling Pay In Person lets customer pay you for online orders at delivery via cash or card.\n\nOrders can still be created manually without enabling this feature.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay In Person</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Failed to enable cash on delivery. Please try again later.</string>
 
     <!--
@@ -2036,6 +2037,10 @@
     <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
+    <string name="product_creation_survey_title">We value your input!</string>
+    <string name="product_creation_survey_description">You\'ve used our AI-assisted feature to add products multiple times now. We\'d love to hear your thoughts to make it even better.</string>
+    <string name="product_creation_survey_button_open">Start the Survey</string>
+    <string name="product_creation_survey_button_skip">Skip</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3322,6 +3327,9 @@
     <string name="store_creation_installation_manage_store_button">Manage my store</string>
     <string name="store_creation_installation_show_preview_button">Store preview</string>
     <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
+    <string name="store_creation_installation_async_dialog_title">Your new store is ready</string>
+    <string name="store_creation_installation_async_dialog_message">Do you want to start managing it now?</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Switch Store</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
@@ -3388,13 +3396,16 @@
     Store theme
     -->
     <string name="theme_picker_title">Choose a theme</string>
+    <string name="theme_picker_settings_title">Try a new look</string>
+    <string name="theme_picker_current_theme_title">Current theme</string>
     <string name="theme_picker_description">You can always change it later in the settings.</string>
     <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
     <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
-    <string name="theme_picker_carousel_placeholder_title">Theme "%s"</string>
-    <string name="theme_picker_carousel_placeholder_message">Tap for live demo.</string>
-    <string name="theme_picker_error_title">An error occurred</string>
-    <string name="theme_picker_error_message">Unable to load themes at this time.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
+    <string name="theme_picker_error_message">Failed to load themes.</string>
+    <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
     <string name="theme_preview_title">Preview</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
@@ -3402,6 +3413,9 @@
     <string name="theme_preview_activate_theme_button">Use this theme</string>
     <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
+    <string name="theme_preview_type_mobile">Mobile</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
     <!--
@@ -3879,6 +3893,7 @@
     <string name="scan_to_update_inventory_update_quantity_button">Update Quantity</string>
     <string name="scan_to_update_inventory_product_details_button">View Product Details</string>
     <string name="scan_to_update_inventory_success_snackbar">Quantity updated: %s</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Update Quantity Undone</string>
     <string name="scan_to_update_inventory_failure_snackbar">Something went wrong. Please try again</string>
     <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
     <string name="scan_to_update_inventory_quantity_label">Quantity</string>

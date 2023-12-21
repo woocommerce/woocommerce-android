@@ -229,7 +229,6 @@ class StoreCreationRepository @Inject constructor(
             timeZoneId = timeZoneId,
             visibility = siteVisibility,
             segmentId = siteData.segmentId,
-            siteDesign = siteData.siteDesign,
             dryRun = dryRun,
             siteCreationFlow = siteCreationFlow,
             findAvailableUrl = shouldFindAvailableUrl
@@ -260,7 +259,6 @@ class StoreCreationRepository @Inject constructor(
     @SuppressLint("ParcelCreator")
     data class SiteCreationData(
         val segmentId: Long?,
-        val siteDesign: String?,
         val domain: String?,
         val title: String?,
         val profilerData: NewStore.ProfilerData? = null,

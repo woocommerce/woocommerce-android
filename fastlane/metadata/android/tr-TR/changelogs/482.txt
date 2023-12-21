@@ -1,2 +1,0 @@
-16.5:
-En son WooCommerce uygulaması sürümü istikrar iyileştirmelerine odaklanıyor. Ayrıca WooPayments kullanıcıları artık Depozito Özeti görünümünde para birimleri arasında sorunsuzca geçiş yapabilir. Daha sorunsuz bir WooCommerce deneyimi için hemen yükseltin!

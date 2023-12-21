@@ -23,17 +23,18 @@ class ObserveSiteInstallation @Inject constructor(
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers,
 ) {
-
     suspend operator fun invoke(
         siteId: Long,
-        expectedName: String,
+        expectedName: String? = null,
+        skipInitialDelay: Boolean = false
     ): Flow<InstallationState> {
         return flow {
             emit(InstallationState.InProgress)
-            delay(INITIAL_STORE_CREATION_DELAY)
+            if (!skipInitialDelay) {
+                delay(INITIAL_STORE_CREATION_DELAY)
+            }
 
             repeat(STORE_LOAD_RETRIES_LIMIT) { retryIteration ->
-
                 if (retryIteration == STORE_LOAD_RETRIES_LIMIT - 1) {
                     emit(InstallationState.Failure(STORE_NOT_READY))
                     return@flow
@@ -66,9 +67,9 @@ class ObserveSiteInstallation @Inject constructor(
         }
     }
 
-    private fun SiteModel?.isDesynced(expectedName: String): Boolean =
+    private fun SiteModel?.isDesynced(expectedName: String?): Boolean =
         this?.isJetpackInstalled == true && this.isJetpackConnected &&
-            (!this.isWpComStore || !this.hasWooCommerce || this.name != expectedName)
+            (!this.isWpComStore || !this.hasWooCommerce || (expectedName != null && expectedName != this.name))
 
     sealed interface InstallationState {
         object Success : InstallationState

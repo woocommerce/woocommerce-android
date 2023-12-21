@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -148,12 +147,10 @@ class MyStoreViewModel @Inject constructor(
         observeTopPerformerUpdates()
         trackLocalTimezoneDifferenceFromStore()
 
-        if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
-            launch {
-                shouldShowPrivacyBanner().let {
-                    if (it) {
-                        triggerEvent(MyStoreEvent.ShowPrivacyBanner)
-                    }
+        launch {
+            shouldShowPrivacyBanner().let {
+                if (it) {
+                    triggerEvent(MyStoreEvent.ShowPrivacyBanner)
                 }
             }
         }
@@ -412,7 +409,9 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedStatsGranularityIfAny(): StatsGranularity {
-        return runCatching { _activeStatsGranularity.value }.getOrDefault(StatsGranularity.DAYS)
+        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
+        return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
+            .getOrDefault(StatsGranularity.DAYS)
     }
 
     private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {

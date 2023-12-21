@@ -22,6 +22,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
@@ -210,186 +211,313 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given bottom sheet shown, when bottom sheet dismissed, then should should start scanning again`() = testBlocking {
-        whenever(fetchProductBySKU(any(), any())).thenReturn(
-            Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
-        )
-        sut.onBarcodeScanningResult(
-            CodeScannerStatus.Success(
-                "123",
-                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+    fun `given bottom sheet shown, when bottom sheet dismissed, then should should start scanning again`() =
+        testBlocking {
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
             )
-        )
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIs<QuickInventoryBottomSheetVisible>(this)
-            }
-        }
-        sut.onBottomSheetDismissed()
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIs<QuickInventoryBottomSheetHidden>(this)
-            }
-        }
-        sut.onBarcodeScanningResult(
-            CodeScannerStatus.Success(
-                "123",
-                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
             )
-        )
-        verify(fetchProductBySKU, times(2)).invoke(any(), any())
-    }
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
+            sut.onBottomSheetDismissed()
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
+            }
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+            verify(fetchProductBySKU, times(2)).invoke(any(), any())
+        }
 
     @Test
-    fun `given bottom sheet with product shown, when increment quantity clicked, then should should update product`() = testBlocking {
-        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
-        whenever(fetchProductBySKU(any(), any())).thenReturn(
-            Result.success(originalProduct)
-        )
-        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
-        sut.onBarcodeScanningResult(
-            CodeScannerStatus.Success(
-                "123",
-                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+    fun `given bottom sheet with product shown, when increment quantity clicked, then should should update product`() =
+        testBlocking {
+            val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(originalProduct)
             )
-        )
-        whenever(productRepo.updateProduct(any())).thenReturn(true)
-        whenever(
-            resourceProvider.getString(
-                R.string.scan_to_update_inventory_success_snackbar,
-                "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
+            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
             )
-        ).thenReturn("Quantity updated")
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIs<QuickInventoryBottomSheetVisible>(this)
+            whenever(productRepo.updateProduct(any())).thenReturn(true)
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_success_snackbar,
+                    "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
+                )
+            ).thenReturn("Quantity updated")
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
+
+            sut.onIncrementQuantityClicked()
+
+            val expectedProduct =
+                originalProduct.copy(stockQuantity = (originalProduct.stockQuantity.toInt() + 1).toDouble())
+            verify(productRepo).updateProduct(expectedProduct)
+        }
+
+    @Test
+    fun `given bottom sheet with product shown, when quantity entered manually, then should update product`() =
+        testBlocking {
+            val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(originalProduct)
+            )
+            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+            whenever(productRepo.updateProduct(any())).thenReturn(true)
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_success_snackbar,
+                    "${originalProduct.stockQuantity.toInt()} ➡ 999"
+                )
+            ).thenReturn("Quantity updated")
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
+
+            sut.onManualQuantityEntered("999")
+            sut.onUpdateQuantityClicked()
+
+            val expectedProduct = originalProduct.copy(stockQuantity = (999).toDouble())
+            verify(productRepo).updateProduct(expectedProduct)
+        }
+
+    @Test
+    fun `given quantity updated, when undo action triggered, then should set quantity back to original`() =
+        testBlocking {
+            val originalQuantity = 5
+            val newQuantity = 6
+            val productId = 1L
+            val product = ProductTestUtils.generateProduct(
+                isStockManaged = true,
+            )
+
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+            whenever(productRepo.getProduct(productId)).thenReturn(product)
+            whenever(productRepo.updateProduct(any())).thenReturn(true)
+            whenever(
+                resourceProvider.getString(
+                    eq(R.string.scan_to_update_inventory_success_snackbar),
+                    any()
+                )
+            ).thenReturn("Quantity updated from $originalQuantity to $newQuantity")
+            whenever(
+                resourceProvider.getString(
+                    eq(R.string.scan_to_update_inventory_undo_snackbar)
+                )
+            ).thenReturn("Undo successful")
+
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever {
+                events.add(it)
+            }
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku, GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            sut.onIncrementQuantityClicked()
+
+            (events.first() as MultiLiveEvent.Event.ShowUndoSnackbar).undoAction.onClick(null)
+
+            verify(productRepo).updateProduct(product.copy(stockQuantity = originalQuantity.toDouble()))
+        }
+
+    @Test
+    fun `given bottom sheet with variation shown, when increment quantity clicked, then should should update product`() =
+        testBlocking {
+            val productId = 1L
+            val variationId = 2L
+            val originalProduct =
+                ProductTestUtils.generateProduct(isStockManaged = true, productId = variationId, parentID = productId)
+                    .copy(stockQuantity = 1.0)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(originalProduct)
+            )
+            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            val originalVariation =
+                ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
+                    .copy(stockQuantity = originalProduct.stockQuantity, isStockManaged = true)
+            whenever(variationRepo.getVariationOrNull(productId, variationId)).thenReturn(originalVariation)
+            whenever(variationRepo.updateVariation(any())).thenReturn(
+                WCProductStore.OnVariationUpdated(
+                    1,
+                    1,
+                    variationId
+                )
+            )
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_success_snackbar,
+                    "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
+                )
+            ).thenReturn("Quantity updated")
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
+
+            sut.onIncrementQuantityClicked()
+            sut.onUpdateQuantityClicked()
+
+            val argumentCaptor = argumentCaptor<ProductVariation>()
+            verify(variationRepo).updateVariation(argumentCaptor.capture())
+            assertEquals(originalVariation.stockQuantity + 1, argumentCaptor.firstValue.stockQuantity)
+        }
+
+    @Test
+    fun `given bottom sheet with variation shown, when quantity entered manually, then should update product`() =
+        testBlocking {
+            val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true, productId = 2, parentID = 1)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(originalProduct)
+            )
+            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            val originalVariation =
+                ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
+                    .copy(stockQuantity = 1.0, isStockManaged = true)
+            whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(originalVariation)
+            whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_success_snackbar,
+                    "${originalProduct.stockQuantity.toInt()} ➡ 999"
+                )
+            ).thenReturn("Quantity updated")
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    "123",
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
+
+            sut.onManualQuantityEntered("999")
+            sut.onUpdateQuantityClicked()
+
+            val expectedVariation = originalVariation.copy(stockQuantity = (999).toDouble())
+            verify(variationRepo).updateVariation(expectedVariation)
+        }
+
+    @Test
+    fun `given barcode scanned, when variation is found which is stock-managed, then should show bottom sheet`() =
+        testBlocking {
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(
+                    ProductTestUtils.generateProduct(
+                        isStockManaged = true,
+                        parentID = 1,
+                        productId = 2
+                    ).copy(sku = "123")
+                )
+            )
+            whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(
+                ProductTestUtils.generateProductVariation(
+                    productId = 1,
+                    variationId = 2
+                ).copy(isStockManaged = true)
+            )
+            sut.viewState.test {
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
             }
         }
 
-        sut.onIncrementQuantityClicked()
-
-        val expectedProduct =
-            originalProduct.copy(stockQuantity = (originalProduct.stockQuantity.toInt() + 1).toDouble())
-        verify(productRepo).updateProduct(expectedProduct)
-    }
-
     @Test
-    fun `given bottom sheet with product shown, when quantity entered manually, then should update product`() = testBlocking {
-        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
-        whenever(fetchProductBySKU(any(), any())).thenReturn(
-            Result.success(originalProduct)
-        )
-        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
-        sut.onBarcodeScanningResult(
-            CodeScannerStatus.Success(
-                "123",
-                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+    fun `when variation is found which is not stock-managed, then should not show bottom sheet`() =
+        testBlocking {
+            whenever(fetchProductBySKU(any(), any())).thenReturn(
+                Result.success(
+                    ProductTestUtils.generateProduct(
+                        isStockManaged = true,
+                        parentID = 1,
+                        productId = 2
+                    ).copy(sku = "123")
+                )
             )
-        )
-        whenever(productRepo.updateProduct(any())).thenReturn(true)
-        whenever(
-            resourceProvider.getString(
-                R.string.scan_to_update_inventory_success_snackbar,
-                "${originalProduct.stockQuantity.toInt()} ➡ 999"
+            whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(
+                ProductTestUtils.generateProductVariation(
+                    productId = 1,
+                    variationId = 2
+                ).copy(isStockManaged = false)
             )
-        ).thenReturn("Quantity updated")
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIs<QuickInventoryBottomSheetVisible>(this)
+            whenever(
+                resourceProvider.getString(
+                    R.string.scan_to_update_inventory_product_not_stock_managed,
+                    "123"
+                )
+            ).thenReturn("Product not stock managed")
+            sut.viewState.test {
+                sut.onBarcodeScanningResult(
+                    CodeScannerStatus.Success(
+                        "123",
+                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    )
+                )
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
+                awaitItem().apply {
+                    assertIs<Loading>(this)
+                }
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                }
             }
         }
-
-        sut.onManualQuantityEntered("999")
-        sut.onUpdateQuantityClicked()
-
-        val expectedProduct = originalProduct.copy(stockQuantity = (999).toDouble())
-        verify(productRepo).updateProduct(expectedProduct)
-    }
-
-    @Test
-    fun `given bottom sheet with variation shown, when increment quantity clicked, then should should update product`() = testBlocking {
-        val productId = 1L
-        val variationId = 2L
-        val originalProduct =
-            ProductTestUtils.generateProduct(isStockManaged = true, productId = variationId, parentID = productId)
-                .copy(stockQuantity = 1.0)
-        whenever(fetchProductBySKU(any(), any())).thenReturn(
-            Result.success(originalProduct)
-        )
-        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
-        sut.onBarcodeScanningResult(
-            CodeScannerStatus.Success(
-                "123",
-                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-            )
-        )
-        val originalVariation =
-            ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
-                .copy(stockQuantity = originalProduct.stockQuantity)
-        whenever(variationRepo.getVariationOrNull(productId, variationId)).thenReturn(originalVariation)
-        whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, variationId))
-        whenever(
-            resourceProvider.getString(
-                R.string.scan_to_update_inventory_success_snackbar,
-                "${originalProduct.stockQuantity.toInt()} ➡ ${originalProduct.stockQuantity.toInt() + 1}"
-            )
-        ).thenReturn("Quantity updated")
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIs<QuickInventoryBottomSheetVisible>(this)
-            }
-        }
-
-        sut.onIncrementQuantityClicked()
-        sut.onUpdateQuantityClicked()
-
-        val argumentCaptor = argumentCaptor<ProductVariation>()
-        verify(variationRepo).updateVariation(argumentCaptor.capture())
-        assertEquals(originalVariation.stockQuantity + 1, argumentCaptor.firstValue.stockQuantity)
-    }
-
-    @Test
-    fun `given bottom sheet with variation shown, when quantity entered manually, then should update product`() = testBlocking {
-        val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true, productId = 2, parentID = 1)
-        whenever(fetchProductBySKU(any(), any())).thenReturn(
-            Result.success(originalProduct)
-        )
-        whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
-        sut.onBarcodeScanningResult(
-            CodeScannerStatus.Success(
-                "123",
-                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-            )
-        )
-        val originalVariation =
-            ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
-                .copy(stockQuantity = 1.0)
-        whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(originalVariation)
-        whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
-        whenever(
-            resourceProvider.getString(
-                R.string.scan_to_update_inventory_success_snackbar,
-                "${originalProduct.stockQuantity.toInt()} ➡ 999"
-            )
-        ).thenReturn("Quantity updated")
-        sut.viewState.test {
-            awaitItem().apply {
-                assertIs<QuickInventoryBottomSheetVisible>(this)
-            }
-        }
-
-        sut.onManualQuantityEntered("999")
-        sut.onUpdateQuantityClicked()
-
-        val expectedVariation = originalVariation.copy(stockQuantity = (999).toDouble())
-        verify(variationRepo).updateVariation(expectedVariation)
-    }
-
-    @Test
-    fun `when increment quantity button tapped, then proper tracking event is triggered`() = testBlocking {
-        sut.onIncrementQuantityClicked()
-        verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_INCREMENT_QUANTITY_TAPPED)
-    }
 
     @Test
     fun `when manual quantity update button tapped, than trigger proper tracking event`() = testBlocking {
