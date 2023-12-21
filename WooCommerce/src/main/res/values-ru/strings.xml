@@ -44,8 +44,6 @@ Language: ru
     <string name="theme_preview_bottom_sheet_pages_subtitle">Коснитесь для просмотра</string>
     <string name="theme_preview_bottom_sheet_pages_title">Страницы в этом шаблоне</string>
     <string name="theme_preview_title">Предварительный просмотр</string>
-    <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
-    <string name="theme_picker_error_title">Произошла ошибка</string>
     <string name="theme_picker_carousel_info_item_description">Настроив магазин, найдите для него самую подходящую тему в магазине тем WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Ищете что-то другое?</string>
     <string name="theme_picker_description">Вы можете изменить настройки в любой момент.</string>

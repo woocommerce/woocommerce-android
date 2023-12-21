@@ -878,6 +878,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_PROPERTIES_OUT_OF_SYNC(siteless = true),
     SITE_CREATION_FREE_TRIAL_CREATED_SUCCESS,
     SITE_CREATION_FLOW_STARTED,
+    SITE_CREATION_STORE_READY_ALERT_DISPLAYED(siteless = true),
+    SITE_CREATION_STORE_READY_ALERT_SWITCH_STORE_TAPPED(siteless = true),
 
     // Domain change
     CUSTOM_DOMAINS_STEP,

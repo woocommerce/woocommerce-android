@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -118,9 +117,7 @@ class AnalyticsHubViewModel @Inject constructor(
         observeRevenueChanges()
         observeRangeSelectionChanges()
         observeLastUpdateTimestamp()
-        if (FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()) {
-            shouldAskForFeedback()
-        }
+        shouldAskForFeedback()
     }
 
     private fun shouldAskForFeedback() {

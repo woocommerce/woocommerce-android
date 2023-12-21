@@ -44,8 +44,6 @@ Language: id
     <string name="theme_preview_bottom_sheet_pages_subtitle">Ketuk untuk melihat</string>
     <string name="theme_preview_bottom_sheet_pages_title">Halaman dengan templat ini</string>
     <string name="theme_preview_title">Pratinjau</string>
-    <string name="theme_picker_error_message">Tidak dapat memuat tema saat ini.</string>
-    <string name="theme_picker_error_title">Terjadi kesalahan</string>
     <string name="theme_picker_carousel_info_item_description">Setelah menyiapkan toko Anda, temukan tema yang ideal di Toko Tema WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Mencari lainnya?</string>
     <string name="theme_picker_description">Anda bebas mengubahnya di pengaturan kapan saja.</string>

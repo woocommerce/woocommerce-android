@@ -44,8 +44,6 @@ Language: fr
     <string name="theme_preview_bottom_sheet_pages_subtitle">Toucher pour prévisualiser</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages sur ce modèle</string>
     <string name="theme_preview_title">Aperçu</string>
-    <string name="theme_picker_error_message">Impossible de charger des thèmes pour l’instant.</string>
-    <string name="theme_picker_error_title">Une erreur s’est produite</string>
     <string name="theme_picker_carousel_info_item_description">Lorsque votre boutique est configurée, trouvez le thème parfait dans la boutique de thèmes WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Vous cherchez le truc en plus ?</string>
     <string name="theme_picker_description">Vous pouvez toujours le changer plus tard dans les réglages.</string>
