@@ -79,7 +79,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val rangeSelectionState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData(dateUtils)
+        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
     )
 
     private val mutableState = MutableStateFlow(
@@ -129,14 +129,11 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
-        rangeSelectionState.value = selectionType.generateLocalizedSelectionData(
-            dateUtils = dateUtils
-        )
+        rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
         rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
-            dateUtils = dateUtils,
             startDate = startDate,
             endDate = endDate
         )
@@ -395,11 +392,9 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun SelectionType.generateLocalizedSelectionData(
-        dateUtils: DateUtils,
-        startDate: Date = Date(),
-        endDate: Date = Date()
+        startDate: Date = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+        endDate: Date = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
     ) = generateSelectionData(
-        dateUtils = dateUtils,
         referenceStartDate = startDate,
         referenceEndDate = endDate,
         calendar = Calendar.getInstance(),

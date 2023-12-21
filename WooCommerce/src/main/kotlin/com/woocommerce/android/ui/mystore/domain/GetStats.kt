@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -192,7 +193,8 @@ class GetStats @Inject constructor(
 fun StatsGranularity.asRangeSelection(dateUtils: DateUtils, locale: Locale? = null) =
     StatsTimeRangeSelection.SelectionType.from(this)
         .generateSelectionData(
-            dateUtils = dateUtils,
             calendar = Calendar.getInstance(),
-            locale = locale ?: Locale.getDefault()
+            locale = locale ?: Locale.getDefault(),
+            referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+            referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
         )

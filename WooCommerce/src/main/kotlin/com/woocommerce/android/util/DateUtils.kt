@@ -10,11 +10,14 @@ import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
-import java.util.TimeZone
 import javax.inject.Inject
 
 class DateUtils @Inject constructor(
@@ -367,6 +370,25 @@ class DateUtils @Inject constructor(
             "Date string argument is not a valid format".reportAsError(e)
             null
         }
+    fun getCurrentDateInSiteTimeZone(): Date? {
+        val site = selectedSite.getOrNull() ?: return null
+        val targetTimezone = SiteUtils.getNormalizedTimezone(site.timezone).toZoneId()
+        val currentDateTime = LocalDateTime.now()
+        val zonedDateTime = ZonedDateTime.of(currentDateTime, ZoneId.systemDefault())
+            .withZoneSameInstant(targetTimezone)
+        val currentDateString = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        return getDateFromFullDateString(currentDateString)
+    }
+
+    private fun getDateFromFullDateString(isoStringDate: String): Date? {
+        return try {
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale)
+            formatter.parse(isoStringDate)
+        } catch (e: Exception) {
+            "Date string argument is not a valid format".reportAsError(e)
+            null
+        }
+    }
 
     /***
      * Will generate a formatted date string in two possible formats:
@@ -385,19 +407,6 @@ class DateUtils @Inject constructor(
     private fun isToday(date: Date): Boolean {
         val todayStart = getDateForTodayAtTheStartOfTheDay()
         return DateUtils.isSameDay(date, Date(todayStart))
-    }
-
-    fun transformDateToSiteDate(date: Date): Date? {
-        val site = selectedSite.getOrNull() ?: return null
-        val timeZone = SiteUtils.getNormalizedTimezone(site.timezone)
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).apply {
-            this.timeZone = timeZone
-        }
-
-        val formattedDate = outputFormat.format(date)
-
-        outputFormat.timeZone = TimeZone.getDefault()
-        return runCatching { outputFormat.parse(formattedDate) }.getOrDefault(null)
     }
 
     companion object {
