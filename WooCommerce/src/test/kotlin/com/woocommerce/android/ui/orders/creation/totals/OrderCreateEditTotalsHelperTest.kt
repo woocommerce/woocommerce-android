@@ -44,7 +44,7 @@ class OrderCreateEditTotalsHelperTest {
         val actual = helper.mapToPaymentTotalsState(order)
 
         // THEN
-        assertThat((actual as TotalsSectionsState.Shown).button.text).isEqualTo("Collect Payment")
+        assertThat((actual as TotalsSectionsState.Shown).mainButton.text).isEqualTo("Collect Payment")
     }
 
     @Test
@@ -62,7 +62,7 @@ class OrderCreateEditTotalsHelperTest {
         val actual = helper.mapToPaymentTotalsState(order)
 
         // THEN
-        assertThat((actual as TotalsSectionsState.Shown).button.text).isEqualTo("Collect Payment")
+        assertThat((actual as TotalsSectionsState.Shown).mainButton.text).isEqualTo("Collect Payment")
     }
 
     @Test

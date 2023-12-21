@@ -164,10 +164,6 @@ private fun TotalsView(
             }
 
             if (isExpanded) {
-                Products()
-                CustomAmounts()
-                Shipping {}
-                Coupon {}
             }
         }
 
@@ -175,41 +171,6 @@ private fun TotalsView(
 
         TotalsSummary(state)
     }
-}
-
-@Composable
-fun Products() {
-    RowWithData(
-        title = stringResource(id = R.string.order_creation_payment_products),
-        data = "$20.00"
-    )
-}
-
-@Composable
-fun CustomAmounts() {
-    RowWithData(
-        title = stringResource(id = R.string.custom_amounts),
-        data = "$20.00"
-    )
-}
-
-@Composable
-fun Shipping(onClick: () -> Unit) {
-    RowWithButtonAndData(
-        buttonText = stringResource(id = R.string.shipping),
-        data = "$20.00",
-        onClick = onClick,
-    )
-}
-
-@Composable
-fun Coupon(onClick: () -> Unit) {
-    RowWithButtonAndData(
-        buttonText = stringResource(id = R.string.order_creation_coupon_button),
-        data = "$20.00",
-        extraData = "20OFF",
-        onClick = onClick,
-    )
 }
 
 @Composable
@@ -239,13 +200,13 @@ private fun TotalsSummary(state: TotalsSectionsState.Shown) {
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
     WCColoredButton(
-        onClick = { (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke() },
+        onClick = { (state as? TotalsSectionsState.Shown)?.mainButton?.onClick?.invoke() },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
     ) {
         Text(
-            text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
+            text = (state as? TotalsSectionsState.Shown)?.mainButton?.text ?: "",
         )
     }
 }
@@ -357,9 +318,58 @@ fun RowWithButtonAndData(
 fun OrderCreateEditTotalsViewPreview() {
     OrderCreateEditTotalsView(
         state = TotalsSectionsState.Shown(
-            button = TotalsSectionsState.Button(
+            lines = listOf(
+                TotalsSectionsState.Line.Simple(
+                    label = stringResource(R.string.order_creation_payment_products),
+                    value = "$125.00"
+                ),
+                TotalsSectionsState.Line.Simple(
+                    label = stringResource(R.string.custom_amounts),
+                    value = "$2.00"
+                ),
+                TotalsSectionsState.Line.Button(
+                    text = stringResource(R.string.shipping),
+                    value = "$16.25",
+                    onClick = {},
+                ),
+                TotalsSectionsState.Line.Button(
+                    text = stringResource(R.string.order_creation_coupon_button),
+                    value = "-$4.25",
+                    extraValue = "20 OFF",
+                    onClick = {},
+                ),
+                TotalsSectionsState.Line.Button(
+                    text = stringResource(R.string.order_gift_card),
+                    value = "-$4.25",
+                    extraValue = "1234-5678-9987-6543",
+                    onClick = {},
+                ),
+                TotalsSectionsState.Line.Simple(
+                    label = stringResource(R.string.order_creation_payment_tax_label),
+                    value = "$15.33"
+                ),
+                TotalsSectionsState.Line.SimpleSmall(
+                    label = "Government Sales Tax · 10%",
+                    value = "$12.50"
+                ),
+                TotalsSectionsState.Line.SimpleSmall(
+                    label = "State Tax · 5%",
+                    value = "$6.25"
+                ),
+                TotalsSectionsState.Line.LearnMore(
+                    text = stringResource(R.string.order_creation_tax_based_on_billing_address),
+                    buttonText = stringResource(R.string.learn_more),
+                    onClick = {}
+                ),
+            ),
+            orderTotal = TotalsSectionsState.OrderTotal(
+                label = stringResource(R.string.order_creation_payment_order_total),
+                value = "$143.75"
+            ),
+            mainButton = TotalsSectionsState.Button(
                 text = "Collect Payment",
-                onClick = {}
+                enabled = true,
+                onClick = {},
             )
         )
     )
