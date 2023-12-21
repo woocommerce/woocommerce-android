@@ -373,6 +373,7 @@ class DateUtils @Inject constructor(
         }
 
     fun getDateUsingSiteTimeZone(isoStringDate: String): Date? {
+        if(isoStringDate.isEmpty()) return null
         val iso8601DateString = iso8601OnSiteTimeZoneFromIso8601UTC(isoStringDate)
         return getDateFromFullDateString(iso8601DateString)
     }
@@ -411,7 +412,7 @@ class DateUtils @Inject constructor(
 
             // Format the result as a string
             zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        } catch (e: ParseException) {
+        } catch (e: Exception) {
             iso8601date
         }
     }
