@@ -160,7 +160,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         barcodeScanningTracker = barcodeScanningTracker,
         notificationChannelsHandler = notificationChannelsHandler,
         appPrefs = appPrefs,
-        showTestNotification = showTestNotification
+        showTestNotification = showTestNotification,
+        localeProvider = mock(),
+        dateUtils = mock()
     )
 
     @Test
