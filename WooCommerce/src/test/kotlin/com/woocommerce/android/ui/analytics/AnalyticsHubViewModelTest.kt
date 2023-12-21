@@ -113,7 +113,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             val expectedSelection = TODAY.generateSelectionData(
                 calendar = testCalendar,
                 locale = testLocale,
-                siteModel = null
+                dateUtils = dateUtils
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
@@ -157,7 +157,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             val expectedSelection = TODAY.generateSelectionData(
                 calendar = testCalendar,
                 locale = testLocale,
-                siteModel = null
+                dateUtils = dateUtils
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
@@ -183,7 +183,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             val expectedSelection = LAST_YEAR.generateSelectionData(
                 calendar = testCalendar,
                 locale = testLocale,
-                siteModel = null
+                dateUtils = mock()
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
@@ -704,7 +704,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             feedbackRepository,
             tracker,
             dateUtils,
-            mock(),
             savedState
         )
     }

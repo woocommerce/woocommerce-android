@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import android.os.Parcelable
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.withSiteTimeZone
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_QUARTER
@@ -25,8 +24,8 @@ import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
+import com.woocommerce.android.util.DateUtils
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
 import java.util.Date
@@ -77,14 +76,9 @@ class StatsTimeRangeSelection private constructor(
             referenceDate: Date,
             calendar: Calendar,
             locale: Locale,
-            siteModel: SiteModel?
+            dateUtils: DateUtils
         ): StatsTimeRangeSelection {
-            val referenceDateWithTimeZone = siteModel?.let {
-                referenceDate.withSiteTimeZone(
-                    site = siteModel,
-                    locale = locale
-                )
-            } ?: referenceDate
+            val referenceDateWithTimeZone = dateUtils.transformDateToSiteDate(referenceDate) ?: referenceDate
             val rangeData = generateTimeRangeData(selectionType, referenceDateWithTimeZone, locale, calendar)
             return StatsTimeRangeSelection(
                 selectionType = selectionType,
@@ -135,7 +129,7 @@ class StatsTimeRangeSelection private constructor(
             referenceEndDate: Date = Date(),
             calendar: Calendar,
             locale: Locale,
-            siteModel: SiteModel?
+            dateUtils: DateUtils
         ): StatsTimeRangeSelection {
             return if (this == CUSTOM) {
                 build(
@@ -150,7 +144,7 @@ class StatsTimeRangeSelection private constructor(
                     referenceDate = referenceStartDate,
                     calendar = calendar,
                     locale = locale,
-                    siteModel = siteModel
+                    dateUtils = dateUtils
                 )
             }
         }

@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.mystore.domain
 
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -11,14 +11,14 @@ import javax.inject.Inject
 class ObserveLastUpdate @Inject constructor(
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
     private val localeProvider: LocaleProvider,
-    private val selectedSite: SelectedSite
+    private val dateUtils: DateUtils
 ) {
     operator fun invoke(
         granularity: WCStatsStore.StatsGranularity,
         analyticData: List<AnalyticsUpdateDataStore.AnalyticData>
     ): Flow<Long?> {
         val rangeSelection = granularity.asRangeSelection(
-            siteModel = selectedSite.getOrNull(),
+            dateUtils = dateUtils,
             locale = localeProvider.provideLocale()
         )
         return analyticsUpdateDataStore.observeLastUpdate(
@@ -32,7 +32,7 @@ class ObserveLastUpdate @Inject constructor(
         analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Flow<Long?> {
         val rangeSelection = granularity.asRangeSelection(
-            siteModel = selectedSite.getOrNull(),
+            dateUtils = dateUtils,
             locale = localeProvider.provideLocale()
         )
         return analyticsUpdateDataStore.observeLastUpdate(

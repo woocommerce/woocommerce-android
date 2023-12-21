@@ -3,14 +3,12 @@ package com.woocommerce.android.tools
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.util.PreferenceUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
@@ -18,19 +16,18 @@ import javax.inject.Singleton
  * Persists and restores the selected site to/from the app preferences.
  */
 @Singleton
-class SelectedSite(
+class SelectedSite @Inject constructor(
     private val context: Context,
-    private val siteStore: SiteStore,
-    private val scope: CoroutineScope
+    private val siteStore: SiteStore
 ) {
     companion object {
         const val SELECTED_SITE_LOCAL_ID = "SELECTED_SITE_LOCAL_ID"
-        private const val RESET_DELAY = 5000L
 
         fun getEventBus(): EventBus = EventBus.getDefault()
     }
 
     private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getSelectedSiteFromPersistance())
+    private var wasReset = false
 
     val connectionType: SiteConnectionType?
         get() = getIfExists()?.connectionType
@@ -41,11 +38,11 @@ class SelectedSite(
     fun getOrNull(): SiteModel? =
         try {
             get()
-        } catch (e: IllegalStateException) {
+        } catch (e: SelectedSiteException) {
             null
         }
 
-    @Throws(IllegalStateException::class)
+    @Throws(SelectedSiteException::class)
     fun get(): SiteModel {
         state.value?.let { return it }
 
@@ -61,14 +58,16 @@ class SelectedSite(
             getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
         }
 
-        throw IllegalStateException(
-            "SelectedSite.get() was accessed before being initialized - siteId $localSiteId." +
-                "\nConsider calling selectedSite.exists() to ensure site exists prior to calling selectedSite.get()."
-        )
+        if (wasReset) {
+            throw SelectedSiteResetException()
+        } else {
+            throw SelectedSiteUninitializedException(localSiteId)
+        }
     }
 
     @Suppress("DEPRECATION")
     fun set(siteModel: SiteModel) {
+        wasReset = false
         state.value = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
 
@@ -86,11 +85,9 @@ class SelectedSite(
     fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
 
     fun reset() {
-        scope.launch {
-            delay(RESET_DELAY) // delay the site reset and allow for the requests to fail gracefully
-            state.value = null
-            getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
-        }
+        wasReset = true
+        state.value = null
+        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
     }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
@@ -102,4 +99,10 @@ class SelectedSite(
 
     @Deprecated("Event bus is considered deprecated.", ReplaceWith("observe()"))
     class SelectedSiteChangedEvent(val site: SiteModel)
+
+    open class SelectedSiteException(message: String? = null) : Exception(message)
+    class SelectedSiteResetException : SelectedSiteException()
+    class SelectedSiteUninitializedException(
+        val siteId: Int
+    ) : SelectedSiteException("Selected Site is missing, id: $siteId")
 }

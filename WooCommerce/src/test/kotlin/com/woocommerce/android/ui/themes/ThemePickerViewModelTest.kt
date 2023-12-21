@@ -106,6 +106,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given navigating from app settings, when current theme loading fails, then hide section`() = testBlocking {
         setup(isFromStoreCreation = false) {
+            whenever(themeRepository.fetchThemes()).thenReturn(Result.success(listOf(sampleTheme)))
             whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.failure(Exception()))
         }
 

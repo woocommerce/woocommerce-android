@@ -15,19 +15,20 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Visitor
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult.VisitorsData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
+import org.mockito.kotlin.mock
 import java.util.Calendar
 import java.util.Locale
 
 val testRangeSelection = TODAY.generateSelectionData(
     calendar = Calendar.getInstance(),
     locale = Locale.getDefault(),
-    siteModel = null
+    dateUtils = mock()
 )
 
 val testCustomRangeSelection = CUSTOM.generateSelectionData(
     calendar = Calendar.getInstance(),
     locale = Locale.getDefault(),
-    siteModel = null
+    dateUtils = mock()
 )
 
 val testRevenueStat = RevenueStat(

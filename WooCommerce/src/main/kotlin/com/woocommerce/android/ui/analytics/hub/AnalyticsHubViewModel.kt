@@ -13,7 +13,6 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
@@ -34,7 +33,6 @@ import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -52,7 +50,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -73,7 +70,6 @@ class AnalyticsHubViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
     private val dateUtils: DateUtils,
-    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -83,7 +79,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val rangeSelectionState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData(selectedSite.getOrNull())
+        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData(dateUtils)
     )
 
     private val mutableState = MutableStateFlow(
@@ -118,9 +114,7 @@ class AnalyticsHubViewModel @Inject constructor(
         observeRevenueChanges()
         observeRangeSelectionChanges()
         observeLastUpdateTimestamp()
-        if (FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()) {
-            shouldAskForFeedback()
-        }
+        shouldAskForFeedback()
     }
 
     private fun shouldAskForFeedback() {
@@ -136,13 +130,13 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onNewRangeSelection(selectionType: SelectionType) {
         rangeSelectionState.value = selectionType.generateLocalizedSelectionData(
-            siteModel = selectedSite.getOrNull()
+            dateUtils = dateUtils
         )
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
         rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
-            siteModel = selectedSite.getOrNull(),
+            dateUtils = dateUtils,
             startDate = startDate,
             endDate = endDate
         )
@@ -401,11 +395,11 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun SelectionType.generateLocalizedSelectionData(
-        siteModel: SiteModel?,
+        dateUtils: DateUtils,
         startDate: Date = Date(),
         endDate: Date = Date()
     ) = generateSelectionData(
-        siteModel = siteModel,
+        dateUtils = dateUtils,
         referenceStartDate = startDate,
         referenceEndDate = endDate,
         calendar = Calendar.getInstance(),

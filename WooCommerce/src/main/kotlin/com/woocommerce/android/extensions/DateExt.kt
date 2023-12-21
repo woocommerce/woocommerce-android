@@ -2,8 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -12,7 +10,6 @@ import java.time.format.FormatStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -156,15 +153,3 @@ private const val THREE_MONTHS = 3
 private const val SEVEN_DAYS = 7
 
 fun LocalDate.formatStyleFull(): String = format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
-
-fun Date.withSiteTimeZone(locale: Locale, site: SiteModel): Date {
-    val timeZone = SiteUtils.getNormalizedTimezone(site.timezone)
-    val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).apply {
-        this.timeZone = timeZone
-    }
-
-    val formattedDate = outputFormat.format(this)
-
-    outputFormat.timeZone = TimeZone.getDefault()
-    return runCatching { outputFormat.parse(formattedDate) }.getOrDefault(this)
-}

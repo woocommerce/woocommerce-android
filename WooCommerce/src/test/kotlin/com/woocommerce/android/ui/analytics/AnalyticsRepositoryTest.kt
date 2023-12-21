@@ -963,7 +963,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         referenceEndDate = referenceEndDate,
         calendar = testCalendar,
         locale = testLocale,
-        siteModel = null
+        dateUtils = mock()
     )
 
     companion object {

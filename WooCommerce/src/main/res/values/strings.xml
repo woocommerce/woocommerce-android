@@ -3327,6 +3327,9 @@
     <string name="store_creation_installation_manage_store_button">Manage my store</string>
     <string name="store_creation_installation_show_preview_button">Store preview</string>
     <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
+    <string name="store_creation_installation_async_dialog_title">Your new store is ready</string>
+    <string name="store_creation_installation_async_dialog_message">Do you want to start managing it now?</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Switch Store</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
@@ -3401,8 +3404,8 @@
     <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
     <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
-    <string name="theme_picker_error_title">An error occurred</string>
-    <string name="theme_picker_error_message">Unable to load themes at this time.</string>
+    <string name="theme_picker_error_message">Failed to load themes.</string>
+    <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
     <string name="theme_preview_title">Preview</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
@@ -3414,7 +3417,6 @@
     <string name="theme_preview_type_tablet">Tablet</string>
     <string name="theme_preview_type_desktop">Desktop</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
-    <string name="theme_picker_loading_current_theme_failed">Couldn\'t load your current theme</string>
 
     <!--
     Store onboarding

@@ -44,8 +44,6 @@ Language: nl
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tik om te bekijken</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagina\'s op dit sjabloon</string>
     <string name="theme_preview_title">Voorbeeld</string>
-    <string name="theme_picker_error_message">Thema\'s kunnen op dit moment niet worden geladen.</string>
-    <string name="theme_picker_error_title">Er is een fout opgetreden</string>
     <string name="theme_picker_carousel_info_item_description">Wanneer je winkel is ingesteld, zoek je jouw perfecte thema op in de WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_title">Zoek je naar iets anders?</string>
     <string name="theme_picker_description">Je kan later altijd nog wijzigen in de instellingen.</string>

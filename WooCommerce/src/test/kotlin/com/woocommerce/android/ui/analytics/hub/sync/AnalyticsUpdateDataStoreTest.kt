@@ -35,7 +35,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     private val defaultSelectionData = LAST_MONTH.generateSelectionData(
         calendar = Calendar.getInstance(),
         locale = Locale.getDefault(),
-        siteModel = null
+        dateUtils = mock()
     )
 
     @Test
@@ -102,7 +102,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection(siteModel = null)
+        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection(dateUtils = mock())
 
         // When
         sut.storeLastAnalyticsUpdate(
@@ -121,7 +121,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection(siteModel = null)
+        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection(dateUtils = mock())
         val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.values().size
 
         // When
