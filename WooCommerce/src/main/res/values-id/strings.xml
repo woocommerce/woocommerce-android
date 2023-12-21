@@ -36,10 +36,7 @@ Language: id
     <string name="custom_amounts_bottom_sheet_heading">Bagaimana Anda ingin menambahkan jumlah kustom?</string>
     <string name="custom_amounts_percentage_label">Persentase dari total pesanan (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Hapus jumlah kustom</string>
-    <string name="store_creation_use_theme_button">Memulai dengan tema ini</string>
     <string name="theme_activated_successfully">Tema berhasil diaktifkan</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Gunakan tema ini</string>
     <string name="theme_preview_bottom_sheet_home_section">Beranda</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Ketuk untuk melihat</string>
     <string name="theme_preview_bottom_sheet_pages_title">Halaman dengan templat ini</string>
