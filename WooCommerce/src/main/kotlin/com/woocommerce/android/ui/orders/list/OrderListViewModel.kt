@@ -51,7 +51,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -106,7 +105,6 @@ class OrderListViewModel @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val appPrefs: AppPrefsWrapper,
     private val showTestNotification: ShowTestNotification,
-    private val localeProvider: LocaleProvider,
     private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -133,8 +131,6 @@ class OrderListViewModel @Inject constructor(
             networkStatus,
             fetcher,
             resourceProvider,
-            selectedSite,
-            localeProvider,
             dateUtils
         )
     }
