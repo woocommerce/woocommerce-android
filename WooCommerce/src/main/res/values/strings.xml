@@ -636,6 +636,7 @@
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
     <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
+    <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
 
     <!--
          Barcode Scanning

@@ -27,9 +27,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +42,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -142,19 +140,16 @@ private fun TotalsView(
                 ) { expanded ->
                     IconButton(
                         interactionSource = totalsIs,
-                        onClick = { isExpanded = !isExpanded }
+                        onClick = { isExpanded = !isExpanded },
                     ) {
                         Icon(
-                            imageVector = if (expanded) {
-                                Icons.Default.KeyboardArrowDown
+                            painter = if (expanded) {
+                                painterResource(R.drawable.ic_arrow_down_26)
                             } else {
-                                Icons.Default.KeyboardArrowUp
+                                painterResource(R.drawable.ic_arrow_up_26)
                             },
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
                             tint = colorResource(id = R.color.color_primary),
-                            modifier = Modifier.padding(
-                                all = dimensionResource(id = R.dimen.minor_100)
-                            )
                         )
                     }
                 }
@@ -166,6 +161,8 @@ private fun TotalsView(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                 Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             }
         }
 
@@ -213,8 +210,6 @@ private fun TotalsSummary(
     orderTotal: TotalsSectionsState.OrderTotal,
     mainButton: TotalsSectionsState.Button,
 ) {
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
     RowWithData(
         title = orderTotal.label,
         data = orderTotal.value,
