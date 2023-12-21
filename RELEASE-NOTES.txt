@@ -26,7 +26,6 @@
 - [*] [Internal] Custom Amounts: Fix RTL issue in the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10316]
 - [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
 - [***] Added possibility to scan product's barcode in the Products page to update product's inventory quickly [https://github.com/woocommerce/woocommerce-android/pull/10250]
-- [***] In Person Payments: Fix crash when external card readers were being discovered on Android versions < 12 [https://github.com/woocommerce/woocommerce-android/pull/10454]
 
 16.5
 -----
