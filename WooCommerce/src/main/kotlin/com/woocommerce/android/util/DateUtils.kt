@@ -4,19 +4,23 @@ import android.content.Context
 import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
+import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 class DateUtils @Inject constructor(
     private val locale: Locale,
-    private val crashLogger: CrashLogging
+    private val crashLogger: CrashLogging,
+    private val selectedSite: SelectedSite
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
     private val friendlyMonthDayYearFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", locale)
@@ -381,6 +385,19 @@ class DateUtils @Inject constructor(
     private fun isToday(date: Date): Boolean {
         val todayStart = getDateForTodayAtTheStartOfTheDay()
         return DateUtils.isSameDay(date, Date(todayStart))
+    }
+
+    fun transformDateToSiteDate(date: Date): Date? {
+        val site = selectedSite.getOrNull() ?: return null
+        val timeZone = SiteUtils.getNormalizedTimezone(site.timezone)
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).apply {
+            this.timeZone = timeZone
+        }
+
+        val formattedDate = outputFormat.format(date)
+
+        outputFormat.timeZone = TimeZone.getDefault()
+        return runCatching { outputFormat.parse(formattedDate) }.getOrDefault(null)
     }
 
     companion object {

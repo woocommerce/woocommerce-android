@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.endOfCurrentQuarter
 import com.woocommerce.android.extensions.endOfCurrentWeek
 import com.woocommerce.android.extensions.endOfCurrentYear
 import com.woocommerce.android.extensions.startOfCurrentDay
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_QUARTER
@@ -17,9 +18,12 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YESTERDAY
+import com.woocommerce.android.util.DateUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.SimpleDateFormat
@@ -63,7 +67,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -89,7 +93,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -118,7 +122,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -144,7 +148,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -173,7 +177,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -199,7 +203,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -228,7 +232,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -254,7 +258,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -283,7 +287,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -309,7 +313,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -335,7 +339,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceEndDate = midDayFrom("2022-12-07"),
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // Then
@@ -351,7 +355,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -371,7 +375,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -391,7 +395,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -411,7 +415,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -431,7 +435,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -451,7 +455,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -471,7 +475,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -491,7 +495,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -511,7 +515,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -531,7 +535,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -551,7 +555,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -571,7 +575,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -591,7 +595,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -613,7 +617,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceEndDate = end,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = null
+            dateUtils = mock()
         )
 
         // When
@@ -632,6 +636,14 @@ internal class StatsTimeRangeSelectionTest {
         val deviceTimeZoneString = "+10"
         val deviceTimeZone = SiteUtils.getNormalizedTimezone(deviceTimeZoneString)
         val siteModel = SiteModel().apply { timezone = siteTimeZoneString }
+        val selectedSite: SelectedSite = mock {
+            on { getOrNull() } doReturn siteModel
+        }
+        val dateUtils = DateUtils(
+            locale = Locale.getDefault(),
+            crashLogger = mock(),
+            selectedSite = selectedSite
+        )
 
         val resultFormatter = SimpleDateFormat("yyyy-MM-dd")
         val dateFormatter = SimpleDateFormat("yyyy-MM-dd HH").apply {
@@ -645,7 +657,7 @@ internal class StatsTimeRangeSelectionTest {
             referenceStartDate = today,
             calendar = testCalendar,
             locale = testLocale,
-            siteModel = siteModel
+            dateUtils = dateUtils
         )
 
         // Then transform the date to the store's timezone date
