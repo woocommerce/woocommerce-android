@@ -120,12 +120,11 @@ class OrderListItemDataSource(
             OrderIdentifier(summary.orderId)
         }
 
-        val currentSiteDate = dateUtils.transformDateToSiteDate(Date()) ?: Date()
+        val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
 
         orderSummaries.forEach {
-            // Default to today if the date cannot be parsed. This date is in UTC.
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
-            val siteDate = dateUtils.transformDateToSiteDate(date) ?: Date()
+            // Default to today if the date cannot be parsed.
+            val siteDate = dateUtils.getDateUsingSiteTimeZone(it.dateCreated) ?: Date()
 
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
