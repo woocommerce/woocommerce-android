@@ -371,25 +371,6 @@ class DateUtils @Inject constructor(
             "Date string argument is not a valid format".reportAsError(e)
             null
         }
-    fun getCurrentDateInSiteTimeZone(): Date? {
-        val site = selectedSite.getOrNull() ?: return null
-        val targetTimezone = SiteUtils.getNormalizedTimezone(site.timezone).toZoneId()
-        val currentDateTime = LocalDateTime.now()
-        val zonedDateTime = ZonedDateTime.of(currentDateTime, ZoneId.systemDefault())
-            .withZoneSameInstant(targetTimezone)
-        val currentDateString = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        return getDateFromFullDateString(currentDateString)
-    }
-
-    private fun getDateFromFullDateString(isoStringDate: String): Date? {
-        return try {
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale)
-            formatter.parse(isoStringDate)
-        } catch (e: Exception) {
-            "Date string argument is not a valid format".reportAsError(e)
-            null
-        }
-    }
 
     fun getDateUsingSiteTimeZone(isoStringDate: String): Date? {
         val iso8601DateString = iso8601OnSiteTimeZoneFromIso8601UTC(isoStringDate)
