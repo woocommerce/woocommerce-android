@@ -1811,7 +1811,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given totals helper returns hidden, when totals updated, then return hidden`() {
         testBlocking {
-            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(TotalsSectionsState.Hidden)
+            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any())).thenReturn(
+                TotalsSectionsState.Hidden
+            )
 
             createSut()
 
@@ -1825,7 +1827,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns shown, when totals checked, then return shown`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Shown>()
-            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(totalsSectionsState)
+            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any()))
+                .thenReturn(totalsSectionsState)
 
             createSut()
 
