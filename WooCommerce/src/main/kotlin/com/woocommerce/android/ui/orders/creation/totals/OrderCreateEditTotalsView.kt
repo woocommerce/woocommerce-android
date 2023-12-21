@@ -11,7 +11,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,11 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -49,7 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun OrderCreateEditTotalsView(
@@ -105,7 +101,6 @@ private fun TotalsView(
     var isExpanded by remember { mutableStateOf(isPreview) }
 
     val totalsIs = remember { MutableInteractionSource() }
-    val topRowCoroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -119,11 +114,6 @@ private fun TotalsView(
                     interactionSource = totalsIs,
                     indication = null
                 ) {
-                    val press = PressInteraction.Press(Offset.Zero)
-                    topRowCoroutineScope.launch {
-                        totalsIs.emit(press)
-                        totalsIs.emit(PressInteraction.Release(press))
-                    }
                     isExpanded = !isExpanded
                 }
                 .animateContentSize()
