@@ -4,6 +4,7 @@
 - [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
 - [*] [Internal] Fixed crashes after resetting the Selected Site [https://github.com/woocommerce/woocommerce-android/pull/10444]
 - [*] [Internal] Improve handling of store switching when app is launched after store creation [https://github.com/woocommerce/woocommerce-android/pull/10436]
+- [*] [Internal] Fix crash when we try to edit custom amount while its still being deleted [https://github.com/woocommerce/woocommerce-android/pull/10468]
 
 16.7
 -----
