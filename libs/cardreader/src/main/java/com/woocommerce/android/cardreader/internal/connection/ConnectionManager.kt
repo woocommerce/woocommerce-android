@@ -1,6 +1,9 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import androidx.annotation.RequiresPermission
+import android.Manifest
+import android.app.Application
+import android.content.pm.PackageManager
+import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
@@ -34,53 +37,86 @@ internal class ConnectionManager(
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
     private val terminalListenerImpl: TerminalListenerImpl,
+    private val application: Application,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
     val batteryStatus = bluetoothReaderListener.batteryStatusEvents
     val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvents
-
-    @RequiresPermission(
-        allOf = [
-            "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.BLUETOOTH_CONNECT",
-            "android.permission.BLUETOOTH_SCAN"
-        ]
-    )
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
         when (cardReaderTypesToDiscover) {
             is SpecificReaders -> {
                 when (cardReaderTypesToDiscover) {
-                    is BuiltInReaders -> discoverReadersAction.discoverBuildInReaders(isSimulated)
-                    is ExternalReaders -> discoverReadersAction.discoverExternalReaders(isSimulated)
+                    is BuiltInReaders -> {
+                        if (application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            error("ACCESS_FINE_LOCATION permission is required to discover built-in readers")
+                        }
+                        discoverReadersAction.discoverBuildInReaders(isSimulated)
+                    }
+
+                    is ExternalReaders -> {
+                        checkIfNecessaryPermissionsAreGranted()
+                        discoverReadersAction.discoverExternalReaders(isSimulated)
+                    }
                 }
             }
-            UnspecifiedReaders -> merge(
-                discoverReadersAction.discoverBuildInReaders(isSimulated),
-                discoverReadersAction.discoverExternalReaders(isSimulated)
-            )
+
+            UnspecifiedReaders -> {
+                checkIfNecessaryPermissionsAreGranted()
+                merge(
+                    discoverReadersAction.discoverBuildInReaders(isSimulated),
+                    discoverReadersAction.discoverExternalReaders(isSimulated)
+                )
+            }
         }.map { state ->
             when (state) {
                 is DiscoverReadersStatus.Started -> {
                     CardReaderDiscoveryEvents.Started
                 }
+
                 is DiscoverReadersStatus.Failure -> {
                     CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
                 }
+
                 is DiscoverReadersStatus.FoundReaders -> {
                     val filtering: (Reader) -> Boolean = when (cardReaderTypesToDiscover) {
                         is SpecificReaders -> { reader ->
                             cardReaderTypesToDiscover.readers.map { it.name }.contains(reader.deviceType.name)
                         }
+
                         UnspecifiedReaders -> { _ -> true }
                     }
                     CardReaderDiscoveryEvents.ReadersFound(state.readers.filter(filtering).map { CardReaderImpl(it) })
                 }
+
                 DiscoverReadersStatus.Success -> {
                     CardReaderDiscoveryEvents.Succeeded
                 }
             }
         }
+
+    private fun checkIfNecessaryPermissionsAreGranted() {
+        val isAtLeastAndroidS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        val permissionsToCheck = mutableMapOf(
+            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is " +
+                "required to discover external readers"
+        )
+
+        if (isAtLeastAndroidS) {
+            permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is " +
+                "required to discover external readers"
+            permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is " +
+                "required to discover external readers"
+        }
+
+        permissionsToCheck.forEach { (permission, errorMessage) ->
+            if (application.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                error(errorMessage)
+            }
+        }
+    }
 
     fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         (cardReader as CardReaderImpl).let {

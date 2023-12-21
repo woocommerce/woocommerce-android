@@ -44,8 +44,6 @@ Language: zh_TW
     <string name="theme_preview_bottom_sheet_pages_subtitle">點選以檢視</string>
     <string name="theme_preview_bottom_sheet_pages_title">此範本上的頁面</string>
     <string name="theme_preview_title">預覽</string>
-    <string name="theme_picker_error_message">目前無法載入佈景主題。</string>
-    <string name="theme_picker_error_title">發生錯誤</string>
     <string name="theme_picker_carousel_info_item_description">商店設定完畢後，請前往 WooCommerce 佈景主題商店，尋找最適合你的佈景主題。</string>
     <string name="theme_picker_carousel_info_item_title">想探索更多選項嗎？</string>
     <string name="theme_picker_description">你之後可以隨時在設定中變更。</string>

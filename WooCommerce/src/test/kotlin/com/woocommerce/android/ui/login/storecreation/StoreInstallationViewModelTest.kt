@@ -98,6 +98,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
                 onBlocking {
                     invoke(
                         any(),
+                        any(),
                         any()
                     )
                 }.thenReturn(flowOf(ObserveSiteInstallation.InstallationState.Success))
@@ -119,6 +120,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             observeSiteInstallation.stub {
                 onBlocking {
                     invoke(
+                        any(),
                         any(),
                         any()
                     )
@@ -147,6 +149,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         observeSiteInstallation.stub {
             onBlocking {
                 invoke(
+                    any(),
                     any(),
                     any()
                 )
@@ -193,6 +196,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
                 onBlocking {
                     invoke(
                         any(),
+                        any(),
                         any()
                     )
                 }.thenReturn(flowOf(ObserveSiteInstallation.InstallationState.Success))
@@ -226,6 +230,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
                 onBlocking {
                     invoke(
                         any(),
+                        any(),
                         any()
                     )
                 }.thenReturn(
@@ -253,6 +258,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             observeSiteInstallation.stub {
                 onBlocking {
                     invoke(
+                        any(),
                         any(),
                         any()
                     )

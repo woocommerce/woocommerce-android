@@ -4,6 +4,8 @@
 - [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
 - [***] In Person Payments: Fix crash when external card readers were being discovered on Android versions < 12 [https://github.com/woocommerce/woocommerce-android/pull/10454]
 
+- [*] [Internal] Fixed crashes after resetting the Selected Site [https://github.com/woocommerce/woocommerce-android/pull/10444]
+- [*] [Internal] Improve handling of store switching when app is launched after store creation [https://github.com/woocommerce/woocommerce-android/pull/10436]
 
 16.7
 -----
