@@ -14,9 +14,7 @@ enum class TimeGroup(@StringRes val labelRes: Int) {
     GROUP_OLDER_MONTH(R.string.date_timeframe_older_month);
 
     companion object {
-        fun getTimeGroupForDate(localDate: Date): TimeGroup {
-            val dateToday = Date()
-
+        fun getTimeGroupForDate(localDate: Date, dateToday: Date = Date()): TimeGroup {
             return when {
                 localDate < DateUtils.addMonths(dateToday, -1) -> GROUP_OLDER_MONTH
                 localDate < DateUtils.addWeeks(dateToday, -1) -> GROUP_OLDER_WEEK
