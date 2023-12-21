@@ -66,7 +66,11 @@ fun OrderCreateEditTotalsView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .background(color = Color.Transparent),
+                    .background(color = Color.Transparent)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {}
             ) {
                 val shadowHeight = dimensionResource(id = R.dimen.minor_100)
                 val shadowHeightPx = with(LocalDensity.current) { shadowHeight.toPx() }
