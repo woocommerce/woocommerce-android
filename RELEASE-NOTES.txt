@@ -2,10 +2,10 @@
 16.8
 -----
 - [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
-- [***] In Person Payments: Fix crash when external card readers were being discovered on Android versions < 12 [https://github.com/woocommerce/woocommerce-android/pull/10454]
 
 - [*] [Internal] Fixed crashes after resetting the Selected Site [https://github.com/woocommerce/woocommerce-android/pull/10444]
 - [*] [Internal] Improve handling of store switching when app is launched after store creation [https://github.com/woocommerce/woocommerce-android/pull/10436]
+- [*] [Internal] Fix crash when we try to edit custom amount while its still being deleted [https://github.com/woocommerce/woocommerce-android/pull/10468]
 
 16.7
 -----
@@ -27,6 +27,7 @@
 - [*] [Internal] Custom Amounts: Fix RTL issue in the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10316]
 - [**] Quantity of the products in the order creation/editing flow can be changed by entering the amount [https://github.com/woocommerce/woocommerce-android/pull/10321]
 - [***] Added possibility to scan product's barcode in the Products page to update product's inventory quickly [https://github.com/woocommerce/woocommerce-android/pull/10250]
+- [***] In Person Payments: Fix crash when external card readers were being discovered on Android versions < 12 [https://github.com/woocommerce/woocommerce-android/pull/10454]
 
 16.5
 -----
