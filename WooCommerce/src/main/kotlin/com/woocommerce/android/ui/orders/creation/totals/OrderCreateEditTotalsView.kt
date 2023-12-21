@@ -12,14 +12,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -48,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import kotlinx.coroutines.launch
 
@@ -90,6 +95,7 @@ fun OrderCreateEditTotalsView(
                         .height(shadowHeight)
                 )
 
+                if (state !is TotalsSectionsState.Shown) return@Column
                 TotalsView(state)
             }
         }
@@ -98,7 +104,7 @@ fun OrderCreateEditTotalsView(
 
 @Composable
 private fun TotalsView(
-    state: TotalsSectionsState,
+    state: TotalsSectionsState.Shown,
     isPreview: Boolean = LocalInspectionMode.current,
 ) {
     var isExpanded by remember { mutableStateOf(isPreview) }
@@ -109,7 +115,6 @@ private fun TotalsView(
     Column(
         modifier = Modifier
             .background(color = colorResource(id = R.color.color_surface))
-            .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
     ) {
         Column(
             modifier = Modifier
@@ -160,24 +165,15 @@ private fun TotalsView(
 
             if (isExpanded) {
                 Products()
-                OrderTotal()
-            } else {
-                OrderTotal()
+                CustomAmounts()
+                Shipping {}
+                Coupon {}
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-        WCColoredButton(
-            onClick = {
-                (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
-            )
-        }
+        TotalsSummary(state)
     }
 }
 
@@ -186,6 +182,33 @@ fun Products() {
     RowWithData(
         title = stringResource(id = R.string.order_creation_payment_products),
         data = "$20.00"
+    )
+}
+
+@Composable
+fun CustomAmounts() {
+    RowWithData(
+        title = stringResource(id = R.string.custom_amounts),
+        data = "$20.00"
+    )
+}
+
+@Composable
+fun Shipping(onClick: () -> Unit) {
+    RowWithButtonAndData(
+        buttonText = stringResource(id = R.string.shipping),
+        data = "$20.00",
+        onClick = onClick,
+    )
+}
+
+@Composable
+fun Coupon(onClick: () -> Unit) {
+    RowWithButtonAndData(
+        buttonText = stringResource(id = R.string.order_creation_coupon_button),
+        data = "$20.00",
+        extraData = "20OFF",
+        onClick = onClick,
     )
 }
 
@@ -199,6 +222,35 @@ fun OrderTotal() {
 }
 
 @Composable
+private fun TotalsSummary(state: TotalsSectionsState.Shown) {
+    Divider(
+        modifier = Modifier
+            .padding(start = dimensionResource(id = R.dimen.major_100))
+    )
+
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+    OrderTotal()
+
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+    Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+    WCColoredButton(
+        onClick = { (state as? TotalsSectionsState.Shown)?.button?.onClick?.invoke() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+    ) {
+        Text(
+            text = (state as? TotalsSectionsState.Shown)?.button?.text ?: "",
+        )
+    }
+}
+
+@Composable
 fun RowWithData(
     title: String,
     data: String,
@@ -207,14 +259,18 @@ fun RowWithData(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(
+                vertical = dimensionResource(id = R.dimen.minor_100),
+                horizontal = dimensionResource(id = R.dimen.major_100),
+            )
+            .wrapContentHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.body1,
+            color = colorResource(id = R.color.color_on_surface),
             fontWeight = if (bold) {
                 FontWeight.Bold
             } else {
@@ -223,13 +279,75 @@ fun RowWithData(
         )
         Text(
             text = data,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.body1,
+            color = colorResource(id = R.color.color_on_surface),
             fontWeight = if (bold) {
                 FontWeight.Bold
             } else {
                 FontWeight.Normal
             }
         )
+    }
+}
+
+@Composable
+fun RowWithButtonAndData(
+    buttonText: String,
+    data: String,
+    extraData: String? = null,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                end = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.minor_50),
+                bottom = dimensionResource(id = R.dimen.minor_50),
+            )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            WCTextButton(
+                onClick = onClick,
+                modifier = Modifier
+                    .padding(vertical = 0.dp),
+                contentPadding = PaddingValues(
+                    vertical = 0.dp,
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                ),
+            ) {
+                Text(
+                    text = buttonText,
+                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier
+                )
+            }
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+            Text(
+                text = data,
+                color = colorResource(id = R.color.color_on_surface),
+                style = MaterialTheme.typography.body1,
+            )
+        }
+
+        extraData?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.caption,
+                color = colorResource(id = R.color.color_on_surface_disabled),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                    )
+            )
+        }
     }
 }
 
