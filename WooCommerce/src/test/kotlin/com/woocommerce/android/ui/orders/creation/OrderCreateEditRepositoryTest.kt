@@ -215,10 +215,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     @Test
     fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
         // Given
+        val giftCardPluginName = "woocommerce-gift-cards/woocommerce-gift-cards"
         val pluginMock = mock<SitePluginModel> {
-            on { name } doReturn "test plugin"
+            on { name } doReturn giftCardPluginName
             on { isActive } doReturn true
-            on { version } doReturn "1.0.0"
+            on { version } doReturn "1.16.6"
         }
         whenever(wooCommerceStore.getSitePlugins(defaultSiteModel, listOf(WOO_GIFT_CARDS)))
             .thenReturn(listOf(pluginMock))
@@ -228,11 +229,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // Then
         assertThat(plugins).isNotEmpty
-        assertThat(plugins["test plugin"]).isEqualTo(
+        assertThat(plugins["woocommerce-gift-cards/woocommerce-gift-cards"]).isEqualTo(
             WooPlugin(
                 isInstalled = true,
                 isActive = true,
-                version = "1.0.0"
+                version = "1.16.6"
             )
         )
     }
