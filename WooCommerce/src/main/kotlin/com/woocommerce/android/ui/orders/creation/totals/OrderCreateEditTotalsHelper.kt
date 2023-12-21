@@ -20,6 +20,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             if (order.items.isEmpty() && order.feesLines.isEmpty()) {
                 TotalsSectionsState.Hidden
             } else {
+                // Just for testing for now
                 TotalsSectionsState.Shown(
                     lines = listOf(
                         TotalsSectionsState.Line.Simple(
@@ -47,22 +48,26 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                             extraValue = "1234-5678-9987-6543",
                             onClick = {},
                         ),
-                        TotalsSectionsState.Line.Simple(
-                            label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
-                            value = "$15.33"
-                        ),
-                        TotalsSectionsState.Line.SimpleSmall(
-                            label = "Government Sales Tax · 10%",
-                            value = "$12.50"
-                        ),
-                        TotalsSectionsState.Line.SimpleSmall(
-                            label = "State Tax · 5%",
-                            value = "$6.25"
-                        ),
-                        TotalsSectionsState.Line.LearnMore(
-                            text = resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address),
-                            buttonText = resourceProvider.getString(R.string.learn_more),
-                            onClick = {}
+                        TotalsSectionsState.Line.Block(
+                            lines = listOf(
+                                TotalsSectionsState.Line.Simple(
+                                    label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
+                                    value = "$15.33"
+                                ),
+                                TotalsSectionsState.Line.SimpleSmall(
+                                    label = "Government Sales Tax · 10%",
+                                    value = "$12.50"
+                                ),
+                                TotalsSectionsState.Line.SimpleSmall(
+                                    label = "State Tax · 5%",
+                                    value = "$6.25"
+                                ),
+                                TotalsSectionsState.Line.LearnMore(
+                                    text = resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address),
+                                    buttonText = resourceProvider.getString(R.string.learn_more),
+                                    onClick = {}
+                                )
+                            )
                         ),
                     ),
                     orderTotal = TotalsSectionsState.OrderTotal(
@@ -129,6 +134,7 @@ sealed class TotalsSectionsState {
             val onClick: () -> Unit
         ) : Line()
 
+        data class Block(val lines: List<Line>) : Line()
 
         data class LearnMore(val text: String, val buttonText: String, val onClick: () -> Unit) : Line()
     }

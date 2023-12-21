@@ -15,7 +15,6 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,10 +48,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import kotlinx.coroutines.launch
 
@@ -164,26 +161,56 @@ private fun TotalsView(
             }
 
             if (isExpanded) {
+                Lines(lines = state.lines, smallGaps = false)
             }
         }
 
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-        TotalsSummary(state)
+        TotalsSummary(state.orderTotal, state.mainButton)
     }
 }
 
 @Composable
-fun OrderTotal() {
-    RowWithData(
-        title = stringResource(id = R.string.order_creation_payment_order_total),
-        data = "$20.00",
-        bold = true,
-    )
+fun Lines(lines: List<TotalsSectionsState.Line>, smallGaps: Boolean) {
+    lines.forEach { line ->
+        LineGap(smallGaps)
+
+        when (line) {
+            is TotalsSectionsState.Line.Simple -> RowWithData(
+                title = line.label,
+                data = line.value,
+            )
+
+            is TotalsSectionsState.Line.SimpleSmall -> RowWithDataSmall(line)
+
+            is TotalsSectionsState.Line.Button -> RowWithButtonAndData(line)
+
+            is TotalsSectionsState.Line.Block -> {
+                Lines(lines = line.lines, smallGaps = true)
+            }
+
+            is TotalsSectionsState.Line.LearnMore -> LearnMore(line)
+        }
+
+        LineGap(smallGaps)
+    }
 }
 
 @Composable
-private fun TotalsSummary(state: TotalsSectionsState.Shown) {
+private fun LineGap(smallGaps: Boolean) {
+    if (smallGaps) {
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_25)))
+    } else {
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+    }
+}
+
+@Composable
+private fun TotalsSummary(
+    orderTotal: TotalsSectionsState.OrderTotal,
+    mainButton: TotalsSectionsState.Button,
+) {
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+
     Divider(
         modifier = Modifier
             .padding(start = dimensionResource(id = R.dimen.major_100))
@@ -191,7 +218,11 @@ private fun TotalsSummary(state: TotalsSectionsState.Shown) {
 
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-    OrderTotal()
+    RowWithData(
+        title = orderTotal.label,
+        data = orderTotal.value,
+        bold = true,
+    )
 
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
@@ -200,13 +231,41 @@ private fun TotalsSummary(state: TotalsSectionsState.Shown) {
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
     WCColoredButton(
-        onClick = { (state as? TotalsSectionsState.Shown)?.mainButton?.onClick?.invoke() },
+        onClick = mainButton.onClick,
+        enabled = mainButton.enabled,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
     ) {
         Text(
-            text = (state as? TotalsSectionsState.Shown)?.mainButton?.text ?: "",
+            text = mainButton.text,
+        )
+    }
+
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+}
+
+@Composable
+fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .wrapContentHeight()
+            .clickable(onClick = learnMore.onClick),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = learnMore.text,
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface_medium),
+        )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+        Text(
+            text = learnMore.buttonText,
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_primary),
+            modifier = Modifier.clickable(onClick = learnMore.onClick)
         )
     }
 }
@@ -220,10 +279,7 @@ fun RowWithData(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = dimensionResource(id = R.dimen.minor_100),
-                horizontal = dimensionResource(id = R.dimen.major_100),
-            )
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .wrapContentHeight(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -252,61 +308,64 @@ fun RowWithData(
 }
 
 @Composable
-fun RowWithButtonAndData(
-    buttonText: String,
-    data: String,
-    extraData: String? = null,
-    onClick: () -> Unit,
-) {
+fun RowWithDataSmall(lineSimpleSmall: TotalsSectionsState.Line.SimpleSmall) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .wrapContentHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = lineSimpleSmall.label,
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface_medium),
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = lineSimpleSmall.value,
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface),
+        )
+    }
+}
+
+@Composable
+fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                end = dimensionResource(id = R.dimen.major_100),
-                top = dimensionResource(id = R.dimen.minor_50),
-                bottom = dimensionResource(id = R.dimen.minor_50),
-            )
+            .clickable { lineWithButton.onClick() }
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp),
+                .wrapContentHeight(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            WCTextButton(
-                onClick = onClick,
+            Text(
+                text = lineWithButton.text,
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_primary),
                 modifier = Modifier
-                    .padding(vertical = 0.dp),
-                contentPadding = PaddingValues(
-                    vertical = 0.dp,
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                ),
-            ) {
-                Text(
-                    text = buttonText,
-                    style = MaterialTheme.typography.subtitle1,
-                    modifier = Modifier
-                )
-            }
+            )
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Text(
-                text = data,
+                text = lineWithButton.value,
                 color = colorResource(id = R.color.color_on_surface),
                 style = MaterialTheme.typography.body1,
             )
         }
 
-        extraData?.let {
+        lineWithButton.extraValue?.let {
             Text(
                 text = it,
                 style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_disabled),
+                color = colorResource(id = R.color.color_on_surface_medium),
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                    )
             )
         }
     }
@@ -344,22 +403,26 @@ fun OrderCreateEditTotalsViewPreview() {
                     extraValue = "1234-5678-9987-6543",
                     onClick = {},
                 ),
-                TotalsSectionsState.Line.Simple(
-                    label = stringResource(R.string.order_creation_payment_tax_label),
-                    value = "$15.33"
-                ),
-                TotalsSectionsState.Line.SimpleSmall(
-                    label = "Government Sales Tax · 10%",
-                    value = "$12.50"
-                ),
-                TotalsSectionsState.Line.SimpleSmall(
-                    label = "State Tax · 5%",
-                    value = "$6.25"
-                ),
-                TotalsSectionsState.Line.LearnMore(
-                    text = stringResource(R.string.order_creation_tax_based_on_billing_address),
-                    buttonText = stringResource(R.string.learn_more),
-                    onClick = {}
+                TotalsSectionsState.Line.Block(
+                    lines = listOf(
+                        TotalsSectionsState.Line.Simple(
+                            label = stringResource(R.string.order_creation_payment_tax_label),
+                            value = "$15.33"
+                        ),
+                        TotalsSectionsState.Line.SimpleSmall(
+                            label = "Government Sales Tax · 10%",
+                            value = "$12.50"
+                        ),
+                        TotalsSectionsState.Line.SimpleSmall(
+                            label = "State Tax · 5%",
+                            value = "$6.25"
+                        ),
+                        TotalsSectionsState.Line.LearnMore(
+                            text = stringResource(R.string.order_creation_tax_based_on_billing_address),
+                            buttonText = stringResource(R.string.learn_more),
+                            onClick = {}
+                        )
+                    )
                 ),
             ),
             orderTotal = TotalsSectionsState.OrderTotal(
