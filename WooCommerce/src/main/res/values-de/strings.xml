@@ -44,8 +44,6 @@ Language: de
     <string name="theme_preview_bottom_sheet_pages_subtitle">Zum Anzeigen tippen</string>
     <string name="theme_preview_bottom_sheet_pages_title">Seiten auf diesem Template</string>
     <string name="theme_preview_title">Vorschau</string>
-    <string name="theme_picker_error_message">Derzeit können keine Themes geladen werden.</string>
-    <string name="theme_picker_error_title">Ein Fehler ist aufgetreten</string>
     <string name="theme_picker_carousel_info_item_description">Sobald dein Shop eingerichtet ist, kannst du dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
     <string name="theme_picker_carousel_info_item_title">Du suchst mehr?</string>
     <string name="theme_picker_description">In deinen Einstellungen kannst du dein Theme später jederzeit ändern.</string>

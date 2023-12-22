@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.themes
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,13 +21,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -52,8 +52,8 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
@@ -86,11 +86,11 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
                     .background(MaterialTheme.colors.surface),
                 viewState = viewState,
                 onThemeTapped = viewModel::onThemeTapped,
-                onThemeScreenshotFailure = viewModel::onThemeScreenshotFailure
+                onThemeScreenshotFailure = viewModel::onThemeScreenshotFailure,
+                onRetryTapped = viewModel::onRetryTapped
             )
         }
     }
@@ -101,19 +101,22 @@ private fun ThemePicker(
     modifier: Modifier,
     viewState: ThemePickerViewModel.ViewState,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
-    onThemeScreenshotFailure: (String, Throwable) -> Unit
+    onThemeScreenshotFailure: (String, Throwable) -> Unit,
+    onRetryTapped: () -> Unit
 ) {
     Column(
         modifier = modifier
             .padding(vertical = dimensionResource(id = R.dimen.major_100))
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         CurrentTheme(viewState.currentThemeState)
-        Header(
-            isFromStoreCreation = viewState.isFromStoreCreation,
-            modifier = Modifier.fillMaxWidth()
+        Carousel(
+            viewState.isFromStoreCreation,
+            viewState.carouselState,
+            onThemeTapped,
+            onThemeScreenshotFailure,
+            onRetryTapped
         )
-        Carousel(viewState.carouselState, onThemeTapped, onThemeScreenshotFailure)
     }
 }
 
@@ -137,7 +140,7 @@ private fun CurrentTheme(
             is CurrentThemeState.Loading -> {
                 SkeletonView(
                     width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
-                    height = dimensionResource(id = R.dimen.skeleton_text_height_100)
+                    height = 22.dp
                 )
             }
 
@@ -191,10 +194,12 @@ private fun Header(
 }
 
 @Composable
-private fun ColumnScope.Carousel(
+private fun Carousel(
+    isFromStoreCreation: Boolean,
     state: CarouselState,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
-    onThemeScreenshotFailure: (String, Throwable) -> Unit
+    onThemeScreenshotFailure: (String, Throwable) -> Unit,
+    onRetryTapped: () -> Unit
 ) {
     when (state) {
         is CarouselState.Loading -> {
@@ -202,63 +207,101 @@ private fun ColumnScope.Carousel(
         }
 
         is CarouselState.Error -> {
-            Error()
+            Error(onRetryTapped)
         }
 
         is CarouselState.Success -> {
-            Carousel(state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
+            Carousel(isFromStoreCreation, state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
         }
     }
 }
 
 @Composable
-private fun ColumnScope.Loading() {
-    Box(
+private fun Loading() {
+    Row(
         modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxWidth()
-            .weight(1f)
+            .height(480.dp)
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
-        CircularProgressIndicator(
+        repeat(6) {
+            val startPadding = if (it == 0) dimensionResource(id = R.dimen.major_100) else 0.dp
+            val endPadding = if (it == 5) dimensionResource(id = R.dimen.major_100) else 0.dp
+            Card(
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
+                elevation = dimensionResource(id = R.dimen.minor_50),
+                modifier = Modifier
+                    .width(256.dp)
+                    .height(480.dp)
+                    .padding(start = startPadding, end = endPadding)
+            ) {
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Error(onRetryClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.theme_picker_error_message),
+            textAlign = TextAlign.Center,
+            color = colorResource(id = color.color_on_surface_medium),
             modifier = Modifier
-                .align(Alignment.Center)
+                .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth()
+        )
+        WCTextButton(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            onClick = onRetryClick,
+            icon = Filled.Refresh,
+            text = stringResource(id = R.string.retry),
         )
     }
 }
 
 @Composable
-private fun ColumnScope.Error() {
-    Message(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        title = stringResource(id = R.string.theme_picker_error_title),
-        description = annotatedStringRes(stringResId = R.string.theme_picker_error_message),
-        color = color.color_error
-    )
-}
-
-@Composable
 private fun Carousel(
+    isFromStoreCreation: Boolean,
     items: List<CarouselItem>,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
-    LazyRow(
+    Column(
         modifier = Modifier
-            .height(480.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.major_100))
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
-        items(items) { item ->
-            when (item) {
-                is CarouselItem.Theme -> Theme(item, onThemeTapped, onThemeScreenshotFailure)
-                is CarouselItem.Message -> Message(
-                    title = item.title,
-                    description = AnnotatedString(item.description),
-                    modifier = Modifier.width(320.dp)
-                )
+        Header(
+            isFromStoreCreation = isFromStoreCreation,
+            modifier = Modifier.fillMaxWidth()
+        )
+        LazyRow(
+            modifier = Modifier
+                .height(480.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.major_100))
+        ) {
+            items(items) { item ->
+                when (item) {
+                    is CarouselItem.Theme -> Theme(item, onThemeTapped, onThemeScreenshotFailure)
+                    is CarouselItem.Message -> Message(
+                        title = item.title,
+                        description = AnnotatedString(item.description),
+                        modifier = Modifier.width(320.dp)
+                    )
+                }
             }
         }
     }
@@ -271,34 +314,29 @@ private fun Message(
     modifier: Modifier = Modifier,
     color: Int = R.color.color_on_surface_medium
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxHeight()
             .padding(dimensionResource(id = R.dimen.major_100)),
-        contentAlignment = Alignment.Center,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
+        Text(
+            text = title,
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = color),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = color),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth()
-            )
-            Text(
-                text = description,
-                color = colorResource(id = color),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+                .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth()
+        )
+        Text(
+            text = description,
+            color = colorResource(id = color),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
 }
 
@@ -312,7 +350,6 @@ private fun Theme(
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
         elevation = dimensionResource(id = R.dimen.minor_50),
-        modifier = themeModifier.clickable { onThemeTapped(theme) }
     ) {
         val imageLoader = ImageLoader.Builder(LocalContext.current)
             .okHttpClient {
@@ -355,8 +392,16 @@ private fun Theme(
                     modifier = themeModifier
                 )
             },
+            loading = {
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            },
             contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
+                .clickable { onThemeTapped(theme) }
         )
     }
 }
@@ -373,7 +418,8 @@ private fun PreviewThemePickerError() {
                 currentThemeState = CurrentThemeState.Hidden
             ),
             onThemeTapped = {},
-            onThemeScreenshotFailure = { _, _ -> }
+            onThemeScreenshotFailure = { _, _ -> },
+            onRetryTapped = {}
         )
     }
 }
@@ -386,11 +432,12 @@ private fun PreviewThemePickerLoading() {
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
                 isFromStoreCreation = true,
-                carouselState = CarouselState.Error,
+                carouselState = CarouselState.Loading,
                 currentThemeState = CurrentThemeState.Hidden
             ),
             onThemeTapped = {},
-            onThemeScreenshotFailure = { _, _ -> }
+            onThemeScreenshotFailure = { _, _ -> },
+            onRetryTapped = {}
         )
     }
 }
@@ -414,7 +461,8 @@ private fun PreviewThemePickerStoreCreation() {
                 currentThemeState = CurrentThemeState.Hidden
             ),
             onThemeTapped = {},
-            onThemeScreenshotFailure = { _, _ -> }
+            onThemeScreenshotFailure = { _, _ -> },
+            onRetryTapped = {}
         )
     }
 }
@@ -438,7 +486,8 @@ private fun PreviewThemePickerSettings() {
                 currentThemeState = CurrentThemeState.Success(themeName = "Tsubaki", themeId = "tsubaki")
             ),
             onThemeTapped = {},
-            onThemeScreenshotFailure = { _, _ -> }
+            onThemeScreenshotFailure = { _, _ -> },
+            onRetryTapped = {}
         )
     }
 }

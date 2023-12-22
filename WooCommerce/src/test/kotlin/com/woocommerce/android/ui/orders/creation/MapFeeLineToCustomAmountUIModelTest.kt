@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -25,8 +25,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             id = 1,
             amount = BigDecimal.TEN,
             name = "Test Amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
-            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
@@ -47,8 +47,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             id = 1,
             amount = BigDecimal.TEN,
             name = "Test Amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = false),
-            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = false),
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
@@ -69,8 +69,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             id = 1,
             amount = BigDecimal.TEN,
             name = "Test Amount",
-            taxStatus = CustomAmountsDialogViewModel.TaxStatus(isTaxable = true),
-            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = true),
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)

@@ -100,7 +100,6 @@ class AccountRepository @Inject constructor(
                 WooLog.d(LOGIN, "Error while trying to log out after successfully closing the account")
                 CloseAccountResult.Error(hasActiveStores = false)
             } else {
-                selectedSite.reset()
                 cleanup()
                 CloseAccountResult.Success
             }

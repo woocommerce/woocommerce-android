@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.TaxStatus
 import javax.inject.Inject
 
 class MapFeeLineToCustomAmountUiModel @Inject constructor() {
@@ -19,7 +19,7 @@ class MapFeeLineToCustomAmountUiModel @Inject constructor() {
                 Order.FeeLine.FeeLineTaxStatus.NONE -> TaxStatus(isTaxable = false)
                 Order.FeeLine.FeeLineTaxStatus.UNKNOWN -> TaxStatus(isTaxable = false)
             },
-            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
         )
     }
 }
