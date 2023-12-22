@@ -18,72 +18,77 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         onButtonClicked: () -> Unit
     ): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
-            if (order.items.isEmpty() && order.feesLines.isEmpty()) {
-                TotalsSectionsState.Hidden
-            } else {
-                // Just for testing for now
-                TotalsSectionsState.Shown(
-                    lines = listOf(
-                        TotalsSectionsState.Line.Simple(
-                            label = resourceProvider.getString(R.string.order_creation_payment_products),
-                            value = "$125.00"
-                        ),
-                        TotalsSectionsState.Line.Simple(
-                            label = resourceProvider.getString(R.string.custom_amounts),
-                            value = "$2.00"
-                        ),
-                        TotalsSectionsState.Line.Button(
-                            text = resourceProvider.getString(R.string.shipping),
-                            value = "$16.25",
-                            onClick = {},
-                        ),
-                        TotalsSectionsState.Line.Button(
-                            text = resourceProvider.getString(R.string.order_creation_coupon_button),
-                            value = "-$4.25",
-                            extraValue = "20 OFF",
-                            onClick = {},
-                        ),
-                        TotalsSectionsState.Line.Button(
-                            text = resourceProvider.getString(R.string.order_gift_card),
-                            value = "-$4.25",
-                            extraValue = "1234-5678-9987-6543",
-                            onClick = {},
-                        ),
-                        TotalsSectionsState.Line.Block(
-                            lines = listOf(
-                                TotalsSectionsState.Line.Simple(
-                                    label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
-                                    value = "$15.33"
-                                ),
-                                TotalsSectionsState.Line.SimpleSmall(
-                                    label = "Government Sales Tax · 10%",
-                                    value = "$12.50"
-                                ),
-                                TotalsSectionsState.Line.SimpleSmall(
-                                    label = "State Tax · 5%",
-                                    value = "$6.25"
-                                ),
-                                TotalsSectionsState.Line.LearnMore(
-                                    text = resourceProvider.getString(
-                                        R.string.order_creation_tax_based_on_billing_address
-                                    ),
-                                    buttonText = resourceProvider.getString(R.string.learn_more),
-                                    onClick = {}
-                                )
-                            )
-                        ),
-                    ),
-                    orderTotal = TotalsSectionsState.OrderTotal(
-                        label = resourceProvider.getString(R.string.order_creation_payment_order_total),
-                        value = "$143.75"
-                    ),
-                    mainButton = TotalsSectionsState.Button(
-                        text = mode.toButtonText(),
-                        enabled = true,
-                        onClick = onButtonClicked,
+                // The data Just for testing for now
+                if (order.items.isEmpty() && order.feesLines.isEmpty()) {
+                    TotalsSectionsState.Minimised(
+                        orderTotal = TotalsSectionsState.OrderTotal(
+                            label = resourceProvider.getString(R.string.order_creation_payment_order_total),
+                            value = "$0.00"
+                        )
                     )
-                )
-            }
+                } else {
+                    TotalsSectionsState.Full(
+                        lines = listOf(
+                            TotalsSectionsState.Line.Simple(
+                                label = resourceProvider.getString(R.string.order_creation_payment_products),
+                                value = "$125.00"
+                            ),
+                            TotalsSectionsState.Line.Simple(
+                                label = resourceProvider.getString(R.string.custom_amounts),
+                                value = "$2.00"
+                            ),
+                            TotalsSectionsState.Line.Button(
+                                text = resourceProvider.getString(R.string.shipping),
+                                value = "$16.25",
+                                onClick = {},
+                            ),
+                            TotalsSectionsState.Line.Button(
+                                text = resourceProvider.getString(R.string.order_creation_coupon_button),
+                                value = "-$4.25",
+                                extraValue = "20 OFF",
+                                onClick = {},
+                            ),
+                            TotalsSectionsState.Line.Button(
+                                text = resourceProvider.getString(R.string.order_gift_card),
+                                value = "-$4.25",
+                                extraValue = "1234-5678-9987-6543",
+                                onClick = {},
+                            ),
+                            TotalsSectionsState.Line.Block(
+                                lines = listOf(
+                                    TotalsSectionsState.Line.Simple(
+                                        label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
+                                        value = "$15.33"
+                                    ),
+                                    TotalsSectionsState.Line.SimpleSmall(
+                                        label = "Government Sales Tax · 10%",
+                                        value = "$12.50"
+                                    ),
+                                    TotalsSectionsState.Line.SimpleSmall(
+                                        label = "State Tax · 5%",
+                                        value = "$6.25"
+                                    ),
+                                    TotalsSectionsState.Line.LearnMore(
+                                        text = resourceProvider.getString(
+                                            R.string.order_creation_tax_based_on_billing_address
+                                        ),
+                                        buttonText = resourceProvider.getString(R.string.learn_more),
+                                        onClick = {}
+                                    )
+                                )
+                            ),
+                        ),
+                        orderTotal = TotalsSectionsState.OrderTotal(
+                            label = resourceProvider.getString(R.string.order_creation_payment_order_total),
+                            value = "$143.75"
+                        ),
+                        mainButton = TotalsSectionsState.Button(
+                            text = mode.toButtonText(),
+                            enabled = true,
+                            onClick = onButtonClicked,
+                        )
+                    )
+                }
         } else {
             TotalsSectionsState.Disabled
         }
@@ -100,13 +105,15 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 }
 
 sealed class TotalsSectionsState {
-    data class Shown(
+    data class Full(
         val lines: List<Line>,
         val orderTotal: OrderTotal,
         val mainButton: Button,
     ) : TotalsSectionsState()
 
-    object Hidden : TotalsSectionsState()
+    data class Minimised(
+        val orderTotal: OrderTotal,
+    ) : TotalsSectionsState()
 
     object Disabled : TotalsSectionsState()
 

@@ -48,12 +48,12 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 
 @Composable
-fun OrderCreateEditTotalsView(
+fun OrderCreateEditTotalsFullView(
     state: TotalsSectionsState,
     isPreview: Boolean = LocalInspectionMode.current,
 ) {
     WooTheme {
-        val visible = state is TotalsSectionsState.Shown
+        val visible = state is TotalsSectionsState.Full
         AnimatedVisibility(
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,7 +90,7 @@ fun OrderCreateEditTotalsView(
                         .height(shadowHeight)
                 )
 
-                if (state !is TotalsSectionsState.Shown) return@Column
+                if (state !is TotalsSectionsState.Full) return@Column
                 TotalsView(state)
             }
         }
@@ -98,8 +98,15 @@ fun OrderCreateEditTotalsView(
 }
 
 @Composable
+fun OrderCreateEditTotalsMinimisedView(
+    state: TotalsSectionsState.Minimised
+) {
+
+}
+
+@Composable
 private fun TotalsView(
-    state: TotalsSectionsState.Shown,
+    state: TotalsSectionsState.Full,
     isPreview: Boolean = LocalInspectionMode.current,
 ) {
     var isExpanded by remember { mutableStateOf(isPreview) }
@@ -361,8 +368,8 @@ fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button) {
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 fun OrderCreateEditTotalsViewPreview() {
-    OrderCreateEditTotalsView(
-        state = TotalsSectionsState.Shown(
+    OrderCreateEditTotalsFullView(
+        state = TotalsSectionsState.Full(
             lines = listOf(
                 TotalsSectionsState.Line.Simple(
                     label = stringResource(R.string.order_creation_payment_products),

@@ -1826,7 +1826,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given totals helper returns shown, when totals checked, then return shown`() {
         testBlocking {
-            val totalsSectionsState = mock<TotalsSectionsState.Shown>()
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
             whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any()))
                 .thenReturn(totalsSectionsState)
 

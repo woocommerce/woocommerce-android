@@ -56,7 +56,7 @@ class OrderCreateEditTotalsHelperTest {
         )
 
         // THEN
-        assertThat((actual as TotalsSectionsState.Shown).mainButton.text).isEqualTo("Collect Payment")
+        assertThat((actual as TotalsSectionsState.Full).mainButton.text).isEqualTo("Collect Payment")
     }
 
     @Test
@@ -78,7 +78,7 @@ class OrderCreateEditTotalsHelperTest {
         )
 
         // THEN
-        assertThat((actual as TotalsSectionsState.Shown).mainButton.text).isEqualTo("Collect Payment")
+        assertThat((actual as TotalsSectionsState.Full).mainButton.text).isEqualTo("Collect Payment")
     }
 
     @Test
