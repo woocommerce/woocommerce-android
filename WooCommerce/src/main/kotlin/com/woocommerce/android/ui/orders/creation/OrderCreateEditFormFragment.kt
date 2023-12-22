@@ -619,7 +619,7 @@ class OrderCreateEditFormFragment :
             FeatureFlag.TABLET_ORDERS_M1.isEnabled()
         ) {
             if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
-                paymentSection.orderTotalValue.hide()
+                paymentSection.orderTotalLayout.hide()
             } else {
                 paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
             }
