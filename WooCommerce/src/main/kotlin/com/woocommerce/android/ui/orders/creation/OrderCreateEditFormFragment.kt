@@ -409,6 +409,9 @@ class OrderCreateEditFormFragment :
             new.isAddGiftCardButtonEnabled.takeIfNotEqualTo(old?.isAddGiftCardButtonEnabled) {
                 binding.paymentSection.addGiftCardButton.isEnabled = it
             }
+            new.shouldDisplayAddGiftCardButton.takeIfNotEqualTo(old?.shouldDisplayAddGiftCardButton) {
+                binding.paymentSection.addGiftCardButton.isVisible = it
+            }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
             }
@@ -688,7 +691,7 @@ class OrderCreateEditFormFragment :
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
         orderEditGiftCardLayout.hide()
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
-            addGiftCardButton.isVisible = true
+            addGiftCardButton.isVisible = viewModel.isGiftCardExtensionEnabled
             giftCardSelectionLayout.hide()
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
         } else {

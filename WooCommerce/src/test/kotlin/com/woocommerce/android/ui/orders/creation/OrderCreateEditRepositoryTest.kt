@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -31,6 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -208,5 +210,31 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             assertThat(setting).isNotNull
             assertThat(setting).isInstanceOf(TaxBasedOnSetting.BillingAddress::class.java)
         }
+    }
+
+    @Test
+    fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
+        // Given
+        val giftCardPluginName = "woocommerce-gift-cards/woocommerce-gift-cards"
+        val pluginMock = mock<SitePluginModel> {
+            on { name } doReturn giftCardPluginName
+            on { isActive } doReturn true
+            on { version } doReturn "1.16.6"
+        }
+        whenever(wooCommerceStore.getSitePlugins(defaultSiteModel, listOf(WOO_GIFT_CARDS)))
+            .thenReturn(listOf(pluginMock))
+
+        // When
+        val plugins = sut.fetchOrderSupportedPlugins()
+
+        // Then
+        assertThat(plugins).isNotEmpty
+        assertThat(plugins["woocommerce-gift-cards/woocommerce-gift-cards"]).isEqualTo(
+            WooPlugin(
+                isInstalled = true,
+                isActive = true,
+                version = "1.16.6"
+            )
+        )
     }
 }

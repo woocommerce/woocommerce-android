@@ -70,6 +70,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import java.util.function.Consumer
+import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
@@ -1539,6 +1540,44 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when custom amount added, then disable the custom amount section until the operation is complete`() {
+        var viewState: MutableList<ViewState> = mutableListOf()
+        sut.viewStateData.liveData.observeForever {
+            viewState.add(it)
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        // The first state will be triggered for updating the progress, hence we need to verify the second state
+        assertFalse(viewState[1].isEditable)
+    }
+
+    @Test
+    fun `when custom amount added, then enable the custom amount section after the operation is complete`() {
+        var viewState: MutableList<ViewState> = mutableListOf()
+        sut.viewStateData.liveData.observeForever {
+            viewState.add(it)
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        // The first state will be triggered for updating the progress, second state for disabling the custom amount. Hence we need to verify the third state
+        assertTrue(viewState[2].isEditable)
+    }
+
+    @Test
     fun `when custom amount added with tax status as taxable, then fee line gets updated with proper tax status`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
@@ -1762,6 +1801,85 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         )
 
         assertThat(orderDraft?.feesLines?.filter { it.name != null }?.size).isEqualTo(0)
+    }
+
+    @Test
+    fun `when custom amount removed, then disable the custom amount section until the operation is complete`() {
+        var viewState: MutableList<ViewState> = mutableListOf()
+        sut.viewStateData.liveData.observeForever {
+            viewState.add(it)
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount",
+                type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            )
+        )
+
+        assertFalse(viewState[viewState.size - 2].isEditable)
+    }
+
+    @Test
+    fun `when custom amount removed, then enable the custom amount section after the operation is complete`() {
+        var viewState: MutableList<ViewState> = mutableListOf()
+        sut.viewStateData.liveData.observeForever {
+            viewState.add(it)
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount",
+                type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            )
+        )
+
+        assertTrue(viewState[viewState.size - 1].isEditable)
+    }
+
+    @Test
+    fun `when custom amount removed, then exit event is triggered`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount",
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountRemoved(
+            CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "Test amount",
+                type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            )
+        )
+
+        assertThat(sut.event.value).isInstanceOf(Exit::class.java)
     }
     @Test
     fun `when custom amount is added, then proper event is tracked`() {
