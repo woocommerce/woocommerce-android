@@ -304,6 +304,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 handleCouponEditResult()
+                updateTotals(_orderDraft.value)
                 launch {
                     updateAutoTaxRateSettingState()
                     updateTaxRateSelectorButtonState()
@@ -329,6 +330,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
+                        updateTotals(order)
                     }
                 }
             }
