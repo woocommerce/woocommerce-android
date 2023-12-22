@@ -1,4 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+16.8
+-----
+- [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
+- [*] [Internal] Fixed crashes after resetting the Selected Site [https://github.com/woocommerce/woocommerce-android/pull/10444]
+- [*] [Internal] Improve handling of store switching when app is launched after store creation [https://github.com/woocommerce/woocommerce-android/pull/10436]
+- [**] Custom Amounts: Change the custom amount from dialog into full screen fragment [https://github.com/woocommerce/woocommerce-android/pull/10394]
+- [*] [Internal] Fix crash when we try to edit custom amount while its still being deleted [https://github.com/woocommerce/woocommerce-android/pull/10468]
+
 16.7
 -----
 - [*] [Internal] Fixed disabling editable controls in product cards in order edit screen in case order is not editable [https://github.com/woocommerce/woocommerce-android/pull/10345]

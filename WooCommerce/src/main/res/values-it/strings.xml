@@ -36,16 +36,11 @@ Language: it
     <string name="custom_amounts_bottom_sheet_heading">Come desideri aggiungere l\'importo personalizzato?</string>
     <string name="custom_amounts_percentage_label">Percentuale del totale dell\'ordine (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Elimina importo personalizzato</string>
-    <string name="store_creation_use_theme_button">Inizia scegliendo questo tema</string>
     <string name="theme_activated_successfully">Tema attivato correttamente</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Usa questo tema</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tocca per visualizzare</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagine su questo template</string>
     <string name="theme_preview_title">Anteprima</string>
-    <string name="theme_picker_error_message">Impossibile caricare i temi in questo momento.</string>
-    <string name="theme_picker_error_title">Si è verificato un errore</string>
     <string name="theme_picker_carousel_info_item_description">Una volta configurato il negozio, trova il tema perfetto nel negozio di temi WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Cerchi altro?</string>
     <string name="theme_picker_description">Puoi sempre modificare il tema nelle impostazioni in un secondo momento.</string>

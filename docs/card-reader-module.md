@@ -2,24 +2,26 @@
 If reading this you find anything is not up-to-date, please fix it or report to the team if not sure how to do that
 
 ## Dictionary
-* **CPP** - Card Present Payments
 * **Stripe** - Third party company we use as payments processing for In-Person Payments
 * **WCPay** - Or WooCommerce Payments is a plugin for WooCommerce (which itself is a plugin for Wordpress) that contains integrations with different payments platform including Stripe
 * **Stripe Extension/Plugin** - is another plugin for WooCommerce which can be used to accept payments using Stripe Payment Gateway.
-* **Card Reader** - At the moment the app supports *BBPOS Chipper 2X BT*. We are working on adding support for *Stripe M2* (ask Aaron to order your own reader)
-* **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷 (Cash On Delivery option can be renamed to "Pay On Delivery" on the site, but internally COD is used for both)
+* **Card Reader** - At the moment
+1. For the  **US**, we support the  [WooCommerce In-Person Payments M2](https://href.li/?https://woocommerce.com/products/m2-card-reader/).
+2. In  **Canada**  and  **UK**, we support the  [WooCommerce In-Person Payments WisePad 3](https://href.li/?https://woocommerce.com/products/wisepad3-card-reader/).
+To Order card reader for development and testing purpose, read [this post](https://wcpayoperations.wordpress.com/2022/06/01/card-reader-ad-hoc-requests/).
+* **COD** - Cash On Delivery. Paying with a card is also "cash", so CPP is COD 🤷 (Cash On Delivery option can be renamed to "Pay On Delivery" on the site, but internally COD is used for both). In the app, we call it as "Pay In Person"
 * **POS** - Point Of Sale
 * **KYC** - Know Your Customer
-* **Card Present Payments / In-Person Payments / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-Person Payments” is used in user facing features.
+* **Card Present Payments (CPP) / In-Person Payments (IPP) / Card Reader Payments** - are interchangeable terms in our internal documentation and code, but only “In-Person Payments” is used in user facing features.
+* **TTP** - Tap To Pay. IPP where the card reader is the mobile phone itself.
 
 ## Useful Links To Get Started
-* Store Setup for Card Present Payment Testing - P91TBi-4BH-p2
+* Store Setup for Card Present Payment Testing - PdfdoF-D-p2
 * Stripe terminal In-Person Payments - https://stripe.com/docs/terminal
 * Our very own P2 - dfdoF-p2
 * Before creating of taptopay P2 we were using general WooMobile P2 with tag #card-present 91TBi-p2
-* WCPay Server repo. If something goes wrong with the API most probably issue has to be created there - https://github.com/Automattic/woocommerce-payments-server
+* WCPay Server repo. If something goes wrong with the API most probably issue has to be created there https://github.com/Automattic/woocommerce-payments-server or here https://github.com/Automattic/woocommerce-payments
 * Stripe Android SDK github repo - https://github.com/stripe/stripe-android
-* Designs - vaw3DvewbUwuQnPXpdNGGH-fi-8%3A0
 
 ## CardReaderModule Overview
 
@@ -44,6 +46,8 @@ The module provides an abstraction from a provider-specific SDK to connect and a
 This section is aimed for developer who want to add IPP into another section of the app without necessarily understanding how the module and communication between the app and the module actually works.
 
 There are several sections/screens/flows related to In-Person-Payments (IPP) already implemented in WCAndroid and can be reused to access IPP from a new section of the app.
+
+All payments related screens are aggregated in one navigation graph - nav_graph_payment_flow.xml
 
 #### Onboarding Flow
 `CardReaderOnboardingChecker` is a class used to check eligibility of a store for IPP. It can be used from any class to check store's eligibility. However, when the store is not eligible, it is recommended to navigate to `CardReaderOnboardingFragment` instead of handling the errors on each screen separately.
