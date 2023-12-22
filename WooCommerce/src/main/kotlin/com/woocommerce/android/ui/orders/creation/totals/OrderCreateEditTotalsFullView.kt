@@ -55,13 +55,18 @@ fun OrderCreateEditTotalsMinimisedView(
     state: TotalsSectionsState.Minimised
 ) {
     PanelWithShadow {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        RowWithData(
-            title = state.orderTotal.label,
-            data = state.orderTotal.value,
-            bold = true,
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Column(
+            modifier = Modifier
+                .background(color = colorResource(id = R.color.color_surface))
+        ) {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            RowWithData(
+                title = state.orderTotal.label,
+                data = state.orderTotal.value,
+                bold = true,
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        }
     }
 }
 
