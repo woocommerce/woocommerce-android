@@ -4,8 +4,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTO
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,14 +19,14 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CustomAmountsDialogViewModelTest : BaseUnitTest() {
+class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
-    private lateinit var viewModel: CustomAmountsDialogViewModel
+    private lateinit var viewModel: CustomAmountsViewModel
 
     @Before
     fun setup() {
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel.EMPTY,
                 orderTotal = null,
@@ -61,7 +61,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount dialog is opened for editing, then proper event is tracked`() {
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
@@ -101,7 +101,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount is opened for editing in percentage mode, then proper percentage is calculated from current price`() {
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
@@ -119,7 +119,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount is modified by adding a certain percentage, then proper current price is calculated`() {
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
@@ -137,7 +137,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
     }
     @Test
     fun `when view model is initiated as fixed custom amount type, then assign proper custom amount type to view state`() {
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
@@ -154,7 +154,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model is initiated as percentage custom amount type, then assign proper custom amount type to view state`() {
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             CustomAmountsDialogArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
@@ -180,7 +180,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
             ),
             orderTotal = "200"
         )
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             customAmountUIModel.toSavedStateHandle(),
             tracker
         )

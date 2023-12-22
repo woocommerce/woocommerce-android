@@ -183,7 +183,7 @@
     </dialog>
     <fragment
         android:id="@+id/customAmountsDialog"
-        android:name="com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog"
+        android:name="com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment"
         android:label="CustomAmountsDialog">
         <argument
             android:name="customAmountUIModel"

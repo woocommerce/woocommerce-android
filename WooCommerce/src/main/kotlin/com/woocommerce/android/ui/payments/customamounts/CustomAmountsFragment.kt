@@ -25,10 +25,10 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.PopulatePercentage
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.PopulatePercentage
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.TaxStatus
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getDensityPixel
@@ -41,16 +41,16 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CustomAmountsDialog : BaseFragment(R.layout.dialog_custom_amounts) {
+class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: CustomAmountsDialogViewModel by viewModels()
+    private val viewModel: CustomAmountsViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val arguments: CustomAmountsDialogArgs by navArgs()
+    private val arguments: CustomAmountsFragmentArgs by navArgs()
 
     override fun getFragmentTitle() = getString(R.string.custom_amounts)
 

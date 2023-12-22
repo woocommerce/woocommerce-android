@@ -20,7 +20,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @HiltViewModel
-class CustomAmountsDialogViewModel @Inject constructor(
+class CustomAmountsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
@@ -80,7 +80,7 @@ class CustomAmountsDialogViewModel @Inject constructor(
             )
         }
 
-    private val args: CustomAmountsDialogArgs by savedState.navArgs()
+    private val args: CustomAmountsFragmentArgs by savedState.navArgs()
 
     init {
         if (isInCreateMode()) {
