@@ -151,7 +151,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         whenever(orderUpdateStore.createOrder(any(), any()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
-        val order = Order.getEmptyOrder(Date(),Date()).copy(
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
             id = 0L,
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )

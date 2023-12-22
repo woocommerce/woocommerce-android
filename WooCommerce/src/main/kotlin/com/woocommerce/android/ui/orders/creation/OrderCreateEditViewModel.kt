@@ -186,7 +186,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
-    private val dateUtils: DateUtils,
+    dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -222,10 +222,13 @@ class OrderCreateEditViewModel @Inject constructor(
         initialValue = args.giftCardCode.orEmpty()
     )
 
-    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.getEmptyOrder(
-        dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-        dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-    ))
+    private val _orderDraft = savedState.getStateFlow(
+        viewModelScope,
+        Order.getEmptyOrder(
+            dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+            dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+        )
+    )
 
     val orderDraft = _orderDraft
         .combine(_selectedGiftCard) { order, giftCard ->
