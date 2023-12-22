@@ -1,19 +1,15 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,52 +44,9 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 
 @Composable
-fun OrderCreateEditTotalsFullView(
-    state: TotalsSectionsState,
-    isPreview: Boolean = LocalInspectionMode.current,
-) {
-    WooTheme {
-        val visible = state is TotalsSectionsState.Full
-        AnimatedVisibility(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            visible = visible || isPreview,
-            enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(color = Color.Transparent)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {}
-            ) {
-                val shadowHeight = dimensionResource(id = R.dimen.minor_100)
-                val shadowHeightPx = with(LocalDensity.current) { shadowHeight.toPx() }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.15f),
-                                ),
-                                startY = 0f,
-                                endY = shadowHeightPx,
-                            )
-                        )
-                        .height(shadowHeight)
-                )
-
-                if (state !is TotalsSectionsState.Full) return@Column
-                TotalsView(state)
-            }
-        }
+fun OrderCreateEditTotalsFullView(state: TotalsSectionsState.Full) {
+    PanelWithShadow {
+        TotalsView(state)
     }
 }
 
@@ -101,7 +54,51 @@ fun OrderCreateEditTotalsFullView(
 fun OrderCreateEditTotalsMinimisedView(
     state: TotalsSectionsState.Minimised
 ) {
+    PanelWithShadow {
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        RowWithData(
+            title = state.orderTotal.label,
+            data = state.orderTotal.value,
+            bold = true,
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    }
+}
 
+@Composable
+private fun PanelWithShadow(content: @Composable ColumnScope.() -> Unit) {
+    WooTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(color = Color.Transparent)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {}
+        ) {
+            val shadowHeight = dimensionResource(id = R.dimen.minor_100)
+            val shadowHeightPx = with(LocalDensity.current) { shadowHeight.toPx() }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.15f),
+                            ),
+                            startY = 0f,
+                            endY = shadowHeightPx,
+                        )
+                    )
+                    .height(shadowHeight)
+            )
+
+            content()
+        }
+    }
 }
 
 @Composable
@@ -172,7 +169,7 @@ private fun TotalsView(
 }
 
 @Composable
-fun Lines(lines: List<TotalsSectionsState.Line>, smallGaps: Boolean) {
+private fun Lines(lines: List<TotalsSectionsState.Line>, smallGaps: Boolean) {
     lines.forEachIndexed { index, line ->
         if (index != 0) LineGap(smallGaps)
 
@@ -239,7 +236,7 @@ private fun TotalsSummary(
 }
 
 @Composable
-fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
+private fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -264,7 +261,7 @@ fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
 }
 
 @Composable
-fun RowWithData(
+private fun RowWithData(
     title: String,
     data: String,
     bold: Boolean = false
@@ -301,7 +298,7 @@ fun RowWithData(
 }
 
 @Composable
-fun RowWithDataSmall(lineSimpleSmall: TotalsSectionsState.Line.SimpleSmall) {
+private fun RowWithDataSmall(lineSimpleSmall: TotalsSectionsState.Line.SimpleSmall) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -325,7 +322,7 @@ fun RowWithDataSmall(lineSimpleSmall: TotalsSectionsState.Line.SimpleSmall) {
 }
 
 @Composable
-fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button) {
+private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -367,7 +364,7 @@ fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button) {
 @Composable
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-fun OrderCreateEditTotalsViewPreview() {
+private fun OrderCreateEditTotalsFullViewPreview() {
     OrderCreateEditTotalsFullView(
         state = TotalsSectionsState.Full(
             lines = listOf(
@@ -426,6 +423,21 @@ fun OrderCreateEditTotalsViewPreview() {
                 text = "Collect Payment",
                 enabled = true,
                 onClick = {},
+            )
+        )
+    )
+}
+
+
+@Composable
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+private fun OrderCreateEditTotalsMinimisedViewPreview() {
+    OrderCreateEditTotalsMinimisedView(
+        state = TotalsSectionsState.Minimised(
+            orderTotal = TotalsSectionsState.OrderTotal(
+                label = stringResource(R.string.order_creation_payment_order_total),
+                value = "$143.75"
             )
         )
     )
