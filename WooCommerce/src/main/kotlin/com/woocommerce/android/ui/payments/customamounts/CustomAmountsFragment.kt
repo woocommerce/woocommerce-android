@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getDensityPixel
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils

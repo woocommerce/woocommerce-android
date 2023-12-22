@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
