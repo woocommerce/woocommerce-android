@@ -133,7 +133,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                     type = viewModel.viewState.customAmountUIModel.type
                 )
             )
-            viewModel.triggerExitEvent()
+            findNavController().navigateUp()
         }
         binding.buttonDelete.setOnClickListener {
             sharedViewModel.onCustomAmountRemoved(
@@ -145,7 +145,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                     type = viewModel.viewState.customAmountUIModel.type
                 )
             )
-            viewModel.triggerExitEvent()
+            findNavController().navigateUp()
         }
     }
 
@@ -157,7 +157,6 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                         viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toString()
                     )
                 }
-                is Exit -> findNavController().navigateUp()
             }
         }
     }

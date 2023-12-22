@@ -77,13 +77,6 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
         verify(tracker).track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
     }
 
-    @Test
-    fun `when trigger exit event method is called, then trigger proper event`() {
-        viewModel.triggerExitEvent()
-
-        assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
-    }
-
     // region Percentage based custom amounts
     @Test
     fun `when percentage is zero, then done button is not enabled`() {
