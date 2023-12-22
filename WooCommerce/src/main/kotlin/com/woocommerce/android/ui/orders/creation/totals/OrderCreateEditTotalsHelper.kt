@@ -10,19 +10,22 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     private val resourceProvider: ResourceProvider,
 ) {
-    @Suppress("UNUSED_PARAMETER")
     fun mapToPaymentTotalsState(order: Order): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
-            TotalsSectionsState.Shown(
-                button = TotalsSectionsState.Button(
-                    text = resourceProvider.getString(R.string.order_creation_collect_payment_button),
-                    onClick = {
-                        // TODO
-                    }
+            if (order.items.isEmpty() && order.feesLines.isEmpty()) {
+                TotalsSectionsState.Hidden
+            } else {
+                TotalsSectionsState.Shown(
+                    button = TotalsSectionsState.Button(
+                        text = resourceProvider.getString(R.string.order_creation_collect_payment_button),
+                        onClick = {
+                            // TODO
+                        }
+                    )
                 )
-            )
+            }
         } else {
-            TotalsSectionsState.Hidden
+            TotalsSectionsState.Disabled
         }
     }
 }
@@ -33,6 +36,8 @@ sealed class TotalsSectionsState {
     ) : TotalsSectionsState()
 
     object Hidden : TotalsSectionsState()
+
+    object Disabled : TotalsSectionsState()
 
     data class Button(
         val text: String,
