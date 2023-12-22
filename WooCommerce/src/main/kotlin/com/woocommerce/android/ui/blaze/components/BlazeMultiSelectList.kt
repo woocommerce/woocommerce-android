@@ -38,10 +38,10 @@ fun <T> BlazeMultiSelectList(
     modifier: Modifier = Modifier,
     itemFormatter: T.() -> String = { toString() },
     itemKey: ((T) -> Any)? = null,
-    selectAllButton: BlazeMultiSelectAllButton? = null,
+    allItemsButton: BlazeMultiSelectAllItemsButton? = null,
 ) {
     Column(modifier = modifier) {
-        selectAllButton?.let {
+        allItemsButton?.let {
             BlazeMultiSelectItem(
                 item = it.text,
                 isSelected = selectedItems.isEmpty(),
@@ -99,21 +99,21 @@ private fun BlazeMultiSelectItem(
 }
 
 @Composable
-fun rememberBlazeMultiSelectAllButton(
+fun rememberBlazeMultiSelectAllItemsButton(
     text: String,
     onClick: () -> Unit
-): BlazeMultiSelectAllButton {
+): BlazeMultiSelectAllItemsButton {
     val currentOnClick by rememberUpdatedState(onClick)
 
     return remember(text) {
-        BlazeMultiSelectAllButton(
+        BlazeMultiSelectAllItemsButton(
             text = text,
             onClicked = { currentOnClick() }
         )
     }
 }
 
-data class BlazeMultiSelectAllButton(
+data class BlazeMultiSelectAllItemsButton(
     val text: String,
     val onClicked: () -> Unit
 )
@@ -125,7 +125,7 @@ private fun BlazeMultiSelectListPreview() {
     WooThemeWithBackground {
         val items by remember { mutableStateOf(List(20) { "Item $it" }) }
         var selectedItems by remember { mutableStateOf(emptyList<String>()) }
-        val selectAllButton = rememberBlazeMultiSelectAllButton(
+        val allItemsButton = rememberBlazeMultiSelectAllItemsButton(
             text = "All",
             onClick = { selectedItems = emptyList() }
         )
@@ -136,7 +136,7 @@ private fun BlazeMultiSelectListPreview() {
             onItemToggled = {
                 selectedItems = if (selectedItems.contains(it)) selectedItems - it else selectedItems + it
             },
-            selectAllButton = selectAllButton,
+            allItemsButton = allItemsButton,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.surface)
