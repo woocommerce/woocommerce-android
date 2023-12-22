@@ -636,6 +636,7 @@
     <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
     <string name="order_creation_gift_card_text_field_hint">Enter code</string>
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
+    <string name="order_creation_collect_payment_button">Collect Payment</string>
 
     <!--
          Barcode Scanning
@@ -3410,12 +3411,12 @@
     <string name="theme_preview_bottom_sheet_pages_title">Pages on this template</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tap to view</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
-    <string name="theme_preview_activate_theme_button">Use this theme</string>
-    <string name="theme_preview_theme_name">Theme: %1$s</string>
     <string name="theme_activated_successfully">Theme activated successfully</string>
     <string name="theme_preview_type_mobile">Mobile</string>
     <string name="theme_preview_type_tablet">Tablet</string>
     <string name="theme_preview_type_desktop">Desktop</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Start with %1$s</string>
+    <string name="theme_preview_activate_theme_button_settings">Use %1$s</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
     <!--
@@ -3919,5 +3920,4 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
-    <string name="store_creation_use_theme_button">Start with this theme</string>
 </resources>

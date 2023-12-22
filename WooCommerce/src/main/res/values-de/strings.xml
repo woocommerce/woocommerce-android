@@ -36,10 +36,7 @@ Language: de
     <string name="custom_amounts_bottom_sheet_heading">Wie möchtest du deinen individuellen Betrag hinzufügen?</string>
     <string name="custom_amounts_percentage_label">Prozentsatz der Gesamtbestellung (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Individuellen Betrag löschen</string>
-    <string name="store_creation_use_theme_button">Mit diesem Theme starten</string>
     <string name="theme_activated_successfully">Theme erfolgreich aktiviert</string>
-    <string name="theme_preview_theme_name">Theme: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Dieses Theme verwenden</string>
     <string name="theme_preview_bottom_sheet_home_section">Startseite</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Zum Anzeigen tippen</string>
     <string name="theme_preview_bottom_sheet_pages_title">Seiten auf diesem Template</string>

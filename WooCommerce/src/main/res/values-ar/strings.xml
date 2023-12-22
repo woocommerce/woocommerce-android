@@ -36,10 +36,7 @@ Language: ar
     <string name="custom_amounts_bottom_sheet_heading">كيف تريد إضافة مبلغك المخصص؟</string>
     <string name="custom_amounts_percentage_label">نسبة مئوية من إجمالي الطلبات (⁦%1$s⁩)</string>
     <string name="custom_amounts_delete_custom_amount">حذف المبلغ المخصص</string>
-    <string name="store_creation_use_theme_button">البدء باستخدام هذا القالب</string>
     <string name="theme_activated_successfully">تم تفعيل القالب بنجاح</string>
-    <string name="theme_preview_theme_name">القالب: ⁦%1$s⁩</string>
-    <string name="theme_preview_activate_theme_button">استخدام هذا القالب</string>
     <string name="theme_preview_bottom_sheet_home_section">الصفحة الرئيسية</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">الضغط للعرض</string>
     <string name="theme_preview_bottom_sheet_pages_title">الصحفات الموجودة على هذا القالب</string>

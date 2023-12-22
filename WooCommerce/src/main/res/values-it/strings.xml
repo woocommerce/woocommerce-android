@@ -36,10 +36,7 @@ Language: it
     <string name="custom_amounts_bottom_sheet_heading">Come desideri aggiungere l\'importo personalizzato?</string>
     <string name="custom_amounts_percentage_label">Percentuale del totale dell\'ordine (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Elimina importo personalizzato</string>
-    <string name="store_creation_use_theme_button">Inizia scegliendo questo tema</string>
     <string name="theme_activated_successfully">Tema attivato correttamente</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Usa questo tema</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tocca per visualizzare</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagine su questo template</string>

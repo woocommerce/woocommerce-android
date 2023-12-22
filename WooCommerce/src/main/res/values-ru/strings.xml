@@ -36,10 +36,7 @@ Language: ru
     <string name="custom_amounts_bottom_sheet_heading">Как вы хотите добавить индивидуальную сумму?</string>
     <string name="custom_amounts_percentage_label">Процент от общей суммы заказа (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Удалить индивидуальную сумму</string>
-    <string name="store_creation_use_theme_button">Начать с этой темой</string>
     <string name="theme_activated_successfully">Тема успешно активирована</string>
-    <string name="theme_preview_theme_name">Тема: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Использовать эту тему</string>
     <string name="theme_preview_bottom_sheet_home_section">Главная страница</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Коснитесь для просмотра</string>
     <string name="theme_preview_bottom_sheet_pages_title">Страницы в этом шаблоне</string>

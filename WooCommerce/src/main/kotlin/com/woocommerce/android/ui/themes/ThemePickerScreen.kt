@@ -110,8 +110,8 @@ private fun ThemePicker(
             .fillMaxSize(),
     ) {
         CurrentTheme(viewState.currentThemeState)
+        Header(viewState.isFromStoreCreation)
         Carousel(
-            viewState.isFromStoreCreation,
             viewState.carouselState,
             onThemeTapped,
             onThemeScreenshotFailure,
@@ -195,7 +195,6 @@ private fun Header(
 
 @Composable
 private fun Carousel(
-    isFromStoreCreation: Boolean,
     state: CarouselState,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit,
@@ -211,7 +210,7 @@ private fun Carousel(
         }
 
         is CarouselState.Success -> {
-            Carousel(isFromStoreCreation, state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
+            Carousel(state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
         }
     }
 }
@@ -272,7 +271,6 @@ private fun Error(onRetryClick: () -> Unit) {
 
 @Composable
 private fun Carousel(
-    isFromStoreCreation: Boolean,
     items: List<CarouselItem>,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit
@@ -282,10 +280,6 @@ private fun Carousel(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Header(
-            isFromStoreCreation = isFromStoreCreation,
-            modifier = Modifier.fillMaxWidth()
-        )
         LazyRow(
             modifier = Modifier
                 .height(480.dp)

@@ -36,10 +36,7 @@ Language: fr
     <string name="custom_amounts_bottom_sheet_heading">Comment souhaitez-vous ajouter votre montant personnalisé ?</string>
     <string name="custom_amounts_percentage_label">Pourcentage du total de la commande (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Supprimer le montant personnalisé</string>
-    <string name="store_creation_use_theme_button">Commencer avec ce thème</string>
     <string name="theme_activated_successfully">Thème activé avec succès</string>
-    <string name="theme_preview_theme_name">Thème : %1$s</string>
-    <string name="theme_preview_activate_theme_button">Utiliser ce thème</string>
     <string name="theme_preview_bottom_sheet_home_section">Accueil</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Toucher pour prévisualiser</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages sur ce modèle</string>
