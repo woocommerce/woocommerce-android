@@ -82,7 +82,7 @@ class OrderCreateEditTotalsHelperTest {
     }
 
     @Test
-    fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then hidden returned`() {
+    fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then minised returned`() {
         // GIVEN
         whenever(isTabletOrdersM1Enabled()).thenReturn(true)
         val order = mock<Order> {
@@ -98,6 +98,6 @@ class OrderCreateEditTotalsHelperTest {
         )
 
         // THEN
-        assertThat(actual).isEqualTo(TotalsSectionsState.Hidden)
+        assertThat(actual).isInstanceOf(TotalsSectionsState.Minimised::class.java)
     }
 }
