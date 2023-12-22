@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import java.math.BigDecimal
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class OrderCreateEditRepositoryTest : BaseUnitTest() {
@@ -119,7 +120,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         whenever(orderUpdateStore.createOrder(any(), any()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
-        val order = Order.EMPTY.copy(
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
             id = 0L,
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
@@ -150,7 +151,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         whenever(orderUpdateStore.createOrder(any(), any()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
-        val order = Order.EMPTY.copy(
+        val order = Order.getEmptyOrder(Date(),Date()).copy(
             id = 0L,
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )

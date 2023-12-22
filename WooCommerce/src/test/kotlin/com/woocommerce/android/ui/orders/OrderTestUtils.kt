@@ -148,7 +148,7 @@ object OrderTestUtils {
     }
 
     fun generateTestOrder(orderId: Long = 1): Order {
-        return Order.EMPTY.copy(
+        return Order.getEmptyOrder(Date(),Date()).copy(
             id = orderId,
             customer = Order.Customer(
                 billingAddress = Address.EMPTY.copy(
