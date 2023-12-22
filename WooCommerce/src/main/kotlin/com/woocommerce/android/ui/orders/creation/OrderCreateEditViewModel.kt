@@ -112,8 +112,8 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -1371,7 +1371,6 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
-        triggerEvent(Exit)
     }
 
     private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
@@ -1439,7 +1438,6 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         viewState = viewState.copy(isEditable = true)
         tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
-        triggerEvent(Exit)
     }
 
     fun onFeeRemoved() {
