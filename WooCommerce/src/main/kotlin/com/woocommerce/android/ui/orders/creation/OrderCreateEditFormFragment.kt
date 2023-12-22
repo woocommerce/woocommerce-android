@@ -611,15 +611,7 @@ class OrderCreateEditFormFragment :
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
     ) {
-        when (viewModel.mode) {
-            OrderCreateEditViewModel.Mode.Creation -> {
-                binding.paymentSection.loadingProgress.isVisible = shouldShowProgressBars
-            }
-
-            is OrderCreateEditViewModel.Mode.Edit -> {
-                binding.loadingProgress.isVisible = shouldShowProgressBars
-            }
-        }
+        binding.loadingProgress.isVisible = shouldShowProgressBars
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
