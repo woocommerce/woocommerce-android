@@ -36,10 +36,7 @@ Language: es
     <string name="custom_amounts_bottom_sheet_heading">¿Cómo deseas añadir el importe personalizado?</string>
     <string name="custom_amounts_percentage_label">Porcentaje del total del pedido (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Eliminar importe personalizado</string>
-    <string name="store_creation_use_theme_button">Comenzar con este tema</string>
     <string name="theme_activated_successfully">El tema se ha activado correctamente</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Usar este tema</string>
     <string name="theme_preview_bottom_sheet_home_section">Inicio</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Toca para ver</string>
     <string name="theme_preview_bottom_sheet_pages_title">Páginas de esta plantilla</string>

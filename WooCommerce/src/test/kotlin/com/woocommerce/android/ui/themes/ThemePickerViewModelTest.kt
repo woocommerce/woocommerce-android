@@ -229,4 +229,20 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
             assertThat((carouseItems)).noneMatch { it is CarouselItem.Theme && it.themeId == currentTheme.id }
         }
+
+    @Test
+    fun `when a new theme is installed, then update current theme state`() = testBlocking {
+        setup(isFromStoreCreation = false) {
+            whenever(themeRepository.fetchThemes())
+                .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
+            whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(currentTheme))
+        }
+
+        val viewState = viewModel.viewState.runAndCaptureValues {
+            viewModel.onCurrentThemeUpdated(sampleTheme2.id, sampleTheme2.name)
+        }.last()
+
+        assertThat(viewState.currentThemeState)
+            .isEqualTo(ThemePickerViewModel.CurrentThemeState.Success(sampleTheme2.name, sampleTheme2.id))
+    }
 }
