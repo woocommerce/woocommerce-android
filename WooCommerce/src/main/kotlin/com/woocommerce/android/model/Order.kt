@@ -390,8 +390,8 @@ data class Order(
             )
         }
 
-        val EMPTY
-            get() = DEFAULT_EMPTY_ORDER.copy(dateCreated = Date(), dateModified = Date())
+        fun getEmptyOrder(dateCreated: Date, dateModified: Date) =
+            DEFAULT_EMPTY_ORDER.copy(dateCreated = dateCreated, dateModified = dateModified)
     }
 }
 

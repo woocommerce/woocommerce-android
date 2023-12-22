@@ -124,6 +124,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -156,6 +157,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 
@@ -184,6 +186,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
+    private val dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -219,7 +222,11 @@ class OrderCreateEditViewModel @Inject constructor(
         initialValue = args.giftCardCode.orEmpty()
     )
 
-    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
+    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.getEmptyOrder(
+        dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+        dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+    ))
+
     val orderDraft = _orderDraft
         .combine(_selectedGiftCard) { order, giftCard ->
             order.copy(
