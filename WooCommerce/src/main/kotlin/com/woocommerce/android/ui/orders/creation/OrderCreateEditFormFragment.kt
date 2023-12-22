@@ -626,7 +626,11 @@ class OrderCreateEditFormFragment :
         if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty() ||
             FeatureFlag.TABLET_ORDERS_M1.isEnabled()
         ) {
-            paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+            if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
+                paymentSection.orderTotalValue.hide()
+            } else {
+                paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+            }
             paymentSection.paymentsLayout.hide()
         } else {
             paymentSection.paymentsLayout.show()
