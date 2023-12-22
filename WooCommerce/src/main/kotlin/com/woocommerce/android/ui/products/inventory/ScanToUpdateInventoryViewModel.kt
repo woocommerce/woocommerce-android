@@ -73,7 +73,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     sku = product.sku,
                     quantity = product.stockQuantity.toInt(),
                 )
-                if (product.isStockManaged) {
+                if (isItemStockManaged(product)) {
                     tracker.track(
                         AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
                         mapOf(KEY_ITEM_STOCK_MANAGED to true)
@@ -97,6 +97,15 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             handleProductNotFound(status.code)
         }
     }
+
+    private suspend fun isItemStockManaged(product: Product): Boolean =
+        if (product.isVariation()) {
+            variationRepository.getVariationOrNull(product.parentId, product.remoteId).let {
+                it?.isStockManaged == true
+            }
+        } else {
+            product.isStockManaged
+        }
 
     private suspend fun handleProductIsNotStockManaged(product: Product) {
         tracker.track(
@@ -165,7 +174,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         } else {
-            val result = if (product.isVariable()) {
+            val result = if (product.isVariation()) {
                 product.updateVariation(updatedProductInfo)
             } else {
                 product.updateProduct(updatedProductInfo)
@@ -282,7 +291,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         } catch (_: NumberFormatException) {}
     }
 
-    private fun Product.isVariable(): Boolean {
+    private fun Product.isVariation(): Boolean {
         return this.parentId != 0L
     }
 

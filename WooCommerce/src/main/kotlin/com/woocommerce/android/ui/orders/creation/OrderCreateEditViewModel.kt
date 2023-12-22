@@ -77,6 +77,7 @@ import com.woocommerce.android.model.Address.Companion.EMPTY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
@@ -111,8 +112,8 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -137,10 +138,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
@@ -149,6 +153,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -199,6 +204,15 @@ class OrderCreateEditViewModel @Inject constructor(
         Mode.Creation -> VALUE_FLOW_CREATION
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
+
+    private val pluginsInformation: MutableStateFlow<Map<String, WooPlugin>> =
+        savedState.getStateFlow(
+            scope = viewModelScope,
+            initialValue = HashMap()
+        )
+    val isGiftCardExtensionEnabled
+        get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
+            ?.isOperational ?: false
 
     private val _selectedGiftCard = savedState.getStateFlow(
         scope = viewModelScope,
@@ -287,6 +301,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
 
     init {
+        monitorPluginAvailabilityChanges()
+
         when (mode) {
             Mode.Creation -> {
                 _orderDraft.update {
@@ -1187,6 +1203,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private fun monitorPluginAvailabilityChanges() {
+        launch {
+            pluginsInformation
+                .onEach {
+                    val isGiftCardExtensionEnabled = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
+                    viewState = viewState.copy(shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled)
+                }.launchIn(viewModelScope)
+
+            pluginsInformation.update {
+                orderCreateEditRepository.fetchOrderSupportedPlugins()
+            }
+        }
+    }
+
     private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
         (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
 
@@ -1304,6 +1334,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
@@ -1336,10 +1367,10 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
-        triggerEvent(Exit)
     }
 
     private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
@@ -1394,6 +1425,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val feesList = draft.feesLines.map {
                 if (customAmountUIModel.id == it.id) {
@@ -1404,8 +1436,8 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
-        triggerEvent(Exit)
     }
 
     fun onFeeRemoved() {
@@ -1578,6 +1610,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isCouponButtonEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
         val isAddGiftCardButtonEnabled: Boolean = false,
+        val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",

@@ -11,8 +11,10 @@
         tools:layout="@layout/fragment_order_create_edit_form">
         <action
             android:id="@+id/action_orderCreationFragment_to_customAmountsDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim"
             app:destination="@+id/customAmountsDialog" />
         <action
             android:id="@+id/action_orderCreationFragment_to_taxRatesInfoDialogFragment"
@@ -179,9 +181,9 @@
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
     </dialog>
-    <dialog
+    <fragment
         android:id="@+id/customAmountsDialog"
-        android:name="com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog"
+        android:name="com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment"
         android:label="CustomAmountsDialog">
         <argument
             android:name="customAmountUIModel"
@@ -191,7 +193,7 @@
             app:argType="string"
             android:defaultValue="@null"
             app:nullable="true"/>
-    </dialog>
+    </fragment>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
         android:name="com.woocommerce.android.ui.orders.creation.notes.OrderCreateEditCustomerNoteFragment"

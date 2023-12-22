@@ -21,12 +21,13 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
+            ORDER_GIFT_CARD -> true
+
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            TABLET_ORDERS_M1,
-            ORDER_GIFT_CARD -> PackageUtils.isDebugBuild()
+            TABLET_ORDERS_M1 -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

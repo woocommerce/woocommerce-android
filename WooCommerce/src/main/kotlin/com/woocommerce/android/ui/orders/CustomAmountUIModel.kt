@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders
 
 import android.os.Parcelable
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.TaxStatus
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 

@@ -78,7 +78,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -409,6 +409,9 @@ class OrderCreateEditFormFragment :
             new.isAddGiftCardButtonEnabled.takeIfNotEqualTo(old?.isAddGiftCardButtonEnabled) {
                 binding.paymentSection.addGiftCardButton.isEnabled = it
             }
+            new.shouldDisplayAddGiftCardButton.takeIfNotEqualTo(old?.shouldDisplayAddGiftCardButton) {
+                binding.paymentSection.addGiftCardButton.isVisible = it
+            }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
             }
@@ -688,7 +691,7 @@ class OrderCreateEditFormFragment :
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
         orderEditGiftCardLayout.hide()
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
-            addGiftCardButton.isVisible = true
+            addGiftCardButton.isVisible = viewModel.isGiftCardExtensionEnabled
             giftCardSelectionLayout.hide()
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
         } else {

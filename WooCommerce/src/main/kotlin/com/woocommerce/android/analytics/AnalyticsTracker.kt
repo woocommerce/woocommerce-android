@@ -632,7 +632,7 @@ class AnalyticsTracker private constructor(
 
         // Theme picker
         const val KEY_THEME_PICKER_SOURCE = "source"
-        const val VALUE_THEME_PICKER_SOURCE_PROFILER = "profiler"
+        const val VALUE_THEME_PICKER_SOURCE_STORE_CREATION = "store_creation"
         const val VALUE_THEME_PICKER_SOURCE_SETTINGS = "settings"
         const val KEY_THEME_PICKER_THEME = "theme"
         const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"

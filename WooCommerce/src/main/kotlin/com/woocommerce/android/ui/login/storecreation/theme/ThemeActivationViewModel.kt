@@ -40,7 +40,7 @@ class ThemeActivationViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
                     properties = mapOf(
-                        AnalyticsTracker.KEY_THEME_PICKER_THEME to themeRepository.getTheme(args.themeId)?.name
+                        AnalyticsTracker.KEY_THEME_PICKER_THEME to args.themeId
                     )
                 )
                 appPrefsWrapper.clearThemeIdForStoreCreation()
@@ -51,7 +51,7 @@ class ThemeActivationViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
                     properties = mapOf(
-                        AnalyticsTracker.KEY_THEME_PICKER_THEME to themeRepository.getTheme(args.themeId)?.name
+                        AnalyticsTracker.KEY_THEME_PICKER_THEME to args.themeId
                     )
                 )
                 _viewState.value = ViewState.ErrorState(
