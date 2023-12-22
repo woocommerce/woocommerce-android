@@ -1,0 +1,45 @@
+package com.woocommerce.android.ui.orders.creation.totals
+
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
+import com.woocommerce.android.viewmodel.ResourceProvider
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+
+class OrderCreateEditTotalsHelperTest {
+    private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper = mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val helper = OrderCreateEditTotalsHelper(
+        isTabletOrdersM1Enabled = isTabletOrdersM1Enabled,
+        resourceProvider = resourceProvider
+    )
+
+    @Test
+    fun `given ff disabled, when mapToPaymentTotalsState, then hidden returned`() {
+        // GIVEN
+        whenever(isTabletOrdersM1Enabled()).thenReturn(false)
+
+        // WHEN
+        val actual = helper.mapToPaymentTotalsState(mock())
+
+        // THEN
+        assertThat(actual).isEqualTo(TotalsSectionsState.Hidden)
+    }
+
+    @Test
+    fun `given ff enabled, when mapToPaymentTotalsState, then shown returned`() {
+        // GIVEN
+        whenever(isTabletOrdersM1Enabled()).thenReturn(true)
+        whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
+            "Collect Payment"
+        )
+
+        // WHEN
+        val actual = helper.mapToPaymentTotalsState(mock())
+
+        // THEN
+        assertThat((actual as TotalsSectionsState.Shown).button.text).isEqualTo("Collect Payment")
+    }
+}

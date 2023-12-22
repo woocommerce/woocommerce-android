@@ -69,6 +69,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsView
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCard
 import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCardLoading
 import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
@@ -343,6 +345,20 @@ class OrderCreateEditFormFragment :
 
         viewModel.customAmounts.observe(viewLifecycleOwner) {
             bindCustomAmountsSection(binding.customAmountsSection, it)
+        }
+
+        viewModel.totalsData.observe(viewLifecycleOwner) {
+            when (it) {
+                TotalsSectionsState.Hidden -> binding.totalsSection.hide()
+                is TotalsSectionsState.Shown -> {
+                    binding.totalsSection.show()
+                    binding.totalsSection.apply {
+                        setContent {
+                            OrderCreateEditTotalsView(state = it)
+                        }
+                    }
+                }
+            }
         }
 
         observeViewStateChanges(binding)

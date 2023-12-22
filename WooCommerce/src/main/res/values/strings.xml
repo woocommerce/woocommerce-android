@@ -636,6 +636,7 @@
     <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
     <string name="order_creation_gift_card_text_field_hint">Enter code</string>
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
+    <string name="order_creation_collect_payment_button">Collect Payment</string>
 
     <!--
          Barcode Scanning
