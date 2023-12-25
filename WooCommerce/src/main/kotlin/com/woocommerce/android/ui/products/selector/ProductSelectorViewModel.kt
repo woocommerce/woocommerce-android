@@ -579,7 +579,9 @@ class ProductSelectorViewModel @Inject constructor(
         val filterState: FilterState,
         val searchState: SearchState,
         val selectionMode: SelectionMode
-    )
+    ) {
+        val isDoneButtonEnabled: Boolean = selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0
+    }
 
     @Parcelize
     data class SearchState(

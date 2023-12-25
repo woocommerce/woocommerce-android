@@ -437,12 +437,17 @@ private fun ProductList(
 
         WCColoredButton(
             onClick = onDoneButtonClick,
-            text = StringUtils.getQuantityString(
-                quantity = state.selectedItemsCount,
-                default = string.product_selector_select_button_title_default,
-                one = string.product_selector_select_button_title_one,
-                zero = string.done
-            ),
+            text = when (state.selectionMode) {
+                ProductSelectorViewModel.SelectionMode.MULTIPLE -> StringUtils.getQuantityString(
+                    quantity = state.selectedItemsCount,
+                    default = string.product_selector_select_button_title_default,
+                    one = string.product_selector_select_button_title_one,
+                    zero = string.done
+                )
+
+                ProductSelectorViewModel.SelectionMode.SINGLE -> stringResource(id = R.string.done)
+            },
+            enabled = state.isDoneButtonEnabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = dimen.major_100))
