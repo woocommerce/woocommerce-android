@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
 import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchType
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
@@ -90,7 +89,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val searchState = savedState.getStateFlow(this, SearchState())
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedItems = savedState.getStateFlow(
+    private val selectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
         viewModelScope,
         navArgs.selectedItems.toList(),
         "key_selected_items"
@@ -130,7 +129,8 @@ class ProductSelectorViewModel @Inject constructor(
             recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
-            searchState = searchState
+            searchState = searchState,
+            selectionMode = navArgs.selectionMode
         )
     }.asLiveData()
 
@@ -268,7 +268,7 @@ class ProductSelectorViewModel @Inject constructor(
             }
 
             else -> {
-                ProductListItem(
+                ListItem.ProductListItem(
                     productId = remoteId,
                     title = name,
                     type = productType,
@@ -310,19 +310,8 @@ class ProductSelectorViewModel @Inject constructor(
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
         when (item) {
-            is ProductListItem -> {
-                if (item.hasVariations()) {
-                    triggerEvent(
-                        NavigateToVariationSelector(
-                            item.id,
-                            item.selectedVariationIds,
-                            productSelectorFlow,
-                            productSource
-                        )
-                    )
-                } else if (!item.isVariable()) {
-                    handleNonVariableProductItemTap(item, productSource)
-                }
+            is ListItem.ProductListItem -> {
+                handleProductTap(item, productSource)
             }
 
             is ListItem.VariationListItem -> {
@@ -335,23 +324,33 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    private fun handleProductTap(
+        item: ListItem.ProductListItem,
+        productSource: ProductSourceForTracking
+    ) {
+        fun ListItem.ProductListItem.hasVariations() =
+            isVariable() && numVariations > 0
+
+        if (item.hasVariations()) {
+            triggerEvent(
+                NavigateToVariationSelector(
+                    productId = item.id,
+                    selectedVariationIds = item.selectedVariationIds,
+                    productSelectorFlow = productSelectorFlow,
+                    productSourceForTracking = productSource,
+                    selectionMode = navArgs.selectionMode
+                )
+            )
+        } else if (!item.isVariable()) {
+            updateItemSelection(SelectedItem.Product(item.id), productSource)
+        }
+    }
+
     private fun handleVariationItemTap(
         item: ListItem.VariationListItem,
         productSource: ProductSourceForTracking
     ) {
-        if (selectedItems.value.containsItemWith(item.id)) {
-            tracker.trackItemUnselected(productSelectorFlow)
-            selectedItemsSource.remove(item.id)
-            selectedItems.update { items ->
-                items.filter { it.id != item.id }
-            }
-        } else {
-            tracker.trackItemSelected(productSelectorFlow)
-            selectedItemsSource[item.id] = productSource
-            selectedItems.update { items ->
-                items + SelectedItem.ProductVariation(item.parentId, item.id)
-            }
-        }
+        updateItemSelection(SelectedItem.ProductVariation(item.parentId, item.id), productSource)
     }
 
     private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
@@ -367,29 +366,28 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun handleNonVariableProductItemTap(
-        item: ListItem,
-        productSource: ProductSourceForTracking
-    ) {
-        selectedItems.update { items ->
-            val selectedProductItems = items.filter {
-                it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
-            }
-            if (selectedProductItems.containsItemWith(item.id)) {
-                tracker.trackItemUnselected(productSelectorFlow)
-                selectedItemsSource.remove(item.id)
-                val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
-                selectedItems.value - productItemToUnselect
-            } else {
-                selectedItemsSource[item.id] = productSource
+    private fun updateItemSelection(item: SelectedItem, productSource: ProductSourceForTracking) {
+        when (navArgs.selectionMode) {
+            SelectionMode.SINGLE -> {
                 tracker.trackItemSelected(productSelectorFlow)
-                selectedItems.value + SelectedItem.Product(item.id)
+                selectedItemsSource[item.id] = productSource
+                selectedItems.value = listOf(item)
+            }
+            SelectionMode.MULTIPLE -> {
+                selectedItems.update { items ->
+                    if (items.containsItemWith(item.id)) {
+                        tracker.trackItemUnselected(productSelectorFlow)
+                        selectedItemsSource.remove(item.id)
+                        items.filter { it.id != item.id }
+                    } else {
+                        selectedItemsSource[item.id] = productSource
+                        tracker.trackItemSelected(productSelectorFlow)
+                        items + item
+                    }
+                }
             }
         }
     }
-
-    private fun ProductListItem.hasVariations() =
-        isVariable() && numVariations > 0
 
     private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
         ProductSourceForTracking {
@@ -558,15 +556,19 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onConfigurationChanged(productId: Long, productConfiguration: ProductConfiguration) {
-        launch {
-            tracker.trackItemSelected(productSelectorFlow)
-            selectedItems.update { items ->
-                items + SelectedItem.ConfigurableProduct(productId, productConfiguration)
+        tracker.trackItemSelected(productSelectorFlow)
+        selectedItems.update { items ->
+            val newItem = SelectedItem.ConfigurableProduct(productId, productConfiguration)
+            when (navArgs.selectionMode) {
+                SelectionMode.SINGLE -> listOf(newItem)
+                SelectionMode.MULTIPLE -> items + newItem
             }
         }
     }
 
-    fun trackConfigurableProduct() { tracker.trackConfigurableItem(productSelectorFlow) }
+    fun trackConfigurableProduct() {
+        tracker.trackConfigurableItem(productSelectorFlow)
+    }
 
     data class ViewState(
         val loadingState: LoadingState,
@@ -575,7 +577,8 @@ class ProductSelectorViewModel @Inject constructor(
         val recentProducts: List<ListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
-        val searchState: SearchState = SearchState()
+        val searchState: SearchState,
+        val selectionMode: SelectionMode
     )
 
     @Parcelize
@@ -693,6 +696,10 @@ class ProductSelectorViewModel @Inject constructor(
 
     enum class ProductSelectorFlow {
         OrderCreation, OrderEditing, CouponEdition, Undefined
+    }
+
+    enum class SelectionMode {
+        SINGLE, MULTIPLE
     }
 }
 

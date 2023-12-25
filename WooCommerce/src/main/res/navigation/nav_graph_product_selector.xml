@@ -26,11 +26,15 @@
         android:name="com.woocommerce.android.ui.products.selector.ProductSelectorFragment"
         android:label="ProductSelectorFragment">
         <argument
+            android:name="selectionMode"
+            android:defaultValue="MULTIPLE"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionMode" />
+        <argument
             android:name="selectedItems"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
         <argument
             android:name="productSelectorFlow"
-            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow"/>
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
         <action
             android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
             app:destination="@id/variationSelectorFragment" />
@@ -61,6 +65,9 @@
         <action
             android:id="@+id/action_productSelectorFragment_to_productConfigurationFragment"
             app:destination="@id/productConfigurationFragment" />
+        <action
+            android:id="@+id/action_productSelectorFragment_to_variationPickerFragment"
+            app:destination="@id/variationPickerFragment" />
     </fragment>
     <include app:graph="@navigation/nav_graph_product_filters" />
     <fragment

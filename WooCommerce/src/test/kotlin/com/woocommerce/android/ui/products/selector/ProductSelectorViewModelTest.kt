@@ -336,13 +336,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).toSavedStateHandle()
+        )
         val popularOrdersList = generatePopularOrders()
         val ordersList = generateTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
-        val sut = createViewModel(navArgs)
+        val sut = createViewModel(navArgs.toSavedStateHandle())
         sut.onProductClick(
             item = ProductListItem(productId = 1, numVariations = 2, title = "", type = ProductType.VARIABLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
@@ -353,7 +353,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productId = 1,
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+                selectionMode = navArgs.selectionMode
             )
         )
     }
@@ -363,13 +364,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).toSavedStateHandle()
+        )
         val popularOrdersList = generatePopularOrders()
         val ordersList = generateTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
-        val sut = createViewModel(navArgs)
+        val sut = createViewModel(navArgs.toSavedStateHandle())
         sut.onProductClick(
             item = ProductListItem(
                 productId = 23,
@@ -385,7 +386,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productId = 23,
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+                selectionMode = navArgs.selectionMode
             )
         )
     }

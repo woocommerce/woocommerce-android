@@ -551,13 +551,14 @@ fun PopularProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = emptyList(),
+            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
         ),
-        {},
-        {},
-        {},
-        { _, _ -> },
-        {},
-        {}
+        onDoneButtonClick = {},
+        onClearButtonClick = {},
+        onFilterButtonClick = {},
+        onProductClick = { _, _ -> },
+        onLoadMore = {},
+        trackConfigurableProduct = {}
     )
 }
 
@@ -619,13 +620,14 @@ fun RecentProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = products,
+            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
         ),
-        {},
-        {},
-        {},
-        { _, _ -> },
-        {},
-        {}
+        onDoneButtonClick = {},
+        onClearButtonClick = {},
+        onFilterButtonClick = {},
+        onProductClick = { _, _ -> },
+        onLoadMore = {},
+        trackConfigurableProduct = {}
     )
 }
 
@@ -686,13 +688,14 @@ fun ProductListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = products,
+            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
         ),
-        {},
-        {},
-        {},
-        { _, _ -> },
-        {},
-        {}
+        onDoneButtonClick = {},
+        onClearButtonClick = {},
+        onFilterButtonClick = {},
+        onProductClick = { _, _ -> },
+        onLoadMore = {},
+        trackConfigurableProduct = {}
     )
 }
 
@@ -700,7 +703,7 @@ fun ProductListPreview() {
 @Composable
 fun ProductListEmptyPreview() {
     EmptyProductList(
-        ViewState(
+        state = ViewState(
             products = emptyList(),
             selectedItemsCount = 3,
             loadingState = IDLE,
@@ -708,8 +711,10 @@ fun ProductListEmptyPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
-        )
-    ) {}
+            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+        ),
+        onClearFiltersButtonClick = {}
+    )
 }
 
 @Preview
