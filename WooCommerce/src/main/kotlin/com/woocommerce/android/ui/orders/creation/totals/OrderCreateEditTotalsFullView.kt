@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,7 +122,7 @@ private fun TotalsView(
     state: TotalsSectionsState.Full,
     isPreview: Boolean = LocalInspectionMode.current,
 ) {
-    var isExpanded by remember { mutableStateOf(isPreview) }
+    var isExpanded by rememberSaveable { mutableStateOf(isPreview) }
 
     val totalsIs = remember { MutableInteractionSource() }
 
