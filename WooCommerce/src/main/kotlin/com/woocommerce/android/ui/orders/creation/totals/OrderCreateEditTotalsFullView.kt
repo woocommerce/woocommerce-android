@@ -316,12 +316,12 @@ private fun RowWithDataSmall(lineSimpleSmall: TotalsSectionsState.Line.SimpleSma
             text = lineSimpleSmall.label,
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold
         )
         Text(
             text = lineSimpleSmall.value,
             style = MaterialTheme.typography.caption,
-            color = colorResource(id = R.color.color_on_surface),
+            color = colorResource(id = R.color.color_on_surface_medium),
         )
     }
 }
@@ -360,7 +360,7 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
                 text = it,
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_medium),
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
             )
         }
     }
