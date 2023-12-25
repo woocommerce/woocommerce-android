@@ -250,7 +250,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onShippingClicked = { onShippingButtonClicked() },
                 onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
-                onTaxesLearnMore = {},
+                onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = {},
             )
         }
