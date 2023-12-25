@@ -30,6 +30,10 @@
             android:defaultValue="MULTIPLE"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionMode" />
         <argument
+            android:name="selectionHandling"
+            android:defaultValue="NORMAL"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionHandling" />
+        <argument
             android:name="selectedItems"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
         <argument

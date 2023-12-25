@@ -72,7 +72,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
     private val productsMapper: ProductsMapper,
-    private val productRestrictions: OrderCreationProductRestrictions,
+    private val productRestrictions: OrderCreationProductRestrictions
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -124,7 +124,12 @@ class ProductSelectorViewModel @Inject constructor(
     ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState ->
         ViewState(
             loadingState = loadingState,
-            products = products.map { it.toUiModel(selectedIds) },
+            products = products.map {
+                when (navArgs.selectionHandling) {
+                    SelectionHandling.NORMAL -> it.toUiModel(selectedIds)
+                    SelectionHandling.SIMPLE -> it.toSimpleUiModel(selectedIds)
+                }
+            },
             popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
             recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
@@ -281,6 +286,23 @@ class ProductSelectorViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
+        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
+        val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
+
+        return ListItem.ProductListItem(
+            productId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            numVariations = 0,
+            selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
+            selectionState = if (selectedItems.any { it.id == remoteId }) SELECTED else UNSELECTED
+        )
     }
 
     fun onClearButtonClick() {
@@ -702,6 +724,19 @@ class ProductSelectorViewModel @Inject constructor(
 
     enum class SelectionMode {
         SINGLE, MULTIPLE
+    }
+
+    enum class SelectionHandling {
+
+        /**
+         * Treat all products as a single item, and return just the product ID.
+         */
+        SIMPLE,
+
+        /**
+         * Handle product selection depending on the product type.
+         */
+        NORMAL
     }
 }
 
