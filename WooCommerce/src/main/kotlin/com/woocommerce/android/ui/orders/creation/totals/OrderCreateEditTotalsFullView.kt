@@ -255,9 +255,13 @@ private fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .padding(
+                start = dimensionResource(id = R.dimen.major_75),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
             .wrapContentHeight()
-            .clickable(onClick = learnMore.onClick),
+            .clickable(onClick = learnMore.onClick)
+            .padding(all = dimensionResource(id = R.dimen.minor_50)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -270,9 +274,6 @@ private fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
             text = learnMore.buttonText,
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_primary),
-            modifier = Modifier
-                .clickable(onClick = learnMore.onClick)
-                .padding(all = dimensionResource(id = R.dimen.minor_50))
         )
     }
 }
