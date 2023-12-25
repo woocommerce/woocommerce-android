@@ -394,16 +394,16 @@ private fun TextWithIcon(
             pencilId,
             InlineTextContent(
                 Placeholder(
-                    width = 16.sp,
-                    height = 16.sp,
-                    placeholderVerticalAlign = PlaceholderVerticalAlign.Bottom
+                    width = 20.sp,
+                    height = 20.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextBottom
                 )
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = null,
                     tint = colorResource(id = R.color.color_primary),
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         )
