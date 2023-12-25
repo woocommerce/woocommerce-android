@@ -1,5 +1,6 @@
 package com.woocommerce.android.viewmodel
 
+import android.app.Activity
 import android.content.DialogInterface.OnClickListener
 import android.view.View
 import androidx.annotation.MainThread
@@ -11,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -139,6 +141,22 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val cancelable: Boolean = true,
             val onDismiss: (() -> Unit)? = null
         ) : Event() {
+            fun showIn(activity: Activity) {
+                WooDialog.showDialog(
+                    activity = activity,
+                    titleId = this.titleId,
+                    messageId = this.messageId,
+                    positiveButtonId = this.positiveButtonId,
+                    posBtnAction = this.positiveBtnAction,
+                    negativeButtonId = this.negativeButtonId,
+                    negBtnAction = this.negativeBtnAction,
+                    neutralButtonId = this.neutralButtonId,
+                    neutBtAction = this.neutralBtnAction,
+                    cancellable = this.cancelable,
+                    onDismiss = this.onDismiss
+                )
+            }
+
             companion object {
                 fun buildDiscardDialogEvent(
                     messageId: Int = string.discard_message,

@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.plans.repository
 
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.Error
@@ -20,11 +22,15 @@ class SitePlanRepository @Inject constructor(
     private val sitePlanRestClient: SitePlanRestClient
 ) {
 
-    suspend fun fetchCurrentPlanDetails(site: SiteModel): SitePlan? = withContext(dispatchers.io) {
-        sitePlanRestClient.fetchCurrentPlanDetails(site).let { result: Response<SitePlan?> ->
-            when (result) {
-                is Success -> result.data
-                is Response.Error -> null
+    suspend fun fetchCurrentPlanDetails(site: SiteModel): SitePlan? {
+        if (site.connectionType == SiteConnectionType.ApplicationPasswords) return null
+
+        return withContext(dispatchers.io) {
+            sitePlanRestClient.fetchCurrentPlanDetails(site).let { result: Response<SitePlan?> ->
+                when (result) {
+                    is Success -> result.data
+                    is Response.Error -> null
+                }
             }
         }
     }

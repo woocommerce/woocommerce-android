@@ -96,7 +96,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
-    val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
     val currencySymbolFinder: CurrencySymbolFinder = mock()
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
     protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
@@ -2412,7 +2411,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
             orderCreationProductMapper = orderCreationProductMapper,
-            isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
             adjustProductQuantity = AdjustProductQuantity(),
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
             currencySymbolFinder = currencySymbolFinder,

@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.payments.customamounts
 
-import android.app.Dialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import androidx.activity.ComponentDialog
-import androidx.activity.addCallback
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,15 +20,15 @@ import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.PopulatePercentage
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.TaxStatus
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.PopulatePercentage
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.TaxStatus
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getDensityPixel
@@ -43,46 +40,27 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_amounts) {
+class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: CustomAmountsDialogViewModel by viewModels()
+    private val viewModel: CustomAmountsViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val arguments: CustomAmountsDialogArgs by navArgs()
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = ComponentDialog(requireContext(), theme)
-        dialog.onBackPressedDispatcher.addCallback(dialog) {
-            cancelDialog()
-        }
-        return dialog
-    }
+    private val arguments: CustomAmountsFragmentArgs by navArgs()
+
+    override fun getFragmentTitle() = getString(R.string.custom_amounts)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val isLandscape = DisplayUtils.isLandscape(requireContext())
-        setWindowLayout(isLandscape)
         val binding = DialogCustomAmountsBinding.bind(view)
         bindViews(binding)
         setupClickListeners(binding)
         showKeyboard(isLandscape, binding)
         setupObservers(binding)
         setupEventObservers(binding)
-    }
-
-    private fun setWindowLayout(isLandscape: Boolean) {
-        requireDialog().window?.let { window ->
-            window.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
-            val widthRatio = if (isLandscape) WIDTH_RATIO_LANDSCAPE else WIDTH_RATIO
-            val heightRatio = if (isLandscape) HEIGHT_RATIO_LANDSCAPE else HEIGHT_RATIO
-
-            window.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * widthRatio).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * heightRatio).toInt()
-            )
-        }
     }
 
     private fun showKeyboard(
@@ -154,6 +132,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                     type = viewModel.viewState.customAmountUIModel.type
                 )
             )
+            findNavController().navigateUp()
         }
         binding.buttonDelete.setOnClickListener {
             sharedViewModel.onCustomAmountRemoved(
@@ -165,9 +144,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                     type = viewModel.viewState.customAmountUIModel.type
                 )
             )
-        }
-        binding.imageClose.setOnClickListener {
-            cancelDialog()
+            findNavController().navigateUp()
         }
     }
 
@@ -192,7 +169,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
                         binding.editPrice.value.filterNotNull().observe(
-                            this
+                            viewLifecycleOwner
                         ) {
                             viewModel.currentPrice = it
                         }
@@ -282,15 +259,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         }
     }
 
-    private fun cancelDialog() {
-        findNavController().navigateUp()
-    }
-
     companion object {
-        private const val HEIGHT_RATIO = 0.6
-        private const val WIDTH_RATIO = 0.9
-        private const val HEIGHT_RATIO_LANDSCAPE = 0.9
-        private const val WIDTH_RATIO_LANDSCAPE = 0.6
         private const val KEYBOARD_DELAY = 500L
 
         const val CUSTOM_AMOUNT = "Custom Amount"

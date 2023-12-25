@@ -2,10 +2,12 @@
 
 ### OAuth2 Authentication
 
-The WooCommerce for Android app connects to stores via WordPress.com APIs so if a WooCommerce store is not hosted on WordPress.com, it will require the [Jetpack plugin][jetpack] to setup a common interface for communicating with a self-hosted store. In order to use these APIs, you will need a client ID and a client secret key. These details will be
+The WooCommerce for Android app previously connected to stores exclusively via WordPress.com APIs. This meant that if a WooCommerce store was not hosted on WordPress.com, users could not connect to it using the app and it will require the [Jetpack plugin][jetpack] to setup a common interface for communicating with a self-hosted store. In order to use these APIs, you will need a client ID and a client secret key. These details will be
 used to authenticate your application and verify that the API calls being
 made are valid. You can create an application or view details for your existing
 applications with our [WordPress.com applications manager][wp-com-apps].
+
+Now the app also supports a new system for making authenticated requests to various WordPress APIs — [Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/), but to build the app you still need to provide `app_id` and `app_secret` fields
 
 When creating your application, you should select "**Native client**" for the application type.
 The "**Website URL**", "**Redirect URLs**", and "**Javascript Origins**" fields are required but not used for
@@ -48,7 +50,7 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 The woocommerce-android project uses [detekt][detekt] for Kotlin linting and code style check.
 
-You can run detekt using `./gradlew detekt`.
+You can run detekt using `./gradlew detektAll`.
 
 You can also view errors and warnings in realtime with the Detekt plugin.
 

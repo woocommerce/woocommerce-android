@@ -100,13 +100,4 @@ There are several custom widgets for handling the main types of options offered 
 * `WCSettingsOptionValueView` - Setting that displays the setting option and an optional current value or a description below it.
 * `WCSettingsToggleOptionView` - Toggled setting capable of optionally displaying an icon and description.
 
-[[images/best-practices-settings.png]]
-￼
-### When in doubt
-* When in doubt, reference an existing view. Great examples:
-	* List-type fragment styling: l`ayout/fragment_order_list.xml`
-	* List Item styling: `layout/order_list_item.xml`
-	* Detail-type fragment styling: `layout/fragment_order_detail.xml`
-	* Card contents styling: `layout/order_detail_customer_info.xml`
-	* Settings option: `layout/fragment_settings_main.xml`
-* Prefer resource files over defining/implementing styles in code.
+![](/docs/images/best-practices-settings.png)
