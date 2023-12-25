@@ -36,10 +36,7 @@ Language: sv_SE
     <string name="custom_amounts_bottom_sheet_heading">Hur vill du lägga till ditt anpassade belopp?</string>
     <string name="custom_amounts_percentage_label">Procentandel av beställningens totala belopp %1$s</string>
     <string name="custom_amounts_delete_custom_amount">Ta bort anpassat belopp</string>
-    <string name="store_creation_use_theme_button">Börja med detta tema</string>
     <string name="theme_activated_successfully">Temat har aktiverats</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Använd detta tema</string>
     <string name="theme_preview_bottom_sheet_home_section">Hem</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tryck för att visa</string>
     <string name="theme_preview_bottom_sheet_pages_title">Sidor på denna mall</string>

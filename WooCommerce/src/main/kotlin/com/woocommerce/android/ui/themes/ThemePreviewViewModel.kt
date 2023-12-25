@@ -182,7 +182,7 @@ class ThemePreviewViewModel @Inject constructor(
                             title = it.title,
                             isLoaded = false
                         )
-                    }
+                    }.filter { it.uri != homePage.uri }
                 )
             }
         )

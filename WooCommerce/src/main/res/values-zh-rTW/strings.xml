@@ -36,10 +36,7 @@ Language: zh_TW
     <string name="custom_amounts_bottom_sheet_heading">你想要如何新增自訂金額？</string>
     <string name="custom_amounts_percentage_label">訂單總計的百分比 (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">刪除自訂金額</string>
-    <string name="store_creation_use_theme_button">開始使用此佈景主題</string>
     <string name="theme_activated_successfully">已成功啟用佈景主題</string>
-    <string name="theme_preview_theme_name">佈景主題：%1$s</string>
-    <string name="theme_preview_activate_theme_button">使用此佈景主題</string>
     <string name="theme_preview_bottom_sheet_home_section">首頁</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">點選以檢視</string>
     <string name="theme_preview_bottom_sheet_pages_title">此範本上的頁面</string>

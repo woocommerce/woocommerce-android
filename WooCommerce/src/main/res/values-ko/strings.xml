@@ -36,10 +36,7 @@ Language: ko_KR
     <string name="custom_amounts_bottom_sheet_heading">사용자 정의 금액을 어떻게 추가하시겠어요?</string>
     <string name="custom_amounts_percentage_label">주문 합계 백분율(%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">사용자 정의 금액 삭제</string>
-    <string name="store_creation_use_theme_button">이 테마로 시작</string>
     <string name="theme_activated_successfully">테마 활성화됨</string>
-    <string name="theme_preview_theme_name">테마: %1$s</string>
-    <string name="theme_preview_activate_theme_button">이 테마 사용</string>
     <string name="theme_preview_bottom_sheet_home_section">홈</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">눌러서 보기</string>
     <string name="theme_preview_bottom_sheet_pages_title">이 템플릿의 페이지</string>

@@ -36,10 +36,7 @@ Language: nl
     <string name="custom_amounts_bottom_sheet_heading">Hoe wil je je aangepaste bedrag toevoegen?</string>
     <string name="custom_amounts_percentage_label">Percentage van het totaalaantal bestellingen (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Aangepast bedrag verwijderen</string>
-    <string name="store_creation_use_theme_button">Begin met dit thema</string>
     <string name="theme_activated_successfully">Thema geactiveerd</string>
-    <string name="theme_preview_theme_name">Thema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Gebruik dit thema</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tik om te bekijken</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagina\'s op dit sjabloon</string>

@@ -36,10 +36,7 @@ Language: ja_JP
     <string name="custom_amounts_bottom_sheet_heading">カスタム金額をどのように追加しますか ?</string>
     <string name="custom_amounts_percentage_label">注文合計に対するパーセンテージ (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">カスタム金額を削除</string>
-    <string name="store_creation_use_theme_button">このテーマで始める</string>
     <string name="theme_activated_successfully">テーマが正常に有効化されました</string>
-    <string name="theme_preview_theme_name">テーマ: %1$s</string>
-    <string name="theme_preview_activate_theme_button">このテーマを使用</string>
     <string name="theme_preview_bottom_sheet_home_section">ホーム</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">タップして表示</string>
     <string name="theme_preview_bottom_sheet_pages_title">このテンプレートのページ</string>

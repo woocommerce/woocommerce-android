@@ -110,10 +110,12 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -186,6 +188,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
+    private val totalsHelper: OrderCreateEditTotalsHelper,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -246,6 +249,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 orderDetailRepository.getOrderStatus(status.value)
             }
         }.asLiveData()
+
+    private val _totalsData = MutableLiveData<TotalsSectionsState>(TotalsSectionsState.Disabled)
+    val totalsData: LiveData<TotalsSectionsState> = _totalsData
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
@@ -515,6 +521,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     onIncreaseProductsQuantity(product)
                 }
             }
+
             is ProductAmountEvent.Change -> {
                 when (val newAmountInt = amountChangeEvent.newAmount.toIntOrNull()) {
                     null, 0 -> onRemoveProduct(product)
@@ -672,6 +679,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 _selectedGiftCard.value.isEmpty() &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
+    }
+
+    private fun updateTotals(order: Order) {
+        _totalsData.value = totalsHelper.mapToPaymentTotalsState(order)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1206,6 +1217,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 updateCouponButtonVisibility(it)
                                 updateAddShippingButtonVisibility(it)
                                 updateAddGiftCardButtonVisibility(it)
+                                updateTotals(it)
                             }
                         }
                     }
@@ -1344,6 +1356,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
@@ -1376,10 +1389,10 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
-        triggerEvent(Exit)
     }
 
     private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
@@ -1387,6 +1400,7 @@ class OrderCreateEditViewModel @Inject constructor(
             CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
                 tracker.track(ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED)
             }
+
             CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
                 // no -op
             }
@@ -1434,6 +1448,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val feesList = draft.feesLines.map {
                 if (customAmountUIModel.id == it.id) {
@@ -1444,8 +1459,8 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
-        triggerEvent(Exit)
     }
 
     fun onFeeRemoved() {

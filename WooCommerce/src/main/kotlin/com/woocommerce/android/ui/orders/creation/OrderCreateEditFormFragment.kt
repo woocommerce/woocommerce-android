@@ -69,6 +69,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsView
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCard
 import com.woocommerce.android.ui.orders.creation.views.ExpandableGroupedProductCardLoading
 import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
@@ -78,7 +80,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -343,6 +345,21 @@ class OrderCreateEditFormFragment :
 
         viewModel.customAmounts.observe(viewLifecycleOwner) {
             bindCustomAmountsSection(binding.customAmountsSection, it)
+        }
+
+        viewModel.totalsData.observe(viewLifecycleOwner) {
+            when (it) {
+                is TotalsSectionsState.Shown, TotalsSectionsState.Hidden -> {
+                    binding.totalsSection.show()
+                    binding.totalsSection.setContent {
+                        OrderCreateEditTotalsView(state = it)
+                    }
+                }
+
+                is TotalsSectionsState.Disabled -> {
+                    binding.totalsSection.hide()
+                }
+            }
         }
 
         observeViewStateChanges(binding)
@@ -961,9 +978,11 @@ class OrderCreateEditFormFragment :
                 shouldHideCustomerAddressAndNotesSections(newOrderData) -> {
                     hideCustomerAddressAndNotesSections()
                 }
+
                 shouldShowCustomerSectionOnly(newOrderData) -> {
                     showCustomerSectionOnly(newOrderData)
                 }
+
                 shouldShowNotesSectionOnly(newOrderData) -> {
                     showNotesSectionOnly(newOrderData)
                 }

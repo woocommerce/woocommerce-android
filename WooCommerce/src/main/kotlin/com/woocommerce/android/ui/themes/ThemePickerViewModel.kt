@@ -163,7 +163,7 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     fun onCurrentThemeUpdated(themeId: String, themeName: String) {
-        currentTheme.value = CurrentThemeState.Success(themeId, themeName)
+        currentTheme.value = CurrentThemeState.Success(themeName = themeName, themeId = themeId)
     }
 
     fun onThemeScreenshotFailure(themeName: String, throwable: Throwable) {

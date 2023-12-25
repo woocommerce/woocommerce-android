@@ -4,8 +4,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTO
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -18,15 +18,15 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CustomAmountsDialogViewModelTest : BaseUnitTest() {
+class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
-    private lateinit var viewModel: CustomAmountsDialogViewModel
+    private lateinit var viewModel: CustomAmountsViewModel
 
     @Before
     fun setup() {
-        viewModel = CustomAmountsDialogViewModel(
-            CustomAmountsDialogArgs(
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
                 customAmountUIModel = CustomAmountUIModel.EMPTY,
                 orderTotal = null,
             ).toSavedStateHandle(),
@@ -60,8 +60,8 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount dialog is opened for editing, then proper event is tracked`() {
-        viewModel = CustomAmountsDialogViewModel(
-            CustomAmountsDialogArgs(
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
@@ -93,8 +93,8 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount is opened for editing in percentage mode, then proper percentage is calculated from current price`() {
-        viewModel = CustomAmountsDialogViewModel(
-            CustomAmountsDialogArgs(
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
@@ -111,8 +111,8 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount is modified by adding a certain percentage, then proper current price is calculated`() {
-        viewModel = CustomAmountsDialogViewModel(
-            CustomAmountsDialogArgs(
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
@@ -129,8 +129,8 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
     }
     @Test
     fun `when view model is initiated as fixed custom amount type, then assign proper custom amount type to view state`() {
-        viewModel = CustomAmountsDialogViewModel(
-            CustomAmountsDialogArgs(
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
@@ -146,8 +146,8 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when view model is initiated as percentage custom amount type, then assign proper custom amount type to view state`() {
-        viewModel = CustomAmountsDialogViewModel(
-            CustomAmountsDialogArgs(
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
                 customAmountUIModel = CustomAmountUIModel(
                     id = 0L,
                     amount = BigDecimal.TEN,
@@ -163,7 +163,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when custom amount dialog is opened to edit, then update view state to populate all values`() {
-        val customAmountUIModel = CustomAmountsDialogArgs(
+        val customAmountUIModel = CustomAmountsFragmentArgs(
             customAmountUIModel = CustomAmountUIModel(
                 id = 0L,
                 amount = BigDecimal.TEN,
@@ -172,7 +172,7 @@ class CustomAmountsDialogViewModelTest : BaseUnitTest() {
             ),
             orderTotal = "200"
         )
-        viewModel = CustomAmountsDialogViewModel(
+        viewModel = CustomAmountsViewModel(
             customAmountUIModel.toSavedStateHandle(),
             tracker
         )
