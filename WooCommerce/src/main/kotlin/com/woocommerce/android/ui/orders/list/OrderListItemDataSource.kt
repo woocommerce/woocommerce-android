@@ -35,12 +35,14 @@ import java.util.Date
  * @see [ListItemDataSourceInterface] and [org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSource]
  * in FluxC to get a better understanding of how this works with the underlying internal list management code.
  */
+@Suppress("LongParameterList")
 class OrderListItemDataSource(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val networkStatus: NetworkStatus,
     private val fetcher: FetchOrdersRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val dateUtils: DateUtils
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     override fun getItemsAndFetchIfNecessary(
         listDescriptor: WCOrderListDescriptor,
@@ -72,7 +74,7 @@ class OrderListItemDataSource(
                         ),
                         orderTotal = order.total,
                         status = order.status,
-                        dateCreated = order.dateCreated,
+                        dateCreated = getFormattedDateWithSiteTimeZone(order.dateCreated),
                         currencyCode = order.currency,
                         isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false
                     )
@@ -117,20 +119,22 @@ class OrderListItemDataSource(
         val mapToRemoteOrderIdentifier = { summary: WCOrderSummaryModel ->
             OrderIdentifier(summary.orderId)
         }
+
+        val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+
         orderSummaries.forEach {
-            // Default to today if the date cannot be parsed. This date is in UTC.
-            val date: Date = DateTimeUtils.dateUTCFromIso8601(it.dateCreated) ?: Date()
+            // Default to today if the date cannot be parsed.
+            val siteDate = dateUtils.getDateUsingSiteTimeZone(it.dateCreated) ?: Date()
 
             // Check if future-dated orders should be excluded from the results list.
             if (listDescriptor.excludeFutureOrders) {
-                val currentDate = Date()
-                if (DateUtils.isAfterDate(currentDate, date)) {
+                if (DateUtils.isAfterDate(currentSiteDate, siteDate)) {
                     // This order is dated for the future so skip adding it to the list
                     return@forEach
                 }
             }
 
-            when (TimeGroup.getTimeGroupForDate(date)) {
+            when (TimeGroup.getTimeGroupForDate(siteDate, currentSiteDate)) {
                 GROUP_FUTURE -> listFuture.add(mapToRemoteOrderIdentifier(it))
                 GROUP_TODAY -> listToday.add(mapToRemoteOrderIdentifier(it))
                 GROUP_YESTERDAY -> listYesterday.add(mapToRemoteOrderIdentifier(it))
@@ -172,5 +176,17 @@ class OrderListItemDataSource(
     override fun fetchList(listDescriptor: WCOrderListDescriptor, offset: Long) {
         val fetchOrderListPayload = FetchOrderListPayload(listDescriptor, offset)
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderListAction(fetchOrderListPayload))
+    }
+
+    private fun getFormattedDateWithSiteTimeZone(dateCreated: String): String? {
+        val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+        val siteDate = dateUtils.getDateUsingSiteTimeZone(dateCreated) ?: Date()
+        val iso8601DateString = dateUtils.getYearMonthDayStringFromDate(siteDate)
+
+        return if (DateTimeUtils.isSameYear(currentSiteDate, siteDate)) {
+            dateUtils.getShortMonthDayString(iso8601DateString)
+        } else {
+            dateUtils.getShortMonthDayAndYearString(iso8601DateString)
+        }
     }
 }
