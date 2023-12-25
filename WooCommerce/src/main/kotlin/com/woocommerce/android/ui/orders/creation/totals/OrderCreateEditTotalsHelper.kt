@@ -38,7 +38,6 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     orderTotal = order.toOrderTotals(bigDecimalFormatter)
                 )
             } else {
-                println("mapping ${viewState.isCouponButtonEnabled}")
                 TotalsSectionsState.Full(
                     lines = listOfNotNull(
                         order.toProductsSection(bigDecimalFormatter),
