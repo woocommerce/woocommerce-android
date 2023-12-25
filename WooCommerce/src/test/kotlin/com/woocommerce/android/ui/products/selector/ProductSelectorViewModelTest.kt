@@ -1459,7 +1459,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             .isEqualTo(ProductSelectorViewModel.SelectionMode.SINGLE)
     }
 
-
     private fun generateProductListItem(
         id: Long,
     ) = ProductListItem(
