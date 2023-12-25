@@ -36,16 +36,11 @@ Language: fr
     <string name="custom_amounts_bottom_sheet_heading">Comment souhaitez-vous ajouter votre montant personnalisé ?</string>
     <string name="custom_amounts_percentage_label">Pourcentage du total de la commande (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Supprimer le montant personnalisé</string>
-    <string name="store_creation_use_theme_button">Commencer avec ce thème</string>
     <string name="theme_activated_successfully">Thème activé avec succès</string>
-    <string name="theme_preview_theme_name">Thème : %1$s</string>
-    <string name="theme_preview_activate_theme_button">Utiliser ce thème</string>
     <string name="theme_preview_bottom_sheet_home_section">Accueil</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Toucher pour prévisualiser</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pages sur ce modèle</string>
     <string name="theme_preview_title">Aperçu</string>
-    <string name="theme_picker_error_message">Impossible de charger des thèmes pour l’instant.</string>
-    <string name="theme_picker_error_title">Une erreur s’est produite</string>
     <string name="theme_picker_carousel_info_item_description">Lorsque votre boutique est configurée, trouvez le thème parfait dans la boutique de thèmes WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Vous cherchez le truc en plus ?</string>
     <string name="theme_picker_description">Vous pouvez toujours le changer plus tard dans les réglages.</string>

@@ -36,16 +36,11 @@ Language: he_IL
     <string name="custom_amounts_bottom_sheet_heading">איך ברצונך להוסיף את הסכום בהתאמה אישית?</string>
     <string name="custom_amounts_percentage_label">אחוז מהסכום הכולל של ההזמנה (⁦%1$s⁩)</string>
     <string name="custom_amounts_delete_custom_amount">למחוק סכום בהתאמה אישית</string>
-    <string name="store_creation_use_theme_button">להתחיל עם ערכת עיצוב זאת</string>
     <string name="theme_activated_successfully">הפעלת ערכת העיצוב בוצעה בהצלחה</string>
-    <string name="theme_preview_theme_name">ערכת עיצוב: ⁦%1$s⁩</string>
-    <string name="theme_preview_activate_theme_button">להשתמש בערכת עיצוב זו</string>
     <string name="theme_preview_bottom_sheet_home_section">עמוד הבית</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">להקיש כדי להציג</string>
     <string name="theme_preview_bottom_sheet_pages_title">עמודים בתבנית זו</string>
     <string name="theme_preview_title">תצוגה מקדימה</string>
-    <string name="theme_picker_error_message">כרגע לא ניתן לטעון ערכות עיצוב.</string>
-    <string name="theme_picker_error_title">אירעה שגיאה</string>
     <string name="theme_picker_carousel_info_item_description">לאחר הגדרת החנות אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">יש משהו נוסף שמעניין אותך?</string>
     <string name="theme_picker_description">תמיד אפשר להחליף ערכה בהמשך, דרך ההגדרות.</string>

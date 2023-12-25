@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboa
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.SETTINGS
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
@@ -67,7 +66,7 @@ class MainSettingsPresenter @Inject constructor(
     override fun setupJetpackInstallOption() {
         val supportsJetpackInstallation = selectedSite.connectionType.let {
             it == SiteConnectionType.JetpackConnectionPackage ||
-                (FeatureFlag.REST_API_I2.isEnabled() && it == SiteConnectionType.ApplicationPasswords)
+                it == SiteConnectionType.ApplicationPasswords
         }
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
     }

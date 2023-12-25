@@ -36,16 +36,11 @@ Language: tr
     <string name="custom_amounts_bottom_sheet_heading">Özel tutarınızı nasıl eklemek istersiniz?</string>
     <string name="custom_amounts_percentage_label">Sipariş toplamının yüzdesi (%1$s)</string>
     <string name="custom_amounts_delete_custom_amount">Özel tutarı sil</string>
-    <string name="store_creation_use_theme_button">Bu tema ile başla</string>
     <string name="theme_activated_successfully">Tema başarıyla etkinleştirildi</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Bu temayı kullan</string>
     <string name="theme_preview_bottom_sheet_home_section">Ana Sayfa</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Görüntülemek için dokunun</string>
     <string name="theme_preview_bottom_sheet_pages_title">Bu şablondaki sayfalar</string>
     <string name="theme_preview_title">Önizleme</string>
-    <string name="theme_picker_error_message">Temalar şu anda yüklenemiyor.</string>
-    <string name="theme_picker_error_title">Bir hata oluştu</string>
     <string name="theme_picker_carousel_info_item_description">Mağazanız kurulduğunda WooCommerce Tema Mağazasından mükemmel temanızı bulun.</string>
     <string name="theme_picker_carousel_info_item_title">Daha fazlasını mı arıyorsunuz?</string>
     <string name="theme_picker_description">Daha sonra ayarlardan değiştirebilirsiniz.</string>

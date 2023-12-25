@@ -13,11 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
 
 @Composable
 fun TaxToggle(
-    taxStatus: CustomAmountsDialogViewModel.TaxStatus,
+    taxStatus: CustomAmountsViewModel.TaxStatus,
     onCheckedChange: (Boolean) -> Unit
 ) {
     WCSwitch(
@@ -37,7 +37,7 @@ fun TaxToggle(
 fun TaxTogglePreview() {
     WooThemeWithBackground {
         TaxToggle(
-            CustomAmountsDialogViewModel.TaxStatus(isTaxable = true)
+            CustomAmountsViewModel.TaxStatus(isTaxable = true)
         ) {}
     }
 }
