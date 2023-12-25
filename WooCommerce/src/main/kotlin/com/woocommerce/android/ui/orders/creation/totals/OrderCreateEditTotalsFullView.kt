@@ -270,7 +270,9 @@ private fun LearnMore(learnMore: TotalsSectionsState.Line.LearnMore) {
             text = learnMore.buttonText,
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_primary),
-            modifier = Modifier.clickable(onClick = learnMore.onClick)
+            modifier = Modifier
+                .clickable(onClick = learnMore.onClick)
+                .padding(all = dimensionResource(id = R.dimen.minor_50))
         )
     }
 }
@@ -341,7 +343,10 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .padding(
+                start = dimensionResource(id = R.dimen.major_75),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
     ) {
         Row(
             modifier = Modifier
@@ -354,6 +359,7 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
                 text = lineWithButton.text,
                 modifier = Modifier
                     .clickable { lineWithButton.onClick() }
+                    .padding(all = dimensionResource(id = R.dimen.minor_50))
             )
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Text(
@@ -369,6 +375,8 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_medium),
                 fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.minor_50))
             )
         }
     }
