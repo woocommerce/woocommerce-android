@@ -335,13 +335,15 @@ private fun ProductList(
                 .padding(horizontal = dimensionResource(dimen.minor_100))
                 .fillMaxWidth()
         ) {
-            WCTextButton(
-                onClick = onClearButtonClick,
-                text = stringResource(id = string.product_selector_clear_button_title),
-                allCaps = false,
-                enabled = state.selectedItemsCount > 0,
-                modifier = Modifier.align(Alignment.CenterStart)
-            )
+            if (state.selectionMode == ProductSelectorViewModel.SelectionMode.MULTIPLE) {
+                WCTextButton(
+                    onClick = onClearButtonClick,
+                    text = stringResource(id = string.product_selector_clear_button_title),
+                    allCaps = false,
+                    enabled = state.selectedItemsCount > 0,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+            }
             if (state.searchState.searchQuery.isEmpty()) {
                 WCTextButton(
                     onClick = onFilterButtonClick,
