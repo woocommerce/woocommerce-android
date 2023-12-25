@@ -246,7 +246,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 order = it,
                 mode = mode,
                 onShippingClicked = { onShippingButtonClicked() },
-                onCouponsClicked = {},
+                onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = {},
                 onTaxesLearnMore = {},
                 onMainButtonClicked = {},
