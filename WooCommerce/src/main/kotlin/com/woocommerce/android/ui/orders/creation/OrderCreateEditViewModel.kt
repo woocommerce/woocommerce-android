@@ -241,7 +241,17 @@ class OrderCreateEditViewModel @Inject constructor(
         }.asLiveData()
 
     val totalsData: LiveData<TotalsSectionsState> = _orderDraft
-        .map { totalsHelper.mapToPaymentTotalsState(mode, it) { } }
+        .map {
+            totalsHelper.mapToPaymentTotalsState(
+                order = it,
+                mode = mode,
+                onShippingClicked = { onShippingButtonClicked() },
+                onCouponsClicked = {},
+                onGiftClicked = {},
+                onTaxesLearnMore = {},
+                onMainButtonClicked = {},
+            )
+        }
         .distinctUntilChanged()
         .asLiveData()
 

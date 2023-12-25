@@ -18,9 +18,13 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) {
     fun mapToPaymentTotalsState(
-        mode: OrderCreateEditViewModel.Mode,
         order: Order,
-        onButtonClicked: () -> Unit
+        mode: OrderCreateEditViewModel.Mode,
+        onShippingClicked: () -> Unit,
+        onCouponsClicked: () -> Unit,
+        onGiftClicked: () -> Unit,
+        onTaxesLearnMore: () -> Unit,
+        onMainButtonClicked: () -> Unit
     ): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
             val bigDecimalFormatter = currencyFormatter.buildBigDecimalFormatter(
@@ -36,17 +40,17 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     lines = listOfNotNull(
                         order.toProductsSection(bigDecimalFormatter),
                         order.toCustomAmountSection(bigDecimalFormatter),
-                        order.toShippingSection(bigDecimalFormatter, onClick = {}),
-                        order.toCouponsSection(bigDecimalFormatter, onClick = {}),
-                        order.toGiftSection(bigDecimalFormatter, onClick = {}),
-                        order.toTaxesSection(bigDecimalFormatter, onClick = {}),
+                        order.toShippingSection(bigDecimalFormatter, onClick = onShippingClicked),
+                        order.toCouponsSection(bigDecimalFormatter, onClick = onCouponsClicked),
+                        order.toGiftSection(bigDecimalFormatter, onClick = onGiftClicked),
+                        order.toTaxesSection(bigDecimalFormatter, onClick = onTaxesLearnMore),
                         order.toDiscountSection(bigDecimalFormatter),
                     ),
                     orderTotal = order.toOrderTotals(bigDecimalFormatter),
                     mainButton = TotalsSectionsState.Button(
                         text = mode.toButtonText(),
                         enabled = true,
-                        onClick = onButtonClicked,
+                        onClick = onMainButtonClicked,
                     )
                 )
             }
