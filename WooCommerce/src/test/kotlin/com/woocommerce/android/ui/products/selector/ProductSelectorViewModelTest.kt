@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Lis
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -1457,6 +1458,23 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         assertThat(event).isInstanceOf(ProductNavigationTarget.NavigateToVariationSelector::class.java)
         assertThat((event as ProductNavigationTarget.NavigateToVariationSelector).selectionMode)
             .isEqualTo(ProductSelectorViewModel.SelectionMode.SINGLE)
+    }
+
+    @Test
+    fun `when using simple handling, then treat all products as single items`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.captureValues().last()
+
+        assertThat(state.products).allMatch {
+            it is ProductListItem && it.numVariations == 0
+        }
     }
 
     private fun generateProductListItem(
