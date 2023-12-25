@@ -243,20 +243,16 @@ class OrderCreateEditViewModel @Inject constructor(
 
     val totalsData: LiveData<TotalsSectionsState> =
         viewStateData.liveData.combineWith(_orderDraft.asLiveData()) { viewState, order ->
-            if (order == null || viewState == null) {
-                TotalsSectionsState.Disabled
-            } else {
-                totalsHelper.mapToPaymentTotalsState(
-                    order = order,
-                    mode = mode,
-                    viewState = viewState,
-                    onShippingClicked = { onShippingButtonClicked() },
-                    onCouponsClicked = { onCouponButtonClicked() },
-                    onGiftClicked = {},
-                    onTaxesLearnMore = {},
-                    onMainButtonClicked = {},
-                )
-            }
+            totalsHelper.mapToPaymentTotalsState(
+                order = order!!,
+                mode = mode,
+                viewState = viewState!!,
+                onShippingClicked = { onShippingButtonClicked() },
+                onCouponsClicked = { onCouponButtonClicked() },
+                onGiftClicked = {},
+                onTaxesLearnMore = {},
+                onMainButtonClicked = {},
+            )
         }
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft

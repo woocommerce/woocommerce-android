@@ -38,6 +38,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     orderTotal = order.toOrderTotals(bigDecimalFormatter)
                 )
             } else {
+                println("mapping ${viewState.isCouponButtonEnabled}")
                 TotalsSectionsState.Full(
                     lines = listOfNotNull(
                         order.toProductsSection(bigDecimalFormatter),
@@ -48,12 +49,12 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                             onClick = onShippingClicked
                         ),
                         order.toCouponsSection(
-                            enabled = viewState.isCouponButtonEnabled,
+                            enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
                             bigDecimalFormatter,
                             onClick = onCouponsClicked
                         ),
                         order.toGiftSection(
-                            enabled = viewState.isAddGiftCardButtonEnabled,
+                            enabled = viewState.isAddGiftCardButtonEnabled && viewState.isIdle,
                             bigDecimalFormatter,
                             onClick = onGiftClicked
                         ),
