@@ -354,7 +354,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
-        if (selectedItems.value.containsItemWith(item.id)) {
+        if (selectedItems.value.containsItemWith(item.id) && navArgs.selectionMode == SelectionMode.MULTIPLE) {
             tracker.trackItemUnselected(productSelectorFlow)
             selectedItemsSource.remove(item.id)
             selectedItems.update { items -> items.filter { it.id != item.id } }
