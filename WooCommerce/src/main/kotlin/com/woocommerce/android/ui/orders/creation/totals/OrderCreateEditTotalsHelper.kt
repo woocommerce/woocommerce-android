@@ -34,10 +34,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             } else {
                 TotalsSectionsState.Full(
                     lines = listOfNotNull(
-                        TotalsSectionsState.Line.Simple(
-                            label = resourceProvider.getString(R.string.order_creation_payment_products),
-                            value = bigDecimalFormatter(order.productsTotal)
-                        ),
+                        order.toProductsSection(bigDecimalFormatter),
                         order.toCustomAmountSection(bigDecimalFormatter),
                         order.toShippingSection(bigDecimalFormatter, onClick = {}),
                         order.toCouponsSection(bigDecimalFormatter, onClick = {}),
@@ -62,6 +59,18 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             label = resourceProvider.getString(R.string.order_creation_payment_order_total),
             value = bigDecimalFormatter(total)
         )
+
+    private fun Order.toProductsSection(
+        bigDecimalFormatter: (BigDecimal) -> String
+    ): TotalsSectionsState.Line? =
+        if (items.isNotEmpty()) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.order_creation_payment_products),
+                value = bigDecimalFormatter(productsTotal)
+            )
+        } else {
+            null
+        }
 
     private fun Order.toCustomAmountSection(
         bigDecimalFormatter: (BigDecimal) -> String
