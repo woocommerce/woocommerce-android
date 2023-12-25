@@ -15,13 +15,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,8 +42,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
@@ -331,7 +341,6 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { lineWithButton.onClick() }
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
         Row(
@@ -341,11 +350,10 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
+            TextWithIcon(
                 text = lineWithButton.text,
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_primary),
                 modifier = Modifier
+                    .clickable { lineWithButton.onClick() }
             )
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Text(
@@ -364,6 +372,44 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
             )
         }
     }
+}
+
+@Composable
+private fun TextWithIcon(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    val pencilId = "pencil"
+    val inlineContent = mapOf(
+        Pair(
+            pencilId,
+            InlineTextContent(
+                Placeholder(
+                    width = 16.sp,
+                    height = 16.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.Bottom
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_primary),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        )
+    )
+    Text(
+        inlineContent = inlineContent,
+        style = MaterialTheme.typography.subtitle1,
+        color = colorResource(id = R.color.color_primary),
+        text = buildAnnotatedString {
+            append(text)
+            append("  ")
+            appendInlineContent(pencilId)
+        },
+        modifier = modifier,
+    )
 }
 
 @Composable
