@@ -17,8 +17,6 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
 ) {
-
-    @Suppress("LongMethod")
     fun mapToPaymentTotalsState(
         mode: OrderCreateEditViewModel.Mode,
         order: Order,
@@ -31,10 +29,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 
             if (order.items.isEmpty() && order.feesLines.isEmpty()) {
                 TotalsSectionsState.Minimised(
-                    orderTotal = TotalsSectionsState.OrderTotal(
-                        label = resourceProvider.getString(R.string.order_creation_payment_order_total),
-                        value = bigDecimalFormatter(order.total)
-                    )
+                    orderTotal = order.toOrderTotals(bigDecimalFormatter)
                 )
             } else {
                 TotalsSectionsState.Full(
@@ -76,10 +71,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                             )
                         ),
                     ),
-                    orderTotal = TotalsSectionsState.OrderTotal(
-                        label = resourceProvider.getString(R.string.order_creation_payment_order_total),
-                        value = "$143.75"
-                    ),
+                    orderTotal = order.toOrderTotals(bigDecimalFormatter),
                     mainButton = TotalsSectionsState.Button(
                         text = mode.toButtonText(),
                         enabled = true,
@@ -91,6 +83,12 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             TotalsSectionsState.Disabled
         }
     }
+
+    private fun Order.toOrderTotals(bigDecimalFormatter: (BigDecimal) -> String) =
+        TotalsSectionsState.OrderTotal(
+            label = resourceProvider.getString(R.string.order_creation_payment_order_total),
+            value = bigDecimalFormatter(order.total)
+        )
 
     private fun Order.toCustomAmountSection(
         bigDecimalFormatter: (BigDecimal) -> String
