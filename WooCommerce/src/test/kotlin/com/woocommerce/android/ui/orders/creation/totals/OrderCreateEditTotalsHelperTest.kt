@@ -9,21 +9,30 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 
 class OrderCreateEditTotalsHelperTest {
     private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) }.thenReturn("")
     }
+    private val bigDecimalFormatter = mock<(BigDecimal) -> String> {
+        on { invoke(anyOrNull()) }.thenReturn("10.00$")
+    }
     private val currencyFormatter: CurrencyFormatter = mock {
-        on { buildBigDecimalFormatter(any()) }.thenReturn(mock())
+        on { buildBigDecimalFormatter("USD") }.thenReturn(bigDecimalFormatter)
     }
     private val helper = OrderCreateEditTotalsHelper(
         isTabletOrdersM1Enabled = isTabletOrdersM1Enabled,
         resourceProvider = resourceProvider,
         currencyFormatter
+    )
+
+    private val order = Order.EMPTY.copy(
+        currency = "USD",
     )
 
     @Test
@@ -33,7 +42,7 @@ class OrderCreateEditTotalsHelperTest {
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            mock(),
+            order,
             mock(),
             OrderCreateEditViewModel.ViewState(),
             {},
@@ -54,13 +63,14 @@ class OrderCreateEditTotalsHelperTest {
         whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
             "Collect Payment"
         )
-        val order = mock<Order> {
-            whenever(it.items).thenReturn(listOf(mock()))
-        }
+        val localOrder = order.copy(
+            items = listOf(mock()),
+            feesLines = emptyList()
+        )
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            order,
+            localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
             {},
@@ -81,13 +91,18 @@ class OrderCreateEditTotalsHelperTest {
         whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
             "Collect Payment"
         )
-        val order = mock<Order> {
-            whenever(it.feesLines).thenReturn(listOf(mock()))
-        }
+        val localOrder = order.copy(
+            items = emptyList(),
+            feesLines = listOf(
+                mock {
+                    on { total }.thenReturn(BigDecimal.TEN)
+                }
+            )
+        )
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            order,
+            localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
             {},
@@ -105,14 +120,15 @@ class OrderCreateEditTotalsHelperTest {
     fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then minimised returned`() {
         // GIVEN
         whenever(isTabletOrdersM1Enabled()).thenReturn(true)
-        val order = mock<Order> {
-            whenever(it.items).thenReturn(emptyList())
-            whenever(it.feesLines).thenReturn(emptyList())
-        }
+
+        val localOrder = order.copy(
+            items = emptyList(),
+            feesLines = emptyList()
+        )
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            order,
+            localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
             {},
