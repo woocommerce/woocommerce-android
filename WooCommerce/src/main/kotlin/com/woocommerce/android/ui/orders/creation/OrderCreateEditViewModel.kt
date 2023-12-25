@@ -134,6 +134,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -240,20 +241,23 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    val totalsData: LiveData<TotalsSectionsState> = _orderDraft
-        .map {
-            totalsHelper.mapToPaymentTotalsState(
-                order = it,
-                mode = mode,
-                onShippingClicked = { onShippingButtonClicked() },
-                onCouponsClicked = { onCouponButtonClicked() },
-                onGiftClicked = {},
-                onTaxesLearnMore = {},
-                onMainButtonClicked = {},
-            )
+    val totalsData: LiveData<TotalsSectionsState> =
+        viewStateData.liveData.combineWith(_orderDraft.asLiveData()) { viewState, order ->
+            if (order == null || viewState == null) {
+                TotalsSectionsState.Disabled
+            } else {
+                totalsHelper.mapToPaymentTotalsState(
+                    order = order,
+                    mode = mode,
+                    viewState = viewState,
+                    onShippingClicked = { onShippingButtonClicked() },
+                    onCouponsClicked = { onCouponButtonClicked() },
+                    onGiftClicked = {},
+                    onTaxesLearnMore = {},
+                    onMainButtonClicked = {},
+                )
+            }
         }
-        .distinctUntilChanged()
-        .asLiveData()
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
@@ -502,17 +506,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
         if (product.item.quantity == 1F) {
-            tracker.track(
-                ORDER_PRODUCT_REMOVE,
-                mapOf(KEY_FLOW to flow)
-            )
+            onRemoveProduct(product)
         } else {
             tracker.track(
                 ORDER_PRODUCT_QUANTITY_CHANGE,
                 mapOf(KEY_FLOW to flow)
             )
+            _orderDraft.update { adjustProductQuantity(it, product, -1) }
         }
-        _orderDraft.update { adjustProductQuantity(it, product, -1) }
     }
 
     fun onItemAmountChanged(product: OrderCreationProduct, amountChangeEvent: ProductAmountEvent) {

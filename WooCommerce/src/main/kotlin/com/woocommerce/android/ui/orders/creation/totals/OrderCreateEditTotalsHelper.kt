@@ -21,6 +21,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     fun mapToPaymentTotalsState(
         order: Order,
         mode: OrderCreateEditViewModel.Mode,
+        viewState: OrderCreateEditViewModel.ViewState,
         onShippingClicked: () -> Unit,
         onCouponsClicked: () -> Unit,
         onGiftClicked: () -> Unit,
@@ -41,9 +42,21 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     lines = listOfNotNull(
                         order.toProductsSection(bigDecimalFormatter),
                         order.toCustomAmountSection(bigDecimalFormatter),
-                        order.toShippingSection(bigDecimalFormatter, onClick = onShippingClicked),
-                        order.toCouponsSection(bigDecimalFormatter, onClick = onCouponsClicked),
-                        order.toGiftSection(bigDecimalFormatter, onClick = onGiftClicked),
+                        order.toShippingSection(
+                            enabled = viewState.isEditable,
+                            bigDecimalFormatter,
+                            onClick = onShippingClicked
+                        ),
+                        order.toCouponsSection(
+                            enabled = viewState.isCouponButtonEnabled,
+                            bigDecimalFormatter,
+                            onClick = onCouponsClicked
+                        ),
+                        order.toGiftSection(
+                            enabled = viewState.isAddGiftCardButtonEnabled,
+                            bigDecimalFormatter,
+                            onClick = onGiftClicked
+                        ),
                         order.toTaxesSection(bigDecimalFormatter, onClick = onTaxesLearnMore),
                         order.toDiscountSection(bigDecimalFormatter),
                     ),
@@ -94,6 +107,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     }
 
     private fun Order.toShippingSection(
+        enabled: Boolean,
         bigDecimalFormatter: (BigDecimal) -> String,
         onClick: () -> Unit
     ): TotalsSectionsState.Line? =
@@ -101,7 +115,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             TotalsSectionsState.Line.Button(
                 text = resourceProvider.getString(R.string.shipping),
                 value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter),
-                enabled = ,
+                enabled = enabled,
                 onClick = onClick,
             )
         } else {
@@ -109,6 +123,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
 
     private fun Order.toCouponsSection(
+        enabled: Boolean,
         bigDecimalFormatter: (BigDecimal) -> String,
         onClick: () -> Unit
     ): TotalsSectionsState.Line? =
@@ -120,7 +135,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     bigDecimalFormatter(discountTotal)
                 ),
                 extraValue = discountCodes,
-                enabled = ,
+                enabled = enabled,
                 onClick = onClick,
             )
         } else {
@@ -128,6 +143,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
 
     private fun Order.toGiftSection(
+        enabled: Boolean,
         bigDecimalFormatter: (BigDecimal) -> String,
         onClick: () -> Unit
     ): TotalsSectionsState.Line? =
@@ -136,6 +152,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 text = resourceProvider.getString(R.string.order_creation_coupon_button),
                 value = bigDecimalFormatter(giftCardDiscountedAmount ?: BigDecimal.ZERO),
                 extraValue = selectedGiftCard,
+                enabled = enabled,
                 onClick = onClick,
             )
         } else {
