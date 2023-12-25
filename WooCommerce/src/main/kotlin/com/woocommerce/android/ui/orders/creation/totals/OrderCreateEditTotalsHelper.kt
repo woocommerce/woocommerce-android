@@ -101,6 +101,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             TotalsSectionsState.Line.Button(
                 text = resourceProvider.getString(R.string.shipping),
                 value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter),
+                enabled = ,
                 onClick = onClick,
             )
         } else {
@@ -119,6 +120,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     bigDecimalFormatter(discountTotal)
                 ),
                 extraValue = discountCodes,
+                enabled = ,
                 onClick = onClick,
             )
         } else {
@@ -225,7 +227,7 @@ sealed class TotalsSectionsState {
             val text: String,
             val value: String,
             val extraValue: String? = null,
-            val enabled: Boolean = true,
+            val enabled: Boolean,
             val onClick: () -> Unit
         ) : Line()
 

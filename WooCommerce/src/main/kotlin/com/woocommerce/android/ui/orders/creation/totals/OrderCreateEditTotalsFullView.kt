@@ -359,8 +359,9 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
         ) {
             TextWithIcon(
                 text = lineWithButton.text,
+                isEnabled = lineWithButton.enabled,
                 modifier = Modifier
-                    .clickable { lineWithButton.onClick() }
+                    .clickable { if (lineWithButton.enabled) lineWithButton.onClick() }
                     .padding(all = dimensionResource(id = R.dimen.minor_50))
             )
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
@@ -387,6 +388,7 @@ private fun RowWithButtonAndData(lineWithButton: TotalsSectionsState.Line.Button
 @Composable
 private fun TextWithIcon(
     text: String,
+    isEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     val pencilId = "pencil"
@@ -412,7 +414,11 @@ private fun TextWithIcon(
     Text(
         inlineContent = inlineContent,
         style = MaterialTheme.typography.subtitle1,
-        color = colorResource(id = R.color.color_primary),
+        color = if (isEnabled) {
+            colorResource(id = R.color.color_primary)
+        } else {
+            colorResource(id = R.color.color_on_surface_medium)
+        },
         text = buildAnnotatedString {
             append(text)
             append("  ")
@@ -440,18 +446,21 @@ private fun OrderCreateEditTotalsFullViewPreview() {
                 TotalsSectionsState.Line.Button(
                     text = stringResource(R.string.shipping),
                     value = "$16.25",
+                    enabled = true,
                     onClick = {},
                 ),
                 TotalsSectionsState.Line.Button(
                     text = stringResource(R.string.order_creation_coupon_button),
                     value = "-$4.25",
                     extraValue = "20 OFF",
+                    enabled = false,
                     onClick = {},
                 ),
                 TotalsSectionsState.Line.Button(
                     text = stringResource(R.string.order_gift_card),
                     value = "-$4.25",
                     extraValue = "1234-5678-9987-6543",
+                    enabled = false,
                     onClick = {},
                 ),
                 TotalsSectionsState.Line.Block(
