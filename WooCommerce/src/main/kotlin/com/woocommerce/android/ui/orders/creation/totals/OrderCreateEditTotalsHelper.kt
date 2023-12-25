@@ -17,6 +17,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
 ) {
+    @Suppress("LongParameterList")
     fun mapToPaymentTotalsState(
         order: Order,
         mode: OrderCreateEditViewModel.Mode,
