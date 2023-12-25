@@ -301,7 +301,7 @@ fun WCTextButton(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
         ) {
             Icon(
                 imageVector = icon,

@@ -36,16 +36,11 @@ Language: zh_CN
     <string name="custom_amounts_bottom_sheet_heading">您想怎样添加自定义金额？</string>
     <string name="custom_amounts_delete_custom_amount">删除自定义金额</string>
     <string name="custom_amounts_percentage_label">订单总额百分比 (%1$s)</string>
-    <string name="store_creation_use_theme_button">从此主题开始</string>
     <string name="theme_activated_successfully">主题激活成功</string>
-    <string name="theme_preview_theme_name">主题：%1$s</string>
-    <string name="theme_preview_activate_theme_button">使用此主题</string>
     <string name="theme_preview_bottom_sheet_home_section">主页</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">轻点以查看</string>
     <string name="theme_preview_bottom_sheet_pages_title">此模板上的页面</string>
     <string name="theme_preview_title">预览</string>
-    <string name="theme_picker_error_message">暂时无法加载主题。</string>
-    <string name="theme_picker_error_title">出现错误</string>
     <string name="theme_picker_carousel_info_item_description">完成商店设置后，请在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_carousel_info_item_title">想要获得更多信息？</string>
     <string name="theme_picker_description">之后您可以随时在设置中进行更改。</string>

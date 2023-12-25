@@ -13,7 +13,7 @@ When an Activity comes to the foreground, TalkBack announces it’s title. When 
 
 > _Example: The background image on the login prologue screen (below) does not require additional context because the text announces the intent of the view. The same is true of the JetPack login button._
 
-[[/images/Accessibility/ImportantForAccessibility.png|width=300px]]
+<img src="/docs/images/Accessibility/ImportantForAccessibility.png" width=300/>
 
 ## Labels & Hints
 
@@ -27,7 +27,7 @@ When an Activity comes to the foreground, TalkBack announces it’s title. When 
 
 > _Example: The **email note to customer** component was specifically built to better communicate the purpose of this settings by using a focusable container_
 
-[[/images/Accessibility/grouping_content.png|width=300px]]
+<img src="/docs/images/Accessibility/grouping_content.png" width=300/>
 
 ## Custom Views
 
