@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -16,9 +17,13 @@ class OrderCreateEditTotalsHelperTest {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) }.thenReturn("")
     }
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on { buildBigDecimalFormatter(any()) }.thenReturn(mock())
+    }
     private val helper = OrderCreateEditTotalsHelper(
         isTabletOrdersM1Enabled = isTabletOrdersM1Enabled,
-        resourceProvider = resourceProvider
+        resourceProvider = resourceProvider,
+        currencyFormatter
     )
 
     @Test
@@ -30,7 +35,12 @@ class OrderCreateEditTotalsHelperTest {
         val actual = helper.mapToPaymentTotalsState(
             mock(),
             mock(),
-            mock()
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {}
         )
 
         // THEN
@@ -50,9 +60,14 @@ class OrderCreateEditTotalsHelperTest {
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            OrderCreateEditViewModel.Mode.Creation,
             order,
-            mock()
+            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {}
         )
 
         // THEN
@@ -72,9 +87,14 @@ class OrderCreateEditTotalsHelperTest {
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            OrderCreateEditViewModel.Mode.Creation,
             order,
-            mock()
+            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {}
         )
 
         // THEN
@@ -82,7 +102,7 @@ class OrderCreateEditTotalsHelperTest {
     }
 
     @Test
-    fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then minised returned`() {
+    fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then minimised returned`() {
         // GIVEN
         whenever(isTabletOrdersM1Enabled()).thenReturn(true)
         val order = mock<Order> {
@@ -92,9 +112,14 @@ class OrderCreateEditTotalsHelperTest {
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
-            OrderCreateEditViewModel.Mode.Creation,
             order,
-            mock()
+            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {}
         )
 
         // THEN

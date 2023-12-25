@@ -1860,9 +1860,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given totals helper returns disabled, when totals updated, then return disabled`() {
         testBlocking {
-            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any())).thenReturn(
-                TotalsSectionsState.Disabled
-            )
+            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(TotalsSectionsState.Disabled)
 
             var totalsData: TotalsSectionsState? = null
 
@@ -1880,7 +1879,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns minimised, when totals checked, then return minimised`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Minimised>()
-            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any()))
+            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(totalsSectionsState)
 
             var totalsData: TotalsSectionsState? = null
@@ -1899,7 +1898,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns full, when totals checked, then return full`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Full>()
-            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any()))
+            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(totalsSectionsState)
             var totalsData: TotalsSectionsState? = null
 
