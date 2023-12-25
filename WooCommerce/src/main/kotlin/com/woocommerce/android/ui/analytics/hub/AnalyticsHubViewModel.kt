@@ -392,8 +392,8 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun SelectionType.generateLocalizedSelectionData(
-        startDate: Date = Date(),
-        endDate: Date = Date()
+        startDate: Date = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+        endDate: Date = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
     ) = generateSelectionData(
         referenceStartDate = startDate,
         referenceEndDate = endDate,
