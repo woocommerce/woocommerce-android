@@ -40,6 +40,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                         order.toCouponsSection(bigDecimalFormatter, onClick = {}),
                         order.toGiftSection(bigDecimalFormatter, onClick = {}),
                         order.toTaxesSection(bigDecimalFormatter, onClick = {}),
+                        order.toDiscountSection(bigDecimalFormatter),
                     ),
                     orderTotal = order.toOrderTotals(bigDecimalFormatter),
                     mainButton = TotalsSectionsState.Button(
@@ -157,6 +158,21 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 onClick = onClick
             )
         )
+
+    private fun Order.toDiscountSection(
+        bigDecimalFormatter: (BigDecimal) -> String,
+    ): TotalsSectionsState.Line? =
+        if (discountTotal.isNotEqualTo(BigDecimal.ZERO)) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.order_creation_discounts_total),
+                value = resourceProvider.getString(
+                    R.string.order_creation_discounts_total_value,
+                    bigDecimalFormatter(discountTotal)
+                )
+            )
+        } else {
+            null
+        }
 
     private fun OrderCreateEditViewModel.Mode.toButtonText() =
         when (this) {
