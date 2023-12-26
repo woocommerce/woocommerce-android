@@ -456,9 +456,7 @@ class OrderDetailFragment :
                 viewModel.onSeeReceiptClicked()
             },
             onCollectPaymentClickListener = {
-                cardReaderManager.let {
-                    viewModel.onAcceptCardPresentPaymentClicked()
-                }
+                viewModel.onCollectPaymentClicked()
             },
             onPrintingInstructionsClickListener = {
                 viewModel.onPrintingInstructionsClicked()

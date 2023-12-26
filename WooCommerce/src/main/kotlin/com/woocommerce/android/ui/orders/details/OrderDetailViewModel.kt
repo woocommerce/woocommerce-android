@@ -322,7 +322,7 @@ class OrderDetailViewModel @Inject constructor(
         it.contains(navArgs.orderId) && it.last() != navArgs.orderId
     } ?: false
 
-    fun onAcceptCardPresentPaymentClicked() {
+    fun onCollectPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
         triggerEvent(StartPaymentFlow(orderId = order.id))
     }
