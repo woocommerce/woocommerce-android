@@ -57,6 +57,7 @@ class OrderCreateEditTotalsHelperTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `given ff enabled and items not empty, when mapToPaymentTotalsState, then full returned`() {
         // GIVEN
         val item = mock<Order.Item> {
@@ -75,7 +76,7 @@ class OrderCreateEditTotalsHelperTest {
                 on { ratePercent }.thenReturn(5F)
                 on { taxTotal }.thenReturn("10")
             },
-                mock<Order.TaxLine> {
+            mock<Order.TaxLine> {
                 on { label }.thenReturn("tax 2")
                 on { ratePercent }.thenReturn(6F)
                 on { taxTotal }.thenReturn("11")
