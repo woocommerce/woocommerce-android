@@ -162,6 +162,10 @@ class OrderDetailViewModel @Inject constructor(
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
         _productList.distinctUntilChanged().observeForever(productListObserver)
+
+        if (navArgs.startPaymentFlow) {
+            triggerEvent(StartPaymentFlow(orderId = navArgs.orderId))
+        }
     }
 
     fun start() {
