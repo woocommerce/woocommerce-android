@@ -45,7 +45,9 @@
             app:nullable="true" />
         <argument
             android:name="selectedItems"
-            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
+            android:defaultValue="@null"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]"
+            app:nullable="true" />
         <argument
             android:name="productSelectorFlow"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
