@@ -176,7 +176,12 @@ class OrderCreateEditFormFragment :
             title = resources.getString(
                 when (viewModel.mode) {
                     Creation -> R.string.create
-                    is Edit -> R.string.done
+                    is Edit -> {
+                        if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
+                            isVisible = false
+                        }
+                        R.string.done
+                    }
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
