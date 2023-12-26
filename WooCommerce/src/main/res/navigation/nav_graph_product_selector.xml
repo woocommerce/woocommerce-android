@@ -34,6 +34,16 @@
             android:defaultValue="NORMAL"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionHandling" />
         <argument
+            android:name="screenTitleOverride"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="ctaButtonTextOverride"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="selectedItems"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
         <argument

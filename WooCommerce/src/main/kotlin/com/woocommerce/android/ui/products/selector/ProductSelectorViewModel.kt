@@ -135,7 +135,9 @@ class ProductSelectorViewModel @Inject constructor(
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchState = searchState,
-            selectionMode = navArgs.selectionMode
+            selectionMode = navArgs.selectionMode,
+            screenTitleOverride = navArgs.screenTitleOverride,
+            ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
         )
     }.asLiveData()
 
@@ -600,7 +602,9 @@ class ProductSelectorViewModel @Inject constructor(
         val selectedItemsCount: Int,
         val filterState: FilterState,
         val searchState: SearchState,
-        val selectionMode: SelectionMode
+        val selectionMode: SelectionMode,
+        val screenTitleOverride: String? = null,
+        val ctaButtonTextOverride: String? = null,
     ) {
         val isDoneButtonEnabled: Boolean = selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0
     }

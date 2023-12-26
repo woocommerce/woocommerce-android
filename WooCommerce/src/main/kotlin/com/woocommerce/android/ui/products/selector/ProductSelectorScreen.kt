@@ -76,7 +76,12 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     viewState?.let { state ->
         Scaffold(topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = string.coupon_conditions_products_select_products_title)) },
+                title = {
+                    Text(
+                        text = state.screenTitleOverride
+                            ?: stringResource(id = string.coupon_conditions_products_select_products_title)
+                    )
+                },
                 navigationIcon = {
                     IconButton(viewModel::onNavigateBack) {
                         Icon(
@@ -394,7 +399,9 @@ private fun ProductList(
                 }
             }
             itemsIndexed(state.products) { _, product ->
-                if (product is ListItem.ConfigurableListItem) { trackConfigurableProduct() }
+                if (product is ListItem.ConfigurableListItem) {
+                    trackConfigurableProduct()
+                }
                 SelectorListItem(
                     title = product.title,
                     imageUrl = product.imageUrl,
@@ -439,7 +446,7 @@ private fun ProductList(
 
         WCColoredButton(
             onClick = onDoneButtonClick,
-            text = when (state.selectionMode) {
+            text = state.ctaButtonTextOverride ?: when (state.selectionMode) {
                 ProductSelectorViewModel.SelectionMode.MULTIPLE -> StringUtils.getQuantityString(
                     quantity = state.selectedItemsCount,
                     default = string.product_selector_select_button_title_default,
