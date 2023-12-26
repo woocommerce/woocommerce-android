@@ -349,15 +349,15 @@ class ProductNavigator @Inject constructor() {
                 val action = when (target.selectionMode) {
                     ProductSelectorViewModel.SelectionMode.MULTIPLE -> {
                         ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
-                            target.productId,
-                            target.selectedVariationIds.toLongArray(),
-                            target.productSelectorFlow,
-                            target.productSourceForTracking,
+                            productId = target.productId,
+                            variationIds = target.selectedVariationIds.toLongArray(),
+                            productSelectorFlow = target.productSelectorFlow,
+                            productSource = target.productSourceForTracking,
                         )
                     }
                     ProductSelectorViewModel.SelectionMode.SINGLE -> {
                         ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationPickerFragment(
-                            target.productId
+                            productId = target.productId
                         )
                     }
                 }
