@@ -63,7 +63,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     orderTotal = order.toOrderTotals(bigDecimalFormatter),
                     mainButton = TotalsSectionsState.Button(
                         text = mode.toButtonText(),
-                        enabled = true,
+                        enabled = viewState.canCreateOrder,
                         onClick = onMainButtonClicked,
                     )
                 )
