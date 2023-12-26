@@ -142,6 +142,9 @@ class ProductSelectorViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
+            error("Single selection mode can only be used with a single selected item")
+        }
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
