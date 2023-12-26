@@ -24,6 +24,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
+    data class ShowCreatedOrderAndStartPaymentFlow(val orderId: Long) : OrderCreateEditNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) :
         OrderCreateEditNavigationTarget()
 

@@ -98,6 +98,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrderAndStartPaymentFlow
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
@@ -251,7 +252,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
-                onMainButtonClicked = {},
+                onMainButtonClicked = { onPrimaryButtonClicked() },
             )
         }
 
@@ -1097,24 +1098,27 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCreateOrderClicked(order: Order) {
         when (mode) {
-            Mode.Creation -> viewModelScope.launch {
+            Mode.Creation -> {
                 trackCreateOrderButtonClick()
-                viewState = viewState.copy(isProgressDialogShown = true)
-                val giftCard = _selectedGiftCard.value
-                orderCreateEditRepository.placeOrder(order, giftCard).fold(
-                    onSuccess = {
-                        trackOrderCreationSuccess()
-                        triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
-                        triggerEvent(ShowCreatedOrder(it.id))
-                    },
-                    onFailure = {
-                        trackOrderCreationFailure(it)
-                        viewState = viewState.copy(isProgressDialogShown = false)
-                        triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
-                    }
-                )
+                createOrder(order) {
+                    triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
+                    triggerEvent(ShowCreatedOrder(it.id))
+                }
             }
 
+            is Mode.Edit -> {
+                triggerEvent(Exit)
+            }
+        }
+    }
+
+    private fun onPrimaryButtonClicked() {
+        when (mode) {
+            Mode.Creation -> {
+                createOrder(currentDraft) {
+                    triggerEvent(ShowCreatedOrderAndStartPaymentFlow(it.id))
+                }
+            }
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -1132,6 +1136,24 @@ class OrderCreateEditViewModel @Inject constructor(
                 mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
             }
         )
+    }
+
+    private fun createOrder(order: Order, onSuccess: (Order) -> Unit) {
+        launch {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            val giftCard = _selectedGiftCard.value
+            orderCreateEditRepository.placeOrder(order, giftCard).fold(
+                onSuccess = {
+                    trackOrderCreationSuccess()
+                    onSuccess(it)
+                },
+                onFailure = {
+                    trackOrderCreationFailure(it)
+                    viewState = viewState.copy(isProgressDialogShown = false)
+                    triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
+                }
+            )
+        }
     }
 
     fun onBackButtonClicked() {
