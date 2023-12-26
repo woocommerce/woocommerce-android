@@ -149,7 +149,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     ): TotalsSectionsState.Line? =
         if (!selectedGiftCard.isNullOrEmpty()) {
             TotalsSectionsState.Line.Button(
-                text = resourceProvider.getString(R.string.order_creation_coupon_button),
+                text = resourceProvider.getString(R.string.order_gift_card),
                 value = bigDecimalFormatter(giftCardDiscountedAmount ?: BigDecimal.ZERO),
                 extraValue = selectedGiftCard,
                 enabled = enabled,
