@@ -360,12 +360,18 @@ class OrderCreateEditFormFragment :
                     binding.totalsSection.setContent {
                         OrderCreateEditTotalsFullView(state = it)
                     }
+                    binding.scrollView.post {
+                        binding.scrollView.setPadding(0, 0, 0, binding.totalsSection.height)
+                    }
                 }
 
                 is TotalsSectionsState.Minimised -> {
                     binding.totalsSection.show()
                     binding.totalsSection.setContent {
                         OrderCreateEditTotalsMinimisedView(state = it)
+                    }
+                    binding.scrollView.post {
+                        binding.scrollView.setPadding(0, 0, 0, binding.totalsSection.height)
                     }
                 }
 
