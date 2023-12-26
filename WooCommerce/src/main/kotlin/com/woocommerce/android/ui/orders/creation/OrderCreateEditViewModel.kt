@@ -98,7 +98,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrderAndStartPaymentFlow
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
@@ -1102,7 +1101,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 trackCreateOrderButtonClick()
                 createOrder(order) {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
-                    triggerEvent(ShowCreatedOrder(it.id))
+                    triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = false))
                 }
             }
 
@@ -1116,7 +1115,7 @@ class OrderCreateEditViewModel @Inject constructor(
         when (mode) {
             Mode.Creation -> {
                 createOrder(currentDraft) {
-                    triggerEvent(ShowCreatedOrderAndStartPaymentFlow(it.id))
+                    triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = true))
                 }
             }
             is Mode.Edit -> {
