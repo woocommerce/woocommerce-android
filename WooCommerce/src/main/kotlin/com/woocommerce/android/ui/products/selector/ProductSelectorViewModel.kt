@@ -289,6 +289,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
+        val stockStatus = getStockText(resourceProvider)
         val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
@@ -300,7 +301,6 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
             numVariations = 0,
-            selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
             selectionState = if (selectedItems.any { it.id == remoteId }) SELECTED else UNSELECTED
         )
     }
