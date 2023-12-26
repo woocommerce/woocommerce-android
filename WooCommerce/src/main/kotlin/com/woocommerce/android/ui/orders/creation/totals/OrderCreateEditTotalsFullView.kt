@@ -1,8 +1,13 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -55,14 +60,37 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 
 @Composable
-fun OrderCreateEditTotalsFullView(state: TotalsSectionsState.Full) {
+fun OrderCreateEditTotalsView(state: TotalsSectionsState) {
+    AnimatedVisibility(
+        visible = state is TotalsSectionsState.Full,
+        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
+    ) {
+        if (state is TotalsSectionsState.Full) {
+            OrderCreateEditTotalsFullView(state)
+        }
+    }
+
+    AnimatedVisibility(
+        visible = state is TotalsSectionsState.Minimised,
+        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
+    ) {
+        if (state is TotalsSectionsState.Minimised) {
+            OrderCreateEditTotalsMinimisedView(state)
+        }
+    }
+}
+
+@Composable
+private fun OrderCreateEditTotalsFullView(state: TotalsSectionsState.Full) {
     PanelWithShadow {
         TotalsView(state)
     }
 }
 
 @Composable
-fun OrderCreateEditTotalsMinimisedView(
+private fun OrderCreateEditTotalsMinimisedView(
     state: TotalsSectionsState.Minimised
 ) {
     PanelWithShadow {
