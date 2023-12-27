@@ -186,7 +186,7 @@ private fun TotalsView(
                         onClick = {
                             isExpanded = !isExpanded
                             state.onExpandCollapseClicked(isExpanded)
-                          },
+                        },
                     ) {
                         Icon(
                             painter = if (expanded) {
