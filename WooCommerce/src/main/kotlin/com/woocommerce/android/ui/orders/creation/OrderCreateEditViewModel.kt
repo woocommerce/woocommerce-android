@@ -44,6 +44,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_A
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_EXPANDED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
@@ -252,6 +253,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onPrimaryButtonClicked() },
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() }
             )
         }
 
@@ -1109,6 +1111,16 @@ class OrderCreateEditViewModel @Inject constructor(
                 triggerEvent(Exit)
             }
         }
+    }
+
+    private fun onExpandCollapseTotalsClicked(expanded: Boolean) {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_EXPANDED to expanded
+            )
+        )
     }
 
     private fun onPrimaryButtonClicked() {
