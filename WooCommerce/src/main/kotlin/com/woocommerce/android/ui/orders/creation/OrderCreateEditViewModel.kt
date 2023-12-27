@@ -252,7 +252,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
-                onMainButtonClicked = { onPrimaryButtonClicked() },
+                onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
                 onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
             )
         }
@@ -1123,7 +1123,7 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    private fun onPrimaryButtonClicked() {
+    private fun onTotalsSectionPrimaryButtonClicked() {
         when (mode) {
             Mode.Creation -> {
                 launch {
