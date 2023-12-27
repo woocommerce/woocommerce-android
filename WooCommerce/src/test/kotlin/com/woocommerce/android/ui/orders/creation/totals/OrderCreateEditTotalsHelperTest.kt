@@ -49,6 +49,7 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
+            {},
             {}
         )
 
@@ -149,6 +150,7 @@ class OrderCreateEditTotalsHelperTest {
         val onGiftClicked = mock<() -> Unit>()
         val onTaxesLearnMore = mock<() -> Unit>()
         val onMainButtonClicked = mock<() -> Unit>()
+        val onCustomAmountsClicked = mock<(Boolean) -> Unit>()
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
@@ -160,6 +162,7 @@ class OrderCreateEditTotalsHelperTest {
             onGiftClicked,
             onTaxesLearnMore,
             onMainButtonClicked,
+            onCustomAmountsClicked,
         )
 
         // THEN
@@ -228,7 +231,8 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
-            {}
+            {},
+            {},
         )
 
         // THEN
@@ -261,7 +265,8 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
-            {}
+            {},
+            {},
         )
 
         // THEN
