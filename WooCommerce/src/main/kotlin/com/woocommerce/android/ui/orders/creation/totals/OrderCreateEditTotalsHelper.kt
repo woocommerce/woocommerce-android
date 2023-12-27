@@ -26,7 +26,8 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         onCouponsClicked: () -> Unit,
         onGiftClicked: () -> Unit,
         onTaxesLearnMore: () -> Unit,
-        onMainButtonClicked: () -> Unit
+        onMainButtonClicked: () -> Unit,
+        onExpandCollapseClicked: () -> Unit
     ): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
             val bigDecimalFormatter = currencyFormatter.buildBigDecimalFormatter(
@@ -65,7 +66,8 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                         text = mode.toButtonText(),
                         enabled = viewState.canCreateOrder,
                         onClick = onMainButtonClicked,
-                    )
+                    ),
+                    onExpandCollapseClicked = onExpandCollapseClicked
                 )
             }
         } else {
@@ -213,6 +215,7 @@ sealed class TotalsSectionsState {
         val lines: List<Line>,
         val orderTotal: OrderTotal,
         val mainButton: Button,
+        val onExpandCollapseClicked: () -> Unit,
     ) : TotalsSectionsState()
 
     data class Minimised(

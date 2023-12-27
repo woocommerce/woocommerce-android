@@ -167,6 +167,7 @@ private fun TotalsView(
                     indication = null
                 ) {
                     isExpanded = !isExpanded
+                    state.onExpandCollapseClicked()
                 }
                 .animateContentSize()
         ) {
@@ -182,7 +183,10 @@ private fun TotalsView(
                 ) { expanded ->
                     IconButton(
                         interactionSource = totalsIs,
-                        onClick = { isExpanded = !isExpanded },
+                        onClick = {
+                            isExpanded = !isExpanded
+                            state.onExpandCollapseClicked()
+                          },
                     ) {
                         Icon(
                             painter = if (expanded) {
@@ -521,7 +525,8 @@ private fun OrderCreateEditTotalsFullViewPreview() {
                 text = "Collect Payment",
                 enabled = true,
                 onClick = {},
-            )
+            ),
+            onExpandCollapseClicked = {},
         )
     )
 }
