@@ -2017,6 +2017,45 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given totals helper returns full and creation, when main button clicked, then PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED tracked`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onMainButtonClickedCaptor = argumentCaptor<() -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onMainButtonClickedCaptor.capture(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onMainButtonClickedCaptor.firstValue.invoke()
+
+            verify(tracker).track(
+                AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
+                mapOf(
+                    "status" to Order.Status.Pending,
+                    "product_count" to 0,
+                    "has_customer_details" to false,
+                    "has_fees" to false,
+                    "has_shipping_method" to false,
+                    "flow" to "creation"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `when custom amount is added, then proper event is tracked`() {
         val customAmountUIModel = CustomAmountUIModel(
             id = 0L,
