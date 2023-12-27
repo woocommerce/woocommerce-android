@@ -253,7 +253,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onPrimaryButtonClicked() },
-                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() }
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
             )
         }
 
