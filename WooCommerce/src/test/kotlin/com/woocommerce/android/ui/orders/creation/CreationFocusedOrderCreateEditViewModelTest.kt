@@ -57,6 +57,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -1872,8 +1873,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any()
                 )
-            )
-                .thenReturn(TotalsSectionsState.Disabled)
+            ).thenReturn(TotalsSectionsState.Disabled)
 
             var totalsData: TotalsSectionsState? = null
 
@@ -1903,8 +1903,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any()
                 )
-            )
-                .thenReturn(totalsSectionsState)
+            ).thenReturn(totalsSectionsState)
 
             var totalsData: TotalsSectionsState? = null
 
@@ -1934,8 +1933,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any()
                 )
-            )
-                .thenReturn(totalsSectionsState)
+            ).thenReturn(totalsSectionsState)
             var totalsData: TotalsSectionsState? = null
 
             sut.totalsData.observeForever {
@@ -1945,6 +1943,76 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             createSut()
 
             assertThat(totalsData).isEqualTo(totalsSectionsState)
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full, when expand clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with true`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onExpandCollapseClickedCaptor.capture()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onExpandCollapseClickedCaptor.firstValue.invoke(true)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    "flow" to "creation",
+                    "expanded" to true
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full, when collapse clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with false`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onExpandCollapseClickedCaptor.capture()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onExpandCollapseClickedCaptor.firstValue.invoke(false)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    "flow" to "creation",
+                    "expanded" to false
+                )
+            )
         }
     }
 
