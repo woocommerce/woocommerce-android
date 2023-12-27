@@ -487,7 +487,7 @@ class DateUtilsTest {
     fun `getFriendlyDayHourString() with an invalid date returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "invalid"
-        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
@@ -500,7 +500,7 @@ class DateUtilsTest {
     fun `getFriendlyDayHourString() with an invalid date format returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12-27"
-        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
@@ -513,7 +513,10 @@ class DateUtilsTest {
     fun `getLongMonthDayString() with a valid date returns correct value`() {
         // getLongMonthDayString returns the expected value
         val stringDate = "2023-12-27"
-        assertEquals(dateUtilsUnderTest.getLongMonthDayString(stringDate), stringDate.formatDateToFriendlyLongMonthDate())
+        assertEquals(
+            dateUtilsUnderTest.getLongMonthDayString(stringDate),
+            stringDate.formatDateToFriendlyLongMonthDate()
+        )
     }
 
     @Test
@@ -533,7 +536,7 @@ class DateUtilsTest {
     fun `getLongMonthDayString() with an invalid date format returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12-27 12"
-        assertEquals(dateUtilsUnderTest.getLongMonthDayString(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getLongMonthDayString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
@@ -566,7 +569,7 @@ class DateUtilsTest {
     fun `getYearMonthString() with an invalid date format returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12-27 12"
-        assertEquals(dateUtilsUnderTest.getYearMonthString(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getYearMonthString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
@@ -599,7 +602,7 @@ class DateUtilsTest {
     fun `getDayString() with an invalid date format returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12"
-        assertEquals(dateUtilsUnderTest.getDayString(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getDayString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
@@ -612,7 +615,10 @@ class DateUtilsTest {
     fun `getFriendlyLongMonthYear() with a valid date returns correct value`() {
         // getFriendlyLongMonthYear returns the expected value
         val stringDate = "2023-12"
-        assertEquals(dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate), stringDate.formatDateToFriendlyLongMonthYear())
+        assertEquals(
+            dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate),
+            stringDate.formatDateToFriendlyLongMonthYear()
+        )
     }
 
     @Test
@@ -632,7 +638,7 @@ class DateUtilsTest {
     fun `getFriendlyLongMonthYear() with an invalid date format returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "2023"
-        assertEquals(dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
@@ -665,7 +671,7 @@ class DateUtilsTest {
     fun `getShortMonthDayString() with an invalid date format returns null and track the error`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12"
-        assertEquals(dateUtilsUnderTest.getShortMonthDayString(stringDate),null)
+        assertEquals(dateUtilsUnderTest.getShortMonthDayString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
             exception = any(),
