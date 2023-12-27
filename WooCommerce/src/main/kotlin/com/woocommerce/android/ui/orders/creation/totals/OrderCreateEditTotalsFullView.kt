@@ -167,7 +167,7 @@ private fun TotalsView(
                     indication = null
                 ) {
                     isExpanded = !isExpanded
-                    state.onExpandCollapseClicked()
+                    state.onExpandCollapseClicked(isExpanded)
                 }
                 .animateContentSize()
         ) {
@@ -185,7 +185,7 @@ private fun TotalsView(
                         interactionSource = totalsIs,
                         onClick = {
                             isExpanded = !isExpanded
-                            state.onExpandCollapseClicked()
+                            state.onExpandCollapseClicked(isExpanded)
                           },
                     ) {
                         Icon(
