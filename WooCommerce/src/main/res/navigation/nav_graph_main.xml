@@ -15,6 +15,7 @@
     <include app:graph="@navigation/nav_graph_coupons" />
     <include app:graph="@navigation/nav_graph_site_picker" />
     <include app:graph="@navigation/nav_graph_domain_change" />
+    <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -668,6 +669,9 @@
     <action
         android:id="@+id/action_global_blazeCampaignCreationFragment"
         app:destination="@id/blazeCampaignCreationFragment" />
+    <action
+        android:id="@+id/action_global_blazeCampaignCreation"
+        app:destination="@id/nav_graph_blaze_campaign_creation" />
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />

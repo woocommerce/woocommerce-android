@@ -460,7 +460,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onBlazeClicked() {
         viewState.productDraft?.let {
             triggerEvent(
-                NavigateToBlazeWebView(
+                ShowBlazeCreationScreen(
                     url = blazeUrlsHelper.buildUrlForProduct(
                         productId = it.remoteId,
                         source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
@@ -2455,7 +2455,7 @@ class ProductDetailViewModel @Inject constructor(
 
     object ShowDuplicateProductInProgress : Event()
 
-    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
+    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : Event()
 
     data class ShowAIProductDescriptionBottomSheet(
         val productTitle: String,

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,13 +46,23 @@ class BlazeCampaignListFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
-                is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(event.url, event.source)
+                is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> if (FeatureFlag.BLAZE_I3.isEnabled()) {
+                    openBlazeCreationFlow()
+                } else {
+                    openBlazeWebView(event.url, event.source)
+                }
                 is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
                     event.url,
                     event.urlToTriggerExit
                 )
             }
         }
+    }
+
+    private fun openBlazeCreationFlow() {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreation()
+        )
     }
 
     private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
