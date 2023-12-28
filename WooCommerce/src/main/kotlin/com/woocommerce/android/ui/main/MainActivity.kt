@@ -14,6 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -897,6 +898,7 @@ class MainActivity :
         intent.data = null
         showOrderDetail(
             orderId = event.uniqueId,
+            navHostFragment = null,
             remoteNoteId = event.remoteNoteId,
             launchedFromNotification = true
         )
@@ -1102,8 +1104,9 @@ class MainActivity :
 
     override fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment?,
         remoteNoteId: Long,
-        launchedFromNotification: Boolean
+        launchedFromNotification: Boolean,
     ) {
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
@@ -1117,7 +1120,16 @@ class MainActivity :
             remoteNoteId
         )
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(action)
+        navHostFragment?.let {
+            val bundle = Bundle().apply {
+                putLong("orderId", orderId)
+            }
+            it.navController.navigate(R.id.orderDetailFragment, bundle)
+            Log.d("NavControllerDebug", "Detail NavController: ${it.navController}")
+        } ?: kotlin.run {
+            navController.navigateSafely(action)
+        }
+        Log.d("NavControllerDebug", "List NavController: $navController")
     }
 
     override fun showOrderDetailWithSharedTransition(

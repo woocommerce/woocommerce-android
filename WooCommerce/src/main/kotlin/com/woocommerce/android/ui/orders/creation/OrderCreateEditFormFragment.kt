@@ -80,6 +80,7 @@ import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
@@ -573,8 +574,12 @@ class OrderCreateEditFormFragment :
     }
 
     private fun displayCustomAmountTypeBottomSheet() {
-        val bottomSheet = CustomAmountTypeBottomSheetDialog()
-        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
+        OrderCreateEditNavigator.navigate(
+            this,
+            OrderCreateEditNavigationTarget.CustomAmountBottomSheet
+        )
+//        val bottomSheet = CustomAmountTypeBottomSheetDialog()
+//        bottomSheet.show(requireActivity().supportFragmentManager, bottomSheet.tag)
     }
 
     private fun updateProgressBarsVisibility(
@@ -1062,6 +1067,17 @@ class OrderCreateEditFormFragment :
     }
 
     private fun setupHandleResults() {
+        handleResult<CustomAmountsViewModel.CustomAmountType>("CUSTOM_AMOUNT") {
+            OrderCreateEditNavigator.navigate(
+                this,
+                OrderCreateEditNavigationTarget.CustomAmountDialog(
+                    customAmountUIModel = viewModel.selectedCustomAmount.value?.copy(
+                        type = it
+                    ) ?: CustomAmountUIModel.EMPTY.copy(type = it),
+                    orderTotal = viewModel.orderDraft.value?.total.toString(),
+                )
+            )
+        }
         handleDialogResult<OrderStatusUpdateSource>(
             key = KEY_ORDER_STATUS_RESULT,
             entryId = R.id.orderCreationFragment

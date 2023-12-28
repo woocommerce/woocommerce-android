@@ -18,6 +18,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -56,6 +57,7 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailFragment
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -179,8 +181,19 @@ class OrderListFragment :
         return binding.root
     }
 
+    private fun isTabletMode(): Boolean {
+        return resources.getBoolean(R.bool.is_tablet)
+    }
+
+    private fun setupTabletSplitView() {
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (isTabletMode()) {
+            setupTabletSplitView()
+        }
         postponeEnterTransition()
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -513,15 +526,21 @@ class OrderListFragment :
         }
         (activity as? MainNavigationRouter)?.run {
 
-            if (sharedView != null) {
-                showOrderDetailWithSharedTransition(
-                    orderId = orderId,
-                    allOrderIds = allOrderIds,
-                    sharedView = sharedView
-                )
+            val navHostFragment = if (isTabletMode()) {
+                childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
             } else {
-                showOrderDetail(orderId)
+                null
             }
+            showOrderDetail(orderId, navHostFragment)
+//            if (sharedView != null) {
+//                showOrderDetailWithSharedTransition(
+//                    orderId = orderId,
+//                    allOrderIds = allOrderIds,
+//                    sharedView = sharedView
+//                )
+//            } else {
+//                showOrderDetail(orderId, navHostFragment)
+//            }
         }
     }
 

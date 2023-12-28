@@ -118,6 +118,10 @@ object OrderCreateEditNavigator {
             is OrderCreateEditNavigationTarget.EditGiftCard -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(target.giftCard)
             }
+
+            OrderCreateEditNavigationTarget.CustomAmountBottomSheet -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountBottomSheetFragment()
+            }
         }
         navController.navigate(action)
     }

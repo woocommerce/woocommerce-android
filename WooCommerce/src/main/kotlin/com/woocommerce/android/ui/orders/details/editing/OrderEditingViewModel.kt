@@ -43,10 +43,11 @@ class OrderEditingViewModel @Inject constructor(
     private var viewState by viewStateData
 
     lateinit var order: Order
+    private var orderId: Long = 0L
 
     fun start() {
         runBlocking {
-            order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId)) {
+            order = requireNotNull(orderDetailRepository.getOrderById(orderId)) {
                 "Order ${navArgs.orderId} not found in the database."
             }
         }
@@ -142,6 +143,10 @@ class OrderEditingViewModel @Inject constructor(
         crossinline action: suspend () -> Unit
     ) = checkConnectionAndResetState().also {
         if (it) launch(dispatchers.io) { action() }
+    }
+
+    fun setOrderId(orderId: Long) {
+        this.orderId = orderId
     }
 
     @Parcelize

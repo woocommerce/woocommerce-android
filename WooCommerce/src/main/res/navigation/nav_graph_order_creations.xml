@@ -10,6 +10,11 @@
         android:label="orderCreationFragment"
         tools:layout="@layout/fragment_order_create_edit_form">
         <action
+            android:id="@+id/action_orderCreationFragment_to_customAmountBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:destination="@+id/customAmountBottomSheetFragment" />
+        <action
             android:id="@+id/action_orderCreationFragment_to_customAmountsDialog"
             app:enterAnim="@anim/default_enter_anim"
             app:exitAnim="@anim/default_exit_anim"
@@ -164,6 +169,14 @@
         <action
             android:id="@+id/action_orderCreationFragment_to_giftCardFragment"
             app:destination="@id/giftCardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customAmountBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog"
+        android:label="CustomAmountBottomSheetFragment">
+        <action
+            android:id="@+id/action_customAmountBottomSheetFragment_to_customAmountsFragment"
+            app:destination="@id/customAmountsDialog" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"

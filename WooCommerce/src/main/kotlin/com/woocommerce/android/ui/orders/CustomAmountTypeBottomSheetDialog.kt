@@ -8,11 +8,15 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.OnCustomAmountTypeSelected
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CustomAmountTypeBottomSheetDialog : WCBottomSheetDialogFragment() {
     private val sharedViewModel: OrderCreateEditViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_order_creations)
     override fun onCreateView(
@@ -28,6 +32,21 @@ class CustomAmountTypeBottomSheetDialog : WCBottomSheetDialogFragment() {
                         sharedViewModel.onCustomAmountTypeSelected(customAmountType)
                         dismiss()
                     }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeViewModelEvents()
+    }
+
+    private fun observeViewModelEvents() {
+        sharedViewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is OnCustomAmountTypeSelected -> {
+                    navigateBackWithResult("CUSTOM_AMOUNT", it.type)
                 }
             }
         }
