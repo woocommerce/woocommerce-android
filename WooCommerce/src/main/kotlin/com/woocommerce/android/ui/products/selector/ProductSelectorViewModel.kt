@@ -368,7 +368,7 @@ class ProductSelectorViewModel @Inject constructor(
                     selectionMode = navArgs.selectionMode
                 )
             )
-        } else if (!item.isVariable()) {
+        } else {
             updateItemSelection(SelectedItem.Product(item.id), productSource)
         }
     }
