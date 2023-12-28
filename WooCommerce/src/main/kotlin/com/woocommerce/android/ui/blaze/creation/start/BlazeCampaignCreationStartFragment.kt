@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -40,8 +42,10 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
             when (event) {
                 is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationIntro ->
                     navigateToBlazeCampaignCreationIntro(event.productId)
+
                 is BlazeCampaignCreationStartViewModel.ShowProductSelectorScreen ->
                     navigateToProductSelectorScreen()
+
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
@@ -55,21 +59,26 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
 
     private fun navigateToBlazeCampaignCreationIntro(productId: Long) {
         findNavController().navigateSafely(
-            BlazeCampaignCreationStartFragmentDirections
-                .actionBlazeCampaignCreationStartFragmentToBlazeCampaignCreationIntroFragment(productId)
+            directions = BlazeCampaignCreationStartFragmentDirections
+                .actionBlazeCampaignCreationStartFragmentToBlazeCampaignCreationIntroFragment(productId),
+            skipThrottling = true, // perform the navigation immediately
+            navOptions = navOptions {
+                popUpTo(R.id.blazeCampaignCreationStartFragment) { inclusive = true }
+            }
         )
     }
 
     private fun navigateToProductSelectorScreen() {
         findNavController().navigateSafely(
-            BlazeCampaignCreationStartFragmentDirections
+            directions = BlazeCampaignCreationStartFragmentDirections
                 .actionBlazeCampaignCreationStartFragmentToProductSelector(
                     selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
                     selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
                     screenTitleOverride = getString(R.string.blaze_campaign_creation_product_selector_title),
                     ctaButtonTextOverride = getString(R.string.blaze_campaign_creation_product_selector_cta_button),
                     productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
-                )
+                ),
+            skipThrottling = true // perform the navigation immediately
         )
     }
 }
