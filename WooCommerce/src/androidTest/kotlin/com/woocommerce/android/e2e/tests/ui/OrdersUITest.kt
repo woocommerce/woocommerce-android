@@ -69,7 +69,6 @@ class OrdersUITest : TestBase() {
                 .selectProduct(composeTestRule, orderData.productName)
                 .editCustomerNote(note)
                 .addShipping()
-                .addFee()
                 .createOrder()
                 .assertSingleOrderScreenWithProduct(orderData)
                 .goBackToOrdersScreen()

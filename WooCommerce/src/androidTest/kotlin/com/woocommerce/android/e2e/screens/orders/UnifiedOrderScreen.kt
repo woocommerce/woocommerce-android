@@ -4,12 +4,10 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
@@ -48,7 +46,7 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     fun addShipping(): UnifiedOrderScreen {
         scrollTo(R.id.additional_info_collection_section)
         waitForElementToBeDisplayed(R.id.additional_info_collection_section)
-        clickOn(R.id.shipping_button)
+        clickOn(R.id.add_shipping_button)
         waitForElementToBeDisplayed(R.id.amountEditText)
 
         Espresso.onView(
@@ -57,20 +55,6 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
                 withClassName(endsWith("EditText"))
             )
         ).perform(ViewActions.replaceText("3.30"))
-
-        clickOn(R.id.menu_done)
-        return this
-    }
-
-    fun addFee(): UnifiedOrderScreen {
-        waitForElementToBeDisplayed(R.id.additional_info_collection_section)
-        clickOn(R.id.fee_button)
-
-        // Clearing first before re-adding because of the mock file, this is prepopulated at this point
-        Espresso.onView((allOf(withText("2.25"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
-            .perform(ViewActions.clearText())
-        Espresso.onView((allOf(withText("0"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
-            .perform(ViewActions.replaceText("2.25"))
 
         clickOn(R.id.menu_done)
         return this
