@@ -3920,4 +3920,9 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+
+    <string name="order_configuration_product_selection">Select product %s</string>
+    <string name="order_configuration_product_selection_control">Product selection</string>
+    <string name="disabled">Disabled</string>
+
 </resources>
