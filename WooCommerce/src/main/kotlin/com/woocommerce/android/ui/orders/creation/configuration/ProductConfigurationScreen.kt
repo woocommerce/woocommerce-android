@@ -327,11 +327,7 @@ fun OptionalQuantityProductItem(
                 contentDescription = description
                 stateDescription = state
             }
-            .clickable {
-                if (isSelectionEnabled) {
-                    onSwitchChanged(!isIncluded)
-                }
-            }
+            .clickable { onSwitchChanged(!isIncluded) }
     } else {
         modifier.clearAndSetSemantics {
             contentDescription = description
