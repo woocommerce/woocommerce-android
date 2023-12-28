@@ -36,7 +36,7 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     }
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
-        waitForElementToBeDisplayed(R.id.payment_section)
+        waitForElementToBeDisplayed(R.id.additional_info_collection_section)
         Espresso.onView(withId(R.id.customer_section))
             .perform(NestedScrollViewExtension())
         Espresso.onView(withText("Add customer details"))
@@ -46,8 +46,8 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     }
 
     fun addShipping(): UnifiedOrderScreen {
-        scrollTo(R.id.payment_section)
-        waitForElementToBeDisplayed(R.id.payment_section)
+        scrollTo(R.id.additional_info_collection_section)
+        waitForElementToBeDisplayed(R.id.additional_info_collection_section)
         clickOn(R.id.shipping_button)
         waitForElementToBeDisplayed(R.id.amountEditText)
 
@@ -63,7 +63,7 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     }
 
     fun addFee(): UnifiedOrderScreen {
-        waitForElementToBeDisplayed(R.id.payment_section)
+        waitForElementToBeDisplayed(R.id.additional_info_collection_section)
         clickOn(R.id.fee_button)
 
         // Clearing first before re-adding because of the mock file, this is prepopulated at this point
