@@ -5,7 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,6 +23,7 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleEvents()
+        handleResults()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -27,11 +36,33 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
             when (event) {
                 is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationIntro ->
                     navigateToBlazeCampaignCreationIntro()
+                is BlazeCampaignCreationStartViewModel.ShowProductSelectorScreen ->
+                    navigateToProductSelectorScreen()
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
+            viewModel.onProductSelected(it.first().id)
         }
     }
 
     private fun navigateToBlazeCampaignCreationIntro() {
         TODO()
+    }
+
+    private fun navigateToProductSelectorScreen() {
+        findNavController().navigateSafely(
+            BlazeCampaignCreationStartFragmentDirections
+                .actionBlazeCampaignCreationStartFragmentToProductSelector(
+                    selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+                    selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
+                    screenTitleOverride = getString(R.string.blaze_campaign_creation_product_selector_title),
+                    ctaButtonTextOverride = getString(R.string.blaze_campaign_creation_product_selector_cta_button),
+                    productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
+                )
+        )
     }
 }

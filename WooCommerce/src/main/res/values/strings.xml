@@ -3823,6 +3823,8 @@
     -->
     <string name="blaze_campaign_details_title">Campaign details</string>
     <string name="product_details_blaze_card">Promote with Blaze</string>
+    <string name="blaze_campaign_creation_product_selector_title">Ready to promote</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
 
     <!--
     Highlights tooltip
