@@ -26,7 +26,7 @@ class BlazeCampaignCreationStartViewModel @Inject constructor(
         launch {
             when {
                 blazeRepository.getMostRecentCampaign() == null -> {
-                    triggerEvent(ShowBlazeCampaignCreationIntro)
+                    triggerEvent(ShowBlazeCampaignCreationIntro(navArgs.productId))
                 }
                 else -> startCampaignCreation()
             }
@@ -61,6 +61,8 @@ class BlazeCampaignCreationStartViewModel @Inject constructor(
         TODO("Make call to the AI to generate the campaign defaults and then navigate to the AD preview")
     }
 
-    object ShowBlazeCampaignCreationIntro : MultiLiveEvent.Event()
+    data class ShowBlazeCampaignCreationIntro(
+        val productId: Long
+    ) : MultiLiveEvent.Event()
     object ShowProductSelectorScreen : MultiLiveEvent.Event()
 }

@@ -35,7 +35,7 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
         viewModel.event.observe(this) { event ->
             when (event) {
                 is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationIntro ->
-                    navigateToBlazeCampaignCreationIntro()
+                    navigateToBlazeCampaignCreationIntro(event.productId)
                 is BlazeCampaignCreationStartViewModel.ShowProductSelectorScreen ->
                     navigateToProductSelectorScreen()
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
@@ -49,8 +49,11 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToBlazeCampaignCreationIntro() {
-        TODO()
+    private fun navigateToBlazeCampaignCreationIntro(productId: Long) {
+        findNavController().navigateSafely(
+            BlazeCampaignCreationStartFragmentDirections
+                .actionBlazeCampaignCreationStartFragmentToBlazeCampaignCreationIntroFragment(productId)
+        )
     }
 
     private fun navigateToProductSelectorScreen() {

@@ -33,6 +33,17 @@
                 android:name="productSelectorFlow"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
         </action>
+        <action
+            android:id="@+id/action_blazeCampaignCreationStartFragment_to_blazeCampaignCreationIntroFragment"
+            app:destination="@id/blazeCampaignCreationIntroFragment" />
     </fragment>
-
+    <fragment
+        android:id="@+id/blazeCampaignCreationIntroFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragment"
+        android:label="BlazeCampaignCreationIntroFragment">
+        <argument
+            android:name="productId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+    </fragment>
 </navigation>
