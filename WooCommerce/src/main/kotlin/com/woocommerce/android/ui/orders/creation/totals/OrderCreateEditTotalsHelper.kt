@@ -58,7 +58,11 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                             bigDecimalFormatter,
                             onClick = onGiftClicked
                         ),
-                        order.toTaxesSection(bigDecimalFormatter, onClick = onTaxesLearnMore),
+                        order.toTaxesSection(
+                            bigDecimalFormatter,
+                            viewState.taxBasedOnSettingLabel,
+                            onClick = onTaxesLearnMore
+                        ),
                         order.toDiscountSection(bigDecimalFormatter),
                     ),
                     orderTotal = order.toOrderTotals(bigDecimalFormatter),
@@ -163,6 +167,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 
     private fun Order.toTaxesSection(
         bigDecimalFormatter: (BigDecimal) -> String,
+        taxBasedOnSettingLabel: String,
         onClick: () -> Unit
     ): TotalsSectionsState.Line =
         TotalsSectionsState.Line.Block(
@@ -177,9 +182,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     value = bigDecimalFormatter(BigDecimal(it.taxTotal))
                 )
             } + TotalsSectionsState.Line.LearnMore(
-                text = resourceProvider.getString(
-                    R.string.order_creation_tax_based_on_billing_address
-                ),
+                text = taxBasedOnSettingLabel,
                 buttonText = resourceProvider.getString(R.string.learn_more),
                 onClick = onClick
             )
