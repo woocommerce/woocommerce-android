@@ -29,11 +29,16 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleEvents()
-        handleResults()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        TODO("Implement loading view for making the AI prompt before showing the AD preview screen")
+        return composeView {
+            // TODO Implement loading view for making the AI prompt before showing the AD preview screen"
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        handleResults()
     }
 
     private fun handleEvents() {
