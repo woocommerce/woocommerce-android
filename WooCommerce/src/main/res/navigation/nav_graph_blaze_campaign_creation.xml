@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/nav_graph_blaze_campaign_creation">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_blaze_campaign_creation"
+    app:startDestination="@id/blazeCampaignCreationStartFragment">
 
+    <fragment
+        android:id="@+id/blazeCampaignCreationStartFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStartFragment"
+        android:label="BlazeCampaignCreationStartFragment" />
 </navigation>
