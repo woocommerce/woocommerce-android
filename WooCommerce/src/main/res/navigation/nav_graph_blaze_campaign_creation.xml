@@ -7,5 +7,9 @@
     <fragment
         android:id="@+id/blazeCampaignCreationStartFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStartFragment"
-        android:label="BlazeCampaignCreationStartFragment" />
+        android:label="BlazeCampaignCreationStartFragment">
+        <argument
+            android:name="productId"
+            app:argType="long" />
+    </fragment>
 </navigation>

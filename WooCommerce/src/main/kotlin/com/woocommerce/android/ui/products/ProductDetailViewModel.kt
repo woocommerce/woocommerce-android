@@ -71,6 +71,7 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -459,15 +460,19 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onBlazeClicked() {
         viewState.productDraft?.let {
-            triggerEvent(
-                ShowBlazeCreationScreen(
-                    url = blazeUrlsHelper.buildUrlForProduct(
-                        productId = it.remoteId,
+            if (FeatureFlag.BLAZE_I3.isEnabled()) {
+                triggerEvent(ShowBlazeCreationScreen(it.remoteId))
+            } else {
+                triggerEvent(
+                    NavigateToBlazeWebView(
+                        url = blazeUrlsHelper.buildUrlForProduct(
+                            productId = it.remoteId,
+                            source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
+                        ),
                         source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
-                    ),
-                    source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -2455,7 +2460,9 @@ class ProductDetailViewModel @Inject constructor(
 
     object ShowDuplicateProductInProgress : Event()
 
-    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : Event()
+    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
+
+    data class ShowBlazeCreationScreen(val productId: Long) : Event()
 
     data class ShowAIProductDescriptionBottomSheet(
         val productTitle: String,

@@ -49,12 +49,13 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.LaunchBlazeCampaignCreation
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowBlazeCreationScreen
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
@@ -74,7 +75,6 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Var
 import com.woocommerce.android.ui.promobanner.PromoBanner
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
@@ -358,11 +358,8 @@ class ProductDetailFragment :
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
                 is ShowDuplicateProductError -> showDuplicateProductError()
-                is LaunchBlazeCampaignCreation -> if (FeatureFlag.BLAZE_I3.isEnabled()) {
-                    openBlazeCreationFlow()
-                } else {
-                    openBlazeWebView(event)
-                }
+                is NavigateToBlazeWebView -> openBlazeWebView(event)
+                is ShowBlazeCreationScreen -> openBlazeCreationFlow()
                 is ShowDuplicateProductInProgress -> showProgressDialog(
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
@@ -400,7 +397,7 @@ class ProductDetailFragment :
         )
     }
 
-    private fun openBlazeWebView(event: LaunchBlazeCampaignCreation) {
+    private fun openBlazeWebView(event: NavigateToBlazeWebView) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
                 urlToLoad = event.url,
