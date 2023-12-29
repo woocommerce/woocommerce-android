@@ -671,11 +671,11 @@
         app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_blazeCampaignCreation"
-        app:destination="@id/nav_graph_blaze_campaign_creation" >
+        app:destination="@id/nav_graph_blaze_campaign_creation">
         <argument
             android:name="productId"
-            app:argType="long"
-            android:defaultValue="-1L" />
+            android:defaultValue="-1L"
+            app:argType="long" />
     </action>
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"

@@ -30,7 +30,8 @@ class BlazeCampaignCreationDispatcherViewModelTests : BaseUnitTest() {
         viewModel = BlazeCampaignCreationDispatcherViewModel(
             savedStateHandle = BlazeCampaignCreationDispatcherFragmentArgs(productId).toSavedStateHandle(),
             blazeRepository = blazeRepository,
-            productListRepository = productListRepository
+            productListRepository = productListRepository,
+            coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
     }
 
