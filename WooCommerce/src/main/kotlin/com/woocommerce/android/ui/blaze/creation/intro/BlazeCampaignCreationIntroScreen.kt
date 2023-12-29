@@ -41,6 +41,18 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
 
+@Composable
+fun BlazeCampaignCreationIntroScreen(
+    viewModel: BlazeCampaignCreationIntroViewModel
+) {
+    WooThemeWithBackground {
+        BlazeCampaignCreationIntroScreen(
+            onContinueClick = viewModel::onContinueClick,
+            onDismissClick = viewModel::onDismissClick
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BlazeCampaignCreationIntroScreen(
@@ -86,7 +98,6 @@ fun BlazeCampaignCreationIntroScreen(
 }
 
 @Composable
-@Suppress("UNUSED_PARAMETER")
 private fun BlazeCampaignCreationIntroContent(
     onContinueClick: () -> Unit,
     onLearnMoreClick: () -> Unit,
@@ -95,7 +106,6 @@ private fun BlazeCampaignCreationIntroContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .padding(vertical = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
     ) {
         Column(
@@ -105,7 +115,7 @@ private fun BlazeCampaignCreationIntroContent(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
                 Icon(
@@ -175,6 +185,8 @@ private fun BlazeCampaignCreationIntroContent(
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
