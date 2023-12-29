@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -11,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -32,9 +32,8 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
-            // TODO Implement loading view for making the AI prompt before showing the AD preview screen"
-        }
+        // Return a non-null View to be able to handle result from the ProductSelectorFragment
+        return View(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,6 +46,14 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
             when (event) {
                 is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationIntro ->
                     navigateToBlazeCampaignCreationIntro(event.productId)
+
+                is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm ->
+                    // TODO update when the AD form is implemented
+                    Toast.makeText(
+                        requireContext(),
+                        "This will show the AD form for product ${event.productId}",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 is BlazeCampaignCreationStartViewModel.ShowProductSelectorScreen ->
                     navigateToProductSelectorScreen()
@@ -83,7 +90,7 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
                     ctaButtonTextOverride = getString(R.string.blaze_campaign_creation_product_selector_cta_button),
                     productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
                 ),
-            skipThrottling = true // perform the navigation immediately
+            skipThrottling = true, // perform the navigation immediately,
         )
     }
 }

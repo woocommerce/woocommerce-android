@@ -25,24 +25,26 @@ class BlazeCampaignCreationStartViewModel @Inject constructor(
     init {
         launch {
             when {
-                blazeRepository.getMostRecentCampaign() == null -> {
-                    triggerEvent(ShowBlazeCampaignCreationIntro(navArgs.productId))
-                }
+                blazeRepository.getMostRecentCampaign() == null -> showIntro()
                 else -> startCampaignCreationWithoutIntro()
             }
         }
     }
 
-    fun onProductSelected(productId: Long) = launch {
-        loadCampaignDefaults(productId)
+    fun onProductSelected(productId: Long) {
+        triggerEvent(ShowBlazeCampaignCreationAdForm(productId))
+    }
+
+    private fun showIntro() {
+        triggerEvent(ShowBlazeCampaignCreationIntro(navArgs.productId))
     }
 
     private suspend fun startCampaignCreationWithoutIntro() {
         val products = getPublishedProducts()
 
         when {
-            navArgs.productId != -1L -> loadCampaignDefaults(navArgs.productId)
-            products.size == 1 -> loadCampaignDefaults(products.first().remoteId)
+            navArgs.productId != -1L -> triggerEvent(ShowBlazeCampaignCreationAdForm(navArgs.productId))
+            products.size == 1 -> triggerEvent(ShowBlazeCampaignCreationAdForm(products.first().remoteId))
             products.isNotEmpty() -> triggerEvent(ShowProductSelectorScreen)
             else -> {
                 WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
@@ -56,12 +58,10 @@ class BlazeCampaignCreationStartViewModel @Inject constructor(
         sortType = ProductSorting.DATE_DESC,
     ).filterNot { it.isSampleProduct }
 
-    @Suppress("UNUSED_PARAMETER", "RedundantSuspendModifier")
-    private suspend fun loadCampaignDefaults(productId: Long) {
-        TODO("Make call to the AI to generate the campaign defaults and then navigate to the AD preview")
-    }
-
     data class ShowBlazeCampaignCreationIntro(
+        val productId: Long
+    ) : MultiLiveEvent.Event()
+    data class ShowBlazeCampaignCreationAdForm(
         val productId: Long
     ) : MultiLiveEvent.Event()
     object ShowProductSelectorScreen : MultiLiveEvent.Event()

@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStar
 import com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStartViewModel
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -54,7 +55,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                         productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
                         sortType = ProductSorting.DATE_DESC,
                     )
-                ).thenReturn(List(2) { mock() })
+                ).thenReturn(List(2) { ProductTestUtils.generateProduct(productId = it.toLong()) })
             }
 
             val event = viewModel.event.value
@@ -63,7 +64,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
         }
 
     @Test
-    fun `given a existing campaign and a given product id, when starting the flow, then load campaign defaults`() =
+    fun `given a existing campaign and a given product id, when starting the flow, then show ad creation form`() =
         testBlocking {
             setup(productId = 1L) {
                 whenever(blazeRepository.getMostRecentCampaign()).thenReturn(mock())
@@ -72,14 +73,16 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                         productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
                         sortType = ProductSorting.DATE_DESC,
                     )
-                ).thenReturn(List(1) { mock() })
+                ).thenReturn(List(1) { ProductTestUtils.generateProduct(productId = it.toLong()) })
             }
 
-            // TODO implement the test after implementing the AI logic
+            val event = viewModel.event.value
+
+            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm(1L))
         }
 
     @Test
-    fun `given a existing campaign and 1 published product, when starting the flow, then make AI call to prepare campaign defaults`() =
+    fun `given a existing campaign and 1 published product, when starting the flow, then show ad creation form`() =
         testBlocking {
             setup(productId = -1L) {
                 whenever(blazeRepository.getMostRecentCampaign()).thenReturn(mock())
@@ -88,14 +91,16 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                         productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
                         sortType = ProductSorting.DATE_DESC,
                     )
-                ).thenReturn(List(1) { mock() })
+                ).thenReturn(List(1) { ProductTestUtils.generateProduct(productId = 1L) })
             }
 
-            // TODO implement the test after implementing the AI logic
+            val event = viewModel.event.value
+
+            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm(1L))
         }
 
     @Test
-    fun `when picking a product from the product selector, then make AI call to prepare campaign default`() =
+    fun `when picking a product from the product selector, then show ad creation form`() =
         testBlocking {
             setup(productId = -1L) {
                 whenever(blazeRepository.getMostRecentCampaign()).thenReturn(mock())
@@ -104,9 +109,12 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                         productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
                         sortType = ProductSorting.DATE_DESC,
                     )
-                ).thenReturn(List(2) { mock() })
+                ).thenReturn(List(2) { ProductTestUtils.generateProduct(productId = it.toLong()) })
             }
 
-            // TODO implement the test after implementing the AI logic
+            viewModel.onProductSelected(1L)
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm(1L))
         }
 }
