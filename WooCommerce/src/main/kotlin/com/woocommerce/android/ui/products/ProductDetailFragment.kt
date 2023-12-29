@@ -359,7 +359,7 @@ class ProductDetailFragment :
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
                 is ShowDuplicateProductError -> showDuplicateProductError()
                 is NavigateToBlazeWebView -> openBlazeWebView(event)
-                is ShowBlazeCreationScreen -> openBlazeCreationFlow()
+                is ShowBlazeCreationScreen -> openBlazeCreationFlow(event.productId)
                 is ShowDuplicateProductInProgress -> showProgressDialog(
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
@@ -391,9 +391,9 @@ class ProductDetailFragment :
         )
     }
 
-    private fun openBlazeCreationFlow() {
+    private fun openBlazeCreationFlow(productId: Long) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreation()
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreation(productId)
         )
     }
 
