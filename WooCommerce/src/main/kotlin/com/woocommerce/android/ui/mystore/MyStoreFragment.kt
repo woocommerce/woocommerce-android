@@ -71,7 +71,6 @@ import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -247,14 +246,12 @@ class MyStoreFragment :
         }
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> if (FeatureFlag.BLAZE_I3.isEnabled()) {
-                    openBlazeCreationFlow()
-                } else {
-                    openBlazeWebView(
-                        url = event.url,
-                        source = event.source
-                    )
-                }
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
+                    url = event.url,
+                    source = event.source
+                )
+
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
 
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {
                     findNavController().navigateSafely(
@@ -275,9 +272,9 @@ class MyStoreFragment :
         }
     }
 
-    private fun openBlazeCreationFlow() {
+    private fun openBlazeCreationFlow(productId: Long?) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreation()
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreation(productId = productId ?: -1L)
         )
     }
 

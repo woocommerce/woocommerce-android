@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,18 +76,6 @@ class MyStoreBlazeViewModel @Inject constructor(
     }.asLiveData()
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
-        fun launchCampaignCreation(productId: Long?) {
-            val source = BlazeFlowSource.MY_STORE_SECTION
-            val url = if (productId != null) {
-                blazeUrlsHelper.buildUrlForProduct(productId, source)
-            } else {
-                blazeUrlsHelper.buildUrlForSite(source)
-            }
-            triggerEvent(
-                LaunchBlazeCampaignCreation(url = url, source = source)
-            )
-        }
-
         return getProducts().map { products ->
             val product = products.firstOrNull() ?: return@map MyStoreBlazeCampaignState.Hidden
             MyStoreBlazeCampaignState.NoCampaign(
@@ -148,12 +137,7 @@ class MyStoreBlazeViewModel @Inject constructor(
                     triggerEvent(ShowAllCampaigns)
                 },
                 onCreateCampaignClicked = {
-                    triggerEvent(
-                        LaunchBlazeCampaignCreation(
-                            url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_SECTION),
-                            source = BlazeFlowSource.MY_STORE_SECTION
-                        )
-                    )
+                    launchCampaignCreation(productId = null)
                 }
             )
         )
@@ -171,6 +155,22 @@ class MyStoreBlazeViewModel @Inject constructor(
                 sortType = ProductSorting.DATE_DESC,
             )
             emit(getCachedProducts())
+        }
+    }
+
+    private fun launchCampaignCreation(productId: Long?) {
+        if (FeatureFlag.BLAZE_I3.isEnabled()) {
+            triggerEvent(LaunchBlazeCampaignCreation(productId))
+        } else {
+            val source = BlazeFlowSource.MY_STORE_SECTION
+            val url = if (productId != null) {
+                blazeUrlsHelper.buildUrlForProduct(productId, source)
+            } else {
+                blazeUrlsHelper.buildUrlForSite(source)
+            }
+            triggerEvent(
+                LaunchBlazeCampaignCreationUsingWebView(url = url, source = source)
+            )
         }
     }
 
@@ -200,7 +200,12 @@ class MyStoreBlazeViewModel @Inject constructor(
         ) : MyStoreBlazeCampaignState
     }
 
-    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    data class LaunchBlazeCampaignCreationUsingWebView(
+        val url: String, val source: BlazeFlowSource
+    ) : MultiLiveEvent.Event()
+
+    data class LaunchBlazeCampaignCreation(val productId: Long?) : MultiLiveEvent.Event()
+
     object ShowAllCampaigns : MultiLiveEvent.Event()
     data class ShowCampaignDetails(
         val url: String,
