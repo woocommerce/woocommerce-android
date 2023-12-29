@@ -28,7 +28,7 @@ class BlazeCampaignCreationStartViewModel @Inject constructor(
                 blazeRepository.getMostRecentCampaign() == null -> {
                     triggerEvent(ShowBlazeCampaignCreationIntro(navArgs.productId))
                 }
-                else -> startCampaignCreation()
+                else -> startCampaignCreationWithoutIntro()
             }
         }
     }
@@ -37,7 +37,7 @@ class BlazeCampaignCreationStartViewModel @Inject constructor(
         loadCampaignDefaults(productId)
     }
 
-    private suspend fun startCampaignCreation() {
+    private suspend fun startCampaignCreationWithoutIntro() {
         val products = getPublishedProducts()
 
         when {
