@@ -670,14 +670,6 @@
         android:id="@+id/action_global_blazeCampaignCreationFragment"
         app:destination="@id/blazeCampaignCreationFragment" />
     <action
-        android:id="@+id/action_global_blazeCampaignCreation"
-        app:destination="@id/nav_graph_blaze_campaign_creation">
-        <argument
-            android:name="productId"
-            android:defaultValue="-1L"
-            app:argType="long" />
-    </action>
-    <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />
     <action

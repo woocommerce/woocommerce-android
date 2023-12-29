@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +44,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION
+import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -83,6 +85,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -106,6 +109,9 @@ class ProductDetailFragment :
         }
 
     private var productId: Long = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID
+
+    @Inject
+    lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
     private val skeletonView = SkeletonView()
 
@@ -146,6 +152,8 @@ class ProductDetailFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        blazeCampaignCreationDispatcher.attachFragment(this)
 
         _binding = FragmentProductDetailBinding.bind(view)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
@@ -392,9 +400,9 @@ class ProductDetailFragment :
     }
 
     private fun openBlazeCreationFlow(productId: Long) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreation(productId)
-        )
+        lifecycleScope.launch {
+            blazeCampaignCreationDispatcher.startCampaignCreation(productId = productId)
+        }
     }
 
     private fun openBlazeWebView(event: NavigateToBlazeWebView) {
