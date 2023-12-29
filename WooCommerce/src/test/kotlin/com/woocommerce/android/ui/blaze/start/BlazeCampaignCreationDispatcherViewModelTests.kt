@@ -78,7 +78,7 @@ class BlazeCampaignCreationDispatcherViewModelTests : BaseUnitTest() {
 
             val event = viewModel.event.value
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm(1L))
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationForm(1L))
         }
 
     @Test
@@ -96,7 +96,7 @@ class BlazeCampaignCreationDispatcherViewModelTests : BaseUnitTest() {
 
             val event = viewModel.event.value
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm(1L))
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationForm(1L))
         }
 
     @Test
@@ -115,6 +115,6 @@ class BlazeCampaignCreationDispatcherViewModelTests : BaseUnitTest() {
             viewModel.onProductSelected(1L)
 
             val event = viewModel.event.value
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm(1L))
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationForm(1L))
         }
 }

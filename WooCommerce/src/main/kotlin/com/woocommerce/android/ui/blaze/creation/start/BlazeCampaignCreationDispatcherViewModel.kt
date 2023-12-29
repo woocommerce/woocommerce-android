@@ -32,7 +32,7 @@ class BlazeCampaignCreationDispatcherViewModel @Inject constructor(
     }
 
     fun onProductSelected(productId: Long) {
-        triggerEvent(ShowBlazeCampaignCreationAdForm(productId))
+        triggerEvent(ShowBlazeCampaignCreationForm(productId))
     }
 
     private fun showIntro() {
@@ -43,8 +43,8 @@ class BlazeCampaignCreationDispatcherViewModel @Inject constructor(
         val products = getPublishedProducts()
 
         when {
-            navArgs.productId != -1L -> triggerEvent(ShowBlazeCampaignCreationAdForm(navArgs.productId))
-            products.size == 1 -> triggerEvent(ShowBlazeCampaignCreationAdForm(products.first().remoteId))
+            navArgs.productId != -1L -> triggerEvent(ShowBlazeCampaignCreationForm(navArgs.productId))
+            products.size == 1 -> triggerEvent(ShowBlazeCampaignCreationForm(products.first().remoteId))
             products.isNotEmpty() -> triggerEvent(ShowProductSelectorScreen)
             else -> {
                 WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
@@ -61,7 +61,7 @@ class BlazeCampaignCreationDispatcherViewModel @Inject constructor(
     data class ShowBlazeCampaignCreationIntro(
         val productId: Long
     ) : MultiLiveEvent.Event()
-    data class ShowBlazeCampaignCreationAdForm(
+    data class ShowBlazeCampaignCreationForm(
         val productId: Long
     ) : MultiLiveEvent.Event()
     object ShowProductSelectorScreen : MultiLiveEvent.Event()

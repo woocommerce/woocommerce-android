@@ -47,11 +47,11 @@ class BlazeCampaignCreationDispatcherFragment : BaseFragment() {
                 is BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationIntro ->
                     navigateToBlazeCampaignCreationIntro(event.productId)
 
-                is BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm ->
+                is BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationForm ->
                     // TODO update when the AD form is implemented
                     Toast.makeText(
                         requireContext(),
-                        "This will show the AD form for product ${event.productId}",
+                        "This will show the campaign creation form for product ${event.productId}",
                         Toast.LENGTH_SHORT
                     ).show()
 
