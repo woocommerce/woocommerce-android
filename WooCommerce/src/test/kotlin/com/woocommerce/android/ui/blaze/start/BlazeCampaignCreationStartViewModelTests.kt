@@ -75,7 +75,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                 ).thenReturn(List(1) { mock() })
             }
 
-            // TODO: implement the test after implementing the AI logic
+            // TODO implement the test after implementing the AI logic
         }
 
     @Test
@@ -91,7 +91,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                 ).thenReturn(List(1) { mock() })
             }
 
-            // TODO: implement the test after implementing the AI logic
+            // TODO implement the test after implementing the AI logic
         }
 
     @Test
@@ -107,6 +107,6 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
                 ).thenReturn(List(2) { mock() })
             }
 
-            // TODO: implement the test after implementing the AI logic
+            // TODO implement the test after implementing the AI logic
         }
 }

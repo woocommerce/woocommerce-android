@@ -201,7 +201,8 @@ class MyStoreBlazeViewModel @Inject constructor(
     }
 
     data class LaunchBlazeCampaignCreationUsingWebView(
-        val url: String, val source: BlazeFlowSource
+        val url: String,
+        val source: BlazeFlowSource
     ) : MultiLiveEvent.Event()
 
     data class LaunchBlazeCampaignCreation(val productId: Long?) : MultiLiveEvent.Event()

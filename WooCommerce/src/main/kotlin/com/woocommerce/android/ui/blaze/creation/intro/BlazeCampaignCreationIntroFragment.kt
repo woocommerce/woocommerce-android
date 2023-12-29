@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BlazeCampaignCreationIntroFragment: BaseFragment() {
+class BlazeCampaignCreationIntroFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
             WooThemeWithBackground {
