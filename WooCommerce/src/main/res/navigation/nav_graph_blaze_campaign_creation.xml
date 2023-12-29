@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_blaze_campaign_creation"
-    app:startDestination="@id/blazeCampaignCreationStartFragment">
+    app:startDestination="@id/blazeCampaignCreationDispatcherFragment">
 
     <include app:graph="@navigation/nav_graph_product_selector" />
 
     <fragment
-        android:id="@+id/blazeCampaignCreationStartFragment"
-        android:name="com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStartFragment"
-        android:label="BlazeCampaignCreationStartFragment">
+        android:id="@+id/blazeCampaignCreationDispatcherFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationDispatcherFragment"
+        android:label="BlazeCampaignCreationDispatcherFragment">
         <argument
             android:name="productId"
             app:argType="long"

@@ -16,12 +16,12 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import javax.inject.Inject
 
 @HiltViewModel
-class BlazeCampaignCreationStartViewModel @Inject constructor(
+class BlazeCampaignCreationDispatcherViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository,
     private val productListRepository: ProductListRepository
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: BlazeCampaignCreationStartFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: BlazeCampaignCreationDispatcherFragmentArgs by savedStateHandle.navArgs()
     init {
         launch {
             when {

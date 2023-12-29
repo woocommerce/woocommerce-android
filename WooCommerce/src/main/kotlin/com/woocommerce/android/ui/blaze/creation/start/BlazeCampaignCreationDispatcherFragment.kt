@@ -20,8 +20,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BlazeCampaignCreationStartFragment : BaseFragment() {
-    private val viewModel: BlazeCampaignCreationStartViewModel by viewModels()
+class BlazeCampaignCreationDispatcherFragment : BaseFragment() {
+    private val viewModel: BlazeCampaignCreationDispatcherViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -44,10 +44,10 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
         // Use the fragment as the lifecycle owner since navigation might happen before the view is created
         viewModel.event.observe(this) { event ->
             when (event) {
-                is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationIntro ->
+                is BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationIntro ->
                     navigateToBlazeCampaignCreationIntro(event.productId)
 
-                is BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm ->
+                is BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm ->
                     // TODO update when the AD form is implemented
                     Toast.makeText(
                         requireContext(),
@@ -55,7 +55,7 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                is BlazeCampaignCreationStartViewModel.ShowProductSelectorScreen ->
+                is BlazeCampaignCreationDispatcherViewModel.ShowProductSelectorScreen ->
                     navigateToProductSelectorScreen()
 
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
@@ -71,18 +71,18 @@ class BlazeCampaignCreationStartFragment : BaseFragment() {
 
     private fun navigateToBlazeCampaignCreationIntro(productId: Long) {
         findNavController().navigateSafely(
-            directions = BlazeCampaignCreationStartFragmentDirections
+            directions = BlazeCampaignCreationDispatcherFragmentDirections
                 .actionBlazeCampaignCreationStartFragmentToBlazeCampaignCreationIntroFragment(productId),
             skipThrottling = true, // perform the navigation immediately
             navOptions = navOptions {
-                popUpTo(R.id.blazeCampaignCreationStartFragment) { inclusive = true }
+                popUpTo(R.id.blazeCampaignCreationDispatcherFragment) { inclusive = true }
             }
         )
     }
 
     private fun navigateToProductSelectorScreen() {
         findNavController().navigateSafely(
-            directions = BlazeCampaignCreationStartFragmentDirections
+            directions = BlazeCampaignCreationDispatcherFragmentDirections
                 .actionBlazeCampaignCreationStartFragmentToProductSelector(
                     selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
                     selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,

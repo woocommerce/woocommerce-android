@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.blaze.start
 
 import com.woocommerce.android.ui.blaze.BlazeRepository
-import com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStartFragmentArgs
-import com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationStartViewModel
+import com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationDispatcherFragmentArgs
+import com.woocommerce.android.ui.blaze.creation.start.BlazeCampaignCreationDispatcherViewModel
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -16,19 +16,19 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
+class BlazeCampaignCreationDispatcherViewModelTests : BaseUnitTest() {
     private val productListRepository: ProductListRepository = mock()
     private val blazeRepository: BlazeRepository = mock()
 
-    private lateinit var viewModel: BlazeCampaignCreationStartViewModel
+    private lateinit var viewModel: BlazeCampaignCreationDispatcherViewModel
 
     suspend fun setup(
         productId: Long,
         setupMocks: suspend () -> Unit = {}
     ) {
         setupMocks()
-        viewModel = BlazeCampaignCreationStartViewModel(
-            savedStateHandle = BlazeCampaignCreationStartFragmentArgs(productId).toSavedStateHandle(),
+        viewModel = BlazeCampaignCreationDispatcherViewModel(
+            savedStateHandle = BlazeCampaignCreationDispatcherFragmentArgs(productId).toSavedStateHandle(),
             blazeRepository = blazeRepository,
             productListRepository = productListRepository
         )
@@ -42,7 +42,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
 
         val event = viewModel.event.value
 
-        assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationIntro(-1L))
+        assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationIntro(-1L))
     }
 
     @Test
@@ -60,7 +60,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
 
             val event = viewModel.event.value
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowProductSelectorScreen)
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowProductSelectorScreen)
         }
 
     @Test
@@ -78,7 +78,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
 
             val event = viewModel.event.value
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm(1L))
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm(1L))
         }
 
     @Test
@@ -96,7 +96,7 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
 
             val event = viewModel.event.value
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm(1L))
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm(1L))
         }
 
     @Test
@@ -115,6 +115,6 @@ class BlazeCampaignCreationStartViewModelTests : BaseUnitTest() {
             viewModel.onProductSelected(1L)
 
             val event = viewModel.event.value
-            assertThat(event).isEqualTo(BlazeCampaignCreationStartViewModel.ShowBlazeCampaignCreationAdForm(1L))
+            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherViewModel.ShowBlazeCampaignCreationAdForm(1L))
         }
 }
