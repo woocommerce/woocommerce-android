@@ -16,16 +16,21 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Visitor
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 val testRangeSelection = TODAY.generateSelectionData(
     calendar = Calendar.getInstance(),
-    locale = Locale.getDefault()
+    locale = Locale.getDefault(),
+    referenceStartDate = Date(),
+    referenceEndDate = Date()
 )
 
 val testCustomRangeSelection = CUSTOM.generateSelectionData(
     calendar = Calendar.getInstance(),
-    locale = Locale.getDefault()
+    locale = Locale.getDefault(),
+    referenceStartDate = Date(),
+    referenceEndDate = Date()
 )
 
 val testRevenueStat = RevenueStat(

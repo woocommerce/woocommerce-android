@@ -77,6 +77,7 @@ import com.woocommerce.android.model.Address.Companion.EMPTY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
@@ -109,10 +110,12 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
+import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialogViewModel.CustomAmountType
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -137,9 +140,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
@@ -148,6 +155,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -175,10 +183,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
-    private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
     private val adjustProductQuantity: AdjustProductQuantity,
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
+    private val totalsHelper: OrderCreateEditTotalsHelper,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -201,9 +209,28 @@ class OrderCreateEditViewModel @Inject constructor(
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
+    private val pluginsInformation: MutableStateFlow<Map<String, WooPlugin>> =
+        savedState.getStateFlow(
+            scope = viewModelScope,
+            initialValue = HashMap()
+        )
+    val isGiftCardExtensionEnabled
+        get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
+            ?.isOperational ?: false
+
+    private val _selectedGiftCard = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = args.giftCardCode.orEmpty()
+    )
+
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
-        .asLiveData()
+        .combine(_selectedGiftCard) { order, giftCard ->
+            order.copy(
+                selectedGiftCard = giftCard,
+                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
+            )
+        }.asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
@@ -213,6 +240,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 orderDetailRepository.getOrderStatus(status.value)
             }
         }.asLiveData()
+
+    private val _totalsData = MutableLiveData<TotalsSectionsState>(TotalsSectionsState.Disabled)
+    val totalsData: LiveData<TotalsSectionsState> = _totalsData
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
@@ -278,6 +308,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
 
     init {
+        monitorPluginAvailabilityChanges()
+
         when (mode) {
             Mode.Creation -> {
                 _orderDraft.update {
@@ -366,7 +398,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val isSetNewTaxRateButtonVisible: Boolean = when (it) {
                 BillingAddress, ShippingAddress -> true
                 else -> false
-            } && isTaxRateSelectorEnabled() && !_orderDraft.value.isOrderPaid
+            } && !_orderDraft.value.isOrderPaid
             viewState = viewState.copy(
                 taxBasedOnSettingLabel = it?.label ?: "",
                 taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
@@ -480,6 +512,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     onIncreaseProductsQuantity(product)
                 }
             }
+
             is ProductAmountEvent.Change -> {
                 when (val newAmountInt = amountChangeEvent.newAmount.toIntOrNull()) {
                     null, 0 -> onRemoveProduct(product)
@@ -634,8 +667,13 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
+                _selectedGiftCard.value.isEmpty() &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
+    }
+
+    private fun updateTotals(order: Order) {
+        _totalsData.value = totalsHelper.mapToPaymentTotalsState(order)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1045,6 +1083,10 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
     }
 
+    fun onGiftCardSelected(selectedGiftCard: String) {
+        _selectedGiftCard.update { selectedGiftCard }
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
@@ -1054,7 +1096,8 @@ class OrderCreateEditViewModel @Inject constructor(
             Mode.Creation -> viewModelScope.launch {
                 trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
-                orderCreateEditRepository.placeOrder(order).fold(
+                val giftCard = _selectedGiftCard.value
+                orderCreateEditRepository.placeOrder(order, giftCard).fold(
                     onSuccess = {
                         trackOrderCreationSuccess()
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
@@ -1168,10 +1211,25 @@ class OrderCreateEditViewModel @Inject constructor(
                                 updateCouponButtonVisibility(it)
                                 updateAddShippingButtonVisibility(it)
                                 updateAddGiftCardButtonVisibility(it)
+                                updateTotals(it)
                             }
                         }
                     }
                 }
+        }
+    }
+
+    private fun monitorPluginAvailabilityChanges() {
+        launch {
+            pluginsInformation
+                .onEach {
+                    val isGiftCardExtensionEnabled = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
+                    viewState = viewState.copy(shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled)
+                }.launchIn(viewModelScope)
+
+            pluginsInformation.update {
+                orderCreateEditRepository.fetchOrderSupportedPlugins()
+            }
         }
     }
 
@@ -1306,6 +1364,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
@@ -1338,10 +1397,10 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
-        triggerEvent(Exit)
     }
 
     private fun trackIfPercentageBasedCustomAmount(customAmountUIModel: CustomAmountUIModel) {
@@ -1349,6 +1408,7 @@ class OrderCreateEditViewModel @Inject constructor(
             CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
                 tracker.track(ADD_CUSTOM_AMOUNT_PERCENTAGE_ADDED)
             }
+
             CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
                 // no -op
             }
@@ -1396,6 +1456,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
+        viewState = viewState.copy(isEditable = false)
         _orderDraft.update { draft ->
             val feesList = draft.feesLines.map {
                 if (customAmountUIModel.id == it.id) {
@@ -1406,8 +1467,8 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        viewState = viewState.copy(isEditable = true)
         tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
-        triggerEvent(Exit)
     }
 
     fun onFeeRemoved() {
@@ -1580,6 +1641,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isCouponButtonEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
         val isAddGiftCardButtonEnabled: Boolean = false,
+        val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",

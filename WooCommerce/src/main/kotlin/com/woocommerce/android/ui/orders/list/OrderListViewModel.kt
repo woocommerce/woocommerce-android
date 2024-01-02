@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrde
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -103,7 +104,8 @@ class OrderListViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val appPrefs: AppPrefsWrapper,
-    private val showTestNotification: ShowTestNotification
+    private val showTestNotification: ShowTestNotification,
+    private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -123,7 +125,14 @@ class OrderListViewModel @Inject constructor(
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
     private val dataSource by lazy {
-        OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
+        OrderListItemDataSource(
+            dispatcher,
+            orderStore,
+            networkStatus,
+            fetcher,
+            resourceProvider,
+            dateUtils
+        )
     }
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))

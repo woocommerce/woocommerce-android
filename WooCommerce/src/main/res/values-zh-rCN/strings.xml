@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 10:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="store_creation_use_theme_button">从此主题开始</string>
+    <string name="scan_to_update_inventory_product_label">产品</string>
+    <string name="scan_to_update_inventory_quantity_label">数量</string>
+    <string name="scan_to_update_inventory_original_quantity_label">原始数量</string>
+    <string name="scan_to_update_inventory_failure_snackbar">出错了。 请重试</string>
+    <string name="scan_to_update_inventory_success_snackbar">已更新数量：%s</string>
+    <string name="scan_to_update_inventory_product_details_button">查看产品详情</string>
+    <string name="scan_to_update_inventory_update_quantity_button">更新数量</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">数量 + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">SKU 为 %s 的产品不在库存管理范围内。 请重试。</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">未找到 SKU 为 %s 的产品。 请重试。</string>
+    <string name="theme_activation_failed">主题激活失败，请重试！</string>
+    <string name="settings_notifs_enable_chaching_sound_description">订单通知声音已禁用，重新启用即可在完成每笔新销售时听到“咔-亲”提示音。</string>
+    <string name="settings_notifs_enable_chaching_sound">启用“咔-亲”提示音</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">扫描条形码以更新库存</string>
+    <string name="cha_ching_sound_test_notification_message">这只是一条旨在检查“咔-亲”提示音的测试通知。\n您可以一扫而过。</string>
+    <string name="cha_ching_sound_test_notification_title">测试通知</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">测试声音</string>
+    <string name="cha_ching_sound_succcess_snackbar">一切就绪！ 现在，每完成一笔新订单都会听到“咔-亲”提示音。</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">静音</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">启用声音</string>
+    <string name="cha_ching_sound_issue_dialog_message">重新启用即可在完成每笔新销售时听到“咔-亲”提示音。 及时跟进客户订单！</string>
+    <string name="cha_ching_sound_issue_dialog_title">关闭“咔-亲”提示音</string>
+    <string name="order_creation_products_order_count">订单数</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">订单总额百分比</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">固定金额</string>
+    <string name="custom_amounts_bottom_sheet_heading">您想怎样添加自定义金额？</string>
+    <string name="custom_amounts_delete_custom_amount">删除自定义金额</string>
+    <string name="custom_amounts_percentage_label">订单总额百分比 (%1$s)</string>
     <string name="theme_activated_successfully">主题激活成功</string>
-    <string name="theme_preview_theme_name">主题：%1$s</string>
-    <string name="theme_preview_activate_theme_button">使用此主题</string>
     <string name="theme_preview_bottom_sheet_home_section">主页</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">轻点以查看</string>
     <string name="theme_preview_bottom_sheet_pages_title">此模板上的页面</string>
     <string name="theme_preview_title">预览</string>
-    <string name="theme_picker_error_message">暂时无法加载主题。</string>
-    <string name="theme_picker_error_title">出现错误</string>
     <string name="theme_picker_carousel_info_item_description">完成商店设置后，请在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_carousel_info_item_title">想要获得更多信息？</string>
     <string name="theme_picker_description">之后您可以随时在设置中进行更改。</string>

@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 10:54:03+0000
+Translation-Revision-Date: 2023-12-15 09:54:22+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
-    <string name="store_creation_use_theme_button">이 테마로 시작</string>
+    <string name="scan_to_update_inventory_product_label">상품</string>
+    <string name="scan_to_update_inventory_quantity_label">수량</string>
+    <string name="scan_to_update_inventory_original_quantity_label">원래 수량</string>
+    <string name="scan_to_update_inventory_failure_snackbar">문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="scan_to_update_inventory_success_snackbar">수량 업데이트됨: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">상품 상세 정보 보기</string>
+    <string name="scan_to_update_inventory_update_quantity_button">수량 업데이트</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">수량 + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">SKU가 %s인 상품의 재고가 관리되지 않습니다. 다시 시도하세요.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">SKU가 %s인 상품을 찾을 수 없습니다. 다시 시도하세요.</string>
+    <string name="theme_activation_failed">테마 활성화에 실패했습니다. 다시 시도하세요!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">주문 알림 소리가 비활성화됐습니다. 새 판매가 있을 때마다 \'짤랑\' 소리를 들으려면 다시 켜세요.</string>
+    <string name="settings_notifs_enable_chaching_sound">짤랑 소리 활성화</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">바코드를 스캔하여 재고 업데이트</string>
+    <string name="cha_ching_sound_test_notification_message">짤랑 소리를 확인하기 위한 테스트 알림입니다.\n밀어서 제거하시면 됩니다.</string>
+    <string name="cha_ching_sound_test_notification_title">테스트 알림</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">테스트 소리</string>
+    <string name="cha_ching_sound_succcess_snackbar">모두 준비되었습니다! 새 주문이 있을 때마다 \'짤랑\' 소리가 들릴 것입니다.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">무음 유지</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">소리 활성화</string>
+    <string name="cha_ching_sound_issue_dialog_message">새 판매가 있을 때 \'짤랑\' 소리를 들으려면 다시 켜세요. 고객의 주문을 놓치지 마세요!</string>
+    <string name="cha_ching_sound_issue_dialog_title">짤랑 소리 끄기</string>
+    <string name="order_creation_products_order_count">주문 수</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">주문 합계 백분율</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">고정 금액</string>
+    <string name="custom_amounts_bottom_sheet_heading">사용자 정의 금액을 어떻게 추가하시겠어요?</string>
+    <string name="custom_amounts_percentage_label">주문 합계 백분율(%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">사용자 정의 금액 삭제</string>
     <string name="theme_activated_successfully">테마 활성화됨</string>
-    <string name="theme_preview_theme_name">테마: %1$s</string>
-    <string name="theme_preview_activate_theme_button">이 테마 사용</string>
     <string name="theme_preview_bottom_sheet_home_section">홈</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">눌러서 보기</string>
     <string name="theme_preview_bottom_sheet_pages_title">이 템플릿의 페이지</string>
     <string name="theme_preview_title">미리보기</string>
-    <string name="theme_picker_error_message">지금은 테마를 로드할 수 없습니다.</string>
-    <string name="theme_picker_error_title">오류 발생</string>
     <string name="theme_picker_carousel_info_item_description">스토어를 설정했으면 우커머스 테마 스토어에서 완벽한 테마를 찾아보세요.</string>
     <string name="theme_picker_carousel_info_item_title">자세한 정보를 원하시나요?</string>
     <string name="theme_picker_description">나중에 언제든지 설정에서 변경하실 수 있습니다.</string>

@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.Context
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,9 +23,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.tags.TagView
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.util.DateTimeUtils
-import java.util.Date
-
 class OrderListAdapter(
     val listener: OrderListListener,
     val currencyFormatter: CurrencyFormatter
@@ -128,21 +123,6 @@ class OrderListAdapter(
         }
     }
 
-    /**
-     * Returns the order date formatted as a date string, or null if the date is missing or invalid.
-     * Note that the year is not shown when it's the same as the current one
-     */
-    private fun getFormattedOrderDate(context: Context, orderDate: String): String? {
-        DateTimeUtils.dateUTCFromIso8601(orderDate)?.let { date ->
-            val flags = if (DateTimeUtils.isSameYear(date, Date())) {
-                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_YEAR
-            } else {
-                DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
-            }
-            return DateUtils.formatDateTime(context, date.time, flags)
-        } ?: return null
-    }
-
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root), SwipeToComplete.SwipeAbleViewHolder {
         private var isNotCompleted = true
@@ -152,7 +132,7 @@ class OrderListAdapter(
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
 
-            viewBinding.orderDate.text = getFormattedOrderDate(ctx, orderItemUI.dateCreated)
+            viewBinding.orderDate.text = orderItemUI.dateCreated
             viewBinding.orderNum.text = "#${orderItemUI.orderNumber}"
             viewBinding.orderName.text = orderItemUI.orderName
             viewBinding.orderTotal.text = currencyFormatter.formatCurrency(

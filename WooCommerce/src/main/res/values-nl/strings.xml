@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 12:54:04+0000
+Translation-Revision-Date: 2023-12-13 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="store_creation_use_theme_button">Begin met dit thema</string>
+    <string name="scan_to_update_inventory_product_label">Product</string>
+    <string name="scan_to_update_inventory_quantity_label">Aantal</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Originele aantal</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Er is iets fout gegaan. Probeer het nog eens</string>
+    <string name="scan_to_update_inventory_success_snackbar">Aantal is bijgewerkt: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Productgegevens bekijken</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Aantal bijwerken</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Aantal + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Product met SKU: %s wordt geen voorraadbeheer voor uitgevoerd. Probeer het nog eens.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Product met SKU: %s niet gevonden. Probeer het nog eens.</string>
+    <string name="theme_activation_failed">Het activeren van het thema is mislukt. Probeer het nog eens.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Het geluid van meldingen voor bestellingen is uitgeschakeld. Schakel het weer in om bij elke nieuwe verkoop \'ka-ching\' te horen.</string>
+    <string name="settings_notifs_enable_chaching_sound">Ka-ching inschakelen</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Streepjescode scannen om voorraad bij te werken</string>
+    <string name="cha_ching_sound_test_notification_message">Dit is een testmelding om de ka-ching te controleren.\nJe kan hem wegvegen.</string>
+    <string name="cha_ching_sound_test_notification_title">Testmelding</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">GELUID TESTEN</string>
+    <string name="cha_ching_sound_succcess_snackbar">Helemaal klaar! Je hoort nu \'ka-ching\' wanneer er een bestelling wordt geplaatst.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">STIL LATEN</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">GELUID INSCHAKELEN</string>
+    <string name="cha_ching_sound_issue_dialog_message">Schakel het weer in om bij elke nieuwe verkoop \'ka-ching\' te horen. Blijf op de hoogte van je bestellingen!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Ka-ching uitgeschakeld</string>
+    <string name="order_creation_products_order_count">Aantal bestellingen</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Als percentage van het totale bestelbedrag</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Als vast bedrag</string>
+    <string name="custom_amounts_bottom_sheet_heading">Hoe wil je je aangepaste bedrag toevoegen?</string>
+    <string name="custom_amounts_percentage_label">Percentage van het totaalaantal bestellingen (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Aangepast bedrag verwijderen</string>
     <string name="theme_activated_successfully">Thema geactiveerd</string>
-    <string name="theme_preview_theme_name">Thema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Gebruik dit thema</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tik om te bekijken</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagina\'s op dit sjabloon</string>
     <string name="theme_preview_title">Voorbeeld</string>
-    <string name="theme_picker_error_message">Thema\'s kunnen op dit moment niet worden geladen.</string>
-    <string name="theme_picker_error_title">Er is een fout opgetreden</string>
     <string name="theme_picker_carousel_info_item_description">Wanneer je winkel is ingesteld, zoek je jouw perfecte thema op in de WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_title">Zoek je naar iets anders?</string>
     <string name="theme_picker_description">Je kan later altijd nog wijzigen in de instellingen.</string>

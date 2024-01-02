@@ -50,7 +50,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -196,6 +195,7 @@ private fun ThemePreviewBottomSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = dimen.major_100))
+                .padding(bottom = dimensionResource(id = dimen.major_100))
         ) {
             if (isActivatingTheme) {
                 CircularProgressIndicator(
@@ -205,22 +205,13 @@ private fun ThemePreviewBottomSection(
             } else {
                 Text(
                     text = stringResource(
-                        id = if (isFromStoreCreation) R.string.store_creation_use_theme_button
-                        else R.string.theme_preview_activate_theme_button
+                        id = if (isFromStoreCreation) R.string.theme_preview_activate_theme_button_store_creation
+                        else R.string.theme_preview_activate_theme_button_settings,
+                        themeName
                     )
                 )
             }
         }
-
-        Text(
-            text = stringResource(id = string.theme_preview_theme_name, themeName),
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = dimen.major_100))
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
     }
 }
 
@@ -235,14 +226,14 @@ private fun DemoSectionsToolbar(
         modifier = Modifier
             .wrapContentHeight()
             .padding(start = dimensionResource(id = dimen.major_150))
-            .clickable {
-                if (state.themePages.isNotEmpty()) {
-                    coroutineScope.launch {
-                        if (modalSheetState.isVisible)
-                            modalSheetState.hide()
-                        else {
-                            modalSheetState.show()
-                        }
+            .clickable(
+                enabled = state.shouldShowPagesDropdown,
+            ) {
+                coroutineScope.launch {
+                    if (modalSheetState.isVisible)
+                        modalSheetState.hide()
+                    else {
+                        modalSheetState.show()
                     }
                 }
             }
@@ -251,23 +242,24 @@ private fun DemoSectionsToolbar(
             text = stringResource(id = string.theme_preview_title),
             style = MaterialTheme.typography.body1,
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = state.currentPageTitle,
-                style = MaterialTheme.typography.caption,
-            )
-            Icon(
-                modifier = Modifier
-                    .size(dimensionResource(id = dimen.major_100))
-                    .padding(
-                        start = dimensionResource(id = dimen.minor_50),
-                        top = dimensionResource(id = dimen.minor_75),
-                    ),
-                painter = painterResource(drawable.ic_arrow_down),
-                contentDescription = "",
-                tint = colorResource(id = color.color_on_surface)
-            )
-        }
+        if (state.shouldShowPagesDropdown)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = state.currentPageTitle,
+                    style = MaterialTheme.typography.caption,
+                )
+                Icon(
+                    modifier = Modifier
+                        .size(dimensionResource(id = dimen.major_100))
+                        .padding(
+                            start = dimensionResource(id = dimen.minor_50),
+                            top = dimensionResource(id = dimen.minor_75),
+                        ),
+                    painter = painterResource(drawable.ic_arrow_down),
+                    contentDescription = "",
+                    tint = colorResource(id = color.color_on_surface)
+                )
+            }
     }
 }
 

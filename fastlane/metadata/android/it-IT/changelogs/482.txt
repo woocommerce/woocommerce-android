@@ -1,2 +1,0 @@
-16.5:
-L'ultima versione dell'app WooCommerce si concentra sui miglioramenti in termini di stabilità. Inoltre, gli utenti WooPayments ora possono passare facilmente da una valuta all'altra nella visualizzazione di riepilogo degli acconti. Effettua subito l'aggiornamento per vivere un'esperienza WooCommerce più fluida.
