@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.0
+-----
+- [*] [Internal] "Lock" icon is fully visible after a product is deleted from an order [https://github.com/woocommerce/woocommerce-android/pull/10508]
+
 16.8
 -----
 - [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]
