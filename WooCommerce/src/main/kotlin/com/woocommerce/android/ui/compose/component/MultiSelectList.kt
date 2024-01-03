@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.blaze.components
+package com.woocommerce.android.ui.compose.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
