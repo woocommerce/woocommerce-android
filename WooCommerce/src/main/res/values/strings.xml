@@ -3932,5 +3932,8 @@
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Access a vast audience</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Your ads on millions of sites within the WordPress.com and Tumblr networks.</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Start your campaign</string>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Learn how Blaze works</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Learn how Blaze works</string>
+    <string name="blaze_campaign_creation_new_intro_learn_point_1">Choose a product to promote with Blaze.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_point_2">Our moderators review your campaign. (Usually no longer than 24 hours)</string>
+    <string name="blaze_campaign_creation_new_intro_learn_point_3">Your promotion goes live.</string>
 </resources>
