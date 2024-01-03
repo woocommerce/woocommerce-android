@@ -31,18 +31,18 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun <T> BlazeMultiSelectList(
+fun <T> MultiSelectList(
     items: List<T>,
     selectedItems: List<T>,
     onItemToggled: (T) -> Unit,
     modifier: Modifier = Modifier,
     itemFormatter: T.() -> String = { toString() },
     itemKey: ((T) -> Any)? = null,
-    allItemsButton: BlazeMultiSelectAllItemsButton? = null,
+    allItemsButton: MultiSelectAllItemsButton? = null,
 ) {
     Column(modifier = modifier) {
         allItemsButton?.let {
-            BlazeMultiSelectItem(
+            MultiSelectItem(
                 item = it.text,
                 isSelected = selectedItems.isEmpty(),
                 onItemToggled = it.onClicked,
@@ -53,7 +53,7 @@ fun <T> BlazeMultiSelectList(
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(items, key = itemKey) { item ->
-                BlazeMultiSelectItem(
+                MultiSelectItem(
                     item = itemFormatter(item),
                     isSelected = selectedItems.contains(item),
                     onItemToggled = { onItemToggled(item) },
@@ -65,7 +65,7 @@ fun <T> BlazeMultiSelectList(
 }
 
 @Composable
-private fun BlazeMultiSelectItem(
+private fun MultiSelectItem(
     item: String,
     isSelected: Boolean,
     onItemToggled: () -> Unit,
@@ -99,21 +99,21 @@ private fun BlazeMultiSelectItem(
 }
 
 @Composable
-fun rememberBlazeMultiSelectAllItemsButton(
+fun rememberMultiSelectAllItemsButton(
     text: String,
     onClick: () -> Unit
-): BlazeMultiSelectAllItemsButton {
+): MultiSelectAllItemsButton {
     val currentOnClick by rememberUpdatedState(onClick)
 
     return remember(text) {
-        BlazeMultiSelectAllItemsButton(
+        MultiSelectAllItemsButton(
             text = text,
             onClicked = { currentOnClick() }
         )
     }
 }
 
-data class BlazeMultiSelectAllItemsButton(
+data class MultiSelectAllItemsButton(
     val text: String,
     val onClicked: () -> Unit
 )
@@ -121,16 +121,16 @@ data class BlazeMultiSelectAllItemsButton(
 @Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-private fun BlazeMultiSelectListPreview() {
+private fun MultiSelectListPreview() {
     WooThemeWithBackground {
         val items by remember { mutableStateOf(List(20) { "Item $it" }) }
         var selectedItems by remember { mutableStateOf(emptyList<String>()) }
-        val allItemsButton = rememberBlazeMultiSelectAllItemsButton(
+        val allItemsButton = rememberMultiSelectAllItemsButton(
             text = "All",
             onClick = { selectedItems = emptyList() }
         )
 
-        BlazeMultiSelectList(
+        MultiSelectList(
             items = items,
             selectedItems = selectedItems,
             onItemToggled = {
