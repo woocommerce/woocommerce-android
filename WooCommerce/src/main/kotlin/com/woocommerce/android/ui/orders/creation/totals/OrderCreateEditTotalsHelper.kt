@@ -18,11 +18,16 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         onButtonClicked: () -> Unit
     ): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
+            // The data Just for testing for now
             if (order.items.isEmpty() && order.feesLines.isEmpty()) {
-                TotalsSectionsState.Hidden
+                TotalsSectionsState.Minimised(
+                    orderTotal = TotalsSectionsState.OrderTotal(
+                        label = resourceProvider.getString(R.string.order_creation_payment_order_total),
+                        value = "$0.00"
+                    )
+                )
             } else {
-                // Just for testing for now
-                TotalsSectionsState.Shown(
+                TotalsSectionsState.Full(
                     lines = listOf(
                         TotalsSectionsState.Line.Simple(
                             label = resourceProvider.getString(R.string.order_creation_payment_products),
@@ -100,13 +105,15 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 }
 
 sealed class TotalsSectionsState {
-    data class Shown(
+    data class Full(
         val lines: List<Line>,
         val orderTotal: OrderTotal,
         val mainButton: Button,
     ) : TotalsSectionsState()
 
-    object Hidden : TotalsSectionsState()
+    data class Minimised(
+        val orderTotal: OrderTotal,
+    ) : TotalsSectionsState()
 
     object Disabled : TotalsSectionsState()
 

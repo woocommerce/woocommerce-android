@@ -51,7 +51,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
@@ -1859,32 +1858,58 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `given totals helper returns hidden, when totals updated, then return hidden`() {
+    fun `given totals helper returns disabled, when totals updated, then return disabled`() {
         testBlocking {
             whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any())).thenReturn(
-                TotalsSectionsState.Hidden
+                TotalsSectionsState.Disabled
             )
+
+            var totalsData: TotalsSectionsState? = null
+
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
 
             createSut()
 
-            advanceUntilIdle()
-
-            assertThat(sut.totalsData.value).isEqualTo(TotalsSectionsState.Hidden)
+            assertThat(totalsData).isEqualTo(TotalsSectionsState.Disabled)
         }
     }
 
     @Test
-    fun `given totals helper returns shown, when totals checked, then return shown`() {
+    fun `given totals helper returns minimised, when totals checked, then return minimised`() {
         testBlocking {
-            val totalsSectionsState = mock<TotalsSectionsState.Shown>()
+            val totalsSectionsState = mock<TotalsSectionsState.Minimised>()
             whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any()))
                 .thenReturn(totalsSectionsState)
 
+            var totalsData: TotalsSectionsState? = null
+
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
+
             createSut()
 
-            advanceUntilIdle()
+            assertThat(totalsData).isEqualTo(totalsSectionsState)
+        }
+    }
 
-            assertThat(sut.totalsData.value).isEqualTo(totalsSectionsState)
+    @Test
+    fun `given totals helper returns full, when totals checked, then return full`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any()))
+                .thenReturn(totalsSectionsState)
+            var totalsData: TotalsSectionsState? = null
+
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
+
+            createSut()
+
+            assertThat(totalsData).isEqualTo(totalsSectionsState)
         }
     }
 

@@ -240,8 +240,10 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    private val _totalsData = MutableLiveData<TotalsSectionsState>(TotalsSectionsState.Disabled)
-    val totalsData: LiveData<TotalsSectionsState> = _totalsData
+    val totalsData: LiveData<TotalsSectionsState> = _orderDraft
+        .map { totalsHelper.mapToPaymentTotalsState(mode, it) { } }
+        .distinctUntilChanged()
+        .asLiveData()
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
@@ -669,12 +671,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 _selectedGiftCard.value.isEmpty() &&
                 FeatureFlag.ORDER_GIFT_CARD.isEnabled()
         )
-    }
-
-    private fun updateTotals(order: Order) {
-        _totalsData.value = totalsHelper.mapToPaymentTotalsState(mode, order) {
-            // TODO
-        }
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1209,7 +1205,6 @@ class OrderCreateEditViewModel @Inject constructor(
                                 updateCouponButtonVisibility(it)
                                 updateAddShippingButtonVisibility(it)
                                 updateAddGiftCardButtonVisibility(it)
-                                updateTotals(it)
                             }
                         }
                     }
