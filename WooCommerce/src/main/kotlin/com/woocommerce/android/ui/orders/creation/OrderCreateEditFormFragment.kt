@@ -608,14 +608,8 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty() ||
-            FeatureFlag.TABLET_ORDERS_M1.isEnabled()
-        ) {
-            if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
-                paymentSection.orderTotalLayout.hide()
-            } else {
-                paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
-            }
+        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty()) {
+            paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
             paymentSection.paymentsLayout.hide()
         } else {
             paymentSection.paymentsLayout.show()
@@ -652,6 +646,11 @@ class OrderCreateEditFormFragment :
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
             paymentSection.bindGiftCardSubSection(newOrderData)
+        }
+
+        if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
+            paymentSection.paymentsLayout.hide()
+            paymentSection.orderTotalLayout.hide()
         }
     }
 
