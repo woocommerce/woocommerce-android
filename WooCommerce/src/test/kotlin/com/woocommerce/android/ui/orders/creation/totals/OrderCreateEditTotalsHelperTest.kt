@@ -125,11 +125,15 @@ class OrderCreateEditTotalsHelperTest {
         val onMainButtonClicked = mock<() -> Unit>()
         val onExpandCollapseClicked = mock<(Boolean) -> Unit>()
 
+        val taxBasedOnSettingLabel = "tax based on billing address"
+
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
             OrderCreateEditViewModel.Mode.Creation,
-            OrderCreateEditViewModel.ViewState(),
+            OrderCreateEditViewModel.ViewState(
+                taxBasedOnSettingLabel = taxBasedOnSettingLabel
+            ),
             onShippingClicked,
             onCouponsClicked,
             onGiftClicked,
@@ -179,7 +183,7 @@ class OrderCreateEditTotalsHelperTest {
         assertThat((taxesLines[1] as TotalsSectionsState.Line.SimpleSmall).value).isEqualTo("10.00$")
         assertThat((taxesLines[2] as TotalsSectionsState.Line.SimpleSmall).label).isEqualTo("tax 2 · 6.0")
         assertThat((taxesLines[2] as TotalsSectionsState.Line.SimpleSmall).value).isEqualTo("11.00$")
-        assertThat((taxesLines[3] as TotalsSectionsState.Line.LearnMore).text).isEqualTo("tax based on billing address")
+        assertThat((taxesLines[3] as TotalsSectionsState.Line.LearnMore).text).isEqualTo(taxBasedOnSettingLabel)
         assertThat((taxesLines[3] as TotalsSectionsState.Line.LearnMore).buttonText).isEqualTo("learn More")
         assertThat((taxesLines[3] as TotalsSectionsState.Line.LearnMore).onClick == onTaxesLearnMore).isTrue()
     }

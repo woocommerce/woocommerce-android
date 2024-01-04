@@ -87,9 +87,10 @@ class VariationPickerViewModel @Inject constructor(
         triggerEvent(
             MultiLiveEvent.Event.ExitWithResult(
                 VariationPickerResult(
-                    navArgs.itemId,
-                    variation.id,
-                    variation.attributes
+                    itemId = navArgs.itemId,
+                    productId = navArgs.productId,
+                    variationId = variation.id,
+                    attributes = variation.attributes
                 )
             )
         )
@@ -114,6 +115,7 @@ class VariationPickerViewModel @Inject constructor(
     @Parcelize
     data class VariationPickerResult(
         val itemId: Long,
+        val productId: Long,
         val variationId: Long,
         val attributes: List<VariantOption>
     ) : Parcelable

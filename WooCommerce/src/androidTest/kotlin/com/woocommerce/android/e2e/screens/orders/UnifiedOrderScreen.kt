@@ -24,7 +24,7 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     }
 
     fun updateOrderStatus(newOrderStatus: String): UnifiedOrderScreen {
-        clickOn(R.id.orderStatus_editButton)
+        clickOn(R.id.orderStatus_editImage)
         waitForElementToBeDisplayed(androidx.appcompat.R.id.select_dialog_listview)
         Espresso.onView(withText(newOrderStatus))
             .perform(click())

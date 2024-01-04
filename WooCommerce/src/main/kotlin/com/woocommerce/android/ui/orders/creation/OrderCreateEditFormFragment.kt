@@ -201,18 +201,21 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
-        val mode = when (viewModel.mode) {
-            Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
-            is Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
-        }
-        orderStatusView.initView(
-            mode = mode,
-            editOrderStatusClickListener = {
-                viewModel.orderStatusData.value?.let {
-                    viewModel.onEditOrderStatusClicked(it)
-                }
+        when (viewModel.mode) {
+            Creation -> {
+                orderStatusView.visibility = View.GONE
             }
-        )
+            is Edit -> {
+                orderStatusView.initView(
+                    mode = OrderDetailOrderStatusView.Mode.OrderEdit,
+                    editOrderStatusClickListener = {
+                        viewModel.orderStatusData.value?.let {
+                            viewModel.onEditOrderStatusClicked(it)
+                        }
+                    }
+                )
+            }
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initNotesSection() {

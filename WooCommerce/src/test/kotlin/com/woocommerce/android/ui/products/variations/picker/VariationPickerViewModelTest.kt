@@ -89,7 +89,12 @@ class VariationPickerViewModelTest : BaseUnitTest() {
 
         // Assert
         val expectedEvent = MultiLiveEvent.Event.ExitWithResult(
-            VariationPickerViewModel.VariationPickerResult(navArgs.itemId, variation.id, variation.attributes)
+            VariationPickerViewModel.VariationPickerResult(
+                itemId = navArgs.itemId,
+                productId = navArgs.productId,
+                variationId = variation.id,
+                attributes = variation.attributes
+            )
         )
         verify(observer).onChanged(expectedEvent)
     }

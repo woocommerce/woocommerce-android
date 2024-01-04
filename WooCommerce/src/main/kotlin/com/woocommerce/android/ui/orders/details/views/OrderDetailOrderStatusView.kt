@@ -61,7 +61,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
         this.mode = mode
         when (mode) {
             Mode.OrderEdit -> {
-                binding.orderStatusEditButton.isVisible = false
                 binding.orderStatusEditImage.isVisible = true
                 with(binding.orderStatusContainer) {
                     isClickable = true
@@ -70,7 +69,6 @@ class OrderDetailOrderStatusView @JvmOverloads constructor(
                 }
             }
             Mode.OrderCreation -> {
-                binding.orderStatusEditButton.isVisible = false
                 with(binding.orderStatusEditImage) {
                     isVisible = true
                     setOnClickListener(editOrderStatusClickListener)

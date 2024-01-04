@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -17,7 +18,8 @@ class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val dateUtils: DateUtils
 ) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -36,7 +38,10 @@ class GetTopPerformers @Inject constructor(
         refresh: Boolean = false,
         topPerformersCount: Int = NUM_TOP_PERFORMERS,
     ): Result<Unit> {
-        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
+        val selectionRange = granularity.asRangeSelection(
+            dateUtils = dateUtils,
+            locale = localeProvider.provideLocale()
+        )
         val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
         return statsRepository.fetchTopPerformerProducts(isForcedRefresh, granularity, topPerformersCount)
             .let { result ->
