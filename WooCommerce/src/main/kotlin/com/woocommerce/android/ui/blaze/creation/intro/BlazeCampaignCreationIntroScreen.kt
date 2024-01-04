@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -135,11 +136,13 @@ private fun BlazeCampaignCreationIntroContent(
             Text(
                 text = stringResource(id = R.string.blaze_campaign_creation_new_intro_title),
                 style = MaterialTheme.typography.h4,
+                textAlign = TextAlign.Center
             )
 
             Text(
                 text = stringResource(id = R.string.blaze_campaign_creation_new_intro_description),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                textAlign = TextAlign.Center
             )
 
             Image(
