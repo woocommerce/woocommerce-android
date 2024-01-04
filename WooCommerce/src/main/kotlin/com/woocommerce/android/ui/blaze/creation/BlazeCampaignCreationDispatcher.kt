@@ -59,7 +59,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         productId: Long?,
         handler: (BlazeCampaignCreationDispatcherEvent) -> Unit
     ) {
-        val products = getPublishedProducts()
+        val products = getPublishedCachedProducts()
 
         when {
             productId != null -> {
@@ -83,11 +83,11 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         }
     }
 
-    private suspend fun getPublishedProducts() = withContext(coroutineDispatchers.io) {
+    private suspend fun getPublishedCachedProducts() = withContext(coroutineDispatchers.io) {
         productListRepository.getProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
-        )
+        ).filterNot { it.isSampleProduct }
     }
 
     private fun handleEvent(event: BlazeCampaignCreationDispatcherEvent) {
