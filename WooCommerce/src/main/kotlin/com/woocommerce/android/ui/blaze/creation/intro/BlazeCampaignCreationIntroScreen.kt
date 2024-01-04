@@ -274,7 +274,6 @@ private fun BlazeCampaignBottomSheetContent(
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
-
         learnMoreItems.forEachIndexed { i, item ->
             if (i > 0) {
                 Divider(color = colorResource(id = R.color.color_surface_elevated), thickness = 1.dp)
