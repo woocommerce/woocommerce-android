@@ -11,10 +11,17 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_UPDATE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNT_TAX_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_EXPANDED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
@@ -57,6 +64,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -1860,8 +1868,19 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given totals helper returns disabled, when totals updated, then return disabled`() {
         testBlocking {
-            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(TotalsSectionsState.Disabled)
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(TotalsSectionsState.Disabled)
 
             var totalsData: TotalsSectionsState? = null
 
@@ -1879,8 +1898,19 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns minimised, when totals checked, then return minimised`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Minimised>()
-            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(totalsSectionsState)
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
 
             var totalsData: TotalsSectionsState? = null
 
@@ -1898,8 +1928,19 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns full, when totals checked, then return full`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Full>()
-            whenever(totalsHelper.mapToPaymentTotalsState(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(totalsSectionsState)
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
             var totalsData: TotalsSectionsState? = null
 
             sut.totalsData.observeForever {
@@ -1909,6 +1950,115 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             createSut()
 
             assertThat(totalsData).isEqualTo(totalsSectionsState)
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full, when expand clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with true`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onExpandCollapseClickedCaptor.capture()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onExpandCollapseClickedCaptor.firstValue.invoke(true)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_EXPANDED to true
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full, when collapse clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with false`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onExpandCollapseClickedCaptor.capture()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onExpandCollapseClickedCaptor.firstValue.invoke(false)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_EXPANDED to false
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full and creation, when main button clicked, then PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED tracked`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onMainButtonClickedCaptor = argumentCaptor<() -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onMainButtonClickedCaptor.capture(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onMainButtonClickedCaptor.firstValue.invoke()
+
+            verify(tracker).track(
+                AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
+                mapOf(
+                    KEY_STATUS to Order.Status.Pending,
+                    KEY_PRODUCT_COUNT to 0,
+                    KEY_HAS_CUSTOMER_DETAILS to false,
+                    KEY_HAS_FEES to false,
+                    KEY_HAS_SHIPPING_METHOD to false,
+                    KEY_FLOW to VALUE_FLOW_CREATION
+                )
+            )
         }
     }
 

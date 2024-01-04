@@ -49,6 +49,7 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
+            {},
             {}
         )
 
@@ -149,6 +150,7 @@ class OrderCreateEditTotalsHelperTest {
         val onGiftClicked = mock<() -> Unit>()
         val onTaxesLearnMore = mock<() -> Unit>()
         val onMainButtonClicked = mock<() -> Unit>()
+        val onExpandCollapseClicked = mock<(Boolean) -> Unit>()
 
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
@@ -160,10 +162,16 @@ class OrderCreateEditTotalsHelperTest {
             onGiftClicked,
             onTaxesLearnMore,
             onMainButtonClicked,
+            onExpandCollapseClicked,
         )
 
         // THEN
         assertThat((actual as TotalsSectionsState.Full).mainButton.text).isEqualTo("Collect Payment")
+        assertThat(actual.mainButton.enabled).isTrue()
+        assertThat(actual.mainButton.onClick == onMainButtonClicked).isTrue()
+
+        assertThat(actual.onExpandCollapseClicked == onExpandCollapseClicked).isTrue()
+
         assertThat(actual.orderTotal.value).isEqualTo("10.00$")
         assertThat(actual.orderTotal.label).isEqualTo("Order Total")
 
@@ -228,7 +236,8 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
-            {}
+            {},
+            {},
         )
 
         // THEN
@@ -261,7 +270,8 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
-            {}
+            {},
+            {},
         )
 
         // THEN

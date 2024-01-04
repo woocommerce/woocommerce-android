@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -164,7 +165,12 @@ class OrderDetailViewModel @Inject constructor(
         _productList.distinctUntilChanged().observeForever(productListObserver)
 
         if (navArgs.startPaymentFlow) {
-            triggerEvent(StartPaymentFlow(orderId = navArgs.orderId))
+            triggerEvent(
+                StartPaymentFlow(
+                    orderId = navArgs.orderId,
+                    paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
+                )
+            )
         }
     }
 
@@ -328,7 +334,12 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCollectPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(StartPaymentFlow(orderId = order.id))
+        triggerEvent(
+            StartPaymentFlow(
+                orderId = order.id,
+                paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+            )
+        )
     }
 
     fun onSeeReceiptClicked() {
