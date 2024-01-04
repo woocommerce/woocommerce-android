@@ -3812,6 +3812,7 @@
     <string name="blaze_campaign_creation_intro_benefit_3">Reach millions on WordPress and Tumblr sites.</string>
     <string name="blaze_campaign_creation_intro_benefit_4">Track performance, start and stop your Blaze campaign anytime.</string>
     <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
+    <string name="blaze_campaign_creation_new_intro_title">Get your products seen by millions</string>
 
     <!--
     Blaze campaign creation celebration
@@ -3823,6 +3824,7 @@
     <!--
     Blaze other
     -->
+    <string name="blaze" translatable="false">Blaze</string>
     <string name="blaze_campaign_details_title">Campaign details</string>
     <string name="product_details_blaze_card">Promote with Blaze</string>
     <string name="blaze_campaign_creation_product_selector_title">Ready to promote</string>
@@ -3924,4 +3926,13 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+    <string name="blaze_campaign_creation_new_intro_description">Our tool is designed to empower merchants with fast, simple ad campaign setups for maximum traffic boost.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Quick start, big impact</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Launch ads in minutes – no experience or big budget needed, starting at just $5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global reach made simple</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">"Our tool presents your product where interested shoppers can find it. "</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Access a vast audience</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Your ads on millions of sites within the WordPress.com and Tumblr networks.</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Start your campaign</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Learn how Blaze works</string>
 </resources>
