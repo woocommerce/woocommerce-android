@@ -72,13 +72,9 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
             }
             else -> {
-                WooLog.w(WooLog.T.BLAZE, "Fetching products from the API")
-                val fetchedProducts = productListRepository.fetchProductList()
-                if (fetchedProducts.isNotEmpty()) {
-                    handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
-                } else {
-                    WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
-                }
+                // If there are no cached products at this point, we should ensure the code triggering
+                // this code, has previously refreshed the products from the API.
+                WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
             }
         }
     }
