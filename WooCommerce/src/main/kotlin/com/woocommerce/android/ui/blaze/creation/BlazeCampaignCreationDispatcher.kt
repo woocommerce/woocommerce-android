@@ -72,7 +72,13 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
             }
             else -> {
-                WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
+                WooLog.w(WooLog.T.BLAZE, "Fetching products from the API")
+                val fetchedProducts = productListRepository.fetchProductList()
+                if (fetchedProducts.isNotEmpty()) {
+                    handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
+                } else {
+                    WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
+                }
             }
         }
     }
