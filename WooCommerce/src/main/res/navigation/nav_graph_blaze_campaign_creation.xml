@@ -15,4 +15,13 @@
             android:defaultValue="-1L"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignCreationPreviewFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragment"
+        android:label="BlazeCampaignCreationPreviewFragment">
+        <argument
+            android:name="productId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+    </fragment>
 </navigation>

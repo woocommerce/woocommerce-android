@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze.creation
 
-import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
@@ -65,12 +64,15 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
             productId != null -> {
                 handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(productId))
             }
+
             products.size == 1 -> {
                 handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(products.first().remoteId))
             }
+
             products.isNotEmpty() -> {
                 handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
             }
+
             else -> {
                 WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
             }
@@ -105,12 +107,10 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     }
 
     private fun BaseFragment.showCampaignForm(productId: Long) {
-        // TODO update when the AD form is implemented
-        Toast.makeText(
-            requireContext(),
-            "This will show the campaign creation form for product $productId",
-            Toast.LENGTH_SHORT
-        ).show()
+        findNavController().navigateToBlazeGraph(
+            startDestination = R.id.blazeCampaignCreationPreviewFragment,
+            bundle = BlazeCampaignCreationIntroFragmentArgs(productId).toBundle()
+        )
     }
 
     private fun BaseFragment.showProductSelector() {
