@@ -23,7 +23,10 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val mode: OrderCreateEditViewModel.Mode
     ) : OrderCreateEditNavigationTarget()
 
-    data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
+    data class ShowCreatedOrder(
+        val orderId: Long,
+        val startPaymentFlow: Boolean,
+    ) : OrderCreateEditNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) :
         OrderCreateEditNavigationTarget()
 

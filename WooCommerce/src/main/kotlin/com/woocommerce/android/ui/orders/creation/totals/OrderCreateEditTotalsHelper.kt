@@ -1,92 +1,77 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class OrderCreateEditTotalsHelper @Inject constructor(
     private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter
 ) {
-    @Suppress("LongMethod")
+    @Suppress("LongParameterList")
     fun mapToPaymentTotalsState(
-        mode: OrderCreateEditViewModel.Mode,
         order: Order,
-        onButtonClicked: () -> Unit
+        mode: OrderCreateEditViewModel.Mode,
+        viewState: OrderCreateEditViewModel.ViewState,
+        onShippingClicked: () -> Unit,
+        onCouponsClicked: () -> Unit,
+        onGiftClicked: () -> Unit,
+        onTaxesLearnMore: () -> Unit,
+        onMainButtonClicked: () -> Unit,
+        onExpandCollapseClicked: (Boolean) -> Unit
     ): TotalsSectionsState {
         return if (isTabletOrdersM1Enabled()) {
-            // The data Just for testing for now
+            val bigDecimalFormatter = currencyFormatter.buildBigDecimalFormatter(
+                currencyCode = order.currency
+            )
+
             if (order.items.isEmpty() && order.feesLines.isEmpty()) {
                 TotalsSectionsState.Minimised(
-                    orderTotal = TotalsSectionsState.OrderTotal(
-                        label = resourceProvider.getString(R.string.order_creation_payment_order_total),
-                        value = "$0.00"
-                    )
+                    orderTotal = order.toOrderTotals(bigDecimalFormatter)
                 )
             } else {
                 TotalsSectionsState.Full(
-                    lines = listOf(
-                        TotalsSectionsState.Line.Simple(
-                            label = resourceProvider.getString(R.string.order_creation_payment_products),
-                            value = "$125.00"
+                    lines = listOfNotNull(
+                        order.toProductsSection(bigDecimalFormatter),
+                        order.toCustomAmountSection(bigDecimalFormatter),
+                        order.toShippingSection(
+                            enabled = viewState.isEditable,
+                            bigDecimalFormatter,
+                            onClick = onShippingClicked
                         ),
-                        TotalsSectionsState.Line.Simple(
-                            label = resourceProvider.getString(R.string.custom_amounts),
-                            value = "$2.00"
+                        order.toCouponsSection(
+                            enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
+                            bigDecimalFormatter,
+                            onClick = onCouponsClicked
                         ),
-                        TotalsSectionsState.Line.Button(
-                            text = resourceProvider.getString(R.string.shipping),
-                            value = "$16.25",
-                            onClick = {},
+                        order.toGiftSection(
+                            enabled = viewState.isAddGiftCardButtonEnabled && viewState.isIdle,
+                            bigDecimalFormatter,
+                            onClick = onGiftClicked
                         ),
-                        TotalsSectionsState.Line.Button(
-                            text = resourceProvider.getString(R.string.order_creation_coupon_button),
-                            value = "-$4.25",
-                            extraValue = "20 OFF",
-                            onClick = {},
+                        order.toTaxesSection(
+                            bigDecimalFormatter,
+                            viewState.taxBasedOnSettingLabel,
+                            onClick = onTaxesLearnMore
                         ),
-                        TotalsSectionsState.Line.Button(
-                            text = resourceProvider.getString(R.string.order_gift_card),
-                            value = "-$4.25",
-                            extraValue = "1234-5678-9987-6543",
-                            onClick = {},
-                        ),
-                        TotalsSectionsState.Line.Block(
-                            lines = listOf(
-                                TotalsSectionsState.Line.Simple(
-                                    label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
-                                    value = "$15.33"
-                                ),
-                                TotalsSectionsState.Line.SimpleSmall(
-                                    label = "Government Sales Tax · 10%",
-                                    value = "$12.50"
-                                ),
-                                TotalsSectionsState.Line.SimpleSmall(
-                                    label = "State Tax · 5%",
-                                    value = "$6.25"
-                                ),
-                                TotalsSectionsState.Line.LearnMore(
-                                    text = resourceProvider.getString(
-                                        R.string.order_creation_tax_based_on_billing_address
-                                    ),
-                                    buttonText = resourceProvider.getString(R.string.learn_more),
-                                    onClick = {}
-                                )
-                            )
-                        ),
+                        order.toDiscountSection(bigDecimalFormatter),
                     ),
-                    orderTotal = TotalsSectionsState.OrderTotal(
-                        label = resourceProvider.getString(R.string.order_creation_payment_order_total),
-                        value = "$143.75"
-                    ),
+                    orderTotal = order.toOrderTotals(bigDecimalFormatter),
                     mainButton = TotalsSectionsState.Button(
                         text = mode.toButtonText(),
-                        enabled = true,
-                        onClick = onButtonClicked,
-                    )
+                        enabled = viewState.canCreateOrder,
+                        onClick = onMainButtonClicked,
+                    ),
+                    onExpandCollapseClicked = onExpandCollapseClicked
                 )
             }
         } else {
@@ -94,13 +79,137 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
     }
 
+    private fun Order.toOrderTotals(bigDecimalFormatter: (BigDecimal) -> String) =
+        TotalsSectionsState.OrderTotal(
+            label = resourceProvider.getString(R.string.order_creation_payment_order_total),
+            value = bigDecimalFormatter(total)
+        )
+
+    private fun Order.toProductsSection(
+        bigDecimalFormatter: (BigDecimal) -> String
+    ): TotalsSectionsState.Line? =
+        if (items.isNotEmpty()) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.order_creation_payment_products),
+                value = bigDecimalFormatter(productsTotal)
+            )
+        } else {
+            null
+        }
+
+    private fun Order.toCustomAmountSection(
+        bigDecimalFormatter: (BigDecimal) -> String
+    ): TotalsSectionsState.Line? {
+        val hasCustomAmount = feesTotal.isNotEqualTo(BigDecimal.ZERO)
+
+        return if (hasCustomAmount) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.custom_amounts),
+                value = bigDecimalFormatter(feesTotal)
+            )
+        } else {
+            null
+        }
+    }
+
+    private fun Order.toShippingSection(
+        enabled: Boolean,
+        bigDecimalFormatter: (BigDecimal) -> String,
+        onClick: () -> Unit
+    ): TotalsSectionsState.Line? =
+        if (shippingLines.firstOrNull { it.methodId != null } != null) {
+            TotalsSectionsState.Line.Button(
+                text = resourceProvider.getString(R.string.shipping),
+                value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter),
+                enabled = enabled,
+                onClick = onClick,
+            )
+        } else {
+            null
+        }
+
+    private fun Order.toCouponsSection(
+        enabled: Boolean,
+        bigDecimalFormatter: (BigDecimal) -> String,
+        onClick: () -> Unit
+    ): TotalsSectionsState.Line? =
+        if (discountCodes.isNotNullOrEmpty()) {
+            TotalsSectionsState.Line.Button(
+                text = resourceProvider.getString(R.string.order_creation_coupon_button),
+                value = resourceProvider.getString(
+                    R.string.order_creation_coupon_discount_value,
+                    bigDecimalFormatter(discountTotal)
+                ),
+                extraValue = discountCodes,
+                enabled = enabled,
+                onClick = onClick,
+            )
+        } else {
+            null
+        }
+
+    private fun Order.toGiftSection(
+        enabled: Boolean,
+        bigDecimalFormatter: (BigDecimal) -> String,
+        onClick: () -> Unit
+    ): TotalsSectionsState.Line? =
+        if (!selectedGiftCard.isNullOrEmpty()) {
+            TotalsSectionsState.Line.Button(
+                text = resourceProvider.getString(R.string.order_gift_card),
+                value = bigDecimalFormatter(giftCardDiscountedAmount ?: BigDecimal.ZERO),
+                extraValue = selectedGiftCard,
+                enabled = enabled,
+                onClick = onClick,
+            )
+        } else {
+            null
+        }
+
+    private fun Order.toTaxesSection(
+        bigDecimalFormatter: (BigDecimal) -> String,
+        taxBasedOnSettingLabel: String,
+        onClick: () -> Unit
+    ): TotalsSectionsState.Line =
+        TotalsSectionsState.Line.Block(
+            lines = listOf(
+                TotalsSectionsState.Line.Simple(
+                    label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
+                    value = bigDecimalFormatter(totalTax)
+                )
+            ) + taxLines.map {
+                TotalsSectionsState.Line.SimpleSmall(
+                    label = "${it.label} · ${it.ratePercent}",
+                    value = bigDecimalFormatter(BigDecimal(it.taxTotal))
+                )
+            } + TotalsSectionsState.Line.LearnMore(
+                text = taxBasedOnSettingLabel,
+                buttonText = resourceProvider.getString(R.string.learn_more),
+                onClick = onClick
+            )
+        )
+
+    private fun Order.toDiscountSection(
+        bigDecimalFormatter: (BigDecimal) -> String,
+    ): TotalsSectionsState.Line? =
+        if (discountTotal.isNotEqualTo(BigDecimal.ZERO)) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.order_creation_discounts_total),
+                value = resourceProvider.getString(
+                    R.string.order_creation_discounts_total_value,
+                    bigDecimalFormatter(discountTotal)
+                )
+            )
+        } else {
+            null
+        }
+
     private fun OrderCreateEditViewModel.Mode.toButtonText() =
         when (this) {
             OrderCreateEditViewModel.Mode.Creation -> resourceProvider.getString(
                 R.string.order_creation_collect_payment_button
             )
 
-            is OrderCreateEditViewModel.Mode.Edit -> resourceProvider.getString(R.string.save)
+            is OrderCreateEditViewModel.Mode.Edit -> resourceProvider.getString(R.string.done)
         }
 }
 
@@ -109,6 +218,7 @@ sealed class TotalsSectionsState {
         val lines: List<Line>,
         val orderTotal: OrderTotal,
         val mainButton: Button,
+        val onExpandCollapseClicked: (Boolean) -> Unit,
     ) : TotalsSectionsState()
 
     data class Minimised(
@@ -140,7 +250,7 @@ sealed class TotalsSectionsState {
             val text: String,
             val value: String,
             val extraValue: String? = null,
-            val enabled: Boolean = true,
+            val enabled: Boolean,
             val onClick: () -> Unit
         ) : Line()
 

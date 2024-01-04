@@ -42,6 +42,7 @@
                 android:layout_height="@dimen/image_minor_40"
                 android:src="@drawable/ic_lock"
                 android:visibility="gone"
+                tools:visibility="visible"
                 android:contentDescription="@string/order_editing_locked_content_description"
                 android:layout_gravity="center_vertical"/>
 

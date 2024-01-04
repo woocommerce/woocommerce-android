@@ -44,6 +44,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_A
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_EXPANDED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FROM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
@@ -134,6 +135,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -240,10 +242,20 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    val totalsData: LiveData<TotalsSectionsState> = _orderDraft
-        .map { totalsHelper.mapToPaymentTotalsState(mode, it) { } }
-        .distinctUntilChanged()
-        .asLiveData()
+    val totalsData: LiveData<TotalsSectionsState> =
+        viewStateData.liveData.combineWith(_orderDraft.asLiveData()) { viewState, order ->
+            totalsHelper.mapToPaymentTotalsState(
+                order = order!!,
+                mode = mode,
+                viewState = viewState!!,
+                onShippingClicked = { onShippingButtonClicked() },
+                onCouponsClicked = { onCouponButtonClicked() },
+                onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
+                onTaxesLearnMore = { onTaxHelpButtonClicked() },
+                onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
+            )
+        }
 
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
@@ -492,17 +504,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
         if (product.item.quantity == 1F) {
-            tracker.track(
-                ORDER_PRODUCT_REMOVE,
-                mapOf(KEY_FLOW to flow)
-            )
+            onRemoveProduct(product)
         } else {
             tracker.track(
                 ORDER_PRODUCT_QUANTITY_CHANGE,
                 mapOf(KEY_FLOW to flow)
             )
+            _orderDraft.update { adjustProductQuantity(it, product, -1) }
         }
-        _orderDraft.update { adjustProductQuantity(it, product, -1) }
     }
 
     fun onItemAmountChanged(product: OrderCreationProduct, amountChangeEvent: ProductAmountEvent) {
@@ -1090,24 +1099,46 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCreateOrderClicked(order: Order) {
         when (mode) {
-            Mode.Creation -> viewModelScope.launch {
+            Mode.Creation -> {
                 trackCreateOrderButtonClick()
-                viewState = viewState.copy(isProgressDialogShown = true)
-                val giftCard = _selectedGiftCard.value
-                orderCreateEditRepository.placeOrder(order, giftCard).fold(
-                    onSuccess = {
-                        trackOrderCreationSuccess()
-                        triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
-                        triggerEvent(ShowCreatedOrder(it.id))
-                    },
-                    onFailure = {
-                        trackOrderCreationFailure(it)
-                        viewState = viewState.copy(isProgressDialogShown = false)
-                        triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
-                    }
-                )
+                createOrder(order) {
+                    triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
+                    triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = false))
+                }
             }
 
+            is Mode.Edit -> {
+                triggerEvent(Exit)
+            }
+        }
+    }
+
+    private fun onExpandCollapseTotalsClicked(expanded: Boolean) {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_EXPANDED to expanded
+            )
+        )
+    }
+
+    private fun onTotalsSectionPrimaryButtonClicked() {
+        when (mode) {
+            Mode.Creation -> {
+                launch {
+                    tracker.track(
+                        AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
+                        buildPropsForOrderCreation()
+                            .toMutableMap().apply {
+                                put(KEY_FLOW, flow)
+                            }
+                    )
+                }
+                createOrder(currentDraft) {
+                    triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = true))
+                }
+            }
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -1125,6 +1156,24 @@ class OrderCreateEditViewModel @Inject constructor(
                 mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
             }
         )
+    }
+
+    private fun createOrder(order: Order, onSuccess: (Order) -> Unit) {
+        launch {
+            viewState = viewState.copy(isProgressDialogShown = true)
+            val giftCard = _selectedGiftCard.value
+            orderCreateEditRepository.placeOrder(order, giftCard).fold(
+                onSuccess = {
+                    trackOrderCreationSuccess()
+                    onSuccess(it)
+                },
+                onFailure = {
+                    trackOrderCreationFailure(it)
+                    viewState = viewState.copy(isProgressDialogShown = false)
+                    triggerEvent(ShowSnackbar(string.order_creation_failure_snackbar))
+                }
+            )
+        }
     }
 
     fun onBackButtonClicked() {
@@ -1245,23 +1294,9 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCreateOrderButtonClick() {
         launch {
-            val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
-            val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
-            val productCount = products.value?.count() ?: 0
             tracker.track(
                 ORDER_CREATE_BUTTON_TAPPED,
-                buildMap {
-                    put(KEY_STATUS, _orderDraft.value.status)
-                    putIfNotNull(PRODUCT_TYPES to productTypes)
-                    put(KEY_PRODUCT_COUNT, productCount)
-                    put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
-                    put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
-                    put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
-                    if (_orderDraft.value.feesLines.isNotEmpty()) {
-                        put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
-                    }
-                }
-
+                buildPropsForOrderCreation()
             )
         }
     }
@@ -1610,6 +1645,23 @@ class OrderCreateEditViewModel @Inject constructor(
         orderDraft.value?.hasProducts() == true || orderDraft.value?.hasCustomAmounts() == true
 
     fun getCurrencySymbol() = currencySymbolFinder.findCurrencySymbol(currentDraft.currency)
+
+    private suspend fun buildPropsForOrderCreation(): Map<String, Any> {
+        val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
+        val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
+        val productCount = products.value?.count() ?: 0
+        return buildMap {
+            put(KEY_STATUS, _orderDraft.value.status)
+            putIfNotNull(PRODUCT_TYPES to productTypes)
+            put(KEY_PRODUCT_COUNT, productCount)
+            put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
+            put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
+            put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
+            if (_orderDraft.value.feesLines.isNotEmpty()) {
+                put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
+            }
+        }
+    }
 
     @Parcelize
     data class ViewState(
