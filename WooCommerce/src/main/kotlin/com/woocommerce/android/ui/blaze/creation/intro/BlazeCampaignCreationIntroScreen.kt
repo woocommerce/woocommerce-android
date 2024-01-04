@@ -41,12 +41,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -85,7 +88,8 @@ fun BlazeCampaignCreationIntroScreen(
         val coroutineScope = rememberCoroutineScope()
         val modalSheetState = rememberModalBottomSheetState(
             initialValue = Hidden,
-            confirmValueChange = { it != HalfExpanded }
+            confirmValueChange = { it != HalfExpanded },
+            skipHalfExpanded = true
         )
 
         WCModalBottomSheetLayout(
@@ -93,8 +97,7 @@ fun BlazeCampaignCreationIntroScreen(
                 BlazeCampaignBottomSheetContent(
                     onDismissClick = {
                         coroutineScope.launch { modalSheetState.hide() }
-                    },
-                    onLearnMoreClick = { }
+                    }
                 )
             },
             sheetState = modalSheetState,
@@ -232,9 +235,16 @@ private fun BlazeCampaignBenefitPoint(
 
 @Composable
 private fun BlazeCampaignBottomSheetContent(
-    onDismissClick: () -> Unit,
-    onLearnMoreClick: () -> Unit
+    onDismissClick: () -> Unit
 ) {
+    val learnMoreItems = listOf(
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_1),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_2),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_3),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_4),
+        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_5),
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -253,45 +263,29 @@ private fun BlazeCampaignBottomSheetContent(
             Text(
                 text = stringResource(id = R.string.blaze_campaign_creation_new_intro_learn_more),
                 textAlign = TextAlign.Center,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.Center)
             )
 
-            CloseButton(onDismissClick, modifier = Modifier.align(Alignment.CenterEnd))
+            CloseButton(onDismissClick, modifier = Modifier.align(Alignment.CenterStart))
         }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
-        StepItem(
-            number = 1,
-            text = stringResource(id = R.string.blaze_campaign_creation_new_intro_learn_point_1),
-            position = StepPosition.FIRST
-        )
 
-        Divider(color = colorResource(id = R.color.color_surface_elevated), thickness = 1.dp)
+        learnMoreItems.forEachIndexed { i, item ->
+            if (i > 0) {
+                Divider(color = colorResource(id = R.color.color_surface_elevated), thickness = 1.dp)
+            }
 
-        StepItem(
-            number = 2,
-            text = stringResource(id = R.string.blaze_campaign_creation_new_intro_learn_point_2),
-            position = StepPosition.MIDDLE
-        )
-
-        Divider(color = colorResource(id = R.color.color_surface_elevated), thickness = 1.dp)
-
-        StepItem(
-            number = 3,
-            text = stringResource(id = R.string.blaze_campaign_creation_new_intro_learn_point_3),
-            position = StepPosition.LAST
-        )
-
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
-
-        WCTextButton(
-            onClick = onLearnMoreClick,
-            text = stringResource(id = R.string.learn_more),
-            allCaps = false
-        )
+            StepItem(
+                currentStep = i,
+                steps = learnMoreItems.size,
+                text = item
+            )
+        }
     }
 }
 
@@ -299,11 +293,6 @@ private fun BlazeCampaignBottomSheetContent(
 private fun CloseButton(onDismissClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .size(dimensionResource(id = R.dimen.major_200))
-            .background(
-                color = colorResource(id = R.color.blaze_campaign_bottom_sheet_highlight_background),
-                shape = CircleShape
-            )
             .clickable(
                 onClick = onDismissClick,
                 role = Role.Button,
@@ -317,7 +306,7 @@ private fun CloseButton(onDismissClick: () -> Unit, modifier: Modifier = Modifie
             tint = colorResource(id = R.color.color_on_surface_medium),
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(dimensionResource(id = R.dimen.major_100))
+                .size(dimensionResource(id = R.dimen.major_150))
         )
     }
 }
@@ -340,17 +329,17 @@ fun CircleNumber(number: String) {
 }
 
 @Composable
-fun StepItem(number: Int, text: String, position: StepPosition) {
-    val shape = when (position) {
-        StepPosition.FIRST -> RoundedCornerShape(
+fun StepItem(currentStep: Int, steps: Int, text: AnnotatedString) {
+    val shape = when {
+        currentStep == 0 -> RoundedCornerShape(
             topStart = dimensionResource(id = R.dimen.minor_100),
             topEnd = dimensionResource(id = R.dimen.minor_100)
         )
-        StepPosition.MIDDLE -> RoundedCornerShape(0.dp)
-        StepPosition.LAST -> RoundedCornerShape(
+        currentStep + 1 == steps -> RoundedCornerShape(
             bottomStart = dimensionResource(id = R.dimen.minor_100),
             bottomEnd = dimensionResource(id = R.dimen.minor_100)
         )
+        else -> RoundedCornerShape(0.dp)
     }
 
     Row(
@@ -363,19 +352,13 @@ fun StepItem(number: Int, text: String, position: StepPosition) {
             )
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
-        CircleNumber(number = number.toString())
+        CircleNumber(number = (currentStep + 1).toString())
         Text(
             text = text,
             style = MaterialTheme.typography.body1,
             modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
         )
     }
-}
-
-enum class StepPosition {
-    FIRST,
-    MIDDLE,
-    LAST
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -395,6 +378,8 @@ private fun BlazeCampaignCreationIntroScreenPreview() {
 @Composable
 private fun BlazeCampaignBottomSheetContentPreview() {
     WooThemeWithBackground {
-        BlazeCampaignBottomSheetContent(onDismissClick = {}, onLearnMoreClick = {})
+        BlazeCampaignBottomSheetContent(
+            onDismissClick = {}
+        )
     }
 }
