@@ -63,7 +63,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     orderTotal = order.toOrderTotals(bigDecimalFormatter),
                     mainButton = TotalsSectionsState.Button(
                         text = mode.toButtonText(),
-                        enabled = true,
+                        enabled = viewState.canCreateOrder,
                         onClick = onMainButtonClicked,
                     )
                 )
@@ -204,7 +204,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 R.string.order_creation_collect_payment_button
             )
 
-            is OrderCreateEditViewModel.Mode.Edit -> resourceProvider.getString(R.string.save)
+            is OrderCreateEditViewModel.Mode.Edit -> resourceProvider.getString(R.string.done)
         }
 }
 

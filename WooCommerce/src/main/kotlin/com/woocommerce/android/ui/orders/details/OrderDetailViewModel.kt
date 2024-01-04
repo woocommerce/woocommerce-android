@@ -162,6 +162,10 @@ class OrderDetailViewModel @Inject constructor(
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
         _productList.distinctUntilChanged().observeForever(productListObserver)
+
+        if (navArgs.startPaymentFlow) {
+            triggerEvent(StartPaymentFlow(orderId = navArgs.orderId))
+        }
     }
 
     fun start() {
@@ -322,7 +326,7 @@ class OrderDetailViewModel @Inject constructor(
         it.contains(navArgs.orderId) && it.last() != navArgs.orderId
     } ?: false
 
-    fun onAcceptCardPresentPaymentClicked() {
+    fun onCollectPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
         triggerEvent(StartPaymentFlow(orderId = order.id))
     }
