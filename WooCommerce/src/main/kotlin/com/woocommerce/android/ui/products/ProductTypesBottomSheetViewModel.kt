@@ -52,8 +52,8 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
                     val currentProductType = navArgs.currentProductType
                         ?.let { nonNullProductType -> ProductType.fromString(nonNullProductType) }
 
-                    it.isVisible && (it.type != currentProductType ||
-                        (it.type == ProductType.SIMPLE && it.isVirtual != navArgs.isCurrentProductVirtual))
+                    return@filter it.isVisible &&
+                        (it.type != currentProductType || it.isVirtual != navArgs.isCurrentProductVirtual)
                 }
         }
     }

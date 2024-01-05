@@ -9,10 +9,8 @@ import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
-import javax.inject.Inject
 
-class ProductTypeBottomSheetBuilder @Inject constructor(
-) {
+class ProductTypeBottomSheetBuilder {
     fun buildBottomSheetList(areSubscriptionsSupported: Boolean): List<ProductTypesBottomSheetUiItem> {
         return listOf(
             ProductTypesBottomSheetUiItem(
