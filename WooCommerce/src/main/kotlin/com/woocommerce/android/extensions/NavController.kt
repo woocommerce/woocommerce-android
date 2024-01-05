@@ -56,10 +56,14 @@ fun NavController.navigateSafely(
     }
 }
 
-fun NavController.navigateSafely(@IdRes resId: Int, bundle: Bundle? = null) {
+fun NavController.navigateSafely(
+    @IdRes resId: Int,
+    bundle: Bundle? = null,
+    navOptions: NavOptions? = null
+) {
     CallThrottler.throttle {
         if (currentDestination?.id != resId) {
-            navigate(resId, bundle)
+            navigate(resId, bundle, navOptions)
         }
     }
 }

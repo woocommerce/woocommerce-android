@@ -234,7 +234,7 @@ class MainActivity :
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar()
+                AppBarStatus.Hidden -> hideToolbar(animate = f is TopLevelFragment)
             }
 
             if (f is TopLevelFragment) {
@@ -500,11 +500,17 @@ class MainActivity :
         }
     }
 
-    private fun hideToolbar() {
+    private fun hideToolbar(animate: Boolean) {
         if (binding.collapsingToolbar.layoutParams.height == 0) return
-        animatorHelper.animateToolbarHeight(show = false) {
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = false) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
             binding.collapsingToolbar.updateLayoutParams {
-                height = it
+                height = 0
             }
         }
     }

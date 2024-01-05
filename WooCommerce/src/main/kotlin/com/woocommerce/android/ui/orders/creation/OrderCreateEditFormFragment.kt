@@ -175,7 +175,12 @@ class OrderCreateEditFormFragment :
             title = resources.getString(
                 when (viewModel.mode) {
                     Creation -> R.string.create
-                    is Edit -> R.string.done
+                    is Edit -> {
+                        if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
+                            isVisible = false
+                        }
+                        R.string.done
+                    }
                 }
             )
             isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
@@ -215,18 +220,32 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
-        val mode = when (viewModel.mode) {
-            Creation -> OrderDetailOrderStatusView.Mode.OrderCreation
-            is Edit -> OrderDetailOrderStatusView.Mode.OrderEdit
-        }
-        orderStatusView.initView(
-            mode = mode,
-            editOrderStatusClickListener = {
-                viewModel.orderStatusData.value?.let {
-                    viewModel.onEditOrderStatusClicked(it)
+        when (viewModel.mode) {
+            Creation -> {
+                if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
+                    orderStatusView.visibility = View.GONE
+                } else {
+                    orderStatusView.initView(
+                        mode = OrderDetailOrderStatusView.Mode.OrderCreation,
+                        editOrderStatusClickListener = {
+                            viewModel.orderStatusData.value?.let {
+                                viewModel.onEditOrderStatusClicked(it)
+                            }
+                        }
+                    )
                 }
             }
-        )
+            is Edit -> {
+                orderStatusView.initView(
+                    mode = OrderDetailOrderStatusView.Mode.OrderEdit,
+                    editOrderStatusClickListener = {
+                        viewModel.orderStatusData.value?.let {
+                            viewModel.onEditOrderStatusClicked(it)
+                        }
+                    }
+                )
+            }
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initNotesSection() {
@@ -349,10 +368,14 @@ class OrderCreateEditFormFragment :
 
         viewModel.totalsData.observe(viewLifecycleOwner) {
             when (it) {
-                is TotalsSectionsState.Shown, TotalsSectionsState.Hidden -> {
+                is TotalsSectionsState.Full,
+                is TotalsSectionsState.Minimised -> {
                     binding.totalsSection.show()
                     binding.totalsSection.setContent {
                         OrderCreateEditTotalsView(state = it)
+                    }
+                    binding.scrollView.post {
+                        binding.scrollView.setPadding(0, 0, 0, binding.totalsSection.height)
                     }
                 }
 
@@ -582,21 +605,11 @@ class OrderCreateEditFormFragment :
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
     ) {
-        when (viewModel.mode) {
-            Creation -> {
-                binding.paymentSection.loadingProgress.isVisible = shouldShowProgressBars
-            }
-
-            is Edit -> {
-                binding.loadingProgress.isVisible = shouldShowProgressBars
-            }
-        }
+        binding.loadingProgress.isVisible = shouldShowProgressBars
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty() ||
-            FeatureFlag.TABLET_ORDERS_M1.isEnabled()
-        ) {
+        if (newOrderData.items.isEmpty() && newOrderData.feesLines.isEmpty()) {
             paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
             paymentSection.paymentsLayout.hide()
         } else {
@@ -634,6 +647,11 @@ class OrderCreateEditFormFragment :
             )
             paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
             paymentSection.bindGiftCardSubSection(newOrderData)
+        }
+
+        if (FeatureFlag.TABLET_ORDERS_M1.isEnabled()) {
+            paymentSection.paymentsLayout.hide()
+            paymentSection.orderTotalLayout.hide()
         }
     }
 

@@ -65,6 +65,9 @@
             <argument
                 android:name="orderId"
                 app:argType="long" />
+            <argument
+                android:name="startPaymentFlow"
+                app:argType="boolean" />
         </action>
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationShippingFragment"
