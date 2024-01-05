@@ -6,16 +6,19 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Locale.ROOT
 import javax.inject.Inject
@@ -24,24 +27,33 @@ import javax.inject.Inject
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val prefs: AppPrefs,
-    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder
+    private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder,
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductTypesBottomSheetFragmentArgs by savedState.navArgs()
 
     private val _productTypesBottomSheetList = MutableLiveData<List<ProductTypesBottomSheetUiItem>>()
     val productTypesBottomSheetList: LiveData<List<ProductTypesBottomSheetUiItem>> = _productTypesBottomSheetList
 
-    suspend fun loadProductTypes() {
+    init {
+        viewModelScope.launch {
+            loadProductTypes()
+        }
+    }
+
+    private suspend fun loadProductTypes() {
+        val areSubscriptionsSupported = isEligibleForSubscriptions()
         _productTypesBottomSheetList.value = if (navArgs.isAddProduct) {
-            productTypeBottomSheetBuilder.buildBottomSheetList()
+            productTypeBottomSheetBuilder.buildBottomSheetList(areSubscriptionsSupported)
+                .filter { it.isVisible }
         } else {
-            productTypeBottomSheetBuilder.buildBottomSheetList()
+            productTypeBottomSheetBuilder.buildBottomSheetList(areSubscriptionsSupported)
                 .filter {
                     val currentProductType = navArgs.currentProductType
                         ?.let { nonNullProductType -> ProductType.fromString(nonNullProductType) }
 
-                    it.type != currentProductType ||
-                        (it.type == ProductType.SIMPLE && it.isVirtual != navArgs.isCurrentProductVirtual)
+                    it.isVisible && (it.type != currentProductType ||
+                        (it.type == ProductType.SIMPLE && it.isVirtual != navArgs.isCurrentProductVirtual))
                 }
         }
     }
