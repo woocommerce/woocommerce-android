@@ -9,15 +9,11 @@ import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
-import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import javax.inject.Inject
 
-@Suppress("ForbiddenComment")
 class ProductTypeBottomSheetBuilder @Inject constructor(
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) {
-    suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
-        val areSubscriptionsSupported = isEligibleForSubscriptions()
+    fun buildBottomSheetList(areSubscriptionsSupported: Boolean): List<ProductTypesBottomSheetUiItem> {
         return listOf(
             ProductTypesBottomSheetUiItem(
                 type = SIMPLE,
