@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 13:54:21+0000
+Translation-Revision-Date: 2023-12-22 16:40:55+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="theme_picker_error_message">Misslyckades att ladda teman.</string>
+    <string name="configuration_complete">Konfiguration slutförd</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Uppdatering av kvantitet är ångrad</string>
+    <string name="theme_picker_loading_current_theme_failed">Kunde inte ladda ditt nuvarande tema</string>
+    <string name="theme_preview_type_desktop">Stationär dator</string>
+    <string name="theme_preview_type_tablet">Läsplatta</string>
+    <string name="theme_preview_type_mobile">Mobil</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tryck här</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Tyvärr verkar det vara ett problem med hämtningen av mallen. %1$s för en live-demo.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Du hittar ditt perfekta tema i WooCommerce-temabutiken.</string>
+    <string name="theme_picker_current_theme_title">Nuvarande tema</string>
+    <string name="theme_picker_settings_title">Prova ett nytt utseende</string>
+    <string name="product_creation_survey_button_skip">Hoppa över</string>
+    <string name="product_creation_survey_button_open">Börja undersökningen</string>
+    <string name="product_creation_survey_description">Du har använt vår AI-assisterade funktion för att lägga till produkter flera gånger nu. Vi vill gärna ta del av dina tankar om hur vi kan göra den ännu bättre.</string>
+    <string name="product_creation_survey_title">Vi värdesätter dina åsikter!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Om du aktiverar alternativet Betala personligen kan kunden betala kontant eller med kort för onlinebeställningar vid leverans.\n\nBeställningar kan fortfarande skapas manuellt utan att aktivera denna funktion.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vill du lägga till alternativet Betala personligen i din kassa?</string>
+    <string name="card_reader_onboarding_contact_us">Behöver du hjälp? &lt;a href=\'\'&gt;Kontakta oss&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Återbetala anpassat belopp</string>
+    <string name="order_refunds_custom_amount_refund">Återbetalning av anpassade belopp</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Skanna produktens streckkod</string>
+    <string name="order_creation_add_gift_card">Lägg till presentkort</string>
     <string name="scan_to_update_inventory_product_label">Produkt</string>
     <string name="scan_to_update_inventory_quantity_label">Antal</string>
     <string name="scan_to_update_inventory_original_quantity_label">Ursprungligt antal</string>
@@ -44,8 +67,6 @@ Language: sv_SE
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tryck för att visa</string>
     <string name="theme_preview_bottom_sheet_pages_title">Sidor på denna mall</string>
     <string name="theme_preview_title">Förhandsgranska</string>
-    <string name="theme_picker_error_message">Kan inte att ladda teman just nu.</string>
-    <string name="theme_picker_error_title">Ett fel uppstod</string>
     <string name="theme_picker_carousel_info_item_description">När din butik har konfigurerats kan du hitta ditt perfekta tema i WooCommerce-temabutiken.</string>
     <string name="theme_picker_carousel_info_item_title">Letar du efter fler?</string>
     <string name="theme_picker_description">Du kan alltid ändra det senare i inställningar</string>
@@ -1116,8 +1137,6 @@ Language: sv_SE
     <string name="login_site_picker_try_another_address">Försök med en annan adress</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Det gick inte att aktivera Postförskott. Försök igen senare.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktivera Betala personligen</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Alternativet \"Betala personligen\" i kassan gör det möjligt att ta emot kortbetalningar eller kontanta betalningar vid upphämtning eller leverans.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Lägg till Betala personligen i din kassa</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om Personliga betalningar</string>
     <string name="login_site_picker_new_to_woo">Är WooCommerce nytt för dig?</string>
     <string name="site_discovery_postlogin_failure">Ett fel uppstod, kontakta support</string>

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:05+0000
+Translation-Revision-Date: 2024-01-03 11:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="theme_picker_error_message">فشل تحميل القوالب.</string>
+    <string name="configuration_complete">اكتمل التكوين</string>
+    <string name="scan_to_update_inventory_undo_snackbar">تم التراجع عن تحديث الكمية</string>
+    <string name="theme_picker_loading_current_theme_failed">يتعذر تحميل قالبك الحالي</string>
+    <string name="theme_preview_type_desktop">سطح المكتب</string>
+    <string name="theme_preview_type_tablet">جهاز لوحي</string>
+    <string name="theme_preview_type_mobile">الهاتف المحمول</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">النقر هنا</string>
+    <string name="theme_picker_carousel_error_placeholder_message">عفوًا، يبدو أن هناك مشكلة في تحميل القالب. يرجى ⁦%1$s⁩ للحصول على عرض توضيحي فوري.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">يمكنك العثور على قالبك المثالي في متجر قوالب WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">القالب الحالي</string>
+    <string name="theme_picker_settings_title">تجربة مظهر جديد</string>
+    <string name="product_creation_survey_button_skip">تخطٍّ</string>
+    <string name="product_creation_survey_button_open">بدء الاستبيان</string>
+    <string name="product_creation_survey_description">لقد استخدمت ميزتنا المدعومة بالذكاء الاصطناعي لإضافة المنتجات مرات عديدة الآن. نرغب في التعرُّف على أفكارك لتحسين الميزة.</string>
+    <string name="product_creation_survey_title">إسهاماتك محل تقدير!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">يؤدي تمكين Pay In Person إلى السماح للعملاء بالدفع إليك للحصول على الطلبات على الإنترنت عند التسليم نقدًا أو باستخدام البطاقة.\n\nلا يزال بالإمكان إنشاء الطلبات يدويًا من دون تمكين هذه الميزة.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">هل تريد إضافة Pay In Person إلى طرق السداد الخاصة بك على الويب؟</string>
+    <string name="card_reader_onboarding_contact_us">هل تحتاج إلى بعض المساعدة؟ &lt;a href=\'\'&gt;الاتصال بنا&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">استرداد المبلغ المخصص</string>
+    <string name="order_refunds_custom_amount_refund">استرداد المبلغ المخصص</string>
+    <string name="barcode_scanning_scan_product_barcode_label">مسح الرمز الشريطي للمنتج ضوئيًا</string>
+    <string name="order_creation_add_gift_card">إضافة بطاقة الهدايا</string>
     <string name="scan_to_update_inventory_product_label">المنتج</string>
     <string name="scan_to_update_inventory_quantity_label">الكمية</string>
     <string name="scan_to_update_inventory_original_quantity_label">الكمية الأصلية</string>
@@ -44,8 +67,6 @@ Language: ar
     <string name="theme_preview_bottom_sheet_pages_subtitle">الضغط للعرض</string>
     <string name="theme_preview_bottom_sheet_pages_title">الصحفات الموجودة على هذا القالب</string>
     <string name="theme_preview_title">معاينة</string>
-    <string name="theme_picker_error_message">يتعذر تحميل القوالب في الوقت الحالي.</string>
-    <string name="theme_picker_error_title">حدث خطأ</string>
     <string name="theme_picker_carousel_info_item_description">بمجرد إعداد متجرك، اعثر على قالبك المثالي في متجر قوالب WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">هل تبحث عن المزيد؟</string>
     <string name="theme_picker_description">يمكنك دومًا تغييره لاحقًا ضمن الإعدادات.</string>
@@ -1116,8 +1137,6 @@ Language: ar
     <string name="login_site_picker_try_another_address">تجربة عنوان آخر</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">فشل تمكين خيار الدفع نقدًا عند التوصيل. يرجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">تمكين الدفع بشكل شخصي</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">يتيح لك خيار \"الدفع بشكل شخصي\" الموجود في إجراءات السداد الخاصة بك قبول المدفوعات باستخدام البطاقات أو نقدًا عند التحصيل أو التوصيل.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">إضافة خيار \"الدفع بشكل شخصي\" إلى إجراءات السداد الخاصة بك</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول المدفوعات الشخصية</string>
     <string name="login_site_picker_new_to_woo">جديد على WooCommerce</string>
     <string name="site_discovery_postlogin_failure">حدث خطأ، يرجى الاتصال بالدعم</string>

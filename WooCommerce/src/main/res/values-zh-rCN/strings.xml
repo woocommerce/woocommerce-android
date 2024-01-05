@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:04+0000
+Translation-Revision-Date: 2024-01-03 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="theme_picker_error_message">主题加载失败。</string>
+    <string name="configuration_complete">配置完成</string>
+    <string name="scan_to_update_inventory_undo_snackbar">更新数量操作已撤销</string>
+    <string name="theme_picker_loading_current_theme_failed">无法加载当前主题</string>
+    <string name="theme_preview_type_desktop">台式设备</string>
+    <string name="theme_preview_type_tablet">平板电脑</string>
+    <string name="theme_preview_type_mobile">移动设备</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">轻按此处</string>
+    <string name="theme_picker_carousel_error_placeholder_message">抱歉，加载模板时似乎出现了问题。 请访问 %1$s 查看实时演示。</string>
+    <string name="theme_picker_carousel_info_item_description_settings">您可以在 WooCommerce 主题商店中找到最适合您的主题。</string>
+    <string name="theme_picker_current_theme_title">当前主题</string>
+    <string name="theme_picker_settings_title">试用新外观</string>
+    <string name="product_creation_survey_button_skip">跳过</string>
+    <string name="product_creation_survey_button_open">开始调查</string>
+    <string name="product_creation_survey_description">您已多次使用我们的人工智能辅助功能添加产品。 我们想听听您对这项功能的看法，以便进一步改进。</string>
+    <string name="product_creation_survey_title">您的宝贵意见对我们非常重要！</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">启用“现场付款”功能，让客户能在收货时通过现金或银行卡为在线订单付款。\n\n即使不启用此功能，您仍然可以手动创建订单。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">您想在结账页面中添加“现场付款”功能吗？</string>
+    <string name="card_reader_onboarding_contact_us">需要一些帮助？ &lt;a href=\'\'&gt;联系我们&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">退还自定义金额</string>
+    <string name="order_refunds_custom_amount_refund">自定义金额退款</string>
+    <string name="barcode_scanning_scan_product_barcode_label">扫描产品条形码</string>
+    <string name="order_creation_add_gift_card">添加礼品卡</string>
     <string name="scan_to_update_inventory_product_label">产品</string>
     <string name="scan_to_update_inventory_quantity_label">数量</string>
     <string name="scan_to_update_inventory_original_quantity_label">原始数量</string>
@@ -44,8 +67,6 @@ Language: zh_CN
     <string name="theme_preview_bottom_sheet_pages_subtitle">轻点以查看</string>
     <string name="theme_preview_bottom_sheet_pages_title">此模板上的页面</string>
     <string name="theme_preview_title">预览</string>
-    <string name="theme_picker_error_message">暂时无法加载主题。</string>
-    <string name="theme_picker_error_title">出现错误</string>
     <string name="theme_picker_carousel_info_item_description">完成商店设置后，请在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_carousel_info_item_title">想要获得更多信息？</string>
     <string name="theme_picker_description">之后您可以随时在设置中进行更改。</string>
@@ -1116,12 +1137,10 @@ Language: zh_CN
     <string name="login_site_picker_try_another_address">尝试使用其他地址</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">启用货到付款失败。 请稍后重试。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">启用现场付款</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">通过在结账时使用“现场付款”选项，您可在到货或配送时接受银行卡或现金付款。</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;详细了解&lt;/a&gt;现场付款</string>
     <string name="login_site_picker_new_to_woo">首次使用 WooCommerce</string>
     <string name="site_discovery_postlogin_failure">发生错误，请联系支持人员</string>
     <string name="login_site_picker_enter_site_address">输入站点地址</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">将现场付款添加到您的结账方式</string>
     <string name="login_help_notification_invalid_password_title">忘记密码？</string>
     <string name="login_help_notification_get_link_by_email_button">通过电子邮件获取登录链接</string>
     <string name="card_reader_onboarding_not_finished">我们注意到您尚未完成“现场付款”设置。 &lt;a href=\'\'&gt;继续设置&lt;/a&gt;</string>

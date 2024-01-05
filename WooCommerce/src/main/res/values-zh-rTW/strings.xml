@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-14 11:54:04+0000
+Translation-Revision-Date: 2024-01-03 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="theme_picker_error_message">無法載入佈景主題。</string>
+    <string name="configuration_complete">設定完成</string>
+    <string name="scan_to_update_inventory_undo_snackbar">已復原更新數量</string>
+    <string name="theme_picker_loading_current_theme_failed">無法載入目前的佈景主題</string>
+    <string name="theme_preview_type_desktop">桌上型電腦</string>
+    <string name="theme_preview_type_tablet">平板電腦</string>
+    <string name="theme_preview_type_mobile">行動裝置</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">點選這裡</string>
+    <string name="theme_picker_carousel_error_placeholder_message">抱歉，看來在載入範本時發生問題。 如需即時示範，請%1$s。</string>
+    <string name="theme_picker_carousel_info_item_description_settings">歡迎前往 WooCommerce 佈景主題商店，尋找最適合的佈景主題。</string>
+    <string name="theme_picker_current_theme_title">目前的佈景主題</string>
+    <string name="theme_picker_settings_title">嘗試新的外觀</string>
+    <string name="product_creation_survey_button_skip">略過</string>
+    <string name="product_creation_survey_button_open">開始進行調查</string>
+    <string name="product_creation_survey_description">你目前已使用 AI 功能多次新增產品。 歡迎與我們分享想法，讓體驗更好。</string>
+    <string name="product_creation_survey_title">我們很重視你的意見！</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">若你啟用親自收款功能，可以讓顧客在到貨時以現金或卡片支付線上訂單款項。\n\n即使不啟用這項功能，你仍可手動建立訂單。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">你想將親自收款新增至網頁結帳功能嗎？</string>
+    <string name="card_reader_onboarding_contact_us">需要協助嗎？ &lt;a href=\'\'&gt;聯絡我們&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">退款自訂金額</string>
+    <string name="order_refunds_custom_amount_refund">自訂金額退款</string>
+    <string name="barcode_scanning_scan_product_barcode_label">掃瞄產品條碼</string>
+    <string name="order_creation_add_gift_card">新增禮物卡</string>
     <string name="scan_to_update_inventory_product_label">產品</string>
     <string name="scan_to_update_inventory_quantity_label">數量</string>
     <string name="scan_to_update_inventory_original_quantity_label">原始數量</string>
@@ -44,8 +67,6 @@ Language: zh_TW
     <string name="theme_preview_bottom_sheet_pages_subtitle">點選以檢視</string>
     <string name="theme_preview_bottom_sheet_pages_title">此範本上的頁面</string>
     <string name="theme_preview_title">預覽</string>
-    <string name="theme_picker_error_message">目前無法載入佈景主題。</string>
-    <string name="theme_picker_error_title">發生錯誤</string>
     <string name="theme_picker_carousel_info_item_description">商店設定完畢後，請前往 WooCommerce 佈景主題商店，尋找最適合你的佈景主題。</string>
     <string name="theme_picker_carousel_info_item_title">想探索更多選項嗎？</string>
     <string name="theme_picker_description">你之後可以隨時在設定中變更。</string>
@@ -1116,8 +1137,6 @@ Language: zh_TW
     <string name="login_site_picker_try_another_address">嘗試其他地址</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">無法啟用貨到付款。 請稍後再試一次。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">啟用親自收款</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">結帳畫面的「親自收款」選項可讓你在收貨或貨到時接受卡片或現金付款。</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">將「親自收款」功能新增至結帳畫面</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;親自收款功能</string>
     <string name="login_site_picker_new_to_woo">第一次使用 WooCommerce</string>
     <string name="site_discovery_postlogin_failure">發生錯誤，請聯絡支援團隊</string>

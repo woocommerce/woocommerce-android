@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 09:54:04+0000
+Translation-Revision-Date: 2024-01-03 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="theme_picker_error_message">Gagal memuat tema.</string>
+    <string name="configuration_complete">Konfigurasi selesai</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Perbarui Jumlah yang Dibatalkan</string>
+    <string name="theme_picker_loading_current_theme_failed">Tidak dapat memuat tema Anda saat ini</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Seluler</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">ketuk di sini</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Maaf, sepertinya ada masalah saat memuat templat. Mohon %1$s untuk demo langsung.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Temukan tema ideal Anda di Toko Tema WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Tema saat ini</string>
+    <string name="theme_picker_settings_title">Coba tampilan baru</string>
+    <string name="product_creation_survey_button_skip">Lewati</string>
+    <string name="product_creation_survey_button_open">Mulai Survei</string>
+    <string name="product_creation_survey_description">Anda telah menggunakan fitur yang didukung AI untuk menambahkan produk beberapa kali. Sampaikan masukan Anda agar kami bisa meningkatkan fitur.</string>
+    <string name="product_creation_survey_title">Kami menghargai masukan Anda!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mengaktifkan Pembayaran Langsung memungkinkan pelanggan membayar pesanan online saat pesanan diterima dengan uang tunai atau kartu.\n\nPesanan dapat dibuat secara manual tanpa mengaktifkan fitur ini.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Apakah Anda ingin menambahkan fitur Pembayaran Langsung saat checkout di situs web?</string>
+    <string name="card_reader_onboarding_contact_us">Butuh bantuan? &lt;a href=\'\'&gt;Hubungi kami&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Kembalikan Dana Sebesar Jumlah Kustom</string>
+    <string name="order_refunds_custom_amount_refund">Pengembalian dana sebesar jumlah kustom</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Pindai Barcode Produk</string>
+    <string name="order_creation_add_gift_card">Tambahkan Kartu Hadiah</string>
     <string name="scan_to_update_inventory_product_label">Produk</string>
     <string name="scan_to_update_inventory_quantity_label">Jumlah</string>
     <string name="scan_to_update_inventory_original_quantity_label">Jumlah awal</string>
@@ -44,8 +67,6 @@ Language: id
     <string name="theme_preview_bottom_sheet_pages_subtitle">Ketuk untuk melihat</string>
     <string name="theme_preview_bottom_sheet_pages_title">Halaman dengan templat ini</string>
     <string name="theme_preview_title">Pratinjau</string>
-    <string name="theme_picker_error_message">Tidak dapat memuat tema saat ini.</string>
-    <string name="theme_picker_error_title">Terjadi kesalahan</string>
     <string name="theme_picker_carousel_info_item_description">Setelah menyiapkan toko Anda, temukan tema yang ideal di Toko Tema WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Mencari lainnya?</string>
     <string name="theme_picker_description">Anda bebas mengubahnya di pengaturan kapan saja.</string>
@@ -1116,8 +1137,6 @@ Language: id
     <string name="login_site_picker_try_another_address">Coba alamat lainnya</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Gagal mengaktifkan bayar di tempat. Silakan coba lagi nanti.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktifkan Pembayaran Langsung</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Dengan pilihan \"Pembayaran Langsung\" saat checkout, Anda dapat menerima pembayaran kartu atau tunai saat pengambilan atau penerimaan barang.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Tambahkan Pembayaran Langsung pada proses checkout Anda</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang Pembayaran Langsung</string>
     <string name="login_site_picker_new_to_woo">Baru menggunakan WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Terjadi kegagalan, silakan hubungi dukungan</string>

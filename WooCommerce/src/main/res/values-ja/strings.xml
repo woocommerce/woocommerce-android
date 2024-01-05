@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-14 09:54:04+0000
+Translation-Revision-Date: 2024-01-04 10:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="theme_picker_error_message">テーマを読み込めませんでした。</string>
+    <string name="configuration_complete">設定が完了しました</string>
+    <string name="scan_to_update_inventory_undo_snackbar">数量の更新を取り消しました</string>
+    <string name="theme_picker_loading_current_theme_failed">現在のテーマを読み込めませんでした</string>
+    <string name="theme_preview_type_desktop">デスクトップ</string>
+    <string name="theme_preview_type_tablet">タブレット</string>
+    <string name="theme_preview_type_mobile">モバイル</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">ここをタップ</string>
+    <string name="theme_picker_carousel_error_placeholder_message">テンプレートの読み込みに問題があるようです。 ライブデモを確認するには%1$sしてください。</string>
+    <string name="theme_picker_carousel_info_item_description_settings">WooCommerce テーマストアでご自身にぴったりなテーマが見つかります。</string>
+    <string name="theme_picker_current_theme_title">現在のテーマ</string>
+    <string name="theme_picker_settings_title">新しいデザインを試す</string>
+    <string name="product_creation_survey_button_skip">スキップ</string>
+    <string name="product_creation_survey_button_open">アンケートをスタート</string>
+    <string name="product_creation_survey_description">これまでに AI によるサポート機能を使用して商品を複数回追加しました。 改善を重ねてまいりますので、ぜひご意見をお寄せください。</string>
+    <string name="product_creation_survey_title">お待ちしています。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">「直接支払い」を有効化すると、顧客はオンライン注文の代金を配達時に現金またはカードで支払うことができます。\n\nこの機能を有効化しなくても、注文は手動で作成できます。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">ウェブでの購入手続きに「直接支払い」を追加しますか ?</string>
+    <string name="card_reader_onboarding_contact_us">サポートが必要ですか ? &lt;a href=\'\'&gt;お問い合わせ&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">カスタム金額を返金</string>
+    <string name="order_refunds_custom_amount_refund">カスタム金額の返金</string>
+    <string name="barcode_scanning_scan_product_barcode_label">商品バーコードをスキャン</string>
+    <string name="order_creation_add_gift_card">ギフトカードを追加する</string>
     <string name="scan_to_update_inventory_product_label">商品</string>
     <string name="scan_to_update_inventory_quantity_label">数量</string>
     <string name="scan_to_update_inventory_original_quantity_label">元の数量</string>
@@ -44,8 +67,6 @@ Language: ja_JP
     <string name="theme_preview_bottom_sheet_pages_subtitle">タップして表示</string>
     <string name="theme_preview_bottom_sheet_pages_title">このテンプレートのページ</string>
     <string name="theme_preview_title">プレビュー</string>
-    <string name="theme_picker_error_message">現時点ではテーマを読み込むことができません。</string>
-    <string name="theme_picker_error_title">エラーが発生しました</string>
     <string name="theme_picker_carousel_info_item_description">ストアをセットアップしたら、WooCommerce テーマストアでご自身にぴったりなテーマを見つけましょう。</string>
     <string name="theme_picker_carousel_info_item_title">もっと知りたいですか ?</string>
     <string name="theme_picker_description">設定で後でいつでも変更できます。</string>
@@ -1116,8 +1137,6 @@ Language: ja_JP
     <string name="login_site_picker_try_another_address">別のアドレスを試す</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">代金引換を有効にできませんでした。 後でやり直してください。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">直接支払いを有効化</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">購入手続きの「直接支払い」オプションでは、集荷または配送時にカードまたは現金での支払いを受けることができます。</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">購入手続きに直接支払いを追加</string>
     <string name="card_reader_connect_learn_more">直接支払いについて&lt;a href=\'\'&gt;詳しく読む&lt;/a&gt;。</string>
     <string name="login_site_picker_new_to_woo">初めて WooCommerce をお使いになる場合</string>
     <string name="site_discovery_postlogin_failure">エラーが生じました。サポートにお問い合わせください</string>

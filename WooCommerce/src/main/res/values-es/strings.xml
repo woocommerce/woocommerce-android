@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 17:54:04+0000
+Translation-Revision-Date: 2024-01-03 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="theme_picker_error_message">No se han podido cargar los temas.</string>
+    <string name="configuration_complete">Configuración completada</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Actualizar cantidad deshecha</string>
+    <string name="theme_picker_loading_current_theme_failed">No se puede cargar el tema actual</string>
+    <string name="theme_preview_type_desktop">Ordenador</string>
+    <string name="theme_preview_type_tablet">Tableta</string>
+    <string name="theme_preview_type_mobile">Móvil</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">toca aquí</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Lo siento, parece que hay un problema con la carga de la plantilla. %1$s para ver una demostración en directo.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Puedes buscar el tema perfecto en la tienda de temas de WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Tema actual</string>
+    <string name="theme_picker_settings_title">Prueba una nueva imagen.</string>
+    <string name="product_creation_survey_button_skip">Omitir</string>
+    <string name="product_creation_survey_button_open">Empieza la encuesta.</string>
+    <string name="product_creation_survey_description">Ya has utilizado varias veces nuestra función asistida por IA para añadir productos. Nos encantaría conocer tu opinión para hacerlo aún mejor.</string>
+    <string name="product_creation_survey_title">Valoramos tu opinión.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Activar el pago en persona permite a los clientes pagar sus pedidos en línea en el momento de la entrega en efectivo o con tarjeta.\n\nLos pedidos pueden seguir creándose manualmente sin activar esta función.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">¿Quieres añadir el pago en persona a tu caja web?</string>
+    <string name="card_reader_onboarding_contact_us">¿Necesitas ayuda? &lt;a href=\'\'&gt;Contacto&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Devolver importe personalizado</string>
+    <string name="order_refunds_custom_amount_refund">Devolución de importes personalizados</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Escanear código de barras de producto</string>
+    <string name="order_creation_add_gift_card">Añadir tarjeta regalo</string>
     <string name="scan_to_update_inventory_product_label">Producto</string>
     <string name="scan_to_update_inventory_quantity_label">Cantidad</string>
     <string name="scan_to_update_inventory_original_quantity_label">Cantidad original</string>
@@ -44,8 +67,6 @@ Language: es
     <string name="theme_preview_bottom_sheet_pages_subtitle">Toca para ver</string>
     <string name="theme_preview_bottom_sheet_pages_title">Páginas de esta plantilla</string>
     <string name="theme_preview_title">Vista previa</string>
-    <string name="theme_picker_error_message">No se han podido cargar los temas en este momento.</string>
-    <string name="theme_picker_error_title">Se ha producido un error</string>
     <string name="theme_picker_carousel_info_item_description">Cuando hayas configurado tu tienda, busca el tema perfecto en la tienda de temas de WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">¿Quieres más opciones?</string>
     <string name="theme_picker_description">Podrás cambiarlo más tarde en la configuración.</string>
@@ -1116,8 +1137,6 @@ Language: es
     <string name="login_site_picker_try_another_address">Prueba con otra dirección</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">No se ha podido activar el pago contra reembolso. Inténtalo de nuevo más tarde.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Activar Pagos en persona</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Establecer la opción \"Pagos en persona\" en la página de finalizar compra permite aceptar pagos con tarjeta o en efectivo en la recogida o entrega.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Añade Pagos en persona a la página de finalizar compra</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Más información&lt;/a&gt; sobre los Pagos en persona</string>
     <string name="login_site_picker_new_to_woo">Nuevo en WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Se ha producido un error, contacta con soporte.</string>
