@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.EMPTY_BIG_DECIMAL
 import com.woocommerce.android.viewmodel.BaseUnitTest
