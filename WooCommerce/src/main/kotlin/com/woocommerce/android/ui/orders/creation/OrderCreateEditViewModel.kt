@@ -1082,7 +1082,7 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddCoupon)
     }
 
-    fun onEditGiftCardButtonClicked(currentGiftCard: String? = null) {
+    private fun onEditGiftCardButtonClicked(currentGiftCard: String? = null) {
         triggerEvent(OrderCreateEditNavigationTarget.EditGiftCard(currentGiftCard.orEmpty()))
     }
 
