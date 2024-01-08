@@ -59,7 +59,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         productId: Long?,
         handler: (BlazeCampaignCreationDispatcherEvent) -> Unit
     ) {
-        val products = getPublishedProducts()
+        val products = getPublishedCachedProducts()
 
         when {
             productId != null -> {
@@ -72,16 +72,18 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
             }
             else -> {
+                // If there are no cached products at this point, we should ensure the code triggering
+                // this code, has previously refreshed the products from the API.
                 WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
             }
         }
     }
 
-    private suspend fun getPublishedProducts() = withContext(coroutineDispatchers.io) {
+    private suspend fun getPublishedCachedProducts() = withContext(coroutineDispatchers.io) {
         productListRepository.getProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
-        )
+        ).filterNot { it.isSampleProduct }
     }
 
     private fun handleEvent(event: BlazeCampaignCreationDispatcherEvent) {

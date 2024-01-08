@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Companion.EMPTY_BIG_DECIMAL
 import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
 import com.woocommerce.android.ui.orders.creation.configuration.OptionalRule
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
@@ -27,8 +28,12 @@ class ListItemMapper @Inject constructor(
             put("product_id", item.productId)
             put("variation_id", item.variationId)
             put("quantity", item.quantity.toString())
-            put("subtotal", item.subtotal.toString())
-            put("total", item.total.toString())
+            if (item.subtotal != EMPTY_BIG_DECIMAL) {
+                put("subtotal", item.subtotal.toString())
+            }
+            if (item.total != EMPTY_BIG_DECIMAL) {
+                put("total", item.total.toString())
+            }
             item.configuration?.let {
                 getConfiguration(item.productId, it)?.let { keyConfigurationPair ->
                     put(keyConfigurationPair.first, keyConfigurationPair.second)

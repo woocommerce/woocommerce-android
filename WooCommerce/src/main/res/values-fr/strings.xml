@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:04+0000
+Translation-Revision-Date: 2024-01-03 16:54:24+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="theme_picker_error_message">Chargement des thèmes impossible.</string>
+    <string name="configuration_complete">Configuration terminée</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Mettre à jour la quantité annulé</string>
+    <string name="theme_picker_loading_current_theme_failed">Impossible de charger votre thème actuel</string>
+    <string name="theme_preview_type_desktop">Application de bureau</string>
+    <string name="theme_preview_type_tablet">Tablette</string>
+    <string name="theme_preview_type_mobile">Portable</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">appuyer ici</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Malheureusement, il semble y avoir un problème avec le chargement du modèle. Veuillez %1$s pour une démonstration en direct.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Vous trouverez le thème parfait dans la boutique de thèmes WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Thème actuel</string>
+    <string name="theme_picker_settings_title">Essayer un nouveau look</string>
+    <string name="product_creation_survey_button_skip">Ignorer</string>
+    <string name="product_creation_survey_button_open">Commencer l’enquête</string>
+    <string name="product_creation_survey_description">Vous avez utilisé notre fonctionnalité assistée par l’IA pour ajouter des produits à de multiples reprises désormais. Nous aimerions savoir ce que vous en pensez pour l’améliorer.</string>
+    <string name="product_creation_survey_title">Nous apprécions vos retours !</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Activer Payez en personne permet à vos clients de vous régler leurs commandes en ligne lors de la livraison, en espèces ou par carte.\n\nLes commandes peuvent toujours être créées manuellement sans activer cette fonctionnalité.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Désirez-vous ajouter Payer en personne à la validation de la commande Web ?</string>
+    <string name="card_reader_onboarding_contact_us">Besoin d’aide ? &lt;a href=\'\'&gt;Nous contacter&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Rembourser le montant personnalisé</string>
+    <string name="order_refunds_custom_amount_refund">Remboursement du montant personnalisé</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Scanner le code-barres du produit</string>
+    <string name="order_creation_add_gift_card">Ajouter une carte-cadeau</string>
     <string name="scan_to_update_inventory_product_label">Produit</string>
     <string name="scan_to_update_inventory_quantity_label">Quantité</string>
     <string name="scan_to_update_inventory_original_quantity_label">Quantité initiale</string>
@@ -1111,8 +1134,6 @@ Language: fr
     <string name="login_site_picker_try_another_address">Essayer une autre adresse</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Échec de l’activation du paiement à la livraison. Veuillez réessayer ultérieurement.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Activer Payer en personne</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L’option « Payer en personne » sur votre page de validation de commande vous permet d’accepter les paiements par carte ou en espèces lors de la collecte ou de la livraison.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Ajouter Payer en personne à votre page de validation de commande</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur les paiements en personne</string>
     <string name="login_site_picker_new_to_woo">Vous débutez sur WooCommerce ?</string>
     <string name="site_discovery_postlogin_failure">Une erreur s’est produite, veuillez contacter l’assistance</string>

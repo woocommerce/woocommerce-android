@@ -194,6 +194,7 @@ class OrderCreateEditViewModel @Inject constructor(
     parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
+        val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
         const val MAX_PRODUCT_QUANTITY = 100_000
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
@@ -1216,6 +1217,9 @@ class OrderCreateEditViewModel @Inject constructor(
                     // the application does not send notifications or synchronize its status on other devices.
                     _orderDraft.map { order -> order.copy(status = orderCreationStatus) }
                 }
+                    .map {
+                        sanitizeUnsyncedOrderItemsData(it)
+                    }
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
@@ -1274,6 +1278,20 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
+
+    private fun sanitizeUnsyncedOrderItemsData(it: Order) = it.copy(
+        items = it.items.map { item ->
+            if (!item.isSynced()) {
+                item.copy(
+                    itemId = 0L,
+                    subtotal = EMPTY_BIG_DECIMAL,
+                    total = EMPTY_BIG_DECIMAL,
+                )
+            } else {
+                item
+            }
+        }
+    )
 
     private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
         (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON

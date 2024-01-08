@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,14 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
@@ -44,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
@@ -80,17 +77,8 @@ fun AboutProductSubScreen(
     )
     val configuration = LocalConfiguration.current
 
-    ModalBottomSheetLayout(
+    WCModalBottomSheetLayout(
         sheetState = modalSheetState,
-        sheetShape = RoundedCornerShape(
-            topStart = dimensionResource(id = R.dimen.minor_100),
-            topEnd = dimensionResource(id = R.dimen.minor_100)
-        ),
-        scrimColor =
-        // Overriding scrim color for dark theme because of the following bug affecting ModalBottomSheetLayout:
-        // https://issuetracker.google.com/issues/183697056
-        if (isSystemInDarkTheme()) colorResource(id = R.color.color_scrim_background)
-        else ModalBottomSheetDefaults.scrimColor,
         sheetContent = {
             AiToneBottomSheetContent(
                 aiTones = AiTone.values().toList(),
