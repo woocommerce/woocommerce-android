@@ -56,7 +56,6 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onViewProductDetailsClicked = viewModel::onViewProductDetailsClicked,
                 onManualQuantityEntered = viewModel::onManualQuantityEntered,
                 onManageStockClicked = viewModel::onManageStockClicked,
-                onViewProductDetailsClickedFromStockManagement = viewModel::onViewProductDetailsClicked,
             )
         }
     }
