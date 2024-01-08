@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.8
+We've polished your WooCommerce app experience! Check out the sleek new design for the deposit summary on the payments screen. Say goodbye to crashes after resetting your selected site, and enjoy a smoother store switching process right after you create a new store. Plus, managing custom amounts is now a breeze with our full-screen feature. Update now for a more seamless and stable business management journey!
+
 ## 16.7
 In our latest update, we've fine-tuned the In Person Payments onboarding flow for a more seamless and intuitive experience. Additionally, we've addressed various fixes to enhance the stability and performance of animations. Update now to enjoy a smoother and more reliable WooCommerce experience! 
 

@@ -31,8 +31,8 @@ object EditCouponNavigator {
             is EditIncludedProducts -> {
                 navController.navigateSafely(
                     EditCouponFragmentDirections.actionEditCouponFragmentToProductSelectorFragment(
-                        target.selectedItems.toTypedArray(),
-                        ProductSelectorViewModel.ProductSelectorFlow.CouponEdition
+                        selectedItems = target.selectedItems.toTypedArray(),
+                        productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.CouponEdition
                     )
                 )
             }

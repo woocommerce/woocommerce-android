@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:04+0000
+Translation-Revision-Date: 2024-01-03 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="theme_picker_error_message">Temalar yüklenemedi.</string>
+    <string name="configuration_complete">Yapılandırma tamamlandı</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Miktarı Güncellemeyi Geri Al</string>
+    <string name="theme_picker_loading_current_theme_failed">Mevcut temanız yüklenemedi</string>
+    <string name="theme_preview_type_desktop">Masaüstü</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Mobil</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">buraya dokunun</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Üzgünüz, görünüşe göre şablon yüklenirken bir hata oluştu. Lütfen canlı bir demo için %1$s.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">WooCommerce Tema Mağazasından mükemmel temanızı bulabilirsiniz.</string>
+    <string name="theme_picker_current_theme_title">Geçerli tema</string>
+    <string name="theme_picker_settings_title">Yeni bir görünüm deneyin</string>
+    <string name="product_creation_survey_button_skip">Atla</string>
+    <string name="product_creation_survey_button_open">Anketi Başlat</string>
+    <string name="product_creation_survey_description">Birkaç kere ürün eklemek için yapay zeka destekli özelliğimizi kullandınız. Daha da iyi hale getirmek için düşüncelerinizi duymak isteriz.</string>
+    <string name="product_creation_survey_title">Fikirlerinize değer veriyoruz!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Şahsen Ödemeyi etkinleştirmek, müşterinin çevrimiçi siparişler için ödemeyi nakit veya kart aracılığıyla teslimat sırasında yapmasını sağlar.\n\nSiparişler bu özellik etkinleştirilmeden manuel olarak da oluşturulabilir.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Web ödemenize Şahsen Ödeme özelliğini eklemek istiyor musunuz?</string>
+    <string name="card_reader_onboarding_contact_us">Biraz yardıma mı ihtiyacınız var? &lt;a href=\'\'&gt;Bizimle iletişim kurun&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Özel Tutarı İade Edin</string>
+    <string name="order_refunds_custom_amount_refund">Özel tutar iadesi</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Ürün Barkodunu Tarayın</string>
+    <string name="order_creation_add_gift_card">Hediye kartı ekleyin</string>
     <string name="scan_to_update_inventory_product_label">Ürün</string>
     <string name="scan_to_update_inventory_quantity_label">Miktar</string>
     <string name="scan_to_update_inventory_original_quantity_label">Orijinal miktar</string>
@@ -1111,8 +1134,6 @@ Language: tr
     <string name="login_site_picker_try_another_address">Başka bir adres deneyin</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Teslimatta nakit ödeme etkinleştirilemedi. Lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Şahsen Ödemeyi Etkinleştir</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Ödeme sayfanızdaki \"Şahsen Öde\" seçeneği, tahsilat veya teslimatta kart veya nakit ödemeleri kabul etmenizi sağlar.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Ödeme sayfanıza Şahsen Ödeme yöntemini ekleyin</string>
     <string name="card_reader_connect_learn_more">Şahsen Ödemeler hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
     <string name="login_site_picker_new_to_woo">WooCommerce\'ü yeni kullanmaya mı başladınız?</string>
     <string name="site_discovery_postlogin_failure">Bir hata oluştu, lütfen desteğe başvurun</string>

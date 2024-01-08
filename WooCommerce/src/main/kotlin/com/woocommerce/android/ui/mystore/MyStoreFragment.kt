@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
+import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -131,6 +132,9 @@ class MyStoreFragment :
     @Inject
     lateinit var addProductNavigator: AddProductNavigator
 
+    @Inject
+    lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
 
@@ -172,6 +176,7 @@ class MyStoreFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        blazeCampaignCreationDispatcher.attachFragment(this)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -246,10 +251,12 @@ class MyStoreFragment :
         }
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
                     url = event.url,
                     source = event.source
                 )
+
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
 
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {
                     findNavController().navigateSafely(
@@ -267,6 +274,12 @@ class MyStoreFragment :
                     )
                 }
             }
+        }
+    }
+
+    private fun openBlazeCreationFlow(productId: Long?) {
+        lifecycleScope.launch {
+            blazeCampaignCreationDispatcher.startCampaignCreation(productId)
         }
     }
 

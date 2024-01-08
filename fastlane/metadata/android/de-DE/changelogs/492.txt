@@ -1,2 +1,2 @@
-16.6:
+16.7:
 Tolle Neuigkeiten! Die neusten Updates optimieren dein WooCommerce-Erlebnis in vielfacher Hinsicht. Scanne Barcodes direkt auf der Produktseite, um den Lagerbestand bequem und schnell zu aktualisieren! In der überarbeiteten Benutzeroberfläche kannst du individuelle prozentuale Beträge eingeben. Bei der Produkterstellung kannst du jetzt Bilder aus anderen Apps nahtlos einfügen. Interne Optimierungen ermöglichen eine benutzerfreundlichere Suche. Sieh dir diese tollen Verbesserungen an!
