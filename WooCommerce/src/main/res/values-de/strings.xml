@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 12:54:04+0000
+Translation-Revision-Date: 2024-01-03 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="store_creation_use_theme_button">Mit diesem Theme starten</string>
+    <string name="theme_picker_error_message">Themes konnten nicht geladen werden.</string>
+    <string name="configuration_complete">Konfiguration abgeschlossen</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Mengenaktualisierung rückgängig gemacht</string>
+    <string name="theme_picker_loading_current_theme_failed">Dein aktuelles Theme konnte nicht geladen werden</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Mobil</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">hier tippen</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Anscheinend gab es ein Problem beim Laden des Templates. Bitte %1$s, um dir eine Live-Demo anzusehen.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Du kannst dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
+    <string name="theme_picker_current_theme_title">Aktuelles Theme</string>
+    <string name="theme_picker_settings_title">Teste einen neuen Look</string>
+    <string name="product_creation_survey_button_skip">Überspringen</string>
+    <string name="product_creation_survey_button_open">Befragung starten</string>
+    <string name="product_creation_survey_description">Du hast unsere KI-unterstützte Funktion verwendet, um Produkte mehrfach hinzuzufügen. Wir würden uns über Feedback freuen, damit wir die Funktion weiter verbessern können.</string>
+    <string name="product_creation_survey_title">Deine Meinung ist uns wichtig!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Wenn „Persönliche Zahlung“ aktiviert ist, können Kunden für Online-Bestellungen bei Zustellung in bar oder mit Karte zahlen.\n\nBestellungen kannst du auch ohne Aktivierung dieser Funktion weiterhin manuell erstellen.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Möchtest du „Persönliche Zahlung“ zu deinem Web-Bezahlvorgang hinzufügen?</string>
+    <string name="card_reader_onboarding_contact_us">Brauchst du Hilfe? &lt;a href=\'\'&gt;Kontaktiere uns&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Individuellen Betrag zurückerstatten</string>
+    <string name="order_refunds_custom_amount_refund">Rückerstattung des individuellen Betrags</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Produkt-Barcode scannen</string>
+    <string name="order_creation_add_gift_card">Geschenkkarte hinzufügen</string>
+    <string name="scan_to_update_inventory_product_label">Produkt</string>
+    <string name="scan_to_update_inventory_quantity_label">Menge</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Ursprüngliche Menge</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Etwas ist schiefgegangen. Bitte versuche es erneut</string>
+    <string name="scan_to_update_inventory_success_snackbar">Menge aktualisiert: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Produktdetails anzeigen</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Menge aktualisieren</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Menge + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Das Produkt mit der SKU %s wird nicht im Lager verwaltet. Bitte versuche es erneut.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Das Produkt mit der SKU %s wurde nicht gefunden. Bitte versuche es erneut.</string>
+    <string name="theme_activation_failed">Theme konnte nicht aktiviert werden. Bitte versuche es erneut!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Der Benachrichtigungston für Bestellungen wurde deaktiviert. Aktiviere ihn wieder, um bei jedem neuen Verkauf den typischen Ka-tsching-Ton zu hören.</string>
+    <string name="settings_notifs_enable_chaching_sound">Ka-tsching-Ton aktivieren</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Scanne den Barcode, um den Lagerbestand zu aktualisieren</string>
+    <string name="cha_ching_sound_test_notification_message">Dies ist nur eine Testbenachrichtigung, um den Ka-tsching-Ton zu überprüfen.\nDu kannst sie einfach wegwischen.</string>
+    <string name="cha_ching_sound_test_notification_title">Testbenachrichtigung</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">TON TESTEN</string>
+    <string name="cha_ching_sound_succcess_snackbar">Fertig! Der Ka-tsching-Ton erklingt jetzt bei jeder neuen Bestellung.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">STUMMSCHALTEN</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">TON AKTIVIEREN</string>
+    <string name="cha_ching_sound_issue_dialog_message">Aktiviere ihn wieder, um bei jedem neuen Verkauf das Ka-tsching-Geräusch zu hören. Bleibe bei Kundenbestellungen auf dem Laufenden!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Ka-tsching-Ton deaktiviert</string>
+    <string name="order_creation_products_order_count">Bestell-Zähler</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Prozentsatz der Gesamtbestellung</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Fester Betrag</string>
+    <string name="custom_amounts_bottom_sheet_heading">Wie möchtest du deinen individuellen Betrag hinzufügen?</string>
+    <string name="custom_amounts_percentage_label">Prozentsatz der Gesamtbestellung (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Individuellen Betrag löschen</string>
     <string name="theme_activated_successfully">Theme erfolgreich aktiviert</string>
-    <string name="theme_preview_theme_name">Theme: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Dieses Theme verwenden</string>
     <string name="theme_preview_bottom_sheet_home_section">Startseite</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Zum Anzeigen tippen</string>
     <string name="theme_preview_bottom_sheet_pages_title">Seiten auf diesem Template</string>
     <string name="theme_preview_title">Vorschau</string>
-    <string name="theme_picker_error_message">Derzeit können keine Themes geladen werden.</string>
-    <string name="theme_picker_error_title">Ein Fehler ist aufgetreten</string>
-    <string name="theme_picker_carousel_placeholder_message">Tippe, um dir eine Live-Demo anzusehen.</string>
-    <string name="theme_picker_carousel_placeholder_title">Theme „%s“</string>
     <string name="theme_picker_carousel_info_item_description">Sobald dein Shop eingerichtet ist, kannst du dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
     <string name="theme_picker_carousel_info_item_title">Du suchst mehr?</string>
     <string name="theme_picker_description">In deinen Einstellungen kannst du dein Theme später jederzeit ändern.</string>
@@ -1088,8 +1134,6 @@ Language: de
     <string name="login_site_picker_try_another_address">Andere Adresse versuchen</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Bezahlung per Nachnahme konnte nicht aktiviert werden. Versuch es später noch einmal.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">„Persönliche Zahlung“ aktivieren</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mit der Bezahloption „Persönliche Zahlung“ kannst du Karten- oder Barzahlung bei Abholung oder Lieferung akzeptieren.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">„Persönliche Zahlung“ als Bezahloption hinzufügen</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; zu „Persönliche Zahlungen“</string>
     <string name="login_site_picker_new_to_woo">Neu bei WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Es ist ein Fehler aufgetreten, kontaktiere bitte den Support</string>

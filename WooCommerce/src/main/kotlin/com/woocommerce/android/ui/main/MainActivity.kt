@@ -109,6 +109,7 @@ import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -208,7 +209,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar()
+                    showToolbar(f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -233,7 +234,7 @@ class MainActivity :
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar()
+                AppBarStatus.Hidden -> hideToolbar(animate = f is TopLevelFragment)
             }
 
             if (f is TopLevelFragment) {
@@ -484,20 +485,32 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar() {
+    private fun showToolbar(animate: Boolean) {
         if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
-        animatorHelper.animateToolbarHeight(show = true) {
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = true) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
             binding.collapsingToolbar.updateLayoutParams {
-                height = it
+                height = animatorHelper.toolbarHeight
             }
         }
     }
 
-    private fun hideToolbar() {
+    private fun hideToolbar(animate: Boolean) {
         if (binding.collapsingToolbar.layoutParams.height == 0) return
-        animatorHelper.animateToolbarHeight(show = false) {
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = false) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
             binding.collapsingToolbar.updateLayoutParams {
-                height = it
+                height = 0
             }
         }
     }
@@ -791,6 +804,7 @@ class MainActivity :
                 is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
+                is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
             }
         }
 

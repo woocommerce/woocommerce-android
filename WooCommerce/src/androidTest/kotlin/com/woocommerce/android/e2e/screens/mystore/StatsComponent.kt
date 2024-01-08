@@ -46,7 +46,7 @@ class StatsComponent : Screen(R.id.dashboardStats_root) {
     }
 
     private fun switchToStatsDashboardTab(tabName: Int): MyStoreScreen {
-        selectItemWithTitleInTabLayout(tabName, R.id.app_bar_layout)
+        selectItemWithTitleInTabLayout(tabName, R.id.my_store_stats_container)
         waitForGraphToLoad()
         return MyStoreScreen()
     }

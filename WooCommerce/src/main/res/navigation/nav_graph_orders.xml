@@ -174,6 +174,10 @@
             android:name="remoteNoteId"
             android:defaultValue="0L"
             app:argType="long" />
+        <argument
+            android:name="startPaymentFlow"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderDetailFragment"
             app:destination="@+id/orderDetailFragment"
@@ -274,6 +278,14 @@
             <argument
                 android:name="barcodeFormat"
                 app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+                app:nullable="true"/>
+            <argument
+                android:name="giftCardCode"
+                app:argType="string"
+                app:nullable="true"/>
+            <argument
+                android:name="giftCardAmount"
+                app:argType="java.math.BigDecimal"
                 app:nullable="true"/>
         </action>
 

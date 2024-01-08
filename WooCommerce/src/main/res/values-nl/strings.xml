@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 12:54:04+0000
+Translation-Revision-Date: 2024-01-03 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="store_creation_use_theme_button">Begin met dit thema</string>
+    <string name="theme_picker_error_message">Thema\'s laden mislukt.</string>
+    <string name="configuration_complete">Configuratie voltooid</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Aantal bijwerken ongedaan gemaakt</string>
+    <string name="theme_picker_loading_current_theme_failed">Je huidige thema kon niet geladen worden</string>
+    <string name="theme_preview_type_desktop">Bureaublad</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Mobiel</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tik hier</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Het lijkt erop dat er een probleem is met het laden van de template. %1$s voor een live demo.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Je kan jouw perfecte thema vinden in de WooCommerce Theme Store.</string>
+    <string name="theme_picker_current_theme_title">Huidig thema</string>
+    <string name="theme_picker_settings_title">Probeer een nieuwe look</string>
+    <string name="product_creation_survey_button_skip">Overslaan</string>
+    <string name="product_creation_survey_button_open">Begin het onderzoek</string>
+    <string name="product_creation_survey_description">Je hebt onze AI-ondersteunde functie om nu meerdere keren gebruikt om producten toe te voegen. We horen graag je mening om de functie nog beter te kunnen maken.</string>
+    <string name="product_creation_survey_title">We waarderen je input!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Door Fysiek betalen in te schakelen kunnen klanten bij levering met cash of kaart betalen voor online bestellingen.\n\nBestellingen kunnen nog steeds handmatig aangemaakt worden als je deze functie niet inschakelt.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Wil je Fysiek betalen toevoegen aan online betalen?</string>
+    <string name="card_reader_onboarding_contact_us">Hulp nodig? &lt;a href=\'\'&gt;Neem contact met ons op&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Aangepast bedrag restitueren</string>
+    <string name="order_refunds_custom_amount_refund">Restitutie voor aangepast bedrag</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Barcode van product scannen</string>
+    <string name="order_creation_add_gift_card">Een cadeaubon toevoegen?</string>
+    <string name="scan_to_update_inventory_product_label">Product</string>
+    <string name="scan_to_update_inventory_quantity_label">Aantal</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Originele aantal</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Er is iets fout gegaan. Probeer het nog eens</string>
+    <string name="scan_to_update_inventory_success_snackbar">Aantal is bijgewerkt: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Productgegevens bekijken</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Aantal bijwerken</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Aantal + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Product met SKU: %s wordt geen voorraadbeheer voor uitgevoerd. Probeer het nog eens.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Product met SKU: %s niet gevonden. Probeer het nog eens.</string>
+    <string name="theme_activation_failed">Het activeren van het thema is mislukt. Probeer het nog eens.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Het geluid van meldingen voor bestellingen is uitgeschakeld. Schakel het weer in om bij elke nieuwe verkoop \'ka-ching\' te horen.</string>
+    <string name="settings_notifs_enable_chaching_sound">Ka-ching inschakelen</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Streepjescode scannen om voorraad bij te werken</string>
+    <string name="cha_ching_sound_test_notification_message">Dit is een testmelding om de ka-ching te controleren.\nJe kan hem wegvegen.</string>
+    <string name="cha_ching_sound_test_notification_title">Testmelding</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">GELUID TESTEN</string>
+    <string name="cha_ching_sound_succcess_snackbar">Helemaal klaar! Je hoort nu \'ka-ching\' wanneer er een bestelling wordt geplaatst.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">STIL LATEN</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">GELUID INSCHAKELEN</string>
+    <string name="cha_ching_sound_issue_dialog_message">Schakel het weer in om bij elke nieuwe verkoop \'ka-ching\' te horen. Blijf op de hoogte van je bestellingen!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Ka-ching uitgeschakeld</string>
+    <string name="order_creation_products_order_count">Aantal bestellingen</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Als percentage van het totale bestelbedrag</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Als vast bedrag</string>
+    <string name="custom_amounts_bottom_sheet_heading">Hoe wil je je aangepaste bedrag toevoegen?</string>
+    <string name="custom_amounts_percentage_label">Percentage van het totaalaantal bestellingen (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Aangepast bedrag verwijderen</string>
     <string name="theme_activated_successfully">Thema geactiveerd</string>
-    <string name="theme_preview_theme_name">Thema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Gebruik dit thema</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tik om te bekijken</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagina\'s op dit sjabloon</string>
     <string name="theme_preview_title">Voorbeeld</string>
-    <string name="theme_picker_error_message">Thema\'s kunnen op dit moment niet worden geladen.</string>
-    <string name="theme_picker_error_title">Er is een fout opgetreden</string>
-    <string name="theme_picker_carousel_placeholder_message">Tik voor een live demonstratie.</string>
-    <string name="theme_picker_carousel_placeholder_title">Thema \'%s\'</string>
     <string name="theme_picker_carousel_info_item_description">Wanneer je winkel is ingesteld, zoek je jouw perfecte thema op in de WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_title">Zoek je naar iets anders?</string>
     <string name="theme_picker_description">Je kan later altijd nog wijzigen in de instellingen.</string>
@@ -1081,8 +1127,6 @@ Language: nl
     <string name="login_site_picker_try_another_address">Probeer een ander adres</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Contant betalen bij ontvangst inschakelen mislukt. Probeer later opnieuw.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Fysieke betalingen inschakelen.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Met een optie voor ‘Fysieke betalingen’ in je online kassa kan je contante of kaartbetalingen accepteren bij ophalen of ontvangst.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Voeg fysieke betalingen toe aan je online kassa</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over fysieke betalingen</string>
     <string name="login_site_picker_new_to_woo">Nieuw bij WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Er is een probleem opgetreden, neem contact op met de klantenservice</string>

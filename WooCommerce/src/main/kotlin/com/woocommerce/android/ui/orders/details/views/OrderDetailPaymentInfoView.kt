@@ -17,7 +17,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.ui.orders.creation.IsCustomAmountsFeatureFlagEnabled
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsLineBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,8 +31,6 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     @Inject lateinit var orderDetailRefundsLineBuilder: OrderDetailRefundsLineBuilder
 
-    @Inject lateinit var isCustomAmountsM1FeatureFlagEnabled: IsCustomAmountsFeatureFlagEnabled
-
     private val binding = OrderDetailPaymentInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
     @Suppress("LongParameterList")
@@ -44,7 +41,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onSeeReceiptClickListener: (view: View) -> Unit,
         onIssueRefundClickListener: (view: View) -> Unit,
-        onCollectCardPresentPaymentClickListener: (view: View) -> Unit,
+        onCollectPaymentClickListener: (view: View) -> Unit,
         onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
         binding.paymentInfoProductsTotal.text = formatCurrencyForDisplay(order.productsTotal)
@@ -90,7 +87,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         updateDiscountsSection(order, formatCurrencyForDisplay)
         updateFeesSection(order, formatCurrencyForDisplay)
         updateRefundSection(order, formatCurrencyForDisplay, onIssueRefundClickListener)
-        updateCollectPaymentSection(order, onCollectCardPresentPaymentClickListener)
+        updateCollectPaymentSection(order, onCollectPaymentClickListener)
         updateSeeReceiptSection(isReceiptAvailable, onSeeReceiptClickListener)
         updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
     }
@@ -156,11 +153,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         order: Order,
         formatCurrencyForDisplay: (BigDecimal) -> String
     ) {
-        if (isCustomAmountsM1FeatureFlagEnabled()) {
-            binding.paymentInfoLblFees.text = context.getString(R.string.custom_amounts)
-        } else {
-            binding.paymentInfoLblFees.text = context.getString(R.string.orderdetail_payment_fees)
-        }
+        binding.paymentInfoLblFees.text = context.getString(R.string.custom_amounts)
         if (order.feesTotal isEqualTo BigDecimal.ZERO) {
             binding.paymentInfoFeesSection.hide()
         } else {
@@ -187,14 +180,14 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
 
     private fun updateCollectPaymentSection(
         order: Order,
-        onCollectCardPresentPaymentClickListener: (view: View) -> Unit
+        onCollectPaymentClickListener: (view: View) -> Unit
     ) {
         if (order.isOrderPaid) {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = GONE
         } else {
             binding.paymentInfoCollectCardPresentPaymentButton.visibility = VISIBLE
             binding.paymentInfoCollectCardPresentPaymentButton.setOnClickListener(
-                onCollectCardPresentPaymentClickListener
+                onCollectPaymentClickListener
             )
         }
     }

@@ -8,18 +8,30 @@ import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import androidx.camera.core.Preview as CameraPreview
 
@@ -75,10 +87,38 @@ fun BarcodeScanner(
         }
     }
 
-    AndroidView(
-        factory = { previewView },
-        modifier = Modifier.fillMaxSize()
-    )
+    Box {
+        AndroidView(
+            factory = { previewView },
+            modifier = Modifier.fillMaxSize()
+        )
+        ScannerOverlay()
+    }
+}
+
+@Composable
+private fun ScannerOverlay() {
+    Column {
+        Box(
+            modifier = Modifier
+                .weight(0.24F)
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.color_scrim_background))
+        )
+        Spacer(modifier = Modifier.weight(0.52F))
+        Box(
+            modifier = Modifier
+                .weight(0.24F)
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.color_scrim_background)),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Text(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                text = stringResource(R.string.barcode_scanning_scan_product_barcode_label)
+            )
+        }
+    }
 }
 
 @Preview(name = "Light mode")

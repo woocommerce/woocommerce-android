@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -154,7 +153,7 @@ class OrderNavigator @Inject constructor() {
             }
             is StartPaymentFlow -> {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
-                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, ORDER)
+                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, target.paymentTypeFlow)
                 )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -184,8 +183,10 @@ class OrderNavigator @Inject constructor() {
                 OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderCreationFragment(
                         OrderCreateEditViewModel.Mode.Edit(target.orderId),
-                        null,
-                        null,
+                        sku = null,
+                        barcodeFormat = null,
+                        giftCardCode = target.giftCard,
+                        giftCardAmount = target.appliedDiscount
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is OrderNavigationTarget.ShowOrder -> {

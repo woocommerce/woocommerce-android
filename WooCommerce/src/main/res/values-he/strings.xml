@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 16:54:05+0000
+Translation-Revision-Date: 2024-01-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="store_creation_use_theme_button">להתחיל עם ערכת עיצוב זאת</string>
+    <string name="theme_picker_error_message">העלאת ערכות העיצוב נכשלה.</string>
+    <string name="configuration_complete">הושלמו הגדרות התצורה</string>
+    <string name="scan_to_update_inventory_undo_snackbar">עדכון הכמות בוטל</string>
+    <string name="theme_picker_loading_current_theme_failed">לא הצלחנו לטעון את ערכת העיצוב הנוכחית שלך</string>
+    <string name="theme_preview_type_desktop">מחשב שולחני</string>
+    <string name="theme_preview_type_tablet">טאבלט</string>
+    <string name="theme_preview_type_mobile">טלפון נייד</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">יש להקיש כאן</string>
+    <string name="theme_picker_carousel_error_placeholder_message">מצטערים, נראה שיש בעיה בהעלאה של התבנית. יש ⁦%1$s⁩ לצפייה בהדגמה חיה.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">ערכת העיצוב הנוכחית</string>
+    <string name="theme_picker_settings_title">לנסות מראה חדש</string>
+    <string name="product_creation_survey_button_skip">לדלג</string>
+    <string name="product_creation_survey_button_open">להתחיל לענות על הסקר</string>
+    <string name="product_creation_survey_description">כבר השתמשת מספר פעמים באפשרות שנעזרת בבינה מלאכותית כדי להוסיף מוצרים. נשמח לשמוע מה דעתך על האפשרות כדי לשפר אותה.</string>
+    <string name="product_creation_survey_title">אנחנו מעריכים את המשוב שלך!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">הפעלת האפשרות \'לשלם באופן אישי\' תאפשר ללקוחות לשלם לך על הזמנות מקוונות במעמד המשלוח באמצעות מזומן או כרטיס.\n\nעדיין ניתן ליצור הזמנות באופן ידני ללא הפעלת האפשרות הזו.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">האם ברצונך להוסיף את \'לשלם באופן אישי\' אל תהליך התשלום בקופה באתר?</string>
+    <string name="card_reader_onboarding_contact_us">נדרשת לך עזרה? &lt;a href=\'\'&gt;ליצירת קשר&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">להחזיר סכום בהתאמה אישית</string>
+    <string name="order_refunds_custom_amount_refund">החזר כספי של סכום בהתאמה אישית</string>
+    <string name="barcode_scanning_scan_product_barcode_label">לסרוק את הברקוד של המוצר</string>
+    <string name="order_creation_add_gift_card">להוסיף שובר מתנה</string>
+    <string name="scan_to_update_inventory_product_label">מוצר</string>
+    <string name="scan_to_update_inventory_quantity_label">כמות</string>
+    <string name="scan_to_update_inventory_original_quantity_label">כמות מקורית</string>
+    <string name="scan_to_update_inventory_failure_snackbar">משהו השתבש. יש לנסות שוב</string>
+    <string name="scan_to_update_inventory_success_snackbar">הכמות עודכנה: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">להציג פרטי המוצר</string>
+    <string name="scan_to_update_inventory_update_quantity_button">לעדכן כמות</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">כמות + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">מוצר עם SKU: ‏%s לא מנוהל במלאי. יש לנסות שוב.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">מוצר עם SKU: ‏%s לא נמצא. יש לנסות שוב.</string>
+    <string name="theme_activation_failed">הפעלתה של ערכת העיצוב נכשלה, יש לנסות שוב!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">צליל ההודעות של ההזמנות הושבת. יש להפעיל אותו מחדש כדי לשמוע צליל של קופה רושמת כל פעם שמבוצעת מכירה חדשה.</string>
+    <string name="settings_notifs_enable_chaching_sound">להפעיל את צליל הקופה הרושמת</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">לסרוק את הברקוד לעדכון המלאי</string>
+    <string name="cha_ching_sound_test_notification_message">זהו רק ניסיון כדי לבדוק את צליל הקופה הרושמת.\nאפשר להחליק כדי להפסיק את הצליל.</string>
+    <string name="cha_ching_sound_test_notification_title">הודעת בדיקה</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">לבדוק את הצליל</string>
+    <string name="cha_ching_sound_succcess_snackbar">הכול מוכן! צליל הקופה הרושמת יופעל כעת בכל הזמנה חדשה.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">להשאיר על שקט</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">להפעיל את הצליל</string>
+    <string name="cha_ching_sound_issue_dialog_message">יש להפעיל את הצליל מחדש כדי לשמוע צליל של קופה רושמת כל פעם שמבוצעת מכירה חדשה. להפעיל צליל משמח בכל פעם שהלקוחות מבצעים הזמנה!</string>
+    <string name="cha_ching_sound_issue_dialog_title">צליל הקופה הרושמת מושבת</string>
+    <string name="order_creation_products_order_count">מספר הזמנות</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">אחוז מהסכום הכולל של ההזמנה</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">סכום קבוע</string>
+    <string name="custom_amounts_bottom_sheet_heading">איך ברצונך להוסיף את הסכום בהתאמה אישית?</string>
+    <string name="custom_amounts_percentage_label">אחוז מהסכום הכולל של ההזמנה (⁦%1$s⁩)</string>
+    <string name="custom_amounts_delete_custom_amount">למחוק סכום בהתאמה אישית</string>
     <string name="theme_activated_successfully">הפעלת ערכת העיצוב בוצעה בהצלחה</string>
-    <string name="theme_preview_theme_name">ערכת עיצוב: ⁦%1$s⁩</string>
-    <string name="theme_preview_activate_theme_button">להשתמש בערכת עיצוב זו</string>
     <string name="theme_preview_bottom_sheet_home_section">עמוד הבית</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">להקיש כדי להציג</string>
     <string name="theme_preview_bottom_sheet_pages_title">עמודים בתבנית זו</string>
     <string name="theme_preview_title">תצוגה מקדימה</string>
-    <string name="theme_picker_error_message">כרגע לא ניתן לטעון ערכות עיצוב.</string>
-    <string name="theme_picker_error_title">אירעה שגיאה</string>
-    <string name="theme_picker_carousel_placeholder_message">יש להקיש כדי להציג הדגמה חיה.</string>
-    <string name="theme_picker_carousel_placeholder_title">ערכת העיצוב \'%s\'</string>
     <string name="theme_picker_carousel_info_item_description">לאחר הגדרת החנות אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">יש משהו נוסף שמעניין אותך?</string>
     <string name="theme_picker_description">תמיד אפשר להחליף ערכה בהמשך, דרך ההגדרות.</string>
@@ -1088,8 +1134,6 @@ Language: he_IL
     <string name="login_site_picker_try_another_address">יש לנסות כתובת אחרת</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">נכשלה הפעלת האפשרות לתשלום במזומן במהלך המסירה. יש לנסות שוב מאוחר יותר.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">להפעיל \'תשלום באופן אישי\'</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">האפשרות \'תשלום באופן אישי\' בקופה מאפשר לך לקבל תשלומים בכרטיס אשראי או במזומן במעמד האיסוף או המסירה.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">להוסיף \'תשלום באופן אישי\' בקופה</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; בנושא \'תשלומים באופן אישי\'</string>
     <string name="login_site_picker_new_to_woo">פעם ראשונה ב-WooCommerce</string>
     <string name="site_discovery_postlogin_failure">הפעולה נכשלה, יש לפנות לתמיכה</string>

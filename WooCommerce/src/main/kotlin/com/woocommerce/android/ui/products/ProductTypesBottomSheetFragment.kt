@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -18,7 +17,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,8 +27,6 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
 
     @Inject internal lateinit var navigator: ProductNavigator
     val viewModel: ProductTypesBottomSheetViewModel by viewModels()
-
-    private lateinit var productTypesBottomSheetAdapter: ProductTypesBottomSheetAdapter
 
     private val navArgs: ProductTypesBottomSheetFragmentArgs by navArgs()
 
@@ -52,18 +48,7 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
 
         setupObservers()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.loadProductTypes()
-        }
-
         binding.productDetailInfoLblTitle.text = getString(R.string.product_type_list_header)
-        productTypesBottomSheetAdapter = ProductTypesBottomSheetAdapter(
-            viewModel::onProductTypeSelected
-        )
-        with(binding.productDetailInfoOptionsList) {
-            adapter = productTypesBottomSheetAdapter
-            layoutManager = LinearLayoutManager(activity)
-        }
     }
 
     private fun setupObservers() {
@@ -101,8 +86,14 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
         }
     }
 
-    private fun showProductTypeOptions(productTypeOptions: List<ProductTypesBottomSheetUiItem>) {
-        productTypesBottomSheetAdapter.setProductTypeOptions(productTypeOptions)
+    private fun showProductTypeOptions(productTypes: List<ProductTypesBottomSheetUiItem>) {
+        with(binding.productDetailInfoOptionsList) {
+            adapter = ProductTypesBottomSheetAdapter(
+                productTypes,
+                viewModel::onProductTypeSelected
+            )
+            layoutManager = LinearLayoutManager(activity)
+        }
     }
 
     private fun navigateWithSelectedResult(productTypesBottomSheetUiItem: ProductTypesBottomSheetUiItem) {

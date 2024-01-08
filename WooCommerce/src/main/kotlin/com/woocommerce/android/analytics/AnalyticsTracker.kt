@@ -257,6 +257,8 @@ class AnalyticsTracker private constructor(
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
         const val KEY_CUSTOM_AMOUNT_TAX_STATUS = "tax_status"
+        const val KEY_EXPANDED = "expanded"
+
         const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE = "taxable"
         const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE = "none"
         const val VALUE_FLOW_CREATION = "creation"
@@ -332,6 +334,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_CARD_READER_TYPE_BUILT_IN = "built_in"
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+        const val VALUE_ORDER_CREATION_PAYMENTS_FLOW = "creation"
         const val VALUE_SCAN_TO_PAY_PAYMENT_FLOW = "scan_to_pay"
         const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
 
@@ -628,6 +631,14 @@ class AnalyticsTracker private constructor(
 
         // -- Scan To Update Inventory
         const val SCAN_TO_UPDATE_INVENTORY = "scan_to_update_inventory"
+
+        // Theme picker
+        const val KEY_THEME_PICKER_SOURCE = "source"
+        const val VALUE_THEME_PICKER_SOURCE_STORE_CREATION = "store_creation"
+        const val VALUE_THEME_PICKER_SOURCE_SETTINGS = "settings"
+        const val KEY_THEME_PICKER_THEME = "theme"
+        const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"
+        const val KEY_THEME_PICKER_PAGE_PREVIEW = "page"
 
         var sendUsageStats: Boolean = true
             set(value) {

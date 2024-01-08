@@ -148,6 +148,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.textLabel, state.cashOnDeliveryHintLabel)
         UiHelpers.setTextOrHide(binding.skipCashOnDelivery, state.skipCashOnDeliveryButtonLabel)
         UiHelpers.setTextOrHide(binding.enableCashOnDelivery, state.enableCashOnDeliveryButtonLabel)
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.cardIllustration)
 
@@ -178,6 +179,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
+        }
+        binding.textSupport.setOnClickListener {
+            state.onContactSupportActionClicked.invoke()
         }
     }
 
@@ -403,7 +407,10 @@ sealed class CardReaderFlowParam : Parcelable {
             val paymentType: PaymentType
         ) : PaymentOrRefund() {
             enum class PaymentType {
-                SIMPLE, ORDER, TRY_TAP_TO_PAY,
+                SIMPLE,
+                ORDER,
+                ORDER_CREATION,
+                TRY_TAP_TO_PAY,
             }
         }
 

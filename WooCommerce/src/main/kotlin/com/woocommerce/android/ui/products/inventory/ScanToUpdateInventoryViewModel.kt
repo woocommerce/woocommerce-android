@@ -72,7 +72,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     sku = product.sku,
                     quantity = product.stockQuantity.toInt(),
                 )
-                if (product.isStockManaged) {
+                if (isItemStockManaged(product)) {
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
@@ -92,8 +92,16 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         }
     }
 
+    private suspend fun isItemStockManaged(product: Product): Boolean =
+        if (product.isVariation()) {
+            variationRepository.getVariationOrNull(product.parentId, product.remoteId).let {
+                it?.isStockManaged == true
+            }
+        } else {
+            product.isStockManaged
+        }
+
     private fun handleProductIsNotStockManaged(product: Product) {
-        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.FetchingProduct
         _viewState.value = ViewState.StockManagementBottomSheetVisible(
             product = ProductInfo(
                 id = product.remoteId,
@@ -154,7 +162,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
             scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
         } else {
-            val result = if (product.isVariable()) {
+            val result = if (product.isVariation()) {
                 product.updateVariation(updatedProductInfo)
             } else {
                 product.updateProduct(updatedProductInfo)
@@ -271,7 +279,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         } catch (_: NumberFormatException) {}
     }
 
-    private fun Product.isVariable(): Boolean {
+    private fun Product.isVariation(): Boolean {
         return this.parentId != 0L
     }
 

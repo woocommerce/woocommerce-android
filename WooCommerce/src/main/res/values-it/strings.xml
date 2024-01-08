@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 16:54:04+0000
+Translation-Revision-Date: 2024-01-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="store_creation_use_theme_button">Inizia scegliendo questo tema</string>
+    <string name="theme_picker_error_message">Impossibile caricare i temi.</string>
+    <string name="configuration_complete">Configurazione completata</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Aggiornamento quantità annullato</string>
+    <string name="theme_picker_loading_current_theme_failed">Impossibile caricare il tema corrente</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Dispositivi mobili</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tocca qui</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Siamo spiacenti, sembra che ci sia un problema con il caricamento del modello. %1$s per una demo live.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Puoi trovare il tema perfetto nel negozio di temi WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Tema corrente</string>
+    <string name="theme_picker_settings_title">Prova un nuovo aspetto</string>
+    <string name="product_creation_survey_button_skip">Salta</string>
+    <string name="product_creation_survey_button_open">Inizia il sondaggio</string>
+    <string name="product_creation_survey_description">Hai usato la nostra funzionalità assistita dall\'intelligenza artificiale per aggiungere prodotti più volte. Ci piacerebbe sapere cosa ne pensi per migliorare ancora di più.</string>
+    <string name="product_creation_survey_title">Apprezziamo il tuo contributo!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L\'attivazione di Paga di persona consente al cliente di pagare gli ordini online alla consegna tramite contanti o carta.\n\nGli ordini possono comunque essere creati manualmente senza attivare questa funzione.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vuoi aggiungere Paga di persona al pagamento web?</string>
+    <string name="card_reader_onboarding_contact_us">Hai bisogno di assistenza? &lt;a href=\'\'&gt;Contattaci&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Rimborsa importo personalizzato</string>
+    <string name="order_refunds_custom_amount_refund">Rimborso dell\'importo personalizzato</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Scansiona codice a barre del prodotto</string>
+    <string name="order_creation_add_gift_card">Aggiungi gift card</string>
+    <string name="scan_to_update_inventory_product_label">Prodotto</string>
+    <string name="scan_to_update_inventory_quantity_label">Quantità</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Quantità originale</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Si è verificato un problema. Riprova</string>
+    <string name="scan_to_update_inventory_success_snackbar">Quantità aggiornata: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Visualizza dettagli del prodotto</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Aggiorna quantità</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Quantità + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Prodotto con SKU: %s non è gestito dal magazzino. Riprova.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Prodotto con SKU: %s non trovato. Riprova.</string>
+    <string name="theme_activation_failed">Attivazione del tema non riuscita, riprova!</string>
+    <string name="settings_notifs_enable_chaching_sound_description">I suoni delle notifiche degli ordini sono state disattivate, riattivale per sentire il \"din din\" per ogni nuova vendita.</string>
+    <string name="settings_notifs_enable_chaching_sound">Attiva il suono della cassa</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Esegui scansione del codice a barre per aggiornare l\'inventario</string>
+    <string name="cha_ching_sound_test_notification_message">Questa è solo una notifica di prova per controllare il suono della cassa.\nPuoi cancellarla.</string>
+    <string name="cha_ching_sound_test_notification_title">Notifica di prova</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">PROVA IL SUONO</string>
+    <string name="cha_ching_sound_succcess_snackbar">Tutto impostato! Il suono della cassa verrà riprodotto per ogni nuovo ordine.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">MANTIENI SILENZIOSO</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ATTIVA IL SUONO</string>
+    <string name="cha_ching_sound_issue_dialog_message">Riattivalo per sentire il suono della cassa per ogni nuova vendita. Resta aggiornato con gli ordini dei tuoi clienti!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Suono della casa disattivato</string>
+    <string name="order_creation_products_order_count">Conteggio dell\'ordine</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Una percentuale del totale dell\'ordine</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Un importo fisso</string>
+    <string name="custom_amounts_bottom_sheet_heading">Come desideri aggiungere l\'importo personalizzato?</string>
+    <string name="custom_amounts_percentage_label">Percentuale del totale dell\'ordine (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Elimina importo personalizzato</string>
     <string name="theme_activated_successfully">Tema attivato correttamente</string>
-    <string name="theme_preview_theme_name">Tema: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Usa questo tema</string>
     <string name="theme_preview_bottom_sheet_home_section">Home</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Tocca per visualizzare</string>
     <string name="theme_preview_bottom_sheet_pages_title">Pagine su questo template</string>
     <string name="theme_preview_title">Anteprima</string>
-    <string name="theme_picker_error_message">Impossibile caricare i temi in questo momento.</string>
-    <string name="theme_picker_error_title">Si è verificato un errore</string>
-    <string name="theme_picker_carousel_placeholder_message">Tocca per la demo live.</string>
-    <string name="theme_picker_carousel_placeholder_title">Tema \"%s\"</string>
     <string name="theme_picker_carousel_info_item_description">Una volta configurato il negozio, trova il tema perfetto nel negozio di temi WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Cerchi altro?</string>
     <string name="theme_picker_description">Puoi sempre modificare il tema nelle impostazioni in un secondo momento.</string>
@@ -1088,8 +1134,6 @@ Language: it
     <string name="login_site_picker_try_another_address">Prova con un altro indirizzo</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Non è stato possibile abilitare il pagamento alla consegna. Riprova più tardi.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Abilita Paga di persona</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L\'opzione \"Paga di persona\" al momento del pagamento ti consente di accettare pagamenti tramite carte di credito o contanti alla consegna.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Aggiungi Paga di persona al pagamento</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Altre informazioni&lt;/a&gt; sui Pagamenti di persona</string>
     <string name="login_site_picker_new_to_woo">Prima volta in WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Si è verificato un errore, contatta il supporto</string>

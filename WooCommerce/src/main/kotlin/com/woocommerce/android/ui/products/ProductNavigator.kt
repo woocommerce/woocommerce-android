@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
@@ -345,14 +346,23 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ProductNavigationTarget.NavigateToVariationSelector -> {
-                fragment.findNavController().navigateSafely(
-                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
-                        target.productId,
-                        target.selectedVariationIds.toLongArray(),
-                        target.productSelectorFlow,
-                        target.productSourceForTracking,
-                    )
-                )
+                val action = when (target.selectionMode) {
+                    ProductSelectorViewModel.SelectionMode.MULTIPLE -> {
+                        ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                            productId = target.productId,
+                            variationIds = target.selectedVariationIds.toLongArray(),
+                            productSelectorFlow = target.productSelectorFlow,
+                            productSource = target.productSourceForTracking,
+                        )
+                    }
+                    ProductSelectorViewModel.SelectionMode.SINGLE -> {
+                        ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationPickerFragment(
+                            productId = target.productId
+                        )
+                    }
+                }
+
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ProductNavigationTarget.NavigateToProductConfiguration -> {

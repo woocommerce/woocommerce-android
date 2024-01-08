@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_blaze_campaign_creation"
+    app:startDestination="@id/blazeCampaignCreationIntroFragment">
+
+    <include app:graph="@navigation/nav_graph_product_selector" />
+
+    <fragment
+        android:id="@+id/blazeCampaignCreationIntroFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragment"
+        android:label="BlazeCampaignCreationIntroFragment">
+        <argument
+            android:name="productId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationIntroFragment_to_nav_graph_product_selector"
+            app:destination="@id/nav_graph_product_selector" >
+            <argument
+                android:name="selectionMode"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionMode" />
+            <argument
+                android:name="selectionHandling"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionHandling" />
+            <argument
+                android:name="screenTitleOverride"
+                app:argType="string" />
+            <argument
+                android:name="ctaButtonTextOverride"
+                app:argType="string" />
+            <argument
+                android:name="productSelectorFlow"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
+        </action>
+    </fragment>
+</navigation>

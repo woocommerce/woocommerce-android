@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogVie
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
+import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -95,9 +96,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
-    val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
     val currencySymbolFinder: CurrencySymbolFinder = mock()
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
+    protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -183,6 +184,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         getTaxRateLabel = mock()
         prefs = mock()
         mapFeeLineToCustomAmountUiModel = mock()
+        totalsHelper = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2377,7 +2379,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         )
     }
-
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
@@ -2410,10 +2411,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
             orderCreationProductMapper = orderCreationProductMapper,
-            isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
             adjustProductQuantity = AdjustProductQuantity(),
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
-            currencySymbolFinder = currencySymbolFinder
+            currencySymbolFinder = currencySymbolFinder,
+            totalsHelper = totalsHelper,
         )
     }
 

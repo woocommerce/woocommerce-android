@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-06 19:54:04+0000
+Translation-Revision-Date: 2024-01-03 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="store_creation_use_theme_button">Начать с этой темой</string>
+    <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
+    <string name="configuration_complete">Настройка выполнена</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Обновление количества отменено</string>
+    <string name="theme_picker_loading_current_theme_failed">Не удалось загрузить текущую тему</string>
+    <string name="theme_preview_type_desktop">ПК</string>
+    <string name="theme_preview_type_tablet">Планшет</string>
+    <string name="theme_preview_type_mobile">Мобильный телефон</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">нажмите здесь</string>
+    <string name="theme_picker_carousel_error_placeholder_message">При загрузке шаблона возникла проблема. %1$s для демонстрационного режима.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Найдите самую подходящую для вас тему в магазине тем WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Текущая тема</string>
+    <string name="theme_picker_settings_title">Попробуйте новый дизайн</string>
+    <string name="product_creation_survey_button_skip">Пропустить</string>
+    <string name="product_creation_survey_button_open">Начать опрос</string>
+    <string name="product_creation_survey_description">Вы уже несколько раз воспользовались нашей функцией добавления товаров при помощи ИИ. Мы хотели бы узнать ваши впечатления, чтобы сделать её ещё лучше.</string>
+    <string name="product_creation_survey_title">Мы высоко ценим ваше мнение!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Активация функции очной оплаты даёт возможность клиенту оплачивать заказ при доставке наличными или банковской картой.\n\nЗаказы можно по-прежнему создавать вручную, не активируя этой функции.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Хотите добавить функцию очной оплаты к оформлению заказа онлайн?</string>
+    <string name="card_reader_onboarding_contact_us">Требуется помощь? &lt;a href=\'\'&gt;Свяжитесь с нами&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Возместить индивидуальную сумму</string>
+    <string name="order_refunds_custom_amount_refund">Возврат индивидуальной суммы</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Сканировать штрихкод товара</string>
+    <string name="order_creation_add_gift_card">Добавить подарочную карту</string>
+    <string name="scan_to_update_inventory_product_label">Товар</string>
+    <string name="scan_to_update_inventory_quantity_label">Количество</string>
+    <string name="scan_to_update_inventory_original_quantity_label">Исходное количество</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Что-то пошло не так. Повторите попытку</string>
+    <string name="scan_to_update_inventory_success_snackbar">Количество обновлено: %s</string>
+    <string name="scan_to_update_inventory_product_details_button">Показать сведения о товаре</string>
+    <string name="scan_to_update_inventory_update_quantity_button">Обновить количество</string>
+    <string name="scan_to_update_inventory_increment_quantity_button">Количество + 1</string>
+    <string name="scan_to_update_inventory_product_not_stock_managed">Товар с артикулом %s не значится в складских запасах. Повторите попытку.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Товар с артикулом %s не найден. Повторите попытку.</string>
+    <string name="theme_activation_failed">Не удалось активировать тему, повторите попытку.</string>
+    <string name="settings_notifs_enable_chaching_sound_description">Звуковое оповещение о новых заказах отключено. Включите его заново, чтобы слышать «дзинь» всякий раз при очередной продаже.</string>
+    <string name="settings_notifs_enable_chaching_sound">Включить «дзинь»</string>
+    <string name="scan_barcode_to_update_inventory_menu_item_title">Сканировать штрихкод, чтобы обновить запас</string>
+    <string name="cha_ching_sound_test_notification_message">Это тестовое оповещение для проверки звука «дзинь».\nМожете его удалить.</string>
+    <string name="cha_ching_sound_test_notification_title">Тестировать уведомление</string>
+    <string name="cha_ching_sound_succcess_snackbar_action">ТЕСТИРОВАТЬ ЗВУК</string>
+    <string name="cha_ching_sound_succcess_snackbar">Всё готово! Теперь звук «дзинь» будет раздаваться при каждом заказе.</string>
+    <string name="cha_ching_sound_issue_dialog_keep_silent">ОТКЛЮЧИТЬ ЗВУК</string>
+    <string name="cha_ching_sound_issue_dialog_turn_on_sound">ВКЛЮЧИТЬ ЗВУК</string>
+    <string name="cha_ching_sound_issue_dialog_message">Включите заново, чтобы слышать «дзинь» при каждой новой продаже. Отслеживайте заказы ваших клиентов!</string>
+    <string name="cha_ching_sound_issue_dialog_title">Звук «дзинь» отключён</string>
+    <string name="order_creation_products_order_count">Количество заказов</string>
+    <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_hint">0</string>
+    <string name="custom_amounts_bottom_sheet_percentage_amount_option">Процент от общей суммы заказа</string>
+    <string name="custom_amounts_bottom_sheet_fixed_amount_option">Фиксированная сумма</string>
+    <string name="custom_amounts_bottom_sheet_heading">Как вы хотите добавить индивидуальную сумму?</string>
+    <string name="custom_amounts_percentage_label">Процент от общей суммы заказа (%1$s)</string>
+    <string name="custom_amounts_delete_custom_amount">Удалить индивидуальную сумму</string>
     <string name="theme_activated_successfully">Тема успешно активирована</string>
-    <string name="theme_preview_theme_name">Тема: %1$s</string>
-    <string name="theme_preview_activate_theme_button">Использовать эту тему</string>
     <string name="theme_preview_bottom_sheet_home_section">Главная страница</string>
     <string name="theme_preview_bottom_sheet_pages_subtitle">Коснитесь для просмотра</string>
     <string name="theme_preview_bottom_sheet_pages_title">Страницы в этом шаблоне</string>
     <string name="theme_preview_title">Предварительный просмотр</string>
-    <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
-    <string name="theme_picker_error_title">Произошла ошибка</string>
-    <string name="theme_picker_carousel_placeholder_message">Нажмите, чтобы просмотреть демонстрацию в реальном времени.</string>
-    <string name="theme_picker_carousel_placeholder_title">Тема «%s»</string>
     <string name="theme_picker_carousel_info_item_description">Настроив магазин, найдите для него самую подходящую тему в магазине тем WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">Ищете что-то другое?</string>
     <string name="theme_picker_description">Вы можете изменить настройки в любой момент.</string>
@@ -1088,8 +1134,6 @@ Language: ru
     <string name="login_site_picker_try_another_address">Используйте другой адрес</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не удалось включить наложенный платёж. Повторите попытку позже.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Включить опцию «Очная оплата»</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Опция «Очная оплата» позволяет вам принимать плату наличными и кредитными картами при получении товара покупателем.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Добавьте опцию «Очная оплата» для оформления заказа</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Подробности&lt;/a&gt; об очных платежах</string>
     <string name="login_site_picker_new_to_woo">Недавно на WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Произошла ошибка, обратитесь в службу поддержки</string>

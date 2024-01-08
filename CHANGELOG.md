@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.8
+We've polished your WooCommerce app experience! Check out the sleek new design for the deposit summary on the payments screen. Say goodbye to crashes after resetting your selected site, and enjoy a smoother store switching process right after you create a new store. Plus, managing custom amounts is now a breeze with our full-screen feature. Update now for a more seamless and stable business management journey!
+
+## 16.7
+In our latest update, we've fine-tuned the In Person Payments onboarding flow for a more seamless and intuitive experience. Additionally, we've addressed various fixes to enhance the stability and performance of animations. Update now to enjoy a smoother and more reliable WooCommerce experience! 
+
 ## 16.6
 Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!
 

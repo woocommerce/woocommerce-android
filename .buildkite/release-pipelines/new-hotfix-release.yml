@@ -1,0 +1,9 @@
+steps:
+  - label: "New Hotfix Release"
+    plugins:
+      - automattic/a8c-ci-toolkit#3.0.1
+    command: |
+      .buildkite/commands/configure-environment.sh
+
+      echo '--- :fire: Start New Hotfix Release'
+      bundle exec fastlane new_hotfix_release version:${VERSION} skip_confirm:true
