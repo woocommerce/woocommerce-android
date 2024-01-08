@@ -3934,5 +3934,10 @@
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Access a vast audience</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Your ads on millions of sites within the WordPress.com and Tumblr networks.</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Start your campaign</string>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Learn how Blaze works</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Learn how Blaze works</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1"><![CDATA[<b>Choose a product:</b> Choose what to promote with Blaze.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2"><![CDATA[<b>Customize targeting:</b> Select audience by location or interests, and see potential reach.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3"><![CDATA[<b>Set your budget:</b> Decide on your spend and campaign length.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4"><![CDATA[<b>Quick review:</b> Submit your ad for a fast moderator check.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5"><![CDATA[<b>Go live:</b> Watch as your promotion begins and track its success.]]></string>
 </resources>
