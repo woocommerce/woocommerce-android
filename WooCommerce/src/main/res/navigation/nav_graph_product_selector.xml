@@ -27,10 +27,13 @@
         android:label="ProductSelectorFragment">
         <argument
             android:name="selectedItems"
-            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]"
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <argument
             android:name="productSelectorFlow"
-            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow"/>
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow"
+            android:defaultValue='OrderCreation'/>
         <action
             android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
             app:destination="@id/variationSelectorFragment" />

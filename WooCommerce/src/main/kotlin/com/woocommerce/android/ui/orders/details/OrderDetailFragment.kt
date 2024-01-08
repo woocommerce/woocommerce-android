@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -18,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
@@ -69,6 +71,7 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabe
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -219,10 +222,20 @@ class OrderDetailFragment :
         }
     }
 
+    private fun isTabletMode(): Boolean {
+        return resources.getBoolean(R.bool.is_tablet)
+    }
+
     override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
-                viewModel.onEditClicked()
+//                val navHostFragment = parentFragmentManager.fragments[0].parentFragment?.parentFragment?.childFragmentManager?.findFragmentById(R.id.full_screen_nav_container) as? NavHostFragment
+//                if (navHostFragment != null) {
+//                    navHostFragment.view?.visibility = View.VISIBLE
+//                    viewModel.onEditClicked(navHostFragment)
+//                }
+                (activity as? MainNavigationRouter)?.showOrderCreation()
+//                viewModel.onEditClicked(null)
                 true
             }
 

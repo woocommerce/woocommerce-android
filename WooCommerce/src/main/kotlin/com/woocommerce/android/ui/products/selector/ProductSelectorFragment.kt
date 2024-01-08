@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -14,6 +15,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_RESULT
 import com.woocommerce.android.ui.orders.creation.configuration.SelectProductConfigurationResult
 import com.woocommerce.android.ui.products.ProductFilterResult
@@ -25,11 +27,13 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductSelectorFragment : BaseFragment() {
+    private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
     companion object {
         const val PRODUCT_SELECTOR_RESULT = "product-selector-result"
     }
@@ -66,9 +70,10 @@ class ProductSelectorFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> {
+                    sharedViewModel.updateSelectedItem(event.data as List<SelectedItem>)
                     navigateBackWithResult(
                         PRODUCT_SELECTOR_RESULT,
-                        event.data as Collection<SelectedItem>
+                        event.data
                     )
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)

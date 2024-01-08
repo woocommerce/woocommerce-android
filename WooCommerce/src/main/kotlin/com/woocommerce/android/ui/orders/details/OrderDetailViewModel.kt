@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.distinctUntilChanged
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -278,14 +279,15 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
     }
 
-    fun onEditClicked() {
+    fun onEditClicked(navHostFragment: NavHostFragment?) {
         tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
         val firstGiftCard = giftCards.value?.firstOrNull()
         triggerEvent(
             EditOrder(
                 orderId = order.id,
                 giftCard = firstGiftCard?.code,
-                appliedDiscount = firstGiftCard?.used
+                appliedDiscount = firstGiftCard?.used,
+                navHostFragment = navHostFragment
             )
         )
     }

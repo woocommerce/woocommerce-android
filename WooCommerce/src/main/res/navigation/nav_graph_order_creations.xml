@@ -125,14 +125,18 @@
         </action>
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode"
+            android:defaultValue="@null"
+            app:nullable="true"/>
         <argument
             android:name="sku"
             app:argType="string"
+            android:defaultValue="@null"
             app:nullable="true"/>
         <argument
             android:name="barcodeFormat"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+            android:defaultValue="@null"
             app:nullable="true"/>
         <argument
             android:name="couponEditResult"

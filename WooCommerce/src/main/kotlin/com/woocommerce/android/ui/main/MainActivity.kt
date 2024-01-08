@@ -96,6 +96,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
@@ -1100,6 +1101,18 @@ class MainActivity :
             selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
+    }
+
+    override fun showOrderCreation() {
+        NavGraphMainDirections.actionGlobalToOrderCreationFragment(
+            mode = OrderCreateEditViewModel.Mode.Creation,
+            barcodeFormat = null,
+            giftCardCode = null,
+            giftCardAmount = null,
+            sku = null,
+        ).apply {
+            navController.navigateSafely(this)
+        }
     }
 
     override fun showOrderDetail(

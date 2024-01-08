@@ -8,6 +8,8 @@ interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
 
+    fun showOrderCreation()
+
     fun showProductDetail(remoteProductId: Long, enableTrash: Boolean = false)
     fun showProductDetailWithSharedTransition(
         remoteProductId: Long,

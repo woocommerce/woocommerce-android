@@ -23,7 +23,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -83,6 +85,7 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorSharedViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -94,6 +97,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -105,6 +109,8 @@ class OrderCreateEditFormFragment :
     BackPressListener,
     MenuProvider {
     private val viewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
+
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
@@ -330,6 +336,11 @@ class OrderCreateEditFormFragment :
     }
 
     private fun setupObserversWith(binding: FragmentOrderCreateEditFormBinding) {
+        lifecycleScope.launch {
+            sharedViewModel.selectedItemsFlow.collect {
+                viewModel.onProductsSelected(it)
+            }
+        }
         viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
             binding.orderStatusView.updateOrder(newOrderData)
             bindCustomerAddressAndNotesSection(binding, newOrderData)

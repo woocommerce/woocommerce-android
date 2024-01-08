@@ -190,11 +190,11 @@ class OrderNavigator @Inject constructor() {
                         giftCardCode = target.giftCard,
                         giftCardAmount = target.appliedDiscount
                     ).let {
-                        val navController = fragment.findNavController()
-                        Log.d("NavControllerDebug", "Current Nav Controller: $navController")
-                        Log.d("NavControllerDebug", "Current Destination ID: ${navController.currentDestination?.id}")
-                        Log.d("NavControllerDebug", "Current Destination Label: ${navController.currentDestination?.label}")
-                        Log.d("NavControllerDebug", "Current Nav Graph: ${navController.graph}")
+                        val navController = target.navHostFragment?.findNavController() ?: fragment.findNavController()
+//                        Log.d("NavControllerDebug", "Current Nav Controller: $navController")
+//                        Log.d("NavControllerDebug", "Current Destination ID: ${navController.currentDestination?.id}")
+//                        Log.d("NavControllerDebug", "Current Destination Label: ${navController.currentDestination?.label}")
+//                        Log.d("NavControllerDebug", "Current Nav Graph: ${navController.graph}")
                         navController.navigateSafely(it)
                     }
             }

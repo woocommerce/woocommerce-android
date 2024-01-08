@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -60,7 +61,8 @@ sealed class OrderNavigationTarget : Event() {
     data class EditOrder(
         val orderId: Long,
         val giftCard: String? = null,
-        val appliedDiscount: BigDecimal? = null
+        val appliedDiscount: BigDecimal? = null,
+        val navHostFragment: NavHostFragment? = null,
     ) : OrderNavigationTarget()
     data class ShowOrder(val orderId: Long, val allOrderIds: LongArray) : OrderNavigationTarget()
     data class ViewCustomFields(val orderId: Long) : OrderNavigationTarget()

@@ -201,7 +201,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val args: OrderCreateEditFormFragmentArgs by savedState.navArgs()
-    val mode: Mode = args.mode
+    val mode: Mode = args.mode ?: Mode.Creation
 
     private val flow = when (mode) {
         Mode.Creation -> VALUE_FLOW_CREATION
@@ -1040,7 +1040,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     ProductRestriction.NonPublishedProducts,
                     ProductRestriction.VariableProductsWithNoVariations
                 ),
-                args.mode
+                args.mode ?: Mode.Creation
             )
         )
     }

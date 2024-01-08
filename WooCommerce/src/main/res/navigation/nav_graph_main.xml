@@ -677,6 +677,33 @@
     <action
         android:id="@+id/action_global_freeTrialSurveyFragment"
         app:destination="@id/freeTrialSurveyFragment" />
+    <action
+        android:id="@+id/action_global_to_orderCreationFragment"
+        app:destination="@id/nav_graph_order_creations"
+        app:enterAnim="@anim/activity_fade_in"
+        app:exitAnim="@null"
+        app:popEnterAnim="@null"
+        app:popExitAnim="@anim/activity_fade_out">
+        <argument
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <argument
+            android:name="sku"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="barcodeFormat"
+            app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+            app:nullable="true"/>
+        <argument
+            android:name="giftCardCode"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="giftCardAmount"
+            app:argType="java.math.BigDecimal"
+            app:nullable="true"/>
+    </action>
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
         android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"

@@ -92,7 +92,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedItems = savedState.getStateFlow(
         viewModelScope,
-        navArgs.selectedItems.toList(),
+        navArgs.selectedItems?.toList() ?: emptyList<SelectedItem>(),
         "key_selected_items"
     )
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <fragment
+                android:id="@+id/product_selector_nav_container"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:defaultNavHost="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:navGraph="@navigation/nav_graph_product_selector"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2">
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/loadingProgress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toTopOf="@+id/scrollView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"/>
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/loadingProgress">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/order_creation_root"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.woocommerce.android.ui.common.ExpandableMessageView
+                        android:id="@+id/message_no_editable_fields"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_lock"
+                        app:message="@string/order_editing_non_editable_message"
+                        app:title="@string/order_editing_non_editable_title" />
+
+                    <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+                        android:id="@+id/order_status_view"
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                        android:id="@+id/products_section"
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hasEditButton="false"
+                        app:header="@string/products"
+                        app:keepAddButtons="true" />
+
+                    <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                        android:id="@+id/custom_amounts_section"
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hasEditButton="false"
+                        app:header="@string/custom_amounts"
+                        app:keepAddButtons="true" />
+
+                    <include
+                        android:id="@+id/multiple_lines_warning_section"
+                        layout="@layout/multiple_lines_warning" />
+
+                    <include
+                        android:id="@+id/payment_section"
+                        layout="@layout/order_creation_payment_section" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/tax_rate_selector_section"
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/set_tax_rate_button"
+                            style="@style/Woo.Button.TextButton.Secondary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/order_creation_set_tax_rate"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                        android:id="@+id/customer_section"
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
+                        android:id="@+id/notes_section"
+                        style="@style/Woo.Card"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:header="@string/order_creation_customer_note" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.core.widget.NestedScrollView>
+
+            <androidx.compose.ui.platform.ComposeView
+                app:layout_constraintBottom_toBottomOf="@+id/scrollView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/totals_section"
+                tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsViewKt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:visibility="visible"
+                android:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
