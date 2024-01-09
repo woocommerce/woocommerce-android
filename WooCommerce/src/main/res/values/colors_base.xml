@@ -308,4 +308,10 @@
     <color name="deposit_summary_status_failed_text">@color/woo_red_70</color>
     <color name="deposit_summary_status_unknown_background">@color/woo_gray_6</color>
     <color name="deposit_summary_status_unknown_text">@color/woo_gray_80</color>
+
+    <!--
+    Blaze Campaigns
+    -->
+    <color name="blaze_campaign_preview_header_background">@color/woo_gray_0</color>
+
 </resources>

@@ -3822,6 +3822,11 @@
     <string name="blaze_campaign_ceation_celebration_button">Got it</string>
 
     <!--
+    Blaze campaign preview screen
+    -->
+    <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
+
+    <!--
     Blaze other
     -->
     <string name="blaze" translatable="false">Blaze</string>
