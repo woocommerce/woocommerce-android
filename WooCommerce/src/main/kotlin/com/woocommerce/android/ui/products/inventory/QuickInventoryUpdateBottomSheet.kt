@@ -98,7 +98,7 @@ fun QuickInventoryUpdateBottomSheet(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (state.isStockManagementEnabled) {
+            if (state.product.isStockManaged) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.scan_to_update_inventory_quantity_label)
@@ -154,7 +154,7 @@ fun QuickInventoryUpdateBottomSheet(
             }
         }
         Divider()
-        if (state.isStockManagementEnabled) {
+        if (state.product.isStockManaged) {
             if (state.isPendingUpdate) {
                 Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
                     Text(
@@ -224,8 +224,9 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         imageUrl = "https://woocommerce.com/wp-content/uploads/2017/03/woocommerce-logo.png",
         sku = "123-SKU-456",
         quantity = 10,
+        isStockManaged = true
     )
-    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product, true)
+    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
     WooThemeWithBackground {
         QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {}, {})
     }
@@ -241,8 +242,9 @@ fun QuickInventoryUpdateBottomSheetStockNotManagedPreview() {
         imageUrl = "https://woocommerce.com/wp-content/uploads/2017/03/woocommerce-logo.png",
         sku = "123-SKU-456",
         quantity = 10,
+        isStockManaged = false
     )
-    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product, false)
+    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
     WooThemeWithBackground {
         QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {}, {})
     }
