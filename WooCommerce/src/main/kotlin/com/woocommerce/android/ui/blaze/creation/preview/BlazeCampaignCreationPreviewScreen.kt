@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,18 +28,25 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.CampaignPreviewContent
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.Loading
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
-    WooThemeWithBackground {
-        viewModel.viewState.observeAsState().value?.let { previewState ->
+    viewModel.viewState.observeAsState().value?.let { previewState ->
+        WooThemeWithBackground {
             when (previewState) {
-                is CampaignPreviewState.Loading -> LoadingPreview()
-                is CampaignPreviewState.CampaignPreviewContent -> CampaignPreviewContent(previewState)
+                is Loading -> LoadingPreview()
+                is CampaignPreviewContent -> CampaignPreviewContent(
+                    state = previewState,
+                    modifier = Modifier.background(color = MaterialTheme.colors.surface)
+                )
             }
         }
     }
@@ -52,11 +58,15 @@ fun LoadingPreview() {
 }
 
 @Composable
-fun CampaignPreviewContent(state: CampaignPreviewState.CampaignPreviewContent) {
+fun CampaignPreviewContent(
+    state: CampaignPreviewState.CampaignPreviewContent,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
+            .padding(16.dp)
     ) {
         CampaignHeader(state)
         Spacer(modifier = Modifier.height(24.dp))
@@ -65,12 +75,13 @@ fun CampaignPreviewContent(state: CampaignPreviewState.CampaignPreviewContent) {
 
 @Composable
 fun CampaignHeader(state: CampaignPreviewState.CampaignPreviewContent, modifier: Modifier = Modifier) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .background(color = colorResource(id = color.blaze_campaign_preview_header_background))
             .padding(16.dp)
-            .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background))
+            .clip(RoundedCornerShape(16.dp)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -88,6 +99,7 @@ fun CampaignHeader(state: CampaignPreviewState.CampaignPreviewContent, modifier:
                         .size(276.dp)
                         .clip(shape = RoundedCornerShape(size = 8.dp))
                 )
+
                 Text(
                     modifier = Modifier.padding(top = 12.dp),
                     text = state.tagLine,
@@ -102,10 +114,8 @@ fun CampaignHeader(state: CampaignPreviewState.CampaignPreviewContent, modifier:
             }
         }
         WCTextButton(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.Center),
-            text = stringResource(id = R.string.blaze_campaign_preview_edit_ad_button),
+            modifier = Modifier.padding(top = 16.dp),
+            text = stringResource(id = string.blaze_campaign_preview_edit_ad_button),
             onClick = { /*TODO*/ },
         )
     }
