@@ -31,7 +31,8 @@ fun ScanToUpdateInventoryScreen(
     onIncrementQuantityClicked: () -> Unit,
     onUpdateQuantityClicked: () -> Unit,
     onViewProductDetailsClicked: () -> Unit,
-    onManualQuantityEntered: (String) -> Unit
+    onManualQuantityEntered: (String) -> Unit,
+    onManageStockClicked: () -> Unit,
 ) = WooThemeWithBackground {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -63,6 +64,7 @@ fun ScanToUpdateInventoryScreen(
                         onManualQuantityEntered = onManualQuantityEntered,
                         onUpdateQuantityClicked = onUpdateQuantityClicked,
                         onViewProductDetailsClicked = onViewProductDetailsClicked,
+                        onManageStockClicked = onManageStockClicked,
                     )
                 }
                 LaunchedEffect(state) {
