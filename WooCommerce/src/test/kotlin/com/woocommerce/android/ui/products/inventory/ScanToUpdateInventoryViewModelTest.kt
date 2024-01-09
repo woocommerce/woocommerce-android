@@ -451,12 +451,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     variationId = 2
                 ).copy(isStockManaged = false)
             )
-            whenever(
-                resourceProvider.getString(
-                    R.string.scan_to_update_inventory_product_not_stock_managed,
-                    "123"
-                )
-            ).thenReturn("Product not stock managed")
             sut.viewState.test {
                 sut.onBarcodeScanningResult(
                     CodeScannerStatus.Success(
