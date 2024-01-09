@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetHidden
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.StockManagementBottomSheetVisible
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -163,36 +162,9 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
             sut.viewState.test {
                 awaitItem().apply {
-                    assertIs<StockManagementBottomSheetVisible>(this)
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
                 }
             }
-        }
-
-    @Test
-    fun `given product not stock-managed, when manage stock btn cliked, then should set product as stock-managed`() =
-        testBlocking {
-            val product = ProductTestUtils.generateProduct(isStockManaged = false)
-            val productId = 1L
-
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
-            whenever(productRepo.getProduct(productId)).thenReturn(product)
-            whenever(productRepo.updateProduct(any())).thenReturn(true)
-
-            sut.onBarcodeScanningResult(
-                CodeScannerStatus.Success(
-                    product.sku, GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                )
-            )
-
-            sut.viewState.test {
-                awaitItem().apply {
-                    assertIs<StockManagementBottomSheetVisible>(this)
-                }
-            }
-
-            sut.onManageStockClicked()
-
-            verify(productRepo).updateProduct(product.copy(isStockManaged = true))
         }
 
     @Test
@@ -462,7 +434,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when variation is found which is not stock-managed, then should not show bottom sheet`() =
+    fun `when variation is found which is not stock-managed, then should show bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(
@@ -496,10 +468,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     assertIs<QuickInventoryBottomSheetHidden>(this)
                 }
                 awaitItem().apply {
-                    assertIs<Loading>(this)
-                }
-                awaitItem().apply {
-                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
                 }
             }
         }
