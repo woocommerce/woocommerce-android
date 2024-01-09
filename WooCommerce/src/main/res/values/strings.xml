@@ -3824,6 +3824,7 @@
     <!--
     Blaze campaign preview screen
     -->
+    <string name="blaze_campaign_preview_fragment_title">Preview</string>
     <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
 
     <!--

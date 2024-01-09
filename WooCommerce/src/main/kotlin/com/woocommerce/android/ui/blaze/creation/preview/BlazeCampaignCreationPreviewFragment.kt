@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -14,7 +15,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class BlazeCampaignCreationPreviewFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Hidden
+        get() = AppBarStatus.Visible(
+            hasShadow = false
+        )
+
+    override fun getFragmentTitle() = getString(R.string.blaze_campaign_preview_fragment_title)
 
     val viewModel: BlazeCampaignCreationPreviewViewModel by viewModels()
 
