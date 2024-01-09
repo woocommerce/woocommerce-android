@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
@@ -486,4 +487,40 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
     }
+
+    @Test fun `given item is stock-managed, when bottom sheet is shown, then track proper event`() =
+        testBlocking {
+            val product = ProductTestUtils.generateProduct(isStockManaged = true)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku,
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+                mapOf(AnalyticsTracker.KEY_ITEM_STOCK_MANAGED to true)
+            )
+        }
+
+    @Test fun `given item is not stock-managed, when bottom sheet is shown, then track proper event`() =
+        testBlocking {
+            val product = ProductTestUtils.generateProduct(isStockManaged = false)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku,
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+                mapOf(AnalyticsTracker.KEY_ITEM_STOCK_MANAGED to false)
+            )
+        }
 }
