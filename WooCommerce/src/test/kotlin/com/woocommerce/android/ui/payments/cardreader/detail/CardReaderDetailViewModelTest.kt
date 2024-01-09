@@ -15,7 +15,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard

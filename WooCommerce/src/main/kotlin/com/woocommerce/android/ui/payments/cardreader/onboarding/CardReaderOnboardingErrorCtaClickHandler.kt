@@ -4,7 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
