@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper

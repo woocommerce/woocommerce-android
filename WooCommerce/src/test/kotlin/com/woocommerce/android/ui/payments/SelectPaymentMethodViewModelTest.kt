@@ -11,8 +11,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
-import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
@@ -35,6 +33,8 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest

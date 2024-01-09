@@ -9,7 +9,6 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
@@ -53,6 +52,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel

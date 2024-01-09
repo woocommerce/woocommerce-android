@@ -20,7 +20,6 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -45,6 +44,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
+import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
