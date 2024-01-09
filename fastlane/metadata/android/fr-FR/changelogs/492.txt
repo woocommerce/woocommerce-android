@@ -1,2 +1,2 @@
-16.6 :
+16.7 :
 Bonne nouvelle ! Cette mise à jour améliore votre expérience WooCommerce de bien des façons. Mise à jour fluide de l’inventaire en scannant les codes-barres directement depuis la page Produits. Pratique ! Flexibilité accrue grâce aux montants personnalisés basés sur des pourcentages de notre UI repensée. Création de produits fluide avec l’intégration d’images d’autres applications. Optimisations internes pour de meilleures performances, vous offrant une navigation conviviale et vivifiante. Plongez-vous dedans et explorez ces améliorations fantastiques !
