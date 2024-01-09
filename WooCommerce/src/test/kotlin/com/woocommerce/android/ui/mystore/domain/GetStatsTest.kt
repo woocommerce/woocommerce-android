@@ -43,7 +43,8 @@ class GetStatsTest : BaseUnitTest() {
         statsRepository,
         appPrefsWrapper,
         coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore
+        analyticsUpdateDataStore,
+        mock()
     )
 
     @Before

@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationPickerResult
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -80,6 +82,14 @@ class ProductSelectorFragment : BaseFragment() {
     private fun handleResults() {
         handleResult<VariationSelectionResult>(VariationSelectorFragment.VARIATION_SELECTOR_RESULT) {
             viewModel.onSelectedVariationsUpdated(it)
+        }
+
+        handleResult<VariationPickerResult>(VariationPickerFragment.VARIATION_PICKER_RESULT) {
+            // This means we are in the single-selection mode, return result immediately
+            navigateBackWithResult(
+                PRODUCT_SELECTOR_RESULT,
+                listOf(SelectedItem.ProductVariation(it.productId, it.variationId))
+            )
         }
 
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->

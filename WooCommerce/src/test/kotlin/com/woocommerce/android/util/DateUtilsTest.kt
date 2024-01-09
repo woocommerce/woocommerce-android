@@ -25,7 +25,8 @@ class DateUtilsTest {
     fun setUp() {
         dateUtilsUnderTest = DateUtils(
             Locale.US,
-            crashLogger = mock()
+            crashLogger = mock(),
+            selectedSite = mock()
         )
     }
 

@@ -22,6 +22,7 @@ const val TEXT_FROM_TO = "{START_DATE} - {END_DATE}"
 class PriceUtilsTest {
     private val dateUtils = DateUtils(
         Locale.US,
+        mock(),
         mock()
     )
 

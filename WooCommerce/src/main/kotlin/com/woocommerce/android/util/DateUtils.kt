@@ -4,10 +4,17 @@ import android.content.Context
 import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
+import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.DateFormatSymbols
+import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
@@ -16,7 +23,8 @@ import javax.inject.Inject
 
 class DateUtils @Inject constructor(
     private val locale: Locale,
-    private val crashLogger: CrashLogging
+    private val crashLogger: CrashLogging,
+    private val selectedSite: SelectedSite
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
     private val friendlyMonthDayYearFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", locale)
@@ -363,6 +371,50 @@ class DateUtils @Inject constructor(
             "Date string argument is not a valid format".reportAsError(e)
             null
         }
+
+    fun getDateUsingSiteTimeZone(isoStringDate: String): Date? {
+        val iso8601DateString = iso8601OnSiteTimeZoneFromIso8601UTC(isoStringDate)
+        return getDateFromFullDateString(iso8601DateString)
+    }
+
+    fun getCurrentDateInSiteTimeZone(): Date? {
+        val site = selectedSite.getOrNull() ?: return null
+        val targetTimezone = SiteUtils.getNormalizedTimezone(site.timezone).toZoneId()
+        val currentDateTime = LocalDateTime.now()
+        val zonedDateTime = ZonedDateTime.of(currentDateTime, ZoneId.systemDefault())
+            .withZoneSameInstant(targetTimezone)
+        // Format the result as a string
+        val currentDateString = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        return getDateFromFullDateString(currentDateString)
+    }
+
+    private fun getDateFromFullDateString(isoStringDate: String): Date? {
+        return try {
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale)
+            formatter.parse(isoStringDate)
+        } catch (e: Exception) {
+            "Date string argument is not a valid format".reportAsError(e)
+            null
+        }
+    }
+    private fun iso8601OnSiteTimeZoneFromIso8601UTC(iso8601date: String): String {
+        return try {
+            val site = selectedSite.getOrNull() ?: return iso8601date
+            // Parse ISO 8601 string to LocalDateTime object
+            val utcDateTime = LocalDateTime.parse(iso8601date, DateTimeFormatter.ISO_DATE_TIME)
+
+            // Specify the target timezone
+            val targetTimezone = SiteUtils.getNormalizedTimezone(site.timezone).toZoneId()
+
+            val zonedDateTime = ZonedDateTime.of(utcDateTime, ZoneId.of("UTC"))
+                .withZoneSameInstant(targetTimezone)
+
+            // Format the result as a string
+            zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        } catch (e: ParseException) {
+            iso8601date
+        }
+    }
 
     /***
      * Will generate a formatted date string in two possible formats:

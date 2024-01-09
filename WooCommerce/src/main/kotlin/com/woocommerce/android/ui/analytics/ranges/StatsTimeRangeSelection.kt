@@ -122,8 +122,8 @@ class StatsTimeRangeSelection private constructor(
         CUSTOM(R.string.date_timeframe_custom);
 
         fun generateSelectionData(
-            referenceStartDate: Date = Date(),
-            referenceEndDate: Date = Date(),
+            referenceStartDate: Date,
+            referenceEndDate: Date,
             calendar: Calendar,
             locale: Locale
         ): StatsTimeRangeSelection {

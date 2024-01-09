@@ -33,7 +33,7 @@ sealed class OrderListItemUIType {
         val orderName: String,
         val orderTotal: String,
         var status: String,
-        val dateCreated: String,
+        val dateCreated: String?,
         val currencyCode: String,
         val isLastItemInSection: Boolean = false
     ) : OrderListItemUIType()

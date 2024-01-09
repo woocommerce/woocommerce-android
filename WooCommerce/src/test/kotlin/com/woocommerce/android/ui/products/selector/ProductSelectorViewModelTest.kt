@@ -23,6 +23,8 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Lis
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -336,13 +338,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).toSavedStateHandle()
+        )
         val popularOrdersList = generatePopularOrders()
         val ordersList = generateTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
-        val sut = createViewModel(navArgs)
+        val sut = createViewModel(navArgs.toSavedStateHandle())
         sut.onProductClick(
             item = ProductListItem(productId = 1, numVariations = 2, title = "", type = ProductType.VARIABLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
@@ -353,7 +355,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productId = 1,
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+                selectionMode = navArgs.selectionMode
             )
         )
     }
@@ -363,13 +366,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-        ).toSavedStateHandle()
+        )
         val popularOrdersList = generatePopularOrders()
         val ordersList = generateTestOrders()
         val totalOrders = ordersList + popularOrdersList
         whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
 
-        val sut = createViewModel(navArgs)
+        val sut = createViewModel(navArgs.toSavedStateHandle())
         sut.onProductClick(
             item = ProductListItem(
                 productId = 23,
@@ -385,7 +388,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productId = 23,
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+                selectionMode = navArgs.selectionMode
             )
         )
     }
@@ -1402,6 +1406,76 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
     //endregion
+
+    @Test
+    fun `given single selection, when product selected, then should set selection state to selected`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.runAndCaptureValues {
+            sut.onProductClick(
+                item = generateProductListItem(DRAFT_PRODUCT.remoteId),
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+            sut.onProductClick(
+                item = generateProductListItem(VALID_PRODUCT.remoteId),
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+        }.last()
+
+        assertThat(state.products.single { it.id == VALID_PRODUCT.remoteId }.selectionState)
+            .isEqualTo(SelectionState.SELECTED)
+        assertThat(state.products.count { it.selectionState == SelectionState.SELECTED }).isEqualTo(1)
+    }
+
+    @Test
+    fun `given single selection, when variable product is clicked, then should pass correct selection mode`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val event = sut.event.runAndCaptureValues {
+            sut.onProductClick(
+                item = ProductListItem(
+                    productId = DRAFT_PRODUCT.remoteId,
+                    title = "",
+                    type = ProductType.VARIABLE,
+                    numVariations = 2
+                ),
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+        }.last()
+
+        assertThat(event).isInstanceOf(ProductNavigationTarget.NavigateToVariationSelector::class.java)
+        assertThat((event as ProductNavigationTarget.NavigateToVariationSelector).selectionMode)
+            .isEqualTo(ProductSelectorViewModel.SelectionMode.SINGLE)
+    }
+
+    @Test
+    fun `when using simple handling, then treat all products as single items`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.captureValues().last()
+
+        assertThat(state.products).allMatch {
+            it is ProductListItem && it.numVariations == 0
+        }
+    }
 
     private fun generateProductListItem(
         id: Long,
