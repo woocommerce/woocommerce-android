@@ -3827,6 +3827,13 @@
     <string name="blaze_campaign_preview_fragment_title">Preview</string>
     <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
+    <string name="blaze_campaign_preview_details_section_title">Details</string>
+    <string name="blaze_campaign_preview_details_budget">Budget</string>
+    <string name="blaze_campaign_preview_details_language">Language</string>
+    <string name="blaze_campaign_preview_details_devices">Devices</string>
+    <string name="blaze_campaign_preview_details_location">Location</string>
+    <string name="blaze_campaign_preview_details_interests">Interests</string>
+    <string name="blaze_campaign_preview_details_destination_url">Ad destination</string>
 
     <!--
     Blaze other
