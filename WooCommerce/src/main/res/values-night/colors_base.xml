@@ -233,4 +233,6 @@
     Blaze
     -->
     <color name="blaze_campaign_bottom_sheet_highlight_background">@color/woo_black_90_alpha_038</color>
+    <color name="blaze_campaign_preview_header_background">@color/woo_gray_90</color>
+
 </resources>

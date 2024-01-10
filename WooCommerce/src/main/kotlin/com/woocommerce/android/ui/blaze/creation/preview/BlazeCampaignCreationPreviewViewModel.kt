@@ -27,7 +27,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 productId = product?.remoteId ?: -1,
                 title = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",
-                campaignImageUrl = "https://myer-media.com.au/wcsstore/MyerCatalogAssetStore/images/70/705/3856/100/1/797334760/797334760_1_720x928.webp",
+                campaignImageUrl = "https://shorturl.at/bhqtz",
                 destinationUrl = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
                 budget = CampaignPreviewState.Budget(
                     totalBudget = "140",

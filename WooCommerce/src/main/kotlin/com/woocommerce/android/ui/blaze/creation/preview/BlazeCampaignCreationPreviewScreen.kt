@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -93,18 +94,17 @@ fun CampaignPreviewContent(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(16.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .padding(16.dp)
                 .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background))
-                .padding(16.dp)
         )
-        Spacer(modifier = Modifier.height(24.dp))
         CampaignDetails(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
+        Spacer(modifier = Modifier.height(16.dp))
         Divider()
         WCColoredButton(
             modifier = Modifier
@@ -120,11 +120,16 @@ fun CampaignPreviewContent(
 @Composable
 fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
+            backgroundColor = colorResource(id = R.color.woo_white),
+            contentColor =
+            if (isSystemInDarkTheme()) colorResource(id = R.color.color_surface)
+            else colorResource(id = R.color.color_on_surface),
             shape = RoundedCornerShape(8.dp)
         ) {
             Column(
@@ -169,8 +174,8 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
                         modifier = Modifier
                             .padding(start = 16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = colorResource(id = R.color.color_on_surface),
-                            backgroundColor = colorResource(id = R.color.blaze_campaign_preview_header_background),
+                            contentColor = colorResource(id = R.color.color_on_secondary),
+                            backgroundColor = colorResource(id = R.color.blaze_campaign_preview_shop_now_button),
                         ),
                         onClick = { /*TODO*/ },
                     )
@@ -178,12 +183,10 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
             }
         }
         WCTextButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            text = stringResource(id = R.string.blaze_campaign_preview_edit_ad_button),
             onClick = { /*TODO*/ },
-        )
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+        }
     }
 }
 
@@ -201,7 +204,8 @@ fun CampaignDetails(
         // Budget
         CampaignPropertyGroupItem(
             items = listOf(
-                stringResource(id = R.string.blaze_campaign_preview_details_budget) to state.budget.displayBudgetDetails,
+                stringResource(id = R.string.blaze_campaign_preview_details_budget) to
+                    state.budget.displayBudgetDetails,
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -209,10 +213,14 @@ fun CampaignDetails(
         // Audience
         CampaignPropertyGroupItem(
             items = listOf(
-                stringResource(id = R.string.blaze_campaign_preview_details_language) to state.audience.languages.joinToString(),
-                stringResource(id = R.string.blaze_campaign_preview_details_devices) to state.audience.devices.joinToString(),
-                stringResource(id = R.string.blaze_campaign_preview_details_location) to state.audience.locations.joinToString(),
-                stringResource(id = R.string.blaze_campaign_preview_details_interests) to state.audience.interests.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_language) to
+                    state.audience.languages.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_devices) to
+                    state.audience.devices.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_location) to
+                    state.audience.locations.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_interests) to
+                    state.audience.interests.joinToString(),
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -223,8 +231,6 @@ fun CampaignDetails(
                 stringResource(id = R.string.blaze_campaign_preview_details_destination_url) to state.destinationUrl,
             )
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
     }
 }
 
