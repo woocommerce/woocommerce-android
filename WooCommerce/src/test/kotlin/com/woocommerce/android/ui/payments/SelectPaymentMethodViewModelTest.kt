@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.payments
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -95,7 +92,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock {
         onBlocking { isCollectable(order) }.thenReturn(false)
     }
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
@@ -396,13 +392,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onCashPaymentClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "order_payment",
+                orderId = 1L,
+                paymentMethod = "cash",
+                cardReaderType = null,
+                timeElapsed = null,
             )
         }
 
@@ -416,13 +411,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onCashPaymentClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "simple_payment",
+                orderId = 1L,
+                paymentMethod = "cash",
+                cardReaderType = null,
+                timeElapsed = null,
             )
         }
 
@@ -436,14 +430,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onBtReaderClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                    "card_reader_type" to "external"
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "order_payment",
+                orderId = 1L,
+                paymentMethod = "card",
+                cardReaderType = "external",
+                timeElapsed = null,
             )
         }
 
@@ -457,14 +449,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onBtReaderClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                    "card_reader_type" to "external"
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "simple_payment",
+                orderId = 1L,
+                paymentMethod = "card",
+                cardReaderType = "external",
+                timeElapsed = null,
             )
         }
 
@@ -516,14 +506,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onTapToPayClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    "payment_method" to "card",
-                    "order_id" to 1L,
-                    "flow" to "simple_payment",
-                    "card_reader_type" to "built_in",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "simple_payment",
+                orderId = 1L,
+                paymentMethod = "card",
+                cardReaderType = "built_in",
+                timeElapsed = null,
             )
         }
 
@@ -537,14 +525,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onTapToPayClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    "payment_method" to "card",
-                    "order_id" to 1L,
-                    "flow" to "order_payment",
-                    "card_reader_type" to "built_in",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "order_payment",
+                orderId = 1L,
+                paymentMethod = "card",
+                cardReaderType = "built_in",
+                timeElapsed = null,
             )
         }
 
@@ -571,12 +557,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onConnectToReaderResultReceived(false)
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "simple_payment",
             )
         }
 
@@ -590,12 +573,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onConnectToReaderResultReceived(false)
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "order_payment",
             )
         }
 
@@ -611,16 +591,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onCardReaderPaymentCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                mapOf(
-                    "payment_method" to "card",
-                    "order_id" to 1L,
-                    "amount" to "100$",
-                    "amount_normalized" to 100L,
-                    "currency" to "USD",
-                    "flow" to "order_payment",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCompleted(
+                flow = "order_payment",
+                orderId = 1L,
+                paymentMethod = "card",
+                amount = "100$",
+                amountNormalized = 100L,
             )
         }
 
@@ -636,16 +612,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onCardReaderPaymentCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                mapOf(
-                    "payment_method" to "card",
-                    "order_id" to 1L,
-                    "amount" to "100$",
-                    "amount_normalized" to 100L,
-                    "currency" to "USD",
-                    "flow" to "simple_payment",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCompleted(
+                flow = "simple_payment",
+                orderId = 1L,
+                paymentMethod = "card",
+                amount = "100$",
+                amountNormalized = 100L,
             )
         }
 
@@ -660,12 +632,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onCardReaderPaymentCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "simple_payment",
             )
         }
 
@@ -680,12 +649,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onCardReaderPaymentCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "order_payment",
             )
         }
 
@@ -729,13 +695,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "order_payment",
+                orderId = 1L,
+                paymentMethod = "payment_link",
+                cardReaderType = null,
+                timeElapsed = null,
             )
         }
 
@@ -749,13 +714,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "simple_payment",
+                orderId = 1L,
+                paymentMethod = "payment_link",
+                cardReaderType = null,
+                timeElapsed = null,
             )
         }
 
@@ -769,13 +733,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-                mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                    "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to "tap_to_pay_try_a_payment",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+                flow = "tap_to_pay_try_a_payment",
+                orderId = 1L,
+                paymentMethod = "payment_link",
+                cardReaderType = null,
+                timeElapsed = null,
             )
         }
 
@@ -790,16 +753,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                mapOf(
-                    "payment_method" to "payment_link",
-                    "order_id" to 1L,
-                    "amount" to "100$",
-                    "amount_normalized" to 100L,
-                    "currency" to "USD",
-                    "flow" to "simple_payment",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCompleted(
+                flow = "simple_payment",
+                orderId = 1L,
+                paymentMethod = "payment_link",
+                amount = "100$",
+                amountNormalized = 100L,
             )
         }
 
@@ -814,16 +773,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                mapOf(
-                    "payment_method" to "payment_link",
-                    "order_id" to 1L,
-                    "amount" to "100$",
-                    "amount_normalized" to 100L,
-                    "currency" to "USD",
-                    "flow" to "order_payment",
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCompleted(
+                flow = "order_payment",
+                orderId = 1L,
+                paymentMethod = "payment_link",
+                amount = "100$",
+                amountNormalized = 100L,
             )
         }
 
@@ -848,12 +803,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "order_payment",
             )
         }
 
@@ -878,12 +830,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onSharePaymentUrlCompleted()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "simple_payment",
             )
         }
 
@@ -897,7 +846,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             // THEN
-            verify(analyticsTrackerWrapper, never()).track(eq(AnalyticsEvent.PAYMENTS_FLOW_CANCELED), any())
+            verify(paymentsFlowTracker, never()).trackPaymentsFlowCanceled(any())
         }
 
     @Test
@@ -910,11 +859,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
-                mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowCanceled(
+                flow = "order_payment"
             )
         }
 
@@ -1105,13 +1051,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.onScanToPayClicked()
 
             // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to
-                        AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-                )
+            verify(paymentsFlowTracker).trackPaymentsFlowFailed(
+                source = "payment_method",
+                flow = "order_payment",
             )
             assertThat(viewModel.event.value).isEqualTo(
                 MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general)
@@ -1129,13 +1071,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         viewModel.onScanToPayClicked()
 
         // THEN
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-            mapOf(
-                "payment_method" to "scan_to_pay",
-                "order_id" to 1L,
-                "flow" to "order_payment",
-            )
+        verify(paymentsFlowTracker).trackPaymentsFlowCollect(
+            flow = "order_payment",
+            orderId = 1L,
+            paymentMethod = "scan_to_pay",
+            cardReaderType = null,
+            timeElapsed = null,
         )
     }
 
@@ -1167,16 +1108,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         viewModel.onScanToPayCompleted()
 
         // THEN
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-            mapOf(
-                "payment_method" to "scan_to_pay",
-                "order_id" to 1L,
-                "amount" to "100$",
-                "amount_normalized" to 100L,
-                "currency" to "USD",
-                "flow" to "order_payment",
-            )
+        verify(paymentsFlowTracker).trackPaymentsFlowCompleted(
+            flow = "order_payment",
+            orderId = 1L,
+            paymentMethod = "scan_to_pay",
+            amount = "100$",
+            amountNormalized = 100L,
         )
     }
 
@@ -1206,7 +1143,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             currencyFormatter,
             wooCommerceStore,
             orderMapper,
-            analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
             learnMoreUrlProvider,
             paymentsFlowTracker,

@@ -530,13 +530,10 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    fun trackPaymentsFlowCanceled(source: String, flow: String) {
+    fun trackPaymentsFlowCanceled(flow: String) {
         track(
             AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
-            properties = mutableMapOf(
-                AnalyticsTracker.KEY_SOURCE to source,
-                AnalyticsTracker.KEY_FLOW to flow,
-            )
+            properties = mutableMapOf(AnalyticsTracker.KEY_FLOW to flow)
         )
     }
 

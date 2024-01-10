@@ -349,10 +349,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     fun onBackPressed() {
         // Simple payments flow is not canceled if we going back from this fragment
         if (cardReaderPaymentFlowParam.paymentType == ORDER) {
-            paymentsFlowTracker.trackPaymentsFlowCanceled(
-                source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                flow = AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
-            )
+            paymentsFlowTracker.trackPaymentsFlowCanceled(flow = AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW)
         }
     }
 
