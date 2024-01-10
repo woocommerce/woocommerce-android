@@ -435,7 +435,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun Payment.toAnalyticsFlowName() =
-         when (paymentType) {
+        when (paymentType) {
             SIMPLE -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
             TRY_TAP_TO_PAY -> AnalyticsTracker.VALUE_TTP_TRY_PAYMENT_FLOW
