@@ -102,9 +102,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                 wooCommerceStore.getStoreCountryCode(selectedSite.get())
                             )
 
-                            _order.value = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
+                            orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
                                 orderMapper.toAppModel(it)
+                            }.also { order ->
+                                _order.value = order
+                                cardReaderTrackingInfoKeeper.setCurrency(order.currency)
                             }
+
                             showPaymentState()
                         }
                         Unit
