@@ -366,7 +366,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private suspend fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
         paymentsFlowTracker.trackPaymentsFlowCollect(
-            source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
             flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
             paymentMethod = paymentMethodType,
             orderId = order.first().id,

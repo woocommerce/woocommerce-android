@@ -541,7 +541,6 @@ class PaymentsFlowTracker @Inject constructor(
     }
 
     fun trackPaymentsFlowCollect(
-        source: String,
         flow: String,
         paymentMethod: String,
         orderId: Long,
@@ -551,7 +550,6 @@ class PaymentsFlowTracker @Inject constructor(
         track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
             properties = mutableMapOf<String, Any>(
-                AnalyticsTracker.KEY_SOURCE to source,
                 AnalyticsTracker.KEY_ORDER_ID to orderId,
                 AnalyticsTracker.KEY_FLOW to flow,
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethod,
