@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.math.BigDecimal
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AdjustProductQuantityTest : BaseUnitTest() {
@@ -234,7 +235,8 @@ class AdjustProductQuantityTest : BaseUnitTest() {
         )
     }
 
-    private val order = Order.EMPTY.copy(items = listOf(simpleItem, bundleItem, bundleChildItem))
+    private val order = Order.getEmptyOrder(Date(), Date())
+        .copy(items = listOf(simpleItem, bundleItem, bundleChildItem))
 
     private val defaultProductInfo = ProductInfo(
         imageUrl = "",

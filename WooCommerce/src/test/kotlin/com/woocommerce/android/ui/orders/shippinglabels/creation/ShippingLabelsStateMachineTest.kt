@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
@@ -28,7 +27,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     private val orderMapper = OrderMapper(
         getLocations = mock {
             on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-        }
+        },
+        mock()
     )
     private val order = OrderTestUtils.generateOrder().let { orderMapper.toAppModel(it) }
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()

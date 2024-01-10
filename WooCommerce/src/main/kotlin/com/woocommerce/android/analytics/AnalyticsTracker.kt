@@ -152,6 +152,7 @@ class AnalyticsTracker private constructor(
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
+        const val KEY_ITEM_STOCK_MANAGED = "item_stock_managed"
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
         const val KEY_PRODUCT_COUNT = "product_count"
@@ -257,6 +258,8 @@ class AnalyticsTracker private constructor(
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
         const val KEY_CUSTOM_AMOUNT_TAX_STATUS = "tax_status"
+        const val KEY_EXPANDED = "expanded"
+
         const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE = "taxable"
         const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE = "none"
         const val VALUE_FLOW_CREATION = "creation"
@@ -332,6 +335,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_CARD_READER_TYPE_BUILT_IN = "built_in"
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+        const val VALUE_ORDER_CREATION_PAYMENTS_FLOW = "creation"
         const val VALUE_SCAN_TO_PAY_PAYMENT_FLOW = "scan_to_pay"
         const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
 

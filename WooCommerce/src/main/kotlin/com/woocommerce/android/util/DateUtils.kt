@@ -11,7 +11,6 @@ import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
 import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.DateFormatSymbols
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -466,6 +465,7 @@ class DateUtils @Inject constructor(
         }
 
     fun getDateUsingSiteTimeZone(isoStringDate: String): Date? {
+        if (isoStringDate.isEmpty()) return null
         val iso8601DateString = iso8601OnSiteTimeZoneFromIso8601UTC(isoStringDate)
         return getDateFromFullDateString(iso8601DateString)
     }
@@ -490,6 +490,7 @@ class DateUtils @Inject constructor(
             null
         }
     }
+    @Suppress("SwallowedException")
     private fun iso8601OnSiteTimeZoneFromIso8601UTC(iso8601date: String): String {
         return try {
             val site = selectedSite.getOrNull() ?: return iso8601date
@@ -504,7 +505,7 @@ class DateUtils @Inject constructor(
 
             // Format the result as a string
             zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        } catch (e: ParseException) {
+        } catch (e: Exception) {
             iso8601date
         }
     }

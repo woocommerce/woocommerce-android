@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.math.BigDecimal
 
@@ -51,7 +52,10 @@ sealed class OrderNavigationTarget : Event() {
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
     data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
-    data class StartPaymentFlow(val orderId: Long) : OrderNavigationTarget()
+    data class StartPaymentFlow(
+        val orderId: Long,
+        val paymentTypeFlow: CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType,
+    ) : OrderNavigationTarget()
     object ViewPrintingInstructions : OrderNavigationTarget()
     data class PreviewReceipt(val billingEmail: String, val receiptUrl: String, val orderId: Long) :
         OrderNavigationTarget()

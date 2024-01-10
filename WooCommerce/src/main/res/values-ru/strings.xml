@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 17:54:04+0000
+Translation-Revision-Date: 2024-01-03 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
+    <string name="configuration_complete">Настройка выполнена</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Обновление количества отменено</string>
+    <string name="theme_picker_loading_current_theme_failed">Не удалось загрузить текущую тему</string>
+    <string name="theme_preview_type_desktop">ПК</string>
+    <string name="theme_preview_type_tablet">Планшет</string>
+    <string name="theme_preview_type_mobile">Мобильный телефон</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">нажмите здесь</string>
+    <string name="theme_picker_carousel_error_placeholder_message">При загрузке шаблона возникла проблема. %1$s для демонстрационного режима.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Найдите самую подходящую для вас тему в магазине тем WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Текущая тема</string>
+    <string name="theme_picker_settings_title">Попробуйте новый дизайн</string>
+    <string name="product_creation_survey_button_skip">Пропустить</string>
+    <string name="product_creation_survey_button_open">Начать опрос</string>
+    <string name="product_creation_survey_description">Вы уже несколько раз воспользовались нашей функцией добавления товаров при помощи ИИ. Мы хотели бы узнать ваши впечатления, чтобы сделать её ещё лучше.</string>
+    <string name="product_creation_survey_title">Мы высоко ценим ваше мнение!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Активация функции очной оплаты даёт возможность клиенту оплачивать заказ при доставке наличными или банковской картой.\n\nЗаказы можно по-прежнему создавать вручную, не активируя этой функции.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Хотите добавить функцию очной оплаты к оформлению заказа онлайн?</string>
+    <string name="card_reader_onboarding_contact_us">Требуется помощь? &lt;a href=\'\'&gt;Свяжитесь с нами&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Возместить индивидуальную сумму</string>
+    <string name="order_refunds_custom_amount_refund">Возврат индивидуальной суммы</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Сканировать штрихкод товара</string>
+    <string name="order_creation_add_gift_card">Добавить подарочную карту</string>
     <string name="scan_to_update_inventory_product_label">Товар</string>
     <string name="scan_to_update_inventory_quantity_label">Количество</string>
     <string name="scan_to_update_inventory_original_quantity_label">Исходное количество</string>
@@ -1111,8 +1134,6 @@ Language: ru
     <string name="login_site_picker_try_another_address">Используйте другой адрес</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не удалось включить наложенный платёж. Повторите попытку позже.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Включить опцию «Очная оплата»</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Опция «Очная оплата» позволяет вам принимать плату наличными и кредитными картами при получении товара покупателем.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Добавьте опцию «Очная оплата» для оформления заказа</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Подробности&lt;/a&gt; об очных платежах</string>
     <string name="login_site_picker_new_to_woo">Недавно на WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Произошла ошибка, обратитесь в службу поддержки</string>

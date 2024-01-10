@@ -92,7 +92,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val orderMapper = OrderMapper(
         getLocations = mock {
             on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
-        }
+        },
+        mock()
     )
     private val checkEUShippingScenario: CheckEUShippingScenario = mock {
         on { invoke(any()) } doReturn flowOf(false)

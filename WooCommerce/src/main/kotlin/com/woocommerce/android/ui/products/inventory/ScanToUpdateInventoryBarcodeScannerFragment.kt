@@ -27,6 +27,7 @@ import javax.inject.Inject
 class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val viewModel: ScanToUpdateInventoryViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
     private var undoSnackbar: Snackbar? = null
@@ -45,7 +46,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onCameraPermissionResult = { granted ->
                     scannerViewModel.updatePermissionState(
                         granted,
-                        shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                        shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION),
                     )
                 },
                 viewState = viewModel.viewState.collectAsState(),
@@ -54,6 +55,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 onUpdateQuantityClicked = viewModel::onUpdateQuantityClicked,
                 onViewProductDetailsClicked = viewModel::onViewProductDetailsClicked,
                 onManualQuantityEntered = viewModel::onManualQuantityEntered,
+                onManageStockClicked = viewModel::onManageStockClicked,
             )
         }
     }
@@ -98,6 +100,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                 is MultiLiveEvent.Event.ShowUiStringSnackbar -> {
                     uiMessageResolver.showSnack(it.message)
                 }
+
                 is MultiLiveEvent.Event.ShowUndoSnackbar -> {
                     showUndoSnackbar(
                         message = it.message,
@@ -105,6 +108,7 @@ class ScanToUpdateInventoryBarcodeScannerFragment : BaseFragment() {
                         dismissCallback = it.dismissAction
                     )
                 }
+
                 is ScanToUpdateInventoryViewModel.NavigateToProductDetailsEvent -> {
                     (requireActivity() as? MainNavigationRouter)?.showProductDetail(it.productId)
                 }

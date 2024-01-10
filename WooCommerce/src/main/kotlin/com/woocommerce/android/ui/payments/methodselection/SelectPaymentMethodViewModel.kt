@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
@@ -234,7 +235,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
             val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
                 SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
-                ORDER -> R.string.existing_order_cash_dlg_message
+                ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
             }
             triggerEvent(
                 MultiLiveEvent.Event.ShowDialog(
@@ -449,7 +450,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             when (cardReaderPaymentFlowParam.paymentType) {
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
-                ORDER -> NavigateBackToOrderList
+                ORDER, ORDER_CREATION -> NavigateBackToOrderList
             }
         )
     }
@@ -459,6 +460,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             SIMPLE -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
             TRY_TAP_TO_PAY -> AnalyticsTracker.VALUE_TTP_TRY_PAYMENT_FLOW
+            Payment.PaymentType.ORDER_CREATION -> AnalyticsTracker.VALUE_ORDER_CREATION_PAYMENTS_FLOW
         }
 
     private fun onLearnMoreIppClicked() {
