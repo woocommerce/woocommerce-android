@@ -38,8 +38,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.drawable
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.CampaignPreviewContent
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.Loading
@@ -56,7 +54,7 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
             Scaffold(
                 topBar = {
                     Toolbar(
-                        title = stringResource(id = R.string.more_menu_button_blaze),
+                        title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
                         onNavigationButtonClick = {/*TODO*/ },
                         navigationIcon = Filled.ArrowBack
                     )
@@ -91,13 +89,13 @@ fun CampaignPreviewContent(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         CampaignHeader(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
+                .padding(16.dp)
                 .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background))
                 .padding(16.dp)
         )
@@ -106,7 +104,16 @@ fun CampaignPreviewContent(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 24.dp)
+                .padding(16.dp)
+        )
+        Divider()
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .padding(bottom = 8.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
+            onClick = { /*TODO*/ },
         )
     }
 }
@@ -174,7 +181,9 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
             }
         }
         WCTextButton(
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             text = stringResource(id = R.string.blaze_campaign_preview_edit_ad_button),
             onClick = { /*TODO*/ },
         )
@@ -274,16 +283,16 @@ private fun CampaignPropertyItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = color.color_on_surface_high)
+                color = colorResource(id = R.color.color_on_surface_high)
             )
             Text(
                 text = content,
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = color.color_on_surface_medium)
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
         }
         Icon(
-            painter = painterResource(id = drawable.ic_arrow_right),
+            painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = null,
             modifier = Modifier.size(24.dp)
         )
@@ -294,7 +303,7 @@ private fun CampaignPropertyItem(
 @Composable
 fun CampaignScreenPreview() {
     CampaignPreviewContent(
-        state = CampaignPreviewState.CampaignPreviewContent(
+        state = CampaignPreviewContent(
             productId = 1,
             title = "Get the latest white t-shirts",
             tagLine = "From 45.00 USD",

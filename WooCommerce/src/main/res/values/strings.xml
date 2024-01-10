@@ -3824,7 +3824,7 @@
     <!--
     Blaze campaign preview screen
     -->
-    <string name="blaze_campaign_preview_fragment_title">Preview</string>
+    <string name="blaze_campaign_screen_fragment_title">Preview</string>
     <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
@@ -3834,7 +3834,7 @@
     <string name="blaze_campaign_preview_details_location">Location</string>
     <string name="blaze_campaign_preview_details_interests">Interests</string>
     <string name="blaze_campaign_preview_details_destination_url">Ad destination</string>
-
+    <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
     <!--
     Blaze other
     -->
