@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader
+package com.woocommerce.android.ui.payments.tracking
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -42,9 +42,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRI
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
-import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoProvider
-import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.payments.tracking.TrackingInfo
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
