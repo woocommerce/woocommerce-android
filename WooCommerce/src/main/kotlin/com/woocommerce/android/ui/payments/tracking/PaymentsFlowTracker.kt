@@ -502,7 +502,7 @@ class PaymentsFlowTracker @Inject constructor(
         track(
             CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
             properties = mutableMapOf(
-                AnalyticsTracker.KEY_REASON to reason::class.java.simpleName,
+                KEY_REASON to reason::class.java.simpleName,
                 AnalyticsTracker.KEY_SOURCE to source,
             )
         )
@@ -518,6 +518,71 @@ class PaymentsFlowTracker @Inject constructor(
 
     fun trackPaymentFailedEnabledNfcTapped() {
         track(CARD_PRESENT_TAP_TO_PAY_PAYMENT_FAILED_ENABLE_NFC_TAPPED)
+    }
+
+    fun trackPaymentsFlowFailed(source: String, flow: String) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            properties = mutableMapOf(
+                AnalyticsTracker.KEY_SOURCE to source,
+                AnalyticsTracker.KEY_FLOW to flow,
+            )
+        )
+    }
+
+    fun trackPaymentsFlowCanceled(source: String, flow: String) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
+            properties = mutableMapOf(
+                AnalyticsTracker.KEY_SOURCE to source,
+                AnalyticsTracker.KEY_FLOW to flow,
+            )
+        )
+    }
+
+    fun trackPaymentsFlowCollect(
+        source: String,
+        flow: String,
+        paymentMethod: String,
+        orderId: Long,
+        cardReaderType: String?,
+        timeElapsed: Long?,
+    ) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+            properties = mutableMapOf<String, Any>(
+                AnalyticsTracker.KEY_SOURCE to source,
+                AnalyticsTracker.KEY_ORDER_ID to orderId,
+                AnalyticsTracker.KEY_FLOW to flow,
+                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethod,
+            ).also {
+                if (cardReaderType != null) {
+                    it[AnalyticsTracker.KEY_PAYMENT_CARD_READER_TYPE] = cardReaderType
+                }
+                if (timeElapsed != null) {
+                    it[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
+                }
+            }
+        )
+    }
+
+    fun trackPaymentsFlowCompleted(
+        flow: String,
+        paymentMethod: String,
+        orderId: Long,
+        amount: String,
+        amountNormalized: Long,
+    ) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
+            properties = mutableMapOf(
+                AnalyticsTracker.KEY_FLOW to flow,
+                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethod,
+                AnalyticsTracker.KEY_ORDER_ID to orderId,
+                AnalyticsTracker.KEY_AMOUNT to amount,
+                AnalyticsTracker.KEY_AMOUNT_NORMALIZED to amountNormalized,
+            )
+        )
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {
