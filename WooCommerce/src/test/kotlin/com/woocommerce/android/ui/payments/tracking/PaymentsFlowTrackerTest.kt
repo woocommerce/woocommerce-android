@@ -1204,4 +1204,115 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
                 any()
             )
         }
+
+    @Test
+    fun `when trackPaymentsFlowFailed invoked, then PAYMENTS_FLOW_FAILED tracked`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowFailed(
+                source = "source",
+                flow = "flow",
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_FAILED),
+                check {
+                    assertThat(it["source"]).isEqualTo("source")
+                    assertThat(it["flow"]).isEqualTo("flow")
+                },
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowCanceled invoked, then PAYMENTS_FLOW_CANCELED tracked`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCanceled(
+                flow = "flow",
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_CANCELED),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                },
+            )
+        }
+
+    @Test
+    fun `given cardReaderType and timeElapsed, when trackPaymentsFlowCollect invoked, then PAYMENTS_FLOW_COLLECT tracked with type and time`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCollect(
+                flow = "flow",
+                paymentMethod = "paymentMethod",
+                orderId = 1L,
+                cardReaderType = "cardReaderType",
+                timeElapsed = 2L,
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_COLLECT),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                    assertThat(it["payment_method"]).isEqualTo("paymentMethod")
+                    assertThat(it["order_id"]).isEqualTo(1L)
+                    assertThat(it["card_reader_type"]).isEqualTo("cardReaderType")
+                    assertThat(it["milliseconds_since_order_add_new"]).isEqualTo("2")
+                },
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowCollect invoked, then PAYMENTS_FLOW_COLLECT tracked without time and card reader type`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCollect(
+                flow = "flow",
+                paymentMethod = "paymentMethod",
+                orderId = 1L,
+                cardReaderType = null,
+                timeElapsed = null,
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_COLLECT),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                    assertThat(it["payment_method"]).isEqualTo("paymentMethod")
+                    assertThat(it["order_id"]).isEqualTo(1L)
+                    assertThat(it["card_reader_type"]).isNull()
+                    assertThat(it["milliseconds_since_order_add_new"]).isNull()
+                },
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowCompleted invoked, then PAYMENTS_FLOW_COMPLETED tracked`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCompleted(
+                flow = "flow",
+                paymentMethod = "paymentMethod",
+                orderId = 1L,
+                amount = "1$",
+                amountNormalized = 2L,
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_COMPLETED),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                    assertThat(it["payment_method"]).isEqualTo("paymentMethod")
+                    assertThat(it["order_id"]).isEqualTo(1L)
+                    assertThat(it["amount"]).isEqualTo("1$")
+                    assertThat(it["amount_normalized"]).isEqualTo(2L)
+                },
+            )
+        }
 }
