@@ -678,7 +678,7 @@ class OrderCreateEditFormFragment :
                         var isExpanded by rememberSaveable { mutableStateOf(false) }
                         when {
                             item is OrderCreationProduct.ProductItemWithRules &&
-                                item.configuration.childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
+                                item.getConfiguration().childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
                                 val modifier = if (isExpanded) {
                                     Modifier.border(
                                         1.dp,
@@ -692,7 +692,7 @@ class OrderCreateEditFormFragment :
                                 ExpandableGroupedProductCardLoading(
                                     state = viewModel.viewStateData.liveData.observeAsState(),
                                     product = item,
-                                    childrenSize = item.configuration.childrenConfiguration?.keys?.size ?: 0,
+                                    childrenSize = item.getConfiguration().childrenConfiguration?.keys?.size ?: 0,
                                     onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                                     onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
                                     onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },

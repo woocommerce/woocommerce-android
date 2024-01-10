@@ -1028,7 +1028,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onAddProductClicked() {
         val selectedItems = products.value?.map { product ->
-            val configuration = product.item.configuration
+            val configuration = product.getConfiguration()
             when {
                 configuration != null -> {
                     SelectedItem.ConfigurableProduct(product.item.productId, configuration)
@@ -1140,6 +1140,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = true))
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -1627,7 +1628,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onEditConfiguration(product: OrderCreationProduct) {
-        (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
+        product.getConfiguration()?.let {
             if (product.productInfo.productType == ProductType.BUNDLE) {
                 tracker.track(
                     AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
