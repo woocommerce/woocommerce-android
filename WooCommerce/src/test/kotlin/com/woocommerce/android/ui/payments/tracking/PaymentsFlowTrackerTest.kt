@@ -865,7 +865,7 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(CARD_READER_LOCATION_FAILURE),
                 any(),
-                eq("CardReaderTracker"),
+                eq("PaymentsFlowTracker"),
                 eq(null),
                 eq(dummyErrorMgs)
             )
