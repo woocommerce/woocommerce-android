@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -125,27 +124,25 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(state.campaignImageUrl)
                         .crossfade(true)
-                        .placeholder(R.drawable.ic_product)
-                        .fallback(R.drawable.ic_product)
-                        .error(R.drawable.ic_product)
                         .build(),
+                    fallback = painterResource(R.drawable.blaze_campaign_product_placeholder),
+                    placeholder = painterResource(R.drawable.blaze_campaign_product_placeholder),
+                    error = painterResource(R.drawable.ic_woo_error_state),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(276.dp)
                         .clip(shape = RoundedCornerShape(size = 8.dp))
@@ -307,7 +304,7 @@ fun CampaignScreenPreview() {
             productId = 1,
             title = "Get the latest white t-shirts",
             tagLine = "From 45.00 USD",
-            campaignImageUrl = "https://myer-media.com.au/wcsstore/MyerCatalogAssetStore/images/70/705/3856/100/1/797334760/797334760_1_720x928.webp",
+            campaignImageUrl = "https://shorturl.at/bhqtz",
             destinationUrl = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
             budget = CampaignPreviewState.Budget(
                 totalBudget = "140",
