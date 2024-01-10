@@ -2,18 +2,23 @@ package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -26,13 +31,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest.Builder
+import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.CampaignPreviewContent
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.Loading
+import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -41,12 +45,25 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
         WooThemeWithBackground {
-            when (previewState) {
-                is Loading -> LoadingPreview()
-                is CampaignPreviewContent -> CampaignPreviewContent(
-                    state = previewState,
-                    modifier = Modifier.background(color = MaterialTheme.colors.surface)
-                )
+            Scaffold(
+                topBar = {
+                    Toolbar(
+                        title = stringResource(id = R.string.more_menu_button_blaze),
+                        onNavigationButtonClick = {/*TODO*/ },
+                        navigationIcon = Filled.ArrowBack
+                    )
+                },
+                modifier = Modifier.background(MaterialTheme.colors.surface)
+            ) { paddingValues ->
+                when (previewState) {
+                    is Loading -> LoadingPreview()
+                    is CampaignPreviewContent -> CampaignPreviewContent(
+                        state = previewState,
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .background(color = MaterialTheme.colors.surface)
+                    )
+                }
             }
         }
     }
@@ -59,7 +76,7 @@ fun LoadingPreview() {
 
 @Composable
 fun CampaignPreviewContent(
-    state: CampaignPreviewState.CampaignPreviewContent,
+    state: CampaignPreviewContent,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -74,19 +91,28 @@ fun CampaignPreviewContent(
 }
 
 @Composable
-fun CampaignHeader(state: CampaignPreviewState.CampaignPreviewContent, modifier: Modifier = Modifier) {
+fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = colorResource(id = color.blaze_campaign_preview_header_background))
-            .padding(16.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background))
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Card {
-            Column(modifier = Modifier.padding(16.dp)) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 AsyncImage(
-                    model = Builder(LocalContext.current)
+                    model = ImageRequest.Builder(LocalContext.current)
                         .data(state.campaignImageUrl)
                         .crossfade(true)
                         .placeholder(R.drawable.ic_product)
@@ -96,26 +122,43 @@ fun CampaignHeader(state: CampaignPreviewState.CampaignPreviewContent, modifier:
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = modifier
-                        .size(276.dp)
+                        .fillMaxWidth()
+                        .height(276.dp)
                         .clip(shape = RoundedCornerShape(size = 8.dp))
                 )
-
                 Text(
                     modifier = Modifier.padding(top = 12.dp),
                     text = state.tagLine,
                     style = MaterialTheme.typography.caption,
                 )
-                Text(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = state.title,
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold,
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = state.title,
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    WCColoredButton(
+                        text = stringResource(id = R.string.blaze_campaign_preview_shop_now_button),
+                        modifier = Modifier
+                            .padding(start = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = colorResource(id = R.color.color_on_surface),
+                            backgroundColor = colorResource(id = R.color.blaze_campaign_preview_header_background),
+                        ),
+                        onClick = { /*TODO*/ },
+                    )
+                }
             }
         }
         WCTextButton(
-            modifier = Modifier.padding(top = 16.dp),
-            text = stringResource(id = string.blaze_campaign_preview_edit_ad_button),
+            modifier = Modifier.padding(top = 8.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_edit_ad_button),
             onClick = { /*TODO*/ },
         )
     }
@@ -125,10 +168,10 @@ fun CampaignHeader(state: CampaignPreviewState.CampaignPreviewContent, modifier:
 @Composable
 fun CampaignScreenPreview() {
     CampaignPreviewContent(
-        state = CampaignPreviewState.CampaignPreviewContent(
+        state = CampaignPreviewContent(
             productId = 1,
-            title = "title",
-            tagLine = "tagLine",
+            title = "Very long title to see what happens with a long text",
+            tagLine = "From $45.00",
             totalBudget = "totalBudget",
             duration = "duration",
             startDate = "startDate",

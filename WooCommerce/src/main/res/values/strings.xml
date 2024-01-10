@@ -3826,6 +3826,7 @@
     -->
     <string name="blaze_campaign_preview_fragment_title">Preview</string>
     <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
+    <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
 
     <!--
     Blaze other
