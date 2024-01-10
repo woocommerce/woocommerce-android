@@ -1339,7 +1339,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked()
+            viewModel.onCollectPaymentClicked()
 
             // Then
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartPaymentFlow::class.java)
@@ -1353,7 +1353,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked()
+            viewModel.onCollectPaymentClicked()
 
             // Then
             verify(cardReaderTracker).trackCollectPaymentTapped()

@@ -11,10 +11,17 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_UPDATE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_AMOUNT_TAX_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_EXPANDED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUNDLE_CONFIGURATION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
@@ -51,13 +58,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -71,6 +78,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
+import java.util.Date
 import java.util.function.Consumer
 import kotlin.test.assertFalse
 
@@ -803,7 +811,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(id = 1, total = BigDecimal(1)),
                             Order.FeeLine.EMPTY.copy(id = 2, total = BigDecimal(2)),
@@ -838,7 +846,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(id = 1, total = BigDecimal(1)),
                             Order.FeeLine.EMPTY.copy(id = 2, total = BigDecimal(2)),
@@ -934,7 +942,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
                             Order.ShippingLine("first", "first", BigDecimal(1)),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
@@ -982,7 +990,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
                             Order.ShippingLine("first", "first", BigDecimal(1)),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
@@ -1132,7 +1140,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         assertThat(sut.orderDraft.value)
             .usingRecursiveComparison()
             .ignoringFields("dateCreated", "dateModified")
-            .isEqualTo(Order.EMPTY)
+            .isEqualTo(Order.getEmptyOrder(Date(), Date()))
     }
 
     @Test
@@ -1859,29 +1867,170 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `given totals helper returns hidden, when totals updated, then return hidden`() {
+    fun `given totals helper returns minimised, when totals checked, then return minimised`() {
         testBlocking {
-            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(TotalsSectionsState.Hidden)
+            val totalsSectionsState = mock<TotalsSectionsState.Minimised>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            var totalsData: TotalsSectionsState? = null
+
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
 
             createSut()
 
-            advanceUntilIdle()
-
-            assertThat(sut.totalsData.value).isEqualTo(TotalsSectionsState.Hidden)
+            assertThat(totalsData).isEqualTo(totalsSectionsState)
         }
     }
 
     @Test
-    fun `given totals helper returns shown, when totals checked, then return shown`() {
+    fun `given totals helper returns full, when totals checked, then return full`() {
         testBlocking {
-            val totalsSectionsState = mock<TotalsSectionsState.Shown>()
-            whenever(totalsHelper.mapToPaymentTotalsState(any())).thenReturn(totalsSectionsState)
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
+            var totalsData: TotalsSectionsState? = null
+
+            sut.totalsData.observeForever {
+                totalsData = it
+            }
 
             createSut()
 
-            advanceUntilIdle()
+            assertThat(totalsData).isEqualTo(totalsSectionsState)
+        }
+    }
 
-            assertThat(sut.totalsData.value).isEqualTo(totalsSectionsState)
+    @Test
+    fun `given totals helper returns full, when expand clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with true`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onExpandCollapseClickedCaptor.capture()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onExpandCollapseClickedCaptor.firstValue.invoke(true)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_EXPANDED to true
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full, when collapse clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with false`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onExpandCollapseClickedCaptor.capture()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onExpandCollapseClickedCaptor.firstValue.invoke(false)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_EXPANDED to false
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given totals helper returns full and creation, when main button clicked, then PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED tracked`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onMainButtonClickedCaptor = argumentCaptor<() -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onMainButtonClickedCaptor.capture(),
+                    any()
+                )
+            ).thenReturn(totalsSectionsState)
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onMainButtonClickedCaptor.firstValue.invoke()
+
+            verify(tracker).track(
+                AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
+                mapOf(
+                    KEY_STATUS to Order.Status.Pending,
+                    KEY_PRODUCT_COUNT to 0,
+                    KEY_HAS_CUSTOMER_DETAILS to false,
+                    KEY_HAS_FEES to false,
+                    KEY_HAS_SHIPPING_METHOD to false,
+                    KEY_FLOW to VALUE_FLOW_CREATION
+                )
+            )
         }
     }
 
@@ -1904,7 +2053,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(
                                 id = 1,
@@ -1934,7 +2083,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(
                                 id = 1,
@@ -1970,7 +2119,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(
                                 id = 1,

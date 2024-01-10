@@ -1,2 +1,2 @@
-16.6:
+16.7:
 Boas notícias, pessoal! A atualização mais recente do WooCommerce melhora sua experiência de várias formas. Aproveite atualizações rápidas de inventário ao ler códigos de barras com facilidade diretamente da página Produtos. Pense na praticidade! Nossa IU repaginada traz valores personalizados com base na porcentagem para aumentar a flexibilidade. Incorpore imagens de outros aplicativos para começar a criar seu produto sem problemas. As otimizações internas garantem um desempenho melhor, proporcionando uma experiência emocionante e mais intuitiva. Mergulhe de cabeça nessas melhorias fantásticas para conhecê-las!

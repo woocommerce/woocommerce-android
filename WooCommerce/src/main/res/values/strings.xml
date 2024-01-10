@@ -559,6 +559,7 @@
     <string name="order_creation_select_coupon">Select a coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_coupon_button">Coupon</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
     <string name="order_creation_increase_item_amount_content_description">Increase product quantity</string>
     <string name="order_creation_decrease_item_amount_content_description">Decrease product quantity</string>
@@ -637,6 +638,7 @@
     <string name="order_creation_gift_card_text_field_hint">Enter code</string>
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
+    <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
 
     <!--
          Barcode Scanning
@@ -3810,6 +3812,7 @@
     <string name="blaze_campaign_creation_intro_benefit_3">Reach millions on WordPress and Tumblr sites.</string>
     <string name="blaze_campaign_creation_intro_benefit_4">Track performance, start and stop your Blaze campaign anytime.</string>
     <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
+    <string name="blaze_campaign_creation_new_intro_title">Get your products seen by millions</string>
 
     <!--
     Blaze campaign creation celebration
@@ -3821,8 +3824,11 @@
     <!--
     Blaze other
     -->
+    <string name="blaze" translatable="false">Blaze</string>
     <string name="blaze_campaign_details_title">Campaign details</string>
     <string name="product_details_blaze_card">Promote with Blaze</string>
+    <string name="blaze_campaign_creation_product_selector_title">Ready to promote</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
 
     <!--
     Highlights tooltip
@@ -3899,6 +3905,8 @@
     <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
     <string name="scan_to_update_inventory_quantity_label">Quantity</string>
     <string name="scan_to_update_inventory_product_label">Product</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Stock not managed</string>
+    <string name="scan_to_update_inventory_manage_stock">Manage Stock</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
@@ -3920,6 +3928,20 @@
     <string name="configuration_children_issue"> "%1$s " -&gt; %2$s </string>
     <string name="configuration_variable_update">Choose variation</string>
     <string name="product_variation_picker_title">Select a variation</string>
+    <string name="blaze_campaign_creation_new_intro_description">Our tool is designed to empower merchants with fast, simple ad campaign setups for maximum traffic boost.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Quick start, big impact</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Launch ads in minutes – no experience or big budget needed, starting at just $5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global reach made simple</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">"Our tool presents your product where interested shoppers can find it. "</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Access a vast audience</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Your ads on millions of sites within the WordPress.com and Tumblr networks.</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Start your campaign</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Learn how Blaze works</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1"><![CDATA[<b>Choose a product:</b> Choose what to promote with Blaze.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2"><![CDATA[<b>Customize targeting:</b> Select audience by location or interests, and see potential reach.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3"><![CDATA[<b>Set your budget:</b> Decide on your spend and campaign length.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4"><![CDATA[<b>Quick review:</b> Submit your ad for a fast moderator check.]]></string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5"><![CDATA[<b>Go live:</b> Watch as your promotion begins and track its success.]]></string>
 
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>

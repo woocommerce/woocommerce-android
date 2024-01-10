@@ -53,17 +53,6 @@
                 android:paddingVertical="@dimen/major_75"
                 android:src="@drawable/ic_edit_pencil"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/orderStatus_editButton"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/orderStatus_editButton"
-                style="@style/Woo.Button.TextButton.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/order_creation_status_edit_content_description"
-                android:text="@string/edit"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
