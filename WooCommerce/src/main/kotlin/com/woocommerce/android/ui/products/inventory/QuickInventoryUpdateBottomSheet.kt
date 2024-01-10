@@ -45,6 +45,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ProductInfo
 
@@ -55,6 +56,7 @@ fun QuickInventoryUpdateBottomSheet(
     onManualQuantityEntered: (String) -> Unit,
     onUpdateQuantityClicked: () -> Unit,
     onViewProductDetailsClicked: () -> Unit,
+    onManageStockClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -96,91 +98,104 @@ fun QuickInventoryUpdateBottomSheet(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(id = R.string.scan_to_update_inventory_quantity_label)
-            )
-            val interactionSource = remember { MutableInteractionSource() }
-            val isAmountFieldInFocus by interactionSource.collectIsFocusedAsState()
-            val elevation = animateDpAsState(
-                targetValue = if (isAmountFieldInFocus) 4.dp else 0.dp,
-                label = "elevation"
-            )
-            Card(
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large)),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.divider_color),
-                ),
-                elevation = elevation.value,
-            ) {
-                val focusManager = LocalFocusManager.current
-                BasicTextField(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.minor_100),
-                            vertical = dimensionResource(id = R.dimen.minor_50),
-                        )
-                        .defaultMinSize(minWidth = 12.dp)
-                        .width(IntrinsicSize.Min),
-                    value = state.newQuantity,
-                    onValueChange = { value ->
-                        onManualQuantityEntered(value)
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done,
+            if (state.product.isStockManaged) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.scan_to_update_inventory_quantity_label)
+                )
+                val interactionSource = remember { MutableInteractionSource() }
+                val isAmountFieldInFocus by interactionSource.collectIsFocusedAsState()
+                val elevation = animateDpAsState(
+                    targetValue = if (isAmountFieldInFocus) 4.dp else 0.dp,
+                    label = "elevation"
+                )
+                Card(
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large)),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = colorResource(id = R.color.divider_color),
                     ),
-                    textStyle = MaterialTheme.typography.body1.copy(
-                        color = MaterialTheme.colors.onSurface,
-                    ),
-                    interactionSource = interactionSource,
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                    elevation = elevation.value,
+                ) {
+                    val focusManager = LocalFocusManager.current
+                    BasicTextField(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = dimensionResource(id = R.dimen.minor_100),
+                                vertical = dimensionResource(id = R.dimen.minor_50),
+                            )
+                            .defaultMinSize(minWidth = 12.dp)
+                            .width(IntrinsicSize.Min),
+                        value = state.newQuantity,
+                        onValueChange = { value ->
+                            onManualQuantityEntered(value)
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done,
+                        ),
+                        textStyle = MaterialTheme.typography.body1.copy(
+                            color = MaterialTheme.colors.onSurface,
+                        ),
+                        interactionSource = interactionSource,
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                    )
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.scan_to_update_inventory_stock_not_managed)
                 )
             }
         }
         Divider()
-        if (state.isPendingUpdate) {
-            Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.scan_to_update_inventory_original_quantity_label),
-                    style = MaterialTheme.typography.caption,
+        if (state.product.isStockManaged) {
+            if (state.isPendingUpdate) {
+                Row(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.scan_to_update_inventory_original_quantity_label),
+                        style = MaterialTheme.typography.caption,
+                    )
+                    Text(
+                        text = state.originalQuantity,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                WCColoredButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = dimensionResource(id = R.dimen.major_100),
+                            end = dimensionResource(id = R.dimen.major_100),
+                            start = dimensionResource(id = R.dimen.major_100),
+                        ),
+                    onClick = onUpdateQuantityClicked,
+                    text = stringResource(R.string.scan_to_update_inventory_update_quantity_button)
                 )
-                Text(
-                    text = state.originalQuantity,
-                    style = MaterialTheme.typography.caption
+            } else {
+                WCColoredButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = dimensionResource(id = R.dimen.major_100),
+                            end = dimensionResource(id = R.dimen.major_100),
+                            start = dimensionResource(id = R.dimen.major_100),
+                        ),
+                    onClick = onIncrementQuantityClicked,
+                    text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
                 )
             }
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                    ),
-                onClick = onUpdateQuantityClicked,
-                text = stringResource(R.string.scan_to_update_inventory_update_quantity_button)
-            )
         } else {
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                    ),
-                onClick = onIncrementQuantityClicked,
-                text = stringResource(R.string.scan_to_update_inventory_increment_quantity_button)
-            )
+            WCTextButton(onClick = onManageStockClicked) {
+                Text(text = stringResource(R.string.scan_to_update_inventory_manage_stock))
+            }
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)))
         }
         WCOutlinedButton(
             onClick = onViewProductDetailsClicked,
@@ -209,9 +224,28 @@ fun QuickInventoryUpdateBottomSheetPreview() {
         imageUrl = "https://woocommerce.com/wp-content/uploads/2017/03/woocommerce-logo.png",
         sku = "123-SKU-456",
         quantity = 10,
+        isStockManaged = true
     )
     val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
     WooThemeWithBackground {
-        QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {})
+        QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {}, {})
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun QuickInventoryUpdateBottomSheetStockNotManagedPreview() {
+    val product = ProductInfo(
+        id = 12,
+        name = "Product Name",
+        imageUrl = "https://woocommerce.com/wp-content/uploads/2017/03/woocommerce-logo.png",
+        sku = "123-SKU-456",
+        quantity = 10,
+        isStockManaged = false
+    )
+    val state = ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible(product)
+    WooThemeWithBackground {
+        QuickInventoryUpdateBottomSheet(state, {}, {}, {}, {}, {})
     }
 }

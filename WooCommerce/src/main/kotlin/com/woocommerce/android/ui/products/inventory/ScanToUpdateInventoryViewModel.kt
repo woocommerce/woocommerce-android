@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ITEM_STOCK_MANAGED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
@@ -71,12 +72,16 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
                     imageUrl = product.firstImageUrl.orEmpty(),
                     sku = product.sku,
                     quantity = product.stockQuantity.toInt(),
+                    isStockManaged = isItemStockManaged(product)
                 )
                 if (isItemStockManaged(product)) {
+                    tracker.track(
+                        AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+                        mapOf(KEY_ITEM_STOCK_MANAGED to true)
+                    )
                     _viewState.value = ViewState.QuickInventoryBottomSheetVisible(productInfo)
                 } else {
                     handleProductIsNotStockManaged(product)
-                    _viewState.value = ViewState.QuickInventoryBottomSheetHidden
                 }
             } else {
                 handleProductNotFound(status.code)
@@ -102,18 +107,21 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             product.isStockManaged
         }
 
-    private suspend fun handleProductIsNotStockManaged(product: Product) {
-        triggerProductNotStockManagedSnackBar(product)
-        delay(SCANNER_RESTART_DEBOUNCE_MS)
-        scanToUpdateInventoryState.value = ScanToUpdateInventoryState.Idle
-    }
-
-    private fun triggerProductNotStockManagedSnackBar(product: Product) {
-        val message = resourceProvider.getString(
-            R.string.scan_to_update_inventory_product_not_stock_managed,
-            product.sku
+    private fun handleProductIsNotStockManaged(product: Product) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+            mapOf(KEY_ITEM_STOCK_MANAGED to false)
         )
-        triggerEvent(ShowUiStringSnackbar(UiString.UiStringText(message)))
+        _viewState.value = ViewState.QuickInventoryBottomSheetVisible(
+            product = ProductInfo(
+                id = product.remoteId,
+                name = product.name,
+                imageUrl = product.firstImageUrl.orEmpty(),
+                sku = product.sku,
+                quantity = product.stockQuantity.toInt(),
+                isStockManaged = false
+            )
+        )
     }
 
     private suspend fun handleProductNotFound(barcode: String) {
@@ -191,7 +199,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     }
 
     private suspend fun Product.updateProduct(updatedProductInfo: ProductInfo): Result<Unit> {
-        val updatedProduct = copy(stockQuantity = updatedProductInfo.quantity.toDouble())
+        val updatedProduct = copy(
+            stockQuantity = updatedProductInfo.quantity.toDouble(),
+            isStockManaged = updatedProductInfo.isStockManaged,
+        )
         val result: Boolean = productRepository.updateProduct(updatedProduct)
         return if (result) {
             Result.success(Unit)
@@ -207,8 +218,10 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             remoteProductId = productId,
             remoteVariationId = variationId
         )
-        val updatedVariation = variation?.copy(stockQuantity = updatedProductInfo.quantity.toDouble())
-            ?: return Result.failure(Exception("Unable to find variation"))
+        val updatedVariation = variation?.copy(
+            stockQuantity = updatedProductInfo.quantity.toDouble(),
+            isStockManaged = updatedProductInfo.isStockManaged,
+        ) ?: return Result.failure(Exception("Unable to find variation"))
 
         val result: WCProductStore.OnVariationUpdated = variationRepository.updateVariation(updatedVariation)
         return if (result.isError) {
@@ -288,9 +301,42 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     fun onViewProductDetailsClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
+        val productId: Long? = when (val state = viewState.value) {
+            is ViewState.QuickInventoryBottomSheetVisible -> state.product.id
+            else -> null
+        }
+
+        productId?.let { id ->
+            triggerEvent(NavigateToProductDetailsEvent(id))
+        }
+    }
+
+    fun onManageStockClicked() = launch {
         val state = viewState.value
-        if (state !is ViewState.QuickInventoryBottomSheetVisible) return
-        triggerEvent(NavigateToProductDetailsEvent(state.product.id))
+        if (state !is ViewState.QuickInventoryBottomSheetVisible) return@launch
+
+        val productInfo = state.product
+        val updatedProductInfo = productInfo.copy(isStockManaged = true)
+        val product = productRepository.getProduct(updatedProductInfo.id)
+        if (product != null) {
+            val result = if (product.isVariation()) {
+                product.updateVariation(updatedProductInfo)
+            } else {
+                product.updateProduct(updatedProductInfo)
+            }
+
+            if (result.isSuccess) {
+                _viewState.value = ViewState.QuickInventoryBottomSheetVisible(product = updatedProductInfo)
+            } else {
+                triggerEvent(
+                    ShowUiStringSnackbar(
+                        UiString.UiStringRes(
+                            R.string.scan_to_update_inventory_failure_snackbar
+                        )
+                    )
+                )
+            }
+        }
     }
 
     @Parcelize
@@ -300,6 +346,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
         val imageUrl: String,
         val sku: String,
         val quantity: Int,
+        val isStockManaged: Boolean,
     ) : Parcelable
 
     @Parcelize
@@ -308,7 +355,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             val product: ProductInfo,
             val isPendingUpdate: Boolean = false,
             val originalQuantity: String = product.quantity.toString(),
-            val newQuantity: String = product.quantity.toString()
+            val newQuantity: String = product.quantity.toString(),
         ) : ViewState()
         object QuickInventoryBottomSheetHidden : ViewState()
         object Loading : ViewState()

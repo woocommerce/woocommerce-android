@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
@@ -11,7 +12,6 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetHidden
 import com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryViewModel.ViewState.QuickInventoryBottomSheetVisible
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
@@ -150,64 +150,22 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should show snackbar with error`() =
+    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should display correct bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123"))
             )
-            whenever(
-                resourceProvider.getString(
-                    R.string.scan_to_update_inventory_product_not_stock_managed,
-                    "123"
-                )
-            ).thenReturn("Product with SKU: 123 is not stock-managed. Please try again.")
-            sut.event.observeForTesting {
-                sut.onBarcodeScanningResult(
-                    CodeScannerStatus.Success(
-                        "123",
-                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                    )
-                )
-                sut.event.value.apply {
-                    assertIs<MultiLiveEvent.Event.ShowUiStringSnackbar>(this)
-                    assertEquals(
-                        "Product with SKU: 123 is not stock-managed. Please try again.",
-                        (message as UiString.UiStringText).text
-                    )
-                }
-            }
-        }
-
-    @Test
-    fun `given barcode successfully scanned, when corresponding product is not stock managed, then should start scanning again`() =
-        testBlocking {
-            whenever(
-                resourceProvider.getString(
-                    R.string.scan_to_update_inventory_product_not_stock_managed,
-                    "123"
-                )
-            ).thenReturn("Product with SKU: 123 is not stock-managed. Please try again.")
-            val product = ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123")
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
-
-            sut.viewState.test {
-                sut.onBarcodeScanningResult(
-                    CodeScannerStatus.Success(
-                        "123",
-                        GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-                    )
-                )
-                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
-                assertEquals(Loading, awaitItem())
-                assertEquals(QuickInventoryBottomSheetHidden, awaitItem())
-            }
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
                     "123",
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            verify(fetchProductBySKU, times(1)).invoke(any(), any())
+            sut.viewState.test {
+                awaitItem().apply {
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
+                }
+            }
         }
 
     @Test
@@ -477,7 +435,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when variation is found which is not stock-managed, then should not show bottom sheet`() =
+    fun `when variation is found which is not stock-managed, then should show bottom sheet`() =
         testBlocking {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(
@@ -494,12 +452,6 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     variationId = 2
                 ).copy(isStockManaged = false)
             )
-            whenever(
-                resourceProvider.getString(
-                    R.string.scan_to_update_inventory_product_not_stock_managed,
-                    "123"
-                )
-            ).thenReturn("Product not stock managed")
             sut.viewState.test {
                 sut.onBarcodeScanningResult(
                     CodeScannerStatus.Success(
@@ -511,10 +463,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     assertIs<QuickInventoryBottomSheetHidden>(this)
                 }
                 awaitItem().apply {
-                    assertIs<Loading>(this)
-                }
-                awaitItem().apply {
-                    assertIs<QuickInventoryBottomSheetHidden>(this)
+                    assertIs<QuickInventoryBottomSheetVisible>(this)
                 }
             }
         }
@@ -538,4 +487,40 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(AnalyticsEvent.PRODUCT_QUICK_INVENTORY_VIEW_PRODUCT_DETAILS_TAPPED)
     }
+
+    @Test fun `given item is stock-managed, when bottom sheet is shown, then track proper event`() =
+        testBlocking {
+            val product = ProductTestUtils.generateProduct(isStockManaged = true)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku,
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+                mapOf(AnalyticsTracker.KEY_ITEM_STOCK_MANAGED to true)
+            )
+        }
+
+    @Test fun `given item is not stock-managed, when bottom sheet is shown, then track proper event`() =
+        testBlocking {
+            val product = ProductTestUtils.generateProduct(isStockManaged = false)
+            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+
+            sut.onBarcodeScanningResult(
+                CodeScannerStatus.Success(
+                    product.sku,
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                )
+            )
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_QUICK_INVENTORY_UPDATE_BOTTOM_SHEET_SHOWN,
+                mapOf(AnalyticsTracker.KEY_ITEM_STOCK_MANAGED to false)
+            )
+        }
 }

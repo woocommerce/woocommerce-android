@@ -3905,6 +3905,8 @@
     <string name="scan_to_update_inventory_original_quantity_label">Original quantity</string>
     <string name="scan_to_update_inventory_quantity_label">Quantity</string>
     <string name="scan_to_update_inventory_product_label">Product</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Stock not managed</string>
+    <string name="scan_to_update_inventory_manage_stock">Manage Stock</string>
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
