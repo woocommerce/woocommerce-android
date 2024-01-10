@@ -16,7 +16,7 @@
             app:argType="long" />
         <action
             android:id="@+id/action_blazeCampaignCreationIntroFragment_to_nav_graph_product_selector"
-            app:destination="@id/nav_graph_product_selector" >
+            app:destination="@id/nav_graph_product_selector">
             <argument
                 android:name="selectionMode"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionMode" />
@@ -32,6 +32,14 @@
             <argument
                 android:name="productSelectorFlow"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
+        </action>
+        <action
+            android:id="@+id/action_blazeCampaignCreationIntroFragment_to_blazeCampaignCreationPreviewFragment"
+            app:destination="@id/blazeCampaignCreationPreviewFragment">
+            <argument
+                android:name="productId"
+                android:defaultValue="-1L"
+                app:argType="long" />
         </action>
     </fragment>
     <fragment
