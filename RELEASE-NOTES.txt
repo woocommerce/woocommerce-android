@@ -1,4 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.2
+-----
+- [*] [Internal] Tracking of "country" and "currency" properties for entry and exit of the payments flows [https://github.com/woocommerce/woocommerce-android/pull/10528]
+
+17.1
+-----
+
+17.0
+-----
+
 16.9
 -----
 - [**] We moved order creation section to the bottom of the screen to make it easier to reach and freeing up the space for the controls. The order editing section is removed from the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/10505]
