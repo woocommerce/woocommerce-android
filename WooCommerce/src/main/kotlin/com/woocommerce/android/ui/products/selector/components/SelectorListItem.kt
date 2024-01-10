@@ -52,7 +52,8 @@ fun SelectorListItem(
     selectionState: SelectionState,
     isArrowVisible: Boolean,
     isCogwheelVisible: Boolean,
-    onItemClick: () -> Unit
+    onEditConfiguration: () -> Unit,
+    onItemClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -146,7 +147,8 @@ fun SelectorListItem(
                     .size(dimensionResource(id = dimen.major_200))
             } else {
                 Modifier
-                    .padding(end = 8.dp)
+                    .clickable { onEditConfiguration() }
+                    .padding(8.dp)
                     .size(dimensionResource(id = dimen.major_150))
             }
 
@@ -180,9 +182,10 @@ private fun SelectorListItemPreview() =
         infoLine1 = "Information 1",
         infoLine2 = "Information 2",
         selectionState = SELECTED,
-        isArrowVisible = true,
+        isArrowVisible = false,
         onItemClick = {},
         onClickLabel = null,
         imageContentDescription = null,
-        isCogwheelVisible = false
+        isCogwheelVisible = true,
+        onEditConfiguration = {}
     )
