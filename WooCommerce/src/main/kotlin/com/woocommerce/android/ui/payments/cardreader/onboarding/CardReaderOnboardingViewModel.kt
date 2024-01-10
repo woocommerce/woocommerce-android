@@ -52,7 +52,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -73,7 +73,7 @@ private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -295,7 +295,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             selfHostedSiteId = site.selfHostedSiteId,
             true
         )
-        cardReaderTracker.trackOnboardingSkippedState(
+        paymentsFlowTracker.trackOnboardingSkippedState(
             CardReaderOnboardingState.CashOnDeliveryDisabled(
                 countryCode,
                 preferredPlugin,
@@ -315,7 +315,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
+        paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
         viewState.value = CashOnDeliveryDisabledState(
             onSkipCashOnDeliveryClicked = {
                 (::onSkipCashOnDeliveryClicked)(
@@ -346,7 +346,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 settings = Settings(instructions = "Pay by card or another accepted payment method"),
             )
             result.model?.let {
-                cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                     ONBOARDING
                 )
                 viewState.postValue(
@@ -373,7 +373,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     )
                 )
             } ?: run {
-                cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                paymentsFlowTracker.trackCashOnDeliveryEnabledFailure(
                     ONBOARDING,
                     result.error.message
                 )
@@ -409,7 +409,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             viewState.value =
                 CardReaderOnboardingViewState.SelectPaymentPluginState(
                     onConfirmPaymentMethodClicked = { pluginType ->
-                        cardReaderTracker.trackPaymentGatewaySelected(pluginType)
+                        paymentsFlowTracker.trackPaymentGatewaySelected(pluginType)
                         (::refreshState)(pluginType)
                     }
                 )
@@ -421,7 +421,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onLearnMoreClicked() {
-        cardReaderTracker.trackOnboardingLearnMoreTapped()
+        paymentsFlowTracker.trackOnboardingLearnMoreTapped()
         triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 

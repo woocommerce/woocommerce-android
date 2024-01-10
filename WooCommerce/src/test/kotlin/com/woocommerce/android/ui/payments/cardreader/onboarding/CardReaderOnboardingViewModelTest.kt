@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,7 +65,7 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
-    private val tracker: CardReaderTracker = mock()
+    private val tracker: PaymentsFlowTracker = mock()
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }

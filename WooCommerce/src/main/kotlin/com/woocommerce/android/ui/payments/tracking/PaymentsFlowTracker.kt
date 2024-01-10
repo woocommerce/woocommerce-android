@@ -76,7 +76,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDelive
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
 
-class CardReaderTracker @Inject constructor(
+class PaymentsFlowTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
@@ -101,7 +101,7 @@ class CardReaderTracker @Inject constructor(
             trackerWrapper.track(
                 stat,
                 properties,
-                this@CardReaderTracker.javaClass.simpleName,
+                this@PaymentsFlowTracker.javaClass.simpleName,
                 errorType,
                 errorDescription
             )

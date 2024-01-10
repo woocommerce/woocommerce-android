@@ -4,7 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
@@ -15,17 +15,17 @@ import javax.inject.Inject
 class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pluginRepository: PluginRepository,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val resourceProvider: ResourceProvider,
 ) {
     suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
+                paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
 
                 installAndActivateWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
-                        cardReaderTracker.trackOnboardingCtaFailed(
+                        paymentsFlowTracker.trackOnboardingCtaFailed(
                             reason = OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
                             description = errorMessage
                         )
@@ -34,11 +34,11 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             }
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED)
+                paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED)
 
                 installAndActivateWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
-                        cardReaderTracker.trackOnboardingCtaFailed(
+                        paymentsFlowTracker.trackOnboardingCtaFailed(
                             reason = OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED,
                             description = errorMessage
                         )
@@ -47,12 +47,12 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             }
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED)
+                paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED)
                 buildReactionToOpenWcPaySetup()
             }
 
             CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
+                paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
                 buildReactionToOpenWcPaySetup()
             }
         }

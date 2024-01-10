@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -77,7 +77,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         val cachedValue = cardReaderOnboardingCheckResultCache.value
@@ -110,7 +110,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                     )
                 }
         }.also {
-            cardReaderTracker.trackOnboardingState(it)
+            paymentsFlowTracker.trackOnboardingState(it)
         }
     }
 

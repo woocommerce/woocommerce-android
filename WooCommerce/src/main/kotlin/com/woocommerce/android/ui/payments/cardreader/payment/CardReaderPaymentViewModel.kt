@@ -70,7 +70,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLo
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -107,7 +107,7 @@ class CardReaderPaymentViewModel
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val interacRefundableChecker: CardReaderInteracRefundableChecker,
-    private val tracker: CardReaderTracker,
+    private val tracker: PaymentsFlowTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,

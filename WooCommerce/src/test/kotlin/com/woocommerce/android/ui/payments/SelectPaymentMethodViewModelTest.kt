@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
@@ -97,7 +97,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
     private val paymentsUtils: PaymentUtils = mock()
@@ -967,7 +967,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported, "payment_methods")
+            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported, "payment_methods")
         }
 
     @Test
@@ -983,7 +983,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported, "payment_methods")
+            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported, "payment_methods")
         }
 
     @Test
@@ -999,7 +999,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable, "payment_methods")
+            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable, "payment_methods")
         }
 
     @Test
@@ -1015,7 +1015,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable, "payment_methods")
+            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable, "payment_methods")
         }
 
     @Test
@@ -1209,7 +1209,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
             learnMoreUrlProvider,
-            cardReaderTracker,
+            paymentsFlowTracker,
             tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper,
             appPrefs,

@@ -59,7 +59,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel
@@ -90,7 +90,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class CardReaderConnectViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderConnectViewModel
 
-    private val tracker: CardReaderTracker = mock()
+    private val tracker: PaymentsFlowTracker = mock()
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(readerStatusFlow)

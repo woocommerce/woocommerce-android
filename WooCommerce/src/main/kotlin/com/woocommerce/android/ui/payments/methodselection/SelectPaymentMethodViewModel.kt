@@ -40,8 +40,8 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -75,7 +75,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val appPrefs: AppPrefs = AppPrefs,
@@ -223,7 +223,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun isTapToPayAvailable(): Boolean {
         val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
-            cardReaderTracker.trackTapToPayNotAvailableReason(result, SOURCE)
+            paymentsFlowTracker.trackTapToPayNotAvailableReason(result, SOURCE)
             false
         } else {
             true
@@ -464,7 +464,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
+        paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(

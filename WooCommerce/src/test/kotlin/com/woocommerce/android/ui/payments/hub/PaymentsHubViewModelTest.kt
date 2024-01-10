@@ -44,7 +44,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -89,7 +89,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         onBlocking { isCashOnDeliveryEnabled() } doReturn false
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val paymentMenuUtmProvider: UtmProvider = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() }.thenReturn(Available)
@@ -1096,7 +1096,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(true)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
+            verify(paymentsFlowTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
         }
 
     @Test
@@ -1118,7 +1118,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(true)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryEnabledFailure(
+            verify(paymentsFlowTracker).trackCashOnDeliveryEnabledFailure(
                 PAYMENTS_HUB,
                 "Toggling COD failed. Please try again later"
             )
@@ -1143,7 +1143,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
+            verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
         }
 
     @Test
@@ -1165,7 +1165,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledFailure(
+            verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledFailure(
                 PAYMENTS_HUB,
                 "Toggling COD failed. Please try again later"
             )
@@ -1190,7 +1190,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryDisabledFailure(
+            verify(paymentsFlowTracker).trackCashOnDeliveryDisabledFailure(
                 PAYMENTS_HUB,
                 "Toggling COD failed. Please try again later"
             )
@@ -1215,7 +1215,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryDisabledSuccess(
+            verify(paymentsFlowTracker).trackCashOnDeliveryDisabledSuccess(
                 PAYMENTS_HUB
             )
         }
@@ -1369,7 +1369,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onLearnMoreClicked.invoke()
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryLearnMoreTapped()
+            verify(paymentsFlowTracker).trackCashOnDeliveryLearnMoreTapped()
         }
 
     @Test
@@ -1551,7 +1551,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 .onClick!!.invoke()
 
             // THEN
-            verify(cardReaderTracker).trackIPPLearnMoreClicked("payments_menu")
+            verify(paymentsFlowTracker).trackIPPLearnMoreClicked("payments_menu")
         }
 
     @Test
@@ -1771,7 +1771,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             any(),
             any(),
         )
-        verify(cardReaderTracker).trackTapToPayNotAvailableReason(
+        verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(
             SystemVersionNotSupported,
             "payments_menu",
         )
@@ -1917,7 +1917,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         initViewModel()
         softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
 
-        verify(cardReaderTracker).trackSoftwareUpdateAlertShown()
+        verify(paymentsFlowTracker).trackSoftwareUpdateAlertShown()
     }
 
     @Test
@@ -1929,7 +1929,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
         (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
 
-        verify(cardReaderTracker).trackSoftwareUpdateAlertInstallClicked()
+        verify(paymentsFlowTracker).trackSoftwareUpdateAlertInstallClicked()
     }
 
     @Test
@@ -1939,7 +1939,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertShown()
+        verify(paymentsFlowTracker, never()).trackSoftwareUpdateAlertShown()
     }
 
     @Test
@@ -1949,7 +1949,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertInstallClicked()
+        verify(paymentsFlowTracker, never()).trackSoftwareUpdateAlertInstallClicked()
     }
 
     @Test
@@ -2020,7 +2020,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             cashOnDeliverySettingsRepository,
             learnMoreUrlProvider,
             cardReaderCountryConfigProvider,
-            cardReaderTracker,
+            paymentsFlowTracker,
             paymentMenuUtmProvider,
             tapToPayAvailabilityStatus,
             appPrefs,

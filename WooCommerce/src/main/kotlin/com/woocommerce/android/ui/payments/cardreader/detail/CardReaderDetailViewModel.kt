@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOC
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
-import com.woocommerce.android.ui.payments.tracking.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,7 +49,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
     val cardReaderManager: CardReaderManager,
-    private val tracker: CardReaderTracker,
+    private val tracker: PaymentsFlowTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
