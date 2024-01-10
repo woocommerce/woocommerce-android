@@ -932,7 +932,7 @@ class OrderCreateEditFormFragment :
             viewModel.handleBarcodeScannedStatus(status)
         }
         handleResult<EditProductConfigurationResult>(
-            ProductConfigurationFragment.PRODUCT_CONFIGURATION_RESULT
+            ProductConfigurationFragment.PRODUCT_CONFIGURATION_EDITED_RESULT
         ) { result ->
             viewModel.onConfigurationChanged(result.itemId, result.productConfiguration)
         }

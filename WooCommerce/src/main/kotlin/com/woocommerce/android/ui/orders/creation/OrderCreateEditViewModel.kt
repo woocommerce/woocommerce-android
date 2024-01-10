@@ -638,10 +638,21 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
 
                 val itemsToAdd = selectedItems.filter { selectedItem ->
-                    if (selectedItem is SelectedItem.ProductVariation) {
-                        none { it.variationId == selectedItem.variationId }
-                    } else {
-                        none { it.parent == null && it.productId == selectedItem.id }
+                    when (selectedItem) {
+                        is SelectedItem.ProductVariation -> {
+                            none { it.variationId == selectedItem.variationId }
+                        }
+
+                        is SelectedItem.ConfigurableProduct -> {
+                            products.value?.none {
+                                it.item.productId == selectedItem.id &&
+                                    selectedItem.configuration == it.getConfiguration()
+                            } ?: true
+                        }
+
+                        else -> {
+                            none { it.parent == null && it.productId == selectedItem.id }
+                        }
                     }
                 }.map {
                     when (it) {
