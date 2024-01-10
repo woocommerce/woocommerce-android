@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -30,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,7 +39,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.CampaignPreviewContent
@@ -193,10 +192,60 @@ fun CampaignDetails(
             text = stringResource(id = R.string.blaze_campaign_preview_details_section_title),
             style = MaterialTheme.typography.body2
         )
-        CampaignPropertyItem(
-            title = stringResource(id = R.string.blaze_campaign_preview_details_budget),
-            content = state.budget.displayBudgetDetails
+        // Budget
+        CampaignPropertyGroupItem(
+            items = listOf(
+                stringResource(id = R.string.blaze_campaign_preview_details_budget) to state.budget.displayBudgetDetails,
+            )
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Audience
+        CampaignPropertyGroupItem(
+            items = listOf(
+                stringResource(id = R.string.blaze_campaign_preview_details_language) to state.audience.languages.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_devices) to state.audience.devices.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_location) to state.audience.locations.joinToString(),
+                stringResource(id = R.string.blaze_campaign_preview_details_interests) to state.audience.interests.joinToString(),
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Destination
+        CampaignPropertyGroupItem(
+            items = listOf(
+                stringResource(id = R.string.blaze_campaign_preview_details_destination_url) to state.destinationUrl,
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+    }
+}
+
+@Composable
+private fun CampaignPropertyGroupItem(
+    items: List<Pair<String, String>>,
+    modifier: Modifier = Modifier
+) {
+    val borderWidth = 1.dp
+    val borderColor = colorResource(id = R.color.divider_color)
+    Column(
+        modifier = modifier
+            .border(
+                width = borderWidth,
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
+            )
+    ) {
+        items.forEachIndexed { index, item ->
+            CampaignPropertyItem(
+                title = item.first,
+                content = item.second,
+            )
+            if (index < items.lastIndex && items.size > 1) {
+                Divider(color = borderColor, thickness = borderWidth)
+            }
+        }
     }
 }
 
@@ -206,15 +255,14 @@ private fun CampaignPropertyItem(
     content: String,
     modifier: Modifier = Modifier
 ) {
-    val borderWidth = dimensionResource(id = R.dimen.minor_10)
-    val borderColor = colorResource(id = R.color.divider_color)
     Row(
         modifier = modifier
-            .padding(dimensionResource(id = dimen.major_100))
-            .border(
-                width = borderWidth,
-                color = borderColor,
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 8.dp,
+                bottom = 8.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -237,7 +285,7 @@ private fun CampaignPropertyItem(
         Icon(
             painter = painterResource(id = drawable.ic_arrow_right),
             contentDescription = null,
-            modifier = Modifier.size(dimensionResource(id = dimen.image_minor_50))
+            modifier = Modifier.size(24.dp)
         )
     }
 }
