@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +21,7 @@ class DetermineMultipleLinesContextTest : BaseUnitTest() {
 
     private val location: GetLocations = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val dateUtils: DateUtils = mock()
     @Test
     fun `when order has multiple shipping lines, then return proper multiple lines context`() {
         whenever(location.invoke(any(), any())).thenReturn(
@@ -33,7 +35,7 @@ class DetermineMultipleLinesContextTest : BaseUnitTest() {
         val sut = DetermineMultipleLinesContext(resourceProvider)
 
         val result = sut.invoke(
-            OrderMapper(location).toAppModel(OrderTestUtils.generateOrderWithMultipleShippingLines())
+            OrderMapper(location, dateUtils).toAppModel(OrderTestUtils.generateOrderWithMultipleShippingLines())
         )
 
         assertThat(result).isInstanceOf(OrderCreateEditViewModel.MultipleLinesContext.Warning::class.java)
@@ -50,7 +52,7 @@ class DetermineMultipleLinesContextTest : BaseUnitTest() {
         val sut = DetermineMultipleLinesContext(resourceProvider)
 
         val result = sut.invoke(
-            OrderMapper(location).toAppModel(OrderTestUtils.generateOrder())
+            OrderMapper(location, dateUtils).toAppModel(OrderTestUtils.generateOrder())
         )
 
         assertThat(result).isInstanceOf(OrderCreateEditViewModel.MultipleLinesContext.None::class.java)
