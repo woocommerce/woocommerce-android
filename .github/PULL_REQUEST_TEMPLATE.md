@@ -7,12 +7,12 @@ Closes: #
 <!-- Take the time to write a good summary. Why is it needed? What does it do? When fixing bugs try to avoid just writing “See original issue” – clarify what the problem was and how you’ve fixed it. -->
 
 ### Testing instructions
-<!-- Step by step testing instructions. When necessary break out individual scenarios that need testing, consider including a checklist for the reviewer to go through. -->
+<!-- Step-by-step testing instructions. When necessary, break out individual scenarios that need testing, and consider including a checklist for the reviewer to go through. -->
 
 ### Images/gif
 <!-- Include before and after images or gifs when appropriate. -->
 
 
-- [ ] I have considered if this change warrants user-facing release notes and have added them to `RELEASE-NOTES.txt` if necessary.
+- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Not user-facing changes should be marked as [Internal]
 
 <!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/develop/docs/pull-request-guidelines.md -->
