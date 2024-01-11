@@ -24,10 +24,8 @@ sealed class PaymentsHubDepositSummaryState {
         val pendingFundsFormatted: String,
         val availableFundsAmount: Long,
         val pendingFundsAmount: Long,
-        val pendingBalanceDepositsCount: Int,
         val fundsAvailableInDays: Int?,
         val fundsDepositInterval: Interval?,
-        val nextDeposit: Deposit?,
         val lastDeposit: Deposit?,
     ) {
         sealed class Interval {
