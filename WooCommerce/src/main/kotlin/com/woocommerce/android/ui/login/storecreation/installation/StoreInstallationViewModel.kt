@@ -84,11 +84,9 @@ class StoreInstallationViewModel @Inject constructor(
         if (!savedStateHandle.contains(STORE_DATA_KEY)) {
             storeData = newStore.data
             if (storeData.siteId == null) {
-                storeData.copy(siteId = appPrefsWrapper.createdStoreSiteId)
+                storeData = storeData.copy(siteId = appPrefsWrapper.createdStoreSiteId)
             }
-            if (storeData.siteId == null) {
-                throw IllegalStateException("Store data must contain site id during store creation")
-            }
+            check(storeData.siteId != null) { "Store data must contain site id during store creation" }
         }
 
         analyticsTrackerWrapper.track(
