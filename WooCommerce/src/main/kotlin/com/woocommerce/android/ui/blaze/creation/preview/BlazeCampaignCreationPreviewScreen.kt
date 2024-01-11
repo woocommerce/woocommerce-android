@@ -55,7 +55,7 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
                 topBar = {
                     Toolbar(
                         title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
-                        onNavigationButtonClick = {/*TODO*/ },
+                        onNavigationButtonClick = { /*TODO*/ },
                         navigationIcon = Filled.ArrowBack
                     )
                 },
