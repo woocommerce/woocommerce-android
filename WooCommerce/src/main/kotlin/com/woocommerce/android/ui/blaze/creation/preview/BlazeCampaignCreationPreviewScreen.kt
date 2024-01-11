@@ -144,7 +144,7 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
                         .build(),
                     fallback = painterResource(R.drawable.blaze_campaign_product_placeholder),
                     placeholder = painterResource(R.drawable.blaze_campaign_product_placeholder),
-                    error = painterResource(R.drawable.ic_woo_error_state),
+                    error = painterResource(R.drawable.blaze_campaign_product_placeholder),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -183,6 +183,7 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
             }
         }
         WCTextButton(
+            modifier = Modifier.padding(top = 8.dp),
             onClick = { /*TODO*/ },
         ) {
             Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
