@@ -83,6 +83,10 @@ class StoreInstallationViewModel @Inject constructor(
     init {
         if (!savedStateHandle.contains(STORE_DATA_KEY)) {
             storeData = newStore.data
+            if (storeData.siteId == null) {
+                storeData = storeData.copy(siteId = appPrefsWrapper.createdStoreSiteId)
+            }
+            check(storeData.siteId != null) { "Store data must contain site id during store creation" }
         }
 
         analyticsTrackerWrapper.track(
@@ -102,7 +106,7 @@ class StoreInstallationViewModel @Inject constructor(
 
                 val properties = mapOf(
                     AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
-                    AnalyticsTracker.KEY_URL to storeData.domain!!,
+                    AnalyticsTracker.KEY_URL to storeData.domain,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                     AnalyticsTracker.KEY_IS_FREE_TRIAL to true
                 )
