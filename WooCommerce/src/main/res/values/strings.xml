@@ -3912,7 +3912,7 @@
     <string name="default_product_title">Product %s</string>
     <string name="product_configuration_title">Configuration</string>
     <string name="save_configuration">Save configuration</string>
-    <string name="order_configuration_change_product_quantity">Change the product quantity from %1$f to %2$f</string>
+    <string name="order_configuration_change_product_quantity">Change the product quantity from %1$.2f to %2$.2f</string>
     <string name="configuration_required">Configuration required</string>
     <string name="configuration_complete">Configuration complete</string>
     <string name="configuration_quantity_item">%d item</string>
@@ -3942,4 +3942,9 @@
     <string name="blaze_campaign_creation_new_intro_learn_item_3"><![CDATA[<b>Set your budget:</b> Decide on your spend and campaign length.]]></string>
     <string name="blaze_campaign_creation_new_intro_learn_item_4"><![CDATA[<b>Quick review:</b> Submit your ad for a fast moderator check.]]></string>
     <string name="blaze_campaign_creation_new_intro_learn_item_5"><![CDATA[<b>Go live:</b> Watch as your promotion begins and track its success.]]></string>
+
+    <string name="order_configuration_product_selection">Select product %s</string>
+    <string name="order_configuration_product_selection_control">Product selection</string>
+    <string name="disabled">Disabled</string>
+
 </resources>
