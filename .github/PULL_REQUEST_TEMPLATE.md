@@ -13,6 +13,6 @@ Closes: #
 <!-- Include before and after images or gifs when appropriate. -->
 
 
-- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Not user-facing changes should be marked as [Internal]
+- [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
 
 <!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/develop/docs/pull-request-guidelines.md -->
