@@ -24,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProductConfigurationFragment : BaseFragment() {
     companion object {
         const val PRODUCT_CONFIGURATION_RESULT = "product-configuration-result"
+        const val PRODUCT_CONFIGURATION_EDITED_RESULT = "product-configuration-edited-result"
     }
 
     private val viewModel: ProductConfigurationViewModel by viewModels()
@@ -57,7 +58,17 @@ class ProductConfigurationFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
-                    navigateBackWithResult(PRODUCT_CONFIGURATION_RESULT, event.data)
+                    when (event.data) {
+                        is SelectProductConfigurationResult -> navigateBackWithResult(
+                            PRODUCT_CONFIGURATION_RESULT,
+                            event.data
+                        )
+
+                        is EditProductConfigurationResult -> navigateBackWithResult(
+                            PRODUCT_CONFIGURATION_EDITED_RESULT,
+                            event.data
+                        )
+                    }
                 }
 
                 is ProductConfigurationNavigationTarget -> {

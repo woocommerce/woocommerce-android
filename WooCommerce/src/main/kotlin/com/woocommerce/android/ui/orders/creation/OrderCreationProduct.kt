@@ -26,6 +26,8 @@ sealed class OrderCreationProduct(
         productInfo: ProductInfo = this.productInfo
     ): OrderCreationProduct
 
+    abstract fun getConfiguration(): ProductConfiguration?
+
     data class ProductItem(
         override val item: Order.Item,
         override val productInfo: ProductInfo
@@ -34,6 +36,8 @@ sealed class OrderCreationProduct(
             item: Order.Item,
             productInfo: ProductInfo
         ) = copy(item = item, productInfo = productInfo)
+
+        override fun getConfiguration() = null
     }
 
     data class GroupedProductItem(
@@ -45,18 +49,22 @@ sealed class OrderCreationProduct(
             item: Order.Item,
             productInfo: ProductInfo
         ) = copy(item = item, productInfo = productInfo)
+
+        override fun getConfiguration() = null
     }
 
     data class ProductItemWithRules(
         override val item: Order.Item,
         override val productInfo: ProductInfo,
         val rules: ProductRules,
-        var configuration: ProductConfiguration
+        private var configuration: ProductConfiguration
     ) : OrderCreationProduct(item, productInfo) {
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
         ) = copy(item = item, productInfo = productInfo)
+
+        override fun getConfiguration() = configuration
     }
 
     data class GroupedProductItemWithRules(
@@ -64,12 +72,14 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo,
         val children: List<ProductItem>,
         val rules: ProductRules,
-        var configuration: ProductConfiguration
+        private var configuration: ProductConfiguration
     ) : OrderCreationProduct(item, productInfo) {
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
         ) = copy(item = item, productInfo = productInfo)
+
+        override fun getConfiguration() = configuration
     }
 }
 
