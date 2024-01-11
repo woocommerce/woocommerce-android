@@ -24,6 +24,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class CreateUpdateOrderTests : BaseUnitTest() {
@@ -33,7 +34,7 @@ class CreateUpdateOrderTests : BaseUnitTest() {
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
         }
     }
-    private val order = Order.EMPTY.copy(items = OrderTestUtils.generateTestOrderItems())
+    private val order = Order.getEmptyOrder(Date(), Date()).copy(items = OrderTestUtils.generateTestOrderItems())
     private val orderDraftChanges = MutableStateFlow(order)
     private val retryTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 

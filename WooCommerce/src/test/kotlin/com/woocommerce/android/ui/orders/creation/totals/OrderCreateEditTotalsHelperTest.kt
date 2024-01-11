@@ -28,7 +28,7 @@ class OrderCreateEditTotalsHelperTest {
         currencyFormatter
     )
 
-    private val order = Order.EMPTY.copy(
+    private val order = Order.getEmptyOrder(mock(), mock()).copy(
         currency = "USD",
     )
 
