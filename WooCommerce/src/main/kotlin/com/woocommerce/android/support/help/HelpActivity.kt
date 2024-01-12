@@ -17,7 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -107,7 +106,7 @@ class HelpActivity : AppCompatActivity() {
                         is ShowLoading -> {
                             binding.helpLoading.visibility = View.VISIBLE
                         }
-                    }.exhaustive
+                    }
                 }
                 else -> event.isHandled = false
             }
