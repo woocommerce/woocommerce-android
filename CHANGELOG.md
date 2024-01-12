@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.9
+Fresh out of the oven! Our latest WooCommerce app update brings you a sleeker shopping cart experience. We've handily relocated the order creation to the bottom of your screen for easy thumb access, giving you more room to navigate. Plus, we've streamlined your workflow by detaching the order editing from the creation process. Get ready for a tidier, more efficient way to manage your sales. Tap "Update" and feel the difference!
+
 ## 16.8
 We've polished your WooCommerce app experience! Check out the sleek new design for the deposit summary on the payments screen. Say goodbye to crashes after resetting your selected site, and enjoy a smoother store switching process right after you create a new store. Plus, managing custom amounts is now a breeze with our full-screen feature. Update now for a more seamless and stable business management journey!
 
