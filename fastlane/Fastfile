@@ -459,7 +459,8 @@ platform :android do
 
     configure_apply(force: is_ci)
 
-    check_translation_progress_all
+    # Don't check translation coverage in CI
+    check_translation_progress_all unless is_ci
     download_translations(options)
 
     # Bump the release version and build code
