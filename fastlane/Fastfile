@@ -794,7 +794,7 @@ platform :android do
     )
 
     UI.important('Pushing changes to remote')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless is_ci || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
