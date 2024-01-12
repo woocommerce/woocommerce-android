@@ -17,7 +17,6 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -87,7 +86,7 @@ class CardReaderDetailViewModel @Inject constructor(
                         )
                         handleNotConnectedState()
                     }
-                }.exhaustive
+                }
             }
         }
     }
@@ -126,7 +125,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_success))
             }
             FAILED -> triggerEvent(Event.ShowSnackbar(R.string.card_reader_detail_connected_update_failed))
-        }.exhaustive
+        }
     }
 
     private fun handleNotConnectedState() {
@@ -230,7 +229,7 @@ class CardReaderDetailViewModel @Inject constructor(
         when (updateStatus) {
             SoftwareUpdateAvailability.Available -> showConnectedState(readerStatus, updateAvailable = true)
             SoftwareUpdateAvailability.NotAvailable -> showConnectedState(readerStatus)
-        }.exhaustive
+        }
     }
 
     private fun handleBatteryStatusChange(newStatus: CardReaderBatteryStatus) {
@@ -239,7 +238,7 @@ class CardReaderDetailViewModel @Inject constructor(
                 updateBatteryLevelOnConnectedState(newStatus.batteryLevel)
             }
             else -> {}
-        }.exhaustive
+        }
     }
 
     private fun clearLastKnowReader() {

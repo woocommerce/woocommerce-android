@@ -17,7 +17,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSelectPaymentMethodBinding
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -74,7 +73,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             when (state) {
                 Loading -> renderLoadingState(binding)
                 is Success -> renderSuccessfulState(binding, state)
-            }.exhaustive
+            }
         }
     }
 

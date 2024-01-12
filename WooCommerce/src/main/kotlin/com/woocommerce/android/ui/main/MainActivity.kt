@@ -49,7 +49,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -858,7 +857,7 @@ class MainActivity :
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 NewFeature -> binding.bottomNav.showMoreMenuNewFeatureBadge()
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
-            }.exhaustive
+            }
         }
     }
 
