@@ -22,7 +22,6 @@ import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.C
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
@@ -284,7 +283,7 @@ class CardReaderConnectViewModel @Inject constructor(
                     connectionStarted = true
                     viewState.value = provideConnectingState()
                 }
-            }.exhaustive
+            }
         }
     }
 
@@ -332,7 +331,7 @@ class CardReaderConnectViewModel @Inject constructor(
             CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
                 // noop
             }
-        }.exhaustive
+        }
     }
 
     private fun onReadersFound(discoveryEvent: ReadersFound) {
@@ -426,7 +425,7 @@ class CardReaderConnectViewModel @Inject constructor(
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error -> {
                         handleLocationFetchingError(result)
                     }
-                }.exhaustive
+                }
             }
         }
     }
