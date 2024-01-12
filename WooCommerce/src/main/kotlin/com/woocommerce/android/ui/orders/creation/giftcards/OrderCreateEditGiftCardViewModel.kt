@@ -38,6 +38,10 @@ class OrderCreateEditGiftCardViewModel @Inject constructor(
         selectedGiftCard.value = giftCard
     }
 
+    fun onClearButtonClicked() {
+        selectedGiftCard.value = ""
+    }
+
     fun onDoneButtonClicked() {
         triggerEvent(ExitWithResult(GiftCardResult(selectedGiftCard.value)))
     }
