@@ -112,6 +112,20 @@ class OrderCreateEditGiftCardViewModelTest : BaseUnitTest() {
         assertThat(lastIsValidCodeUpdate).isFalse
     }
 
+    @Test
+    fun `when onClearButtonClicked is triggered, then giftCard should be set to empty string`() {
+        // Given
+        var lastGiftCardUpdate: String? = null
+        sut.viewState.observeForever { lastGiftCardUpdate = it.giftCard }
+
+        // When
+        sut.onGiftCardChanged("test-gift-card-code")
+        sut.onClearButtonClicked()
+
+        // Then
+        assertThat(lastGiftCardUpdate).isEqualTo("")
+    }
+
     private fun createSutWith(initialGiftCardValue: String?) {
         val savedState = OrderCreateEditGiftCardFragmentArgs(initialGiftCardValue).toSavedStateHandle()
         sut = OrderCreateEditGiftCardViewModel(savedState)
