@@ -16,7 +16,6 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusE
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.SUCCESS
@@ -26,6 +25,7 @@ import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateVie
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -39,7 +39,7 @@ private const val PERCENT_100: Int = 100
 @HiltViewModel
 class CardReaderUpdateViewModel @Inject constructor(
     private val cardReaderManager: CardReaderManager,
-    private val tracker: CardReaderTracker,
+    private val tracker: PaymentsFlowTracker,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = MutableLiveData<ViewState>()

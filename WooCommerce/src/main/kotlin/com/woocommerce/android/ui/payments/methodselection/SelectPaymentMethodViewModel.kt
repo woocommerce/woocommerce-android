@@ -5,16 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_CARD_READER_TYPE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARD_READER_TYPE_BUILT_IN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARD_READER_TYPE_EXTERNAL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
@@ -23,8 +19,6 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -41,6 +35,8 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -71,10 +67,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val orderMapper: OrderMapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val appPrefs: AppPrefs = AppPrefs,
@@ -106,9 +101,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                 wooCommerceStore.getStoreCountryCode(selectedSite.get())
                             )
 
-                            _order.value = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
+                            orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
                                 orderMapper.toAppModel(it)
+                            }.also { order ->
+                                _order.value = order
+                                cardReaderTrackingInfoKeeper.setCurrency(order.currency)
                             }
+
                             showPaymentState()
                         }
                         Unit
@@ -222,7 +221,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun isTapToPayAvailable(): Boolean {
         val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
-            cardReaderTracker.trackTapToPayNotAvailableReason(result, SOURCE)
+            paymentsFlowTracker.trackTapToPayNotAvailableReason(result, SOURCE)
             false
         } else {
             true
@@ -296,12 +295,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
         if (!connected) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                    cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                )
+            paymentsFlowTracker.trackPaymentsFlowFailed(
+                source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+                flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
             )
         }
     }
@@ -317,12 +313,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 delay(DELAY_MS)
                 exitFlow()
             } else {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
+                paymentsFlowTracker.trackPaymentsFlowFailed(
+                    source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+                    flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
                 )
             }
         }
@@ -355,10 +348,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     fun onBackPressed() {
         // Simple payments flow is not canceled if we going back from this fragment
         if (cardReaderPaymentFlowParam.paymentType == ORDER) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
-                mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW)
-            )
+            paymentsFlowTracker.trackPaymentsFlowCanceled(flow = AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW)
         }
     }
 
@@ -371,36 +361,25 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private suspend fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
-            mutableMapOf(
-                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
-                AnalyticsTracker.KEY_ORDER_ID to order.first().id,
-                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-            ).also { mutableMap ->
-                cardReaderType?.let { mutableMap[KEY_PAYMENT_CARD_READER_TYPE] = it }
-                OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
-                    mutableMap[KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
-                }
-            }
+        paymentsFlowTracker.trackPaymentsFlowCollect(
+            flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
+            paymentMethod = paymentMethodType,
+            orderId = order.first().id,
+            cardReaderType = cardReaderType,
+            timeElapsed = OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull(),
         )
     }
 
     private suspend fun trackPaymentMethodCompletion(paymentMethodType: String) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-            mutableMapOf(
-                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
-                AnalyticsTracker.KEY_ORDER_ID to order.first().id,
-                AnalyticsTracker.KEY_AMOUNT to formatOrderTotal(order.first().total),
-                AnalyticsTracker.KEY_AMOUNT_NORMALIZED to
-                    paymentsUtils.convertToSmallestCurrencyUnit(
-                        order.first().total,
-                        order.first().currency,
-                    ),
-                AnalyticsTracker.KEY_CURRENCY to order.first().currency,
-                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-            )
+        paymentsFlowTracker.trackPaymentsFlowCompleted(
+            flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
+            paymentMethod = paymentMethodType,
+            orderId = order.first().id,
+            amount = formatOrderTotal(order.first().total),
+            amountNormalized = paymentsUtils.convertToSmallestCurrencyUnit(
+                order.first().total,
+                order.first().currency,
+            ),
         )
     }
 
@@ -434,13 +413,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun handleUpdateOrderStatusError() {
         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-            mapOf(
-                AnalyticsTracker.KEY_SOURCE to
-                    AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-            )
+        paymentsFlowTracker.trackPaymentsFlowFailed(
+            source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+            flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
         )
     }
 
@@ -454,8 +429,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun Payment.toAnalyticsFlowParams() =
-        AnalyticsTracker.KEY_FLOW to when (paymentType) {
+    private fun Payment.toAnalyticsFlowName() =
+        when (paymentType) {
             SIMPLE -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
             TRY_TAP_TO_PAY -> AnalyticsTracker.VALUE_TTP_TRY_PAYMENT_FLOW
@@ -463,7 +438,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
+        paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(

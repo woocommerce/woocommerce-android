@@ -13,11 +13,11 @@ import com.woocommerce.android.cardreader.config.SupportedExtensionType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -59,7 +59,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
 
     private val site = SiteModel()
 
@@ -81,7 +81,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             cardReaderCountryConfigProvider,
             cashOnDeliverySettingsRepository,
             cardReaderOnboardingCheckResultCache,
-            cardReaderTracker,
+            paymentsFlowTracker,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)

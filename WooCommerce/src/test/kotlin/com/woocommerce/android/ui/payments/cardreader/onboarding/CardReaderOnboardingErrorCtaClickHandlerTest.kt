@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.onboarding
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,13 +21,13 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
         on { get() }.thenReturn(siteModel)
     }
     private val pluginRepository: PluginRepository = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val resourceProvider: ResourceProvider = mock()
 
     private val handler = CardReaderOnboardingErrorCtaClickHandler(
         selectedSite,
         pluginRepository,
-        cardReaderTracker,
+        paymentsFlowTracker,
         resourceProvider,
     )
 
@@ -53,7 +53,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaTapped(
+            verify(paymentsFlowTracker).trackOnboardingCtaTapped(
                 OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED
             )
         }
@@ -80,7 +80,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaTapped(
+            verify(paymentsFlowTracker).trackOnboardingCtaTapped(
                 OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED
             )
         }
@@ -109,7 +109,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaFailed(
+            verify(paymentsFlowTracker).trackOnboardingCtaFailed(
                 reason = OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
                 description = "errorDescription"
             )
@@ -139,7 +139,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaFailed(
+            verify(paymentsFlowTracker).trackOnboardingCtaFailed(
                 reason = OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED,
                 description = "errorDescription"
             )
@@ -427,7 +427,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaTapped(
+            verify(paymentsFlowTracker).trackOnboardingCtaTapped(
                 OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED
             )
         }
@@ -501,7 +501,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaTapped(
+            verify(paymentsFlowTracker).trackOnboardingCtaTapped(
                 OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED
             )
         }

@@ -22,7 +22,6 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -48,6 +47,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Tog
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -71,7 +71,7 @@ class PaymentsHubViewModel @Inject constructor(
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs,
@@ -113,12 +113,12 @@ class PaymentsHubViewModel @Inject constructor(
         if (readerStatus !is CardReaderStatus.Connected) return
         when (updateStatus) {
             SoftwareUpdateAvailability.Available -> {
-                cardReaderTracker.trackSoftwareUpdateAlertShown()
+                paymentsFlowTracker.trackSoftwareUpdateAlertShown()
                 triggerEvent(
                     PaymentsHubEvents.CardReaderUpdateAvailable(
                         message = R.string.card_reader_payment_update_available,
                         onClick = {
-                            cardReaderTracker.trackSoftwareUpdateAlertInstallClicked()
+                            paymentsFlowTracker.trackSoftwareUpdateAlertInstallClicked()
                             triggerEvent(PaymentsHubEvents.CardReaderUpdateScreen)
                         }
                     )
@@ -363,7 +363,7 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private fun onLearnMoreCodClicked() {
-        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+        paymentsFlowTracker.trackCashOnDeliveryLearnMoreTapped()
         triggerEvent(
             PaymentsHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -374,7 +374,7 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
+        paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             PaymentsHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -426,7 +426,7 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private fun onCashOnDeliveryToggled(isChecked: Boolean) {
-        cardReaderTracker.trackCashOnDeliveryToggled(isChecked)
+        paymentsFlowTracker.trackCashOnDeliveryToggled(isChecked)
         launch {
             updateCashOnDeliveryOptionState(
                 cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
@@ -434,11 +434,11 @@ class PaymentsHubViewModel @Inject constructor(
             val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
                 if (isChecked) {
-                    cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                    paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                         PAYMENTS_HUB
                     )
                 } else {
-                    cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                    paymentsFlowTracker.trackCashOnDeliveryDisabledSuccess(
                         PAYMENTS_HUB
                     )
                 }
@@ -447,12 +447,12 @@ class PaymentsHubViewModel @Inject constructor(
                 )
             } else {
                 if (isChecked) {
-                    cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                    paymentsFlowTracker.trackCashOnDeliveryEnabledFailure(
                         PAYMENTS_HUB,
                         result.error.message
                     )
                 } else {
-                    cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                    paymentsFlowTracker.trackCashOnDeliveryDisabledFailure(
                         PAYMENTS_HUB,
                         result.error.message
                     )
@@ -483,7 +483,7 @@ class PaymentsHubViewModel @Inject constructor(
                     TAP_TO_PAY_SUMMARY -> {
                         val ttpAvailabilityStatus = tapToPayAvailabilityStatus()
                         if (ttpAvailabilityStatus is TapToPayAvailabilityStatus.Result.NotAvailable) {
-                            cardReaderTracker.trackTapToPayNotAvailableReason(
+                            paymentsFlowTracker.trackTapToPayNotAvailableReason(
                                 ttpAvailabilityStatus,
                                 SOURCE,
                             )

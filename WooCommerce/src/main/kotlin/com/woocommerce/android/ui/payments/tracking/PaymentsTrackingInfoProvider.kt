@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader
+package com.woocommerce.android.ui.payments.tracking
 
 import dagger.Binds
 import dagger.Module
