@@ -351,6 +351,19 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
+        val selectedItem = selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
+        selectedItem?.configuration?.let {
+            triggerEvent(
+                ProductNavigationTarget.EditProductConfiguration(
+                    itemId = item.id,
+                    productId = item.productId,
+                    configuration = it
+                )
+            )
+        } ?: triggerEvent(ProductNavigationTarget.NavigateToProductConfiguration(item.id))
+    }
+
     private fun handleProductTap(
         item: ListItem.ProductListItem,
         productSource: ProductSourceForTracking
@@ -400,6 +413,7 @@ class ProductSelectorViewModel @Inject constructor(
                 selectedItemsSource[item.id] = productSource
                 selectedItems.value = listOf(item)
             }
+
             SelectionMode.MULTIPLE -> {
                 selectedItems.update { items ->
                     if (items.containsItemWith(item.id)) {
@@ -582,7 +596,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    fun onConfigurationChanged(productId: Long, productConfiguration: ProductConfiguration) {
+    fun onConfigurationSaved(productId: Long, productConfiguration: ProductConfiguration) {
         tracker.trackItemSelected(productSelectorFlow)
         selectedItems.update { items ->
             val newItem = SelectedItem.ConfigurableProduct(productId, productConfiguration)
@@ -591,6 +605,15 @@ class ProductSelectorViewModel @Inject constructor(
                 SelectionMode.MULTIPLE -> items + newItem
             }
         }
+    }
+
+    fun onConfigurationEdited(productId: Long, productConfiguration: ProductConfiguration) {
+        val items = selectedItems.value.map { item ->
+            if (item.id == productId && item is SelectedItem.ConfigurableProduct) {
+                item.copy(configuration = productConfiguration)
+            } else item
+        }
+        selectedItems.update { items }
     }
 
     fun trackConfigurableProduct() {

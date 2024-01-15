@@ -17,7 +17,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
@@ -128,7 +127,7 @@ class PaymentsHubViewModel @Inject constructor(
             SoftwareUpdateAvailability.NotAvailable -> {
                 // no op
             }
-        }.exhaustive
+        }
     }
 
     private val initialState
@@ -508,7 +507,7 @@ class PaymentsHubViewModel @Inject constructor(
             is PaymentOrRefund -> {
                 // no-op
             }
-        }.exhaustive
+        }
     }
 
     private fun handlePositiveButtonClickTTPUnavailable(

@@ -34,7 +34,7 @@ class AdjustProductQuantity @Inject constructor() {
                     quantity = newQuantity,
                     subtotal = newSubtotal,
                     total = newSubtotal - discountAmount,
-                    configuration = groupedProduct.configuration
+                    configuration = groupedProduct.getConfiguration()
                 )
             }
             for (child in product.children) {

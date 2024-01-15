@@ -648,10 +648,21 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
 
                 val itemsToAdd = selectedItems.filter { selectedItem ->
-                    if (selectedItem is SelectedItem.ProductVariation) {
-                        none { it.variationId == selectedItem.variationId }
-                    } else {
-                        none { it.parent == null && it.productId == selectedItem.id }
+                    when (selectedItem) {
+                        is SelectedItem.ProductVariation -> {
+                            none { it.variationId == selectedItem.variationId }
+                        }
+
+                        is SelectedItem.ConfigurableProduct -> {
+                            products.value?.none {
+                                it.item.productId == selectedItem.id &&
+                                    selectedItem.configuration == it.getConfiguration()
+                            } ?: true
+                        }
+
+                        else -> {
+                            none { it.parent == null && it.productId == selectedItem.id }
+                        }
                     }
                 }.map {
                     when (it) {
@@ -1038,7 +1049,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onAddProductClicked() {
         val selectedItems = products.value?.map { product ->
-            val configuration = product.item.configuration
+            val configuration = product.getConfiguration()
             when {
                 configuration != null -> {
                     SelectedItem.ConfigurableProduct(product.item.productId, configuration)
@@ -1150,6 +1161,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = true))
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -1637,7 +1649,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onEditConfiguration(product: OrderCreationProduct) {
-        (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
+        product.getConfiguration()?.let {
             if (product.productInfo.productType == ProductType.BUNDLE) {
                 tracker.track(
                     AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,

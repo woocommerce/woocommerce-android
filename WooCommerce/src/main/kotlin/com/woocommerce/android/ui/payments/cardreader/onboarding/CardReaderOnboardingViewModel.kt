@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
@@ -93,7 +92,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
             is Check -> refreshState(onboardingParam.pluginType)
             is Failed -> showOnboardingState(onboardingParam.onboardingState)
-        }.exhaustive
+        }
     }
 
     private fun refreshState(pluginType: PluginType? = null) {
@@ -280,7 +279,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     onLearnMoreActionClicked = ::onLearnMoreClicked,
                     onContactSupportActionClicked = ::onContactSupportClicked
                 )
-        }.exhaustive
+        }
     }
 
     private fun onSkipCashOnDeliveryClicked(
@@ -439,7 +438,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
                 )
             }
-        }.exhaustive
+        }
     }
 
     private fun convertCountryCodeToCountry(countryCode: String?) =

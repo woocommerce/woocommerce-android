@@ -459,7 +459,8 @@ platform :android do
 
     configure_apply(force: is_ci)
 
-    check_translation_progress_all
+    # Don't check translation coverage in CI
+    check_translation_progress_all unless is_ci
     download_translations(options)
 
     # Bump the release version and build code
@@ -793,7 +794,7 @@ platform :android do
     )
 
     UI.important('Pushing changes to remote')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless is_ci || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
@@ -1324,7 +1325,7 @@ end
 # -----------------------------------------------------------------------------------
 def create_release_management_pull_request(base_branch:, title:)
   create_pull_request(
-    api_token: get_required_env('GITHUB_TOKEN'),
+    api_token: ENV.fetch('GITHUB_TOKEN', nil),
     repo: GITHUB_REPO,
     title: title,
     head: Fastlane::Helper::GitHelper.current_git_branch,

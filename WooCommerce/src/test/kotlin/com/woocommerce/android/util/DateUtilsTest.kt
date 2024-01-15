@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
@@ -11,7 +12,10 @@ import com.woocommerce.android.extensions.formatToMonthDateOnly
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import java.util.Calendar
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -21,11 +25,13 @@ import kotlin.test.assertNull
 class DateUtilsTest {
     lateinit var dateUtilsUnderTest: DateUtils
 
+    private val crashLogger: CrashLogging = mock()
+
     @Before
     fun setUp() {
         dateUtilsUnderTest = DateUtils(
             Locale.US,
-            crashLogger = mock(),
+            crashLogger = crashLogger,
             selectedSite = mock()
         )
     }
@@ -468,5 +474,209 @@ class DateUtilsTest {
         assertThat(calendar.get(Calendar.MINUTE)).isZero
         assertThat(calendar.get(Calendar.HOUR)).isZero
         assertThat(calendar.get(Calendar.SECOND)).isZero
+    }
+
+    @Test
+    fun `getFriendlyDayHourString() with a valid date returns correct value`() {
+        // getFriendlyDayHourString returns the expected value
+        val stringDate = "2023-12-27 12"
+        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate), stringDate.formatDateToFriendlyDayHour())
+    }
+
+    @Test
+    fun `getFriendlyDayHourString() with an invalid date returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid"
+        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format yyyy-MM-dd HH: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getFriendlyDayHourString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "2023-12-27"
+        assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format yyyy-MM-dd HH: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getLongMonthDayString() with a valid date returns correct value`() {
+        // getLongMonthDayString returns the expected value
+        val stringDate = "2023-12-27"
+        assertEquals(
+            dateUtilsUnderTest.getLongMonthDayString(stringDate),
+            stringDate.formatDateToFriendlyLongMonthDate()
+        )
+    }
+
+    @Test
+    fun `getLongMonthDayString() with an invalid date returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid"
+        assertEquals(null, dateUtilsUnderTest.getLongMonthDayString(stringDate))
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format YYYY-MM-DD: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getLongMonthDayString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "2023-12-27 12"
+        assertEquals(dateUtilsUnderTest.getLongMonthDayString(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format YYYY-MM-DD: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getYearMonthString() with a valid date returns correct value`() {
+        // getYearMonthString returns the expected value
+        val stringDate = "2023-12-27"
+        assertEquals(dateUtilsUnderTest.getYearMonthString(stringDate), stringDate.formatDateToYearMonth())
+    }
+
+    @Test
+    fun `getYearMonthString() with an invalid date returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid"
+        assertEquals(null, dateUtilsUnderTest.getYearMonthString(stringDate))
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format YYYY-MM-DD: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getYearMonthString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "2023-12-27 12"
+        assertEquals(dateUtilsUnderTest.getYearMonthString(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format YYYY-MM-DD: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getDayString() with a valid date returns correct value`() {
+        // getDayString returns the expected value
+        val stringDate = "2023-12-27"
+        assertEquals(dateUtilsUnderTest.getDayString(stringDate), stringDate.formatToDateOnly())
+    }
+
+    @Test
+    fun `getDayString() with an invalid date returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid"
+        assertEquals(null, dateUtilsUnderTest.getDayString(stringDate))
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format yyyy-MM-dd: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getDayString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "2023-12"
+        assertEquals(dateUtilsUnderTest.getDayString(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format yyyy-MM-dd: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getFriendlyLongMonthYear() with a valid date returns correct value`() {
+        // getFriendlyLongMonthYear returns the expected value
+        val stringDate = "2023-12"
+        assertEquals(
+            dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate),
+            stringDate.formatDateToFriendlyLongMonthYear()
+        )
+    }
+
+    @Test
+    fun `getFriendlyLongMonthYear() with an invalid date returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid"
+        assertEquals(null, dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate))
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format yyyy-MM: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getFriendlyLongMonthYear() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "2023"
+        assertEquals(dateUtilsUnderTest.getFriendlyLongMonthYear(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format yyyy-MM: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getShortMonthDayString() with a valid date returns correct value`() {
+        // getShortMonthDayString returns the expected value
+        val stringDate = "2023-12-27"
+        assertEquals(dateUtilsUnderTest.getShortMonthDayString(stringDate), stringDate.formatToMonthDateOnly())
+    }
+
+    @Test
+    fun `getShortMonthDayString() with an invalid date returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid"
+        assertEquals(null, dateUtilsUnderTest.getShortMonthDayString(stringDate))
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format YYYY-MM-DD: $stringDate")
+        )
+    }
+
+    @Test
+    fun `getShortMonthDayString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "2023-12"
+        assertEquals(dateUtilsUnderTest.getShortMonthDayString(stringDate), null)
+        // and the exception is tracked
+        verify(crashLogger).sendReport(
+            exception = any(),
+            tags = any(),
+            message = eq("Date string argument is not of format YYYY-MM-DD: $stringDate")
+        )
     }
 }
