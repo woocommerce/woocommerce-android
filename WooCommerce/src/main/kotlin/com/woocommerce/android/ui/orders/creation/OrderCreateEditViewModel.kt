@@ -143,7 +143,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
@@ -222,11 +221,6 @@ class OrderCreateEditViewModel @Inject constructor(
         get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
             ?.isOperational ?: false
 
-    private val _selectedGiftCard = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = args.giftCardCode.orEmpty()
-    )
-
     private val _orderDraft = savedState.getStateFlow(
         viewModelScope,
         Order.getEmptyOrder(
@@ -235,13 +229,7 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     )
 
-    val orderDraft = _orderDraft
-        .combine(_selectedGiftCard) { order, giftCard ->
-            order.copy(
-                selectedGiftCard = giftCard,
-                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
-            )
-        }.asLiveData()
+    val orderDraft = _orderDraft.asLiveData()
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
@@ -698,7 +686,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
-                _selectedGiftCard.value.isEmpty()
+                order.selectedGiftCard.isNullOrEmpty()
         )
     }
 
@@ -1111,6 +1099,12 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onGiftCardSelected(selectedGiftCard: String) {
         _selectedGiftCard.update { selectedGiftCard }
+        _orderDraft.update {
+            it.copy(
+                selectedGiftCard = selectedGiftCard,
+                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
+            )
+        }
     }
 
     fun onShippingButtonClicked() {
@@ -1182,7 +1176,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun createOrder(order: Order, onSuccess: (Order) -> Unit) {
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            val giftCard = _selectedGiftCard.value
+            val giftCard = order.selectedGiftCard.orEmpty()
             orderCreateEditRepository.placeOrder(order, giftCard).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
