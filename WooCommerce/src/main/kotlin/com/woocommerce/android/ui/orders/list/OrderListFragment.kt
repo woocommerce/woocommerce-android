@@ -67,10 +67,13 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
+import androidx.navigation.fragment.AbstractListDetailFragment
+import androidx.navigation.fragment.NavHostFragment
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 
 @AndroidEntryPoint
 class OrderListFragment :
-    TopLevelFragment(R.layout.fragment_order_list),
+    AbstractListDetailFragment(),
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
@@ -99,6 +102,19 @@ class OrderListFragment :
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
+
+    override fun onCreateListPaneView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentOrderListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onCreateDetailPaneNavHostFragment(): NavHostFragment {
+        return NavHostFragment.create(R.navigation.nav_graph_orders)
+    }
 
     override fun onStop() {
         snackBar?.dismiss()
@@ -169,18 +185,8 @@ class OrderListFragment :
         refreshOptionsMenu()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentOrderListBinding.inflate(inflater, container, false)
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onListPaneViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onListPaneViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -208,6 +214,8 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+
+        binding.toolbar.inflateMenu(R.menu.menu_order_list_fragment)
     }
 
     private fun initSwipeBehaviour() {
@@ -294,11 +302,7 @@ class OrderListFragment :
         }
     }
 
-    override fun getFragmentTitle() = if (isSearching) "" else getString(R.string.orders)
-
-    override fun scrollToTop() {
-        binding.orderListView.scrollToTop()
-    }
+    fun getFragmentTitle() = if (isSearching) "" else getString(R.string.orders)
 
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
@@ -379,7 +383,7 @@ class OrderListFragment :
                 is OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment -> {
                     openBarcodeScanningFragment()
                 }
-                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+                is MultiLiveEvent.Event.ShowDialog -> event.showIn(requireActivity())
                 is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
                     message = event.message,
                     actionText = event.actionText,
@@ -507,21 +511,14 @@ class OrderListFragment :
         if (isSearching) {
             val savedSearch = searchQuery
             clearSearchResults()
-            updateActivityTitle()
             searchQuery = savedSearch
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-
-            if (sharedView != null) {
-                showOrderDetailWithSharedTransition(
-                    orderId = orderId,
-                    allOrderIds = allOrderIds,
-                    sharedView = sharedView
-                )
-            } else {
-                showOrderDetail(orderId)
-            }
+            OrderDetailFragmentDirections.actionOrderDetailFragmentToOrderDetailFragment(
+                allOrderIds = allOrderIds.toLongArray(),
+                orderId = orderId,
+            )
         }
     }
 
@@ -550,7 +547,7 @@ class OrderListFragment :
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         isSearching = true
         checkOrientation()
-        onSearchViewActiveChanged(isActive = true)
+//        onSearchViewActiveChanged(isActive = true)
         binding.orderFiltersCard.isVisible = false
         binding.orderListView.clearAdapterData()
         return true
@@ -561,7 +558,7 @@ class OrderListFragment :
         searchMenuItem?.isVisible = true
         viewModel.onSearchClosed()
         binding.orderFiltersCard.isVisible = true
-        onSearchViewActiveChanged(isActive = false)
+//        onSearchViewActiveChanged(isActive = false)
         return true
     }
 
@@ -570,7 +567,6 @@ class OrderListFragment :
             searchQuery = ""
             isSearching = false
             disableSearchListeners()
-            updateActivityTitle()
             searchMenuItem?.collapseActionView()
             (activity as? MainActivity)?.showBottomNav()
         }
@@ -648,10 +644,6 @@ class OrderListFragment :
         }
     }
     // endregion
-
-    override fun shouldExpandToolbar(): Boolean {
-        return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
-    }
 
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
         if (!show) {

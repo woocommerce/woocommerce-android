@@ -241,6 +241,10 @@ class MainActivity :
             } else {
                 hideBottomNav()
             }
+
+            if (f !is BaseFragment) {
+                hideToolbar(animate = false)
+            }
         }
     }
 
@@ -1108,7 +1112,7 @@ class MainActivity :
     override fun showOrderDetail(
         orderId: Long,
         remoteNoteId: Long,
-        launchedFromNotification: Boolean
+        launchedFromNotification: Boolean,
     ) {
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
@@ -1117,9 +1121,9 @@ class MainActivity :
         }
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
-            orderId,
-            arrayOf(orderId).toLongArray(),
-            remoteNoteId
+            orderId = orderId,
+            allOrderIds = arrayOf(orderId).toLongArray(),
+            remoteNoteId = remoteNoteId
         )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
@@ -1135,9 +1139,9 @@ class MainActivity :
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
-            orderId,
-            allOrderIds.toLongArray(),
-            remoteNoteId
+            orderId = orderId,
+            allOrderIds = allOrderIds.toLongArray(),
+            remoteNoteId = remoteNoteId
         )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
