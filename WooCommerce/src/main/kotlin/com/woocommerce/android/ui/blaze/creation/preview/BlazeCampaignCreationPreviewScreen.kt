@@ -34,13 +34,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.CampaignPreviewContent
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewState.Loading
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignPreviewContent
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.Loading
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -203,41 +205,21 @@ fun CampaignDetails(
             style = MaterialTheme.typography.body2
         )
         // Budget
-        CampaignPropertyGroupItem(
-            items = listOf(
-                stringResource(id = R.string.blaze_campaign_preview_details_budget) to
-                    state.budget.displayBudgetDetails,
-            )
-        )
+        CampaignPropertyGroupItem(items = listOf(state.budget))
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Audience
-        CampaignPropertyGroupItem(
-            items = listOf(
-                stringResource(id = R.string.blaze_campaign_preview_details_language) to
-                    state.audience.languages.joinToString(),
-                stringResource(id = R.string.blaze_campaign_preview_details_devices) to
-                    state.audience.devices.joinToString(),
-                stringResource(id = R.string.blaze_campaign_preview_details_location) to
-                    state.audience.locations.joinToString(),
-                stringResource(id = R.string.blaze_campaign_preview_details_interests) to
-                    state.audience.interests.joinToString(),
-            )
-        )
+        // Ad Audience
+        CampaignPropertyGroupItem(items = state.audienceDetails)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Destination
-        CampaignPropertyGroupItem(
-            items = listOf(
-                stringResource(id = R.string.blaze_campaign_preview_details_destination_url) to state.destinationUrl,
-            )
-        )
+        CampaignPropertyGroupItem(items = listOf(state.destinationUrl))
     }
 }
 
 @Composable
 private fun CampaignPropertyGroupItem(
-    items: List<Pair<String, String>>,
+    items: List<CampaignDetailItem>,
     modifier: Modifier = Modifier
 ) {
     val borderWidth = 1.dp
@@ -251,10 +233,7 @@ private fun CampaignPropertyGroupItem(
             )
     ) {
         items.forEachIndexed { index, item ->
-            CampaignPropertyItem(
-                title = item.first,
-                content = item.second,
-            )
+            CampaignPropertyItem(item)
             if (index < items.lastIndex && items.size > 1) {
                 Divider(color = borderColor, thickness = borderWidth)
             }
@@ -264,9 +243,8 @@ private fun CampaignPropertyGroupItem(
 
 @Composable
 private fun CampaignPropertyItem(
-    title: String,
-    content: String,
-    modifier: Modifier = Modifier
+    item: CampaignDetailItem,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -285,14 +263,16 @@ private fun CampaignPropertyItem(
                 .weight(1f)
         ) {
             Text(
-                text = title,
+                text = item.displayTitle,
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_high)
             )
             Text(
-                text = content,
+                text = item.displayValue,
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium)
+                color = colorResource(id = R.color.color_on_surface_medium),
+                maxLines = item.maxLinesValue ?: Int.MAX_VALUE,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Icon(
@@ -307,24 +287,36 @@ private fun CampaignPropertyItem(
 @Composable
 fun CampaignScreenPreview() {
     CampaignPreviewContent(
-        state = CampaignPreviewContent(
-            productId = 1,
-            title = "Get the latest white t-shirts",
-            tagLine = "From 45.00 USD",
-            campaignImageUrl = "https://shorturl.at/bhqtz",
-            destinationUrl = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
-            budget = CampaignPreviewState.Budget(
-                totalBudget = "140",
-                duration = "7",
-                startDate = "2024-10-01",
-                displayBudgetDetails = "140 USD, 7 days from Jan 14"
+        productId = 123,
+        title = "Get the latest white t-shirts",
+        tagLine = "From 45.00 USD",
+        campaignImageUrl = "https://rb.gy/gmjuwb",
+        budget = CampaignDetailItem(
+            displayTitle = stringResource(R.string.blaze_campaign_preview_details_budget),
+            displayValue = "140 USD, 7 days from Jan 14",
+        ),
+        audienceDetails = listOf(
+            CampaignDetailItem(
+                displayTitle = stringResource(string.blaze_campaign_preview_details_language),
+                displayValue = "English, Spanish",
             ),
-            audience = CampaignPreviewState.Audience(
-                languages = listOf("English"),
-                locations = listOf("United States"),
-                devices = listOf("Android"),
-                interests = listOf("Fashion"),
-            )
+            CampaignDetailItem(
+                displayTitle = stringResource(string.blaze_campaign_preview_details_devices),
+                displayValue = "USA, Poland, Japan",
+            ),
+            CampaignDetailItem(
+                displayTitle = stringResource(string.blaze_campaign_preview_details_location),
+                displayValue = "Samsung, Apple, Xiaomi",
+            ),
+            CampaignDetailItem(
+                displayTitle = stringResource(string.blaze_campaign_preview_details_interests),
+                displayValue = "Fashion, Clothing, T-shirts",
+            ),
+        ),
+        destinationUrl = CampaignDetailItem(
+            displayTitle = "Destination URL",
+            displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
+            maxLinesValue = 1,
         )
     )
 }
