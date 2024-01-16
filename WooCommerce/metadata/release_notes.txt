@@ -1,4 +1,0 @@
-- [**] We moved order creation section to the bottom of the screen to make it easier to reach and freeing up the space for the controls. The order editing section is removed from the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/10505]
-- [***] [Internal] Fixed tax calculation in order creation [https://github.com/woocommerce/woocommerce-android/pull/10446]
-- [*] [Internal] "Lock" icon is fully visible after a product is deleted from an order [https://github.com/woocommerce/woocommerce-android/pull/10508]
-
