@@ -34,7 +34,7 @@ class OrderCreateEditTotalsHelperTest {
 
     @Test
     @Suppress("LongMethod")
-    fun `given ff enabled and items not empty, when mapToPaymentTotalsState, then full returned`() {
+    fun `given items not empty, when mapToPaymentTotalsState, then full returned`() {
         // GIVEN
         val item = mock<Order.Item> {
             on { total }.thenReturn(BigDecimal(11))
@@ -189,7 +189,7 @@ class OrderCreateEditTotalsHelperTest {
     }
 
     @Test
-    fun `given ff enabled and fee lines not empty, when mapToPaymentTotalsState, then full returned`() {
+    fun `given fee lines not empty, when mapToPaymentTotalsState, then full returned`() {
         // GIVEN
         whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
             "Collect Payment"
@@ -221,7 +221,7 @@ class OrderCreateEditTotalsHelperTest {
     }
 
     @Test
-    fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then minimised returned`() {
+    fun `given items and fee lines empty, when mapToPaymentTotalsState, then minimised returned`() {
         // GIVEN
         val localOrder = order.copy(
             items = emptyList(),
