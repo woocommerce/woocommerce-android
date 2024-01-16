@@ -1,8 +1,4 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-16.11
------
-
-
 17.0
 -----
 
