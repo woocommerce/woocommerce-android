@@ -354,7 +354,10 @@ class OrderCreateEditViewModel @Inject constructor(
             is Mode.Edit -> {
                 viewModelScope.launch {
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
-                        _orderDraft.value = order
+                        _orderDraft.value = order.copy(
+                            selectedGiftCard = args.giftCardCode,
+                            giftCardDiscountedAmount = args.giftCardAmount,
+                        )
                         viewState = viewState.copy(
                             isUpdatingOrderDraft = false,
                             showOrderUpdateSnackbar = false,
@@ -1098,11 +1101,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onGiftCardSelected(selectedGiftCard: String) {
-        _selectedGiftCard.update { selectedGiftCard }
         _orderDraft.update {
             it.copy(
                 selectedGiftCard = selectedGiftCard,
-                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
+                giftCardDiscountedAmount = args.giftCardAmount
             )
         }
     }
