@@ -4,7 +4,6 @@ on:
     branches:
       - trunk
       - release/*
-      - workflow_dispatch
 permissions:
   contents: write
 jobs:
