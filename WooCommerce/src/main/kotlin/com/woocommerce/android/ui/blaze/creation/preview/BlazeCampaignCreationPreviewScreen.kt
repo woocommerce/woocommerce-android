@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -43,6 +45,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignPreviewContent
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.Loading
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -64,7 +67,12 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
                 modifier = Modifier.background(MaterialTheme.colors.surface)
             ) { paddingValues ->
                 when (previewState) {
-                    is Loading -> LoadingPreview()
+                    is Loading -> CampaignLoadingPreview(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .background(color = MaterialTheme.colors.surface)
+                    )
+
                     is CampaignPreviewContent -> CampaignPreviewContent(
                         state = previewState,
                         modifier = Modifier
@@ -78,8 +86,88 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
 }
 
 @Composable
-fun LoadingPreview() {
-    TODO("Not yet implemented")
+private fun CampaignLoadingPreview(modifier: Modifier = Modifier) {
+    @Composable
+    fun CampaignHeaderSkeletons() {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    SkeletonView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(276.dp)
+                    )
+                    SkeletonView(
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(8.dp)
+                    )
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        SkeletonView(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(24.dp))
+                        SkeletonView(
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(24.dp)
+                        )
+                    }
+                }
+            }
+            WCTextButton(
+                modifier = Modifier.padding(bottom = 8.dp),
+                onClick = { /* No action expected for disabled button */ },
+                enabled = false,
+            ) {
+                Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            }
+        }
+    }
+
+    @Composable
+    fun CampaignDetailSkeletons() {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(bottom = 8.dp),
+                text = stringResource(id = R.string.blaze_campaign_preview_details_section_title),
+                style = MaterialTheme.typography.body2
+            )
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth(),
+    ) {
+        CampaignHeaderSkeletons()
+        CampaignDetailSkeletons()
+    }
 }
 
 @Composable
@@ -319,4 +407,10 @@ fun CampaignScreenPreview() {
             maxLinesValue = 1,
         )
     )
+}
+
+@LightDarkThemePreviews
+@Composable
+fun CampaignLoadingScreenPreview() {
+    CampaignLoadingScreenPreview()
 }
