@@ -386,7 +386,7 @@ data class Order(
                 paymentUrl = "",
                 isEditable = true,
                 selectedGiftCard = "",
-                giftCardDiscountedAmount = BigDecimal(0)
+                giftCardDiscountedAmount = null
             )
         }
 

@@ -253,14 +253,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }.asLiveData()
 
     val totalsData: LiveData<TotalsSectionsState> =
-        viewStateData.liveData.combineWith(orderDraft) { viewState, order ->
+        viewStateData.liveData.combineWith(
+            _orderDraft.asLiveData(),
+            _selectedGiftCard.asLiveData()
+        ) { viewState, order, selectedGiftCard ->
             totalsHelper.mapToPaymentTotalsState(
-                order = order!!,
+                order = order!!.copy(
+                    selectedGiftCard = selectedGiftCard,
+                    giftCardDiscountedAmount = args.giftCardAmount
+                ),
                 mode = mode,
                 viewState = viewState!!,
                 onShippingClicked = { onShippingButtonClicked() },
                 onCouponsClicked = { onCouponButtonClicked() },
-                onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
+                onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
                 onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
