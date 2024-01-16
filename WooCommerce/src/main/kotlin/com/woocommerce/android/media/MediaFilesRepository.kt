@@ -146,7 +146,7 @@ class MediaFilesRepository @Inject constructor(
 
                 event.completed -> {
                     val media = event.media
-                    val channelResult = if (media != null && media.url.isNotNullOrEmpty() && media.url.isNotBlank()) {
+                    val channelResult = if (media != null && media.url.isNotNullOrEmpty()) {
                         WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${media.id}")
                         producerScope.trySendBlocking(
                             UploadSuccess(media)
