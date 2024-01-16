@@ -1281,9 +1281,9 @@ platform :android do
     # Read the current release version from `version.properties` and parse it into an AppVersion object
     current_version = VERSION_FORMATTER.parse(VERSION_FILE.read_version_name)
     # Calculate the next major version number
-    beta_version_next_version = VERSION_CALCULATOR.next_minor_version(version: current_version)
+    next_version = VERSION_CALCULATOR.next_release_version(version: current_version)
     # Calculate the next build number
-    beta_version_first = VERSION_CALCULATOR.next_build_number(version: beta_version_next_version)
+    beta_version_first = VERSION_CALCULATOR.next_build_number(version: next_version)
     # Return the formatted release version
     VERSION_FORMATTER.beta_version(beta_version_first)
   end
