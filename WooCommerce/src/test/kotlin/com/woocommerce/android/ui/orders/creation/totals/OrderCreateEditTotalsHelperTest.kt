@@ -171,7 +171,7 @@ class OrderCreateEditTotalsHelperTest {
         assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).onClick == onCouponsClicked).isTrue()
 
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).text).isEqualTo("Gift Cards")
-        assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).value).isEqualTo("15.00$")
+        assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).value).isEqualTo("-15.00$")
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).enabled).isFalse()
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).extraValue).isEqualTo("21OFF")
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).onClick == onGiftClicked).isTrue()
@@ -251,5 +251,43 @@ class OrderCreateEditTotalsHelperTest {
         // THEN
         assertThat((actual as TotalsSectionsState.Minimised).orderTotal.label).isEqualTo("Order Total")
         assertThat(actual.orderTotal.value).isEqualTo("10.00$")
+    }
+
+    @Test
+    fun `given items not empty and gift amount is null, when mapToPaymentTotalsState, then gift value is empty`() {
+        // GIVEN
+        val item = mock<Order.Item> {
+            on { total }.thenReturn(BigDecimal(11))
+        }
+        val localOrder = order.copy(
+            items = listOf(item),
+            selectedGiftCard = "21OFF",
+            giftCardDiscountedAmount = null,
+        )
+
+        whenever(resourceProvider.getString(R.string.order_gift_card)).thenReturn(
+            "Gift Cards"
+        )
+
+        // WHEN
+        val actual = helper.mapToPaymentTotalsState(
+            localOrder,
+            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+        )
+
+        // THEN
+        actual as TotalsSectionsState.Full
+
+        assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).text).isEqualTo("Gift Cards")
+        assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).value).isEqualTo("")
+        assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).enabled).isFalse()
+        assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).extraValue).isEqualTo("21OFF")
     }
 }
