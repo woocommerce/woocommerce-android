@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -12,7 +11,6 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -29,9 +27,7 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            WooThemeWithBackground {
-                BlazeCampaignCreationIntroScreen(viewModel)
-            }
+            BlazeCampaignCreationIntroScreen(viewModel)
         }
     }
 
@@ -44,12 +40,12 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm -> {
-                    // TODO update when the AD form is implemented
-                    Toast.makeText(
-                        requireContext(),
-                        "This will show the campaign creation form for product ${event.productId}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    findNavController().navigateSafely(
+                        BlazeCampaignCreationIntroFragmentDirections
+                            .actionBlazeCampaignCreationIntroFragmentToBlazeCampaignCreationPreviewFragment(
+                                productId = event.productId
+                            )
+                    )
                 }
 
                 is BlazeCampaignCreationIntroViewModel.ShowProductSelector -> {

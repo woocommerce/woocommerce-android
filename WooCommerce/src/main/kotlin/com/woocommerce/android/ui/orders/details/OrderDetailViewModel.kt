@@ -47,9 +47,9 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
@@ -84,7 +84,7 @@ class OrderDetailViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
@@ -333,7 +333,7 @@ class OrderDetailViewModel @Inject constructor(
     } ?: false
 
     fun onCollectPaymentClicked() {
-        cardReaderTracker.trackCollectPaymentTapped()
+        paymentsFlowTracker.trackCollectPaymentTapped()
         triggerEvent(
             StartPaymentFlow(
                 orderId = order.id,

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader
+package com.woocommerce.android.ui.payments.tracking
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -64,7 +64,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class CardReaderTrackerTest : BaseUnitTest() {
+class PaymentsFlowTrackerTest : BaseUnitTest() {
     companion object {
         private const val REQUIRED_UPDATE = "Required"
         private const val OPTIONAL_UPDATE = "Optional"
@@ -93,7 +93,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         )
     }
 
-    private val cardReaderTracker = CardReaderTracker(
+    private val paymentsFlowTracker = PaymentsFlowTracker(
         trackerWrapper,
         appPrefsWrapper,
         selectedSite,
@@ -103,7 +103,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when track learn more invoked, then CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingLearnMoreTapped()
+            paymentsFlowTracker.trackOnboardingLearnMoreTapped()
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED),
@@ -117,7 +117,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             assertNull(cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevel)
 
             val props = mutableMapOf<String, Any>()
-            cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+            paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
 
             assertFalse(props.containsKey("card_reader_battery_level"))
         }
@@ -131,7 +131,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(cardReaderTrackingInfo)
             val props = mutableMapOf<String, Any>()
 
-            cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+            paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
 
             assertTrue(props.containsKey("card_reader_battery_level"))
             val batteryLevelProperty = props["card_reader_battery_level"]
@@ -141,7 +141,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when track payment gateway invoked with wcpay, then track event with proper gateway`() =
         testBlocking {
-            cardReaderTracker.trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
+            paymentsFlowTracker.trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
@@ -152,7 +152,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when track payment gateway invoked with stripe, then track event with proper gateway`() =
         testBlocking {
-            cardReaderTracker.trackPaymentGatewaySelected(STRIPE_EXTENSION_GATEWAY)
+            paymentsFlowTracker.trackPaymentGatewaySelected(STRIPE_EXTENSION_GATEWAY)
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
@@ -163,7 +163,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given cod disabled state, when skip is tapped, then CARD_PRESENT_ONBOARDING_STEP_SKIPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingSkippedState(
+            paymentsFlowTracker.trackOnboardingSkippedState(
                 CardReaderOnboardingState.CashOnDeliveryDisabled(
                     countryCode = "US",
                     preferredPlugin = WOOCOMMERCE_PAYMENTS,
@@ -183,7 +183,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given CASH_ON_DELIVERY_TAPPED, when trackOnbardingCtaTapped, then cash_on_delivery_disabled tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
+            paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
@@ -194,7 +194,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given PLUGIN_INSTALL_TAPPED state, when trackOnbardingCtaTapped, then plugin_install_tapped tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
+            paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
@@ -205,7 +205,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given CASH_ON_DELIVERY_TAPPED, when trackOnboardingCtaFailed, then cash_on_delivery_disabled tracked with description`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaFailed(
+            paymentsFlowTracker.trackOnboardingCtaFailed(
                 OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED,
                 "errorDescription"
             )
@@ -222,7 +222,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given PLUGIN_INSTALL_TAPPED, when trackOnboardingCtaFailed, then plugin_install_tapped tracked with description`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaFailed(
+            paymentsFlowTracker.trackOnboardingCtaFailed(
                 OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
                 "errorDescription"
             )
@@ -239,7 +239,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given enable cod is tapped, when success, then ENABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+            paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                 ONBOARDING
             )
 
@@ -249,7 +249,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given enable cod is tapped from onboarding, when success, then proper source is tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+            paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                 ONBOARDING
             )
             val captor = argumentCaptor<Map<String, String>>()
@@ -264,7 +264,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given enable cod is tapped from payments hub, when success, then then proper source is tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+            paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                 PAYMENTS_HUB
             )
             val captor = argumentCaptor<Map<String, String>>()
@@ -279,7 +279,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given enable cod is tapped, when failure, then ENABLE_CASH_ON_DELIVERY_FAILED tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+            paymentsFlowTracker.trackCashOnDeliveryEnabledFailure(
                 ONBOARDING,
                 "COD failed. Please try again later."
             )
@@ -296,7 +296,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given track cod toggled invoked, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = true)
+            paymentsFlowTracker.trackCashOnDeliveryToggled(isEnabled = true)
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
@@ -307,7 +307,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given track cod toggled invoked with true, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = true)
+            paymentsFlowTracker.trackCashOnDeliveryToggled(isEnabled = true)
             val captor = argumentCaptor<Map<String, Boolean>>()
 
             verify(trackerWrapper).track(
@@ -320,7 +320,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given track cod toggled invoked with false, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = false)
+            paymentsFlowTracker.trackCashOnDeliveryToggled(isEnabled = false)
             val captor = argumentCaptor<Map<String, Boolean>>()
 
             verify(trackerWrapper).track(
@@ -333,7 +333,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given disable cod method is invoked, when success, then DISABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+            paymentsFlowTracker.trackCashOnDeliveryDisabledSuccess(
                 ONBOARDING
             )
 
@@ -346,7 +346,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given disable cod method is invoked, when success & source is payments_hub, then event tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+            paymentsFlowTracker.trackCashOnDeliveryDisabledSuccess(
                 PAYMENTS_HUB
             )
             val captor = argumentCaptor<Map<String, String>>()
@@ -363,7 +363,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given disable cod method is invoked, when failure, then DISABLE_CASH_ON_DELIVERY_FAILED tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+            paymentsFlowTracker.trackCashOnDeliveryDisabledFailure(
                 ONBOARDING,
                 "Disabling COD failed. Please try again later."
             )
@@ -380,7 +380,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given disable cod method is invoked, when failure & source is payments_hub, then event tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+            paymentsFlowTracker.trackCashOnDeliveryDisabledFailure(
                 PAYMENTS_HUB,
                 "Disabling COD failed. Please try again later."
             )
@@ -401,7 +401,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given learn more cod method is invoked, then proper event is tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+            paymentsFlowTracker.trackCashOnDeliveryLearnMoreTapped()
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED),
@@ -412,7 +412,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state cod disabled, then reason=cash_on_delivery tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.CashOnDeliveryDisabled(
                     countryCode = "US",
                     preferredPlugin = WOOCOMMERCE_PAYMENTS,
@@ -429,7 +429,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state GenericError, then reason=generic_error tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.GenericError)
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.GenericError)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED), check { assertThat(it["reason"]).isEqualTo("generic_error") }
@@ -439,7 +439,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StoreCountryNotSupported, then reason=country_not_supported tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -450,7 +450,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state PluginIsNotSupportedInTheCountry woo, then wcpay_is_not_supported_in_CA tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
                     WOOCOMMERCE_PAYMENTS,
                     "CA"
@@ -466,7 +466,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state PluginIsNotSupportedInTheCountry str, then stripe_extension_is_not_supported_in_US`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
                     STRIPE_EXTENSION_GATEWAY,
                     "US"
@@ -482,7 +482,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountCountryNotSupported, then reason=account_country_not_supported tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.StripeAccountCountryNotSupported(
                     mock(),
                     ""
@@ -498,7 +498,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state WcpayNotInstalled, then reason=wcpay_not_installed tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotInstalled)
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotInstalled)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -509,7 +509,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state WcpayNotActivated, then reason=wcpay_not_activated tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotActivated)
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotActivated)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -520,7 +520,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state PluginUnsupportedVersion WCPay, then reason=wcpay_unsupported_version tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS)
             )
 
@@ -533,7 +533,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding PluginUnsupportedVersion Stripe, then reason=stripe_extension_unsupported_version tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
 
@@ -546,7 +546,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state SetupNotCompleted WCPay, then reason=wcpay_not_setup tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS)
             )
 
@@ -559,7 +559,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state SetupNotCompleted Stripe, then reason=stripe_extension_not_setup tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY)
             )
 
@@ -572,7 +572,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding StripeAccountPendingRequirement WCPay, then reason=account_pending_requirements tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.StripeAccountPendingRequirement(
                     null,
                     WOOCOMMERCE_PAYMENTS,
@@ -590,7 +590,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding StripeAccountPendingRequirement Stripe, then reason=account_pending_requirements tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.StripeAccountPendingRequirement(
                     null,
                     WOOCOMMERCE_PAYMENTS,
@@ -608,7 +608,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountOverdueRequirement, then reason=account_overdue_requirements tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -619,7 +619,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountUnderReview, then reason=account_under_review tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -630,7 +630,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountRejected, then reason=account_rejected tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountRejected(mock()))
+            paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountRejected(mock()))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -641,7 +641,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when state ChoosePaymentGatewayProvider, then reason=multiple_payment_providers_conflict tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 ChoosePaymentGatewayProvider
             )
 
@@ -654,7 +654,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when wcpay in test mode with live account, then wcpay_in_test_mode_with_live_account`() =
         testBlocking {
-            cardReaderTracker
+            paymentsFlowTracker
                 .trackOnboardingState(
                     CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(WOOCOMMERCE_PAYMENTS)
                 )
@@ -668,7 +668,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when stripe in test mode with live account, then stripe_extension_in_test_mode_with_live_account`() =
         testBlocking {
-            cardReaderTracker
+            paymentsFlowTracker
                 .trackOnboardingState(
                     CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(STRIPE_EXTENSION_GATEWAY)
                 )
@@ -682,7 +682,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given OnboardingCompleted with wcpay, when onboarding trackOnboardingState, then event tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.OnboardingCompleted(
                     WOOCOMMERCE_PAYMENTS,
                     PLUGIN_VERSION,
@@ -699,7 +699,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given OnboardingCompleted with stripe, when onboarding trackOnboardingState, then event tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            paymentsFlowTracker.trackOnboardingState(
                 CardReaderOnboardingState.OnboardingCompleted(
                     STRIPE_EXTENSION_GATEWAY,
                     PLUGIN_VERSION,
@@ -716,7 +716,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when track software update started, then CARD_READER_SOFTWARE_UPDATE_STARTED tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateStarted(true)
+            paymentsFlowTracker.trackSoftwareUpdateStarted(true)
 
             verify(trackerWrapper).track(
                 eq(CARD_READER_SOFTWARE_UPDATE_STARTED),
@@ -727,7 +727,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given update required, when track software update started, then event with REQUIRED_UPDATE tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = true)
+            paymentsFlowTracker.trackSoftwareUpdateStarted(requiredUpdate = true)
 
             verify(trackerWrapper).track(
                 any(),
@@ -740,7 +740,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given update not required, when track software update started, then event with OPTIONAL_UPDATE tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateStarted(requiredUpdate = false)
+            paymentsFlowTracker.trackSoftwareUpdateStarted(requiredUpdate = false)
 
             verify(trackerWrapper).track(
                 any(),
@@ -754,7 +754,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when track software update failed, then CARD_READER_SOFTWARE_UPDATE_FAILED tracked`() =
         testBlocking {
             val dummyMessage = "abcd"
-            cardReaderTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)
+            paymentsFlowTracker.trackSoftwareUpdateFailed(Failed(mock(), dummyMessage), requiredUpdate = false)
 
             verify(trackerWrapper).track(
                 eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
@@ -768,7 +768,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when software update canceled, then CARD_READER_SOFTWARE_UPDATE_FAILED tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateCancelled(false)
+            paymentsFlowTracker.trackSoftwareUpdateCancelled(false)
 
             verify(trackerWrapper).track(
                 stat = eq(CARD_READER_SOFTWARE_UPDATE_FAILED),
@@ -782,7 +782,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given required update, when software update canceled, then required update property tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
+            paymentsFlowTracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
 
             verify(trackerWrapper).track(
                 any(),
@@ -798,7 +798,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given optional update, when software update canceled, then optional update property tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateCancelled(requiredUpdate = false)
+            paymentsFlowTracker.trackSoftwareUpdateCancelled(requiredUpdate = false)
 
             verify(trackerWrapper).track(
                 any(),
@@ -814,7 +814,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when auto connection started, then CARD_READER_AUTO_CONNECTION_STARTED tracked`() =
         testBlocking {
-            cardReaderTracker.trackAutoConnectionStarted()
+            paymentsFlowTracker.trackAutoConnectionStarted()
 
             verify(trackerWrapper).track(eq(CARD_READER_AUTO_CONNECTION_STARTED), any())
         }
@@ -823,7 +823,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when scanning fails, then CARD_READER_DISCOVERY_FAILED tracked`() =
         testBlocking {
             val dummyErrorMgs = "dummy error"
-            cardReaderTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
+            paymentsFlowTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
 
             verify(trackerWrapper).track(
                 eq(CARD_READER_DISCOVERY_FAILED), any(), any(), anyOrNull(), eq(dummyErrorMgs)
@@ -834,7 +834,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when reader found, then CARD_READER_DISCOVERY_READER_DISCOVERED tracked`() =
         testBlocking {
             val dummyCount = 99
-            cardReaderTracker.trackReadersDiscovered(dummyCount)
+            paymentsFlowTracker.trackReadersDiscovered(dummyCount)
 
             verify(trackerWrapper)
                 .track(
@@ -847,7 +847,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when reader found, then reader_count tracked`() =
         testBlocking {
             val dummyCount = 99
-            cardReaderTracker.trackReadersDiscovered(dummyCount)
+            paymentsFlowTracker.trackReadersDiscovered(dummyCount)
 
             verify(trackerWrapper)
                 .track(
@@ -860,12 +860,12 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when location fetching fails, then CARD_READER_LOCATION_FAILURE tracked`() =
         testBlocking {
             val dummyErrorMgs = "dummy error"
-            cardReaderTracker.trackFetchingLocationFailed(dummyErrorMgs)
+            paymentsFlowTracker.trackFetchingLocationFailed(dummyErrorMgs)
 
             verify(trackerWrapper).track(
                 eq(CARD_READER_LOCATION_FAILURE),
                 any(),
-                eq("CardReaderTracker"),
+                eq("PaymentsFlowTracker"),
                 eq(null),
                 eq(dummyErrorMgs)
             )
@@ -876,7 +876,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         val countryCode = "US"
         whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(country = countryCode))
 
-        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(trackerWrapper).track(
@@ -891,7 +891,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         val countryCode = "CA"
         whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(country = countryCode))
 
-        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(trackerWrapper).track(
@@ -906,7 +906,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         val currency = "GBR"
         whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(currency = currency))
 
-        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(trackerWrapper).track(
@@ -922,7 +922,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         whenever(cardReaderTrackingInfoProvider.trackingInfo)
             .thenReturn(TrackingInfo(paymentMethodType = paymentMethodType))
 
-        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(trackerWrapper).track(
@@ -938,7 +938,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         whenever(cardReaderTrackingInfoProvider.trackingInfo)
             .thenReturn(TrackingInfo(cardReaderModel = cardReaderModel))
 
-        cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(trackerWrapper).track(
@@ -951,7 +951,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when location fetching succeeds, then CARD_READER_LOCATION_SUCCESS tracked`() =
         testBlocking {
-            cardReaderTracker.trackFetchingLocationSucceeded()
+            paymentsFlowTracker.trackFetchingLocationSucceeded()
 
             verify(trackerWrapper).track(eq(CARD_READER_LOCATION_SUCCESS), any())
         }
@@ -960,7 +960,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked`() =
         testBlocking {
             val dummyMessage = "error msg"
-            cardReaderTracker.trackPaymentFailed(dummyMessage)
+            paymentsFlowTracker.trackPaymentFailed(dummyMessage)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), anyOrNull(), eq(dummyMessage)
@@ -971,7 +971,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given CardReadTimeOut error type, when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked with readable error type`() =
         testBlocking {
             val dummyMessage = "error msg"
-            cardReaderTracker.trackPaymentFailed(
+            paymentsFlowTracker.trackPaymentFailed(
                 dummyMessage,
                 CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
             )
@@ -989,7 +989,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given CardNotSupported error type, when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked with readable error type`() =
         testBlocking {
             val dummyMessage = "error msg"
-            cardReaderTracker.trackPaymentFailed(
+            paymentsFlowTracker.trackPaymentFailed(
                 dummyMessage,
                 CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.CardNotSupported
             )
@@ -1014,7 +1014,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         testBlocking {
             val dummyMessage = "error msg"
             val dummyServerError = "server error"
-            cardReaderTracker.trackPaymentFailed(
+            paymentsFlowTracker.trackPaymentFailed(
                 dummyMessage,
                 CardPaymentStatus.CardPaymentStatusErrorType.Server(dummyServerError)
             )
@@ -1033,7 +1033,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when payment completed, then CARD_PRESENT_COLLECT_PAYMENT_SUCCESS tracked`() =
         testBlocking {
-            cardReaderTracker.trackPaymentSucceeded()
+            paymentsFlowTracker.trackPaymentSucceeded()
 
             verify(trackerWrapper).track(eq(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS), any())
         }
@@ -1041,28 +1041,28 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when user clicks on print receipt button, then RECEIPT_PRINT_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackPrintReceiptTapped()
+            paymentsFlowTracker.trackPrintReceiptTapped()
 
             verify(trackerWrapper).track(eq(RECEIPT_PRINT_TAPPED), any())
         }
 
     @Test
     fun `when OS accepts the print request, then RECEIPT_PRINT_SUCCESS tracked`() {
-        cardReaderTracker.trackPrintReceiptSucceeded()
+        paymentsFlowTracker.trackPrintReceiptSucceeded()
 
         verify(trackerWrapper).track(eq(RECEIPT_PRINT_SUCCESS), any())
     }
 
     @Test
     fun `when OS refuses the print request, then RECEIPT_PRINT_FAILED tracked`() {
-        cardReaderTracker.trackPrintReceiptFailed()
+        paymentsFlowTracker.trackPrintReceiptFailed()
 
         verify(trackerWrapper).track(eq(RECEIPT_PRINT_FAILED), any())
     }
 
     @Test
     fun `when manually cancels the print request, then RECEIPT_PRINT_CANCELED tracked`() {
-        cardReaderTracker.trackPrintReceiptCancelled()
+        paymentsFlowTracker.trackPrintReceiptCancelled()
 
         verify(trackerWrapper).track(eq(RECEIPT_PRINT_CANCELED), any())
     }
@@ -1070,7 +1070,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when user clicks on send receipt button, then RECEIPT_EMAIL_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackEmailReceiptTapped()
+            paymentsFlowTracker.trackEmailReceiptTapped()
 
             verify(trackerWrapper).track(eq(RECEIPT_EMAIL_TAPPED), any())
         }
@@ -1079,7 +1079,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when user cancels payment, then CARD_PRESENT_COLLECT_PAYMENT_CANCELLED tracked`() =
         testBlocking {
             val currentPaymentState = "dummy state"
-            cardReaderTracker.trackPaymentCancelled(currentPaymentState)
+            paymentsFlowTracker.trackPaymentCancelled(currentPaymentState)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_COLLECT_PAYMENT_CANCELLED),
@@ -1093,7 +1093,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when user taps collect payment button, then CARD_PRESENT_COLLECT_PAYMENT_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackCollectPaymentTapped()
+            paymentsFlowTracker.trackCollectPaymentTapped()
 
             verify(trackerWrapper).track(eq(PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED), any())
         }
@@ -1104,7 +1104,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(WOOCOMMERCE_PAYMENTS)
 
-            cardReaderTracker.track(mock())
+            paymentsFlowTracker.track(mock())
 
             verify(trackerWrapper).track(
                 any(),
@@ -1118,7 +1118,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(STRIPE_EXTENSION_GATEWAY)
 
-            cardReaderTracker.track(mock())
+            paymentsFlowTracker.track(mock())
 
             verify(trackerWrapper).track(
                 any(),
@@ -1132,7 +1132,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
             whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
                 .thenReturn(null)
 
-            cardReaderTracker.track(mock())
+            paymentsFlowTracker.track(mock())
 
             verify(trackerWrapper).track(
                 any(),
@@ -1143,7 +1143,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when select bt reader tapped, then bluetooth reader selection tracked`() =
         testBlocking {
-            cardReaderTracker.trackSelectReaderTypeBluetoothTapped()
+            paymentsFlowTracker.trackSelectReaderTypeBluetoothTapped()
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED),
@@ -1154,7 +1154,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when select built in reader tapped, then tpp reader selection tracked`() =
         testBlocking {
-            cardReaderTracker.trackSelectReaderTypeBuiltInTapped()
+            paymentsFlowTracker.trackSelectReaderTypeBuiltInTapped()
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED),
@@ -1165,7 +1165,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when payment failed and contact support button tapped, then CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackPaymentFailedContactSupportTapped()
+            paymentsFlowTracker.trackPaymentFailedContactSupportTapped()
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED),
@@ -1175,7 +1175,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
     @Test
     fun `when trackPaymentFailedContactSupportTapped, then CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED tracked`() {
-        cardReaderTracker.trackPaymentFailedContactSupportTapped()
+        paymentsFlowTracker.trackPaymentFailedContactSupportTapped()
 
         verify(trackerWrapper).track(
             eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED),
@@ -1186,7 +1186,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when track optional card reader update shown invoked, then CARD_READER_SOFTWARE_UPDATE_ALERT_SHOWN tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateAlertShown()
+            paymentsFlowTracker.trackSoftwareUpdateAlertShown()
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_ALERT_SHOWN),
@@ -1197,11 +1197,122 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when track optional card reader update install clicked invoked, then CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED tracked`() =
         testBlocking {
-            cardReaderTracker.trackSoftwareUpdateAlertInstallClicked()
+            paymentsFlowTracker.trackSoftwareUpdateAlertInstallClicked()
 
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED),
                 any()
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowFailed invoked, then PAYMENTS_FLOW_FAILED tracked`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowFailed(
+                source = "source",
+                flow = "flow",
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_FAILED),
+                check {
+                    assertThat(it["source"]).isEqualTo("source")
+                    assertThat(it["flow"]).isEqualTo("flow")
+                },
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowCanceled invoked, then PAYMENTS_FLOW_CANCELED tracked`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCanceled(
+                flow = "flow",
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_CANCELED),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                },
+            )
+        }
+
+    @Test
+    fun `given cardReaderType and timeElapsed, when trackPaymentsFlowCollect invoked, then PAYMENTS_FLOW_COLLECT tracked with type and time`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCollect(
+                flow = "flow",
+                paymentMethod = "paymentMethod",
+                orderId = 1L,
+                cardReaderType = "cardReaderType",
+                timeElapsed = 2L,
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_COLLECT),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                    assertThat(it["payment_method"]).isEqualTo("paymentMethod")
+                    assertThat(it["order_id"]).isEqualTo(1L)
+                    assertThat(it["card_reader_type"]).isEqualTo("cardReaderType")
+                    assertThat(it["milliseconds_since_order_add_new"]).isEqualTo("2")
+                },
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowCollect invoked, then PAYMENTS_FLOW_COLLECT tracked without time and card reader type`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCollect(
+                flow = "flow",
+                paymentMethod = "paymentMethod",
+                orderId = 1L,
+                cardReaderType = null,
+                timeElapsed = null,
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_COLLECT),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                    assertThat(it["payment_method"]).isEqualTo("paymentMethod")
+                    assertThat(it["order_id"]).isEqualTo(1L)
+                    assertThat(it["card_reader_type"]).isNull()
+                    assertThat(it["milliseconds_since_order_add_new"]).isNull()
+                },
+            )
+        }
+
+    @Test
+    fun `when trackPaymentsFlowCompleted invoked, then PAYMENTS_FLOW_COMPLETED tracked`() =
+        testBlocking {
+            // WHEN
+            paymentsFlowTracker.trackPaymentsFlowCompleted(
+                flow = "flow",
+                paymentMethod = "paymentMethod",
+                orderId = 1L,
+                amount = "1$",
+                amountNormalized = 2L,
+            )
+
+            // THEN
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_FLOW_COMPLETED),
+                check {
+                    assertThat(it["flow"]).isEqualTo("flow")
+                    assertThat(it["payment_method"]).isEqualTo("paymentMethod")
+                    assertThat(it["order_id"]).isEqualTo(1L)
+                    assertThat(it["amount"]).isEqualTo("1$")
+                    assertThat(it["amount_normalized"]).isEqualTo(2L)
+                },
             )
         }
 }

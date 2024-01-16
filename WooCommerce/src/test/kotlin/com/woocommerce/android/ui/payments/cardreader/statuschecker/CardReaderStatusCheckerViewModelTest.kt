@@ -5,7 +5,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -13,6 +12,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ import org.mockito.kotlin.whenever
 class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderChecker: CardReaderOnboardingChecker = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
@@ -109,7 +109,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderManager).disconnectReader()
-            verify(cardReaderTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
+            verify(paymentsFlowTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
             assertThat(vm.event.value)
                 .isEqualTo(
                     CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
@@ -149,7 +149,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderManager).disconnectReader()
-            verify(cardReaderTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
+            verify(paymentsFlowTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
             assertThat(vm.event.value)
                 .isEqualTo(
                     CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
@@ -189,7 +189,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderManager).disconnectReader()
-            verify(cardReaderTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
+            verify(paymentsFlowTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
             assertThat(vm.event.value)
                 .isEqualTo(
                     CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
@@ -447,7 +447,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             cardReaderManager,
             cardReaderChecker,
-            cardReaderTracker,
+            paymentsFlowTracker,
             appPrefsWrapper,
         )
 }
