@@ -463,7 +463,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
-
     @Test
     fun `given a standard order creation, when add gift card is clicked, then track expected event`() = testBlocking {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
