@@ -105,6 +105,9 @@ class OrderCreateEditFormFragment :
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    lateinit var uiHelper: OrderCreateEditFormAddInfoButtonsStatusHelper
+
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
     private var orderUpdateFailureSnackBar: Snackbar? = null
@@ -364,13 +367,22 @@ class OrderCreateEditFormFragment :
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->
                 updateProgressBarsVisibility(binding, !idle)
                 if (new.isEditable) {
-                    binding.additionalInfoCollectionSection.addCouponButton.isEnabled =
-                        new.isCouponButtonEnabled && idle
-                    binding.additionalInfoCollectionSection.addShippingButton.isEnabled =
-                        new.isAddShippingButtonEnabled && idle
+                    uiHelper.changeAddInfoButtonsEnabledState(
+                        binding,
+                        AddInfoButtonsStateTransition(
+                            isAddShippingButtonState = AddInfoButtonsStateTransition.State.Change(
+                                enabled = new.isAddShippingButtonEnabled && idle
+                            ),
+                            isAddCouponButtonState = AddInfoButtonsStateTransition.State.Change(
+                                enabled = new.isCouponButtonEnabled && idle
+                            ),
+                            isAddGiftCardButtonState = AddInfoButtonsStateTransition.State.Change(
+                                enabled = new.isAddGiftCardButtonEnabled && idle
+                            )
+                        )
+                    )
+
                     binding.productsSection.isEachAddButtonEnabled = idle
-                    binding.additionalInfoCollectionSection.addGiftCardButton.isEnabled =
-                        new.isAddGiftCardButtonEnabled && idle
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -396,16 +408,37 @@ class OrderCreateEditFormFragment :
                 }
             }
             new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
-                binding.additionalInfoCollectionSection.addCouponButton.isEnabled = it
+                uiHelper.changeAddInfoButtonsEnabledState(
+                    binding,
+                    AddInfoButtonsStateTransition(
+                        isAddCouponButtonState = AddInfoButtonsStateTransition.State.Change(
+                            enabled = it
+                        )
+                    )
+                )
             }
             new.isAddShippingButtonEnabled.takeIfNotEqualTo(old?.isAddShippingButtonEnabled) {
-                binding.additionalInfoCollectionSection.addShippingButton.isEnabled = it
+                uiHelper.changeAddInfoButtonsEnabledState(
+                    binding,
+                    AddInfoButtonsStateTransition(
+                        isAddShippingButtonState = AddInfoButtonsStateTransition.State.Change(
+                            enabled = it
+                        )
+                    )
+                )
             }
             new.isAddGiftCardButtonEnabled.takeIfNotEqualTo(old?.isAddGiftCardButtonEnabled) {
-                binding.additionalInfoCollectionSection.addGiftCardButton.isEnabled = it
+                uiHelper.changeAddInfoButtonsEnabledState(
+                    binding,
+                    AddInfoButtonsStateTransition(
+                        isAddGiftCardButtonState = AddInfoButtonsStateTransition.State.Change(
+                            enabled = it
+                        )
+                    )
+                )
             }
             new.shouldDisplayAddGiftCardButton.takeIfNotEqualTo(old?.shouldDisplayAddGiftCardButton) {
-                binding.additionalInfoCollectionSection.addGiftCardButton.isVisible = it
+                binding.additionalInfoCollectionSection.addGiftCardButtonGroup.isVisible = it
             }
             new.taxRateSelectorButtonState.takeIfNotEqualTo(old?.taxRateSelectorButtonState) {
                 binding.taxRateSelectorSection.isVisible = it.isShown
@@ -569,16 +602,16 @@ class OrderCreateEditFormFragment :
 
         val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         if (firstShipping != null) {
-            additionalInfoCollectionSection.addShippingButton.hide()
+            additionalInfoCollectionSection.addShippingButtonGroup.hide()
         } else {
-            additionalInfoCollectionSection.addShippingButton.show()
+            additionalInfoCollectionSection.addShippingButtonGroup.show()
         }
     }
 
     private fun OrderCreationAdditionalInfoCollectionSectionBinding.bindGiftCardSubSection(newOrderData: Order) {
         when (viewModel.mode) {
             is Creation -> bindGiftCardForOrderCreation(newOrderData)
-            is Edit -> addGiftCardButton.isVisible = false
+            is Edit -> addGiftCardButtonGroup.isVisible = false
         }
     }
 
@@ -587,10 +620,10 @@ class OrderCreateEditFormFragment :
     ) {
         if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
-            addGiftCardButton.isVisible = viewModel.isGiftCardExtensionEnabled
+            addGiftCardButtonGroup.isVisible = viewModel.isGiftCardExtensionEnabled
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
         } else {
-            addGiftCardButton.isVisible = false
+            addGiftCardButtonGroup.isVisible = false
         }
     }
 
@@ -1052,11 +1085,20 @@ class OrderCreateEditFormFragment :
             isLocked = false
             isEachAddButtonEnabled = true
         }
-        additionalInfoCollectionSection.apply {
-            addShippingButton.isEnabled = true
-            addCouponButton.isEnabled = state.isCouponButtonEnabled
-            addGiftCardButton.isEnabled = state.isAddGiftCardButtonEnabled
-        }
+        uiHelper.changeAddInfoButtonsEnabledState(
+            this,
+            AddInfoButtonsStateTransition(
+                isAddShippingButtonState = AddInfoButtonsStateTransition.State.Change(
+                    enabled = true
+                ),
+                isAddCouponButtonState = AddInfoButtonsStateTransition.State.Change(
+                    enabled = state.isCouponButtonEnabled
+                ),
+                isAddGiftCardButtonState = AddInfoButtonsStateTransition.State.Change(
+                    enabled = state.isAddGiftCardButtonEnabled
+                )
+            )
+        )
         customAmountsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
@@ -1069,11 +1111,20 @@ class OrderCreateEditFormFragment :
             isLocked = true
             isEachAddButtonEnabled = false
         }
-        additionalInfoCollectionSection.apply {
-            addShippingButton.isEnabled = false
-            addCouponButton.isEnabled = false
-            addGiftCardButton.isEnabled = false
-        }
+        uiHelper.changeAddInfoButtonsEnabledState(
+            this,
+            AddInfoButtonsStateTransition(
+                isAddShippingButtonState = AddInfoButtonsStateTransition.State.Change(
+                    enabled = false
+                ),
+                isAddCouponButtonState = AddInfoButtonsStateTransition.State.Change(
+                    enabled = false
+                ),
+                isAddGiftCardButtonState = AddInfoButtonsStateTransition.State.Change(
+                    enabled = false
+                )
+            )
+        )
         customAmountsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
