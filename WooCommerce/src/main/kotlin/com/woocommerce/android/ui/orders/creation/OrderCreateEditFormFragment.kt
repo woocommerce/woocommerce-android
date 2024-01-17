@@ -1059,6 +1059,7 @@ class OrderCreateEditFormFragment :
         }
         customAmountsSection.apply {
             isLocked = false
+            isEachAddButtonEnabled = true
         }
     }
 
@@ -1075,6 +1076,7 @@ class OrderCreateEditFormFragment :
         }
         customAmountsSection.apply {
             isLocked = true
+            isEachAddButtonEnabled = false
         }
     }
 }
