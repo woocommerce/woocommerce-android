@@ -453,10 +453,69 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             stat = AnalyticsEvent.ORDER_SYNC_FAILED,
-            properties = mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
+            properties = mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_USE_GIFT_CARD to false
+            ),
             errorContext = sut::class.java.simpleName,
             errorType = wooError.type.name,
             errorDescription = wooError.message
+        )
+    }
+
+
+    @Test
+    fun `given a standard order creation, when add gift card is clicked, then track expected event`() = testBlocking {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onAddGiftCardButtonClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_FORM_ADD_GIFT_CARD_CTA_TAPPED,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
+    fun `given a standard order creation, when a gift card code is set, then track expected event`() = testBlocking {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onGiftCardSelected("abc")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false
+            )
+        )
+    }
+
+    @Test
+    fun `given a order creation with gift card already set, when a gift card is removed, then track expected event`() = testBlocking {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onGiftCardSelected("abc")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false
+            )
+        )
+
+        sut.onGiftCardSelected("")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to true
+            )
         )
     }
 
