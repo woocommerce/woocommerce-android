@@ -164,6 +164,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_GIFT_CARD_REMOVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_USE_GIFT_CARD
 
 @HiltViewModel
@@ -1707,6 +1708,30 @@ class OrderCreateEditViewModel @Inject constructor(
                 put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
             }
         }
+    }
+
+    private fun trackGiftCardCTAShown() {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_ADD_GIFT_CARD_CTA_SHOWN,
+            mapOf(KEY_FLOW to flow)
+        )
+    }
+
+    private fun trackGiftCardCTAClicked() {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_ADD_GIFT_CARD_CTA_TAPPED,
+            mapOf(KEY_FLOW to flow)
+        )
+    }
+
+    private fun trackGiftCardSet(giftCardWasRemoved: Boolean) {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_IS_GIFT_CARD_REMOVED to giftCardWasRemoved
+            )
+        )
     }
 
     @Parcelize
