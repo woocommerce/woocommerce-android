@@ -9,34 +9,40 @@ class OrderCreateEditFormAddInfoButtonsStatusHelper @Inject constructor() {
         binding: FragmentOrderCreateEditFormBinding,
         addInfoButtonsStateTransition: AddInfoButtonsStateTransition,
     ) {
-        binding.additionalInfoCollectionSection.apply {
-            when (addInfoButtonsStateTransition.isAddShippingButtonState) {
-                is AddInfoButtonsStateTransition.State.Change -> {
-                    addShippingButton.isEnabled = addInfoButtonsStateTransition.isAddShippingButtonState.enabled
-                    addShippingButtonLockIcon.isVisible =
-                        !addInfoButtonsStateTransition.isAddShippingButtonState.enabled
+        binding.additionalInfoCollectionSection.run {
+            root.post {
+                when (val state = addInfoButtonsStateTransition.isAddShippingButtonState) {
+                    is AddInfoButtonsStateTransition.State.Change -> {
+                        addShippingButton.isEnabled = state.enabled
+                        if (addShippingButtonGroup.isVisible) {
+                            addShippingButtonLockIcon.isVisible = !state.enabled
+                        }
+                    }
+
+                    AddInfoButtonsStateTransition.State.Keep -> {}
                 }
 
-                AddInfoButtonsStateTransition.State.Keep -> {}
-            }
+                when (val state = addInfoButtonsStateTransition.isAddCouponButtonState) {
+                    is AddInfoButtonsStateTransition.State.Change -> {
+                        addCouponButton.isEnabled = state.enabled
+                        if (addCouponButtonGroup.isVisible) {
+                            addCouponButtonLockIcon.isVisible = !state.enabled
+                        }
+                    }
 
-            when (addInfoButtonsStateTransition.isAddCouponButtonState) {
-                is AddInfoButtonsStateTransition.State.Change -> {
-                    addCouponButton.isEnabled = addInfoButtonsStateTransition.isAddCouponButtonState.enabled
-                    addCouponButtonLockIcon.isVisible = !addInfoButtonsStateTransition.isAddCouponButtonState.enabled
+                    AddInfoButtonsStateTransition.State.Keep -> {}
                 }
 
-                AddInfoButtonsStateTransition.State.Keep -> {}
-            }
+                when (val state = addInfoButtonsStateTransition.isAddGiftCardButtonState) {
+                    is AddInfoButtonsStateTransition.State.Change -> {
+                        addGiftCardButton.isEnabled = state.enabled
+                        if (addGiftCardButtonGroup.isVisible) {
+                            addGiftCardButtonLockIcon.isVisible = !state.enabled
+                        }
+                    }
 
-            when (addInfoButtonsStateTransition.isAddGiftCardButtonState) {
-                is AddInfoButtonsStateTransition.State.Change -> {
-                    addGiftCardButton.isEnabled = addInfoButtonsStateTransition.isAddGiftCardButtonState.enabled
-                    addGiftCardButtonLockIcon.isVisible =
-                        !addInfoButtonsStateTransition.isAddGiftCardButtonState.enabled
+                    AddInfoButtonsStateTransition.State.Keep -> {}
                 }
-
-                AddInfoButtonsStateTransition.State.Keep -> {}
             }
         }
     }
