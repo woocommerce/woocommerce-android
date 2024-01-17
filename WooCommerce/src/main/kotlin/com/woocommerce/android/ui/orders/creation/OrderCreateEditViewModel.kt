@@ -164,6 +164,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_USE_GIFT_CARD
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -1177,6 +1178,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         timeElapsed.toString()
                 }
                 mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
+                mutableMap[KEY_USE_GIFT_CARD] = orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
             }
         )
     }
