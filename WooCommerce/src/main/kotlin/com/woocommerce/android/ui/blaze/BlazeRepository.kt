@@ -23,11 +23,10 @@ class BlazeRepository @Inject constructor(
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
     fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
-        val aiSuggestions = listOf<AiSuggestionForAd>()
         val product = productDetailRepository.getProduct(productId)
         return CampaignPreview(
             productId = productId,
-            aiSuggestions = aiSuggestions,
+            aiSuggestions = listOf(),
             budget = Budget(
                 totalBudget = DEFAULT_CAMPAIGN_TOTAL_BUDGET,
                 spentBudget = 0f,

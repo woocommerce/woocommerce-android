@@ -13,7 +13,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,19 +48,23 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             targetDetails = listOf(
                 CampaignDetailItem(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
-                    displayValue = languages.joinToString { it.name },
+                    displayValue = languages.joinToString { it.name }
+                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
                 ),
                 CampaignDetailItem(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
-                    displayValue = locations.joinToString { it.name },
+                    displayValue = locations.joinToString { it.name }
+                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
                 ),
                 CampaignDetailItem(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
-                    displayValue = devices.joinToString { it.name },
+                    displayValue = devices.joinToString { it.name }
+                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
                 ),
                 CampaignDetailItem(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
-                    displayValue = interests.joinToString { it.description },
+                    displayValue = interests.joinToString { it.description }
+                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
                 ),
             ),
             destinationUrl = CampaignDetailItem(
@@ -96,11 +99,11 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             val targetDetails: List<CampaignDetailItem>,
             val destinationUrl: CampaignDetailItem,
         ) : CampaignPreviewUiState
-
-        data class CampaignDetailItem(
-            val displayTitle: String,
-            val displayValue: String,
-            val maxLinesValue: Int? = null,
-        )
     }
+
+    data class CampaignDetailItem(
+        val displayTitle: String,
+        val displayValue: String,
+        val maxLinesValue: Int? = null,
+    )
 }

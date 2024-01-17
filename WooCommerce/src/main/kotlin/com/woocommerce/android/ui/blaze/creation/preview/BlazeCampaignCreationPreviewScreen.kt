@@ -40,15 +40,15 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignPreviewContent
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.Loading
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
+import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItem
+import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignPreviewContent
+import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.Loading
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -210,7 +210,7 @@ fun CampaignDetails(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
-        CampaignPropertyGroupItem(items = state.audienceDetails)
+        CampaignPropertyGroupItem(items = state.targetDetails)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Destination
@@ -296,7 +296,7 @@ fun CampaignScreenPreview() {
             displayTitle = stringResource(R.string.blaze_campaign_preview_details_budget),
             displayValue = "140 USD, 7 days from Jan 14",
         ),
-        audienceDetails = listOf(
+        targetDetails = listOf(
             CampaignDetailItem(
                 displayTitle = stringResource(string.blaze_campaign_preview_details_language),
                 displayValue = "English, Spanish",
