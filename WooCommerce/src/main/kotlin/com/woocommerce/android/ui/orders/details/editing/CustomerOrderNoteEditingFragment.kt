@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.editing
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -27,9 +28,7 @@ class CustomerOrderNoteEditingFragment :
     private val args: CustomerOrderNoteEditingFragmentArgs by navArgs()
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         sharedViewModel.setOrderId(args.orderId)
@@ -38,6 +37,14 @@ class CustomerOrderNoteEditingFragment :
         Log.d("ABCD", (args.orderId).toString())
         _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
 
+        binding.toolbar.title = requireActivity().getString(R.string.orderdetail_customer_provided_note)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        setupToolbarMenu()
+
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
             binding.customerOrderNoteEditor.requestFocus()
@@ -45,6 +52,12 @@ class CustomerOrderNoteEditingFragment :
         }
 
         binding.customerOrderNoteEditor.addTextChangedListener(textWatcher)
+    }
+
+    private fun setupToolbarMenu() {
+        binding.menuCross.setOnClickListener {
+            navigateUp()
+        }
     }
 
     override fun onDestroyView() {

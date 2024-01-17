@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.CustomAmountCard
 import com.woocommerce.android.ui.orders.Header
@@ -92,8 +93,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),
-    OrderProductActionListener,
-    MenuProvider {
+    OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
@@ -132,6 +132,8 @@ class OrderDetailFragment :
         get() = feedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
             ?: UNANSWERED
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -163,7 +165,16 @@ class OrderDetailFragment :
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
+        binding.toolbar.title = screenTitle
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_order_detail)
+        setupToolbarMenu(binding.toolbar.menu)
+
+//        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
@@ -189,18 +200,24 @@ class OrderDetailFragment :
         )
     }
 
+    private fun setupToolbarMenu(menu: Menu) {
+        onPrepareMenu(menu)
+        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+        menuEditOrder.isVisible = true
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_detail, menu)
-        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
-        menuEditOrder.isVisible = true
-    }
+//    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_order_detail, menu)
+//        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+//        menuEditOrder.isVisible = true
+//    }
 
-    override fun onPrepareMenu(menu: Menu) {
+    fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_edit_order)?.let {
             it.isEnabled = viewModel.hasOrder()
         }
@@ -226,7 +243,7 @@ class OrderDetailFragment :
         return resources.getBoolean(R.bool.is_tablet)
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
 //                val navHostFragment = parentFragmentManager.fragments[0].parentFragment?.parentFragment?.childFragmentManager?.findFragmentById(R.id.full_screen_nav_container) as? NavHostFragment
@@ -268,7 +285,8 @@ class OrderDetailFragment :
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
-                requireActivity().invalidateOptionsMenu()
+                onPrepareMenu(binding.toolbar.menu)
+//                requireActivity().invalidateOptionsMenu()
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
