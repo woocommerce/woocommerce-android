@@ -166,6 +166,7 @@ import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_GIFT_CARD_REMOVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_USE_GIFT_CARD
+import kotlinx.coroutines.flow.firstOrNull
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -221,6 +222,7 @@ class OrderCreateEditViewModel @Inject constructor(
             scope = viewModelScope,
             initialValue = HashMap()
         )
+
     val isGiftCardExtensionEnabled
         get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
             ?.isOperational ?: false
@@ -1110,10 +1112,13 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddGiftCardButtonClicked() {
+        trackGiftCardCTAClicked()
         triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
     }
 
     fun onGiftCardSelected(selectedGiftCard: String) {
+        val giftCardWasRemoved = selectedGiftCard.isEmpty() && _selectedGiftCard.value.isNotEmpty()
+        trackGiftCardSet(giftCardWasRemoved)
         _selectedGiftCard.update { selectedGiftCard }
     }
 
@@ -1296,6 +1301,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 .onEach {
                     val isGiftCardExtensionEnabled = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
                     viewState = viewState.copy(shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled)
+                    if (isGiftCardExtensionEnabled) { trackGiftCardCTAAvailable() }
                 }.launchIn(viewModelScope)
 
             pluginsInformation.update {
@@ -1710,7 +1716,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun trackGiftCardCTAShown() {
+    private fun trackGiftCardCTAAvailable() {
         tracker.track(
             AnalyticsEvent.ORDER_FORM_ADD_GIFT_CARD_CTA_SHOWN,
             mapOf(KEY_FLOW to flow)
