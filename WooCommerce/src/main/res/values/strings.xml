@@ -3835,6 +3835,8 @@
     <string name="blaze_campaign_preview_details_interests">Interests</string>
     <string name="blaze_campaign_preview_details_destination_url">Ad destination</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
+
     <!--
     Blaze other
     -->
