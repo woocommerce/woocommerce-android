@@ -1,22 +1,24 @@
-package com.woocommerce.android.ui.blaze.creation.preview
+package ui.blaze.creation.preview
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
 import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    productDetailRepository: ProductDetailRepository,
-    resourceProvider: ResourceProvider
+    blazeRepository: BlazeRepository,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _viewState = MutableLiveData<CampaignPreviewUiState>(CampaignPreviewUiState.Loading)
@@ -26,42 +28,48 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         launch {
-            val product = productDetailRepository.getProduct(navArgs.productId)
-            _viewState.value = CampaignPreviewUiState.CampaignPreviewContent(
-                productId = product?.remoteId ?: -1,
-                title = "Get the latest white t-shirts",
-                tagLine = "From 45.00 USD",
-                campaignImageUrl = "https://rb.gy/gmjuwb",
-                budget = CampaignDetailItem(
-                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_budget),
-                    displayValue = "140 USD, 7 days from Jan 14",
-                ),
-                audienceDetails = listOf(
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
-                        displayValue = "English, Spanish",
-                    ),
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
-                        displayValue = "USA, Poland, Japan",
-                    ),
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
-                        displayValue = "Samsung, Apple, Xiaomi",
-                    ),
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
-                        displayValue = "Fashion, Clothing, T-shirts",
-                    ),
-                ),
-                destinationUrl = CampaignDetailItem(
-                    displayTitle = "Destination URL",
-                    displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
-                    maxLinesValue = 1,
-                )
-            )
+            _viewState.value = blazeRepository
+                .getCampaignPreviewDetails(navArgs.productId)
+                .toCampaignPreviewUiState()
         }
     }
+
+    private fun CampaignPreview.toCampaignPreviewUiState() =
+        CampaignPreviewUiState.CampaignPreviewContent(
+            productId = productId,
+            title = aiSuggestions.firstOrNull()?.title ?: "",
+            tagLine = aiSuggestions.firstOrNull()?.tagLine ?: "",
+            budget = CampaignDetailItem(
+                displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_budget),
+                displayValue = budget.toDisplayValue(),
+            ),
+            targetDetails = listOf(
+                CampaignDetailItem(
+                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
+                    displayValue = languages.joinToString { it.name },
+                ),
+                CampaignDetailItem(
+                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
+                    displayValue = locations.joinToString { it.name },
+                ),
+                CampaignDetailItem(
+                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
+                    displayValue = devices.joinToString { it.name },
+                ),
+                CampaignDetailItem(
+                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
+                    displayValue = interests.joinToString { it.description },
+                ),
+            ),
+            destinationUrl = CampaignDetailItem(
+                displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_destination_url),
+                displayValue = targetUrl,
+                maxLinesValue = 1,
+            ),
+            campaignImageUrl = campaignImageUrl ?: "",
+        )
+
+    private fun BlazeRepository.Budget.toDisplayValue() = "TODO"
 
     sealed interface CampaignPreviewUiState {
         object Loading : CampaignPreviewUiState
@@ -71,7 +79,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             val tagLine: String,
             val campaignImageUrl: String,
             val budget: CampaignDetailItem,
-            val audienceDetails: List<CampaignDetailItem>,
+            val targetDetails: List<CampaignDetailItem>,
             val destinationUrl: CampaignDetailItem,
         ) : CampaignPreviewUiState
 

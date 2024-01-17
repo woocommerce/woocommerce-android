@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
+import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
 
 @AndroidEntryPoint
 class BlazeCampaignCreationPreviewFragment : BaseFragment() {
