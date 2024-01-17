@@ -1329,7 +1329,8 @@ class OrderCreateEditViewModel @Inject constructor(
             mapOf(
                 KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 KEY_ERROR_TYPE to (it as? WooException)?.error?.type?.name,
-                KEY_ERROR_DESC to it.message
+                KEY_ERROR_DESC to it.message,
+                KEY_USE_GIFT_CARD to orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
             )
         )
     }
