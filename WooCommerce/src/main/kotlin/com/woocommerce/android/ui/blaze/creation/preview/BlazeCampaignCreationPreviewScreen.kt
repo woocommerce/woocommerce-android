@@ -78,11 +78,18 @@ private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiSt
                 .padding(paddingValues)
                 .background(color = MaterialTheme.colors.surface)
         ) {
+
             when {
-                previewState.isLoading -> CampaignPreviewLoading()
-                else -> CampaignPreviewContent(state = previewState)
+                previewState.isLoading -> AdDetailsLoading()
+                else -> AdDetailsHeader(state = previewState)
             }
 
+            CampaignDetails(
+                campaignDetails = previewState.campaignDetails,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Divider()
             WCColoredButton(
@@ -99,7 +106,7 @@ private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiSt
 }
 
 @Composable
-private fun CampaignPreviewLoading(
+private fun AdDetailsLoading(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -158,26 +165,18 @@ private fun CampaignPreviewLoading(
 }
 
 @Composable
-fun CampaignPreviewContent(
+fun AdDetailsHeader(
     state: CampaignPreviewUiState,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        CampaignHeader(
-            adDetails = state.adDetails,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background))
-        )
-        CampaignDetails(
-            campaignDetails = state.campaignDetails,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+    CampaignHeader(
+        adDetails = state.adDetails,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background))
+    )
 }
 
 @Composable
@@ -392,5 +391,5 @@ fun CampaignScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 fun CampaignLoadingScreenPreview() {
-    CampaignPreviewLoading()
+    AdDetailsLoading()
 }
