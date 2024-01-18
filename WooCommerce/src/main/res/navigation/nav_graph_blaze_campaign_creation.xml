@@ -56,6 +56,6 @@
     </fragment>
     <fragment
         android:id="@+id/campaignBudgetFragment"
-        android:name="com.woocommerce.android.ui.blaze.creation.budget.CampaignBudgetFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
         android:label="CampaignBudgetFragment" />
 </navigation>

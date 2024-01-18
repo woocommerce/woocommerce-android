@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CampaignBudgetViewModel @Inject constructor(
+class BlazeCampaignBudgetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
 }
