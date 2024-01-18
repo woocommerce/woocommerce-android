@@ -79,7 +79,6 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -585,7 +584,6 @@ class OrderCreateEditFormFragment :
     private fun OrderCreationAdditionalInfoCollectionSectionBinding.bindGiftCardForOrderCreation(
         newOrderData: Order
     ) {
-        if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
             addGiftCardButton.isVisible = viewModel.isGiftCardExtensionEnabled
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -44,7 +46,6 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItem
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignPreviewContent
@@ -53,34 +54,106 @@ import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignP
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
-        WooThemeWithBackground {
-            Scaffold(
-                topBar = {
-                    Toolbar(
-                        title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
-                        onNavigationButtonClick = { /*TODO*/ },
-                        navigationIcon = Filled.ArrowBack
-                    )
-                },
-                modifier = Modifier.background(MaterialTheme.colors.surface)
-            ) { paddingValues ->
-                when (previewState) {
-                    is Loading -> LoadingPreview()
-                    is CampaignPreviewContent -> CampaignPreviewContent(
-                        state = previewState,
-                        modifier = Modifier
-                            .padding(paddingValues)
-                            .background(color = MaterialTheme.colors.surface)
-                    )
-                }
+        BlazeCampaignCreationPreviewScreen(previewState)
+    }
+}
+
+@Composable
+private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiState) {
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
+                onNavigationButtonClick = { /*TODO*/ },
+                navigationIcon = Filled.ArrowBack
+            )
+        },
+        modifier = Modifier.background(MaterialTheme.colors.surface)
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(color = MaterialTheme.colors.surface)
+        ) {
+            when (previewState) {
+                is Loading -> CampaignPreviewLoading()
+                is CampaignPreviewContent -> CampaignPreviewContent(state = previewState)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            WCColoredButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .padding(bottom = 8.dp),
+                text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
+                onClick = { /*TODO*/ },
+                enabled = previewState !is Loading
+            )
         }
     }
 }
 
 @Composable
-fun LoadingPreview() {
-    TODO("Not yet implemented")
+private fun CampaignPreviewLoading(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(276.dp)
+                )
+                SkeletonView(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(8.dp)
+                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    SkeletonView(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(24.dp))
+                    SkeletonView(
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(24.dp)
+                    )
+                }
+            }
+        }
+        WCTextButton(
+            modifier = Modifier.padding(bottom = 8.dp),
+            onClick = { /* No action expected for disabled button */ },
+            enabled = false,
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+        }
+    }
 }
 
 @Composable
@@ -88,11 +161,7 @@ fun CampaignPreviewContent(
     state: CampaignPreviewContent,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxWidth()) {
         CampaignHeader(
             state = state,
             modifier = Modifier
@@ -106,16 +175,6 @@ fun CampaignPreviewContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-        WCColoredButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .padding(bottom = 8.dp),
-            text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
-            onClick = { /*TODO*/ },
         )
     }
 }
@@ -287,37 +346,45 @@ private fun CampaignPropertyItem(
 @LightDarkThemePreviews
 @Composable
 fun CampaignScreenPreview() {
-    CampaignPreviewContent(
-        productId = 123,
-        title = "Get the latest white t-shirts",
-        tagLine = "From 45.00 USD",
-        campaignImageUrl = "https://rb.gy/gmjuwb",
-        budget = CampaignDetailItem(
-            displayTitle = stringResource(R.string.blaze_campaign_preview_details_budget),
-            displayValue = "140 USD, 7 days from Jan 14",
-        ),
-        targetDetails = listOf(
-            CampaignDetailItem(
-                displayTitle = stringResource(string.blaze_campaign_preview_details_language),
-                displayValue = "English, Spanish",
+    BlazeCampaignCreationPreviewScreen(
+        CampaignPreviewContent(
+            productId = 123,
+            title = "Get the latest white t-shirts",
+            tagLine = "From 45.00 USD",
+            campaignImageUrl = "https://rb.gy/gmjuwb",
+            budget = CampaignDetailItem(
+                displayTitle = stringResource(R.string.blaze_campaign_preview_details_budget),
+                displayValue = "140 USD, 7 days from Jan 14",
             ),
-            CampaignDetailItem(
-                displayTitle = stringResource(string.blaze_campaign_preview_details_devices),
-                displayValue = "USA, Poland, Japan",
+            targetDetails = listOf(
+                CampaignDetailItem(
+                    displayTitle = stringResource(string.blaze_campaign_preview_details_language),
+                    displayValue = "English, Spanish",
+                ),
+                CampaignDetailItem(
+                    displayTitle = stringResource(string.blaze_campaign_preview_details_devices),
+                    displayValue = "USA, Poland, Japan",
+                ),
+                CampaignDetailItem(
+                    displayTitle = stringResource(string.blaze_campaign_preview_details_location),
+                    displayValue = "Samsung, Apple, Xiaomi",
+                ),
+                CampaignDetailItem(
+                    displayTitle = stringResource(string.blaze_campaign_preview_details_interests),
+                    displayValue = "Fashion, Clothing, T-shirts",
+                ),
             ),
-            CampaignDetailItem(
-                displayTitle = stringResource(string.blaze_campaign_preview_details_location),
-                displayValue = "Samsung, Apple, Xiaomi",
-            ),
-            CampaignDetailItem(
-                displayTitle = stringResource(string.blaze_campaign_preview_details_interests),
-                displayValue = "Fashion, Clothing, T-shirts",
-            ),
-        ),
-        destinationUrl = CampaignDetailItem(
-            displayTitle = "Destination URL",
-            displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
-            maxLinesValue = 1,
+            destinationUrl = CampaignDetailItem(
+                displayTitle = "Destination URL",
+                displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
+                maxLinesValue = 1,
+            )
         )
     )
+}
+
+@LightDarkThemePreviews
+@Composable
+fun CampaignLoadingScreenPreview() {
+    CampaignPreviewLoading()
 }

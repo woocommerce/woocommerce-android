@@ -128,7 +128,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -240,7 +239,7 @@ class OrderCreateEditViewModel @Inject constructor(
         .combine(_selectedGiftCard) { order, giftCard ->
             order.copy(
                 selectedGiftCard = giftCard,
-                giftCardDiscountedAmount = -(args.giftCardAmount ?: BigDecimal.ZERO)
+                giftCardDiscountedAmount = args.giftCardAmount
             )
         }.asLiveData()
 
@@ -254,14 +253,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }.asLiveData()
 
     val totalsData: LiveData<TotalsSectionsState> =
-        viewStateData.liveData.combineWith(_orderDraft.asLiveData()) { viewState, order ->
+        viewStateData.liveData.combineWith(
+            _orderDraft.asLiveData(),
+            _selectedGiftCard.asLiveData()
+        ) { viewState, order, selectedGiftCard ->
             totalsHelper.mapToPaymentTotalsState(
-                order = order!!,
+                order = order!!.copy(
+                    selectedGiftCard = selectedGiftCard,
+                    giftCardDiscountedAmount = args.giftCardAmount
+                ),
                 mode = mode,
                 viewState = viewState!!,
                 onShippingClicked = { onShippingButtonClicked() },
                 onCouponsClicked = { onCouponButtonClicked() },
-                onGiftClicked = { onEditGiftCardButtonClicked(order.selectedGiftCard) },
+                onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
                 onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
@@ -699,8 +704,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(
             isAddGiftCardButtonEnabled = order.hasProducts() &&
                 order.isEditable &&
-                _selectedGiftCard.value.isEmpty() &&
-                FeatureFlag.ORDER_GIFT_CARD.isEnabled()
+                _selectedGiftCard.value.isEmpty()
         )
     }
 
