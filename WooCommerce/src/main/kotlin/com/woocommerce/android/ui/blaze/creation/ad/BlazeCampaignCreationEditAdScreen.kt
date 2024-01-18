@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.blaze.creation.ad
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,16 +18,20 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -32,14 +39,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -143,6 +148,7 @@ fun CampaignEditAdContent(
             onValueChange = onDescriptionChanged,
             label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
             maxLines = 4,
+            minLines = 4,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             modifier = Modifier
                 .height(120.dp)
@@ -152,12 +158,69 @@ fun CampaignEditAdContent(
         Text(
             text = stringResource(
                 id = string.blaze_campaign_edit_ad_characters_remaining,
-                viewState.taglineCharactersRemaining
+                viewState.descriptionCharactersRemaining
             ),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_disabled),
             modifier = Modifier.fillMaxWidth()
         )
+
+        Row(
+            modifier = Modifier
+                .padding(top = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_ai),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface)),
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(end = dimensionResource(id = R.dimen.minor_100))
+            )
+            Text(
+                text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
+                style = MaterialTheme.typography.h6,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = colorResource(id = R.color.image_border_color),
+                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                        )
+                        .padding(dimensionResource(id = R.dimen.minor_100))
+                ) {
+                    Icon(
+                        Filled.ArrowBackIosNew, null, tint = MaterialTheme.colors.primary
+                    )
+                }
+            }
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = colorResource(id = R.color.image_border_color),
+                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                        )
+                        .padding(dimensionResource(id = R.dimen.minor_100))
+                ) {
+                    Icon(
+                        Filled.ArrowForwardIos, null, tint = MaterialTheme.colors.primary
+                    )
+                }
+            }
+        }
     }
 }
 
