@@ -27,6 +27,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         launch {
+            @Suppress("MagicNumber")
             delay(5000)
             val product = productDetailRepository.getProduct(navArgs.productId)
             _viewState.value = CampaignPreviewUiState.CampaignPreviewContent(
