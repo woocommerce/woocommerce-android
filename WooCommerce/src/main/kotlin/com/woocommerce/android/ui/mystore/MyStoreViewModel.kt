@@ -371,7 +371,8 @@ class MyStoreViewModel @Inject constructor(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),
             totalOrdersCount = totals?.ordersCount,
             totalSales = totals?.totalSales,
-            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
+            rangeId = rangeId
         )
     }
 
