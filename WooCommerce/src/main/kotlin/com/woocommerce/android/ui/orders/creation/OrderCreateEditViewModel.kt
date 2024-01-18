@@ -269,7 +269,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
-                onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() }
             )
         }
 
@@ -1139,12 +1139,14 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onExpandCollapseTotalsClicked(expanded: Boolean) {
+    private fun onExpandCollapseTotalsClicked() {
+        val newTotalsExpandedState = !viewState.isTotalsExpanded
+        viewState = viewState.copy(isTotalsExpanded = newTotalsExpandedState)
         tracker.track(
             AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_EXPANDED to expanded
+                KEY_EXPANDED to newTotalsExpandedState
             )
         )
     }
@@ -1718,6 +1720,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isAddGiftCardButtonEnabled: Boolean = false,
         val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
+        val isTotalsExpanded: Boolean = false,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
         val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),

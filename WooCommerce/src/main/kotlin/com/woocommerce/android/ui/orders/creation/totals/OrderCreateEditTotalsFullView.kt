@@ -35,17 +35,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -148,12 +143,7 @@ private fun PanelWithShadow(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun TotalsView(
-    state: TotalsSectionsState.Full,
-    isPreview: Boolean = LocalInspectionMode.current,
-) {
-    var isExpanded by rememberSaveable { mutableStateOf(isPreview) }
-
+private fun TotalsView(state: TotalsSectionsState.Full) {
     val totalsIs = remember { MutableInteractionSource() }
 
     Column(
@@ -169,8 +159,7 @@ private fun TotalsView(
                     interactionSource = totalsIs,
                     indication = null
                 ) {
-                    isExpanded = !isExpanded
-                    state.onExpandCollapseClicked(isExpanded)
+                    state.onExpandCollapseClicked()
                 }
                 .animateContentSize()
         ) {
@@ -181,14 +170,13 @@ private fun TotalsView(
                 contentAlignment = Alignment.Center
             ) {
                 Crossfade(
-                    targetState = isExpanded,
+                    targetState = state.isExpanded,
                     label = "totals_icon",
                 ) { expanded ->
                     IconButton(
                         interactionSource = totalsIs,
                         onClick = {
-                            isExpanded = !isExpanded
-                            state.onExpandCollapseClicked(isExpanded)
+                            state.onExpandCollapseClicked()
                         },
                     ) {
                         Icon(
@@ -204,7 +192,7 @@ private fun TotalsView(
                 }
             }
 
-            if (isExpanded) {
+            if (state.isExpanded) {
                 Lines(lines = state.lines, smallGaps = false)
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -529,6 +517,7 @@ private fun OrderCreateEditTotalsFullViewPreview() {
                 enabled = true,
                 onClick = {},
             ),
+            isExpanded = true,
             onExpandCollapseClicked = {},
         )
     )
