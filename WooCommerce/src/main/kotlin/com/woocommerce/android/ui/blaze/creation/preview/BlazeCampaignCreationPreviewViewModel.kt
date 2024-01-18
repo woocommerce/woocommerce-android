@@ -35,6 +35,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         launch {
+            @Suppress("MagicNumber")
             delay(3000)
             _viewState.value = _viewState.value?.copy(isLoading = false)
         }
