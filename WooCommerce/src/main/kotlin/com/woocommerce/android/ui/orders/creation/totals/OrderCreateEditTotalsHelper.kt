@@ -150,7 +150,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         if (!selectedGiftCard.isNullOrEmpty()) {
             TotalsSectionsState.Line.Button(
                 text = resourceProvider.getString(R.string.order_gift_card),
-                value = bigDecimalFormatter(giftCardDiscountedAmount ?: BigDecimal.ZERO),
+                value = giftCardDiscountedAmount?.let { "-" + bigDecimalFormatter(it) } ?: "",
                 extraValue = selectedGiftCard,
                 enabled = enabled,
                 onClick = onClick,

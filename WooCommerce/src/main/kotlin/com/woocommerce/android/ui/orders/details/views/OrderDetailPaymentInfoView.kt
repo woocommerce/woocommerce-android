@@ -95,7 +95,6 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     private fun showPaymentSubDetails() {
         binding.paymentInfoProductsTotalSection.show()
         binding.paymentInfoDiscountSection.show()
-        binding.paymentInfoGiftCardSection.show()
         binding.paymentInfoFeesSection.show()
         binding.paymentInfoShippingSection.show()
         binding.paymentInfoTaxesSection.show()
