@@ -35,6 +35,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,9 +56,17 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 
 @Composable
-fun OrderCreateEditTotalsView(state: TotalsSectionsState) {
+fun OrderCreateEditTotalsView(viewModel: OrderCreateEditViewModel) {
+    viewModel.totalsData.observeAsState().value?.let {
+        OrderCreateEditTotalsView(it)
+    }
+}
+
+@Composable
+private fun OrderCreateEditTotalsView(state: TotalsSectionsState) {
     AnimatedVisibility(
         visible = state is TotalsSectionsState.Full,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),

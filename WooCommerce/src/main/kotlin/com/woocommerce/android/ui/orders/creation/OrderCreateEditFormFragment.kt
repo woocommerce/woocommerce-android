@@ -197,6 +197,12 @@ class OrderCreateEditFormFragment :
         scrollView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
             viewModel.onScreenScrolledVertically(scrollY, oldScrollY)
         }
+        totalsSection.setContent {
+            OrderCreateEditTotalsView(viewModel)
+        }
+        totalsSection.post {
+            scrollView.setPadding(0, 0, 0, totalsSection.height)
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
@@ -337,16 +343,6 @@ class OrderCreateEditFormFragment :
 
         viewModel.customAmounts.observe(viewLifecycleOwner) {
             bindCustomAmountsSection(binding.customAmountsSection, it)
-        }
-
-        viewModel.totalsData.observe(viewLifecycleOwner) {
-            binding.totalsSection.show()
-            binding.totalsSection.setContent {
-                OrderCreateEditTotalsView(state = it)
-            }
-            binding.scrollView.post {
-                binding.scrollView.setPadding(0, 0, 0, binding.totalsSection.height)
-            }
         }
 
         observeViewStateChanges(binding)
