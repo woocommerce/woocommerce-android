@@ -55,17 +55,23 @@ import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignP
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
-        BlazeCampaignCreationPreviewScreen(previewState)
+        BlazeCampaignCreationPreviewScreen(
+            previewState,
+            viewModel::onBackPressed
+        )
     }
 }
 
 @Composable
-private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiState) {
+private fun BlazeCampaignCreationPreviewScreen(
+    previewState: CampaignPreviewUiState,
+    onBackPressed: () -> Unit
+) {
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
-                onNavigationButtonClick = { /*TODO*/ },
+                onNavigationButtonClick = onBackPressed,
                 navigationIcon = Filled.ArrowBack
             )
         },
@@ -384,7 +390,8 @@ fun CampaignScreenPreview() {
                     maxLinesValue = 1,
                 )
             )
-        )
+        ),
+        onBackPressed = { }
     )
 }
 

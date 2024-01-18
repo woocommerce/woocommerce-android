@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -37,6 +38,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             delay(3000)
             _viewState.value = _viewState.value?.copy(isLoading = false)
         }
+    }
+
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     private fun CampaignPreview.toCampaignPreviewUiState(isLoading: Boolean = false) =
