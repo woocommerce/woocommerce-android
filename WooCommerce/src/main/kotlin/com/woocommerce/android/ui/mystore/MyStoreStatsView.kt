@@ -611,14 +611,14 @@ class MyStoreStatsView @JvmOverloads constructor(
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
-    private fun trackUnexpectedFormat(result: String, dateString: String){
+    private fun trackUnexpectedFormat(result: String, dateString: String) {
         if (result.isEmpty()) {
             AnalyticsTracker.track(
                 AnalyticsEvent.STATS_UNEXPECTED_FORMAT,
                 mapOf(
                     KEY_DATE to dateString,
                     KEY_GRANULARITY to activeGranularity.name,
-                    KEY_RANGE to  revenueStatsModel?.rangeId
+                    KEY_RANGE to revenueStatsModel?.rangeId
                 )
             )
         }
