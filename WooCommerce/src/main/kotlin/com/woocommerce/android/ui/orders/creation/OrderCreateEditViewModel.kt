@@ -1687,6 +1687,12 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onScreenScrolledVertically(scrollY: Int, oldScrollY: Int) {
+        if (scrollY > oldScrollY && viewState.isTotalsExpanded) {
+            viewState = viewState.copy(isTotalsExpanded = false)
+        }
+    }
+
     fun orderContainsProductsOrCustomAmounts() =
         orderDraft.value?.hasProducts() == true || orderDraft.value?.hasCustomAmounts() == true
 

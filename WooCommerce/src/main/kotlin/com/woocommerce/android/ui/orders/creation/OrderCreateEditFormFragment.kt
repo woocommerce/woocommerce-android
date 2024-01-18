@@ -190,6 +190,13 @@ class OrderCreateEditFormFragment :
         initProductsSection()
         initAdditionalInfoCollectionSection()
         initTaxRateSelectorSection()
+        initTotalsSection()
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initTotalsSection() {
+        scrollView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+            viewModel.onScreenScrolledVertically(scrollY, oldScrollY)
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
