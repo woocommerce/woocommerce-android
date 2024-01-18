@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -65,6 +66,12 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             )
         }
     }
+
+    fun onEditAdClicked() {
+        triggerEvent(NavigateToEditAdScreen)
+    }
+
+    object NavigateToEditAdScreen : MultiLiveEvent.Event()
 
     sealed interface CampaignPreviewUiState {
         object Loading : CampaignPreviewUiState

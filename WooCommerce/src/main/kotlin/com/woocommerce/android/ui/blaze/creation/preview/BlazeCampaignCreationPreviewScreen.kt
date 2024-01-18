@@ -55,12 +55,15 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
-        BlazeCampaignCreationPreviewScreen(previewState)
+        BlazeCampaignCreationPreviewScreen(previewState, viewModel::onEditAdClicked)
     }
 }
 
 @Composable
-private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiState) {
+private fun BlazeCampaignCreationPreviewScreen(
+    previewState: CampaignPreviewUiState,
+    onEditAdClicked: () -> Unit
+) {
     Scaffold(
         topBar = {
             Toolbar(
@@ -80,7 +83,12 @@ private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiSt
         ) {
             when (previewState) {
                 is Loading -> CampaignPreviewLoading()
-                is CampaignPreviewContent -> CampaignPreviewContent(state = previewState)
+                is CampaignPreviewContent -> {
+                    CampaignPreviewContent(
+                        state = previewState,
+                        onEditAdClicked = onEditAdClicked
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -160,11 +168,13 @@ private fun CampaignPreviewLoading(
 @Composable
 fun CampaignPreviewContent(
     state: CampaignPreviewContent,
+    onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         CampaignHeader(
             state = state,
+            onEditAdClicked = onEditAdClicked,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -181,7 +191,11 @@ fun CampaignPreviewContent(
 }
 
 @Composable
-fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier) {
+fun CampaignHeader(
+    state: CampaignPreviewContent,
+    onEditAdClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -247,7 +261,7 @@ fun CampaignHeader(state: CampaignPreviewContent, modifier: Modifier = Modifier)
         }
         WCTextButton(
             modifier = Modifier.padding(top = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = onEditAdClicked,
         ) {
             Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
         }
@@ -380,7 +394,8 @@ fun CampaignScreenPreview() {
                 displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
                 maxLinesValue = 1,
             )
-        )
+        ),
+        {}
     )
 }
 
