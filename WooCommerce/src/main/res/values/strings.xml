@@ -3836,6 +3836,13 @@
     <string name="blaze_campaign_preview_details_destination_url">Ad destination</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
     <!--
+    Blaze campaign preview screen
+    -->
+    <string name="blaze_campaign_edit_ad_change_image_button">Change image</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Tagline</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
+    <!--
     Blaze other
     -->
     <string name="blaze" translatable="false">Blaze</string>
