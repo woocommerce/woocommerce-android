@@ -397,6 +397,6 @@ fun CampaignScreenPreview() {
 
 @LightDarkThemePreviews
 @Composable
-fun CampaignLoadingScreenPreview() {
+fun AdDetailsLoadingPreview() {
     AdDetailsLoading()
 }
