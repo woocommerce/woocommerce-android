@@ -23,7 +23,6 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingSelectPay
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
@@ -136,7 +135,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showPaymentPluginSelectionState(layout, state)
             is CardReaderOnboardingViewState.CashOnDeliveryDisabledState ->
                 showCashOnDeliveryDisabledState(layout, state)
-        }.exhaustive
+        }
     }
 
     private fun showCashOnDeliveryDisabledState(
@@ -407,7 +406,10 @@ sealed class CardReaderFlowParam : Parcelable {
             val paymentType: PaymentType
         ) : PaymentOrRefund() {
             enum class PaymentType {
-                SIMPLE, ORDER, TRY_TAP_TO_PAY,
+                SIMPLE,
+                ORDER,
+                ORDER_CREATION,
+                TRY_TAP_TO_PAY,
             }
         }
 

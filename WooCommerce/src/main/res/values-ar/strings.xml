@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:05+0000
+Translation-Revision-Date: 2024-01-09 13:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">التعرُّف على كيفية عمل Blaze</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">بدء الحملة الخاصة بك</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">إعلاناتك على ملايين المواقع داخل شبكات ووردبريس.كوم وTumblr.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">الوصول إلى عدد ضخم من الجمهور</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"تقدِّم الأداة التي نطرحها منتجك في المكان الذي يستطيع فيه المتسوقون المهتمون العثور عليه\".</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">أصبح الوصول العالمي بسيطًا</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">يمكنك تشغيل الإعلانات في غضون دقائق - لا يلزم وجود خبرة أو ميزانية كبيرة، بدءًا من 5 دولارات أمريكية فقط.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">بدء سريع، تأثير أكبر</string>
+    <string name="blaze_campaign_creation_new_intro_description">تم تصميم الأداة التي نطرحها لتمكين التجار من خلال عمليات إعداد سريعة وبسيطة للحملات الإعلانية لتحقيق أقصى قدر من زيادة حركة المرور.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">ترويج</string>
+    <string name="blaze_campaign_creation_product_selector_title">جاهز للترويج</string>
+    <string name="blaze_campaign_creation_new_intro_title">تمكين الملايين من مشاهدة منتجاتك</string>
+    <string name="theme_preview_activate_theme_button_settings">استخدام ⁦%1$s⁩</string>
+    <string name="theme_preview_activate_theme_button_store_creation">البدء بـ ⁦%1$s⁩</string>
+    <string name="store_creation_installation_async_dialog_switch_store">تبديل المتجر</string>
+    <string name="store_creation_installation_async_dialog_message">هل تريد بدء إدارته الآن؟</string>
+    <string name="store_creation_installation_async_dialog_title">أصبح متجرك الجديد جاهزًا</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">الوديعة الأخيرة</string>
+    <string name="order_creation_expand_collapse_order_totals">توسيع إجماليات طلبات الطي</string>
+    <string name="order_creation_collect_payment_button">تحصيل المدفوعات</string>
+    <string name="order_creation_gift_card_text_error">ينبغي أن يكون الكود بتنسيق XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">إدخال الكود</string>
+    <string name="order_creation_coupon_button">القسيمة</string>
+    <string name="theme_picker_error_message">فشل تحميل القوالب.</string>
+    <string name="configuration_complete">اكتمل التكوين</string>
+    <string name="scan_to_update_inventory_undo_snackbar">تم التراجع عن تحديث الكمية</string>
+    <string name="theme_picker_loading_current_theme_failed">يتعذر تحميل قالبك الحالي</string>
+    <string name="theme_preview_type_desktop">سطح المكتب</string>
+    <string name="theme_preview_type_tablet">جهاز لوحي</string>
+    <string name="theme_preview_type_mobile">الهاتف المحمول</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">النقر هنا</string>
+    <string name="theme_picker_carousel_error_placeholder_message">عفوًا، يبدو أن هناك مشكلة في تحميل القالب. يرجى ⁦%1$s⁩ للحصول على عرض توضيحي فوري.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">يمكنك العثور على قالبك المثالي في متجر قوالب WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">القالب الحالي</string>
+    <string name="theme_picker_settings_title">تجربة مظهر جديد</string>
+    <string name="product_creation_survey_button_skip">تخطٍّ</string>
+    <string name="product_creation_survey_button_open">بدء الاستبيان</string>
+    <string name="product_creation_survey_description">لقد استخدمت ميزتنا المدعومة بالذكاء الاصطناعي لإضافة المنتجات مرات عديدة الآن. نرغب في التعرُّف على أفكارك لتحسين الميزة.</string>
+    <string name="product_creation_survey_title">إسهاماتك محل تقدير!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">يؤدي تمكين Pay In Person إلى السماح للعملاء بالدفع إليك للحصول على الطلبات على الإنترنت عند التسليم نقدًا أو باستخدام البطاقة.\n\nلا يزال بالإمكان إنشاء الطلبات يدويًا من دون تمكين هذه الميزة.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">هل تريد إضافة Pay In Person إلى طرق السداد الخاصة بك على الويب؟</string>
+    <string name="card_reader_onboarding_contact_us">هل تحتاج إلى بعض المساعدة؟ &lt;a href=\'\'&gt;الاتصال بنا&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">استرداد المبلغ المخصص</string>
+    <string name="order_refunds_custom_amount_refund">استرداد المبلغ المخصص</string>
+    <string name="barcode_scanning_scan_product_barcode_label">مسح الرمز الشريطي للمنتج ضوئيًا</string>
+    <string name="order_creation_add_gift_card">إضافة بطاقة الهدايا</string>
     <string name="scan_to_update_inventory_product_label">المنتج</string>
     <string name="scan_to_update_inventory_quantity_label">الكمية</string>
     <string name="scan_to_update_inventory_original_quantity_label">الكمية الأصلية</string>
@@ -115,12 +161,7 @@ Language: ar
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">طي/توسيع ملخص الإيداع</string>
     <string name="card_reader_hub_deposit_summary_learn_more">معرفة المزيد حول موعد الحصول على أموالك</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">يتم إيداع الأموال المتوافرة تلقائيًا في كل شهر على %s.</string>
-    <string name="card_reader_hub_deposit_summary_last">الأخير</string>
-    <string name="card_reader_hub_deposit_summary_next">التالي</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">الودائع</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">تصبح الأموال متوافرة بعد تعليقها لمدة %d من الأيام.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d من الودائع</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d من الودائع</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">الأموال المعلّقة</string>
     <string name="card_reader_hub_deposit_summary_available_funds">الأموال المتوافرة</string>
     <string name="order_creation_payment_tax_label">الضرائب</string>
@@ -1111,8 +1152,6 @@ Language: ar
     <string name="login_site_picker_try_another_address">تجربة عنوان آخر</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">فشل تمكين خيار الدفع نقدًا عند التوصيل. يرجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">تمكين الدفع بشكل شخصي</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">يتيح لك خيار \"الدفع بشكل شخصي\" الموجود في إجراءات السداد الخاصة بك قبول المدفوعات باستخدام البطاقات أو نقدًا عند التحصيل أو التوصيل.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">إضافة خيار \"الدفع بشكل شخصي\" إلى إجراءات السداد الخاصة بك</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول المدفوعات الشخصية</string>
     <string name="login_site_picker_new_to_woo">جديد على WooCommerce</string>
     <string name="site_discovery_postlogin_failure">حدث خطأ، يرجى الاتصال بالدعم</string>

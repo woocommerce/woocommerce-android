@@ -14,6 +14,8 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_EDITED_RESULT
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_RESULT
 import com.woocommerce.android.ui.orders.creation.configuration.SelectProductConfigurationResult
 import com.woocommerce.android.ui.products.ProductFilterResult
@@ -21,6 +23,8 @@ import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationPickerResult
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -82,6 +86,14 @@ class ProductSelectorFragment : BaseFragment() {
             viewModel.onSelectedVariationsUpdated(it)
         }
 
+        handleResult<VariationPickerResult>(VariationPickerFragment.VARIATION_PICKER_RESULT) {
+            // This means we are in the single-selection mode, return result immediately
+            navigateBackWithResult(
+                PRODUCT_SELECTOR_RESULT,
+                listOf(SelectedItem.ProductVariation(it.productId, it.variationId))
+            )
+        }
+
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
             viewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
@@ -93,7 +105,11 @@ class ProductSelectorFragment : BaseFragment() {
         }
 
         handleResult<SelectProductConfigurationResult>(PRODUCT_CONFIGURATION_RESULT) { result ->
-            viewModel.onConfigurationChanged(result.productId, result.productConfiguration)
+            viewModel.onConfigurationSaved(result.productId, result.productConfiguration)
+        }
+
+        handleResult<EditProductConfigurationResult>(PRODUCT_CONFIGURATION_EDITED_RESULT) { result ->
+            viewModel.onConfigurationEdited(result.productId, result.productConfiguration)
         }
     }
 }

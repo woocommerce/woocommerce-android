@@ -30,7 +30,8 @@ class ProductSelectorScreenTest {
                     recentProducts = emptyList(),
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
-                    searchState = ProductSelectorViewModel.SearchState.EMPTY
+                    searchState = ProductSelectorViewModel.SearchState.EMPTY,
+                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
@@ -40,7 +41,8 @@ class ProductSelectorScreenTest {
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
                 onClearFiltersButtonClick = {},
-                trackConfigurableProduct = {}
+                trackConfigurableProduct = {},
+                onEditConfiguration = { _ -> }
             )
         }
 
@@ -58,7 +60,8 @@ class ProductSelectorScreenTest {
                     recentProducts = emptyList(),
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
-                    searchState = ProductSelectorViewModel.SearchState.EMPTY
+                    searchState = ProductSelectorViewModel.SearchState.EMPTY,
+                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
@@ -68,7 +71,8 @@ class ProductSelectorScreenTest {
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
                 onClearFiltersButtonClick = {},
-                trackConfigurableProduct = {}
+                trackConfigurableProduct = {},
+                onEditConfiguration = { _ -> }
             )
         }
 

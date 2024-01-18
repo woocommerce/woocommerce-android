@@ -459,7 +459,8 @@ platform :android do
 
     configure_apply(force: is_ci)
 
-    check_translation_progress_all
+    # Don't check translation coverage in CI
+    check_translation_progress_all unless is_ci
     download_translations(options)
 
     # Bump the release version and build code
@@ -793,7 +794,7 @@ platform :android do
     )
 
     UI.important('Pushing changes to remote')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless is_ci || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
@@ -1280,9 +1281,9 @@ platform :android do
     # Read the current release version from `version.properties` and parse it into an AppVersion object
     current_version = VERSION_FORMATTER.parse(VERSION_FILE.read_version_name)
     # Calculate the next major version number
-    beta_version_next_version = VERSION_CALCULATOR.next_minor_version(version: current_version)
+    next_version = VERSION_CALCULATOR.next_release_version(version: current_version)
     # Calculate the next build number
-    beta_version_first = VERSION_CALCULATOR.next_build_number(version: beta_version_next_version)
+    beta_version_first = VERSION_CALCULATOR.next_build_number(version: next_version)
     # Return the formatted release version
     VERSION_FORMATTER.beta_version(beta_version_first)
   end
@@ -1324,7 +1325,7 @@ end
 # -----------------------------------------------------------------------------------
 def create_release_management_pull_request(base_branch:, title:)
   create_pull_request(
-    api_token: get_required_env('GITHUB_TOKEN'),
+    api_token: ENV.fetch('GITHUB_TOKEN', nil),
     repo: GITHUB_REPO,
     title: title,
     head: Fastlane::Helper::GitHelper.current_git_branch,

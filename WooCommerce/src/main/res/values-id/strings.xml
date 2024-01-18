@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 09:54:04+0000
+Translation-Revision-Date: 2024-01-09 09:54:25+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Cari tahu cara kerja Blaze</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Buat kampanye Anda</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Jutaan situs dalam jaringan WordPress.com dan Tumblr jadi ruang iklan Anda.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Jangkau audiens yang besar</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Berkat alat kami, pembeli yang tertarik dengan produk Anda bisa lebih mudah menemukannya.\"</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Seluruh dunia dalam jangkauan</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Pasang iklan dalam hitungan menit — tanpa perlu jadi ahli atau banyak biaya, dari $5 USD saja</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Pasang praktis, hasil strategis</string>
+    <string name="blaze_campaign_creation_new_intro_description">Menghadirkan proses penyiapan iklan yang cepat nan ringkas, alat kami membantu para penjual memaksimalkan pengunjung situsnya.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promosikan</string>
+    <string name="blaze_campaign_creation_product_selector_title">Siap mempromosikan</string>
+    <string name="blaze_campaign_creation_new_intro_title">Tampilkan produk ke jutaan pasang mata</string>
+    <string name="theme_preview_activate_theme_button_settings">Pakai %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Mulai dengan %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Beralih Toko</string>
+    <string name="store_creation_installation_async_dialog_message">Ingin mulai mengatur sekarang?</string>
+    <string name="store_creation_installation_async_dialog_title">Toko baru Anda sudah siap</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">DEPOSIT TERAKHIR</string>
+    <string name="order_creation_expand_collapse_order_totals">Buka tutup rincian total pesanan</string>
+    <string name="order_creation_collect_payment_button">Terima Pembayaran</string>
+    <string name="order_creation_gift_card_text_error">Kode harus dalam format XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Masukkan kode</string>
+    <string name="order_creation_coupon_button">Kupon</string>
+    <string name="theme_picker_error_message">Gagal memuat tema.</string>
+    <string name="configuration_complete">Konfigurasi selesai</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Perbarui Jumlah yang Dibatalkan</string>
+    <string name="theme_picker_loading_current_theme_failed">Tidak dapat memuat tema Anda saat ini</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Seluler</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">ketuk di sini</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Maaf, sepertinya ada masalah saat memuat templat. Mohon %1$s untuk demo langsung.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Temukan tema ideal Anda di Toko Tema WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Tema saat ini</string>
+    <string name="theme_picker_settings_title">Coba tampilan baru</string>
+    <string name="product_creation_survey_button_skip">Lewati</string>
+    <string name="product_creation_survey_button_open">Mulai Survei</string>
+    <string name="product_creation_survey_description">Anda telah menggunakan fitur yang didukung AI untuk menambahkan produk beberapa kali. Sampaikan masukan Anda agar kami bisa meningkatkan fitur.</string>
+    <string name="product_creation_survey_title">Kami menghargai masukan Anda!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mengaktifkan Pembayaran Langsung memungkinkan pelanggan membayar pesanan online saat pesanan diterima dengan uang tunai atau kartu.\n\nPesanan dapat dibuat secara manual tanpa mengaktifkan fitur ini.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Apakah Anda ingin menambahkan fitur Pembayaran Langsung saat checkout di situs web?</string>
+    <string name="card_reader_onboarding_contact_us">Butuh bantuan? &lt;a href=\'\'&gt;Hubungi kami&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Kembalikan Dana Sebesar Jumlah Kustom</string>
+    <string name="order_refunds_custom_amount_refund">Pengembalian dana sebesar jumlah kustom</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Pindai Barcode Produk</string>
+    <string name="order_creation_add_gift_card">Tambahkan Kartu Hadiah</string>
     <string name="scan_to_update_inventory_product_label">Produk</string>
     <string name="scan_to_update_inventory_quantity_label">Jumlah</string>
     <string name="scan_to_update_inventory_original_quantity_label">Jumlah awal</string>
@@ -115,12 +161,7 @@ Language: id
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Ciutkan/perluas ringkasan deposit</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Baca selengkapnya tentang kapan Anda akan menerima dana</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Deposit dana yang tersedia dilakukan secara otomatis tiap bulan pada %s.</string>
-    <string name="card_reader_hub_deposit_summary_last">Terakhir</string>
-    <string name="card_reader_hub_deposit_summary_next">Berikutnya</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Deposit</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Dana akan tersedia setelah tertunda selama %d hari.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d deposit</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d deposit</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Dana yang tertunda</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Dana yang tersedia</string>
     <string name="order_creation_payment_tax_label">Pajak</string>
@@ -1111,8 +1152,6 @@ Language: id
     <string name="login_site_picker_try_another_address">Coba alamat lainnya</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Gagal mengaktifkan bayar di tempat. Silakan coba lagi nanti.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktifkan Pembayaran Langsung</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Dengan pilihan \"Pembayaran Langsung\" saat checkout, Anda dapat menerima pembayaran kartu atau tunai saat pengambilan atau penerimaan barang.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Tambahkan Pembayaran Langsung pada proses checkout Anda</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang Pembayaran Langsung</string>
     <string name="login_site_picker_new_to_woo">Baru menggunakan WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Terjadi kegagalan, silakan hubungi dukungan</string>

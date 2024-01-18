@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 17:54:04+0000
+Translation-Revision-Date: 2024-01-09 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Echa un vistazo a cómo funciona Blaze</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Empieza tu campaña</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Tus anuncios en millones de sitios de la red de WordPress.com y Tumblr.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Accede a una gran audiencia</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">«Nuestra herramienta presenta tu producto donde los compradores interesados puedan encontrarlo».</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Alcance global simplificado</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lanza anuncios en minutos, sin necesidad de contar con experiencia ni presupuesto, por tan solo 5 dólares estadounidenses.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Comienzo rápido, gran impacto</string>
+    <string name="blaze_campaign_creation_new_intro_description">Nuestra herramienta está diseñada para impulsar a comerciantes con configuraciones de campañas de anuncios sencillas y rápidas para potenciar al máximo el tráfico.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promocionar</string>
+    <string name="blaze_campaign_creation_product_selector_title">Lista para ser promocionada</string>
+    <string name="blaze_campaign_creation_new_intro_title">Haz que millones de personas vean tus productos</string>
+    <string name="theme_preview_activate_theme_button_settings">Usa %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Empieza con %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Cambiar de tienda</string>
+    <string name="store_creation_installation_async_dialog_message">¿Quieres empezar a gestionarla ahora?</string>
+    <string name="store_creation_installation_async_dialog_title">Tu tienda está lista</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">ÚLTIMO DEPÓSITO</string>
+    <string name="order_creation_expand_collapse_order_totals">Ampliar contraer total de pedidos</string>
+    <string name="order_creation_collect_payment_button">Recibir pago</string>
+    <string name="order_creation_gift_card_text_error">El código debe tener el formato XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Introduce el código</string>
+    <string name="order_creation_coupon_button">Cupón</string>
+    <string name="theme_picker_error_message">No se han podido cargar los temas.</string>
+    <string name="configuration_complete">Configuración completada</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Actualizar cantidad deshecha</string>
+    <string name="theme_picker_loading_current_theme_failed">No se puede cargar el tema actual</string>
+    <string name="theme_preview_type_desktop">Ordenador</string>
+    <string name="theme_preview_type_tablet">Tableta</string>
+    <string name="theme_preview_type_mobile">Móvil</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">toca aquí</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Lo siento, parece que hay un problema con la carga de la plantilla. %1$s para ver una demostración en directo.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Puedes buscar el tema perfecto en la tienda de temas de WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Tema actual</string>
+    <string name="theme_picker_settings_title">Prueba una nueva imagen.</string>
+    <string name="product_creation_survey_button_skip">Omitir</string>
+    <string name="product_creation_survey_button_open">Empieza la encuesta.</string>
+    <string name="product_creation_survey_description">Ya has utilizado varias veces nuestra función asistida por IA para añadir productos. Nos encantaría conocer tu opinión para hacerlo aún mejor.</string>
+    <string name="product_creation_survey_title">Valoramos tu opinión.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Activar el pago en persona permite a los clientes pagar sus pedidos en línea en el momento de la entrega en efectivo o con tarjeta.\n\nLos pedidos pueden seguir creándose manualmente sin activar esta función.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">¿Quieres añadir el pago en persona a tu caja web?</string>
+    <string name="card_reader_onboarding_contact_us">¿Necesitas ayuda? &lt;a href=\'\'&gt;Contacto&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Devolver importe personalizado</string>
+    <string name="order_refunds_custom_amount_refund">Devolución de importes personalizados</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Escanear código de barras de producto</string>
+    <string name="order_creation_add_gift_card">Añadir tarjeta regalo</string>
     <string name="scan_to_update_inventory_product_label">Producto</string>
     <string name="scan_to_update_inventory_quantity_label">Cantidad</string>
     <string name="scan_to_update_inventory_original_quantity_label">Cantidad original</string>
@@ -115,12 +161,7 @@ Language: es
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Contraer/ampliar resumen de depósitos</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Obtén más información acerca de cuándo recibirás tus fondos.</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Los fondos disponibles se depositan automáticamente cada mes en %s.</string>
-    <string name="card_reader_hub_deposit_summary_last">Más reciente</string>
-    <string name="card_reader_hub_deposit_summary_next">Siguiente</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Depósitos</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Los fondos estarán disponibles después de estar pendientes durante %d día.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depósito</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depósitos</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Fondos pendientes</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Fondos disponibles</string>
     <string name="order_creation_payment_tax_label">Impuestos</string>
@@ -1111,8 +1152,6 @@ Language: es
     <string name="login_site_picker_try_another_address">Prueba con otra dirección</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">No se ha podido activar el pago contra reembolso. Inténtalo de nuevo más tarde.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Activar Pagos en persona</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Establecer la opción \"Pagos en persona\" en la página de finalizar compra permite aceptar pagos con tarjeta o en efectivo en la recogida o entrega.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Añade Pagos en persona a la página de finalizar compra</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Más información&lt;/a&gt; sobre los Pagos en persona</string>
     <string name="login_site_picker_new_to_woo">Nuevo en WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Se ha producido un error, contacta con soporte.</string>

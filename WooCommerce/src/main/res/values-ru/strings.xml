@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 17:54:04+0000
+Translation-Revision-Date: 2024-01-09 20:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Как работает Blaze</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Запустите кампанию</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Ваша реклама появится на миллионах сайтов в сетях WordPress.com и Tumblr.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Охватите широкую аудиторию</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">«Наш инструмент покажет ваш товар именно там, где его смогут увидеть заинтересованные покупатели».</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Простота глобального охвата</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Запуск рекламы за несколько минут: вам не понадобится ни навык, ни солидный бюджет, можно начать всего с 5 долларов США.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Быстрый старт, значительный эффект</string>
+    <string name="blaze_campaign_creation_new_intro_description">Наш инструмент разработан специально для того, чтобы дать продавцам возможность простой и быстрой настройки рекламных кампаний с целью максимального увеличения посещаемости.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Продвижение</string>
+    <string name="blaze_campaign_creation_product_selector_title">Готово к продвижению</string>
+    <string name="blaze_campaign_creation_new_intro_title">Пусть миллионы покупателей увидят ваши товары</string>
+    <string name="theme_preview_activate_theme_button_settings">Использовать %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Начать с %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Переключиться на другой магазин</string>
+    <string name="store_creation_installation_async_dialog_message">Хотите приступить к управлению прямо сейчас?</string>
+    <string name="store_creation_installation_async_dialog_title">Ваш новый магазин готов</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">ПОСЛЕДНЯЯ ОПЛАТА</string>
+    <string name="order_creation_expand_collapse_order_totals">Развернуть/свернуть итоговую сумму заказа</string>
+    <string name="order_creation_collect_payment_button">Получение платежа</string>
+    <string name="order_creation_gift_card_text_error">Код должен вводиться в формате XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Введите код</string>
+    <string name="order_creation_coupon_button">Купон</string>
+    <string name="theme_picker_error_message">Не удалось загрузить темы.</string>
+    <string name="configuration_complete">Настройка выполнена</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Обновление количества отменено</string>
+    <string name="theme_picker_loading_current_theme_failed">Не удалось загрузить текущую тему</string>
+    <string name="theme_preview_type_desktop">ПК</string>
+    <string name="theme_preview_type_tablet">Планшет</string>
+    <string name="theme_preview_type_mobile">Мобильный телефон</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">нажмите здесь</string>
+    <string name="theme_picker_carousel_error_placeholder_message">При загрузке шаблона возникла проблема. %1$s для демонстрационного режима.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Найдите самую подходящую для вас тему в магазине тем WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Текущая тема</string>
+    <string name="theme_picker_settings_title">Попробуйте новый дизайн</string>
+    <string name="product_creation_survey_button_skip">Пропустить</string>
+    <string name="product_creation_survey_button_open">Начать опрос</string>
+    <string name="product_creation_survey_description">Вы уже несколько раз воспользовались нашей функцией добавления товаров при помощи ИИ. Мы хотели бы узнать ваши впечатления, чтобы сделать её ещё лучше.</string>
+    <string name="product_creation_survey_title">Мы высоко ценим ваше мнение!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Активация функции очной оплаты даёт возможность клиенту оплачивать заказ при доставке наличными или банковской картой.\n\nЗаказы можно по-прежнему создавать вручную, не активируя этой функции.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Хотите добавить функцию очной оплаты к оформлению заказа онлайн?</string>
+    <string name="card_reader_onboarding_contact_us">Требуется помощь? &lt;a href=\'\'&gt;Свяжитесь с нами&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Возместить индивидуальную сумму</string>
+    <string name="order_refunds_custom_amount_refund">Возврат индивидуальной суммы</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Сканировать штрихкод товара</string>
+    <string name="order_creation_add_gift_card">Добавить подарочную карту</string>
     <string name="scan_to_update_inventory_product_label">Товар</string>
     <string name="scan_to_update_inventory_quantity_label">Количество</string>
     <string name="scan_to_update_inventory_original_quantity_label">Исходное количество</string>
@@ -115,12 +161,7 @@ Language: ru
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Свернуть/развернуть выписку по счёту</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Узнайте, когда вы сможете получить ваши средства</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Доступные средства вносятся на счёт автоматически каждый месяц %s.</string>
-    <string name="card_reader_hub_deposit_summary_last">Последний</string>
-    <string name="card_reader_hub_deposit_summary_next">Следующий</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Предоплата</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Денежные средства станут доступны после утверждения в течение %d дн.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">Внесено на счёт: %d</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">Внесено на счёт: %d</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Средства на утверждении</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Доступные средства</string>
     <string name="order_creation_payment_tax_label">Налоги</string>
@@ -1111,8 +1152,6 @@ Language: ru
     <string name="login_site_picker_try_another_address">Используйте другой адрес</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не удалось включить наложенный платёж. Повторите попытку позже.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Включить опцию «Очная оплата»</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Опция «Очная оплата» позволяет вам принимать плату наличными и кредитными картами при получении товара покупателем.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Добавьте опцию «Очная оплата» для оформления заказа</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Подробности&lt;/a&gt; об очных платежах</string>
     <string name="login_site_picker_new_to_woo">Недавно на WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Произошла ошибка, обратитесь в службу поддержки</string>

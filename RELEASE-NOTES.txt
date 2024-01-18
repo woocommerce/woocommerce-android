@@ -1,4 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.2
+-----
+- [*] [Internal] Tracking of "country" and "currency" properties for entry and exit of the payments flows [https://github.com/woocommerce/woocommerce-android/pull/10528]
+- [*] Fixed bug when gift card was not displayed in the "totals" sections on the order creation/editing screens [https://github.com/woocommerce/woocommerce-android/pull/10546]
+
+17.1
+-----
+
+17.0
+-----
+
+16.9
+-----
+- [**] We moved order creation section to the bottom of the screen to make it easier to reach and freeing up the space for the controls. The order editing section is removed from the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/10505]
+- [***] [Internal] Fixed tax calculation in order creation [https://github.com/woocommerce/woocommerce-android/pull/10446]
+- [*] [Internal] "Lock" icon is fully visible after a product is deleted from an order [https://github.com/woocommerce/woocommerce-android/pull/10508]
+
 16.8
 -----
 - [*] [Internal] Deposit summary on the payments screen got some design improvements [https://github.com/woocommerce/woocommerce-android/pull/10408]

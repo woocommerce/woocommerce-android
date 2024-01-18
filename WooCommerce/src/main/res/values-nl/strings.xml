@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:05+0000
+Translation-Revision-Date: 2024-01-09 15:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Ontdek hoe Blaze werkt</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Start je campagne</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Je advertenties op miljoenen sites binnen de WordPress.com- en Tumblr-netwerken.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Bereik een groot publiek</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">Onze tool toont je product daar waar geïnteresseerde winkelaars dit kunnen vinden. \"</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Wereldwijd bereik vereenvoudigd</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lanceer je advertenties binnen een paar minuten, zonder benodigde ervaring of een groot budget. Vanaf slecht $ 5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Snel aan de slag, grote impact</string>
+    <string name="blaze_campaign_creation_new_intro_description">Onze tool is zo ontworpen dat verkopers snel en eenvoudig een campagne kunnen opzetten om meer klanten te kunnen trekken.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promoten</string>
+    <string name="blaze_campaign_creation_product_selector_title">Klaar om te promoten</string>
+    <string name="blaze_campaign_creation_new_intro_title">Zorg dat je producten door miljoenen mensen worden gezien</string>
+    <string name="theme_preview_activate_theme_button_settings">Gebruik %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Begin met %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Winkel wijzigen</string>
+    <string name="store_creation_installation_async_dialog_message">Wil je nu beginnen je winkelbeheer?</string>
+    <string name="store_creation_installation_async_dialog_title">Je nieuw winkel staat klaar</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">VORIGE STORTING</string>
+    <string name="order_creation_expand_collapse_order_totals">Besteltotalen uitklappen/samenvouwen</string>
+    <string name="order_creation_collect_payment_button">Betaling innen</string>
+    <string name="order_creation_gift_card_text_error">De code moet de volgende indeling hebben: XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Voer code in</string>
+    <string name="order_creation_coupon_button">Coupon</string>
+    <string name="theme_picker_error_message">Thema\'s laden mislukt.</string>
+    <string name="configuration_complete">Configuratie voltooid</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Aantal bijwerken ongedaan gemaakt</string>
+    <string name="theme_picker_loading_current_theme_failed">Je huidige thema kon niet geladen worden</string>
+    <string name="theme_preview_type_desktop">Bureaublad</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Mobiel</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">tik hier</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Het lijkt erop dat er een probleem is met het laden van de template. %1$s voor een live demo.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Je kan jouw perfecte thema vinden in de WooCommerce Theme Store.</string>
+    <string name="theme_picker_current_theme_title">Huidig thema</string>
+    <string name="theme_picker_settings_title">Probeer een nieuwe look</string>
+    <string name="product_creation_survey_button_skip">Overslaan</string>
+    <string name="product_creation_survey_button_open">Begin het onderzoek</string>
+    <string name="product_creation_survey_description">Je hebt onze AI-ondersteunde functie om nu meerdere keren gebruikt om producten toe te voegen. We horen graag je mening om de functie nog beter te kunnen maken.</string>
+    <string name="product_creation_survey_title">We waarderen je input!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Door Fysiek betalen in te schakelen kunnen klanten bij levering met cash of kaart betalen voor online bestellingen.\n\nBestellingen kunnen nog steeds handmatig aangemaakt worden als je deze functie niet inschakelt.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Wil je Fysiek betalen toevoegen aan online betalen?</string>
+    <string name="card_reader_onboarding_contact_us">Hulp nodig? &lt;a href=\'\'&gt;Neem contact met ons op&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Aangepast bedrag restitueren</string>
+    <string name="order_refunds_custom_amount_refund">Restitutie voor aangepast bedrag</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Barcode van product scannen</string>
+    <string name="order_creation_add_gift_card">Een cadeaubon toevoegen?</string>
     <string name="scan_to_update_inventory_product_label">Product</string>
     <string name="scan_to_update_inventory_quantity_label">Aantal</string>
     <string name="scan_to_update_inventory_original_quantity_label">Originele aantal</string>
@@ -109,12 +155,7 @@ Language: nl
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Samenvatting stortingen uit-/inklappen</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Meer informatie over wanneer je je bedragen ontvangt</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Beschikbare bedragen worden automatisch elke maand op de %s gestort.</string>
-    <string name="card_reader_hub_deposit_summary_last">Laatste</string>
-    <string name="card_reader_hub_deposit_summary_next">Volgende</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Stortingen</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Bedragen komen na %d dag in de wacht beschikbaar.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d storting</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d stortingen</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Bedragen in behandeling</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Beschikbare bedragen</string>
     <string name="order_creation_payment_tax_label">Belastingen</string>
@@ -1104,8 +1145,6 @@ Language: nl
     <string name="login_site_picker_try_another_address">Probeer een ander adres</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Contant betalen bij ontvangst inschakelen mislukt. Probeer later opnieuw.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Fysieke betalingen inschakelen.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Met een optie voor ‘Fysieke betalingen’ in je online kassa kan je contante of kaartbetalingen accepteren bij ophalen of ontvangst.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Voeg fysieke betalingen toe aan je online kassa</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over fysieke betalingen</string>
     <string name="login_site_picker_new_to_woo">Nieuw bij WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Er is een probleem opgetreden, neem contact op met de klantenservice</string>

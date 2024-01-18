@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 13:54:21+0000
+Translation-Revision-Date: 2024-01-09 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">So funktioniert Blaze</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Deine Kampagne starten</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Deine Werbung auf Millionen Websites in den WordPress.com- und Tumblr-Netzwerken.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Erziele eine große Reichweite</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">„Unser Tool zeigt dein Produkt dort an, wo es von interessierten Käufern gefunden werden kann.“</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Globale Reichweite leicht gemacht</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Veröffentliche Werbung in Minutenschnelle – ohne Erfahrung oder großes Budget – schon ab 5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Schneller Start, große Wirkung</string>
+    <string name="blaze_campaign_creation_new_intro_description">Unser Tool ermöglicht es Händlern, Werbekampagnen schnell und einfach einzurichten, um maximalen Traffic zu erzielen.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Bewerben</string>
+    <string name="blaze_campaign_creation_product_selector_title">Bereit zum Bewerben</string>
+    <string name="blaze_campaign_creation_new_intro_title">Präsentiere deine Produkte Millionen von Interessenten</string>
+    <string name="theme_preview_activate_theme_button_settings">Verwende %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Beginne mit %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Shop wechseln</string>
+    <string name="store_creation_installation_async_dialog_message">Möchtest du jetzt mit dem Verwalten beginnen?</string>
+    <string name="store_creation_installation_async_dialog_title">Dein Shop ist einsatzbereit</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">LETZTE AUSZAHLUNG</string>
+    <string name="order_creation_expand_collapse_order_totals">Bestellsumme aufklappen/zuklappen</string>
+    <string name="order_creation_collect_payment_button">Zahlung empfangen</string>
+    <string name="order_creation_gift_card_text_error">Der Code muss folgendes Format haben: XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Code eingeben</string>
+    <string name="order_creation_coupon_button">Gutschein</string>
+    <string name="theme_picker_error_message">Themes konnten nicht geladen werden.</string>
+    <string name="configuration_complete">Konfiguration abgeschlossen</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Mengenaktualisierung rückgängig gemacht</string>
+    <string name="theme_picker_loading_current_theme_failed">Dein aktuelles Theme konnte nicht geladen werden</string>
+    <string name="theme_preview_type_desktop">Desktop</string>
+    <string name="theme_preview_type_tablet">Tablet</string>
+    <string name="theme_preview_type_mobile">Mobil</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">hier tippen</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Anscheinend gab es ein Problem beim Laden des Templates. Bitte %1$s, um dir eine Live-Demo anzusehen.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Du kannst dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
+    <string name="theme_picker_current_theme_title">Aktuelles Theme</string>
+    <string name="theme_picker_settings_title">Teste einen neuen Look</string>
+    <string name="product_creation_survey_button_skip">Überspringen</string>
+    <string name="product_creation_survey_button_open">Befragung starten</string>
+    <string name="product_creation_survey_description">Du hast unsere KI-unterstützte Funktion verwendet, um Produkte mehrfach hinzuzufügen. Wir würden uns über Feedback freuen, damit wir die Funktion weiter verbessern können.</string>
+    <string name="product_creation_survey_title">Deine Meinung ist uns wichtig!</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Wenn „Persönliche Zahlung“ aktiviert ist, können Kunden für Online-Bestellungen bei Zustellung in bar oder mit Karte zahlen.\n\nBestellungen kannst du auch ohne Aktivierung dieser Funktion weiterhin manuell erstellen.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Möchtest du „Persönliche Zahlung“ zu deinem Web-Bezahlvorgang hinzufügen?</string>
+    <string name="card_reader_onboarding_contact_us">Brauchst du Hilfe? &lt;a href=\'\'&gt;Kontaktiere uns&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Individuellen Betrag zurückerstatten</string>
+    <string name="order_refunds_custom_amount_refund">Rückerstattung des individuellen Betrags</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Produkt-Barcode scannen</string>
+    <string name="order_creation_add_gift_card">Geschenkkarte hinzufügen</string>
     <string name="scan_to_update_inventory_product_label">Produkt</string>
     <string name="scan_to_update_inventory_quantity_label">Menge</string>
     <string name="scan_to_update_inventory_original_quantity_label">Ursprüngliche Menge</string>
@@ -115,12 +161,7 @@ Language: de
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Zusammenfassung der Auszahlungen aus-/einblenden</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Weitere Informationen zum Erhalt deiner Zahlungen</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Verfügbares Guthaben wird automatisch am %s jedes Monats ausgezahlt.</string>
-    <string name="card_reader_hub_deposit_summary_last">Zuletzt</string>
-    <string name="card_reader_hub_deposit_summary_next">Als Nächstes</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Auszahlungen</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Guthaben, das seit %d Tag aussteht, wird zur Verfügung gestellt.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d Auszahlung</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d Auszahlungen</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Ausstehendes Guthaben</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Verfügbares Guthaben</string>
     <string name="order_creation_payment_tax_label">Steuern</string>
@@ -1111,8 +1152,6 @@ Language: de
     <string name="login_site_picker_try_another_address">Andere Adresse versuchen</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Bezahlung per Nachnahme konnte nicht aktiviert werden. Versuch es später noch einmal.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">„Persönliche Zahlung“ aktivieren</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mit der Bezahloption „Persönliche Zahlung“ kannst du Karten- oder Barzahlung bei Abholung oder Lieferung akzeptieren.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">„Persönliche Zahlung“ als Bezahloption hinzufügen</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; zu „Persönliche Zahlungen“</string>
     <string name="login_site_picker_new_to_woo">Neu bei WooCommerce</string>
     <string name="site_discovery_postlogin_failure">Es ist ein Fehler aufgetreten, kontaktiere bitte den Support</string>

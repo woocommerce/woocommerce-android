@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_167"
+msgctxt "release_note_169"
 msgid ""
-"16.7:\n"
-"Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!\n"
+"16.9:\n"
+"Fresh out of the oven! Our latest WooCommerce app update brings you a sleeker shopping cart experience. We've handily relocated the order creation to the bottom of your screen for easy thumb access, giving you more room to navigate. Plus, we've streamlined your workflow by detaching the order editing from the creation process. Get ready for a tidier, more efficient way to manage your sales. Tap "Update" and feel the difference!\n"
 msgstr ""
 
-msgctxt "release_note_166"
+msgctxt "release_note_168"
 msgid ""
-"16.6:\n"
-"Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!\n"
+"16.8:\n"
+"We've polished your WooCommerce app experience! Check out the sleek new design for the deposit summary on the payments screen. Say goodbye to crashes after resetting your selected site, and enjoy a smoother store switching process right after you create a new store. Plus, managing custom amounts is now a breeze with our full-screen feature. Update now for a more seamless and stable business management journey!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

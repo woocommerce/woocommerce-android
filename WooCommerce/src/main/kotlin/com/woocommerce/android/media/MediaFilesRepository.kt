@@ -3,6 +3,7 @@ package com.woocommerce.android.media
 import android.content.Context
 import android.net.Uri
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
 import com.woocommerce.android.tools.SelectedSite
@@ -145,7 +146,7 @@ class MediaFilesRepository @Inject constructor(
 
                 event.completed -> {
                     val media = event.media
-                    val channelResult = if (media != null && media.url.isNotBlank()) {
+                    val channelResult = if (media != null && media.url.isNotNullOrEmpty()) {
                         WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${media.id}")
                         producerScope.trySendBlocking(
                             UploadSuccess(media)

@@ -15,7 +15,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderConnected
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CardReaderDisconnected
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
@@ -27,6 +26,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,7 +48,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         onBlocking { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
     }
 
-    private val tracker: CardReaderTracker = mock()
+    private val tracker: PaymentsFlowTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())

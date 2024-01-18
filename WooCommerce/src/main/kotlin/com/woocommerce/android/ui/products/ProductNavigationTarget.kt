@@ -4,10 +4,12 @@ import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
@@ -131,9 +133,15 @@ sealed class ProductNavigationTarget : Event() {
         val selectedVariationIds: Set<Long>,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
         val productSourceForTracking: ProductSourceForTracking,
+        val selectionMode: ProductSelectorViewModel.SelectionMode
     ) : ProductNavigationTarget()
 
     data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()
+    data class EditProductConfiguration(
+        val itemId: Long,
+        val productId: Long,
+        val configuration: ProductConfiguration
+    ) : ProductNavigationTarget()
 
     data class NavigateToProductFilter(
         val stockStatus: String?,

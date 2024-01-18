@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-14 09:54:04+0000
+Translation-Revision-Date: 2024-01-10 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Blaze のしくみを知る</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">キャンペーンを開始</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">広告は WordPress.com と Tumblr ネットワーク内の何百万ものサイトに表示されます。</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">多数の読者にアクセス</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">「ツールを使えば、関心を持っている買い物客の目に入る場所に商品を表示できます」</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">世界規模のリーチをシンプルに</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">数分で広告を開始 – 経験も多額の予算も必要ありません。わずか5ドルから始められます。</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">すばやいスタートで大きなインパクト</string>
+    <string name="blaze_campaign_creation_new_intro_description">当社のツールは、マーチャントがシンプルですばやい広告キャンペーン設定でトラフィックを最大化できるよう支援するために設計されています。</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">宣伝</string>
+    <string name="blaze_campaign_creation_product_selector_title">宣伝準備完了</string>
+    <string name="blaze_campaign_creation_new_intro_title">何百万もの人に商品を紹介</string>
+    <string name="theme_preview_activate_theme_button_settings">使用 %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">%1$sで始める</string>
+    <string name="store_creation_installation_async_dialog_switch_store">ストアを切り替える</string>
+    <string name="store_creation_installation_async_dialog_message">すぐに管理を開始しますか ?</string>
+    <string name="store_creation_installation_async_dialog_title">ストアの準備ができました</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">最後のデポジット</string>
+    <string name="order_creation_expand_collapse_order_totals">注文合計を展開 / 折りたたむ</string>
+    <string name="order_creation_collect_payment_button">支払いを受け取る</string>
+    <string name="order_creation_gift_card_text_error">コードのフォーマットは「XXXX-XXXX-XXXX-XXXX」です</string>
+    <string name="order_creation_gift_card_text_field_hint">コードを入力</string>
+    <string name="order_creation_coupon_button">クーポン</string>
+    <string name="theme_picker_error_message">テーマを読み込めませんでした。</string>
+    <string name="configuration_complete">設定が完了しました</string>
+    <string name="scan_to_update_inventory_undo_snackbar">数量の更新を取り消しました</string>
+    <string name="theme_picker_loading_current_theme_failed">現在のテーマを読み込めませんでした</string>
+    <string name="theme_preview_type_desktop">デスクトップ</string>
+    <string name="theme_preview_type_tablet">タブレット</string>
+    <string name="theme_preview_type_mobile">モバイル</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">ここをタップ</string>
+    <string name="theme_picker_carousel_error_placeholder_message">テンプレートの読み込みに問題があるようです。 ライブデモを確認するには%1$sしてください。</string>
+    <string name="theme_picker_carousel_info_item_description_settings">WooCommerce テーマストアでご自身にぴったりなテーマが見つかります。</string>
+    <string name="theme_picker_current_theme_title">現在のテーマ</string>
+    <string name="theme_picker_settings_title">新しいデザインを試す</string>
+    <string name="product_creation_survey_button_skip">スキップ</string>
+    <string name="product_creation_survey_button_open">アンケートをスタート</string>
+    <string name="product_creation_survey_description">これまでに AI によるサポート機能を使用して商品を複数回追加しました。 改善を重ねてまいりますので、ぜひご意見をお寄せください。</string>
+    <string name="product_creation_survey_title">お待ちしています。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">「直接支払い」を有効化すると、顧客はオンライン注文の代金を配達時に現金またはカードで支払うことができます。\n\nこの機能を有効化しなくても、注文は手動で作成できます。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">ウェブでの購入手続きに「直接支払い」を追加しますか ?</string>
+    <string name="card_reader_onboarding_contact_us">サポートが必要ですか ? &lt;a href=\'\'&gt;お問い合わせ&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">カスタム金額を返金</string>
+    <string name="order_refunds_custom_amount_refund">カスタム金額の返金</string>
+    <string name="barcode_scanning_scan_product_barcode_label">商品バーコードをスキャン</string>
+    <string name="order_creation_add_gift_card">ギフトカードを追加する</string>
     <string name="scan_to_update_inventory_product_label">商品</string>
     <string name="scan_to_update_inventory_quantity_label">数量</string>
     <string name="scan_to_update_inventory_original_quantity_label">元の数量</string>
@@ -115,12 +161,7 @@ Language: ja_JP
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">デポジットの概要を折りたたむ / 展開する</string>
     <string name="card_reader_hub_deposit_summary_learn_more">資金の受け取りタイミングについて詳しくはこちら</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">利用可能な資金は毎月 %s 上で自動で入金されます。</string>
-    <string name="card_reader_hub_deposit_summary_last">最後</string>
-    <string name="card_reader_hub_deposit_summary_next">次</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">デポジット</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">資金は%d日間保留された後に利用可能になります。</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d件のデポジット</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d件のデポジット</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">保留中の資金</string>
     <string name="card_reader_hub_deposit_summary_available_funds">利用可能な資金</string>
     <string name="order_creation_payment_tax_label">税</string>
@@ -1111,8 +1152,6 @@ Language: ja_JP
     <string name="login_site_picker_try_another_address">別のアドレスを試す</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">代金引換を有効にできませんでした。 後でやり直してください。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">直接支払いを有効化</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">購入手続きの「直接支払い」オプションでは、集荷または配送時にカードまたは現金での支払いを受けることができます。</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">購入手続きに直接支払いを追加</string>
     <string name="card_reader_connect_learn_more">直接支払いについて&lt;a href=\'\'&gt;詳しく読む&lt;/a&gt;。</string>
     <string name="login_site_picker_new_to_woo">初めて WooCommerce をお使いになる場合</string>
     <string name="site_discovery_postlogin_failure">エラーが生じました。サポートにお問い合わせください</string>

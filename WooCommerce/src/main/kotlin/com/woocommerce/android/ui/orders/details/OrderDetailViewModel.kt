@@ -47,8 +47,9 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstr
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
@@ -83,7 +84,7 @@ class OrderDetailViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
-    private val cardReaderTracker: CardReaderTracker,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
@@ -162,6 +163,15 @@ class OrderDetailViewModel @Inject constructor(
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
         _productList.distinctUntilChanged().observeForever(productListObserver)
+
+        if (navArgs.startPaymentFlow) {
+            triggerEvent(
+                StartPaymentFlow(
+                    orderId = navArgs.orderId,
+                    paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
+                )
+            )
+        }
     }
 
     fun start() {
@@ -322,9 +332,14 @@ class OrderDetailViewModel @Inject constructor(
         it.contains(navArgs.orderId) && it.last() != navArgs.orderId
     } ?: false
 
-    fun onAcceptCardPresentPaymentClicked() {
-        cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(StartPaymentFlow(orderId = order.id))
+    fun onCollectPaymentClicked() {
+        paymentsFlowTracker.trackCollectPaymentTapped()
+        triggerEvent(
+            StartPaymentFlow(
+                orderId = order.id,
+                paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+            )
+        )
     }
 
     fun onSeeReceiptClicked() {

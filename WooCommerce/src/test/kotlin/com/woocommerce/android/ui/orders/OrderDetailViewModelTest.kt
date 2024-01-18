@@ -34,8 +34,8 @@ import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
@@ -97,7 +97,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
     }
     private val addonsRepository: AddonRepository = mock()
-    private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val orderDetailTracker: OrderDetailTracker = mock()
     private val resources: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -170,7 +170,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 selectedSite,
                 productImageMap,
                 paymentCollectibilityChecker,
-                cardReaderTracker,
+                paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
                 orderDetailsTransactionLauncher,
@@ -194,7 +194,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 selectedSite,
                 productImageMap,
                 paymentCollectibilityChecker,
-                cardReaderTracker,
+                paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
                 orderDetailsTransactionLauncher,
@@ -1339,7 +1339,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked()
+            viewModel.onCollectPaymentClicked()
 
             // Then
             assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartPaymentFlow::class.java)
@@ -1353,10 +1353,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // When
-            viewModel.onAcceptCardPresentPaymentClicked()
+            viewModel.onCollectPaymentClicked()
 
             // Then
-            verify(cardReaderTracker).trackCollectPaymentTapped()
+            verify(paymentsFlowTracker).trackCollectPaymentTapped()
         }
 
     @Test

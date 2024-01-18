@@ -49,7 +49,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -234,7 +233,7 @@ class MainActivity :
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar()
+                AppBarStatus.Hidden -> hideToolbar(animate = f is TopLevelFragment)
             }
 
             if (f is TopLevelFragment) {
@@ -500,11 +499,17 @@ class MainActivity :
         }
     }
 
-    private fun hideToolbar() {
+    private fun hideToolbar(animate: Boolean) {
         if (binding.collapsingToolbar.layoutParams.height == 0) return
-        animatorHelper.animateToolbarHeight(show = false) {
+        if (animate) {
+            animatorHelper.animateToolbarHeight(show = false) {
+                binding.collapsingToolbar.updateLayoutParams {
+                    height = it
+                }
+            }
+        } else {
             binding.collapsingToolbar.updateLayoutParams {
-                height = it
+                height = 0
             }
         }
     }
@@ -852,7 +857,7 @@ class MainActivity :
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 NewFeature -> binding.bottomNav.showMoreMenuNewFeatureBadge()
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
-            }.exhaustive
+            }
         }
     }
 

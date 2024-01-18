@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-12-13 15:54:04+0000
+Translation-Revision-Date: 2024-01-09 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Voir comment fonctionne Blaze</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Lancer votre campagne</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Vos publicités sur des millions de sites des réseaux WordPress.com et Tumblr.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Accéder à un large public</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">« Notre outil présente votre produit là où se trouvent les clients ciblés. »</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Une présence mondiale en toute simplicité</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lancez des publicité en quelques minutes ; aucune expérience ni gros budget ne sont nécessaires, à partir de seulement 5 $.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Un démarrage rapide, un énorme impact</string>
+    <string name="blaze_campaign_creation_new_intro_description">Notre outil est conçu pour offrir aux commerçants des configurations rapides et simples pour leurs campagnes publicitaires, pour un trafic boosté au maximum.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promouvoir</string>
+    <string name="blaze_campaign_creation_product_selector_title">Prêt à promouvoir</string>
+    <string name="blaze_campaign_creation_new_intro_title">Faire en sorte que vos produits soient vus par des millions de personnes</string>
+    <string name="theme_preview_activate_theme_button_settings">Utiliser %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Commencer avec %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Changer de boutique</string>
+    <string name="store_creation_installation_async_dialog_message">Voulez-vous commencer à la gérer maintenant ?</string>
+    <string name="store_creation_installation_async_dialog_title">Votre nouvelle boutique est prête</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">DERNIER DÉPÔT</string>
+    <string name="order_creation_expand_collapse_order_totals">Développer / réduire les totaux de commande</string>
+    <string name="order_creation_collect_payment_button">Percevoir le paiement</string>
+    <string name="order_creation_gift_card_text_error">Le code doit respecter le format XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Saisir le code</string>
+    <string name="order_creation_coupon_button">Code promo</string>
+    <string name="theme_picker_error_message">Chargement des thèmes impossible.</string>
+    <string name="configuration_complete">Configuration terminée</string>
+    <string name="scan_to_update_inventory_undo_snackbar">Mettre à jour la quantité annulé</string>
+    <string name="theme_picker_loading_current_theme_failed">Impossible de charger votre thème actuel</string>
+    <string name="theme_preview_type_desktop">Application de bureau</string>
+    <string name="theme_preview_type_tablet">Tablette</string>
+    <string name="theme_preview_type_mobile">Portable</string>
+    <string name="theme_picker_carousel_error_placeholder_message_cta">appuyer ici</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Malheureusement, il semble y avoir un problème avec le chargement du modèle. Veuillez %1$s pour une démonstration en direct.</string>
+    <string name="theme_picker_carousel_info_item_description_settings">Vous trouverez le thème parfait dans la boutique de thèmes WooCommerce.</string>
+    <string name="theme_picker_current_theme_title">Thème actuel</string>
+    <string name="theme_picker_settings_title">Essayer un nouveau look</string>
+    <string name="product_creation_survey_button_skip">Ignorer</string>
+    <string name="product_creation_survey_button_open">Commencer l’enquête</string>
+    <string name="product_creation_survey_description">Vous avez utilisé notre fonctionnalité assistée par l’IA pour ajouter des produits à de multiples reprises désormais. Nous aimerions savoir ce que vous en pensez pour l’améliorer.</string>
+    <string name="product_creation_survey_title">Nous apprécions vos retours !</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Activer Payez en personne permet à vos clients de vous régler leurs commandes en ligne lors de la livraison, en espèces ou par carte.\n\nLes commandes peuvent toujours être créées manuellement sans activer cette fonctionnalité.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Désirez-vous ajouter Payer en personne à la validation de la commande Web ?</string>
+    <string name="card_reader_onboarding_contact_us">Besoin d’aide ? &lt;a href=\'\'&gt;Nous contacter&lt;/a&gt;</string>
+    <string name="order_refunds_refund_custom_amount">Rembourser le montant personnalisé</string>
+    <string name="order_refunds_custom_amount_refund">Remboursement du montant personnalisé</string>
+    <string name="barcode_scanning_scan_product_barcode_label">Scanner le code-barres du produit</string>
+    <string name="order_creation_add_gift_card">Ajouter une carte-cadeau</string>
     <string name="scan_to_update_inventory_product_label">Produit</string>
     <string name="scan_to_update_inventory_quantity_label">Quantité</string>
     <string name="scan_to_update_inventory_original_quantity_label">Quantité initiale</string>
@@ -115,12 +161,7 @@ Language: fr
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Réduire/développer le récapitulatif du dépôt</string>
     <string name="card_reader_hub_deposit_summary_learn_more">En savoir plus sur le moment où vous recevrez vos fonds</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Les fonds disponibles sont versés automatiquement, tous les %s du mois.</string>
-    <string name="card_reader_hub_deposit_summary_last">Dernier</string>
-    <string name="card_reader_hub_deposit_summary_next">Prochain</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Dépôts</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Les fonds sont disponibles après avoir passé %d jour en attente.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d dépôt</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d dépôts</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Fonds en attente</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Fonds disponibles</string>
     <string name="order_creation_payment_tax_label">Taxes</string>
@@ -1111,8 +1152,6 @@ Language: fr
     <string name="login_site_picker_try_another_address">Essayer une autre adresse</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Échec de l’activation du paiement à la livraison. Veuillez réessayer ultérieurement.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Activer Payer en personne</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L’option « Payer en personne » sur votre page de validation de commande vous permet d’accepter les paiements par carte ou en espèces lors de la collecte ou de la livraison.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Ajouter Payer en personne à votre page de validation de commande</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur les paiements en personne</string>
     <string name="login_site_picker_new_to_woo">Vous débutez sur WooCommerce ?</string>
     <string name="site_discovery_postlogin_failure">Une erreur s’est produite, veuillez contacter l’assistance</string>
