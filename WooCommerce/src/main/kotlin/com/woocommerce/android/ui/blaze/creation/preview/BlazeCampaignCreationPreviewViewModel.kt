@@ -27,7 +27,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         launch {
-            delay(10000)
+            delay(5000)
             val product = productDetailRepository.getProduct(navArgs.productId)
             _viewState.value = CampaignPreviewUiState.CampaignPreviewContent(
                 productId = product?.remoteId ?: -1,
@@ -68,6 +68,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     sealed interface CampaignPreviewUiState {
         object Loading : CampaignPreviewUiState
         data class CampaignPreviewContent(
+            val isLoading: Boolean = false,
             val productId: Long,
             val title: String,
             val tagLine: String,

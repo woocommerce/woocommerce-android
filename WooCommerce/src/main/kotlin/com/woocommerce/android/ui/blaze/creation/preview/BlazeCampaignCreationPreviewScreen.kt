@@ -99,83 +99,61 @@ private fun BlazeCampaignCreationPreviewScreen(previewState: CampaignPreviewUiSt
 }
 
 @Composable
-private fun CampaignPreviewLoading(modifier: Modifier = Modifier) {
-    @Composable
-    fun CampaignHeaderSkeletons() {
-        Column(
+private fun CampaignPreviewLoading(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(16.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(color = colorResource(id = R.color.blaze_campaign_preview_header_background)),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Card(
+            Column(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(
+                SkeletonView(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                        .height(276.dp)
+                )
+                SkeletonView(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(8.dp)
+                )
+                Row(verticalAlignment = Alignment.Bottom) {
                     SkeletonView(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(276.dp)
+                            .weight(1f)
+                            .height(16.dp)
                     )
+                    Spacer(modifier = Modifier.width(24.dp))
                     SkeletonView(
                         modifier = Modifier
-                            .width(120.dp)
-                            .height(8.dp)
+                            .width(80.dp)
+                            .height(24.dp)
                     )
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        SkeletonView(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(24.dp))
-                        SkeletonView(
-                            modifier = Modifier
-                                .width(80.dp)
-                                .height(24.dp)
-                        )
-                    }
                 }
             }
-            WCTextButton(
-                modifier = Modifier.padding(bottom = 8.dp),
-                onClick = { /* No action expected for disabled button */ },
-                enabled = false,
-            ) {
-                Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
-            }
         }
-    }
-
-    @Composable
-    fun CampaignDetailSkeletons() {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        WCTextButton(
+            modifier = Modifier.padding(bottom = 8.dp),
+            onClick = { /* No action expected for disabled button */ },
+            enabled = false,
         ) {
-            Text(
-                modifier = Modifier.padding(bottom = 8.dp),
-                text = stringResource(id = R.string.blaze_campaign_preview_details_section_title),
-                style = MaterialTheme.typography.body2
-            )
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
         }
-    }
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        CampaignHeaderSkeletons()
-        CampaignDetailSkeletons()
     }
 }
 
