@@ -42,12 +42,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItem
+import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignPreviewContent
 import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.Loading
 
