@@ -14,7 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_PLAN_PURCHASE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_WEB_CHECKOUT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
@@ -220,7 +219,7 @@ class PlansViewModel @Inject constructor(
                     when (result) {
                         is WPComPurchaseResult.Success -> onPurchaseSuccess()
                         is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
-                    }.exhaustive
+                    }
                 }
             }
         }

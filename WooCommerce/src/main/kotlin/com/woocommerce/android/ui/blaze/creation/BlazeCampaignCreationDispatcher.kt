@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze.creation
 
-import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
@@ -12,6 +11,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragmentArgs
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
@@ -38,7 +38,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     fun attachFragment(fragment: BaseFragment) {
         this.fragmentReference = WeakReference(fragment)
         fragment.handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
-            this.fragmentReference.get()?.showCampaignForm(it.first().id)
+            this.fragmentReference.get()?.showCampaignPreview(it.first().id)
         }
     }
 
@@ -65,12 +65,15 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
             productId != null -> {
                 handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(productId))
             }
+
             products.size == 1 -> {
                 handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(products.first().remoteId))
             }
+
             products.isNotEmpty() -> {
                 handler(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
             }
+
             else -> {
                 // If there are no cached products at this point, we should ensure the code triggering
                 // this code, has previously refreshed the products from the API.
@@ -92,7 +95,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 ?.showIntro(event.productId)
 
             is BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm -> fragmentReference.get()
-                ?.showCampaignForm(event.productId)
+                ?.showCampaignPreview(event.productId)
 
             is BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen -> fragmentReference.get()
                 ?.showProductSelector()
@@ -106,13 +109,11 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         )
     }
 
-    private fun BaseFragment.showCampaignForm(productId: Long) {
-        // TODO update when the AD form is implemented
-        Toast.makeText(
-            requireContext(),
-            "This will show the campaign creation form for product $productId",
-            Toast.LENGTH_SHORT
-        ).show()
+    private fun BaseFragment.showCampaignPreview(productId: Long) {
+        findNavController().navigateToBlazeGraph(
+            startDestination = R.id.blazeCampaignCreationPreviewFragment,
+            bundle = BlazeCampaignCreationPreviewFragmentArgs(productId).toBundle()
+        )
     }
 
     private fun BaseFragment.showProductSelector() {

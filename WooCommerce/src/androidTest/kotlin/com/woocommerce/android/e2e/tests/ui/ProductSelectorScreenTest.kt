@@ -41,7 +41,8 @@ class ProductSelectorScreenTest {
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
                 onClearFiltersButtonClick = {},
-                trackConfigurableProduct = {}
+                trackConfigurableProduct = {},
+                onEditConfiguration = { _ -> }
             )
         }
 
@@ -70,7 +71,8 @@ class ProductSelectorScreenTest {
                 onSearchQueryChanged = {},
                 onSearchTypeChanged = {},
                 onClearFiltersButtonClick = {},
-                trackConfigurableProduct = {}
+                trackConfigurableProduct = {},
+                onEditConfiguration = { _ -> }
             )
         }
 

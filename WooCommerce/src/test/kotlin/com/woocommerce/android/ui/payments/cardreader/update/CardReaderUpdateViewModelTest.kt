@@ -11,7 +11,6 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateAboutToStart
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.CardReaderUpdateEvent.SoftwareUpdateProgress
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult.FAILED
@@ -20,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateVie
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdateFailedBatteryLow
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingCancelingState
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.ViewState.UpdatingState
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +36,7 @@ class CardReaderUpdateViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
         on { softwareUpdateStatus }.thenReturn(softwareStatus)
     }
-    private val tracker: CardReaderTracker = mock()
+    private val tracker: PaymentsFlowTracker = mock()
 
     @Test
     fun `given required update, when view model created, then installation not started`() =

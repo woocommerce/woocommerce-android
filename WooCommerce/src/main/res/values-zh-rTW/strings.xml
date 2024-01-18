@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-03 09:54:03+0000
+Translation-Revision-Date: 2024-01-09 15:54:22+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">了解 Blaze 的運作方式</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">著手展開行銷活動</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">你的廣告會出現在 WordPress.com 與 Tumblr 網路中的數百萬個網站。</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">觸及廣大受眾</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">「我們的工具會讓感興趣的消費者找到你的產品。」</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">輕鬆觸及全球受眾</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">就算沒有經驗或高額預算，也只需幾分鐘即可發布廣告，費用 5 美元起。</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">快速起步，效應非凡</string>
+    <string name="blaze_campaign_creation_new_intro_description">我們的工具可為商店提供快速簡單的廣告行銷活動設定，助你衝刺最佳流量表現。</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">宣傳</string>
+    <string name="blaze_campaign_creation_product_selector_title">準備展開宣傳</string>
+    <string name="blaze_campaign_creation_new_intro_title">讓數百萬使用者看見你的產品</string>
+    <string name="theme_preview_activate_theme_button_settings">使用 %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">透過 %1$s 開始</string>
+    <string name="store_creation_installation_async_dialog_switch_store">切換商店</string>
+    <string name="store_creation_installation_async_dialog_message">你想要立即著手管理嗎？</string>
+    <string name="store_creation_installation_async_dialog_title">你的新商店已準備就緒</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">上次存款</string>
+    <string name="order_creation_expand_collapse_order_totals">展開收合的訂單總額</string>
+    <string name="order_creation_collect_payment_button">收取款項</string>
+    <string name="order_creation_gift_card_text_error">序號必須採用 XXXX-XXXX-XXXX-XXXX 格式。</string>
+    <string name="order_creation_gift_card_text_field_hint">輸入序號</string>
+    <string name="order_creation_coupon_button">優惠券</string>
     <string name="theme_picker_error_message">無法載入佈景主題。</string>
     <string name="configuration_complete">設定完成</string>
     <string name="scan_to_update_inventory_undo_snackbar">已復原更新數量</string>
@@ -138,12 +161,7 @@ Language: zh_TW
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">收合/展開存款摘要</string>
     <string name="card_reader_hub_deposit_summary_learn_more">深入瞭解何時會收到款項</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">可用款項將自動於每月 %s存入。</string>
-    <string name="card_reader_hub_deposit_summary_last">上一個</string>
-    <string name="card_reader_hub_deposit_summary_next">下一個</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">存款</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">待確認款項 %d 天後即可使用。</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">存款：%d</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">存款：%d</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">待確認款項</string>
     <string name="card_reader_hub_deposit_summary_available_funds">可用款項</string>
     <string name="order_creation_payment_tax_label">稅金</string>

@@ -47,15 +47,12 @@ import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -72,6 +69,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLo
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -107,7 +106,7 @@ class CardReaderPaymentViewModel
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val interacRefundableChecker: CardReaderInteracRefundableChecker,
-    private val tracker: CardReaderTracker,
+    private val tracker: PaymentsFlowTracker,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,
@@ -200,7 +199,7 @@ class CardReaderPaymentViewModel
 
                 is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/
                 }
-            }.exhaustive
+            }
         }
     }
 
@@ -375,7 +374,7 @@ class CardReaderPaymentViewModel
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
-        }.exhaustive
+        }
     }
 
     private suspend fun refundPaymentFlow(
@@ -451,7 +450,7 @@ class CardReaderPaymentViewModel
                     refundStatus
                 )
             }
-        }.exhaustive
+        }
     }
 
     private fun onPaymentCompleted(

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader
+package com.woocommerce.android.ui.payments.tracking
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.AppPrefsWrapper
@@ -66,6 +66,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
+import com.woocommerce.android.ui.payments.cardreader.cardReaderBatteryLevelPercent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaReasonTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -75,7 +76,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDelive
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
 
-class CardReaderTracker @Inject constructor(
+class PaymentsFlowTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
@@ -100,7 +101,7 @@ class CardReaderTracker @Inject constructor(
             trackerWrapper.track(
                 stat,
                 properties,
-                this@CardReaderTracker.javaClass.simpleName,
+                this@PaymentsFlowTracker.javaClass.simpleName,
                 errorType,
                 errorDescription
             )
@@ -501,7 +502,7 @@ class CardReaderTracker @Inject constructor(
         track(
             CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
             properties = mutableMapOf(
-                AnalyticsTracker.KEY_REASON to reason::class.java.simpleName,
+                KEY_REASON to reason::class.java.simpleName,
                 AnalyticsTracker.KEY_SOURCE to source,
             )
         )
@@ -517,6 +518,66 @@ class CardReaderTracker @Inject constructor(
 
     fun trackPaymentFailedEnabledNfcTapped() {
         track(CARD_PRESENT_TAP_TO_PAY_PAYMENT_FAILED_ENABLE_NFC_TAPPED)
+    }
+
+    fun trackPaymentsFlowFailed(source: String, flow: String) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            properties = mutableMapOf(
+                AnalyticsTracker.KEY_SOURCE to source,
+                AnalyticsTracker.KEY_FLOW to flow,
+            )
+        )
+    }
+
+    fun trackPaymentsFlowCanceled(flow: String) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
+            properties = mutableMapOf(AnalyticsTracker.KEY_FLOW to flow)
+        )
+    }
+
+    fun trackPaymentsFlowCollect(
+        flow: String,
+        paymentMethod: String,
+        orderId: Long,
+        cardReaderType: String?,
+        timeElapsed: Long?,
+    ) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+            properties = mutableMapOf<String, Any>(
+                AnalyticsTracker.KEY_ORDER_ID to orderId,
+                AnalyticsTracker.KEY_FLOW to flow,
+                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethod,
+            ).also {
+                if (cardReaderType != null) {
+                    it[AnalyticsTracker.KEY_PAYMENT_CARD_READER_TYPE] = cardReaderType
+                }
+                if (timeElapsed != null) {
+                    it[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
+                }
+            }
+        )
+    }
+
+    fun trackPaymentsFlowCompleted(
+        flow: String,
+        paymentMethod: String,
+        orderId: Long,
+        amount: String,
+        amountNormalized: Long,
+    ) {
+        track(
+            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
+            properties = mutableMapOf(
+                AnalyticsTracker.KEY_FLOW to flow,
+                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethod,
+                AnalyticsTracker.KEY_ORDER_ID to orderId,
+                AnalyticsTracker.KEY_AMOUNT to amount,
+                AnalyticsTracker.KEY_AMOUNT_NORMALIZED to amountNormalized,
+            )
+        )
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {

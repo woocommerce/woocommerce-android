@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-03 09:54:03+0000
+Translation-Revision-Date: 2024-01-09 09:54:27+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Blaze 작동 방식 알아보기</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">캠페인 시작하기</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">워드프레스닷컴과 Tumblr 네트워크 내 수백만 개 사이트에 실리는 광고입니다.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">방대한 잠재 고객에게 접근</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"도구를 통해 관심 있는 쇼핑객이 찾을 수 있는 위치에 제품이 표시됩니다.\"</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">전 세계 도달 범위 간단하게 확보</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">몇 분 만에 광고 시작 - 경험이나 많은 예산이 필요하지 않습니다. 단 $5 USD로 시작할 수 있습니다.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">빠른 시작, 큰 효과</string>
+    <string name="blaze_campaign_creation_new_intro_description">판매자가 빠르고 간단한 광고 캠페인 설정을 통해 트래픽을 극대화할 수 있도록 도구를 설계했습니다.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">홍보</string>
+    <string name="blaze_campaign_creation_product_selector_title">홍보 준비 완료</string>
+    <string name="blaze_campaign_creation_new_intro_title">수백만 명에게 제품 표시</string>
+    <string name="theme_preview_activate_theme_button_settings">%1$s 사용</string>
+    <string name="theme_preview_activate_theme_button_store_creation">%1$s 시작</string>
+    <string name="store_creation_installation_async_dialog_switch_store">스토어 전환</string>
+    <string name="store_creation_installation_async_dialog_message">지금 관리를 시작하시겠어요?</string>
+    <string name="store_creation_installation_async_dialog_title">새로운 스토어가 준비되어 있습니다.</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">마지막 예치금</string>
+    <string name="order_creation_expand_collapse_order_totals">주문 합계 확장 축소</string>
+    <string name="order_creation_collect_payment_button">결제 수령</string>
+    <string name="order_creation_gift_card_text_error">코드가 XXXX-XXXX-XXXX-XXXX 형식으로 되어 있어야 함</string>
+    <string name="order_creation_gift_card_text_field_hint">코드 입력</string>
+    <string name="order_creation_coupon_button">쿠폰</string>
     <string name="theme_picker_error_message">테마를 로드하지 못했습니다.</string>
     <string name="configuration_complete">구성 완료</string>
     <string name="scan_to_update_inventory_undo_snackbar">수량 업데이트 취소됨</string>
@@ -138,12 +161,7 @@ Language: ko_KR
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">예치금 요약 접기/펼치기</string>
     <string name="card_reader_hub_deposit_summary_learn_more">언제 자금을 받게 되는지 더 알아보기</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">매월 %s에 사용 가능한 자금이 자동으로 예치됩니다.</string>
-    <string name="card_reader_hub_deposit_summary_last">마지막</string>
-    <string name="card_reader_hub_deposit_summary_next">다음</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">예치금</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">%d일 대기 후 자금을 이용할 수 있게 됩니다.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">예치금 %d건</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">예치금 %d건</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">대기 중인 자금</string>
     <string name="card_reader_hub_deposit_summary_available_funds">사용 가능한 자금</string>
     <string name="order_creation_payment_tax_label">세금</string>

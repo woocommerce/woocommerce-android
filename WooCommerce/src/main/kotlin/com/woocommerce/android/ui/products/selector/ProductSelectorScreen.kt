@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
@@ -109,7 +110,8 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
                 onSearchTypeChanged = viewModel::onSearchTypeChanged,
-                trackConfigurableProduct = viewModel::trackConfigurableProduct
+                trackConfigurableProduct = viewModel::trackConfigurableProduct,
+                onEditConfiguration = viewModel::onEditConfiguration,
             )
         }
     }
@@ -127,7 +129,8 @@ fun ProductSelectorScreen(
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onClearFiltersButtonClick: () -> Unit,
-    trackConfigurableProduct: () -> Unit
+    trackConfigurableProduct: () -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -166,7 +169,8 @@ fun ProductSelectorScreen(
                 onFilterButtonClick = onFilterButtonClick,
                 onProductClick = onProductClick,
                 onLoadMore = onLoadMore,
-                trackConfigurableProduct = trackConfigurableProduct
+                trackConfigurableProduct = trackConfigurableProduct,
+                onEditConfiguration = onEditConfiguration
             )
 
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
@@ -230,11 +234,13 @@ private fun EmptyProductList(
 private fun PopularProductsList(
     state: ViewState,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     displayProductsSection(
         type = ProductType.POPULAR,
         state = state,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onEditConfiguration = onEditConfiguration
     )
 }
 
@@ -242,11 +248,13 @@ private fun PopularProductsList(
 private fun RecentlySoldProductsList(
     state: ViewState,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     displayProductsSection(
         type = ProductType.RECENT,
         state = state,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onEditConfiguration = onEditConfiguration
     )
 }
 
@@ -255,6 +263,7 @@ private fun displayProductsSection(
     type: ProductType,
     state: ViewState,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     val (productsList, heading, productSectionForTracking) = when (type) {
         ProductType.POPULAR -> Triple(
@@ -299,7 +308,10 @@ private fun displayProductsSection(
                 isArrowVisible = product.hasVariations(),
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description),
-                isCogwheelVisible = product is ListItem.ConfigurableListItem
+                isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                onEditConfiguration = {
+                    (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
+                }
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -327,7 +339,8 @@ private fun ProductList(
     onFilterButtonClick: () -> Unit,
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
-    trackConfigurableProduct: () -> Unit
+    trackConfigurableProduct: () -> Unit,
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -372,7 +385,8 @@ private fun ProductList(
                 item {
                     PopularProductsList(
                         state = state,
-                        onProductClick = onProductClick
+                        onProductClick = onProductClick,
+                        onEditConfiguration = onEditConfiguration
                     )
                 }
             }
@@ -380,7 +394,8 @@ private fun ProductList(
                 item {
                     RecentlySoldProductsList(
                         state = state,
-                        onProductClick = onProductClick
+                        onProductClick = onProductClick,
+                        onEditConfiguration = onEditConfiguration
                     )
                 }
             }
@@ -413,7 +428,10 @@ private fun ProductList(
                     isArrowVisible = product.hasVariations(),
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
-                    isCogwheelVisible = product is ListItem.ConfigurableListItem
+                    isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                    onEditConfiguration = {
+                        (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
+                    }
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
@@ -572,7 +590,8 @@ fun PopularProductsListPreview() {
         onFilterButtonClick = {},
         onProductClick = { _, _ -> },
         onLoadMore = {},
-        trackConfigurableProduct = {}
+        trackConfigurableProduct = {},
+        onEditConfiguration = {}
     )
 }
 
@@ -641,7 +660,8 @@ fun RecentProductsListPreview() {
         onFilterButtonClick = {},
         onProductClick = { _, _ -> },
         onLoadMore = {},
-        trackConfigurableProduct = {}
+        trackConfigurableProduct = {},
+        onEditConfiguration = {}
     )
 }
 
@@ -690,6 +710,15 @@ fun ProductListPreview() {
             numVariations = 0,
             stockAndPrice = null,
             sku = null
+        ),
+
+        ListItem.ConfigurableListItem(
+            productId = 5,
+            title = "Product 5",
+            type = BUNDLE,
+            imageUrl = null,
+            stockAndPrice = null,
+            sku = null
         )
     )
 
@@ -709,7 +738,8 @@ fun ProductListPreview() {
         onFilterButtonClick = {},
         onProductClick = { _, _ -> },
         onLoadMore = {},
-        trackConfigurableProduct = {}
+        trackConfigurableProduct = {},
+        onEditConfiguration = {}
     )
 }
 

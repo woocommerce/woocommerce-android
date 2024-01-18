@@ -79,7 +79,6 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -585,7 +584,6 @@ class OrderCreateEditFormFragment :
     private fun OrderCreationAdditionalInfoCollectionSectionBinding.bindGiftCardForOrderCreation(
         newOrderData: Order
     ) {
-        if (FeatureFlag.ORDER_GIFT_CARD.isEnabled().not()) return
         if (newOrderData.selectedGiftCard.isNullOrEmpty()) {
             addGiftCardButton.isVisible = viewModel.isGiftCardExtensionEnabled
             addGiftCardButton.setOnClickListener { viewModel.onAddGiftCardButtonClicked() }
@@ -678,7 +676,7 @@ class OrderCreateEditFormFragment :
                         var isExpanded by rememberSaveable { mutableStateOf(false) }
                         when {
                             item is OrderCreationProduct.ProductItemWithRules &&
-                                item.configuration.childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
+                                item.getConfiguration().childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
                                 val modifier = if (isExpanded) {
                                     Modifier.border(
                                         1.dp,
@@ -692,7 +690,7 @@ class OrderCreateEditFormFragment :
                                 ExpandableGroupedProductCardLoading(
                                     state = viewModel.viewStateData.liveData.observeAsState(),
                                     product = item,
-                                    childrenSize = item.configuration.childrenConfiguration?.keys?.size ?: 0,
+                                    childrenSize = item.getConfiguration().childrenConfiguration?.keys?.size ?: 0,
                                     onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                                     onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
                                     onItemAmountChanged = { viewModel.onItemAmountChanged(item, it) },
@@ -932,7 +930,7 @@ class OrderCreateEditFormFragment :
             viewModel.handleBarcodeScannedStatus(status)
         }
         handleResult<EditProductConfigurationResult>(
-            ProductConfigurationFragment.PRODUCT_CONFIGURATION_RESULT
+            ProductConfigurationFragment.PRODUCT_CONFIGURATION_EDITED_RESULT
         ) { result ->
             viewModel.onConfigurationChanged(result.itemId, result.productConfiguration)
         }

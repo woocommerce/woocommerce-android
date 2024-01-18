@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-03 09:54:03+0000
+Translation-Revision-Date: 2024-01-09 17:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Blaze\'in nasıl çalıştığını öğrenin</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Kampanyanızı başlatın</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Reklamlarınız WordPress.com ve Tumblr ağlarındaki milyonlarca sitede.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Geniş bir kitleye ulaşın</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Aracımız, ürününüzü ilgilenen müşterilerin bulabileceği bir yerde sunar.\"</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Küresel ağa erişmek artık daha kolay</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Dakikalar içinde reklam yayınlayın; deneyim veya büyük bir bütçeye gerek yok, yalnızca ayda 5 ABD dolarından başlayan fiyatlarla.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Hızlı başlangıç, büyük etki</string>
+    <string name="blaze_campaign_creation_new_intro_description">Aracımız, maksimum trafik artışı için satıcıları hızlı ve basit reklam kampanyası kurulumlarıyla güçlendirmek üzere tasarlanmıştır.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Tanıtın</string>
+    <string name="blaze_campaign_creation_product_selector_title">Tanıtmaya hazır</string>
+    <string name="blaze_campaign_creation_new_intro_title">Ürünlerinizin milyonlarca kişi tarafından görülmesini sağlayın</string>
+    <string name="theme_preview_activate_theme_button_settings">%1$s kullanın</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Şununla başlayın: %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Mağaza Değiştirin</string>
+    <string name="store_creation_installation_async_dialog_message">Hemen yönetmeye başlamak mı istiyorsunuz?</string>
+    <string name="store_creation_installation_async_dialog_title">Yeni mağazanız hazır</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">SON DEPOZİTO</string>
+    <string name="order_creation_expand_collapse_order_totals">Sipariş toplamlarını genişletin daraltın</string>
+    <string name="order_creation_collect_payment_button">Ödeme Alın</string>
+    <string name="order_creation_gift_card_text_error">Kod XXXX-XXXX-XXXX-XXXX biçiminde olmalıdır.</string>
+    <string name="order_creation_gift_card_text_field_hint">Kod girin</string>
+    <string name="order_creation_coupon_button">Kupon</string>
     <string name="theme_picker_error_message">Temalar yüklenemedi.</string>
     <string name="configuration_complete">Yapılandırma tamamlandı</string>
     <string name="scan_to_update_inventory_undo_snackbar">Miktarı Güncellemeyi Geri Al</string>
@@ -138,12 +161,7 @@ Language: tr
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Depozito özetini daralt/genişlet</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Fonlarınızı ne zaman alacağınız hakkında daha fazla bilgi edinin</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">Mevcut fonlar otomatik olarak her ay %s olunca yatırılır.</string>
-    <string name="card_reader_hub_deposit_summary_last">Son</string>
-    <string name="card_reader_hub_deposit_summary_next">Sonraki</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Depozito</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">Fonlar, %d gün beklemenin ardından kullanılabilir hale gelir.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depozito</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depozito</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Bekleyen fonlar</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Mevcut fonlar</string>
     <string name="order_creation_payment_tax_label">Vergiler</string>

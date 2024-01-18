@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
@@ -38,7 +37,7 @@ class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActi
                 when (result) {
                     is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
                     is WPComPurchaseResult.Error -> handleError(result.errorType)
-                }.exhaustive
+                }
             }
         }
     }

@@ -20,7 +20,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.calculateTotals
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
@@ -818,7 +817,7 @@ class IssueRefundViewModel @Inject constructor(
                     cardType = PaymentMethodType.CARD_PRESENT
                     updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
                 }
-            }.exhaustive
+            }
         }
     }
 

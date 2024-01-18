@@ -76,14 +76,7 @@ class ProductConfigurationViewModel @Inject constructor(
 
     fun onUpdateChildrenConfiguration(itemId: Long, ruleKey: String, value: String) {
         configuration.value?.let { currentConfiguration ->
-            currentConfiguration.updateChildrenConfiguration(itemId, ruleKey, value)
-            configuration.value =
-                ProductConfiguration(
-                    currentConfiguration.rules,
-                    currentConfiguration.configurationType,
-                    currentConfiguration.configuration,
-                    currentConfiguration.childrenConfiguration
-                )
+            configuration.value = currentConfiguration.updateChildrenConfiguration(itemId, ruleKey, value)
 
             val ruleChanged = when (ruleKey) {
                 OptionalRule.KEY -> VALUE_CHANGED_FIELD_OPTIONAL

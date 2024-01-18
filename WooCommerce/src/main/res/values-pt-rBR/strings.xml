@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-02 20:54:04+0000
+Translation-Revision-Date: 2024-01-08 22:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="blaze_campaign_creation_new_intro_learn_more_button">Descobrir como o Blaze funciona</string>
+    <string name="blaze_campaign_creation_new_intro_start_button">Comece sua campanha</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Seus anúncios em milhões de sites nas redes do WordPress.com e do Tumblr.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_3_title">Acesso a um vasto público</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Nossas ferramentas exibem seu produto onde clientes interessados possam encontrá-lo.\"</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_2_title">Alcance global simplificado</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Publique anúncios em questão de minutos sem precisar de experiência ou de um grande orçamento, a partir de apenas US$ 5.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_title">Início rápido, impacto enorme</string>
+    <string name="blaze_campaign_creation_new_intro_description">Nossa ferramenta foi criada para que os comerciantes possam configurar campanhas de anúncio com facilidade e rapidez, maximizando o tráfego.</string>
+    <string name="blaze_campaign_creation_product_selector_cta_button">Promover</string>
+    <string name="blaze_campaign_creation_product_selector_title">Tudo pronto para promover</string>
+    <string name="blaze_campaign_creation_new_intro_title">Mostre seu produto a milhões de pessoas</string>
+    <string name="theme_preview_activate_theme_button_settings">Usar %1$s</string>
+    <string name="theme_preview_activate_theme_button_store_creation">Começar com %1$s</string>
+    <string name="store_creation_installation_async_dialog_switch_store">Trocar de loja</string>
+    <string name="store_creation_installation_async_dialog_message">Quer começar a gerenciar isso agora?</string>
+    <string name="store_creation_installation_async_dialog_title">Sua nova loja está pronta</string>
+    <string name="card_reader_hub_deposit_funds_deposits_title">ÚLTIMO DEPÓSITO</string>
+    <string name="order_creation_expand_collapse_order_totals">Expandir/recolher totais de pedidos</string>
+    <string name="order_creation_collect_payment_button">Receber pagamento</string>
+    <string name="order_creation_gift_card_text_error">O código deve estar no formato XXXX-XXXX-XXXX-XXXX</string>
+    <string name="order_creation_gift_card_text_field_hint">Digite o código</string>
+    <string name="order_creation_coupon_button">Cupom</string>
     <string name="theme_picker_error_message">Falha ao carregar temas.</string>
     <string name="configuration_complete">Configuração concluída</string>
     <string name="scan_to_update_inventory_undo_snackbar">Atualização de quantidade desfeita</string>
@@ -138,12 +161,7 @@ Language: pt_BR
     <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">Recolher/expandir resumo de depósito</string>
     <string name="card_reader_hub_deposit_summary_learn_more">Saiba mais sobre quando você receberá seu dinheiro</string>
     <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">O dinheiro disponível é depositado automaticamente todo mês no dia %s.</string>
-    <string name="card_reader_hub_deposit_summary_last">Último</string>
-    <string name="card_reader_hub_deposit_summary_next">Próximo</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">Depósitos</string>
     <string name="card_reader_hub_deposit_summary_funds_available_after_one">O dinheiro fica disponível após %d dia pendente.</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_one">%d depósito</string>
-    <string name="card_reader_hub_deposit_summary_pending_deposits_plural">%d depósitos</string>
     <string name="card_reader_hub_deposit_summary_pending_funds">Dinheiro pendente</string>
     <string name="card_reader_hub_deposit_summary_available_funds">Dinheiro disponível</string>
     <string name="order_creation_payment_tax_label">Impostos</string>

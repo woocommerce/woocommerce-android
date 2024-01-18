@@ -19,7 +19,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
@@ -41,7 +40,6 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val blazeCampaignState: Flow<MyStoreBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) emit(Hidden)
         else {

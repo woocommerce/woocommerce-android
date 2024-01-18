@@ -12,7 +12,6 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    ORDER_GIFT_CARD,
     BLAZE_I3;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -20,8 +19,6 @@ enum class FeatureFlag {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
-
-            ORDER_GIFT_CARD -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
