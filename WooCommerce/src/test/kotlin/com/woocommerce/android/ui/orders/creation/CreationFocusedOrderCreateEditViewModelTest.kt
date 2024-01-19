@@ -1928,18 +1928,15 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `given totals helper returns full, when expand clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with true`() {
+    fun `given totals helper returns full, when expand collapse clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with false and true`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Full>()
             val onExpandCollapseClickedCaptor = argumentCaptor<() -> Unit>()
-            val viewState = ViewState(
-                isTotalsExpanded = false
-            )
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
                     any(),
                     any(),
-                    viewState,
+                    any(),
                     any(),
                     any(),
                     any(),
@@ -1955,44 +1952,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             createSut()
 
             onExpandCollapseClickedCaptor.firstValue.invoke()
-
-            verify(tracker).track(
-                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
-                mapOf(
-                    KEY_FLOW to VALUE_FLOW_CREATION,
-                    KEY_EXPANDED to true
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `given totals helper returns full, when collapse clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with false`() {
-        testBlocking {
-            val totalsSectionsState = mock<TotalsSectionsState.Full>()
-            val onExpandCollapseClickedCaptor = argumentCaptor<() -> Unit>()
-            val viewState = ViewState(
-                isTotalsExpanded = true
-            )
-            whenever(
-                totalsHelper.mapToPaymentTotalsState(
-                    any(),
-                    any(),
-                    viewState,
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    onExpandCollapseClickedCaptor.capture(),
-                    any(),
-                )
-            ).thenReturn(totalsSectionsState)
-
-            sut.totalsData.observeForever { }
-
-            createSut()
-
             onExpandCollapseClickedCaptor.firstValue.invoke()
 
             verify(tracker).track(
@@ -2000,6 +1959,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 mapOf(
                     KEY_FLOW to VALUE_FLOW_CREATION,
                     KEY_EXPANDED to false
+                )
+            )
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
+                mapOf(
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_EXPANDED to true
                 )
             )
         }
