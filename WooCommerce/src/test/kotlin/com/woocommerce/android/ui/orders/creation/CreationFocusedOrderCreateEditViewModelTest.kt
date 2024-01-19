@@ -1183,11 +1183,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to productCount,
-                AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
-                AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
-                AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
+                KEY_STATUS to defaultOrderValue.status,
+                KEY_PRODUCT_COUNT to productCount,
+                KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
+                KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
+                KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
             )
         )
     }
@@ -1201,7 +1201,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
-            mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION)
+            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
     }
 
@@ -1215,7 +1215,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,
-            mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION)
+            mapOf(KEY_FLOW to VALUE_FLOW_CREATION)
         )
     }
 
@@ -1304,7 +1304,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "", null,
+                Creation, "", null,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1330,7 +1330,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation, "12345", BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1372,7 +1372,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku fails, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation, "12345", BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1408,7 +1408,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatQRCode,
+                Creation, "12345", BarcodeFormat.FormatQRCode,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1444,7 +1444,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation, "12345", BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1476,8 +1476,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.ORDER_PRODUCT_ADD,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
-                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                     KEY_HAS_BUNDLE_CONFIGURATION to false
@@ -1490,7 +1490,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation, "12345", BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1520,8 +1520,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.ORDER_PRODUCT_ADD,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
-                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_FLOW to VALUE_FLOW_CREATION,
+                    KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                     KEY_HAS_BUNDLE_CONFIGURATION to false
@@ -1880,7 +1880,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    any(),
                 )
             ).thenReturn(totalsSectionsState)
 
@@ -1910,7 +1911,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    any(),
                 )
             ).thenReturn(totalsSectionsState)
             var totalsData: TotalsSectionsState? = null
@@ -1929,18 +1931,22 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns full, when expand clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with true`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Full>()
-            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<() -> Unit>()
+            val viewState = ViewState(
+                isTotalsExpanded = false
+            )
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
                     any(),
                     any(),
+                    viewState,
                     any(),
                     any(),
                     any(),
                     any(),
                     any(),
+                    onExpandCollapseClickedCaptor.capture(),
                     any(),
-                    onExpandCollapseClickedCaptor.capture()
                 )
             ).thenReturn(totalsSectionsState)
 
@@ -1948,7 +1954,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut()
 
-            onExpandCollapseClickedCaptor.firstValue.invoke(true)
+            onExpandCollapseClickedCaptor.firstValue.invoke()
 
             verify(tracker).track(
                 AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
@@ -1964,18 +1970,22 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given totals helper returns full, when collapse clicked, then ORDER_FORM_TOTALS_PANEL_TOGGLED tracked with false`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Full>()
-            val onExpandCollapseClickedCaptor = argumentCaptor<(Boolean) -> Unit>()
+            val onExpandCollapseClickedCaptor = argumentCaptor<() -> Unit>()
+            val viewState = ViewState(
+                isTotalsExpanded = true
+            )
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
                     any(),
                     any(),
+                    viewState,
                     any(),
                     any(),
                     any(),
                     any(),
                     any(),
+                    onExpandCollapseClickedCaptor.capture(),
                     any(),
-                    onExpandCollapseClickedCaptor.capture()
                 )
             ).thenReturn(totalsSectionsState)
 
@@ -1983,7 +1993,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut()
 
-            onExpandCollapseClickedCaptor.firstValue.invoke(false)
+            onExpandCollapseClickedCaptor.firstValue.invoke()
 
             verify(tracker).track(
                 AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
@@ -2010,7 +2020,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     onMainButtonClickedCaptor.capture(),
-                    any()
+                    any(),
+                    any(),
                 )
             ).thenReturn(totalsSectionsState)
 
@@ -2108,7 +2119,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker, never()).track(
             ORDER_FEE_ADD,
             mapOf(
-                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_FLOW to VALUE_FLOW_CREATION,
                 KEY_CUSTOM_AMOUNT_TAX_STATUS to "none"
             )
         )
@@ -2144,7 +2155,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker).track(
             ORDER_FEE_UPDATE,
             mapOf(
-                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_FLOW to VALUE_FLOW_CREATION,
                 KEY_CUSTOM_AMOUNT_TAX_STATUS to "none"
             )
         )
@@ -2196,7 +2207,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker).track(
             ORDER_FEE_ADD,
             mapOf(
-                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_FLOW to VALUE_FLOW_CREATION,
                 KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
             )
         )
@@ -2217,7 +2228,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker).track(
             ORDER_FEE_ADD,
             mapOf(
-                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION,
+                KEY_FLOW to VALUE_FLOW_CREATION,
                 KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
             )
         )
