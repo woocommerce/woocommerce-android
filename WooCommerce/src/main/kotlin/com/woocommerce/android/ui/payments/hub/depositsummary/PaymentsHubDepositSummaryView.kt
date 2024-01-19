@@ -617,14 +617,8 @@ private val previewState = sortedMapOf(
         pendingFundsFormatted = "200$",
         availableFundsAmount = 10000,
         pendingFundsAmount = 20000,
-        pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 5,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
-        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-            amount = "100$",
-            status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
-            date = "13 Oct 2023"
-        ),
         lastDeposit = PaymentsHubDepositSummaryState.Deposit(
             amount = "100$",
             status = PaymentsHubDepositSummaryState.Deposit.Status.FAILED,
@@ -636,14 +630,8 @@ private val previewState = sortedMapOf(
         pendingFundsFormatted = "200$",
         availableFundsAmount = 10000,
         pendingFundsAmount = 20000,
-        pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 2,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Friday"),
-        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-            amount = "100$",
-            status = PaymentsHubDepositSummaryState.Deposit.Status.PAID,
-            date = "13 Oct 2023"
-        ),
         lastDeposit = PaymentsHubDepositSummaryState.Deposit(
             amount = "100$",
             status = PaymentsHubDepositSummaryState.Deposit.Status.PENDING,
@@ -655,14 +643,8 @@ private val previewState = sortedMapOf(
         pendingFundsFormatted = "200$",
         availableFundsAmount = 10000,
         pendingFundsAmount = 20000,
-        pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 4,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Monday"),
-        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-            amount = "100$",
-            status = PaymentsHubDepositSummaryState.Deposit.Status.IN_TRANSIT,
-            date = "13 Oct 2023"
-        ),
         lastDeposit = PaymentsHubDepositSummaryState.Deposit(
             amount = "100$",
             status = PaymentsHubDepositSummaryState.Deposit.Status.CANCELED,
@@ -674,14 +656,8 @@ private val previewState = sortedMapOf(
         pendingFundsFormatted = "200$",
         availableFundsAmount = 10000,
         pendingFundsAmount = 20000,
-        pendingBalanceDepositsCount = 1,
         fundsAvailableInDays = 3,
         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Weekly("Tuesday"),
-        nextDeposit = PaymentsHubDepositSummaryState.Deposit(
-            amount = "100$",
-            status = PaymentsHubDepositSummaryState.Deposit.Status.UNKNOWN,
-            date = "13 Oct 2023"
-        ),
         lastDeposit = PaymentsHubDepositSummaryState.Deposit(
             amount = "100$",
             status = PaymentsHubDepositSummaryState.Deposit.Status.ESTIMATED,
@@ -784,10 +760,8 @@ fun PaymentsHubDepositSummaryViewNoDepositsPreview() {
                         pendingFundsFormatted = "200$",
                         availableFundsAmount = 10000,
                         pendingFundsAmount = 20000,
-                        pendingBalanceDepositsCount = 1,
                         fundsAvailableInDays = 5,
                         fundsDepositInterval = PaymentsHubDepositSummaryState.Info.Interval.Daily,
-                        nextDeposit = null,
                         lastDeposit = null,
                     )
                 )
