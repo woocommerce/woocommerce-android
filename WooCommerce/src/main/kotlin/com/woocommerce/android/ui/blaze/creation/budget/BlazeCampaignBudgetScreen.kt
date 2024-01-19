@@ -215,7 +215,12 @@ private fun ImpressionsInfoBottomSheet(
 ) {
     Column {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 8.dp,
+                bottom = 8.dp
+            ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -231,12 +236,11 @@ private fun ImpressionsInfoBottomSheet(
         }
         Divider()
         Text(
-            modifier = Modifier
-                .padding(16.dp)
-                .padding(bottom = 16.dp),
+            modifier = Modifier.padding(16.dp),
             text = stringResource(id = R.string.blaze_campaign_budget_impressions_info),
             style = MaterialTheme.typography.body1,
         )
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
