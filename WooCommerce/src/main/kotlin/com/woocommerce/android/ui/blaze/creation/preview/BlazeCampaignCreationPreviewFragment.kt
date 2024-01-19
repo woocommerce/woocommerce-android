@@ -39,7 +39,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToCampaignBudgetFragment()
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment()
                 )
             }
         }

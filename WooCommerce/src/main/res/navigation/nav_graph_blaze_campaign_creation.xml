@@ -51,11 +51,11 @@
             android:defaultValue="-1L"
             app:argType="long" />
         <action
-            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_CampaignBudgetFragment"
-            app:destination="@id/blazeCampaignCreationPreviewFragment" />
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignBudgetFragment"
+            app:destination="@id/blazeCampaignBudgetFragment" />
     </fragment>
     <fragment
-        android:id="@+id/campaignBudgetFragment"
+        android:id="@+id/blazeCampaignBudgetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
-        android:label="CampaignBudgetFragment" />
+        android:label="BlazeCampaignBudgetFragment" />
 </navigation>
