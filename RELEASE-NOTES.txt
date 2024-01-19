@@ -2,6 +2,7 @@
 17.3
 -----
 - [*] [Internal] Collapse bottom drawer with totals on the order creation/editing screen when scrolling down [https://github.com/woocommerce/woocommerce-android/pull/10573]
+- [*] [Internal] Better displaying of the "locked" state of the buttons on the order creation screen. Fixed bug when it was possible to add "custom amount" even when the order is locked [https://github.com/woocommerce/woocommerce-android/pull/10562]
 
 17.2
 -----

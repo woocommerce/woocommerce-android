@@ -34,6 +34,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -454,7 +455,7 @@ private fun TextWithIcon(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    imageVector = if (isEnabled) Icons.Default.Edit else Icons.Default.Lock,
                     contentDescription = null,
                     tint = colorResource(id = R.color.color_primary),
                     modifier = Modifier.size(20.dp)
@@ -468,7 +469,7 @@ private fun TextWithIcon(
         color = if (isEnabled) {
             colorResource(id = R.color.color_primary)
         } else {
-            colorResource(id = R.color.color_on_surface_medium)
+            colorResource(id = R.color.color_on_surface)
         },
         text = buildAnnotatedString {
             append(text)
