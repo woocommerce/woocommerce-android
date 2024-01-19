@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -90,7 +92,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "UNUSED_ANONYMOUS_PARAMETER")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
@@ -107,6 +109,9 @@ class OrderCreateEditFormFragment :
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
     private var orderUpdateFailureSnackBar: Snackbar? = null
+    private var totalsSectionLayoutChangeListener: View.OnLayoutChangeListener? = null
+
+    private var binding: FragmentOrderCreateEditFormBinding? = null
 
     private val args: OrderCreateEditFormFragmentArgs by navArgs()
 
@@ -124,7 +129,8 @@ class OrderCreateEditFormFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
-        with(FragmentOrderCreateEditFormBinding.bind(view)) {
+        binding = FragmentOrderCreateEditFormBinding.bind(view)
+        with(binding!!) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
@@ -184,6 +190,13 @@ class OrderCreateEditFormFragment :
         orderUpdateFailureSnackBar?.dismiss()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        totalsSectionLayoutChangeListener?.let {
+            binding?.totalsSection?.removeOnLayoutChangeListener(it)
+        }
+    }
+
     private fun FragmentOrderCreateEditFormBinding.initView() {
         initOrderStatusView()
         initCustomerAndNotesEmptySection()
@@ -197,12 +210,23 @@ class OrderCreateEditFormFragment :
         scrollView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
             viewModel.onScreenScrolledVertically(scrollY, oldScrollY)
         }
-        totalsSection.setContent {
-            OrderCreateEditTotalsView(viewModel)
+        totalsSection.setContent { OrderCreateEditTotalsView(viewModel) }
+        val handler = Handler(Looper.getMainLooper())
+        totalsSectionLayoutChangeListener = View.OnLayoutChangeListener { _, _, p2, p3, p4, p5, p6, p7, p8 ->
+            handler.removeCallbacksAndMessages(null)
+            handler.postDelayed(
+                {
+                    scrollView.setPadding(
+                        0,
+                        0,
+                        0,
+                        totalsSection.height
+                    )
+                }, 300
+            )
+
         }
-        totalsSection.post {
-            scrollView.setPadding(0, 0, 0, totalsSection.height)
-        }
+        totalsSection.addOnLayoutChangeListener(totalsSectionLayoutChangeListener)
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
