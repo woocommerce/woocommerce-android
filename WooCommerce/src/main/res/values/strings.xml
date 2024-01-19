@@ -3839,9 +3839,17 @@
     <string name="blaze_campaign_preview_target_default_value">All</string>
 
     <!--
-    Blaze campaign preview screen
+    Blaze campaign budget screen
     -->
-    <string name="blaze_campaign_budget_title">Set your budget</string>
+    <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
+    <string name="blaze_campaign_budget_subtitle">How much would you like to spend on your product promotion campaign?</string>
+    <string name="blaze_campaign_budget_total_spend">Total spend</string>
+    <string name="blaze_campaign_budget_days_duration">for %1$s days</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
+    <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
+    <string name="blaze_campaign_budget_duration_section_title">Duration</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
+    <string name="blaze_campaign_budget_update_button">Update</string>
 
     <!--
     Blaze other
