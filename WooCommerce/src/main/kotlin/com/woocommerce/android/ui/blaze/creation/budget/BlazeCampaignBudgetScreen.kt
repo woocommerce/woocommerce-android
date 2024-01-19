@@ -21,7 +21,11 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -94,6 +98,8 @@ private fun CampaignBudgetScreen(
 
 @Composable
 private fun EditBudgetSection(modifier: Modifier = Modifier) {
+    var sliderValue by remember { mutableStateOf(35f) }
+
     Column(
         modifier = modifier.padding(
             start = 28.dp,
@@ -118,7 +124,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
-            text = "$35 USD",
+            text = " $${sliderValue.toInt()} USD",
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
         )
@@ -134,9 +140,9 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
         )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            value = 35f,
+            value = sliderValue,
             valueRange = 35f..350f,
-            onValueChange = { /* TODO */ }
+            onValueChange = { sliderValue = it }
         )
         Row(
             verticalAlignment = Alignment.CenterVertically
