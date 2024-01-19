@@ -166,7 +166,6 @@ class OrderListFragment :
 
     override fun onStart() {
         super.onStart()
-
         val navHostFragment = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment?
         navHostFragment?.let {
             val navController = it.navController
@@ -328,6 +327,7 @@ class OrderListFragment :
 
     override fun onResume() {
         super.onResume()
+        binding.orderListView.openFirstOrder()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -335,14 +335,14 @@ class OrderListFragment :
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
 
-        val navHostFragment = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
-        val currentDestinationId = navHostFragment.navController.currentDestination?.id
-        val currentBackStackEntry = navHostFragment.navController.currentBackStackEntry
-        val currentArguments = currentBackStackEntry?.arguments
-        outState.putInt("current_nav_destination", currentDestinationId ?: -1)
-        currentArguments?.let {
-            outState.putBundle("current_nav_arguments", it)
-        }
+//        val navHostFragment = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
+//        val currentDestinationId = navHostFragment.navController.currentDestination?.id
+//        val currentBackStackEntry = navHostFragment.navController.currentBackStackEntry
+//        val currentArguments = currentBackStackEntry?.arguments
+//        outState.putInt("current_nav_destination", currentDestinationId ?: -1)
+//        currentArguments?.let {
+//            outState.putBundle("current_nav_arguments", it)
+//        }
 
 
         super.onSaveInstanceState(outState)
@@ -424,7 +424,10 @@ class OrderListFragment :
     private fun initObservers() {
         // setup observers
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
-
+            viewModel.updateOrderSelectedStatus(
+                orderId = selectedOrder.selectedOrderId.value?.second ?: -1,
+                position = selectedOrder.selectedOrderId.value?.first ?: -1,
+            )
         }
         viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
             it?.let { options ->
@@ -445,6 +448,10 @@ class OrderListFragment :
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
             updatePagedListData(it)
+            viewModel.updateOrderSelectedStatus(
+                orderId = selectedOrder.selectedOrderId.value?.second ?: -1,
+                position = selectedOrder.selectedOrderId.value?.first ?: -1,
+            )
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -651,7 +658,7 @@ class OrderListFragment :
             } else {
                 null
             }
-            selectedOrder.selectOrder(orderId)
+            selectedOrder.selectOrder(Pair(orderPosition, orderId))
             viewModel.updateOrderSelectedStatus(orderPosition, orderId)
             showOrderDetail(orderId, navHostFragment)
 //            if (sharedView != null) {

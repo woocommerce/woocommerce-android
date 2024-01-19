@@ -80,6 +80,10 @@ class OrderListView @JvmOverloads constructor(
         ordersAdapter.submitList(null)
     }
 
+    fun openFirstOrder() {
+        ordersAdapter.openFirstOrder()
+    }
+
     /**
      * scroll to the top of the order list
      */

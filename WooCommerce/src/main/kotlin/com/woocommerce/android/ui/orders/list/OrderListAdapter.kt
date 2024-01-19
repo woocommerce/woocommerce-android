@@ -221,6 +221,22 @@ class OrderListAdapter(
         override fun getSwipedExtras(): Map<String, String> = extras
     }
 
+    fun openFirstOrder() {
+        if (itemCount > 0) {
+            (getItem(1) as? OrderListItemUI)?.let { firstOrderItem ->
+                // Trigger the click listener as if the first item was clicked
+                listener.openOrderDetail(
+                    orderId = firstOrderItem.orderId,
+                    allOrderIds = allOrderIds,
+                    orderStatus = firstOrderItem.status,
+                    sharedView = null,
+                    orderPosition = 1
+                )
+            }
+        }
+    }
+
+
     private class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     private class SectionHeaderViewHolder(val viewBinding: OrderListHeaderBinding) :

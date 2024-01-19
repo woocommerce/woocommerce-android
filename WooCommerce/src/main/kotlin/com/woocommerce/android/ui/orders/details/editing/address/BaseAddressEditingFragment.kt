@@ -60,6 +60,13 @@ abstract class BaseAddressEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        setupToolbarMenu()
+
         replicateAddressSwitch = SwitchMaterial(requireContext())
         _binding?.form?.root?.addView(replicateAddressSwitch)
         replicateAddressSwitch.apply {
@@ -90,6 +97,12 @@ abstract class BaseAddressEditingFragment :
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
+    }
+
+    private fun setupToolbarMenu() {
+        binding.menuCross.setOnClickListener {
+            navigateUp()
+        }
     }
 
     override fun hasChanges() =

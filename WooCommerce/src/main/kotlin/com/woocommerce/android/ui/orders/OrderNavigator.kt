@@ -117,7 +117,7 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewCreateShippingLabelInfo -> {
-                val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+                val action = OrderDetailFragmentDirections.actionGlobalInfoScreenFragment(
                     screenTitle = R.string.shipping_label_more_information_title,
                     heading = R.string.shipping_label_more_information_heading,
                     message = R.string.shipping_label_more_information_message,
@@ -125,6 +125,9 @@ class OrderNavigator @Inject constructor() {
                     imageResource = R.drawable.img_print_with_phone,
                     linkAction = LearnMoreAboutShippingLabels
                 )
+//                val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+//
+//                )
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewShippingLabelFormatOptions -> {
