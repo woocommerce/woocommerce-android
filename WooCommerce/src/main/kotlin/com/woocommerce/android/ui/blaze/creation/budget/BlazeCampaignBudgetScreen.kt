@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
@@ -101,7 +100,6 @@ private fun CampaignBudgetScreen(
 @Composable
 private fun EditBudgetSection(modifier: Modifier = Modifier) {
     var sliderValue by remember { mutableStateOf(35f) }
-
     Column(
         modifier = modifier.padding(
             start = 28.dp,
@@ -114,7 +112,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
                 top = 40.dp,
                 bottom = 90.dp
             ),
-            text = stringResource(id = string.blaze_campaign_budget_subtitle),
+            text = stringResource(id = R.string.blaze_campaign_budget_subtitle),
             style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
             lineHeight = 24.sp,
@@ -122,7 +120,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
         )
         Text(
             modifier = Modifier.padding(bottom = 8.dp),
-            text = stringResource(id = string.blaze_campaign_budget_total_spend),
+            text = stringResource(id = R.string.blaze_campaign_budget_total_spend),
             style = MaterialTheme.typography.body1,
             color = colorResource(id = color.color_on_surface_medium)
         )
@@ -132,13 +130,13 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = stringResource(id = string.blaze_campaign_budget_days_duration),
+            text = stringResource(id = R.string.blaze_campaign_budget_days_duration),
             style = MaterialTheme.typography.h4,
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
             modifier = Modifier.padding(top = 40.dp),
-            text = stringResource(id = string.blaze_campaign_budget_daily_spend),
+            text = stringResource(id = R.string.blaze_campaign_budget_daily_spend),
             color = colorResource(id = color.color_on_surface_medium)
         )
         Slider(
@@ -153,7 +151,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = stringResource(id = string.blaze_campaign_budget_reach_forecast))
+            Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
             Icon(
                 modifier = Modifier.padding(start = 4.dp),
                 painter = painterResource(id = drawable.ic_info_outline_20dp),
@@ -182,7 +180,7 @@ private fun EditDurationSection() {
             )
         ) {
             Text(
-                text = stringResource(id = string.blaze_campaign_budget_duration_section_title),
+                text = stringResource(id = R.string.blaze_campaign_budget_duration_section_title),
                 style = MaterialTheme.typography.body1,
                 color = colorResource(id = color.color_on_surface_medium)
             )
@@ -197,13 +195,13 @@ private fun EditDurationSection() {
                 WCTextButton(
                     onClick = { /*TODO*/ }
                 ) {
-                    Text(text = stringResource(id = string.blaze_campaign_budget_edit_duration_button))
+                    Text(text = stringResource(id = R.string.blaze_campaign_budget_edit_duration_button))
                 }
             }
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { /*TODO*/ },
-                text = stringResource(id = string.blaze_campaign_budget_update_button)
+                text = stringResource(id = R.string.blaze_campaign_budget_update_button)
             )
         }
     }
