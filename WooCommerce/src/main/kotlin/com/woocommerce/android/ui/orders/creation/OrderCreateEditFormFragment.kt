@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -109,9 +107,6 @@ class OrderCreateEditFormFragment :
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
     private var orderUpdateFailureSnackBar: Snackbar? = null
-    private var totalsSectionLayoutChangeListener: View.OnLayoutChangeListener? = null
-
-    private var binding: FragmentOrderCreateEditFormBinding? = null
 
     private val args: OrderCreateEditFormFragmentArgs by navArgs()
 
@@ -129,8 +124,7 @@ class OrderCreateEditFormFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
-        binding = FragmentOrderCreateEditFormBinding.bind(view)
-        with(binding!!) {
+        with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
@@ -190,13 +184,6 @@ class OrderCreateEditFormFragment :
         orderUpdateFailureSnackBar?.dismiss()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        totalsSectionLayoutChangeListener?.let {
-            binding?.totalsSection?.removeOnLayoutChangeListener(it)
-        }
-    }
-
     private fun FragmentOrderCreateEditFormBinding.initView() {
         initOrderStatusView()
         initCustomerAndNotesEmptySection()
@@ -211,22 +198,6 @@ class OrderCreateEditFormFragment :
             viewModel.onScreenScrolledVertically(scrollY, oldScrollY)
         }
         totalsSection.setContent { OrderCreateEditTotalsView(viewModel) }
-
-        val handler = Handler(Looper.getMainLooper())
-        totalsSectionLayoutChangeListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            handler.removeCallbacksAndMessages(null)
-            handler.postDelayed(
-                {
-                    scrollView.setPadding(
-                        0,
-                        0,
-                        0,
-                        totalsSection.height
-                    )
-                }, TOTALS_PADDING_BOUNCE_TIME
-            )
-        }
-        totalsSection.addOnLayoutChangeListener(totalsSectionLayoutChangeListener)
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
@@ -371,7 +342,7 @@ class OrderCreateEditFormFragment :
 
         observeViewStateChanges(binding)
 
-        viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+        viewModel.event.observe(viewLifecycleOwner, { handleViewModelEvents(it, binding) })
     }
 
     @Suppress("LongMethod")
@@ -966,7 +937,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun handleViewModelEvents(event: Event) {
+    private fun handleViewModelEvents(event: Event, binding: FragmentOrderCreateEditFormBinding) {
         when (event) {
             is OrderCreateEditNavigationTarget -> OrderCreateEditNavigator.navigate(this, event)
             is ViewOrderStatusSelector ->
@@ -1015,6 +986,11 @@ class OrderCreateEditFormFragment :
                         orderTotal = viewModel.orderDraft.value?.total.toString(),
                     )
                 )
+            }
+
+            is OnTotalsSectionHeightChanged -> {
+                println("Totals section height changed: ${event.newHeight}")
+                binding.scrollView.setPadding(0, 0, 0, event.newHeight)
             }
 
             is Exit -> findNavController().navigateUp()
@@ -1101,9 +1077,5 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = true
         }
-    }
-
-    private companion object {
-        private const val TOTALS_PADDING_BOUNCE_TIME = 300L
     }
 }

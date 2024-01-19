@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -60,20 +61,28 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 
 @Composable
 fun OrderCreateEditTotalsView(viewModel: OrderCreateEditViewModel) {
-    viewModel.totalsData.observeAsState().value?.let {
-        OrderCreateEditTotalsView(it)
+    viewModel.totalsData.observeAsState().value?.let { state ->
+        OrderCreateEditTotalsView(
+            state,
+            modifier = Modifier.onGloballyPositioned {
+                state.onHeightChanged(it.size.height)
+            }
+        )
     }
 }
 
 @Composable
-private fun OrderCreateEditTotalsView(state: TotalsSectionsState) {
+private fun OrderCreateEditTotalsView(
+    state: TotalsSectionsState,
+    modifier: Modifier = Modifier
+) {
     AnimatedVisibility(
         visible = state is TotalsSectionsState.Full,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
         exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
     ) {
         if (state is TotalsSectionsState.Full) {
-            OrderCreateEditTotalsFullView(state)
+            OrderCreateEditTotalsFullView(state, modifier)
         }
     }
 
@@ -83,25 +92,29 @@ private fun OrderCreateEditTotalsView(state: TotalsSectionsState) {
         exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
     ) {
         if (state is TotalsSectionsState.Minimised) {
-            OrderCreateEditTotalsMinimisedView(state)
+            OrderCreateEditTotalsMinimisedView(state, modifier)
         }
     }
 }
 
 @Composable
-private fun OrderCreateEditTotalsFullView(state: TotalsSectionsState.Full) {
+private fun OrderCreateEditTotalsFullView(
+    state: TotalsSectionsState.Full,
+    modifier: Modifier = Modifier
+) {
     PanelWithShadow {
-        TotalsView(state)
+        TotalsView(state, modifier)
     }
 }
 
 @Composable
 private fun OrderCreateEditTotalsMinimisedView(
-    state: TotalsSectionsState.Minimised
+    state: TotalsSectionsState.Minimised,
+    modifier: Modifier = Modifier
 ) {
     PanelWithShadow {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .background(color = colorResource(id = R.color.color_surface))
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -152,13 +165,19 @@ private fun PanelWithShadow(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun TotalsView(state: TotalsSectionsState.Full) {
+private fun TotalsView(
+    state: TotalsSectionsState.Full,
+    modifier: Modifier = Modifier
+) {
     val totalsIs = remember { MutableInteractionSource() }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(color = colorResource(id = R.color.color_surface))
             .verticalScroll(rememberScrollState())
+            .onGloballyPositioned {
+                state.onHeightChanged(it.size.height)
+            }
     ) {
         Column(
             modifier = Modifier
@@ -528,6 +547,7 @@ private fun OrderCreateEditTotalsFullViewPreview() {
             ),
             isExpanded = true,
             onExpandCollapseClicked = {},
+            onHeightChanged = {},
         )
     )
 }
@@ -541,7 +561,8 @@ private fun OrderCreateEditTotalsMinimisedViewPreview() {
             orderTotal = TotalsSectionsState.OrderTotal(
                 label = stringResource(R.string.order_creation_payment_order_total),
                 value = "$143.75"
-            )
+            ),
+            onHeightChanged = {},
         )
     )
 }

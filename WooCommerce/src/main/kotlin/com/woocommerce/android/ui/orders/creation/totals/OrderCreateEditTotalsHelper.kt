@@ -25,7 +25,8 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         onGiftClicked: () -> Unit,
         onTaxesLearnMore: () -> Unit,
         onMainButtonClicked: () -> Unit,
-        onExpandCollapseClicked: () -> Unit
+        onExpandCollapseClicked: () -> Unit,
+        onHeightChanged: (height: Int) -> Unit
     ): TotalsSectionsState {
         val bigDecimalFormatter = currencyFormatter.buildBigDecimalFormatter(
             currencyCode = order.currency
@@ -33,7 +34,8 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 
         return if (order.items.isEmpty() && order.feesLines.isEmpty()) {
             TotalsSectionsState.Minimised(
-                orderTotal = order.toOrderTotals(bigDecimalFormatter)
+                orderTotal = order.toOrderTotals(bigDecimalFormatter),
+                onHeightChanged = onHeightChanged
             )
         } else {
             TotalsSectionsState.Full(
@@ -69,7 +71,8 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     onClick = onMainButtonClicked,
                 ),
                 isExpanded = viewState.isTotalsExpanded,
-                onExpandCollapseClicked = onExpandCollapseClicked
+                onExpandCollapseClicked = onExpandCollapseClicked,
+                onHeightChanged = onHeightChanged,
             )
         }
     }
@@ -208,18 +211,20 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
 }
 
-sealed class TotalsSectionsState {
+sealed class TotalsSectionsState(open val onHeightChanged: (height: Int) -> Unit) {
     data class Full(
         val lines: List<Line>,
         val orderTotal: OrderTotal,
         val mainButton: Button,
         val isExpanded: Boolean,
         val onExpandCollapseClicked: () -> Unit,
-    ) : TotalsSectionsState()
+        override val onHeightChanged: (height: Int) -> Unit,
+    ) : TotalsSectionsState(onHeightChanged)
 
     data class Minimised(
         val orderTotal: OrderTotal,
-    ) : TotalsSectionsState()
+        override val onHeightChanged: (height: Int) -> Unit
+    ) : TotalsSectionsState(onHeightChanged)
 
     data class Button(
         val text: String,

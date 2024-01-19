@@ -269,7 +269,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
-                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() }
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() },
+                onHeightChanged = { onTotalsSectionHeightChanged(it) }
             )
         }
 
@@ -1151,6 +1152,10 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
+    private fun onTotalsSectionHeightChanged(newHeight: Int) {
+        triggerEvent(OnTotalsSectionHeightChanged(newHeight))
+    }
+
     private fun onTotalsSectionPrimaryButtonClicked() {
         when (mode) {
             Mode.Creation -> {
@@ -1800,6 +1805,10 @@ object OnCouponRejectedByBackend : Event() {
     @StringRes
     val message: Int = string.order_sync_coupon_removed
 }
+
+data class OnTotalsSectionHeightChanged(
+    val newHeight: Int
+) : Event()
 
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType
