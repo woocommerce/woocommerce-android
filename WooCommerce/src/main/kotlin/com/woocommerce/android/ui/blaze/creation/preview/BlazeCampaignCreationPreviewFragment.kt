@@ -39,12 +39,12 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is NavigateToEditAdScreen -> findNavController().navigate(
-                        BlazeCampaignCreationPreviewFragmentDirections
-                            .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
-                                event.tagline,
-                                event.description,
-                                event.campaignImageUrl
-                            )
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
+                            event.tagline,
+                            event.description,
+                            event.campaignImageUrl
+                        )
                 )
             }
         }

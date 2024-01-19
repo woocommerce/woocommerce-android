@@ -45,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
@@ -185,61 +184,61 @@ private fun AdDataSection(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
 
+        Text(
+            text = stringResource(
+                id = string.blaze_campaign_edit_ad_characters_remaining,
+                viewState.taglineCharactersRemaining
+            ),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = color.color_on_surface_disabled),
+            modifier = Modifier
+                .padding(top = dimensionResource(id = dimen.minor_50))
+                .fillMaxWidth()
+        )
+
+        WCOutlinedTextField(
+            value = viewState.description,
+            onValueChange = onDescriptionChanged,
+            label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
+            maxLines = 4,
+            minLines = 4,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            modifier = Modifier
+                .height(130.dp)
+                .padding(top = dimensionResource(id = dimen.major_100))
+        )
+
+        Text(
+            text = stringResource(
+                id = string.blaze_campaign_edit_ad_characters_remaining,
+                viewState.descriptionCharactersRemaining
+            ),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = color.color_on_surface_disabled),
+            modifier = Modifier
+                .padding(top = dimensionResource(id = dimen.minor_50))
+                .fillMaxWidth()
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(top = dimensionResource(id = dimen.major_100))
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = drawable.ic_ai),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+                modifier = Modifier
+                    .size(dimensionResource(id = dimen.image_minor_80))
+                    .padding(end = dimensionResource(id = dimen.minor_100))
+            )
             Text(
-                text = stringResource(
-                    id = string.blaze_campaign_edit_ad_characters_remaining,
-                    viewState.taglineCharactersRemaining
-                ),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = color.color_on_surface_disabled),
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = dimen.minor_50))
-                    .fillMaxWidth()
+                text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
+                style = MaterialTheme.typography.h6,
             )
-
-            WCOutlinedTextField(
-                value = viewState.description,
-                onValueChange = onDescriptionChanged,
-                label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
-                maxLines = 4,
-                minLines = 4,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                modifier = Modifier
-                    .height(130.dp)
-                    .padding(top = dimensionResource(id = dimen.major_100))
-            )
-
-            Text(
-                text = stringResource(
-                    id = string.blaze_campaign_edit_ad_characters_remaining,
-                    viewState.descriptionCharactersRemaining
-                ),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = color.color_on_surface_disabled),
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = dimen.minor_50))
-                    .fillMaxWidth()
-            )
-
-            Row(
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = dimen.major_100))
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = drawable.ic_ai),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
-                    modifier = Modifier
-                        .size(dimensionResource(id = dimen.image_minor_80))
-                        .padding(end = dimensionResource(id = dimen.minor_100))
-                )
-                Text(
-                    text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
-                    style = MaterialTheme.typography.h6,
-                )
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
             SuggestionButton(
                 onClick = onPreviousSuggestionTapped,
