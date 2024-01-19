@@ -13,7 +13,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private const val TAGLINE_MAX_LENGTH = 50
+        private const val TAGLINE_MAX_LENGTH = 32
         private const val DESCRIPTION_MAX_LENGTH = 140
     }
 
