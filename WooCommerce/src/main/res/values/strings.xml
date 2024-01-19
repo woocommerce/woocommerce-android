@@ -3850,6 +3850,11 @@
     <string name="blaze_campaign_budget_duration_section_title">Duration</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
+    <string name="blaze_campaign_budget_impressions_title">Impressions</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Done</string>
+    <string name="blaze_campaign_budget_impressions_info">Impressions reflect the frequency with which your ad appears to potential customers.\n\n
+        While exact numbers can\'t be assured due to fluctuating online traffic and user behavior, we aim to match your ad\'s actual impressions as closely as possible to your target count.\n\n
+        Remember, impressions are about visibility, not action taken by viewers.</string>
 
     <!--
     Blaze other

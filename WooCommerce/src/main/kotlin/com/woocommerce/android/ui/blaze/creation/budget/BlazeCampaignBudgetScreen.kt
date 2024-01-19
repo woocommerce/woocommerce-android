@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.blaze.creation.budget
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -76,11 +75,8 @@ private fun CampaignBudgetScreen(
         WCModalBottomSheetLayout(
             sheetState = modalSheetState,
             sheetContent = {
-                DurationSheetContent(
-                    durationInDays = 0,
-                    onApplyTapped = {
-                        coroutineScope.launch { modalSheetState.hide() }
-                    }
+                ImpressionsInfoBottomSheet(
+                    onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
                 )
             }
         ) {
@@ -89,8 +85,10 @@ private fun CampaignBudgetScreen(
                     .padding(paddingValues)
                     .background(MaterialTheme.colors.surface)
             ) {
-
-                EditBudgetSection(modifier = Modifier.weight(1f))
+                EditBudgetSection(
+                    onInfoTapped = { coroutineScope.launch { modalSheetState.show() } },
+                    modifier = Modifier.weight(1f)
+                )
                 EditDurationSection()
             }
         }
@@ -98,7 +96,10 @@ private fun CampaignBudgetScreen(
 }
 
 @Composable
-private fun EditBudgetSection(modifier: Modifier = Modifier) {
+private fun EditBudgetSection(
+    onInfoTapped: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var sliderValue by remember { mutableStateOf(35f) }
     Column(
         modifier = modifier.padding(
@@ -149,6 +150,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
             )
         )
         Row(
+            modifier = Modifier.clickable { onInfoTapped() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
@@ -208,16 +210,33 @@ private fun EditDurationSection() {
 }
 
 @Composable
-private fun DurationSheetContent(
-    durationInDays: Int,
-    onApplyTapped: () -> Unit,
-    modifier: Modifier = Modifier
+private fun ImpressionsInfoBottomSheet(
+    onDoneTapped: () -> Unit,
 ) {
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
-    ) {
-        Text(text = "Current duration: $durationInDays")
-        WCColoredButton(onClick = onApplyTapped, text = "Apply")
+    Column {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.blaze_campaign_budget_impressions_title),
+                style = MaterialTheme.typography.h6,
+            )
+            WCTextButton(
+                onClick = onDoneTapped
+            ) {
+                Text(text = stringResource(id = R.string.blaze_campaign_budget_impressions_done_button))
+            }
+        }
+        Divider()
+        Text(
+            modifier = Modifier
+                .padding(16.dp)
+                .padding(bottom = 16.dp),
+            text = stringResource(id = R.string.blaze_campaign_budget_impressions_info),
+            style = MaterialTheme.typography.body1,
+        )
     }
 }
 
@@ -227,4 +246,10 @@ private fun CampaignBudgetScreenPreview() {
     CampaignBudgetScreen(
         onBackPressed = {}
     )
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun CampaignImpressionsBottomSheetPreview() {
+    ImpressionsInfoBottomSheet(onDoneTapped = {})
 }
