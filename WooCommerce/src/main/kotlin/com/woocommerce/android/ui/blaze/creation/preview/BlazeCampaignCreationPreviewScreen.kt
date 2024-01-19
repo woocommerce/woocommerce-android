@@ -160,7 +160,7 @@ private fun CampaignPreviewLoading(
             onClick = { /* No action expected for disabled button */ },
             enabled = false,
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad))
         }
     }
 }
@@ -263,7 +263,7 @@ fun CampaignHeader(
             modifier = Modifier.padding(top = 8.dp),
             onClick = onEditAdClicked,
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad))
         }
     }
 }

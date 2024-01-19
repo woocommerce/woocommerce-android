@@ -3825,7 +3825,7 @@
     Blaze campaign preview screen
     -->
     <string name="blaze_campaign_screen_fragment_title">Preview</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
+    <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
