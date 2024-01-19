@@ -16,6 +16,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
@@ -115,6 +117,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
             text = stringResource(id = string.blaze_campaign_budget_subtitle),
             style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
+            lineHeight = 24.sp,
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
@@ -142,7 +145,10 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
             value = sliderValue,
             valueRange = 35f..350f,
-            onValueChange = { sliderValue = it }
+            onValueChange = { sliderValue = it },
+            colors = SliderDefaults.colors(
+                inactiveTrackColor = colorResource(id = color.divider_color)
+            )
         )
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -157,6 +163,7 @@ private fun EditBudgetSection(modifier: Modifier = Modifier) {
         Text(
             text = "2400  --  3000",
             fontWeight = FontWeight.SemiBold,
+            lineHeight = 24.sp,
         )
         Spacer(modifier = Modifier.height(24.dp))
     }
