@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.blaze.creation.ad
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,11 +11,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val aiRepository: AIRepository
+    savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private const val TAGLINE_MAX_LENGTH = 50
+        private const val TAGLINE_MAX_LENGTH = 32
         private const val DESCRIPTION_MAX_LENGTH = 140
     }
 
@@ -40,11 +38,11 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onNextSuggestionTapped() {
-
+        /* TODO */
     }
 
     fun onPreviousSuggestionTapped() {
-
+        /* TODO */
     }
 
     fun onChangeImageTapped() {
@@ -84,5 +82,5 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         }
     }
 
-    data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : MultiLiveEvent.Event()
+    data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : Event()
 }

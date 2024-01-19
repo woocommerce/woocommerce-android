@@ -24,7 +24,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
@@ -179,7 +178,9 @@ fun CampaignEditAdContent(
                 ),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_disabled),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = R.dimen.minor_50))
+                    .fillMaxWidth()
             )
 
             WCOutlinedTextField(
@@ -190,7 +191,7 @@ fun CampaignEditAdContent(
                 minLines = 4,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = Modifier
-                    .height(120.dp)
+                    .height(130.dp)
                     .padding(top = dimensionResource(id = R.dimen.major_100))
             )
 
@@ -201,7 +202,9 @@ fun CampaignEditAdContent(
                 ),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_disabled),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = R.dimen.minor_50))
+                    .fillMaxWidth()
             )
 
             Row(
@@ -215,7 +218,7 @@ fun CampaignEditAdContent(
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface)),
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(dimensionResource(id = R.dimen.image_minor_80))
                         .padding(end = dimensionResource(id = R.dimen.minor_100))
                 )
                 Text(
