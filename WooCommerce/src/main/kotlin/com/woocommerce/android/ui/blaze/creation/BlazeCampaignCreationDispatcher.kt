@@ -144,10 +144,8 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
             bundle = bundle,
             navOptions = navOptions {
                 anim {
-                    enter = R.anim.default_enter_anim
-                    exit = R.anim.default_exit_anim
-                    popEnter = R.anim.default_pop_enter_anim
-                    popExit = R.anim.default_pop_exit_anim
+                    enter = R.anim.activity_fade_in
+                    popExit = R.anim.activity_fade_out
                 }
             }
         )
