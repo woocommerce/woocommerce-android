@@ -46,11 +46,13 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationEditAdViewModel) {
@@ -62,7 +64,9 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationEditAdVie
             onChangeImageTapped = viewModel::onChangeImageTapped,
             onPreviousSuggestionTapped = viewModel::onPreviousSuggestionTapped,
             onNextSuggestionTapped = viewModel::onNextSuggestionTapped,
-            onBackButtonTapped = viewModel::onBackButtonTapped
+            onBackButtonTapped = viewModel::onBackButtonTapped,
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested
         )
     }
 }
@@ -75,8 +79,16 @@ private fun BlazeCampaignCreationEditAdScreen(
     onChangeImageTapped: () -> Unit,
     onPreviousSuggestionTapped: () -> Unit,
     onNextSuggestionTapped: () -> Unit,
-    onBackButtonTapped: () -> Unit
+    onBackButtonTapped: () -> Unit,
+    onMediaPickerDialogDismissed: () -> Unit,
+    onMediaLibraryRequested: (DataSource) -> Unit,
 ) {
+    if (viewState.isMediaPickerDialogVisible) {
+        MediaPickerDialog(
+            onMediaPickerDialogDismissed,
+            onMediaLibraryRequested
+        )
+    }
     Scaffold(
         topBar = {
             Toolbar(
@@ -131,7 +143,7 @@ fun CampaignEditAdContent(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(viewState.campaignImageUrl)
+                    .data(viewState.adImageUrl)
                     .crossfade(true)
                     .fallback(R.drawable.blaze_campaign_product_placeholder)
                     .placeholder(R.drawable.blaze_campaign_product_placeholder)
@@ -283,7 +295,7 @@ fun PreviewCampaignEditAdContent() {
             viewState = BlazeCampaignCreationEditAdViewModel.ViewState(
                 tagLine = "From 45.00 USD",
                 description = "Get the latest white t-shirts",
-                campaignImageUrl = "https://rb.gy/gmjuwb"
+                adImageUrl = "https://rb.gy/gmjuwb"
             ),
             onTagLineChanged = { },
             onDescriptionChanged = { },
