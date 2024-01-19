@@ -23,6 +23,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHandler {
+    companion object {
+        const val EDIT_AD_RESULT = "edit_ad_result"
+    }
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 

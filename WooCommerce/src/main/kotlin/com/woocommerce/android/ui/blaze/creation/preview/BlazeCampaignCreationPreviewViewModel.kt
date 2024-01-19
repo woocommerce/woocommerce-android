@@ -33,7 +33,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             val product = productDetailRepository.getProduct(navArgs.productId)
             _viewState.value = CampaignPreviewUiState.CampaignPreviewContent(
                 productId = product?.remoteId ?: -1,
-                title = "Get the latest white t-shirts",
+                description = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",
                 campaignImageUrl = "https://rb.gy/gmjuwb",
                 budget = CampaignDetailItem(
@@ -68,17 +68,37 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     fun onEditAdClicked() {
-        triggerEvent(NavigateToEditAdScreen)
+        (viewState.value as? CampaignPreviewUiState.CampaignPreviewContent)?.let { campaignPreviewContent ->
+            triggerEvent(
+                NavigateToEditAdScreen(
+                    tagline = campaignPreviewContent.tagLine,
+                    description = campaignPreviewContent.description,
+                    campaignImageUrl = campaignPreviewContent.campaignImageUrl.takeIf { it.isNotBlank() }
+                )
+            )
+        }
     }
 
-    object NavigateToEditAdScreen : MultiLiveEvent.Event()
+    fun onAdUpdated(tagline: String, description: String, campaignImageUrl: String?) {
+        _viewState.value = (viewState.value as? CampaignPreviewUiState.CampaignPreviewContent)?.copy(
+            tagLine = tagline,
+            description = description,
+            campaignImageUrl = campaignImageUrl ?: ""
+        )
+    }
+
+    data class NavigateToEditAdScreen(
+        val tagline: String,
+        val description: String,
+        val campaignImageUrl: String?
+    ) : MultiLiveEvent.Event()
 
     sealed interface CampaignPreviewUiState {
         object Loading : CampaignPreviewUiState
         data class CampaignPreviewContent(
             val isLoading: Boolean = false,
             val productId: Long,
-            val title: String,
+            val description: String,
             val tagLine: String,
             val campaignImageUrl: String,
             val budget: CampaignDetailItem,
