@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.3
+-----
+- [*] [Internal] Better displaying of the "locked" state of the buttons on the order creation screen. Fixed bug when it was possible to add "custom amount" even when the order is locked [https://github.com/woocommerce/woocommerce-android/pull/10562]
+
 17.2
 -----
 - [*] [Internal] Tracking of "country" and "currency" properties for entry and exit of the payments flows [https://github.com/woocommerce/woocommerce-android/pull/10528]
