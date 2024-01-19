@@ -78,6 +78,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
+import java.util.Date
 import java.util.function.Consumer
 import kotlin.test.assertFalse
 
@@ -810,7 +811,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(id = 1, total = BigDecimal(1)),
                             Order.FeeLine.EMPTY.copy(id = 2, total = BigDecimal(2)),
@@ -845,7 +846,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(id = 1, total = BigDecimal(1)),
                             Order.FeeLine.EMPTY.copy(id = 2, total = BigDecimal(2)),
@@ -941,7 +942,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
                             Order.ShippingLine("first", "first", BigDecimal(1)),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
@@ -989,7 +990,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
                             Order.ShippingLine("first", "first", BigDecimal(1)),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
@@ -1139,7 +1140,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         assertThat(sut.orderDraft.value)
             .usingRecursiveComparison()
             .ignoringFields("dateCreated", "dateModified")
-            .isEqualTo(Order.EMPTY)
+            .isEqualTo(Order.getEmptyOrder(Date(), Date()))
     }
 
     @Test
@@ -1866,35 +1867,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `given totals helper returns disabled, when totals updated, then return disabled`() {
-        testBlocking {
-            whenever(
-                totalsHelper.mapToPaymentTotalsState(
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any(),
-                    any()
-                )
-            ).thenReturn(TotalsSectionsState.Disabled)
-
-            var totalsData: TotalsSectionsState? = null
-
-            sut.totalsData.observeForever {
-                totalsData = it
-            }
-
-            createSut()
-
-            assertThat(totalsData).isEqualTo(TotalsSectionsState.Disabled)
-        }
-    }
-
-    @Test
     fun `given totals helper returns minimised, when totals checked, then return minimised`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Minimised>()
@@ -2081,7 +2053,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(
                                 id = 1,
@@ -2111,7 +2083,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(
                                 id = 1,
@@ -2147,7 +2119,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
-                    Order.EMPTY.copy(
+                    Order.getEmptyOrder(Date(), Date()).copy(
                         feesLines = listOf(
                             Order.FeeLine.EMPTY.copy(
                                 id = 1,

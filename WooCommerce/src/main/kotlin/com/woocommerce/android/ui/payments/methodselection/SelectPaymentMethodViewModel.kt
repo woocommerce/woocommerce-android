@@ -16,7 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -118,7 +117,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
-        }.exhaustive
+        }
     }
 
     private suspend fun showPaymentState() {

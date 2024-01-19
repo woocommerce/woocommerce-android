@@ -14,6 +14,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -23,7 +24,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         const val SITE_ID = 1
         const val DEFAULT_SUPPORTED_WCS_VERSION = "1.25.11"
         val ELIGIBLE_ORDER_FOR_WCS_LABELS =
-            Order.EMPTY.copy(
+            Order.getEmptyOrder(Date(), Date()).copy(
                 id = 123L,
                 currency = SUPPORTED_WCS_CURRENCY,
                 isCashPayment = false,

@@ -67,6 +67,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -100,7 +101,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
     protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
 
-    protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
+    protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
     @Before
     fun setUp() {
@@ -115,14 +116,19 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
-        val emptyOrder = Order.EMPTY
+        val emptyOrder = Order.getEmptyOrder(Date(), Date())
         viewState = OrderCreateEditViewModel.ViewState()
         savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
-            on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
+            on {
+                getLiveData(
+                    eq(Order.getEmptyOrder(Date(), Date()).javaClass.name),
+                    any<Order>()
+                )
+            } doReturn MutableLiveData(emptyOrder)
         }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.EMPTY))
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.getEmptyOrder(Date(), Date())))
         }
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn defaultOrderItem
@@ -2415,6 +2421,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
             currencySymbolFinder = currencySymbolFinder,
             totalsHelper = totalsHelper,
+            dateUtils = mock()
         )
     }
 

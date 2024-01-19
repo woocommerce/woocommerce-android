@@ -55,6 +55,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -314,13 +318,28 @@ fun OptionalQuantityProductItem(
     minValue: Float? = null,
     isSelectionEnabled: Boolean = true
 ) {
+    val description = stringResource(id = R.string.order_configuration_product_selection, title)
+    val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
+
+    val itemModifier = if (isSelectionEnabled) {
+        modifier
+            .semantics(mergeDescendants = true) {
+                contentDescription = description
+                stateDescription = state
+            }
+            .clickable { onSwitchChanged(!isIncluded) }
+    } else {
+        modifier.clearAndSetSemantics {
+            contentDescription = description
+            stateDescription = state
+        }
+    }
+
     ConfigurableListItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier
-            .clickable { if (isSelectionEnabled) { onSwitchChanged(!isIncluded) } }
-            .padding(vertical = 16.dp, horizontal = 8.dp),
+        modifier = itemModifier.padding(vertical = 16.dp, horizontal = 8.dp),
         configurableControlStart = {
             SelectionCheck(
                 isSelected = isIncluded,
@@ -359,13 +378,30 @@ fun QuantityProductItem(
     minValue: Float? = null,
     isSelectionEnabled: Boolean = true
 ) {
+    val description = stringResource(id = R.string.order_configuration_product_selection, title)
+    val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
+
+    val itemModifier = if (isSelectionEnabled) {
+        modifier
+            .semantics(mergeDescendants = true) {
+                contentDescription = description
+                stateDescription = state
+            }
+            .clickable {
+                if (minValue == null || minValue <= 0f) onQuantityChanged(if (quantity == 0f) 1f else 0f)
+            }
+    } else {
+        modifier.clearAndSetSemantics {
+            contentDescription = description
+            stateDescription = state
+        }
+    }
+
     ConfigurableListItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier
-            .clickable { if (isSelectionEnabled) { onQuantityChanged(if (quantity == 0f) 1f else 0f) } }
-            .padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
+        modifier = itemModifier.padding(start = 8.dp, top = 16.dp, bottom = 16.dp, end = 8.dp),
         configurableControlStart = {
             SelectionCheck(
                 isSelected = quantity > 0f,
@@ -373,7 +409,9 @@ fun QuantityProductItem(
                 onSelectionChange = { selected ->
                     onQuantityChanged(if (selected) 1f else 0f)
                 },
-                modifier = Modifier.size(dimensionResource(id = R.dimen.min_tap_target))
+                modifier = Modifier
+                    .semantics(mergeDescendants = false) {}
+                    .size(dimensionResource(id = R.dimen.min_tap_target))
             )
         }
     ) {
@@ -462,10 +500,19 @@ fun SelectionCheck(
 
     val colorFilter = if (isEnabled) null else ColorFilter.tint(Color.Gray)
 
+    val description = stringResource(id = R.string.order_configuration_product_selection_control)
+    val state = if (!isEnabled) stringResource(id = R.string.disabled) else ""
+
+    val controlModifier = if (isEnabled) {
+        modifier.clickable { onSelectionChange(!isSelected) }
+    } else modifier
+
     Box(
-        modifier = modifier.clickable {
-            if (isEnabled) { onSelectionChange(!isSelected) }
-        },
+        modifier = controlModifier
+            .semantics {
+                contentDescription = description
+                stateDescription = state
+            },
         contentAlignment = Alignment.Center
     ) {
         Crossfade(
@@ -476,7 +523,7 @@ fun SelectionCheck(
             Image(
                 painter = painterResource(id = icon),
                 colorFilter = colorFilter,
-                contentDescription = "imageContentDescription"
+                contentDescription = null
             )
         }
     }
@@ -556,7 +603,7 @@ fun OrderProductItem(
                 .build(),
             placeholder = painterResource(R.drawable.ic_product),
             error = painterResource(R.drawable.ic_product),
-            contentDescription = stringResource(R.string.product_image_content_description),
+            contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .size(dimensionResource(R.dimen.major_300))
@@ -772,17 +819,31 @@ fun VariableQuantityProductItem(
     attributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
-    Column(
-        modifier = modifier
+
+    val description = stringResource(id = R.string.order_configuration_product_selection, title)
+    val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
+
+    val itemModifier = if (isSelectionEnabled) {
+        modifier
+            .semantics {
+                contentDescription = description
+                stateDescription = state
+            }
             .clickable {
                 if (quantity > 0f) {
                     onSelectAttributes()
-                } else if (isSelectionEnabled) {
+                } else {
                     onQuantityChanged(1f)
                 }
             }
-            .animateContentSize()
-    ) {
+    } else {
+        modifier.clearAndSetSemantics {
+            contentDescription = description
+            stateDescription = state
+        }
+    }
+
+    Column(modifier = itemModifier.animateContentSize()) {
         ConfigurableListItem(
             title = title,
             imageUrl = imageUrl,
@@ -845,17 +906,31 @@ fun OptionalVariableQuantityProductItem(
     attributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
-    Column(
-        modifier = modifier
+
+    val description = stringResource(id = R.string.order_configuration_product_selection, title)
+    val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
+
+    val itemModifier = if (isSelectionEnabled) {
+        modifier
+            .semantics {
+                contentDescription = description
+                stateDescription = state
+            }
             .clickable {
                 if (isIncluded) {
                     onSelectAttributes()
-                } else if (isSelectionEnabled) {
+                } else {
                     onSwitchChanged(true)
                 }
             }
-            .animateContentSize()
-    ) {
+    } else {
+        modifier.clearAndSetSemantics {
+            contentDescription = description
+            stateDescription = state
+        }
+    }
+
+    Column(modifier = itemModifier.animateContentSize()) {
         ConfigurableListItem(
             title = title,
             imageUrl = imageUrl,

@@ -371,6 +371,18 @@ class ProductNavigator @Inject constructor() {
                     ProductSelectorFragmentDirections.actionProductSelectorFragmentToProductConfigurationFragment(flow)
                 )
             }
+
+            is ProductNavigationTarget.EditProductConfiguration -> {
+                val flow = Flow.Edit(
+                    itemId = target.itemId,
+                    productID = target.productId,
+                    configuration = target.configuration
+                )
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToProductConfigurationFragment(flow)
+                )
+            }
+
             is ProductNavigationTarget.NavigateToProductFilter -> {
                 fragment.findNavController().navigateSafely(
                     ProductSelectorFragmentDirections.actionProductSelectorFragmentToNavGraphProductFilters(

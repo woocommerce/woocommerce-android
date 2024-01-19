@@ -127,6 +127,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -160,6 +161,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 
@@ -189,6 +191,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
+    dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -225,7 +228,14 @@ class OrderCreateEditViewModel @Inject constructor(
         initialValue = args.giftCardCode.orEmpty()
     )
 
-    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
+    private val _orderDraft = savedState.getStateFlow(
+        viewModelScope,
+        Order.getEmptyOrder(
+            dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+            dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+        )
+    )
+
     val orderDraft = _orderDraft
         .combine(_selectedGiftCard) { order, giftCard ->
             order.copy(
@@ -638,10 +648,21 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
 
                 val itemsToAdd = selectedItems.filter { selectedItem ->
-                    if (selectedItem is SelectedItem.ProductVariation) {
-                        none { it.variationId == selectedItem.variationId }
-                    } else {
-                        none { it.parent == null && it.productId == selectedItem.id }
+                    when (selectedItem) {
+                        is SelectedItem.ProductVariation -> {
+                            none { it.variationId == selectedItem.variationId }
+                        }
+
+                        is SelectedItem.ConfigurableProduct -> {
+                            products.value?.none {
+                                it.item.productId == selectedItem.id &&
+                                    selectedItem.configuration == it.getConfiguration()
+                            } ?: true
+                        }
+
+                        else -> {
+                            none { it.parent == null && it.productId == selectedItem.id }
+                        }
                     }
                 }.map {
                     when (it) {
@@ -1028,7 +1049,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onAddProductClicked() {
         val selectedItems = products.value?.map { product ->
-            val configuration = product.item.configuration
+            val configuration = product.getConfiguration()
             when {
                 configuration != null -> {
                     SelectedItem.ConfigurableProduct(product.item.productId, configuration)
@@ -1082,7 +1103,7 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.AddCoupon)
     }
 
-    fun onEditGiftCardButtonClicked(currentGiftCard: String? = null) {
+    private fun onEditGiftCardButtonClicked(currentGiftCard: String? = null) {
         triggerEvent(OrderCreateEditNavigationTarget.EditGiftCard(currentGiftCard.orEmpty()))
     }
 
@@ -1140,6 +1161,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = true))
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -1627,7 +1649,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onEditConfiguration(product: OrderCreationProduct) {
-        (product as? OrderCreationProduct.GroupedProductItemWithRules)?.configuration?.let {
+        product.getConfiguration()?.let {
             if (product.productInfo.productType == ProductType.BUNDLE) {
                 tracker.track(
                     AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,

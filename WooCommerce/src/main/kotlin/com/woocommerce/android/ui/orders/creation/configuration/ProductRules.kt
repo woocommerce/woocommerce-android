@@ -144,8 +144,8 @@ class VariableProductRule(
 class ProductConfiguration(
     val rules: ProductRules,
     val configurationType: ConfigurationType,
-    val configuration: MutableMap<String, String?>,
-    val childrenConfiguration: MutableMap<Long, MutableMap<String, String?>>? = null
+    val configuration: Map<String, String?>,
+    val childrenConfiguration: Map<Long, Map<String, String?>>? = null
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
@@ -213,8 +213,24 @@ class ProductConfiguration(
         }
     }
 
-    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String) {
-        childrenConfiguration?.get(itemId)?.set(ruleKey, value)
+    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String): ProductConfiguration {
+        val updatedChildConfiguration = childrenConfiguration?.get(itemId)?.let { childConfiguration ->
+            val mutableConfiguration = childConfiguration.toMutableMap()
+            mutableConfiguration[ruleKey] = value
+            mutableConfiguration
+        } ?: mapOf(ruleKey to value)
+
+        val updatedChildrenConfiguration = childrenConfiguration?.toMutableMap()?.let {
+            it[itemId] = updatedChildConfiguration
+            it
+        }
+
+        return ProductConfiguration(
+            rules,
+            configurationType,
+            configuration,
+            updatedChildrenConfiguration
+        )
     }
 }
 

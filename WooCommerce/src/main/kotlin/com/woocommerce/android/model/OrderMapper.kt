@@ -3,6 +3,7 @@ package com.woocommerce.android.model
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.Order.Item
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCMetaData
@@ -11,7 +12,6 @@ import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
-import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -20,15 +20,18 @@ import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
-class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
+class OrderMapper @Inject constructor(
+    private val getLocations: GetLocations,
+    private val dateUtils: DateUtils
+) {
     fun toAppModel(databaseEntity: OrderEntity): Order {
         val metaDataList = databaseEntity.getMetaDataList()
         return Order(
             id = databaseEntity.orderId,
             number = databaseEntity.number,
-            dateCreated = DateTimeUtils.dateUTCFromIso8601(databaseEntity.dateCreated) ?: Date(),
-            dateModified = DateTimeUtils.dateUTCFromIso8601(databaseEntity.dateModified) ?: Date(),
-            datePaid = DateTimeUtils.dateUTCFromIso8601(databaseEntity.datePaid),
+            dateCreated = dateUtils.getDateUsingSiteTimeZone(databaseEntity.dateCreated) ?: Date(),
+            dateModified = dateUtils.getDateUsingSiteTimeZone(databaseEntity.dateModified) ?: Date(),
+            datePaid = dateUtils.getDateUsingSiteTimeZone(databaseEntity.datePaid),
             status = Order.Status.fromValue(databaseEntity.status),
             total = databaseEntity.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             productsTotal = databaseEntity.getOrderSubtotal().toBigDecimal(),

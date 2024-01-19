@@ -13,7 +13,6 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Success
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Unknown
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -94,7 +93,7 @@ class CardReaderUpdateViewModel @Inject constructor(
                 }
                 Success -> onUpdateSucceeded()
                 Unknown -> onUpdateStatusUnknown()
-            }.exhaustive
+            }
         }
     }
 
@@ -120,7 +119,7 @@ class CardReaderUpdateViewModel @Inject constructor(
                     ),
                 )
             else -> finishFlow(FAILED)
-        }.exhaustive
+        }
     }
 
     private fun finishFlow(result: UpdateResult) {

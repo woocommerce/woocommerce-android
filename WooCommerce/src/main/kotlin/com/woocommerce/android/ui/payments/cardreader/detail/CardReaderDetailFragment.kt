@@ -12,7 +12,6 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
 import com.woocommerce.android.extensions.copyToClipboard
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -151,7 +150,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 }
                 Loading -> {
                 }
-            }.exhaustive
+            }
         }
     }
 

@@ -69,8 +69,8 @@
                 layout="@layout/multiple_lines_warning" />
 
             <include
-                android:id="@+id/payment_section"
-                layout="@layout/order_creation_payment_section" />
+                android:id="@+id/additional_info_collection_section"
+                layout="@layout/order_creation_additional_info_collection_section" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/tax_rate_selector_section"

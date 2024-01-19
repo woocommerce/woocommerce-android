@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation.totals
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -15,7 +14,6 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 class OrderCreateEditTotalsHelperTest {
-    private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) }.thenReturn("")
     }
@@ -26,36 +24,13 @@ class OrderCreateEditTotalsHelperTest {
         on { buildBigDecimalFormatter("USD") }.thenReturn(bigDecimalFormatter)
     }
     private val helper = OrderCreateEditTotalsHelper(
-        isTabletOrdersM1Enabled = isTabletOrdersM1Enabled,
         resourceProvider = resourceProvider,
         currencyFormatter
     )
 
-    private val order = Order.EMPTY.copy(
+    private val order = Order.getEmptyOrder(mock(), mock()).copy(
         currency = "USD",
     )
-
-    @Test
-    fun `given ff disabled, when mapToPaymentTotalsState, then disabled returned`() {
-        // GIVEN
-        whenever(isTabletOrdersM1Enabled()).thenReturn(false)
-
-        // WHEN
-        val actual = helper.mapToPaymentTotalsState(
-            order,
-            mock(),
-            OrderCreateEditViewModel.ViewState(),
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
-        )
-
-        // THEN
-        assertThat(actual).isEqualTo(TotalsSectionsState.Disabled)
-    }
 
     @Test
     @Suppress("LongMethod")
@@ -95,8 +70,6 @@ class OrderCreateEditTotalsHelperTest {
             taxLines = taxLines,
             totalTax = BigDecimal(16)
         )
-
-        whenever(isTabletOrdersM1Enabled()).thenReturn(true)
 
         whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
             "Collect Payment"
@@ -218,7 +191,6 @@ class OrderCreateEditTotalsHelperTest {
     @Test
     fun `given ff enabled and fee lines not empty, when mapToPaymentTotalsState, then full returned`() {
         // GIVEN
-        whenever(isTabletOrdersM1Enabled()).thenReturn(true)
         whenever(resourceProvider.getString(R.string.order_creation_collect_payment_button)).thenReturn(
             "Collect Payment"
         )
@@ -251,8 +223,6 @@ class OrderCreateEditTotalsHelperTest {
     @Test
     fun `given ff enabled and items and fee lines empty, when mapToPaymentTotalsState, then minimised returned`() {
         // GIVEN
-        whenever(isTabletOrdersM1Enabled()).thenReturn(true)
-
         val localOrder = order.copy(
             items = emptyList(),
             feesLines = emptyList(),

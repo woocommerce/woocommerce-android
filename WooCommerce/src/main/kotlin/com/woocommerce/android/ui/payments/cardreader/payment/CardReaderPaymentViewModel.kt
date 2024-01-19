@@ -47,7 +47,6 @@ import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -200,7 +199,7 @@ class CardReaderPaymentViewModel
 
                 is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/
                 }
-            }.exhaustive
+            }
         }
     }
 
@@ -375,7 +374,7 @@ class CardReaderPaymentViewModel
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
-        }.exhaustive
+        }
     }
 
     private suspend fun refundPaymentFlow(
@@ -451,7 +450,7 @@ class CardReaderPaymentViewModel
                     refundStatus
                 )
             }
-        }.exhaustive
+        }
     }
 
     private fun onPaymentCompleted(

@@ -5,7 +5,6 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.TabletOrdersFeatureFlagWrapper
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -13,7 +12,6 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 class OrderCreateEditTotalsHelper @Inject constructor(
-    private val isTabletOrdersM1Enabled: TabletOrdersFeatureFlagWrapper,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
 ) {
@@ -29,53 +27,49 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         onMainButtonClicked: () -> Unit,
         onExpandCollapseClicked: (Boolean) -> Unit
     ): TotalsSectionsState {
-        return if (isTabletOrdersM1Enabled()) {
-            val bigDecimalFormatter = currencyFormatter.buildBigDecimalFormatter(
-                currencyCode = order.currency
-            )
+        val bigDecimalFormatter = currencyFormatter.buildBigDecimalFormatter(
+            currencyCode = order.currency
+        )
 
-            if (order.items.isEmpty() && order.feesLines.isEmpty()) {
-                TotalsSectionsState.Minimised(
-                    orderTotal = order.toOrderTotals(bigDecimalFormatter)
-                )
-            } else {
-                TotalsSectionsState.Full(
-                    lines = listOfNotNull(
-                        order.toProductsSection(bigDecimalFormatter),
-                        order.toCustomAmountSection(bigDecimalFormatter),
-                        order.toShippingSection(
-                            enabled = viewState.isEditable,
-                            bigDecimalFormatter,
-                            onClick = onShippingClicked
-                        ),
-                        order.toCouponsSection(
-                            enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
-                            bigDecimalFormatter,
-                            onClick = onCouponsClicked
-                        ),
-                        order.toGiftSection(
-                            enabled = viewState.isAddGiftCardButtonEnabled && viewState.isIdle,
-                            bigDecimalFormatter,
-                            onClick = onGiftClicked
-                        ),
-                        order.toTaxesSection(
-                            bigDecimalFormatter,
-                            viewState.taxBasedOnSettingLabel,
-                            onClick = onTaxesLearnMore
-                        ),
-                        order.toDiscountSection(bigDecimalFormatter),
-                    ),
-                    orderTotal = order.toOrderTotals(bigDecimalFormatter),
-                    mainButton = TotalsSectionsState.Button(
-                        text = mode.toButtonText(),
-                        enabled = viewState.canCreateOrder,
-                        onClick = onMainButtonClicked,
-                    ),
-                    onExpandCollapseClicked = onExpandCollapseClicked
-                )
-            }
+        return if (order.items.isEmpty() && order.feesLines.isEmpty()) {
+            TotalsSectionsState.Minimised(
+                orderTotal = order.toOrderTotals(bigDecimalFormatter)
+            )
         } else {
-            TotalsSectionsState.Disabled
+            TotalsSectionsState.Full(
+                lines = listOfNotNull(
+                    order.toProductsSection(bigDecimalFormatter),
+                    order.toCustomAmountSection(bigDecimalFormatter),
+                    order.toShippingSection(
+                        enabled = viewState.isEditable,
+                        bigDecimalFormatter,
+                        onClick = onShippingClicked
+                    ),
+                    order.toCouponsSection(
+                        enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
+                        bigDecimalFormatter,
+                        onClick = onCouponsClicked
+                    ),
+                    order.toGiftSection(
+                        enabled = viewState.isAddGiftCardButtonEnabled && viewState.isIdle,
+                        bigDecimalFormatter,
+                        onClick = onGiftClicked
+                    ),
+                    order.toTaxesSection(
+                        bigDecimalFormatter,
+                        viewState.taxBasedOnSettingLabel,
+                        onClick = onTaxesLearnMore
+                    ),
+                    order.toDiscountSection(bigDecimalFormatter),
+                ),
+                orderTotal = order.toOrderTotals(bigDecimalFormatter),
+                mainButton = TotalsSectionsState.Button(
+                    text = mode.toButtonText(),
+                    enabled = viewState.canCreateOrder,
+                    onClick = onMainButtonClicked,
+                ),
+                onExpandCollapseClicked = onExpandCollapseClicked
+            )
         }
     }
 
@@ -224,8 +218,6 @@ sealed class TotalsSectionsState {
     data class Minimised(
         val orderTotal: OrderTotal,
     ) : TotalsSectionsState()
-
-    object Disabled : TotalsSectionsState()
 
     data class Button(
         val text: String,

@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isWooExpressSiteReadyToUse
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
@@ -175,7 +174,7 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
-        }.exhaustive
+        }
     }
 
     private fun handlePostStoreCreationTasks() = launch(dispatchers.io) {
