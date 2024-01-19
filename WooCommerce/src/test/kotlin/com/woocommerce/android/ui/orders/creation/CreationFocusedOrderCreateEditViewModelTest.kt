@@ -1972,6 +1972,40 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given totals helper returns full, when height changed, then event OnTotalsSectionHeightChanged with height emitted`() {
+        testBlocking {
+            val totalsSectionsState = mock<TotalsSectionsState.Full>()
+            val onHeightChangedCaptor = argumentCaptor<(Int) -> Unit>()
+            whenever(
+                totalsHelper.mapToPaymentTotalsState(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    onHeightChangedCaptor.capture(),
+                )
+            ).thenReturn(totalsSectionsState)
+
+            var lastReceivedEvent: Event? = null
+            sut.event.observeForever {
+                lastReceivedEvent = it
+            }
+
+            sut.totalsData.observeForever { }
+
+            createSut()
+
+            onHeightChangedCaptor.firstValue.invoke(100)
+            assertThat(lastReceivedEvent).isEqualTo(OnTotalsSectionHeightChanged(100))
+        }
+    }
+
+    @Test
     fun `given totals helper returns full and creation, when main button clicked, then PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED tracked`() {
         testBlocking {
             val totalsSectionsState = mock<TotalsSectionsState.Full>()
