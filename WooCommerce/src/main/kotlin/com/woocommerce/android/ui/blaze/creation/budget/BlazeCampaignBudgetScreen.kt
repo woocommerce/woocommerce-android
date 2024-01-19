@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -30,9 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import kotlinx.coroutines.launch
 
@@ -80,64 +85,113 @@ private fun CampaignBudgetScreen(
                     .background(MaterialTheme.colors.surface)
             ) {
 
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.blaze_campaign_budget_subtitle),
-                        style = MaterialTheme.typography.subtitle1,
-                        textAlign = TextAlign.Center,
-                        color = colorResource(id = R.color.color_on_surface_medium)
-                    )
-                    Spacer(modifier = Modifier.height(94.dp))
-                    Text(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        text = stringResource(id = R.string.blaze_campaign_budget_total_spend),
-                        style = MaterialTheme.typography.body1,
-                        color = colorResource(id = R.color.color_on_surface_medium)
-                    )
-                    Text(
-                        text = "$35 USD",
-                        style = MaterialTheme.typography.h4,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        text = stringResource(id = R.string.blaze_campaign_budget_days_duration),
-                        style = MaterialTheme.typography.h4,
-                        color = colorResource(id = R.color.color_on_surface_medium)
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = 40.dp),
-                        text = stringResource(id = R.string.blaze_campaign_budget_daily_spend),
-                        color = colorResource(id = R.color.color_on_surface_medium)
-                    )
-                    Slider(
-                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                        value = 35f,
-                        valueRange = 35f..350f,
-                        onValueChange = { /* TODO */ }
-                    )
-                    Row {
-                        Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
-                        Icon(
-                            modifier = Modifier.padding(start = 4.dp),
-                            painter = painterResource(id = R.drawable.ic_info_outline_20dp),
-                            contentDescription = null
-                        )
-                    }
-                    Text(text = "2400-3000")
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-                // Duration content
-                Column() {
-                    Divider()
-
-                }
-
+                EditBudgetSection(modifier = Modifier.weight(1f))
+                EditDurationSection()
             }
+        }
+    }
+}
+
+@Composable
+private fun EditBudgetSection(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(
+            start = 28.dp,
+            end = 28.dp
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            modifier = Modifier.padding(
+                top = 40.dp,
+                bottom = 90.dp
+            ),
+            text = stringResource(id = string.blaze_campaign_budget_subtitle),
+            style = MaterialTheme.typography.subtitle1,
+            textAlign = TextAlign.Center,
+            color = colorResource(id = color.color_on_surface_medium)
+        )
+        Text(
+            modifier = Modifier.padding(bottom = 8.dp),
+            text = stringResource(id = string.blaze_campaign_budget_total_spend),
+            style = MaterialTheme.typography.body1,
+            color = colorResource(id = color.color_on_surface_medium)
+        )
+        Text(
+            text = "$35 USD",
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = stringResource(id = string.blaze_campaign_budget_days_duration),
+            style = MaterialTheme.typography.h4,
+            color = colorResource(id = color.color_on_surface_medium)
+        )
+        Text(
+            modifier = Modifier.padding(top = 40.dp),
+            text = stringResource(id = string.blaze_campaign_budget_daily_spend),
+            color = colorResource(id = color.color_on_surface_medium)
+        )
+        Slider(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+            value = 35f,
+            valueRange = 35f..350f,
+            onValueChange = { /* TODO */ }
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = stringResource(id = string.blaze_campaign_budget_reach_forecast))
+            Icon(
+                modifier = Modifier.padding(start = 4.dp),
+                painter = painterResource(id = drawable.ic_info_outline_20dp),
+                contentDescription = null
+            )
+        }
+        Text(
+            text = "2400  --  3000",
+            fontWeight = FontWeight.SemiBold,
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun EditDurationSection() {
+    Column {
+        Divider()
+        Column(
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = 24.dp
+            )
+        ) {
+            Text(
+                text = stringResource(id = string.blaze_campaign_budget_duration_section_title),
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = color.color_on_surface_medium)
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Dec 13 – Dec 19, 2023",
+                    style = MaterialTheme.typography.subtitle2,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                WCTextButton(
+                    onClick = { /*TODO*/ }
+                ) {
+                    Text(text = stringResource(id = string.blaze_campaign_budget_edit_duration_button))
+                }
+            }
+            WCColoredButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { /*TODO*/ },
+                text = stringResource(id = string.blaze_campaign_budget_update_button)
+            )
         }
     }
 }
