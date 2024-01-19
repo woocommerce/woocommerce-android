@@ -18,11 +18,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val aiRepository: AIRepository
+    savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private const val TAGLINE_MAX_LENGTH = 50
+        private const val TAGLINE_MAX_LENGTH = 32
         private const val DESCRIPTION_MAX_LENGTH = 140
     }
 
@@ -46,11 +45,11 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onNextSuggestionTapped() {
-
+        /* TODO */
     }
 
     fun onPreviousSuggestionTapped() {
-
+        /* TODO */
     }
 
     fun onSaveTapped() {
@@ -102,7 +101,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         }
     }
 
-    data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : MultiLiveEvent.Event()
+    data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : Event()
 
     @Parcelize
     data class EditAdResult(

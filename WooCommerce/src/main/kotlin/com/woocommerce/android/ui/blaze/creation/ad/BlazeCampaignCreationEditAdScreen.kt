@@ -148,7 +148,7 @@ fun CampaignEditAdContent(
         Divider(
             color = colorResource(id = color.divider_color),
             thickness = 1.dp,
-            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
+            modifier = Modifier.padding(vertical = dimensionResource(id = dimen.minor_100))
         )
 
         AdDataSection(
@@ -185,57 +185,61 @@ private fun AdDataSection(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
 
-        Text(
-            text = stringResource(
-                id = string.blaze_campaign_edit_ad_characters_remaining,
-                viewState.taglineCharactersRemaining
-            ),
-            style = MaterialTheme.typography.caption,
-            color = colorResource(id = color.color_on_surface_disabled),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        WCOutlinedTextField(
-            value = viewState.description,
-            onValueChange = onDescriptionChanged,
-            label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
-            maxLines = 4,
-            minLines = 4,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            modifier = Modifier
-                .height(120.dp)
-                .padding(top = dimensionResource(id = dimen.major_100))
-        )
-
-        Text(
-            text = stringResource(
-                id = string.blaze_campaign_edit_ad_characters_remaining,
-                viewState.descriptionCharactersRemaining
-            ),
-            style = MaterialTheme.typography.caption,
-            color = colorResource(id = color.color_on_surface_disabled),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.major_100))
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = drawable.ic_ai),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(end = dimensionResource(id = dimen.minor_100))
-            )
             Text(
-                text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
-                style = MaterialTheme.typography.h6,
+                text = stringResource(
+                    id = string.blaze_campaign_edit_ad_characters_remaining,
+                    viewState.taglineCharactersRemaining
+                ),
+                style = MaterialTheme.typography.caption,
+                color = colorResource(id = color.color_on_surface_disabled),
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = dimen.minor_50))
+                    .fillMaxWidth()
             )
-            Spacer(modifier = Modifier.weight(1f))
+
+            WCOutlinedTextField(
+                value = viewState.description,
+                onValueChange = onDescriptionChanged,
+                label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
+                maxLines = 4,
+                minLines = 4,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                modifier = Modifier
+                    .height(130.dp)
+                    .padding(top = dimensionResource(id = dimen.major_100))
+            )
+
+            Text(
+                text = stringResource(
+                    id = string.blaze_campaign_edit_ad_characters_remaining,
+                    viewState.descriptionCharactersRemaining
+                ),
+                style = MaterialTheme.typography.caption,
+                color = colorResource(id = color.color_on_surface_disabled),
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = dimen.minor_50))
+                    .fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = drawable.ic_ai),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+                    modifier = Modifier
+                        .size(dimensionResource(id = dimen.image_minor_80))
+                        .padding(end = dimensionResource(id = dimen.minor_100))
+                )
+                Text(
+                    text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
+                    style = MaterialTheme.typography.h6,
+                )
+                Spacer(modifier = Modifier.weight(1f))
 
             SuggestionButton(
                 onClick = onPreviousSuggestionTapped,
@@ -304,10 +308,10 @@ private fun SuggestionButton(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = colorResource(id = R.color.image_border_color),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                color = colorResource(id = color.image_border_color),
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
             )
-            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
             .clickable(onClick = onClick, enabled = isEnabled)
     ) {
         Icon(
@@ -316,10 +320,10 @@ private fun SuggestionButton(
             tint = if (isEnabled)
                 MaterialTheme.colors.primary
             else
-                colorResource(id = R.color.color_on_surface_disabled),
+                colorResource(id = color.color_on_surface_disabled),
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(dimensionResource(id = R.dimen.minor_100))
+                .padding(dimensionResource(id = dimen.minor_100))
         )
     }
 }
