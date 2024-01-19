@@ -9,7 +9,6 @@
         android:id="@+id/filterList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@+id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"

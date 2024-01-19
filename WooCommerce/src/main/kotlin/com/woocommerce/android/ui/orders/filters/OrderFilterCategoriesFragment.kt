@@ -1,11 +1,17 @@
 package com.woocommerce.android.ui.orders.filters
 
+import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import androidx.activity.ComponentDialog
+import androidx.activity.addCallback
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -23,32 +29,47 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
 class OrderFilterCategoriesFragment :
-    BaseFragment(R.layout.fragment_order_filter_list),
+    DialogFragment(),
     BackPressListener,
     MenuProvider {
     companion object {
         const val KEY_UPDATED_FILTER_OPTIONS = "key_updated_filter_options"
+        const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
+        const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
     private val viewModel: OrderFilterCategoriesViewModel by viewModels()
 
     private lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
-    override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
-            hasShadow = false,
-            hasDivider = true
-        )
+//    override val activityAppBarStatus: AppBarStatus
+//        get() = AppBarStatus.Visible(
+//            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
+//            hasShadow = false,
+//            hasDivider = true
+//        )
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = ComponentDialog(requireContext(), theme)
+        dialog.onBackPressedDispatcher.addCallback(dialog) {
+            viewModel.onBackPressed()
+        }
+        return dialog
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_order_filter_list, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentOrderFilterListBinding.bind(view)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
@@ -60,6 +81,31 @@ class OrderFilterCategoriesFragment :
         }
         handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
             viewModel.onFilterOptionsUpdated(it)
+        }
+    }
+
+    private fun isTabletMode(): Boolean {
+        return resources.getBoolean(R.bool.is_tablet)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (isTabletMode()) {
+            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
+        } else {
+            /* This draws the dialog as full screen */
+            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isTabletMode()) {
+            dialog?.window?.setLayout(
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
+                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
+            )
         }
     }
 
@@ -113,7 +159,7 @@ class OrderFilterCategoriesFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowFilterOptionsForCategory -> navigateToFilterOptions(event.category)
-                is ShowDialog -> event.showDialog()
+                is ShowDialog -> event.showIn(requireActivity())
                 is OnShowOrders -> navigateBackWithNotice(
                     OrderListFragment.FILTER_CHANGE_NOTICE_KEY
                 )

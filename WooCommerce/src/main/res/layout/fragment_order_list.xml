@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.orders.list.OrderListFragment">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+        android:id="@+id/orderRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        tools:context=".ui.orders.list.OrderListFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/order_list_view_root"
@@ -19,10 +19,10 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
+                style="@style/Widget.Woo.Toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/toolbar_height"
                 app:layout_collapseMode="pin"
-                style="@style/Widget.Woo.Toolbar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -50,20 +50,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/errorParsingOrdersCard"
                 tools:visibility="visible" />
 
-        <com.woocommerce.android.ui.orders.filters.OrderFiltersCard
-            android:id="@+id/order_filters_card"
-            style="@style/Woo.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/simplePaymentsWIPcard" />
+            <com.woocommerce.android.ui.orders.filters.OrderFiltersCard
+                android:id="@+id/order_filters_card"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/simplePaymentsWIPcard" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/jitmOrdersFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/order_filters_card"/>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/jitmOrdersFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/order_filters_card" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/orders_list_top_barrier"
@@ -92,5 +92,5 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+</LinearLayout>

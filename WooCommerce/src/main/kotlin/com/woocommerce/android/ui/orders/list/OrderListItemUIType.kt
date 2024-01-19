@@ -35,7 +35,8 @@ sealed class OrderListItemUIType {
         var status: String,
         val dateCreated: String,
         val currencyCode: String,
-        val isLastItemInSection: Boolean = false
+        val isLastItemInSection: Boolean = false,
+        var isSelected: Boolean = false,
     ) : OrderListItemUIType()
 
     override fun equals(other: Any?) = other?.let { this::class == other::class } ?: false

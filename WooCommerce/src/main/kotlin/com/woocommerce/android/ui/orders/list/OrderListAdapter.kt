@@ -161,6 +161,12 @@ class OrderListAdapter(
             )
             viewBinding.divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
 
+            if (orderItemUI.isSelected) {
+                viewBinding.root.setBackgroundColor(viewBinding.root.context.getColor(R.color.woo_gray_20))
+            } else {
+                viewBinding.root.setBackgroundColor(viewBinding.root.context.getColor(R.color.woo_white))
+            }
+
             // clear existing tags and add new ones
             viewBinding.orderTags.removeAllViews()
             processTagView(orderItemUI.status, this)
@@ -184,7 +190,8 @@ class OrderListAdapter(
                     orderId = orderItemUI.orderId,
                     allOrderIds = allOrderIds,
                     orderStatus = orderItemUI.status,
-                    sharedView = viewBinding.root
+                    sharedView = viewBinding.root,
+                    orderPosition = absoluteAdapterPosition
                 )
             }
         }

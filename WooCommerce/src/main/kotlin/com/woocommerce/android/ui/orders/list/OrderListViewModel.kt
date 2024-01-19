@@ -571,6 +571,16 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
     }
 
+    fun updateOrderSelectedStatus(position: Int, orderId: Long) {
+        val pagedList = _pagedListData.value ?: return
+        pagedList.map { orderItem ->
+            if (orderItem is OrderListItemUIType.OrderListItemUI) {
+                orderItem.isSelected = orderItem.orderId == orderId
+            }
+        }
+        triggerEvent(OrderListEvent.NotifyOrderChanged(position))
+    }
+
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         dismissListErrors = true
 

@@ -18,6 +18,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.NavHostFragment
@@ -53,6 +54,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -141,6 +143,8 @@ class OrderListFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    private val selectedOrder: SelectedOrderListTrackerViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
@@ -419,6 +423,9 @@ class OrderListFragment :
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
+        selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
+
+        }
         viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
@@ -456,7 +463,7 @@ class OrderListFragment :
                     )
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
-                    binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
+                    binding.orderListView.ordersList.adapter?.notifyDataSetChanged()
                 }
                 is MultiLiveEvent.Event.ShowUndoSnackbar -> {
                     snackBar = uiMessageResolver.getUndoSnack(
@@ -613,10 +620,20 @@ class OrderListFragment :
         binding.orderListView.submitPagedList(pagedListData)
     }
 
-    override fun openOrderDetail(orderId: Long, allOrderIds: List<Long>, orderStatus: String, sharedView: View?) {
+    override fun openOrderDetail(
+        orderId: Long,
+        allOrderIds: List<Long>,
+        orderStatus: String,
+        sharedView: View?,
+        orderPosition: Int,
+    ) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
-        _binding?.createOrderButton?.hide()
+        if (isTabletMode()) {
+            _binding?.createOrderButton?.show()
+        } else {
+            _binding?.createOrderButton?.hide()
+        }
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)
@@ -634,6 +651,8 @@ class OrderListFragment :
             } else {
                 null
             }
+            selectedOrder.selectOrder(orderId)
+            viewModel.updateOrderSelectedStatus(orderPosition, orderId)
             showOrderDetail(orderId, navHostFragment)
 //            if (sharedView != null) {
 //                showOrderDetailWithSharedTransition(
