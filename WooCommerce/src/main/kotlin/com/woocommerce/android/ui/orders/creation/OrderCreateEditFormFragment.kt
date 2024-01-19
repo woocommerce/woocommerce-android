@@ -92,7 +92,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
-@Suppress("LargeClass", "UNUSED_ANONYMOUS_PARAMETER")
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
@@ -211,8 +211,9 @@ class OrderCreateEditFormFragment :
             viewModel.onScreenScrolledVertically(scrollY, oldScrollY)
         }
         totalsSection.setContent { OrderCreateEditTotalsView(viewModel) }
+
         val handler = Handler(Looper.getMainLooper())
-        totalsSectionLayoutChangeListener = View.OnLayoutChangeListener { _, _, p2, p3, p4, p5, p6, p7, p8 ->
+        totalsSectionLayoutChangeListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             handler.removeCallbacksAndMessages(null)
             handler.postDelayed(
                 {
@@ -222,9 +223,8 @@ class OrderCreateEditFormFragment :
                         0,
                         totalsSection.height
                     )
-                }, 300
+                }, TOTALS_PADDING_BOUNCE_TIME
             )
-
         }
         totalsSection.addOnLayoutChangeListener(totalsSectionLayoutChangeListener)
     }
@@ -1101,5 +1101,9 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = true
         }
+    }
+
+    private companion object {
+        private const val TOTALS_PADDING_BOUNCE_TIME = 300L
     }
 }
