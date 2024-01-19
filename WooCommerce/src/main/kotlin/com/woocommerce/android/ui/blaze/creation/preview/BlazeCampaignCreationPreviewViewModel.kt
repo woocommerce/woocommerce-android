@@ -69,31 +69,31 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
                     displayValue = languages.joinToString { it.name }
                         .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO: Add language selection */ },
+                    onItemSelected = { /* TODO Add language selection */ },
                 ),
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
                     displayValue = locations.joinToString { it.name }
                         .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO: Add devices selection */ },
+                    onItemSelected = { /* TODO Add devices selection */ },
                 ),
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
                     displayValue = devices.joinToString { it.name }
                         .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO: Add location selection */ },
+                    onItemSelected = { /* TODO Add location selection */ },
                 ),
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
                     displayValue = interests.joinToString { it.description }
                         .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO: Add interests selection */ },
+                    onItemSelected = { /* TODO Add interests selection */ },
                 ),
             ),
             destinationUrl = CampaignDetailItemUi(
                 displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_destination_url),
                 displayValue = targetUrl,
-                onItemSelected = { /* TODO: Add destination url selection */ },
+                onItemSelected = { /* TODO Add destination url selection */ },
                 maxLinesValue = 1,
             )
         )
@@ -138,5 +138,4 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     object NavigateToBudgetScreen : MultiLiveEvent.Event()
-
 }
