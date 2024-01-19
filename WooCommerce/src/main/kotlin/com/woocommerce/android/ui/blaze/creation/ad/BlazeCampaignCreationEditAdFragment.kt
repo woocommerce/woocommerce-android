@@ -7,14 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -43,6 +46,9 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(EDIT_AD_RESULT, event.data as EditAdResult)
+                }
             }
         }
     }
