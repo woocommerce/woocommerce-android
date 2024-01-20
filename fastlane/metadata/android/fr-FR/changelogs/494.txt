@@ -1,2 +1,0 @@
-16.8 :
-Nous avons dépoussiéré l’application WooCommerce ! Découvrez l’élégant design du récapitulatif des dépôts sur l’écran Paiements. Fini les plantages après la réinitialisation de la sélection de votre site et profitez d’un processus de changement de boutique plus fluide dès la création d’une nouvelle boutique. De plus, gérer des montants personnalisés est un jeu d’enfant avec notre fonctionnalité plein écran. Mettez à jour dès maintenant pour une gestion commerciale plus fluide et stable !
