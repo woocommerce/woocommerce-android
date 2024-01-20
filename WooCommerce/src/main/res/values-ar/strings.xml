@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-09 13:54:03+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">التعرُّف على كيفية عمل Blaze</string>
+    <string name="disabled">تعطيل المزامنة</string>
     <string name="blaze_campaign_creation_new_intro_start_button">بدء الحملة الخاصة بك</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">إعلاناتك على ملايين المواقع داخل شبكات ووردبريس.كوم وTumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">الوصول إلى عدد ضخم من الجمهور</string>
@@ -126,7 +126,6 @@ Language: ar
     <string name="configuration_quantity_between"> يتراوح بين ⁦%1$s⁩ و⁦%2$s⁩ من العناصر </string>
     <string name="configuration_quantity_item_plural">%d من العناصر</string>
     <string name="configuration_quantity_item">%d من العناصر</string>
-    <string name="order_configuration_change_product_quantity">تغيير كمية المنتج من ⁦%1$f⁩ إلى ⁦%2$f⁩</string>
     <string name="save_configuration">حفظ التكوين</string>
     <string name="product_configuration_title">التكوين</string>
     <string name="default_product_title">المنتج %s</string>
