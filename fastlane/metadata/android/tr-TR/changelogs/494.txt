@@ -1,2 +1,0 @@
-16.8:
-WooCommerce uygulama deneyiminizi yeniledik! Ödemeler ekranındaki depozito özetinin gösterişli yeni tasarımına göz atın. Seçtiğiniz siteleri sıfırladıktan sonra yaşanan çökmelere elveda deyin ve yeni bir mağaza oluşturduktan hemen sonra daha kolay bir mağaza değiştirme sürecinin keyfini çıkarın. Ayrıca tam ekran özelliğimiz sayesinde özel tutarları yönetmek artık çok kolay. Daha sorunsuz ve istikrarlı bir işletme yönetimi yolculuğu için hemen güncelleyin!

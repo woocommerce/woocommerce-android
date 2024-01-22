@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.ad
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -99,14 +97,13 @@ private fun BlazeCampaignCreationEditAdScreen(
                 actionButtonText = stringResource(id = string.save).uppercase()
             )
         },
-        modifier = Modifier.background(MaterialTheme.colors.surface)
+        backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             CampaignEditAdContent(
                 viewState,
@@ -152,7 +149,7 @@ fun CampaignEditAdContent(
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.image_major_120))
+                    .size(dimensionResource(id = R.dimen.image_major_140))
                     .clip(shape = RoundedCornerShape(size = 8.dp))
             )
 
@@ -191,7 +188,7 @@ fun CampaignEditAdContent(
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_disabled),
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.minor_50))
+                    .padding(top = dimensionResource(id = R.dimen.minor_100))
                     .fillMaxWidth()
             )
 
@@ -199,12 +196,11 @@ fun CampaignEditAdContent(
                 value = viewState.description,
                 onValueChange = onDescriptionChanged,
                 label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
-                maxLines = 4,
-                minLines = 4,
+                maxLines = 3,
+                minLines = 3,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = Modifier
-                    .height(130.dp)
-                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .padding(top = dimensionResource(id = R.dimen.major_150))
             )
 
             Text(
@@ -215,7 +211,7 @@ fun CampaignEditAdContent(
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_disabled),
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.minor_50))
+                    .padding(top = dimensionResource(id = R.dimen.minor_100))
                     .fillMaxWidth()
             )
 
@@ -235,7 +231,7 @@ fun CampaignEditAdContent(
                 )
                 Text(
                     text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.subtitle2,
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -248,7 +244,7 @@ fun CampaignEditAdContent(
                     onClick = onNextSuggestionTapped,
                     isEnabled = viewState.isNextSuggestionButtonEnabled,
                     icon = Filled.ArrowForwardIos,
-                    modifier.padding(start = dimensionResource(id = R.dimen.minor_100))
+                    modifier.padding(start = dimensionResource(id = R.dimen.major_150))
                 )
             }
         }
@@ -281,7 +277,8 @@ private fun SuggestionButton(
                 colorResource(id = R.color.color_on_surface_disabled),
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(dimensionResource(id = R.dimen.minor_100))
+                .size(dimensionResource(id = R.dimen.major_200))
+                .padding(dimensionResource(id = R.dimen.minor_75))
         )
     }
 }
