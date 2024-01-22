@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
-    BaseFragment(R.layout.fragment_order_filter_list),
+    DialogFragment(),
     BackPressListener {
     private companion object {
         const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
@@ -34,11 +37,15 @@ class OrderFilterOptionsFragment :
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
-    override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            hasShadow = false,
-            hasDivider = true
-        )
+//    override val activityAppBarStatus: AppBarStatus
+//        get() = AppBarStatus.Visible(
+//            hasShadow = false,
+//            hasDivider = true
+//        )
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_order_filter_list, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,6 +56,21 @@ class OrderFilterOptionsFragment :
         binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (isTabletMode()) {
+            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
+        } else {
+            /* This draws the dialog as full screen */
+            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
+        }
+    }
+
+    private fun isTabletMode(): Boolean {
+        return resources.getBoolean(R.bool.is_tablet)
     }
 
     private fun setUpFilterOptionsRecyclerView(binding: FragmentOrderFilterListBinding) {

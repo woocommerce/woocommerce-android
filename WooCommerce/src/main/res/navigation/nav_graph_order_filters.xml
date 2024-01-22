@@ -12,7 +12,7 @@
             android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
             app:destination="@id/orderFilterOptionsFragment" />
     </dialog>
-    <fragment
+    <dialog
         android:id="@+id/orderFilterOptionsFragment"
         android:name="com.woocommerce.android.ui.orders.filters.OrderFilterOptionsFragment"
         tools:layout="@layout/fragment_order_filter_list">
@@ -20,5 +20,5 @@
             android:name="filterCategory"
             app:argType="com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel"
             app:nullable="false" />
-    </fragment>
+    </dialog>
 </navigation>
