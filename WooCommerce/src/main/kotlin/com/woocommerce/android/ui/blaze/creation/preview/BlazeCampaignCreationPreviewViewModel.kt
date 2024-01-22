@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.blaze.creation.preview
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState.CampaignDetailItem
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -17,99 +20,142 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    productDetailRepository: ProductDetailRepository,
-    resourceProvider: ResourceProvider
+    blazeRepository: BlazeRepository,
+    private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
-
-    private val _viewState = MutableLiveData<CampaignPreviewUiState>(CampaignPreviewUiState.Loading)
-    val viewState = _viewState
-
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
+
+    private val _viewState = MutableLiveData(
+        blazeRepository
+            .getCampaignPreviewDetails(navArgs.productId)
+            .toCampaignPreviewUiState(isLoading = true)
+    )
+    val viewState = _viewState
 
     init {
         launch {
             @Suppress("MagicNumber")
-            delay(5000)
-            val product = productDetailRepository.getProduct(navArgs.productId)
-            _viewState.value = CampaignPreviewUiState.CampaignPreviewContent(
-                productId = product?.remoteId ?: -1,
-                description = "Get the latest white t-shirts",
-                tagLine = "From 45.00 USD",
-                campaignImageUrl = "https://rb.gy/gmjuwb",
-                budget = CampaignDetailItem(
-                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_budget),
-                    displayValue = "140 USD, 7 days from Jan 14",
-                ),
-                audienceDetails = listOf(
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
-                        displayValue = "English, Spanish",
-                    ),
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
-                        displayValue = "USA, Poland, Japan",
-                    ),
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
-                        displayValue = "Samsung, Apple, Xiaomi",
-                    ),
-                    CampaignDetailItem(
-                        displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
-                        displayValue = "Fashion, Clothing, T-shirts",
-                    ),
-                ),
-                destinationUrl = CampaignDetailItem(
-                    displayTitle = "Destination URL",
-                    displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
-                    maxLinesValue = 1,
-                )
-            )
+            delay(3000)
+            _viewState.value = _viewState.value?.copy(isLoading = false)
         }
     }
 
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun CampaignPreview.toCampaignPreviewUiState(isLoading: Boolean = false) =
+        CampaignPreviewUiState(
+            isLoading = isLoading,
+            adDetails = AdDetailsUi(
+                productId = productId,
+                description = aiSuggestions.firstOrNull()?.title ?: "",
+                tagLine = aiSuggestions.firstOrNull()?.tagLine ?: "",
+                campaignImageUrl = campaignImageUrl ?: "",
+            ),
+            campaignDetails = toCampaignDetailsUi()
+        )
+
+    private fun CampaignPreview.toCampaignDetailsUi() =
+        CampaignDetailsUi(
+            budget = CampaignDetailItemUi(
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
+                displayValue = budget.toDisplayValue(),
+            ),
+            targetDetails = listOf(
+                CampaignDetailItemUi(
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
+                    displayValue = languages.joinToString { it.name }
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                ),
+                CampaignDetailItemUi(
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
+                    displayValue = locations.joinToString { it.name }
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                ),
+                CampaignDetailItemUi(
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
+                    displayValue = devices.joinToString { it.name }
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                ),
+                CampaignDetailItemUi(
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
+                    displayValue = interests.joinToString { it.description }
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                ),
+            ),
+            destinationUrl = CampaignDetailItemUi(
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
+                displayValue = targetUrl,
+                maxLinesValue = 1,
+            )
+        )
+
+    private fun BlazeRepository.Budget.toDisplayValue(): String {
+        val totalBudgetWithCurrency = currencyFormatter.formatCurrency(
+            totalBudget.toBigDecimal(),
+            currencyCode
+        )
+        val duration = resourceProvider.getString(
+            R.string.blaze_campaign_preview_days_duration,
+            durationInDays,
+            startDate.formatToMMMdd()
+        )
+        return "$totalBudgetWithCurrency,  $duration"
+    }
+
     fun onEditAdClicked() {
-        (viewState.value as? CampaignPreviewUiState.CampaignPreviewContent)?.let { campaignPreviewContent ->
+        viewState.value?.let { campaignPreviewContent ->
             triggerEvent(
                 NavigateToEditAdScreen(
-                    tagline = campaignPreviewContent.tagLine,
-                    description = campaignPreviewContent.description,
-                    campaignImageUrl = campaignPreviewContent.campaignImageUrl.takeIf { it.isNotBlank() }
+                    tagLine = campaignPreviewContent.adDetails.tagLine,
+                    description = campaignPreviewContent.adDetails.description,
+                    campaignImageUrl = campaignPreviewContent.adDetails.campaignImageUrl
                 )
             )
         }
     }
 
     fun onAdUpdated(tagline: String, description: String, campaignImageUrl: String?) {
-        _viewState.value = (viewState.value as? CampaignPreviewUiState.CampaignPreviewContent)?.copy(
-            tagLine = tagline,
-            description = description,
-            campaignImageUrl = campaignImageUrl ?: ""
+        _viewState.value = viewState.value?.copy(
+            adDetails = AdDetailsUi(
+                productId = navArgs.productId,
+                description = description,
+                tagLine = tagline,
+                campaignImageUrl = campaignImageUrl
+            )
         )
     }
 
     data class NavigateToEditAdScreen(
-        val tagline: String,
+        val tagLine: String,
         val description: String,
         val campaignImageUrl: String?
     ) : MultiLiveEvent.Event()
 
-    sealed interface CampaignPreviewUiState {
-        object Loading : CampaignPreviewUiState
-        data class CampaignPreviewContent(
-            val isLoading: Boolean = false,
-            val productId: Long,
-            val description: String,
-            val tagLine: String,
-            val campaignImageUrl: String,
-            val budget: CampaignDetailItem,
-            val audienceDetails: List<CampaignDetailItem>,
-            val destinationUrl: CampaignDetailItem,
-        ) : CampaignPreviewUiState
+    data class CampaignPreviewUiState(
+        val isLoading: Boolean = false,
+        val adDetails: AdDetailsUi,
+        val campaignDetails: CampaignDetailsUi,
+    )
 
-        data class CampaignDetailItem(
-            val displayTitle: String,
-            val displayValue: String,
-            val maxLinesValue: Int? = null,
-        )
-    }
+    data class AdDetailsUi(
+        val productId: Long,
+        val description: String,
+        val tagLine: String,
+        val campaignImageUrl: String?,
+    )
+
+    data class CampaignDetailsUi(
+        val budget: CampaignDetailItemUi,
+        val targetDetails: List<CampaignDetailItemUi>,
+        val destinationUrl: CampaignDetailItemUi,
+    )
+
+    data class CampaignDetailItemUi(
+        val displayTitle: String,
+        val displayValue: String,
+        val maxLinesValue: Int? = null,
+    )
 }

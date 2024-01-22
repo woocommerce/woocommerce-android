@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.ad
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -106,14 +104,13 @@ private fun BlazeCampaignCreationEditAdScreen(
                 actionButtonText = stringResource(id = string.save).uppercase()
             )
         },
-        modifier = Modifier.background(MaterialTheme.colors.surface)
+        backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             CampaignEditAdContent(
                 viewState,
@@ -192,7 +189,7 @@ private fun AdDataSection(
             style = MaterialTheme.typography.caption,
             color = colorResource(id = color.color_on_surface_disabled),
             modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.minor_50))
+                .padding(top = dimensionResource(id = dimen.minor_100))
                 .fillMaxWidth()
         )
 
@@ -200,12 +197,11 @@ private fun AdDataSection(
             value = viewState.description,
             onValueChange = onDescriptionChanged,
             label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
-            maxLines = 4,
-            minLines = 4,
+            maxLines = 3,
+            minLines = 3,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             modifier = Modifier
-                .height(130.dp)
-                .padding(top = dimensionResource(id = dimen.major_100))
+                .padding(top = dimensionResource(id = dimen.major_150))
         )
 
         Text(
@@ -216,7 +212,7 @@ private fun AdDataSection(
             style = MaterialTheme.typography.caption,
             color = colorResource(id = color.color_on_surface_disabled),
             modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.minor_50))
+                .padding(top = dimensionResource(id = dimen.minor_100))
                 .fillMaxWidth()
         )
 
@@ -236,7 +232,7 @@ private fun AdDataSection(
             )
             Text(
                 text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.subtitle2,
             )
             Spacer(modifier = Modifier.weight(1f))
 
@@ -249,7 +245,7 @@ private fun AdDataSection(
                 onClick = onNextSuggestionTapped,
                 isEnabled = viewState.isNextSuggestionButtonEnabled,
                 icon = Filled.ArrowForwardIos,
-                modifier.padding(start = dimensionResource(id = dimen.minor_100))
+                modifier.padding(start = dimensionResource(id = dimen.major_150))
             )
         }
     }
@@ -263,35 +259,42 @@ private fun AdImageSection(modifier: Modifier, viewState: ViewState, onChangeIma
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SubcomposeAsyncImage(
-            model = Builder(LocalContext.current)
-                .data(viewState.adImageUrl)
-                .crossfade(true)
-                .fallback(drawable.blaze_campaign_product_placeholder)
-                .placeholder(drawable.blaze_campaign_product_placeholder)
-                .error(drawable.blaze_campaign_product_placeholder)
-                .build(),
-            contentScale = ContentScale.Crop,
-            contentDescription = null,
-            modifier = Modifier
-                .size(dimensionResource(id = dimen.image_major_120))
-                .clip(shape = RoundedCornerShape(size = dimensionResource(id = dimen.minor_100))),
-            loading = {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .size(dimensionResource(id = dimen.progress_bar_small))
-                    )
-                }
-            }
-        )
-
-        WCTextButton(
-            modifier = Modifier.padding(top = 8.dp),
-            onClick = onChangeImageTapped,
+        Column(
+            modifier = modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(stringResource(id = string.blaze_campaign_edit_ad_change_image_button))
+            SubcomposeAsyncImage(
+                model = Builder(LocalContext.current)
+                    .data(viewState.adImageUrl)
+                    .crossfade(true)
+                    .fallback(drawable.blaze_campaign_product_placeholder)
+                    .placeholder(drawable.blaze_campaign_product_placeholder)
+                    .error(drawable.blaze_campaign_product_placeholder)
+                    .build(),
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(dimensionResource(id = dimen.image_major_140))
+                    .clip(shape = RoundedCornerShape(size = dimensionResource(id = dimen.minor_100))),
+                loading = {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(dimensionResource(id = dimen.progress_bar_small))
+                        )
+                    }
+                }
+            )
+
+            WCTextButton(
+                modifier = Modifier.padding(top = 8.dp),
+                onClick = onChangeImageTapped,
+            ) {
+                Text(stringResource(id = string.blaze_campaign_edit_ad_change_image_button))
+            }
         }
     }
 }
@@ -322,7 +325,8 @@ private fun SuggestionButton(
                 colorResource(id = color.color_on_surface_disabled),
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(dimensionResource(id = dimen.minor_100))
+                .size(dimensionResource(id = dimen.major_200))
+                .padding(dimensionResource(id = dimen.minor_75))
         )
     }
 }

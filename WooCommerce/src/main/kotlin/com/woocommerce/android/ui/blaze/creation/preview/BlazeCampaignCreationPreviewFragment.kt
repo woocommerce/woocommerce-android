@@ -30,6 +30,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupObservers()
         handleResults()
     }
@@ -41,7 +42,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToEditAdScreen -> findNavController().navigate(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
-                            event.tagline,
+                            event.tagLine,
                             event.description,
                             event.campaignImageUrl
                         )
