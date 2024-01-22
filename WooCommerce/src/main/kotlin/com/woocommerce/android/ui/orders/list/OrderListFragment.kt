@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.MenuProvider
@@ -18,6 +19,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -34,6 +36,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -83,6 +86,7 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.15f
     }
 
     @Inject
@@ -202,12 +206,33 @@ class OrderListFragment :
 
         initObservers()
         initializeResultHandlers()
+        displayTwoPaneLayoutIfTablet()
         if (isSearching) {
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+    }
+
+    private fun displayTwoPaneLayoutIfTablet() {
+        val detailContainer = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
+        val detailContainerLayoutParams = detailContainer.view?.layoutParams
+            as LinearLayout.LayoutParams
+        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams as LinearLayout.LayoutParams
+        if (isTablet()) {
+            detailContainer.view?.visibility = View.VISIBLE
+            detailContainerLayoutParams.width = 0
+            detailContainerLayoutParams.weight = 2f
+            detailContainerLayoutParams.marginStart = (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
+            detailContainerLayoutParams.marginEnd = (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
+            orderListViewLayoutParams.width = 0
+            orderListViewLayoutParams.weight = 1f
+        } else {
+            detailContainer.view?.visibility = View.GONE
+            orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+            orderListViewLayoutParams.weight = 0f
+        }
     }
 
     private fun initSwipeBehaviour() {

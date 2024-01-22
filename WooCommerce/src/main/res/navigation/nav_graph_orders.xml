@@ -164,7 +164,8 @@
         tools:layout="@layout/fragment_order_detail">
         <argument
             android:name="orderId"
-            app:argType="long" />
+            app:argType="long"
+            android:defaultValue="-1L"/>
         <argument
             android:name="allOrderIds"
             android:defaultValue="@null"
