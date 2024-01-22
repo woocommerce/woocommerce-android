@@ -1,12 +1,12 @@
-package ui.blaze.creation.preview
+package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -60,33 +60,33 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private fun CampaignPreview.toCampaignDetailsUi() =
         CampaignDetailsUi(
             budget = CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_budget),
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
                 displayValue = budget.toDisplayValue(),
             ),
             targetDetails = listOf(
                 CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
                     displayValue = languages.joinToString { it.name }
-                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
                 ),
                 CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
                     displayValue = locations.joinToString { it.name }
-                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
                 ),
                 CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
                     displayValue = devices.joinToString { it.name }
-                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
                 ),
                 CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
+                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
                     displayValue = interests.joinToString { it.description }
-                        .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
+                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
                 ),
             ),
             destinationUrl = CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_destination_url),
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
                 displayValue = targetUrl,
                 maxLinesValue = 1,
             )
