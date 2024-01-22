@@ -224,8 +224,12 @@ class OrderListFragment :
             detailContainer.view?.visibility = View.VISIBLE
             detailContainerLayoutParams.width = 0
             detailContainerLayoutParams.weight = 2f
-            detailContainerLayoutParams.marginStart = (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
-            detailContainerLayoutParams.marginEnd = (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
+            detailContainerLayoutParams.marginStart = (
+                DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO
+                ).toInt()
+            detailContainerLayoutParams.marginEnd = (
+                DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO
+                ).toInt()
             orderListViewLayoutParams.width = 0
             orderListViewLayoutParams.weight = 1f
         } else {
