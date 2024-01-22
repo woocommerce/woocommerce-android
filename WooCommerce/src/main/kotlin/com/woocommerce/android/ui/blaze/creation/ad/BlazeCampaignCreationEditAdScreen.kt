@@ -332,7 +332,6 @@ private fun SuggestionButton(
 }
 
 @LightDarkThemePreviews
-@Preview
 @Composable
 fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
