@@ -188,3 +188,5 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
         )
     )
 }
+
+fun Fragment.isTablet() = resources.getBoolean(R.bool.is_tablet)
