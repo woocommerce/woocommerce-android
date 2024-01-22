@@ -14,6 +14,10 @@
 
 17.0
 -----
+- [*] [Internal] Removed the fields from the models that after the API change are not returned anymore. The endpoint is "deposits/overview-all". [https://github.com/woocommerce/woocommerce-android/pull/10535]
+- [*] [Internal] Tracking of "country" and "currency" properties for entry and exit of the payments flows [https://github.com/woocommerce/woocommerce-android/pull/10528]
+- [*] Fixed bug when gift card was not displayed in the "totals" sections on the order creation/editing screens [https://github.com/woocommerce/woocommerce-android/pull/10546]
+- [*] [Internal] Better displaying of the "locked" state of the buttons on the order creation screen. Fixed bug when it was possible to add "custom amount" even when the order is locked [https://github.com/woocommerce/woocommerce-android/pull/10562]
 
 16.9
 -----
