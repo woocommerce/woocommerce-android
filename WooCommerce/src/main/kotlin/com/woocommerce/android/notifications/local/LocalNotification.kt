@@ -14,7 +14,14 @@ sealed class LocalNotification(
     val delayUnit: TimeUnit
 ) {
     open val data: String? = null
-    val id = type.hashCode()
+    val id: Int by lazy {
+        // Combine current time with hash codes of properties for uniqueness
+        val timeComponent = (System.currentTimeMillis() / 1000L % Integer.MAX_VALUE).toInt()
+        val hashComponent = (siteId.hashCode() xor title.hashCode() xor description.hashCode() xor type.hashCode() xor delay.hashCode() xor delayUnit.hashCode())
+
+        // Combine components to form a unique ID
+        timeComponent xor hashComponent
+    }
 
     abstract fun getDescriptionString(resourceProvider: ResourceProvider): String
 
@@ -38,6 +45,8 @@ sealed class LocalNotification(
             return resourceProvider.getString(description, name)
         }
     }
+
+
 
     data class FreeTrialExpiringNotification(
         val expiryDate: String,
@@ -104,6 +113,23 @@ sealed class LocalNotification(
         type = LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING,
         delay = 3,
         delayUnit = TimeUnit.DAYS
+    ) {
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
+
+    data class TestNotification(
+        override val siteId: Long,
+        @StringRes val testTitle: Int,
+        @StringRes val testDescription: Int
+    ) : LocalNotification(
+        siteId = siteId,
+        title = testTitle,
+        description = testDescription,
+        type = LocalNotificationType.TEST, // Assuming you have a TEST type defined
+        delay = 10,
+        delayUnit = TimeUnit.SECONDS
     ) {
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description)

@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.local
 
 enum class LocalNotificationType(val value: String) {
     STORE_CREATION_FINISHED("store_creation_complete"),
+    TEST("test"),
     FREE_TRIAL_EXPIRING("one_day_before_free_trial_expires"),
     FREE_TRIAL_EXPIRED("one_day_after_free_trial_expires"),
     SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED("six_hours_after_free_trial_subscribed"),

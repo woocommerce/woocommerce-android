@@ -3964,4 +3964,7 @@
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
 
+    <string name="test_notification_title">Test Title</string>
+    <string name="test_notification_description">This is a test description.</string>
+
 </resources>

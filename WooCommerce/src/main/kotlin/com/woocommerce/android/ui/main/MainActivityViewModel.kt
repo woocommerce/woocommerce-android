@@ -16,6 +16,8 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.local.LocalNotification
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
@@ -72,6 +74,7 @@ class MainActivityViewModel @Inject constructor(
     private val privacyRepository: PrivacySettingsRepository,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val observeSiteInstallation: ObserveSiteInstallation,
+    private val notificationScheduler: LocalNotificationScheduler,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -331,6 +334,20 @@ class MainActivityViewModel @Inject constructor(
         triggerEvent(RequestNotificationsPermission)
     }
 
+    @Suppress("ForbiddenComment")
+    fun showLocalNotification() {
+        for (i in 1..10) {
+            val uniqueSiteId = 12345 + i // This ensures each notification has a unique site ID
+            val testNotification = LocalNotification.TestNotification(
+                siteId = uniqueSiteId.toLong(),
+                testTitle = R.string.test_notification_title,
+                testDescription = R.string.test_notification_description
+            )
+            notificationScheduler.scheduleNotification(testNotification)
+        }
+    }
+
+
     fun onLocalNotificationTapped(notification: Notification) {
         if (notification.remoteSiteId != selectedSite.getOrNull()?.siteId) {
             changeSiteAndRestart(
@@ -350,7 +367,7 @@ class MainActivityViewModel @Inject constructor(
 
                     FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
 
-                    STORE_CREATION_FINISHED,
+                    STORE_CREATION_FINISHED, LocalNotificationType.TEST,
                     THREE_DAYS_AFTER_STILL_EXPLORING -> {
                     }
                 }

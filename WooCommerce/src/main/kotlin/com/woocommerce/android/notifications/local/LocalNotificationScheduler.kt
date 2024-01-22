@@ -29,11 +29,11 @@ class LocalNotificationScheduler @Inject constructor(
     private val workManager = WorkManager.getInstance(appContext)
 
     fun scheduleNotification(notification: LocalNotification) {
-        cancelScheduledNotification(notification.type)
+        //cancelScheduledNotification(notification.type)
 
         workManager
             .beginUniqueWork(
-                LOCAL_NOTIFICATION_WORK_NAME + notification.type.value,
+                LOCAL_NOTIFICATION_WORK_NAME + notification.siteId,
                 REPLACE,
                 buildPreconditionCheckWorkRequest(notification)
             )

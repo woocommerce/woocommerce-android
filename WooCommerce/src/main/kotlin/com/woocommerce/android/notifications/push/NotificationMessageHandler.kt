@@ -209,6 +209,11 @@ class NotificationMessageHandler @Inject constructor(
         return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
     }
 
+    fun handleLocalNotification(notification: Notification) {
+        ACTIVE_NOTIFICATIONS_MAP[notification.] = notification
+        // Any additional handling you need for a local notification
+    }
+
     private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
     private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
 
