@@ -541,15 +541,24 @@ class OrderListFragment :
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-
-            if (sharedView != null) {
-                showOrderDetailWithSharedTransition(
-                    orderId = orderId,
-                    allOrderIds = allOrderIds,
-                    sharedView = sharedView
-                )
+            val navHostFragment = if (isTablet()) {
+                childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
             } else {
-                showOrderDetail(orderId)
+                null
+            }
+            navHostFragment?.let {
+                showOrderDetail(orderId, it)
+            } ?: run {
+                // Phone layout
+                if (sharedView != null) {
+                    showOrderDetailWithSharedTransition(
+                        orderId = orderId,
+                        allOrderIds = allOrderIds,
+                        sharedView = sharedView
+                    )
+                } else {
+                    showOrderDetail(orderId)
+                }
             }
         }
     }
