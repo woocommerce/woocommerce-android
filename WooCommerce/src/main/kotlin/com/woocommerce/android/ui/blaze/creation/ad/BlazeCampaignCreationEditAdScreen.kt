@@ -39,7 +39,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
@@ -132,14 +131,13 @@ fun CampaignEditAdContent(
     onChangeImageTapped: () -> Unit,
     onPreviousSuggestionTapped: () -> Unit,
     onNextSuggestionTapped: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AdImageSection(modifier, viewState, onChangeImageTapped)
+        AdImageSection(viewState, onChangeImageTapped)
 
         Divider(
             color = colorResource(id = color.divider_color),
@@ -148,7 +146,6 @@ fun CampaignEditAdContent(
         )
 
         AdDataSection(
-            modifier = modifier,
             viewState = viewState,
             onTagLineChanged = onTagLineChanged,
             onDescriptionChanged = onDescriptionChanged,
@@ -160,7 +157,6 @@ fun CampaignEditAdContent(
 
 @Composable
 private fun AdDataSection(
-    modifier: Modifier,
     viewState: ViewState,
     onTagLineChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
@@ -168,7 +164,7 @@ private fun AdDataSection(
     onNextSuggestionTapped: () -> Unit
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .padding(dimensionResource(id = dimen.major_100))
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -245,22 +241,21 @@ private fun AdDataSection(
                 onClick = onNextSuggestionTapped,
                 isEnabled = viewState.isNextSuggestionButtonEnabled,
                 icon = Filled.ArrowForwardIos,
-                modifier.padding(start = dimensionResource(id = dimen.major_150))
+                modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
             )
         }
     }
 }
 
 @Composable
-private fun AdImageSection(modifier: Modifier, viewState: ViewState, onChangeImageTapped: () -> Unit) {
+private fun AdImageSection(viewState: ViewState, onChangeImageTapped: () -> Unit) {
     Column(
-        modifier = modifier
-            .padding(dimensionResource(id = dimen.major_100))
+        modifier = Modifier
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .padding(dimensionResource(id = dimen.major_100))
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
