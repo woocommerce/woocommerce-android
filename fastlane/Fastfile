@@ -340,11 +340,13 @@ platform :android do
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
   lane :new_hotfix_release do |options|
     UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
+    UI.user_error!('A `version_code` must be provided when calling this lane') if options[:version_code].nil?
 
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
     new_version = options[:version_name]
+    version_code_new = options[:version_code]
     # Parse the provided version into an AppVersion object
     parsed_version = VERSION_FORMATTER.parse(new_version)
     previous_version = VERSION_FORMATTER.release_version(VERSION_CALCULATOR.previous_patch_version(version: parsed_version))
@@ -356,7 +358,7 @@ platform :android do
       New hotfix version: #{new_version}
 
       Current build code: #{build_code_current}
-      New build code: #{build_code_next}
+      New build code: #{version_code_new}
 
       Branching from tag: #{previous_version}
 
@@ -380,7 +382,7 @@ platform :android do
     UI.message 'Bumping hotfix version and build code...'
     VERSION_FILE.write_version(
       version_name: new_version,
-      version_code: build_code_next
+      version_code: version_code_new
     )
     commit_version_bump
     UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
@@ -794,9 +796,7 @@ platform :android do
     )
 
     UI.important('Pushing changes to remote')
-    unless is_ci || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless is_ci || UI.confirm('Do you want to continue?')
 
     push_to_git_remote(tags: false)
   end

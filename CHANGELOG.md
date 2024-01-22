@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.0
+Get ready for a smoother experience with our latest update! We've ironed out the pesky bug that kept gift cards from showing up in the 'totals' section during order creation and editing. Managing your sales with our WooCommerce app is now more seamless than ever. Update now and enjoy the hassle-free enhancements!
+
 ## 16.9
 Fresh out of the oven! Our latest WooCommerce app update brings you a sleeker shopping cart experience. We've handily relocated the order creation to the bottom of your screen for easy thumb access, giving you more room to navigate. Plus, we've streamlined your workflow by detaching the order editing from the creation process. Get ready for a tidier, more efficient way to manage your sales. Tap "Update" and feel the difference!
 
