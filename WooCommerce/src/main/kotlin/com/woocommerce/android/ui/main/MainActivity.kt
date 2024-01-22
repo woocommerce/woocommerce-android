@@ -147,6 +147,10 @@ class MainActivity :
 
         const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
 
+        private const val KEY_ORDER_ID = "orderId"
+        private const val KEY_ALL_ORDER_IDS = "allOrderIds"
+        private const val KEY_REMOTE_NOTE_ID = "remoteNoteId"
+
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
@@ -1107,6 +1111,7 @@ class MainActivity :
 
     override fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment?,
         remoteNoteId: Long,
         launchedFromNotification: Boolean
     ) {
@@ -1121,8 +1126,17 @@ class MainActivity :
             arrayOf(orderId).toLongArray(),
             remoteNoteId
         )
+        navHostFragment?.navController?.let { navController ->
+            val bundle = Bundle().apply {
+                putLong(KEY_ORDER_ID, orderId)
+                putLongArray(KEY_ALL_ORDER_IDS, arrayOf(orderId).toLongArray())
+                putLong(KEY_REMOTE_NOTE_ID, remoteNoteId)
+            }
+            navController.navigate(R.id.orderDetailFragment, bundle)
+        } ?: run {
+            navController.navigateSafely(action)
+        }
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
