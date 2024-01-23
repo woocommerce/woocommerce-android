@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,18 +44,23 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState.FetchingJetpackEmailViewState.onBackPressed
 import kotlinx.coroutines.launch
 
 @Composable
 fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
-    CampaignBudgetScreen(
-        onBackPressed = viewModel::onBackPressed
-    )
+    viewModel.viewState.observeAsState().value?.let { viewState ->
+        CampaignBudgetScreen(
+            state = viewState,
+            onBackPressed = viewModel::onBackPressed
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CampaignBudgetScreen(
+    state: BlazeCampaignBudgetViewModel.BudgetUiState,
     onBackPressed: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -62,6 +68,7 @@ private fun CampaignBudgetScreen(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
+
     Scaffold(
         topBar = {
             Toolbar(
@@ -75,9 +82,15 @@ private fun CampaignBudgetScreen(
         WCModalBottomSheetLayout(
             sheetState = modalSheetState,
             sheetContent = {
-                ImpressionsInfoBottomSheet(
-                    onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
-                )
+                when {
+                    state.showImpressionsBottomSheet -> ImpressionsInfoBottomSheet(
+                        onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                    )
+
+                    state.showCampaignDurationBottomSheet -> ImpressionsInfoBottomSheet(
+                        onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                    )
+                }
             }
         ) {
             Column(
@@ -89,7 +102,9 @@ private fun CampaignBudgetScreen(
                     onInfoTapped = { coroutineScope.launch { modalSheetState.show() } },
                     modifier = Modifier.weight(1f)
                 )
-                EditDurationSection()
+                EditDurationSection(
+                    onEditDurationTapped = { coroutineScope.launch { modalSheetState.show() } }
+                )
             }
         }
     }
@@ -170,7 +185,7 @@ private fun EditBudgetSection(
 }
 
 @Composable
-private fun EditDurationSection() {
+private fun EditDurationSection(onEditDurationTapped: () -> Unit) {
     Column {
         Divider()
         Column(
@@ -202,7 +217,7 @@ private fun EditDurationSection() {
             }
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ },
+                onClick = onEditDurationTapped,
                 text = stringResource(id = R.string.blaze_campaign_budget_update_button)
             )
         }
