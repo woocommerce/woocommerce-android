@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.budget
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             spentBudget = 0f,
             currencyCode = "USD",
             durationInDays = 7,
-            startDate = Date(),
+            startDateMmmDdYyyy = Date().formatToMMMddYYYY(),
             forecast = ForecastUi(
                 isLoaded = false,
                 impressionsMin = 0,
@@ -32,12 +33,26 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onEditDurationTapped() {
+        _viewState.value = _viewState.value?.copy(
+            showCampaignDurationBottomSheet = true,
+            showImpressionsBottomSheet = false
+        )
+    }
+
+    fun onImpressionsInfoTapped() {
+        _viewState.value = _viewState.value?.copy(
+            showImpressionsBottomSheet = true,
+            showCampaignDurationBottomSheet = false
+        )
+    }
+
     data class BudgetUiState(
         val totalBudget: Float,
         val spentBudget: Float,
         val currencyCode: String,
         val durationInDays: Int,
-        val startDate: Date,
+        val startDateMmmDdYyyy: String,
         val forecast: ForecastUi,
         val showImpressionsBottomSheet: Boolean = false,
         val showCampaignDurationBottomSheet: Boolean = false,
