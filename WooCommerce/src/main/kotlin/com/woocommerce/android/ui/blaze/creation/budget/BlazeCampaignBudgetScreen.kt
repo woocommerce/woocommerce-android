@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,8 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
+import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
@@ -86,17 +89,22 @@ private fun CampaignBudgetScreen(
         WCModalBottomSheetLayout(
             sheetState = modalSheetState,
             sheetContent = {
-                when {
-                    state.showImpressionsBottomSheet -> ImpressionsInfoBottomSheet(
-                        onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
-                    )
+                Column {
+                    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+                    BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+                    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+                    when {
+                        state.showImpressionsBottomSheet -> ImpressionsInfoBottomSheet(
+                            onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                        )
 
-                    state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
-                        duration = state.durationInDays,
-                        startDate = state.startDateMmmDdYyyy,
-                        onValueChanged = { /*TODO*/ },
-                        onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
-                    )
+                        state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
+                            duration = state.durationInDays,
+                            startDate = state.startDateMmmDdYyyy,
+                            onValueChanged = { /*TODO*/ },
+                            onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                        )
+                    }
                 }
             }
         ) {
@@ -282,7 +290,7 @@ private fun EditDurationBottomSheet(
     onApplyTapped: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
