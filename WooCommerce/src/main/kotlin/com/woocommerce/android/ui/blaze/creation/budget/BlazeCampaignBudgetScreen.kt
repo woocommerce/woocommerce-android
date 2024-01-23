@@ -175,10 +175,7 @@ private fun EditBudgetSection(
         )
         Text(
             modifier = Modifier.padding(top = 40.dp),
-            text = stringResource(
-                id = R.string.blaze_campaign_budget_daily_spend,
-                (state.totalBudget / state.durationInDays).toInt()
-            ),
+            text = stringResource(id = R.string.blaze_campaign_budget_daily_spend, state.dailySpending),
             color = colorResource(id = color.color_on_surface_medium),
             style = MaterialTheme.typography.subtitle1,
         )
@@ -352,6 +349,7 @@ private fun CampaignBudgetScreenPreview() {
             spentBudget = 0f,
             currencyCode = "USD",
             durationInDays = 7,
+            dailySpending = "$5 USD",
             startDateMmmDdYyyy = "Dec 13, 2023",
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoaded = false,
