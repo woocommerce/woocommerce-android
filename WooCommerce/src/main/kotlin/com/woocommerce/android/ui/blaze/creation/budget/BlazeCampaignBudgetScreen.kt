@@ -178,13 +178,12 @@ private fun EditBudgetSection(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
         )
-        Row(
-            modifier = Modifier.clickable { onImpressionsInfoTapped() },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
             Icon(
-                modifier = Modifier.padding(start = 4.dp),
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .clickable { onImpressionsInfoTapped() },
                 painter = painterResource(id = drawable.ic_info_outline_20dp),
                 contentDescription = null
             )
