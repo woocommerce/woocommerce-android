@@ -123,6 +123,19 @@ class OrderListAdapter(
         }
     }
 
+    fun openFirstOrder() {
+        if (itemCount > 0) {
+            (getItem(1) as? OrderListItemUI)?.let { firstOrderItem ->
+                listener.openOrderDetail(
+                    orderId = firstOrderItem.orderId,
+                    allOrderIds = allOrderIds,
+                    orderStatus = firstOrderItem.status,
+                    sharedView = null,
+                )
+            }
+        }
+    }
+
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root), SwipeToComplete.SwipeAbleViewHolder {
         private var isNotCompleted = true
