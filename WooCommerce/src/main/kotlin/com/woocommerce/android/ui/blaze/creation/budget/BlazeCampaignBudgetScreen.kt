@@ -90,7 +90,6 @@ private fun CampaignBudgetScreen(
                 Column {
                     Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
                     BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-                    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
                     when {
                         state.showImpressionsBottomSheet -> ImpressionsInfoBottomSheet(
                             onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
@@ -244,7 +243,7 @@ private fun EditDurationSection(
             }
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ },
+                onClick = { /* TODO */ },
                 text = stringResource(id = R.string.blaze_campaign_budget_update_button)
             )
         }
@@ -260,7 +259,6 @@ private fun ImpressionsInfoBottomSheet(
             modifier = Modifier.padding(
                 start = 16.dp,
                 end = 16.dp,
-                top = 8.dp,
                 bottom = 8.dp
             ),
             verticalAlignment = Alignment.CenterVertically
@@ -296,7 +294,6 @@ private fun EditDurationBottomSheet(
 ) {
     Column(modifier = modifier.padding(16.dp)) {
         Text(
-            modifier = Modifier.padding(16.dp),
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
             style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.SemiBold,
@@ -371,4 +368,15 @@ private fun CampaignBudgetScreenPreview() {
 @Composable
 private fun CampaignImpressionsBottomSheetPreview() {
     ImpressionsInfoBottomSheet(onDoneTapped = {})
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun EditDurationBottomSheetPreview() {
+    EditDurationBottomSheet(
+        duration = 7,
+        startDate = "Dec 13, 2023",
+        onValueChanged = {},
+        onApplyTapped = {},
+    )
 }
