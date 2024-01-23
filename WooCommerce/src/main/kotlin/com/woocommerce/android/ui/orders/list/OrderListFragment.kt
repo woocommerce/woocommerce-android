@@ -350,6 +350,7 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
+            binding.orderListView.openFirstOrder()
             updatePagedListData(it)
         }
 
