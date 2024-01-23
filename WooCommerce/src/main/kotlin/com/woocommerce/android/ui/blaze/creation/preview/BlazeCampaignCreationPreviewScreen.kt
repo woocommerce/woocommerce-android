@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,15 +42,15 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -325,6 +326,7 @@ private fun CampaignPropertyItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { item.onItemSelected() }
             .padding(
                 start = 16.dp,
                 end = 16.dp,
@@ -375,28 +377,34 @@ fun CampaignScreenPreview() {
                 budget = CampaignDetailItemUi(
                     displayTitle = stringResource(R.string.blaze_campaign_preview_details_budget),
                     displayValue = "140 USD, 7 days from Jan 14",
+                    onItemSelected = {},
                 ),
                 targetDetails = listOf(
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_language),
                         displayValue = "English, Spanish",
+                        onItemSelected = {},
                     ),
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_devices),
                         displayValue = "USA, Poland, Japan",
+                        onItemSelected = {},
                     ),
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_location),
                         displayValue = "Samsung, Apple, Xiaomi",
+                        onItemSelected = {},
                     ),
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_interests),
                         displayValue = "Fashion, Clothing, T-shirts",
+                        onItemSelected = {},
                     ),
                 ),
                 destinationUrl = CampaignDetailItemUi(
                     displayTitle = "Destination URL",
                     displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
+                    onItemSelected = {},
                     maxLinesValue = 1,
                 )
             )

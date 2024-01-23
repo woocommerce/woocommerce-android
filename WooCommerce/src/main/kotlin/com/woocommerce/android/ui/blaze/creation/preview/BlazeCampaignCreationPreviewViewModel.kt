@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -62,32 +61,38 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             budget = CampaignDetailItemUi(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
                 displayValue = budget.toDisplayValue(),
+                onItemSelected = { triggerEvent(NavigateToBudgetScreen) },
             ),
             targetDetails = listOf(
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
                     displayValue = languages.joinToString { it.name }
                         .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                    onItemSelected = { /* TODO Add language selection */ },
                 ),
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
                     displayValue = locations.joinToString { it.name }
                         .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                    onItemSelected = { /* TODO Add devices selection */ },
                 ),
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
                     displayValue = devices.joinToString { it.name }
                         .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                    onItemSelected = { /* TODO Add location selection */ },
                 ),
                 CampaignDetailItemUi(
                     displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
                     displayValue = interests.joinToString { it.description }
                         .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                    onItemSelected = { /* TODO Add interests selection */ },
                 ),
             ),
             destinationUrl = CampaignDetailItemUi(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
                 displayValue = targetUrl,
+                onItemSelected = { /* TODO Add destination url selection */ },
                 maxLinesValue = 1,
             )
         )
@@ -98,7 +103,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             currencyCode
         )
         val duration = resourceProvider.getString(
-            R.string.blaze_campaign_preview_days_duration,
+            string.blaze_campaign_preview_days_duration,
             durationInDays,
             startDate.formatToMMMdd()
         )
@@ -133,6 +138,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     data class CampaignDetailItemUi(
         val displayTitle: String,
         val displayValue: String,
+        val onItemSelected: () -> Unit,
         val maxLinesValue: Int? = null,
     )
+
+    object NavigateToBudgetScreen : MultiLiveEvent.Event()
 }
