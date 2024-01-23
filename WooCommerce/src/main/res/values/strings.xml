@@ -3837,9 +3837,12 @@
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
-
     <!--
-    Blaze campaign preview screen
+    Blaze campaign budget screen
+    -->
+    <string name="blaze_campaign_budget_title">Set your budget</string>
+    <!--
+    Blaze campaign edit-ad screen
     -->
     <string name="blaze_campaign_edit_ad_change_image_button">Change image</string>
     <string name="blaze_campaign_edit_ad_change_tagline_title">Tagline</string>
