@@ -51,6 +51,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         _viewState.value = _viewState.value?.copy(totalBudget = totalBudget)
     }
 
+    fun onCampaignDurationUpdated(duration: Int) {
+        _viewState.value = _viewState.value?.copy(durationInDays = duration)
+    }
+
     data class BudgetUiState(
         val totalBudget: Float,
         val spentBudget: Float,
