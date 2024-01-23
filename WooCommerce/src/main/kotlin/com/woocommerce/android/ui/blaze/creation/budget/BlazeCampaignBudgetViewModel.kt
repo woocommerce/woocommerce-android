@@ -19,7 +19,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         BudgetUiState(
             totalBudget = 35f,
             spentBudget = 0f,
-            dailySpending = currencyFormatter.formatCurrency((35f / 7).toBigDecimal()),
+            dailySpending = "$5",
             currencyCode = "USD",
             durationInDays = 7,
             startDateMmmDdYyyy = Date().formatToMMMddYYYY(),
