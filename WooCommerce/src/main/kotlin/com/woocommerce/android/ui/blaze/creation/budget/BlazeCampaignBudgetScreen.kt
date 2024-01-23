@@ -21,12 +21,8 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -58,6 +54,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onBackPressed = viewModel::onBackPressed,
             onEditDurationTapped = viewModel::onEditDurationTapped,
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
+            onBudgetUpdated = viewModel::onTotalBudgetUpdated,
         )
     }
 }
@@ -69,6 +66,7 @@ private fun CampaignBudgetScreen(
     onBackPressed: () -> Unit,
     onEditDurationTapped: () -> Unit,
     onImpressionsInfoTapped: () -> Unit,
+    onBudgetUpdated: (Float) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -114,10 +112,12 @@ private fun CampaignBudgetScreen(
                     .background(MaterialTheme.colors.surface)
             ) {
                 EditBudgetSection(
+                    state = state,
                     onImpressionsInfoTapped = {
                         onImpressionsInfoTapped()
                         coroutineScope.launch { modalSheetState.show() }
                     },
+                    onBudgetUpdated = onBudgetUpdated,
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
@@ -133,10 +133,11 @@ private fun CampaignBudgetScreen(
 
 @Composable
 private fun EditBudgetSection(
+    state: BlazeCampaignBudgetViewModel.BudgetUiState,
+    onBudgetUpdated: (Float) -> Unit,
     onImpressionsInfoTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var sliderValue by remember { mutableStateOf(35f) }
     Column(
         modifier = modifier.padding(
             start = 28.dp,
@@ -162,26 +163,29 @@ private fun EditBudgetSection(
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
-            text = " $${sliderValue.toInt()} USD",
+            text = " $${state.totalBudget.toInt()} USD",
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = stringResource(id = R.string.blaze_campaign_budget_days_duration),
+            text = stringResource(id = R.string.blaze_campaign_budget_days_duration, state.durationInDays),
             style = MaterialTheme.typography.h4,
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
             modifier = Modifier.padding(top = 40.dp),
-            text = stringResource(id = R.string.blaze_campaign_budget_daily_spend),
+            text = stringResource(
+                id = R.string.blaze_campaign_budget_daily_spend,
+                (state.totalBudget / state.durationInDays).toInt()
+            ),
             color = colorResource(id = color.color_on_surface_medium),
             style = MaterialTheme.typography.subtitle1,
         )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            value = sliderValue,
+            value = state.totalBudget,
             valueRange = 35f..350f,
-            onValueChange = { sliderValue = it },
+            onValueChange = { onBudgetUpdated(it) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
@@ -359,6 +363,7 @@ private fun CampaignBudgetScreenPreview() {
         onBackPressed = {},
         onEditDurationTapped = {},
         onImpressionsInfoTapped = {},
+        onBudgetUpdated = {}
     )
 }
 
