@@ -1,25 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Woo.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/add_shipping_button_group"
+            app:constraint_referenced_ids="add_shipping_button, add_shipping_button_lock_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_shipping_button"
             style="@style/Woo.Button.TextButton.Secondary"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"
             android:text="@string/order_creation_add_shipping"
             app:icon="@drawable/ic_add"
+            app:layout_constraintEnd_toStartOf="@+id/add_shipping_button_lock_icon"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tax_label" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/add_shipping_button_lock_icon"
+            android:layout_width="@dimen/image_minor_40"
+            android:layout_height="@dimen/image_minor_40"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:contentDescription="@string/order_editing_locked_content_description"
+            android:src="@drawable/ic_lock"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/add_shipping_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/add_shipping_button"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/add_coupon_button_group"
+            app:constraint_referenced_ids="add_coupon_button, add_coupon_button_lock_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_coupon_button"
@@ -29,18 +55,52 @@
             android:gravity="start|center_vertical"
             android:text="@string/order_creation_add_coupon"
             app:icon="@drawable/ic_add"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/add_coupon_button_lock_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_shipping_button" />
+
+        <ImageView
+            android:id="@+id/add_coupon_button_lock_icon"
+            android:layout_width="@dimen/image_minor_40"
+            android:layout_height="@dimen/image_minor_40"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:contentDescription="@string/order_editing_locked_content_description"
+            android:src="@drawable/ic_lock"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/add_coupon_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/add_coupon_button"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/add_gift_card_button_group"
+            app:constraint_referenced_ids="add_gift_card_button, add_gift_card_button_lock_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_gift_card_button"
             style="@style/Woo.Button.TextButton.Secondary"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:gravity="start|center_vertical"
             android:text="@string/order_creation_add_gift_card"
             app:icon="@drawable/ic_add"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
+            app:layout_constraintEnd_toStartOf="@+id/add_gift_card_button_lock_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_coupon_button" />
+
+        <ImageView
+            android:id="@+id/add_gift_card_button_lock_icon"
+            android:layout_width="@dimen/image_minor_40"
+            android:layout_height="@dimen/image_minor_40"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:contentDescription="@string/order_editing_locked_content_description"
+            android:src="@drawable/ic_lock"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/add_gift_card_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/add_gift_card_button"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

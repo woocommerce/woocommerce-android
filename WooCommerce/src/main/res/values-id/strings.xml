@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-09 09:54:25+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Cari tahu cara kerja Blaze</string>
+    <string name="disabled">Non-aktif</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Buat kampanye Anda</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Jutaan situs dalam jaringan WordPress.com dan Tumblr jadi ruang iklan Anda.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Jangkau audiens yang besar</string>
@@ -126,7 +126,6 @@ Language: id
     <string name="configuration_quantity_between"> antara %1$s dan %2$s item </string>
     <string name="configuration_quantity_item_plural">%d item</string>
     <string name="configuration_quantity_item">%d item</string>
-    <string name="order_configuration_change_product_quantity">Ubah jumlah produk dari %1$f menjadi %2$f</string>
     <string name="save_configuration">Simpan konfigurasi</string>
     <string name="product_configuration_title">Konfigurasi</string>
     <string name="default_product_title">Produk %s</string>

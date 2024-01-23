@@ -3825,7 +3825,7 @@
     Blaze campaign preview screen
     -->
     <string name="blaze_campaign_screen_fragment_title">Preview</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Edit ad</string>
+    <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
@@ -3837,7 +3837,6 @@
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
-
     <!--
     Blaze campaign budget screen
     -->
@@ -3860,7 +3859,14 @@
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
 
-
+    <!--
+    Blaze campaign edit-ad screen
+    -->
+    <string name="blaze_campaign_edit_ad_change_image_button">Change image</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Tagline</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <!--
     Blaze other
     -->

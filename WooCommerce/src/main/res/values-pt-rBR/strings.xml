@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-08 22:54:04+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Descobrir como o Blaze funciona</string>
+    <string name="disabled">Desativada</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Comece sua campanha</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Seus anúncios em milhões de sites nas redes do WordPress.com e do Tumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Acesso a um vasto público</string>
@@ -126,7 +126,6 @@ Language: pt_BR
     <string name="configuration_quantity_between"> entre %1$s e %2$s itens </string>
     <string name="configuration_quantity_item_plural">%d itens</string>
     <string name="configuration_quantity_item">%d item</string>
-    <string name="order_configuration_change_product_quantity">Mude a quantidade de produtos de %1$f para %2$f</string>
     <string name="save_configuration">Salvar configuração</string>
     <string name="product_configuration_title">Configuração</string>
     <string name="default_product_title">Produto %s</string>

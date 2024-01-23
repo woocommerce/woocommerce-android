@@ -86,7 +86,7 @@ class PaymentsHubDepositSummaryViewModel @Inject constructor(
         fromCache: Boolean
     ): PaymentsHubDepositSummaryState =
         when (val mappingResult = mapper.mapDepositOverviewToViewModelOverviews(overview)) {
-            PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate -> constructApiError()
+            PaymentsHubDepositSummaryStateMapper.Result.InvalidInputData -> constructApiError()
             is PaymentsHubDepositSummaryStateMapper.Result.Success -> {
                 PaymentsHubDepositSummaryState.Success(
                     overview = mappingResult.overview,

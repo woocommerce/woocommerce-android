@@ -42,23 +42,23 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
         BlazeCampaignCreationPreviewScreen(
             previewState,
-            viewModel::onBackPressed
+            viewModel::onBackPressed,
+            viewModel::onEditAdClicked
         )
     }
 }
@@ -66,7 +66,8 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
 @Composable
 private fun BlazeCampaignCreationPreviewScreen(
     previewState: CampaignPreviewUiState,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onEditAdClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -88,7 +89,10 @@ private fun BlazeCampaignCreationPreviewScreen(
 
             when {
                 previewState.isLoading -> AdDetailsLoading()
-                else -> AdDetailsHeader(state = previewState)
+                else -> AdDetailsHeader(
+                    state = previewState,
+                    onEditAdClicked = onEditAdClicked
+                )
             }
 
             CampaignDetails(
@@ -166,7 +170,7 @@ private fun AdDetailsLoading(
             onClick = { /* No action expected for disabled button */ },
             enabled = false,
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad))
         }
     }
 }
@@ -174,10 +178,12 @@ private fun AdDetailsLoading(
 @Composable
 fun AdDetailsHeader(
     state: CampaignPreviewUiState,
+    onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CampaignHeader(
         adDetails = state.adDetails,
+        onEditAdClicked = onEditAdClicked,
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
@@ -187,7 +193,11 @@ fun AdDetailsHeader(
 }
 
 @Composable
-fun CampaignHeader(adDetails: AdDetailsUi, modifier: Modifier = Modifier) {
+fun CampaignHeader(
+    adDetails: AdDetailsUi,
+    onEditAdClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -253,9 +263,9 @@ fun CampaignHeader(adDetails: AdDetailsUi, modifier: Modifier = Modifier) {
         }
         WCTextButton(
             modifier = Modifier.padding(top = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = onEditAdClicked,
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad))
         }
     }
 }
@@ -399,7 +409,8 @@ fun CampaignScreenPreview() {
                 )
             )
         ),
-        onBackPressed = { }
+        onBackPressed = { },
+        onEditAdClicked = { }
     )
 }
 
