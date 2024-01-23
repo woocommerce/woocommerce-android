@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
+import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -21,6 +22,9 @@ class BlazeRepository @Inject constructor(
     }
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
+
+    @Suppress("MagicNumber")
+    fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
 
     fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
         val product = productDetailRepository.getProduct(productId)
@@ -60,8 +64,8 @@ class BlazeRepository @Inject constructor(
     )
 
     data class AiSuggestionForAd(
-        val title: String,
         val tagLine: String,
+        val description: String,
     )
 
     data class Budget(
