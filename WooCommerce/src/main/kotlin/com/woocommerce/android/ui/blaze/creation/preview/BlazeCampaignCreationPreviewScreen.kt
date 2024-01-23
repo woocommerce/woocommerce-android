@@ -244,7 +244,7 @@ fun CampaignHeader(
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = adDetails.title,
+                        text = adDetails.description,
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Bold,
                     )
@@ -369,7 +369,7 @@ fun CampaignScreenPreview() {
             isLoading = false,
             adDetails = AdDetailsUi(
                 productId = 123,
-                title = "Get the latest white t-shirts",
+                description = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",
                 campaignImageUrl = "https://rb.gy/gmjuwb",
             ),

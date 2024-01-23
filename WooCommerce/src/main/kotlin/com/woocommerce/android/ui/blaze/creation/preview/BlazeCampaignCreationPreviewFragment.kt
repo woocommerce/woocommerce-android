@@ -6,11 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
+import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,21 +34,32 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleResults()
     }
 
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen -> findNavController().navigateSafely(
+                is Exit -> findNavController().popBackStack()
+                is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment()
                 )
-                is BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen -> findNavController().navigate(
+                is NavigateToEditAdScreen -> findNavController().navigate(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment()
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
+                            event.tagLine,
+                            event.description,
+                            event.campaignImageUrl
+                        )
                 )
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
+            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImageUrl)
         }
     }
 }

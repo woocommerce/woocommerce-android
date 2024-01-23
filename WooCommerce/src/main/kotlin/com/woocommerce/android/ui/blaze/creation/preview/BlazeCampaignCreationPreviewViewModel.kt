@@ -49,7 +49,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             isLoading = isLoading,
             adDetails = AdDetailsUi(
                 productId = productId,
-                title = aiSuggestions.firstOrNull()?.title ?: "",
+                description = aiSuggestions.firstOrNull()?.title ?: "",
                 tagLine = aiSuggestions.firstOrNull()?.tagLine ?: "",
                 campaignImageUrl = campaignImageUrl ?: "",
             ),
@@ -111,10 +111,33 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     fun onEditAdClicked() {
-        triggerEvent(NavigateToEditAdScreen)
+        viewState.value?.let { campaignPreviewContent ->
+            triggerEvent(
+                NavigateToEditAdScreen(
+                    tagLine = campaignPreviewContent.adDetails.tagLine,
+                    description = campaignPreviewContent.adDetails.description,
+                    campaignImageUrl = campaignPreviewContent.adDetails.campaignImageUrl
+                )
+            )
+        }
     }
 
-    object NavigateToEditAdScreen : MultiLiveEvent.Event()
+    fun onAdUpdated(tagline: String, description: String, campaignImageUrl: String?) {
+        _viewState.value = viewState.value?.copy(
+            adDetails = AdDetailsUi(
+                productId = navArgs.productId,
+                description = description,
+                tagLine = tagline,
+                campaignImageUrl = campaignImageUrl
+            )
+        )
+    }
+
+    data class NavigateToEditAdScreen(
+        val tagLine: String,
+        val description: String,
+        val campaignImageUrl: String?
+    ) : MultiLiveEvent.Event()
 
     data class CampaignPreviewUiState(
         val isLoading: Boolean = false,
@@ -124,7 +147,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     data class AdDetailsUi(
         val productId: Long,
-        val title: String,
+        val description: String,
         val tagLine: String,
         val campaignImageUrl: String?,
     )
