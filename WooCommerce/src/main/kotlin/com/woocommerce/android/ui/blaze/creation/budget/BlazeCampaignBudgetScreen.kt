@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
@@ -51,7 +52,9 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         CampaignBudgetScreen(
             state = viewState,
-            onBackPressed = viewModel::onBackPressed
+            onBackPressed = viewModel::onBackPressed,
+            onEditDurationTapped = viewModel::onEditDurationTapped,
+            onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
         )
     }
 }
@@ -60,7 +63,9 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
 @Composable
 private fun CampaignBudgetScreen(
     state: BlazeCampaignBudgetViewModel.BudgetUiState,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onEditDurationTapped: () -> Unit,
+    onImpressionsInfoTapped: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -86,8 +91,11 @@ private fun CampaignBudgetScreen(
                         onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
                     )
 
-                    state.showCampaignDurationBottomSheet -> ImpressionsInfoBottomSheet(
-                        onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                    state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
+                        duration = state.durationInDays,
+                        startDate = state.startDateMmmDdYyyy,
+                        onValueChanged = { /*TODO*/ },
+                        onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
                     )
                 }
             }
@@ -98,11 +106,17 @@ private fun CampaignBudgetScreen(
                     .background(MaterialTheme.colors.surface)
             ) {
                 EditBudgetSection(
-                    onInfoTapped = { coroutineScope.launch { modalSheetState.show() } },
+                    onImpressionsInfoTapped = {
+                        onImpressionsInfoTapped()
+                        coroutineScope.launch { modalSheetState.show() }
+                    },
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
-                    onEditDurationTapped = { coroutineScope.launch { modalSheetState.show() } }
+                    onEditDurationTapped = {
+                        onEditDurationTapped()
+                        coroutineScope.launch { modalSheetState.show() }
+                    }
                 )
             }
         }
@@ -111,7 +125,7 @@ private fun CampaignBudgetScreen(
 
 @Composable
 private fun EditBudgetSection(
-    onInfoTapped: () -> Unit,
+    onImpressionsInfoTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var sliderValue by remember { mutableStateOf(35f) }
@@ -152,7 +166,8 @@ private fun EditBudgetSection(
         Text(
             modifier = Modifier.padding(top = 40.dp),
             text = stringResource(id = R.string.blaze_campaign_budget_daily_spend),
-            color = colorResource(id = color.color_on_surface_medium)
+            color = colorResource(id = color.color_on_surface_medium),
+            style = MaterialTheme.typography.subtitle1,
         )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
@@ -164,7 +179,7 @@ private fun EditBudgetSection(
             )
         )
         Row(
-            modifier = Modifier.clickable { onInfoTapped() },
+            modifier = Modifier.clickable { onImpressionsInfoTapped() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
@@ -184,7 +199,9 @@ private fun EditBudgetSection(
 }
 
 @Composable
-private fun EditDurationSection(onEditDurationTapped: () -> Unit) {
+private fun EditDurationSection(
+    onEditDurationTapped: () -> Unit
+) {
     Column {
         Divider()
         Column(
@@ -209,14 +226,14 @@ private fun EditDurationSection(onEditDurationTapped: () -> Unit) {
                     fontWeight = FontWeight.SemiBold,
                 )
                 WCTextButton(
-                    onClick = { /*TODO*/ }
+                    onClick = onEditDurationTapped
                 ) {
                     Text(text = stringResource(id = R.string.blaze_campaign_budget_edit_duration_button))
                 }
             }
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onEditDurationTapped,
+                onClick = { /*TODO*/ },
                 text = stringResource(id = R.string.blaze_campaign_budget_update_button)
             )
         }
@@ -258,6 +275,64 @@ private fun ImpressionsInfoBottomSheet(
     }
 }
 
+@Composable
+private fun EditDurationBottomSheet(
+    duration: Int,
+    startDate: String,
+    onValueChanged: (Float) -> Unit,
+    onApplyTapped: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            modifier = Modifier.padding(16.dp),
+            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            modifier = Modifier
+                .padding(top = 40.dp)
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration, duration),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center
+        )
+        Slider(
+            modifier = Modifier
+                .padding(top = 8.dp, bottom = 8.dp)
+                .fillMaxWidth(),
+            value = duration.toFloat(),
+            valueRange = 0f..CAMPAIGN_MAX_DURATION.toFloat(),
+            onValueChange = onValueChanged,
+            colors = SliderDefaults.colors(
+                inactiveTrackColor = colorResource(id = color.divider_color)
+            )
+        )
+        Row(
+            modifier = Modifier.padding(top = 40.dp),
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_starts),
+                style = MaterialTheme.typography.body1,
+            )
+            Text(
+                text = startDate,
+                style = MaterialTheme.typography.body1,
+            )
+        }
+        WCColoredButton(
+            modifier = Modifier
+                .padding(top = 40.dp)
+                .fillMaxWidth(),
+            onClick = onApplyTapped,
+            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
+        )
+    }
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun CampaignBudgetScreenPreview() {
@@ -267,14 +342,16 @@ private fun CampaignBudgetScreenPreview() {
             spentBudget = 0f,
             currencyCode = "USD",
             durationInDays = 7,
-            startDate = java.util.Date(),
+            startDateMmmDdYyyy = "Dec 13, 2023",
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoaded = false,
                 impressionsMin = 0,
                 impressionsMax = 0
             )
         ),
-        onBackPressed = {}
+        onBackPressed = {},
+        onEditDurationTapped = {},
+        onImpressionsInfoTapped = {},
     )
 }
 

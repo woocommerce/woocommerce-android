@@ -3855,6 +3855,11 @@
     <string name="blaze_campaign_budget_impressions_info">Impressions reflect the frequency with which your ad appears to potential customers.\n\n
         While exact numbers can\'t be assured due to fluctuating online traffic and user behavior, we aim to match your ad\'s actual impressions as closely as possible to your target count.\n\n
         Remember, impressions are about visibility, not action taken by viewers.</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Set duration</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
+
 
     <!--
     Blaze other
