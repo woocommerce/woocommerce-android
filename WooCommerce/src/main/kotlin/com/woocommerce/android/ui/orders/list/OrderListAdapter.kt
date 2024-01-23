@@ -131,6 +131,7 @@ class OrderListAdapter(
                     allOrderIds = allOrderIds,
                     orderStatus = firstOrderItem.status,
                     sharedView = null,
+                    orderItemPosition = 1
                 )
             }
         }
@@ -153,6 +154,12 @@ class OrderListAdapter(
                 orderItemUI.currencyCode
             )
             viewBinding.divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
+
+            if (orderItemUI.isSelected) {
+                viewBinding.root.setBackgroundColor(viewBinding.root.context.getColor(R.color.woo_purple_10))
+            } else {
+                viewBinding.root.setBackgroundColor(viewBinding.root.context.getColor(R.color.woo_white))
+            }
 
             // clear existing tags and add new ones
             viewBinding.orderTags.removeAllViews()
@@ -177,8 +184,23 @@ class OrderListAdapter(
                     orderId = orderItemUI.orderId,
                     allOrderIds = allOrderIds,
                     orderStatus = orderItemUI.status,
-                    sharedView = viewBinding.root
+                    sharedView = viewBinding.root,
+                    orderItemPosition = absoluteAdapterPosition
                 )
+//                val currentList = getCurrentList()
+//                val lastSelectedPosition = currentList?.indexOfFirst {
+//                    (it as? OrderListItemUI)?.isSelected == true
+//                } ?: -1
+//
+//                if (lastSelectedPosition != -1) {
+//                    // Deselect the previously selected order
+//                    (currentList?.get(lastSelectedPosition) as? OrderListItemUI)?.isSelected = false
+//                    notifyItemChanged(lastSelectedPosition)
+//                }
+//
+//                // Select the new order
+//                orderItemUI.isSelected = true
+//                notifyItemChanged(absoluteAdapterPosition)
             }
         }
 
