@@ -12,8 +12,6 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 
 @AndroidEntryPoint
 class BlazeCampaignCreationPreviewFragment : BaseFragment() {
@@ -37,9 +35,13 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToBudgetScreen -> findNavController().navigateSafely(
+                is BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment()
+                )
+                is BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen -> findNavController().navigate(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment()
                 )
             }
         }
