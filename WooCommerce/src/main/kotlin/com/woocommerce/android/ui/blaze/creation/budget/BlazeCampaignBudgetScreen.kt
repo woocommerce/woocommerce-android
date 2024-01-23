@@ -44,7 +44,6 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState.FetchingJetpackEmailViewState.onBackPressed
 import kotlinx.coroutines.launch
 
 @Composable
@@ -263,6 +262,18 @@ private fun ImpressionsInfoBottomSheet(
 @Composable
 private fun CampaignBudgetScreenPreview() {
     CampaignBudgetScreen(
+        state = BlazeCampaignBudgetViewModel.BudgetUiState(
+            totalBudget = 35f,
+            spentBudget = 0f,
+            currencyCode = "USD",
+            durationInDays = 7,
+            startDate = java.util.Date(),
+            forecast = BlazeCampaignBudgetViewModel.ForecastUi(
+                isLoaded = false,
+                impressionsMin = 0,
+                impressionsMax = 0
+            )
+        ),
         onBackPressed = {}
     )
 }
