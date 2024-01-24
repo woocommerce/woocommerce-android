@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -158,18 +159,25 @@ class MainActivity :
 
     @Inject
     lateinit var presenter: MainContract.Presenter
+
     @Inject
     lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
     @Inject
     lateinit var selectedSite: SelectedSite
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var crashLogging: CrashLogging
+
     @Inject
     lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+
     @Inject
     lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
     @Inject lateinit var animatorHelper: MainAnimatorHelper
@@ -206,9 +214,12 @@ class MainActivity :
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             if (f is DialogFragment) return
 
+            if (f is BlazeCampaignCreationPreviewFragment) // Context on why this is needed check GH issue #10563
+                animatorHelper.cancelToolBarAnimation()
+
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(f is TopLevelFragment)
+                    showToolbar(animate = true)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -327,6 +338,7 @@ class MainActivity :
             }
         )
     }
+
     override fun hideProgressDialog() {
         progressDialog?.apply {
             if (isShowing) {
