@@ -163,7 +163,8 @@ private fun SurveyBottomSheetContentPreview() {
         SurveyBottomSheetContent(
             timesSurveyWasDisplayed = 0,
             onStartSurveyClick = {},
-            onDismissBottomSheet = {}
+            onDismissBottomSheet = {},
+            onDontShowAgainClicked = {},
         )
     }
 }
