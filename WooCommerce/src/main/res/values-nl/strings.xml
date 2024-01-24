@@ -41,7 +41,6 @@ Language: nl
     <string name="theme_picker_carousel_info_item_description_settings">Je kan jouw perfecte thema vinden in de WooCommerce Theme Store.</string>
     <string name="theme_picker_current_theme_title">Huidig thema</string>
     <string name="theme_picker_settings_title">Probeer een nieuwe look</string>
-    <string name="product_creation_survey_button_skip">Overslaan</string>
     <string name="product_creation_survey_button_open">Begin het onderzoek</string>
     <string name="product_creation_survey_description">Je hebt onze AI-ondersteunde functie om nu meerdere keren gebruikt om producten toe te voegen. We horen graag je mening om de functie nog beter te kunnen maken.</string>
     <string name="product_creation_survey_title">We waarderen je input!</string>

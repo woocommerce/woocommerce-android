@@ -41,7 +41,6 @@ Language: zh_CN
     <string name="theme_picker_carousel_info_item_description_settings">您可以在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_current_theme_title">当前主题</string>
     <string name="theme_picker_settings_title">试用新外观</string>
-    <string name="product_creation_survey_button_skip">跳过</string>
     <string name="product_creation_survey_button_open">开始调查</string>
     <string name="product_creation_survey_description">您已多次使用我们的人工智能辅助功能添加产品。 我们想听听您对这项功能的看法，以便进一步改进。</string>
     <string name="product_creation_survey_title">您的宝贵意见对我们非常重要！</string>

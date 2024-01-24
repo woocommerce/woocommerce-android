@@ -41,7 +41,6 @@ Language: it
     <string name="theme_picker_carousel_info_item_description_settings">Puoi trovare il tema perfetto nel negozio di temi WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema corrente</string>
     <string name="theme_picker_settings_title">Prova un nuovo aspetto</string>
-    <string name="product_creation_survey_button_skip">Salta</string>
     <string name="product_creation_survey_button_open">Inizia il sondaggio</string>
     <string name="product_creation_survey_description">Hai usato la nostra funzionalità assistita dall\'intelligenza artificiale per aggiungere prodotti più volte. Ci piacerebbe sapere cosa ne pensi per migliorare ancora di più.</string>
     <string name="product_creation_survey_title">Apprezziamo il tuo contributo!</string>

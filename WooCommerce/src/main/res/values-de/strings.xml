@@ -41,7 +41,6 @@ Language: de
     <string name="theme_picker_carousel_info_item_description_settings">Du kannst dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
     <string name="theme_picker_current_theme_title">Aktuelles Theme</string>
     <string name="theme_picker_settings_title">Teste einen neuen Look</string>
-    <string name="product_creation_survey_button_skip">Überspringen</string>
     <string name="product_creation_survey_button_open">Befragung starten</string>
     <string name="product_creation_survey_description">Du hast unsere KI-unterstützte Funktion verwendet, um Produkte mehrfach hinzuzufügen. Wir würden uns über Feedback freuen, damit wir die Funktion weiter verbessern können.</string>
     <string name="product_creation_survey_title">Deine Meinung ist uns wichtig!</string>
