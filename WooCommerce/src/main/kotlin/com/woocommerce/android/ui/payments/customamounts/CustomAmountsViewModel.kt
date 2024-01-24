@@ -41,9 +41,9 @@ class CustomAmountsViewModel @Inject constructor(
         get() {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
             return if (orderTotal > BigDecimal.ZERO) {
-                (viewState.customAmountUIModel.currentPrice
-                    .divide(orderTotal, 2, RoundingMode.HALF_UP))
-                    .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+                (viewState.customAmountUIModel.currentPrice.divide(orderTotal, 2, RoundingMode.HALF_UP)).multiply(
+                    BigDecimal(PERCENTAGE_SCALE_FACTOR)
+                )
             } else {
                 BigDecimal.ZERO
             }
@@ -118,6 +118,7 @@ class CustomAmountsViewModel @Inject constructor(
                     CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
                         currentPrice = amount
                     }
+
                     CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
                         currentPercentage = (amount.divide(orderTotalValue, 2, RoundingMode.HALF_UP))
                             .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
