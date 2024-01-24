@@ -37,7 +37,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -101,6 +100,7 @@ private fun CampaignBudgetScreen(
                             duration = state.durationInDays,
                             startDate = state.startDateMmmDdYyyy,
                             onDurationChanged = { onCampaignDurationUpdated(it.toInt()) },
+                            durationRange = state.durationRangeDays,
                             onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
                         )
                     }
@@ -182,7 +182,7 @@ private fun EditBudgetSection(
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
             value = state.totalBudget,
-            valueRange = 35f..350f,
+            valueRange = state.budgetRange,
             onValueChange = { onBudgetUpdated(it) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
@@ -287,6 +287,7 @@ private fun ImpressionsInfoBottomSheet(
 private fun EditDurationBottomSheet(
     duration: Int,
     startDate: String,
+    durationRange: ClosedFloatingPointRange<Float>,
     onDurationChanged: (Float) -> Unit,
     onApplyTapped: () -> Unit,
     modifier: Modifier = Modifier,
@@ -311,7 +312,7 @@ private fun EditDurationBottomSheet(
                 .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
             value = duration.toFloat(),
-            valueRange = 0f..CAMPAIGN_MAX_DURATION.toFloat(),
+            valueRange = durationRange,
             onValueChange = onDurationChanged,
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
@@ -347,10 +348,12 @@ private fun CampaignBudgetScreenPreview() {
         state = BlazeCampaignBudgetViewModel.BudgetUiState(
             totalBudget = 35f,
             spentBudget = 0f,
+            budgetRange = 35f..350f,
             currencyCode = "USD",
             durationInDays = 7,
-            dailySpending = "$5 USD",
+            dailySpending = "$5",
             startDateMmmDdYyyy = "Dec 13, 2023",
+            durationRangeDays = 1f..28f,
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoaded = false,
                 impressionsMin = 0,
@@ -377,6 +380,7 @@ private fun EditDurationBottomSheetPreview() {
     EditDurationBottomSheet(
         duration = 7,
         startDate = "Dec 13, 2023",
+        durationRange = 1f..28f,
         onDurationChanged = {},
         onApplyTapped = {},
     )
