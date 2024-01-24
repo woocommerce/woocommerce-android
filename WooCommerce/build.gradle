@@ -323,7 +323,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    kspAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
     // Dependencies for screenshots
