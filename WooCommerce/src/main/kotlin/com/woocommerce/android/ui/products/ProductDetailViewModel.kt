@@ -357,7 +357,7 @@ class ProductDetailViewModel @Inject constructor(
             true -> startAddNewProduct()
             else -> {
                 loadRemoteProduct(navArgs.remoteProductId)
-                if (navArgs.isAIContent)
+                if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed)
                     triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
             }
         }

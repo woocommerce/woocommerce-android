@@ -127,7 +127,7 @@ object AppPrefs {
         CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
-        AI_PRODUCT_CREATION_SURVEY_COMPLETED,
+        AI_PRODUCT_CREATION_SURVEY_DISMISSED,
     }
 
     /**
@@ -1072,13 +1072,13 @@ object AppPrefs {
             value = value
         )
 
-    var isAiProductCreationSurveyCompleted: Boolean
+    var isAiProductCreationSurveyDismissed: Boolean
         get() = getBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_COMPLETED,
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
             default = false
         )
         set(value) = setBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_COMPLETED,
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
             value = value
         )
 

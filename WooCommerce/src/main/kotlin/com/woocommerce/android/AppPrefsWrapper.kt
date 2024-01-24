@@ -40,7 +40,7 @@ class AppPrefsWrapper @Inject constructor() {
 
     var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
 
-    var isAiProductCreationSurveyCompleted by AppPrefs::isAiProductCreationSurveyCompleted
+    var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 

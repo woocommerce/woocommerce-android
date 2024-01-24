@@ -68,6 +68,11 @@ class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
                     analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_SKIP_BUTTON_TAPPED)
                     findNavController().popBackStack()
                 },
+                onDontShowAgainClicked = {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_SKIP_BUTTON_TAPPED)
+                    appPrefs.isAiProductCreationSurveyDismissed = true
+                    findNavController().popBackStack()
+                }
             )
         }
     }
@@ -78,6 +83,7 @@ private fun SurveyBottomSheetContent(
     timesSurveyWasDisplayed: Int,
     onStartSurveyClick: () -> Unit,
     onDismissBottomSheet: () -> Unit,
+    onDontShowAgainClicked: () -> Unit,
 ) {
     Surface(
         shape = RoundedCornerShape(
@@ -132,13 +138,19 @@ private fun SurveyBottomSheetContent(
                 onClick = onStartSurveyClick,
                 text = stringResource(id = R.string.product_creation_survey_button_open)
             )
-            WCOutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onDismissBottomSheet,
-                text = if (timesSurveyWasDisplayed == 0)
-                    stringResource(id = R.string.product_creation_survey_button_remind_me_later)
-                else stringResource(id = R.string.product_creation_survey_button_dont_show_again)
-            )
+            if (timesSurveyWasDisplayed == 0) {
+                WCOutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onDismissBottomSheet,
+                    text = stringResource(id = R.string.product_creation_survey_button_remind_me_later)
+                )
+            } else {
+                WCOutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onDontShowAgainClicked,
+                    text = stringResource(id = R.string.product_creation_survey_button_dont_show_again)
+                )
+            }
         }
     }
 }
