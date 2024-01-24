@@ -41,7 +41,6 @@ Language: ar
     <string name="theme_picker_carousel_info_item_description_settings">يمكنك العثور على قالبك المثالي في متجر قوالب WooCommerce.</string>
     <string name="theme_picker_current_theme_title">القالب الحالي</string>
     <string name="theme_picker_settings_title">تجربة مظهر جديد</string>
-    <string name="product_creation_survey_button_skip">تخطٍّ</string>
     <string name="product_creation_survey_button_open">بدء الاستبيان</string>
     <string name="product_creation_survey_description">لقد استخدمت ميزتنا المدعومة بالذكاء الاصطناعي لإضافة المنتجات مرات عديدة الآن. نرغب في التعرُّف على أفكارك لتحسين الميزة.</string>
     <string name="product_creation_survey_title">إسهاماتك محل تقدير!</string>

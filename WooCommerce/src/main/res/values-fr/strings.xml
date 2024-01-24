@@ -41,7 +41,6 @@ Language: fr
     <string name="theme_picker_carousel_info_item_description_settings">Vous trouverez le thème parfait dans la boutique de thèmes WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Thème actuel</string>
     <string name="theme_picker_settings_title">Essayer un nouveau look</string>
-    <string name="product_creation_survey_button_skip">Ignorer</string>
     <string name="product_creation_survey_button_open">Commencer l’enquête</string>
     <string name="product_creation_survey_description">Vous avez utilisé notre fonctionnalité assistée par l’IA pour ajouter des produits à de multiples reprises désormais. Nous aimerions savoir ce que vous en pensez pour l’améliorer.</string>
     <string name="product_creation_survey_title">Nous apprécions vos retours !</string>

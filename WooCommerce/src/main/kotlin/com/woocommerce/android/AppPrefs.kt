@@ -126,6 +126,8 @@ object AppPrefs {
         CREATED_STORE_SITE_ID,
         CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
+        TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
+        AI_PRODUCT_CREATION_SURVEY_COMPLETED,
     }
 
     /**
@@ -1057,6 +1059,26 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
+            value = value
+        )
+
+    var timesAiProductCreationSurveyDisplayed: Int
+        get() = getInt(
+            key = DeletablePrefKey.TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
+            default = 0
+        )
+        set(value) = setInt(
+            key = DeletablePrefKey.TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
+            value = value
+        )
+
+    var isAiProductCreationSurveyCompleted: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_COMPLETED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_COMPLETED,
             value = value
         )
 

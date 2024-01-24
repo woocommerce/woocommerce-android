@@ -41,7 +41,6 @@ Language: he_IL
     <string name="theme_picker_carousel_info_item_description_settings">אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
     <string name="theme_picker_current_theme_title">ערכת העיצוב הנוכחית</string>
     <string name="theme_picker_settings_title">לנסות מראה חדש</string>
-    <string name="product_creation_survey_button_skip">לדלג</string>
     <string name="product_creation_survey_button_open">להתחיל לענות על הסקר</string>
     <string name="product_creation_survey_description">כבר השתמשת מספר פעמים באפשרות שנעזרת בבינה מלאכותית כדי להוסיף מוצרים. נשמח לשמוע מה דעתך על האפשרות כדי לשפר אותה.</string>
     <string name="product_creation_survey_title">אנחנו מעריכים את המשוב שלך!</string>

@@ -41,7 +41,6 @@ Language: ko_KR
     <string name="theme_picker_carousel_info_item_description_settings">우커머스 테마 스토어에서 완벽한 테마를 찾아볼 수 있습니다.</string>
     <string name="theme_picker_current_theme_title">현재 테마</string>
     <string name="theme_picker_settings_title">새 외형 사용하기</string>
-    <string name="product_creation_survey_button_skip">건너뛰기</string>
     <string name="product_creation_survey_button_open">설문 조사 시작</string>
     <string name="product_creation_survey_description">AI 보조 기능을 활용하여 제품을 여러 차례 추가하셨습니다. 개선에 도움이 되도록 의견을 듣고자 합니다.</string>
     <string name="product_creation_survey_title">여러분의 의견을 소중히 생각합니다!</string>

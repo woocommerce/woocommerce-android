@@ -41,7 +41,6 @@ Language: zh_TW
     <string name="theme_picker_carousel_info_item_description_settings">歡迎前往 WooCommerce 佈景主題商店，尋找最適合的佈景主題。</string>
     <string name="theme_picker_current_theme_title">目前的佈景主題</string>
     <string name="theme_picker_settings_title">嘗試新的外觀</string>
-    <string name="product_creation_survey_button_skip">略過</string>
     <string name="product_creation_survey_button_open">開始進行調查</string>
     <string name="product_creation_survey_description">你目前已使用 AI 功能多次新增產品。 歡迎與我們分享想法，讓體驗更好。</string>
     <string name="product_creation_survey_title">我們很重視你的意見！</string>

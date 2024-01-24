@@ -41,7 +41,6 @@ Language: tr
     <string name="theme_picker_carousel_info_item_description_settings">WooCommerce Tema Mağazasından mükemmel temanızı bulabilirsiniz.</string>
     <string name="theme_picker_current_theme_title">Geçerli tema</string>
     <string name="theme_picker_settings_title">Yeni bir görünüm deneyin</string>
-    <string name="product_creation_survey_button_skip">Atla</string>
     <string name="product_creation_survey_button_open">Anketi Başlat</string>
     <string name="product_creation_survey_description">Birkaç kere ürün eklemek için yapay zeka destekli özelliğimizi kullandınız. Daha da iyi hale getirmek için düşüncelerinizi duymak isteriz.</string>
     <string name="product_creation_survey_title">Fikirlerinize değer veriyoruz!</string>

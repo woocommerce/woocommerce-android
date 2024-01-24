@@ -43,7 +43,6 @@ Language: sv_SE
     <string name="theme_picker_carousel_error_placeholder_message_cta">tryck här</string>
     <string name="theme_picker_current_theme_title">Nuvarande tema</string>
     <string name="theme_picker_settings_title">Prova ett nytt utseende</string>
-    <string name="product_creation_survey_button_skip">Hoppa över</string>
     <string name="product_creation_survey_button_open">Börja undersökningen</string>
     <string name="product_creation_survey_title">Vi värdesätter dina åsikter!</string>
     <string name="card_reader_onboarding_contact_us">Behöver du hjälp? &lt;a href=\'\'&gt;Kontakta oss&lt;/a&gt;</string>

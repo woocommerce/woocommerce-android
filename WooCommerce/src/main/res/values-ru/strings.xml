@@ -41,7 +41,6 @@ Language: ru
     <string name="theme_picker_carousel_info_item_description_settings">Найдите самую подходящую для вас тему в магазине тем WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Текущая тема</string>
     <string name="theme_picker_settings_title">Попробуйте новый дизайн</string>
-    <string name="product_creation_survey_button_skip">Пропустить</string>
     <string name="product_creation_survey_button_open">Начать опрос</string>
     <string name="product_creation_survey_description">Вы уже несколько раз воспользовались нашей функцией добавления товаров при помощи ИИ. Мы хотели бы узнать ваши впечатления, чтобы сделать её ещё лучше.</string>
     <string name="product_creation_survey_title">Мы высоко ценим ваше мнение!</string>

@@ -41,7 +41,6 @@ Language: id
     <string name="theme_picker_carousel_info_item_description_settings">Temukan tema ideal Anda di Toko Tema WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema saat ini</string>
     <string name="theme_picker_settings_title">Coba tampilan baru</string>
-    <string name="product_creation_survey_button_skip">Lewati</string>
     <string name="product_creation_survey_button_open">Mulai Survei</string>
     <string name="product_creation_survey_description">Anda telah menggunakan fitur yang didukung AI untuk menambahkan produk beberapa kali. Sampaikan masukan Anda agar kami bisa meningkatkan fitur.</string>
     <string name="product_creation_survey_title">Kami menghargai masukan Anda!</string>

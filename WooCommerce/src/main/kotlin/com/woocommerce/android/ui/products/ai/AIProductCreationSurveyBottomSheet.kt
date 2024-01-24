@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls.CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -46,11 +47,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
     @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    @Inject lateinit var appPrefs: AppPrefsWrapper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_CONFIRMATION_VIEW_DISPLAYED)
+        val timesSurveyWasDisplayed = appPrefs.timesAiProductCreationSurveyDisplayed
+        appPrefs.timesAiProductCreationSurveyDisplayed = timesSurveyWasDisplayed + 1
         return composeView {
             SurveyBottomSheetContent(
+                timesSurveyWasDisplayed,
                 onStartSurveyClick = {
                     analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_START_SURVEY_BUTTON_TAPPED)
                     ChromeCustomTabUtils.launchUrl(
@@ -59,7 +64,7 @@ class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
                     )
                     findNavController().popBackStack()
                 },
-                onSkipPressed = {
+                onDismissBottomSheet = {
                     analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SURVEY_SKIP_BUTTON_TAPPED)
                     findNavController().popBackStack()
                 },
@@ -70,8 +75,9 @@ class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
 
 @Composable
 private fun SurveyBottomSheetContent(
+    timesSurveyWasDisplayed: Int,
     onStartSurveyClick: () -> Unit,
-    onSkipPressed: () -> Unit,
+    onDismissBottomSheet: () -> Unit,
 ) {
     Surface(
         shape = RoundedCornerShape(
@@ -128,8 +134,10 @@ private fun SurveyBottomSheetContent(
             )
             WCOutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onSkipPressed,
-                text = stringResource(id = R.string.product_creation_survey_button_skip)
+                onClick = onDismissBottomSheet,
+                text = if (timesSurveyWasDisplayed == 0)
+                    stringResource(id = R.string.product_creation_survey_button_remind_me_later)
+                else stringResource(id = R.string.product_creation_survey_button_dont_show_again)
             )
         }
     }
@@ -141,8 +149,9 @@ private fun SurveyBottomSheetContent(
 private fun SurveyBottomSheetContentPreview() {
     WooThemeWithBackground {
         SurveyBottomSheetContent(
+            timesSurveyWasDisplayed = 0,
             onStartSurveyClick = {},
-            onSkipPressed = {}
+            onDismissBottomSheet = {}
         )
     }
 }
