@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -206,9 +207,12 @@ class MainActivity :
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             if (f is DialogFragment) return
 
+            if (f is BlazeCampaignCreationPreviewFragment) // Context on why this is needed check GH issue #10563
+                animatorHelper.cancelToolbarAnimation()
+
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(f is TopLevelFragment)
+                    showToolbar(animate = f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -327,6 +331,7 @@ class MainActivity :
             }
         )
     }
+
     override fun hideProgressDialog() {
         progressDialog?.apply {
             if (isShowing) {
