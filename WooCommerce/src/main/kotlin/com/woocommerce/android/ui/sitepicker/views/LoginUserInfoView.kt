@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import androidx.core.content.res.ResourcesCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 
 class LoginUserInfoView @JvmOverloads constructor(
     ctx: Context,
@@ -43,7 +43,7 @@ class LoginUserInfoView @JvmOverloads constructor(
     }
 
     fun avatarUrl(avatarUrl: String) {
-        GlideApp.with(this)
+        Glide.with(this)
             .load(avatarUrl)
             .placeholder(R.drawable.img_gravatar_placeholder)
             .circleCrop()

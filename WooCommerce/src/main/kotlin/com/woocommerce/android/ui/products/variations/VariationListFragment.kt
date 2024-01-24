@@ -23,7 +23,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentVariationListBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -347,7 +347,7 @@ class VariationListFragment :
         if (binding.variationList.adapter == null) {
             adapter = VariationListAdapter(
                 requireContext(),
-                GlideApp.with(this),
+                Glide.with(this),
                 this,
                 parentProduct,
                 viewModel::onItemClick

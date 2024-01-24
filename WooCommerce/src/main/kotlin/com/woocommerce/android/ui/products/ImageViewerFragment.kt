@@ -12,7 +12,7 @@ import com.bumptech.glide.request.target.Target
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentImageViewerBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.model.Product
 
 /**
@@ -80,7 +80,7 @@ class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestLis
     private fun loadImage() {
         showProgress(true)
 
-        GlideApp.with(this)
+        Glide.with(this)
             .load(imageUrl)
             .listener(this)
             .into(binding.photoView)

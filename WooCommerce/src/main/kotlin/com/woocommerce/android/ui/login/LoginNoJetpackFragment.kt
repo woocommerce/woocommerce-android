@@ -27,7 +27,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
 import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
@@ -141,7 +141,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         }
 
         userAvatarUrl?.let {
-            GlideApp.with(this)
+            Glide.with(this)
                 .load(it)
                 .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.img_gravatar_placeholder))
                 .circleCrop()

@@ -26,8 +26,8 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ImageGalleryItemBinding
-import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.di.GlideRequest
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.woocommerce.android.model.Product
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils
@@ -66,7 +66,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
     private val adapter: ImageGalleryAdapter
     private val layoutInflater: LayoutInflater
 
-    private val glideRequest: GlideRequest<Drawable>
+    private val glideRequest: RequestBuilder<Drawable>
     private val glideTransform: RequestOptions
 
     private lateinit var listener: OnGalleryImageInteractionListener
@@ -115,7 +115,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         }
 
         // cancel pending Glide request when a view is recycled
-        val glideRequests = GlideApp.with(this)
+        val glideRequests = Glide.with(this)
         @Suppress("DEPRECATION")
         setRecyclerListener { holder ->
             glideRequests.clear((holder as ImageViewHolder).viewBinding.productImage)
