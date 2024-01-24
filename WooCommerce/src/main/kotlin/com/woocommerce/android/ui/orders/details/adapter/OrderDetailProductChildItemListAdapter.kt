@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductChildItemBinding
-import com.bumptech.glide.Glide
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.tools.ProductImageMap

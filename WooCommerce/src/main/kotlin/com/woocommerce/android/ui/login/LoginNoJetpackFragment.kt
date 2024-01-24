@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -27,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.databinding.FragmentLoginNoJetpackBinding
 import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
 import com.woocommerce.android.databinding.ViewLoginUserInfoBinding
-import com.bumptech.glide.Glide
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener

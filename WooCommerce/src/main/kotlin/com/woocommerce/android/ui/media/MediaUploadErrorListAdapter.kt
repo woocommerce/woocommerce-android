@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.woocommerce.android.databinding.MediaUploadErrorItemBinding
 import com.bumptech.glide.Glide
+import com.woocommerce.android.databinding.MediaUploadErrorItemBinding
 import com.woocommerce.android.ui.media.MediaUploadErrorListAdapter.MediaUploadErrorListItemViewHolder
 import com.woocommerce.android.ui.media.MediaUploadErrorListViewModel.ErrorUiModel
 import java.io.File
