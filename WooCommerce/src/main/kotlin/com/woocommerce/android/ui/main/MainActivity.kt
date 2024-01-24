@@ -159,7 +159,6 @@ class MainActivity :
 
     @Inject
     lateinit var presenter: MainContract.Presenter
-
     @Inject
     lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject
