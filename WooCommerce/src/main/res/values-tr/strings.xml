@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-09 17:54:03+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Blaze\'in nasıl çalıştığını öğrenin</string>
+    <string name="disabled">Devre Dışı Bırakıldı</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Kampanyanızı başlatın</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Reklamlarınız WordPress.com ve Tumblr ağlarındaki milyonlarca sitede.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Geniş bir kitleye ulaşın</string>
@@ -41,7 +41,6 @@ Language: tr
     <string name="theme_picker_carousel_info_item_description_settings">WooCommerce Tema Mağazasından mükemmel temanızı bulabilirsiniz.</string>
     <string name="theme_picker_current_theme_title">Geçerli tema</string>
     <string name="theme_picker_settings_title">Yeni bir görünüm deneyin</string>
-    <string name="product_creation_survey_button_skip">Atla</string>
     <string name="product_creation_survey_button_open">Anketi Başlat</string>
     <string name="product_creation_survey_description">Birkaç kere ürün eklemek için yapay zeka destekli özelliğimizi kullandınız. Daha da iyi hale getirmek için düşüncelerinizi duymak isteriz.</string>
     <string name="product_creation_survey_title">Fikirlerinize değer veriyoruz!</string>
@@ -126,7 +125,6 @@ Language: tr
     <string name="configuration_quantity_between"> %1$s ile %2$s öğe arasında </string>
     <string name="configuration_quantity_item_plural">%d öğe</string>
     <string name="configuration_quantity_item">%d öğe</string>
-    <string name="order_configuration_change_product_quantity">%1$f olan ürün miktarını %2$f olarak değiştir</string>
     <string name="save_configuration">Yapılandırmayı kaydet</string>
     <string name="product_configuration_title">Yapılandırma</string>
     <string name="default_product_title">Ürün %s</string>

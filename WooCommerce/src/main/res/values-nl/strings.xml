@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-09 15:54:23+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Ontdek hoe Blaze werkt</string>
+    <string name="disabled">Uitgeschakeld</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Start je campagne</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Je advertenties op miljoenen sites binnen de WordPress.com- en Tumblr-netwerken.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Bereik een groot publiek</string>
@@ -41,7 +41,6 @@ Language: nl
     <string name="theme_picker_carousel_info_item_description_settings">Je kan jouw perfecte thema vinden in de WooCommerce Theme Store.</string>
     <string name="theme_picker_current_theme_title">Huidig thema</string>
     <string name="theme_picker_settings_title">Probeer een nieuwe look</string>
-    <string name="product_creation_survey_button_skip">Overslaan</string>
     <string name="product_creation_survey_button_open">Begin het onderzoek</string>
     <string name="product_creation_survey_description">Je hebt onze AI-ondersteunde functie om nu meerdere keren gebruikt om producten toe te voegen. We horen graag je mening om de functie nog beter te kunnen maken.</string>
     <string name="product_creation_survey_title">We waarderen je input!</string>
@@ -120,7 +119,6 @@ Language: nl
     <string name="configuration_quantity_between"> tussen de %1$s en %2$s items </string>
     <string name="configuration_quantity_item_plural">%d items</string>
     <string name="configuration_quantity_item">%d items</string>
-    <string name="order_configuration_change_product_quantity">Verander de producthoeveelheid van %1$f naar %2$f</string>
     <string name="save_configuration">Configuratie opslaan</string>
     <string name="product_configuration_title">Configuratie</string>
     <string name="default_product_title">Product %s</string>
