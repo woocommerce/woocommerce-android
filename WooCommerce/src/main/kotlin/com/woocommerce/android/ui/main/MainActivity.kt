@@ -208,7 +208,7 @@ class MainActivity :
             if (f is DialogFragment) return
 
             if (f is BlazeCampaignCreationPreviewFragment) // Context on why this is needed check GH issue #10563
-                animatorHelper.cancelToolBarAnimation()
+                animatorHelper.cancelToolbarAnimation()
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {

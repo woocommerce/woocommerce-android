@@ -55,7 +55,7 @@ class MainAnimatorHelper @Inject constructor(private val resourceProvider: Resou
         }
     }
 
-    fun cancelToolBarAnimation() {
+    fun cancelToolbarAnimation() {
         toolbarAnimator.cancel()
     }
 
