@@ -162,22 +162,16 @@ class MainActivity :
 
     @Inject
     lateinit var loginAnalyticsListener: LoginAnalyticsListener
-
     @Inject
     lateinit var selectedSite: SelectedSite
-
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-
     @Inject
     lateinit var crashLogging: CrashLogging
-
     @Inject
     lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
-
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
-
     @Inject
     lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
     @Inject lateinit var animatorHelper: MainAnimatorHelper
@@ -219,7 +213,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(animate = true)
+                    showToolbar(animate = f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
