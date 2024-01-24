@@ -1022,7 +1022,6 @@ class OrderCreateEditFormFragment :
             }
 
             is OnTotalsSectionHeightChanged -> {
-                println("Totals section height changed: ${event.newHeight}")
                 binding.scrollView.setPadding(0, 0, 0, event.newHeight)
             }
 
