@@ -78,10 +78,21 @@ fun BarcodeScanner(
                         }
 
                     cameraProvider.unbindAll()
-                    val camera = cameraProvider.bindToLifecycle(lifecycleOwner, selector, cameraPreview, imageAnalysisUseCase)
+                    val camera = cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        selector,
+                        cameraPreview,
+                        imageAnalysisUseCase
+                    )
 
-                    val factory = SurfaceOrientedMeteringPointFactory(previewView.width.toFloat(), previewView.height.toFloat())
-                    val centerPoint = factory.createPoint(previewView.width.toFloat() / 2, previewView.height.toFloat() / 2)
+                    val factory = SurfaceOrientedMeteringPointFactory(
+                        previewView.width.toFloat(),
+                        previewView.height.toFloat()
+                    )
+                    val centerPoint = factory.createPoint(
+                        previewView.width.toFloat() / 2,
+                        previewView.height.toFloat() / 2
+                    )
                     val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
                         // Confusing naming - that means focus and metering will reset after 2 seconds
                         setAutoCancelDuration(2, TimeUnit.SECONDS)
