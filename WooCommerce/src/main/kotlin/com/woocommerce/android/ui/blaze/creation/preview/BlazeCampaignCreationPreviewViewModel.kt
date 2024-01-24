@@ -33,17 +33,15 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         launch {
-            val suggestions = blazeRepository.getAdSuggestions(navArgs.productId)
-            _viewState.value?.let {
-                _viewState.value = it.copy(
-                    adDetails = it.adDetails.copy(
-                        tagLine = suggestions.firstOrNull()?.title ?: "",
-                        description = suggestions.firstOrNull()?.description ?: "",
-                        tagLine = suggestions.firstOrNull()?.tagLine ?: "",
+            blazeRepository.getAdSuggestions(navArgs.productId)?.let { adSuggestions ->
+                _viewState.value = _viewState.value?.copy(
+                    isLoading = false,
+                    adDetails = _viewState.value?.adDetails!!.copy(
+                        description = adSuggestions.firstOrNull()?.description ?: "",
+                        tagLine = adSuggestions.firstOrNull()?.tagLine ?: "",
                     )
                 )
             }
-            _viewState.value = _viewState.value?.copy(adDetails = _, isLoading = false)
         }
     }
 
