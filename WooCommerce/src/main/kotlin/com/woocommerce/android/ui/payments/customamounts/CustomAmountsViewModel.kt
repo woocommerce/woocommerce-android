@@ -38,24 +38,31 @@ class CustomAmountsViewModel @Inject constructor(
         }
 
     var currentPercentage: BigDecimal
-        get() = (
-            viewState.customAmountUIModel.currentPrice
-                .divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP)
-            )
-            .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+        get() {
+            val orderTotal = BigDecimal(args.orderTotal ?: "0")
+            return if (orderTotal > BigDecimal.ZERO) {
+                (viewState.customAmountUIModel.currentPrice
+                    .divide(orderTotal, 2, RoundingMode.HALF_UP))
+                    .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+            } else {
+                BigDecimal.ZERO
+            }
+        }
         set(value) {
             val totalAmount = BigDecimal(args.orderTotal ?: "0")
-            val percentage = value.toString().toDouble().roundToInt()
-            val updatedAmount = (
-                totalAmount.multiply(BigDecimal(percentage))
-                    .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR), 2, RoundingMode.HALF_UP)
+            if (totalAmount > BigDecimal.ZERO) {
+                val percentage = value.toString().toDouble().roundToInt()
+                val updatedAmount = (
+                    totalAmount.multiply(BigDecimal(percentage))
+                        .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR), 2, RoundingMode.HALF_UP)
+                    )
+                viewState = viewState.copy(
+                    isDoneButtonEnabled = value > BigDecimal.ZERO,
+                    customAmountUIModel = viewState.customAmountUIModel.copy(
+                        currentPrice = updatedAmount,
+                    )
                 )
-            viewState = viewState.copy(
-                isDoneButtonEnabled = value > BigDecimal.ZERO,
-                customAmountUIModel = viewState.customAmountUIModel.copy(
-                    currentPrice = updatedAmount,
-                )
-            )
+            }
         }
 
     var currentName: String
@@ -103,17 +110,21 @@ class CustomAmountsViewModel @Inject constructor(
 
     private fun populateUIWithExistingData() {
         args.customAmountUIModel.apply {
-            populatePercentage(this)
-            when (type) {
-                CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
-                    currentPrice = amount
-                }
 
-                CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                    currentPercentage = (amount.divide(BigDecimal(args.orderTotal), 2, RoundingMode.HALF_UP))
-                        .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+            val orderTotalValue = BigDecimal(args.orderTotal ?: "0")
+            if (orderTotalValue > BigDecimal.ZERO) {
+                populatePercentage(this)
+                when (type) {
+                    CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
+                        currentPrice = amount
+                    }
+                    CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
+                        currentPercentage = (amount.divide(orderTotalValue, 2, RoundingMode.HALF_UP))
+                            .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+                    }
                 }
             }
+
             viewState = viewState.copy(
                 customAmountUIModel = viewState.customAmountUIModel.copy(
                     id = id,
