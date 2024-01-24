@@ -67,6 +67,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     fun onCampaignDurationUpdated(duration: Int) {
         _viewState.value = _viewState.value?.copy(
+            budgetRange = getBudgetRange(duration),
             durationInDays = duration,
             dailySpending = getDailySpending(viewState.value?.totalBudget!!, duration)
         )
