@@ -41,7 +41,6 @@ Language: ja_JP
     <string name="theme_picker_carousel_info_item_description_settings">WooCommerce テーマストアでご自身にぴったりなテーマが見つかります。</string>
     <string name="theme_picker_current_theme_title">現在のテーマ</string>
     <string name="theme_picker_settings_title">新しいデザインを試す</string>
-    <string name="product_creation_survey_button_skip">スキップ</string>
     <string name="product_creation_survey_button_open">アンケートをスタート</string>
     <string name="product_creation_survey_description">これまでに AI によるサポート機能を使用して商品を複数回追加しました。 改善を重ねてまいりますので、ぜひご意見をお寄せください。</string>
     <string name="product_creation_survey_title">お待ちしています。</string>
