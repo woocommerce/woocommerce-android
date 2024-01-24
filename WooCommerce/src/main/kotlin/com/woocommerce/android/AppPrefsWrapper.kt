@@ -38,8 +38,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
 
-    var numberOfProductsCreatedUsingAi by AppPrefs::numberOfProductsCreatedUsingAi
-
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
