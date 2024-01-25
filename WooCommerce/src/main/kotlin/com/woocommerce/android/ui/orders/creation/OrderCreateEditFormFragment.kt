@@ -77,6 +77,8 @@ import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Compa
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentArgs
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -124,6 +126,17 @@ class OrderCreateEditFormFragment :
     private val View?.customAmountAdapter
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
+
+    override fun onStart() {
+        super.onStart()
+        val navController = childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
+        val args = ProductSelectorFragmentArgs(
+            selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        )
+        navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
