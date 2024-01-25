@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
+import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeAdSuggestionEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -24,6 +25,19 @@ class BlazeRepository @Inject constructor(
     }
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
+
+    suspend fun getAdSuggestions(productId: Long): List<AiSuggestionForAd>? {
+        fun List<BlazeAdSuggestionEntity>.mapToUiModel(): List<AiSuggestionForAd> {
+            return map { AiSuggestionForAd(it.tagLine, it.description) }
+        }
+
+        val suggestions = blazeCampaignsStore.getBlazeAdSuggestions(selectedSite.get(), productId)
+        return if (suggestions.isNotEmpty()) {
+            suggestions.mapToUiModel()
+        } else {
+            blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId).model?.mapToUiModel()
+        }
+    }
 
     fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
         val product = productDetailRepository.getProduct(productId)
@@ -63,8 +77,8 @@ class BlazeRepository @Inject constructor(
     )
 
     data class AiSuggestionForAd(
-        val title: String,
         val tagLine: String,
+        val description: String,
     )
 
     data class Budget(

@@ -12,7 +12,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,9 +33,15 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         launch {
-            @Suppress("MagicNumber")
-            delay(3000)
-            _viewState.value = _viewState.value?.copy(isLoading = false)
+            blazeRepository.getAdSuggestions(navArgs.productId)?.let { adSuggestions ->
+                _viewState.value = _viewState.value?.copy(
+                    isLoading = false,
+                    adDetails = _viewState.value?.adDetails!!.copy(
+                        description = adSuggestions.firstOrNull()?.description ?: "",
+                        tagLine = adSuggestions.firstOrNull()?.tagLine ?: "",
+                    )
+                )
+            }
         }
     }
 
@@ -49,7 +54,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             isLoading = isLoading,
             adDetails = AdDetailsUi(
                 productId = productId,
-                description = aiSuggestions.firstOrNull()?.title ?: "",
+                description = aiSuggestions.firstOrNull()?.description ?: "",
                 tagLine = aiSuggestions.firstOrNull()?.tagLine ?: "",
                 campaignImageUrl = campaignImageUrl ?: "",
             ),
@@ -114,6 +119,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         viewState.value?.let { campaignPreviewContent ->
             triggerEvent(
                 NavigateToEditAdScreen(
+                    productId = navArgs.productId,
                     tagLine = campaignPreviewContent.adDetails.tagLine,
                     description = campaignPreviewContent.adDetails.description,
                     campaignImageUrl = campaignPreviewContent.adDetails.campaignImageUrl
@@ -134,6 +140,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     data class NavigateToEditAdScreen(
+        val productId: Long,
         val tagLine: String,
         val description: String,
         val campaignImageUrl: String?

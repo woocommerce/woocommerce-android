@@ -48,6 +48,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToEditAdScreen -> findNavController().navigate(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
+                            event.productId,
                             event.tagLine,
                             event.description,
                             event.campaignImageUrl
