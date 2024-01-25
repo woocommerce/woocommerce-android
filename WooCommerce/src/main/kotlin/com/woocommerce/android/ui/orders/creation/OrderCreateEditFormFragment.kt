@@ -38,6 +38,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -206,6 +207,17 @@ class OrderCreateEditFormFragment :
         initProductsSection()
         initAdditionalInfoCollectionSection()
         initTaxRateSelectorSection()
+        adjustUIForScreenSize()
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
+        if (isTablet()) {
+            productSelectorNavContainer.isVisible = true
+            twoPaneLayoutGuideline.setGuidelinePercent(0.68f)
+        } else {
+            productSelectorNavContainer.isVisible = false
+            twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {

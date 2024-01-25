@@ -12,6 +12,7 @@ import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.wordpress.android.util.DisplayUtils
 import kotlin.math.abs
 
 /**
@@ -188,3 +189,5 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
         )
     )
 }
+
+fun Fragment.isTablet() = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
