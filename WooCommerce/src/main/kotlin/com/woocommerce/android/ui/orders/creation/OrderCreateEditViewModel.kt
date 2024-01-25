@@ -166,6 +166,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import kotlinx.coroutines.flow.filter
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -339,6 +340,9 @@ class OrderCreateEditViewModel @Inject constructor(
         get() = _orderDraft.value
 
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
+
+    private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
+        savedState.getStateFlow(viewModelScope, false)
 
     init {
         monitorPluginAvailabilityChanges()
@@ -705,11 +709,15 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
-        viewState = viewState.copy(
-            isAddGiftCardButtonEnabled = order.hasProducts() &&
-                order.isEditable &&
-                _selectedGiftCard.value.isEmpty()
-        )
+        val shouldEnableAddGiftCardButton = order.hasProducts() &&
+            order.isEditable &&
+            _selectedGiftCard.value.isEmpty()
+
+        viewState = viewState.copy(isAddGiftCardButtonEnabled = shouldEnableAddGiftCardButton)
+
+        if (shouldEnableAddGiftCardButton) {
+            giftCardWasEnabledAtLeastOnce.update { true }
+        }
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1303,10 +1311,15 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             pluginsInformation
                 .onEach {
-                    val isGiftCardExtensionEnabled = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
-                    viewState = viewState.copy(shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled)
-                    if (isGiftCardExtensionEnabled) { trackGiftCardCTAAvailable() }
+                    viewState = viewState.copy(
+                        shouldDisplayAddGiftCardButton = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
+                    )
                 }.launchIn(viewModelScope)
+
+            giftCardWasEnabledAtLeastOnce
+                .filter { it && isGiftCardExtensionEnabled }
+                .onEach { trackGiftCardCTAAvailable() }
+                .launchIn(viewModelScope)
 
             pluginsInformation.update {
                 orderCreateEditRepository.fetchOrderSupportedPlugins()
