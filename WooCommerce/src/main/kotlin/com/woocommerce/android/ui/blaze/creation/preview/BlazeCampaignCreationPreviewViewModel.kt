@@ -119,6 +119,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         viewState.value?.let { campaignPreviewContent ->
             triggerEvent(
                 NavigateToEditAdScreen(
+                    productId = navArgs.productId,
                     tagLine = campaignPreviewContent.adDetails.tagLine,
                     description = campaignPreviewContent.adDetails.description,
                     campaignImageUrl = campaignPreviewContent.adDetails.campaignImageUrl
@@ -139,6 +140,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     data class NavigateToEditAdScreen(
+        val productId: Long,
         val tagLine: String,
         val description: String,
         val campaignImageUrl: String?
