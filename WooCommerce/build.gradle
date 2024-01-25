@@ -256,6 +256,8 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
+    implementation("com.gravatar:gravatar:$gravatarVersion")
+
     implementation project(":libs:cardreader")
     implementation project(":libs:iap")
 

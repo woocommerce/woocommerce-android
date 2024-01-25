@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.login.jetpack.wpcom
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.gravatar.DefaultAvatarImage
+import com.gravatar.emailAddressToGravatarUrl
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
@@ -27,7 +29,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
-import org.wordpress.android.util.GravatarUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -161,7 +162,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
 
     private fun avatarUrlFromEmail(email: String): String {
         val avatarSize = resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100)
-        return GravatarUtils.gravatarFromEmail(email, avatarSize, GravatarUtils.DefaultImage.STATUS_404)
+        return emailAddressToGravatarUrl(email, avatarSize, DefaultAvatarImage.STATUS_404)
     }
 
     data class ViewState(
