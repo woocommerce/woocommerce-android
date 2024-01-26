@@ -4,12 +4,15 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.payments.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class PaymentReceiptHelper @Inject constructor(
     private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore,
     private val appPrefsWrapper: AppPrefsWrapper
 ) {
     fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
@@ -40,5 +43,21 @@ class PaymentReceiptHelper @Inject constructor(
 
             pluginVersion.semverCompareTo(WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION) >= 0
         }
+    }
+
+    private suspend fun isWCCanGenerateReceipts() =
+        withContext(Dispatchers.IO) {
+            val currentWooCoreVersion =
+                wooCommerceStore.getSitePlugin(
+                    selectedSite.get(),
+                    WooCommerceStore.WooPlugin.WOO_CORE
+                )?.version ?: return@withContext false
+
+            currentWooCoreVersion.semverCompareTo(WC_CAN_GENERATE_RECEIPTS_VERSION) >= 0
+        }
+
+    private companion object {
+        const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
+        const val WC_CAN_GENERATE_RECEIPTS_VERSION = "6.4.0"
     }
 }
