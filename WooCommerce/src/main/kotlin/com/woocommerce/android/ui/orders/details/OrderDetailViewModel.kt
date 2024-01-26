@@ -11,7 +11,6 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -346,10 +345,15 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSeeReceiptClicked() {
-        tracker.trackReceiptViewTapped(order.id, order.status)
-        loadReceiptUrl().orNullIfEmpty()?.let {
-            triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
-        } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
+        launch {
+            tracker.trackReceiptViewTapped(order.id, order.status)
+            val receiptResult = paymentReceiptHelper.getReceiptUrl(order.id)
+            if (receiptResult.isSuccess) {
+                triggerEvent(PreviewReceipt(order.billingAddress.email, receiptResult.getOrThrow(), order.id))
+            } else {
+                triggerEvent(ShowSnackbar(string.order_detail_receipt_fetching_error))
+            }
+        }
     }
 
     fun onPrintingInstructionsClicked() {
@@ -374,8 +378,6 @@ class OrderDetailViewModel @Inject constructor(
         reloadOrderDetails()
         triggerEvent(ShowSnackbar(message))
     }
-
-    private fun loadReceiptUrl() = paymentReceiptHelper.getReceiptUrl(order.id)
 
     fun onViewRefundedProductsClicked() {
         triggerEvent(ViewRefundedProducts(orderId = order.id))
@@ -579,7 +581,7 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
-                isReceiptButtonsVisible = loadReceiptUrl().isNotEmpty()
+                isReceiptButtonsVisible = paymentReceiptHelper.isReceiptAvailable(order.id),
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(

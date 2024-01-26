@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -14,6 +15,7 @@ class PaymentReceiptHelper @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val orderStore: WCOrderStore,
 ) {
     fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
         selectedSite.get().let {
@@ -21,7 +23,32 @@ class PaymentReceiptHelper @Inject constructor(
         }
     }
 
-    fun getReceiptUrl(orderId: Long) = selectedSite.get().let {
+    suspend fun getReceiptUrl(orderId: Long): Result<String> =
+        if (isWCCanGenerateReceipts()) {
+            val fetchingResult = orderStore.fetchOrdersReceipt(
+                site = selectedSite.get(),
+                orderId = orderId,
+                expirationDays = RECEIPT_EXPIRATION_DAYS,
+            )
+
+            val result = fetchingResult.result
+            if (fetchingResult.isError || result == null) {
+                Result.failure(Exception(fetchingResult.error.message))
+            } else {
+                Result.success(result.receiptUrl)
+            }
+        } else {
+            Result.success(getReceiptUrlFromAppPrefs(orderId))
+        }
+
+    suspend fun isReceiptAvailable(orderId: Long) =
+        when {
+            isWCCanGenerateReceipts() -> true
+            getReceiptUrlFromAppPrefs(orderId).isNotEmpty() -> true
+            else -> false
+        }
+
+    private fun getReceiptUrlFromAppPrefs(orderId: Long) = selectedSite.get().let {
         appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
     }
 
@@ -59,5 +86,7 @@ class PaymentReceiptHelper @Inject constructor(
     private companion object {
         const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
         const val WC_CAN_GENERATE_RECEIPTS_VERSION = "6.4.0"
+
+        const val RECEIPT_EXPIRATION_DAYS = 365
     }
 }
