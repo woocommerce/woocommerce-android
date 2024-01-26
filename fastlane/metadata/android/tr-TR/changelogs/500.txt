@@ -1,0 +1,2 @@
+17.0:
+En yeni güncellememizle daha sorunsuz bir deneyime hazır olun! Sipariş oluşturma ve düzenleme sırasında hediye kartlarının "toplam" bölümünde görünmesini engelleyen rahatsız edici hatayı düzelttik. WooCommerce uygulamasıyla satışlarınızı yönetmek artık her zamankinden daha kusursuz. Şimdi güncelleyin ve sorunsuz iyileştirmelerin keyfini çıkarın!
