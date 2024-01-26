@@ -114,44 +114,44 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         locations: List<Location>,
         interests: List<Interest>
     ) = CampaignDetailsUi(
-            budget = CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
-                displayValue = budget.toDisplayValue(),
-                onItemSelected = { triggerEvent(NavigateToBudgetScreen) },
+        budget = CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
+            displayValue = budget.toDisplayValue(),
+            onItemSelected = { triggerEvent(NavigateToBudgetScreen) },
+        ),
+        targetDetails = listOf(
+            CampaignDetailItemUi(
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
+                displayValue = languages.joinToString { it.name }
+                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                onItemSelected = { /* TODO Add language selection */ },
             ),
-            targetDetails = listOf(
-                CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
-                    displayValue = languages.joinToString { it.name }
-                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO Add language selection */ },
-                ),
-                CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
-                    displayValue = devices.joinToString { it.name }
-                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO Add devices selection */ },
-                ),
-                CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
-                    displayValue = locations.joinToString { it.name }
-                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO Add location selection */ },
-                ),
-                CampaignDetailItemUi(
-                    displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
-                    displayValue = interests.joinToString { it.description }
-                        .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                    onItemSelected = { /* TODO Add interests selection */ },
-                ),
+            CampaignDetailItemUi(
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
+                displayValue = devices.joinToString { it.name }
+                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                onItemSelected = { /* TODO Add devices selection */ },
             ),
-            destinationUrl = CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-                displayValue = targetUrl,
-                onItemSelected = { /* TODO Add destination url selection */ },
-                maxLinesValue = 1,
-            )
+            CampaignDetailItemUi(
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
+                displayValue = locations.joinToString { it.name }
+                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                onItemSelected = { /* TODO Add location selection */ },
+            ),
+            CampaignDetailItemUi(
+                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
+                displayValue = interests.joinToString { it.description }
+                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                onItemSelected = { /* TODO Add interests selection */ },
+            ),
+        ),
+        destinationUrl = CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
+            displayValue = targetUrl,
+            onItemSelected = { /* TODO Add destination url selection */ },
+            maxLinesValue = 1,
         )
+    )
 
     private fun Budget.toDisplayValue(): String {
         val totalBudgetWithCurrency = currencyFormatter.formatCurrency(
