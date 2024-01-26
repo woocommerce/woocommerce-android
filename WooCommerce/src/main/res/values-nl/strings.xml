@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-26 22:16:34+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="blaze_campaign_preview_details_confirm_details_button">Details bevestigen</string>
+    <string name="blaze_campaign_preview_details_destination_url">Advertentiebestemming</string>
+    <string name="blaze_campaign_preview_details_interests">Interesses</string>
+    <string name="blaze_campaign_preview_details_location">Locatie</string>
+    <string name="blaze_campaign_preview_details_devices">Apparaten</string>
+    <string name="blaze_campaign_preview_details_language">Taal</string>
+    <string name="blaze_campaign_preview_details_budget">Budget:</string>
+    <string name="blaze_campaign_preview_details_section_title">Details</string>
+    <string name="blaze_campaign_preview_shop_now_button">Nu winkelen</string>
+    <string name="blaze_campaign_preview_edit_ad_button">Advertentie bewerken</string>
+    <string name="blaze_campaign_screen_fragment_title">Voorbeeldweergave</string>
     <string name="disabled">Uitgeschakeld</string>
+    <string name="order_configuration_product_selection_control"> product geselecteerd</string>
+    <string name="order_configuration_product_selection">Product %s selecteren </string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">Kijk toe wanneer je promotie begint en volg het succes ervan.&lt;b&gt;&lt;/b&gt;</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">Dien je advertentie in voor een snelle beoordeling door een moderator.&lt;b&gt;&lt;/b&gt;</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">Bepaal de duur van je uitgaven en campagne.&lt;b&gt;&lt;/b&gt;</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">Selecteer je publiek op basis van locatie of interesses en bekijk je potentiële bereik.&lt;b&gt;&lt;/b&gt;</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">Kies wat je met Blaze gaat promoten.&lt;b&gt;&lt;/b&gt;</string>
+    <string name="scan_to_update_inventory_manage_stock">Voorraad beheren</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Voorraad niet beheerd</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Ontdek hoe Blaze werkt</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Start je campagne</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Je advertenties op miljoenen sites binnen de WordPress.com- en Tumblr-netwerken.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Bereik een groot publiek</string>
@@ -120,6 +141,7 @@ Language: nl
     <string name="configuration_quantity_between"> tussen de %1$s en %2$s items </string>
     <string name="configuration_quantity_item_plural">%d items</string>
     <string name="configuration_quantity_item">%d items</string>
+    <string name="order_configuration_change_product_quantity">Verander de producthoeveelheid van %1$.2f naar %2$.2f</string>
     <string name="save_configuration">Configuratie opslaan</string>
     <string name="product_configuration_title">Configuratie</string>
     <string name="default_product_title">Product %s</string>

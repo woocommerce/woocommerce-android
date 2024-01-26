@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-23 09:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="blaze_campaign_preview_details_confirm_details_button">상세 정보 확인</string>
+    <string name="blaze_campaign_preview_details_destination_url">광고 대상</string>
+    <string name="blaze_campaign_preview_details_interests">관심 분야</string>
+    <string name="blaze_campaign_preview_details_location">위치</string>
+    <string name="blaze_campaign_preview_details_devices">기기</string>
+    <string name="blaze_campaign_preview_details_language">언어</string>
+    <string name="blaze_campaign_preview_details_budget">예산</string>
+    <string name="blaze_campaign_preview_details_section_title">상세 정보</string>
+    <string name="blaze_campaign_preview_shop_now_button">지금 쇼핑하기</string>
+    <string name="blaze_campaign_preview_edit_ad_button">광고 편집</string>
+    <string name="blaze_campaign_screen_fragment_title">미리보기</string>
     <string name="disabled">끔</string>
+    <string name="order_configuration_product_selection_control">상품 선택</string>
+    <string name="order_configuration_product_selection">상품 %s 선택</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;적용:&lt;/b&gt; 프로모션이 시작되는 것을 보고 성공을 추적합니다.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;빠른 리뷰&lt;/b&gt;: 검토자가 빠르게 확인할 광고를 제출합니다.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;예산 설정:&lt;/b&gt; 지출과 캠페인 기간을 결정합니다.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;대상 지정 사용자 정의:&lt;/b&gt; 위치 또는 관심 분야를 기준으로 잠재 고객을 선택하고 잠재적 도달 범위를 확인합니다.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;상품 선택:&lt;/b&gt; Blaze로 홍보할 상품을 선택합니다.</string>
+    <string name="scan_to_update_inventory_manage_stock">재고 관리</string>
+    <string name="scan_to_update_inventory_stock_not_managed">재고가 관리되지 않음</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Blaze 작동 방식 알아보기</string>
     <string name="blaze_campaign_creation_new_intro_start_button">캠페인 시작하기</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">워드프레스닷컴과 Tumblr 네트워크 내 수백만 개 사이트에 실리는 광고입니다.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">방대한 잠재 고객에게 접근</string>
@@ -126,6 +147,7 @@ Language: ko_KR
     <string name="configuration_quantity_between"> %1$s~%2$s개 아이템  </string>
     <string name="configuration_quantity_item_plural">%d개 아이템</string>
     <string name="configuration_quantity_item">%d개 아이템</string>
+    <string name="order_configuration_change_product_quantity">%1$.2f개에서 %2$.2f개로 상품 수량 변경</string>
     <string name="save_configuration">구성 저장</string>
     <string name="product_configuration_title">구성</string>
     <string name="default_product_title">%s 상품 </string>

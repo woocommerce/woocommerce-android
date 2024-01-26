@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-23 13:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_preview_details_confirm_details_button">تأكيد التفاصيل</string>
+    <string name="blaze_campaign_preview_details_destination_url">وجهة الإعلان</string>
+    <string name="blaze_campaign_preview_details_interests">مجالات الاهتمام</string>
+    <string name="blaze_campaign_preview_details_location">الموقع</string>
+    <string name="blaze_campaign_preview_details_devices">الأجهزة</string>
+    <string name="blaze_campaign_preview_details_language">اللغة</string>
+    <string name="blaze_campaign_preview_details_budget">الميزانية</string>
+    <string name="blaze_campaign_preview_details_section_title">تفاصيل</string>
+    <string name="blaze_campaign_preview_shop_now_button">التسوق الآن</string>
+    <string name="blaze_campaign_preview_edit_ad_button">تحرير الإعلان</string>
+    <string name="blaze_campaign_screen_fragment_title">معاينة</string>
     <string name="disabled">تعطيل المزامنة</string>
+    <string name="order_configuration_product_selection_control"> تحديد المنتج</string>
+    <string name="order_configuration_product_selection">تحديد المنتج %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;الانتقال إلى الوضع المباشر:&lt;/b&gt; راقب كيف يبدأ عرضك الترويجي وتتبَّع نجاحه.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;مراجعة سريعة:&lt;/b&gt; أرسل إعلانك لإجراء فحص سريع من المشرف.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;تعيين ميزانيتك:&lt;/b&gt; حدد إنفاقك ومدة الحملة.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;تخصيص العناصر المستهدفة:&lt;/b&gt; حدد الجمهور حسب الموقع أو مجالات الاهتمامات، وشاهد مدى الوصول المحتمل.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;اختيار منتج:&lt;/b&gt; اختر ما تريد الترويج له باستخدام Blaze.</string>
+    <string name="scan_to_update_inventory_manage_stock">إدارة المخزون</string>
+    <string name="scan_to_update_inventory_stock_not_managed">لم تتم إدارة المخزون</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">التعرُّف على كيفية عمل Blaze</string>
     <string name="blaze_campaign_creation_new_intro_start_button">بدء الحملة الخاصة بك</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">إعلاناتك على ملايين المواقع داخل شبكات ووردبريس.كوم وTumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">الوصول إلى عدد ضخم من الجمهور</string>
@@ -126,6 +147,7 @@ Language: ar
     <string name="configuration_quantity_between"> يتراوح بين ⁦%1$s⁩ و⁦%2$s⁩ من العناصر </string>
     <string name="configuration_quantity_item_plural">%d من العناصر</string>
     <string name="configuration_quantity_item">%d من العناصر</string>
+    <string name="order_configuration_change_product_quantity">تغيير كمية المنتج من %1$.2f إلى %2$.2f</string>
     <string name="save_configuration">حفظ التكوين</string>
     <string name="product_configuration_title">التكوين</string>
     <string name="default_product_title">المنتج %s</string>
