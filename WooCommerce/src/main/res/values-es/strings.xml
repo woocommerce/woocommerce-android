@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-09 17:54:04+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Echa un vistazo a cómo funciona Blaze</string>
+    <string name="disabled">Desactivado</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Empieza tu campaña</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Tus anuncios en millones de sitios de la red de WordPress.com y Tumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Accede a una gran audiencia</string>
@@ -41,7 +41,6 @@ Language: es
     <string name="theme_picker_carousel_info_item_description_settings">Puedes buscar el tema perfecto en la tienda de temas de WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema actual</string>
     <string name="theme_picker_settings_title">Prueba una nueva imagen.</string>
-    <string name="product_creation_survey_button_skip">Omitir</string>
     <string name="product_creation_survey_button_open">Empieza la encuesta.</string>
     <string name="product_creation_survey_description">Ya has utilizado varias veces nuestra función asistida por IA para añadir productos. Nos encantaría conocer tu opinión para hacerlo aún mejor.</string>
     <string name="product_creation_survey_title">Valoramos tu opinión.</string>
@@ -126,7 +125,6 @@ Language: es
     <string name="configuration_quantity_between"> entre %1$s y %2$s elementos </string>
     <string name="configuration_quantity_item_plural">%d elementos</string>
     <string name="configuration_quantity_item">%d elemento</string>
-    <string name="order_configuration_change_product_quantity">Cambiar la cantidad de producto de %1$f a %2$f</string>
     <string name="save_configuration">Guardar configuración</string>
     <string name="product_configuration_title">Configuración</string>
     <string name="default_product_title">Producto %s</string>

@@ -17,22 +17,17 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
         val availableBalances = overview.balance?.available.orEmpty()
 
         val lastPaidDeposits = overview.deposit?.lastPaid.orEmpty()
-        val nextDeposits = overview.deposit?.nextScheduled.orEmpty()
 
         val defaultCurrency = overview.account?.defaultCurrency.orEmpty()
 
-        if (defaultCurrency.isEmpty()) return Result.InvalidInputDate
+        if (defaultCurrency.isEmpty()) return Result.InvalidInputData
 
-        val currencies = (
-            (pendingBalances + availableBalances).map {
-                it.currency
-            } + (lastPaidDeposits + nextDeposits).map {
-                it.currency
-            }
-            ).filterNotNull().toSet()
+        val pendingAndAvailableBalancesCurrencies = (pendingBalances + availableBalances).map { it.currency }
+        val lastPaidDepositsCurrencies = lastPaidDeposits.map { it.currency }
+        val currencies = (pendingAndAvailableBalancesCurrencies + lastPaidDepositsCurrencies).filterNotNull().toSet()
 
         return if (currencies.isEmpty())
-            Result.InvalidInputDate
+            Result.InvalidInputData
         else Result.Success(
             PaymentsHubDepositSummaryState.Overview(
                 defaultCurrency = defaultCurrency,
@@ -48,12 +43,8 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                         ),
                         availableFundsAmount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
                         pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                        pendingBalanceDepositsCount = pendingBalances.firstOrNull {
-                            it.currency == currency
-                        }?.depositsCount ?: 0,
                         fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
                         fundsDepositInterval = overview.account.fundsAvailableIn(),
-                        nextDeposit = nextDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) },
                         lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
                     )
                 }.toSortedMap(
@@ -105,7 +96,7 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
 
     sealed class Result {
         data class Success(val overview: PaymentsHubDepositSummaryState.Overview) : Result()
-        object InvalidInputDate : Result()
+        object InvalidInputData : Result()
     }
 }
 

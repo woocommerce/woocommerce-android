@@ -1,2 +1,0 @@
-16.8:
-Aprimoramos sua experiência no app do WooCommerce! Confira o design novo e elegante do resumo de depósito na tela de pagamentos. Diga adeus às falhas que ocorriam após reconfigurar o site selecionado e desfrute de um processo mais tranquilo de alternância entre lojas logo após criar uma nova loja. Além disso, agora a gestão de valores personalizados ficou mais fácil com nossa funcionalidade de tela cheia. Atualize agora mesmo para aproveitar uma jornada de gerenciamento de negócios mais estável e uniforme.

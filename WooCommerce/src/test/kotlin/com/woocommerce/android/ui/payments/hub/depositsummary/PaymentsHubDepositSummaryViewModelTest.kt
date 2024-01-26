@@ -131,7 +131,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             // GIVEN
             val overview: WooPaymentsDepositsOverview = mock()
             whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-                PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate
+                PaymentsHubDepositSummaryStateMapper.Result.InvalidInputData
             )
             whenever(repository.retrieveDepositOverview()).thenAnswer {
                 flow {
@@ -162,7 +162,7 @@ class PaymentsHubDepositSummaryViewModelTest : BaseUnitTest() {
             // GIVEN
             val overview: WooPaymentsDepositsOverview = mock()
             whenever(mapper.mapDepositOverviewToViewModelOverviews(overview)).thenReturn(
-                PaymentsHubDepositSummaryStateMapper.Result.InvalidInputDate
+                PaymentsHubDepositSummaryStateMapper.Result.InvalidInputData
             )
             whenever(repository.retrieveDepositOverview()).thenAnswer {
                 flow {

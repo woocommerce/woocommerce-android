@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-09 13:54:03+0000
+Translation-Revision-Date: 2024-01-18 13:36:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Lär dig hur Blaze fungerar</string>
+    <string name="disabled">Inaktiverad (originalstorlek)</string>
+    <string name="order_configuration_product_selection">Välj produkt %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;Välj en produkt:&lt;/b&gt; Välj vad som ska marknadsföras med Blaze.</string>
+    <string name="scan_to_update_inventory_manage_stock">Hantera lager</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Lager inte hanterat</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Lär dig hur Blaze fungerar</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Starta din kampanj</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Dina annonser på miljontals webbplatser inom WordPress.com- och Tumblr-nätverken.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Få tillgång till en stor publik</string>
@@ -38,7 +43,6 @@ Language: sv_SE
     <string name="theme_picker_carousel_error_placeholder_message_cta">tryck här</string>
     <string name="theme_picker_current_theme_title">Nuvarande tema</string>
     <string name="theme_picker_settings_title">Prova ett nytt utseende</string>
-    <string name="product_creation_survey_button_skip">Hoppa över</string>
     <string name="product_creation_survey_button_open">Börja undersökningen</string>
     <string name="product_creation_survey_title">Vi värdesätter dina åsikter!</string>
     <string name="card_reader_onboarding_contact_us">Behöver du hjälp? &lt;a href=\'\'&gt;Kontakta oss&lt;/a&gt;</string>
@@ -117,7 +121,6 @@ Language: sv_SE
     <string name="configuration_children_issue"> ”%1$s” -&gt; %2$s </string>
     <string name="configuration_variable_selection">välj en variant</string>
     <string name="configuration_quantity_rule_issue">Välj %1$s </string>
-    <string name="order_configuration_change_product_quantity">Ändra produktantalet från %1$f till %2$f</string>
     <string name="configuration_quantity_items_selected_plural"> %1$s objekt valda </string>
     <string name="configuration_quantity_items_selected"> %1$s objekt valda </string>
     <string name="configuration_quantity_more_than_plural"> fler än %1$s objekt </string>
@@ -127,6 +130,7 @@ Language: sv_SE
     <string name="configuration_quantity_item_plural">%d objekt</string>
     <string name="configuration_quantity_item">%d objekt</string>
     <string name="configuration_variable_update">Välj variant</string>
+    <string name="order_configuration_change_product_quantity">Ändra produktantalet från %1$.2f till %2$.2f</string>
     <string name="save_configuration">Spara konfiguration</string>
     <string name="product_configuration_title">Konfiguration</string>
     <string name="extension_configure_button">Konfigurera</string>

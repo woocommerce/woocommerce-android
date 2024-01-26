@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-10 09:54:04+0000
+Translation-Revision-Date: 2024-01-17 02:10:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="blaze_campaign_creation_new_intro_learn_more_button">Blaze のしくみを知る</string>
+    <string name="disabled">無効</string>
     <string name="blaze_campaign_creation_new_intro_start_button">キャンペーンを開始</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">広告は WordPress.com と Tumblr ネットワーク内の何百万ものサイトに表示されます。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">多数の読者にアクセス</string>
@@ -41,7 +41,6 @@ Language: ja_JP
     <string name="theme_picker_carousel_info_item_description_settings">WooCommerce テーマストアでご自身にぴったりなテーマが見つかります。</string>
     <string name="theme_picker_current_theme_title">現在のテーマ</string>
     <string name="theme_picker_settings_title">新しいデザインを試す</string>
-    <string name="product_creation_survey_button_skip">スキップ</string>
     <string name="product_creation_survey_button_open">アンケートをスタート</string>
     <string name="product_creation_survey_description">これまでに AI によるサポート機能を使用して商品を複数回追加しました。 改善を重ねてまいりますので、ぜひご意見をお寄せください。</string>
     <string name="product_creation_survey_title">お待ちしています。</string>
@@ -126,7 +125,6 @@ Language: ja_JP
     <string name="configuration_quantity_between"> %1$s～%2$s個のアイテム </string>
     <string name="configuration_quantity_item_plural">%d個のアイテム</string>
     <string name="configuration_quantity_item">%d個のアイテム</string>
-    <string name="order_configuration_change_product_quantity">商品数量を%1$fから%2$fに変更</string>
     <string name="save_configuration">設定を保存する</string>
     <string name="product_configuration_title">設定</string>
     <string name="default_product_title">商品 %s</string>
