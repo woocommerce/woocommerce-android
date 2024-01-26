@@ -153,6 +153,7 @@
     <string name="show_password_content_description">Show password</string>
     <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
+    <string name="receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
 
     <!--
         Date/Time Labels
@@ -878,7 +879,6 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
-    <string name="order_detail_receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
 
     <!--
         Shipping label Refunds

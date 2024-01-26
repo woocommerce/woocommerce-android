@@ -351,7 +351,7 @@ class OrderDetailViewModel @Inject constructor(
             if (receiptResult.isSuccess) {
                 triggerEvent(PreviewReceipt(order.billingAddress.email, receiptResult.getOrThrow(), order.id))
             } else {
-                triggerEvent(ShowSnackbar(string.order_detail_receipt_fetching_error))
+                triggerEvent(ShowSnackbar(string.receipt_fetching_error))
             }
         }
     }
