@@ -1,0 +1,2 @@
+17.0:
+Bereid je voor op een vloeiendere ervaring met onze laatste update! We hebben het hardnekkige probleem verholpen waarbij cadeaubonnen niet werden weergegeven in het gedeelte 'totaal' tijdens het aanmaken en bewerken van bestellingen. Het beheren van je verkopen met onze WooCommerce-app is nu naadlozer dan ooit. Update nu en geniet van de handige verbeteringen!
