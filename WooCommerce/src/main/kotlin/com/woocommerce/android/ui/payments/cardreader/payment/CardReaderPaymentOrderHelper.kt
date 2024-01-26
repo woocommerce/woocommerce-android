@@ -23,5 +23,5 @@ class CardReaderPaymentOrderHelper @Inject constructor(
     fun getAmountLabel(order: Order): String = currencyFormatter
         .formatAmountWithCurrency(order.total.toDouble(), order.currency)
 
-    fun getReceiptDocumentName(orderId: Long) = "receipt-order-${orderId}"
+    fun getReceiptDocumentName(orderId: Long) = "receipt-order-$orderId"
 }
