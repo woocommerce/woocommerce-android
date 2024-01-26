@@ -214,7 +214,11 @@ fun ExpandableProductCard(
                     ),
                 style = MaterialTheme.typography.body2,
                 text = getQuantityWithTotalText(product),
-                color = colorResource(id = R.color.color_on_surface_disabled)
+                color = if (product.item.isSynced()) {
+                    colorResource(id = R.color.color_on_surface_disabled)
+                } else {
+                    colorResource(id = R.color.woo_red_70)
+                }
             )
             Text(
                 modifier = Modifier.constrainAs(price) {
