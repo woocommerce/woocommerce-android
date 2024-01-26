@@ -31,8 +31,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInR
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.payments.receipt.ReceiptEvent.PrintReceipt
+import com.woocommerce.android.ui.payments.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
