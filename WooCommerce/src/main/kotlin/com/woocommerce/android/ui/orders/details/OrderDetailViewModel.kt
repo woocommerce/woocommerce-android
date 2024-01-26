@@ -11,6 +11,7 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -49,6 +50,7 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -91,7 +93,8 @@ class OrderDetailViewModel @Inject constructor(
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
     private val orderProductMapper: OrderProductMapper,
-    private val productDetailRepository: ProductDetailRepository
+    private val productDetailRepository: ProductDetailRepository,
+    private val paymentReceiptHelper: PaymentReceiptHelper,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -344,7 +347,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onSeeReceiptClicked() {
         tracker.trackReceiptViewTapped(order.id, order.status)
-        loadReceiptUrl()?.let {
+        loadReceiptUrl().orNullIfEmpty()?.let {
             triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
     }
@@ -372,11 +375,7 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(ShowSnackbar(message))
     }
 
-    private fun loadReceiptUrl(): String? {
-        return selectedSite.getIfExists()?.let {
-            appPrefs.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, order.id)
-        }
-    }
+    private fun loadReceiptUrl() = paymentReceiptHelper.getReceiptUrl(order.id)
 
     fun onViewRefundedProductsClicked() {
         triggerEvent(ViewRefundedProducts(orderId = order.id))
@@ -580,7 +579,7 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
-                isReceiptButtonsVisible = !loadReceiptUrl().isNullOrEmpty()
+                isReceiptButtonsVisible = loadReceiptUrl().isNotEmpty()
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
