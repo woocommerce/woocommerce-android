@@ -227,7 +227,11 @@ fun ExpandableProductCard(
                 },
                 style = MaterialTheme.typography.body2,
                 text = product.productInfo.priceAfterDiscount,
-                color = MaterialTheme.colors.onSurface
+                color = if (product.item.isSynced()) {
+                    MaterialTheme.colors.onSurface
+                } else {
+                    MaterialTheme.colors.error
+                }
             )
         }
         IconButton(
