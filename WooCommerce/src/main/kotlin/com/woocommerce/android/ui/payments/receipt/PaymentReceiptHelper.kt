@@ -1,11 +1,10 @@
 package com.woocommerce.android.ui.payments.receipt
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -72,16 +71,29 @@ class PaymentReceiptHelper @Inject constructor(
         }
     }
 
-    private suspend fun isWCCanGenerateReceipts() =
-        withContext(Dispatchers.IO) {
-            val currentWooCoreVersion =
-                wooCommerceStore.getSitePlugin(
-                    selectedSite.get(),
-                    WooCommerceStore.WooPlugin.WOO_CORE
-                )?.version ?: return@withContext false
+    private suspend fun isWCCanGenerateReceipts(): Boolean {
+        val currentWooCoreVersion = getWoocommerceCorePluginVersion()
 
-            currentWooCoreVersion.semverCompareTo(WC_CAN_GENERATE_RECEIPTS_VERSION) >= 0
-        }
+        return currentWooCoreVersion.semverCompareTo(WC_CAN_GENERATE_RECEIPTS_VERSION) >= 0
+    }
+
+    private suspend fun getWoocommerceCorePluginVersion(): String {
+        val sitePlugin = wooCommerceStore.getSitePlugin(
+            selectedSite.get(),
+            WooCommerceStore.WooPlugin.WOO_CORE
+        )
+        return if (sitePlugin == null) {
+            if (BuildConfig.DEBUG) {
+                wooCommerceStore.getSitePlugins(selectedSite.get())
+                    .firstOrNull { it.name == "woocommerce-dev/woocommerce" }
+                    ?.let { it.version }
+            } else {
+                ""
+            }
+        } else {
+            sitePlugin.version
+        } ?: ""
+    }
 
     private companion object {
         const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
