@@ -488,7 +488,7 @@
     </fragment>
     <fragment
         android:id="@+id/receiptPreviewFragment"
-        android:name="com.woocommerce.android.ui.payments.receipt.ReceiptPreviewFragment"
+        android:name="com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewFragment"
         android:label="ReceiptPreviewFragment"
         tools:layout="@layout/fragment_receipt_preview">
         <argument

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.receipt
+package com.woocommerce.android.ui.payments.receipt.preview
 
 import android.os.Bundle
 import android.view.Menu

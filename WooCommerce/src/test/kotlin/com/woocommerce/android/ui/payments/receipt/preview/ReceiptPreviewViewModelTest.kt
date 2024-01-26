@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader
+package com.woocommerce.android.ui.payments.receipt.preview
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
@@ -9,13 +9,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.receipt.LoadUrl
-import com.woocommerce.android.ui.payments.receipt.PrintReceipt
-import com.woocommerce.android.ui.payments.receipt.ReceiptPreviewFragmentArgs
-import com.woocommerce.android.ui.payments.receipt.ReceiptPreviewViewModel
-import com.woocommerce.android.ui.payments.receipt.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
-import com.woocommerce.android.ui.payments.receipt.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
-import com.woocommerce.android.ui.payments.receipt.SendReceipt
+import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
+import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
