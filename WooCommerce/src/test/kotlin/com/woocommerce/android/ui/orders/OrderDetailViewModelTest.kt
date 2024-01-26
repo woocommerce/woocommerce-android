@@ -115,6 +115,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val paymentReceiptHelper: PaymentReceiptHelper = mock()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -177,7 +178,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 getOrderSubscriptions,
                 giftCardRepository,
                 orderProductMapper,
-                productDetailRepository
+                productDetailRepository,
+                paymentReceiptHelper,
             )
         )
     }
@@ -201,7 +203,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 getOrderSubscriptions,
                 giftCardRepository,
                 orderProductMapper,
-                productDetailRepository
+                productDetailRepository,
+                paymentReceiptHelper
             )
         )
     }

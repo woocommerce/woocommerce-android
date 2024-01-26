@@ -13,7 +13,7 @@ import javax.inject.Inject
 class PaymentReceiptHelper @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) {
     fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
         selectedSite.get().let {

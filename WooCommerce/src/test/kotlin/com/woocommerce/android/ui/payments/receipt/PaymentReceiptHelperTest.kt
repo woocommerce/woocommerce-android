@@ -10,6 +10,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class PaymentReceiptHelperTest {
@@ -17,8 +18,9 @@ class PaymentReceiptHelperTest {
         on { get() }.thenReturn(mock())
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
 
-    private val helper = PaymentReceiptHelper(selectedSite, appPrefsWrapper)
+    private val helper = PaymentReceiptHelper(selectedSite, wooCommerceStore, appPrefsWrapper)
 
     @Test
     fun `given selected site, when storeReceiptUrl, then url is stored`() {
