@@ -67,8 +67,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.Processi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
-import com.woocommerce.android.ui.payments.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers

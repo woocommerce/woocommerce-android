@@ -14,9 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReceiptPreviewBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.payments.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.receipt.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.payments.receipt.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
