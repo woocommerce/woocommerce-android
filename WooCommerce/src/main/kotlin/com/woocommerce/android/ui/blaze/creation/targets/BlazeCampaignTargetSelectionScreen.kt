@@ -67,7 +67,6 @@ private fun TargetSelectionScreen(
     }
 }
 
-
 @LightDarkThemePreviews
 @Composable
 fun PreviewTargetSelectionScreen() {
