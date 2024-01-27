@@ -332,8 +332,6 @@ fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
-                tagLine = "From 45.00 USD",
-                description = "Get the latest white t-shirts",
                 adImageUrl = "https://rb.gy/gmjuwb"
             ),
             onTagLineChanged = { },

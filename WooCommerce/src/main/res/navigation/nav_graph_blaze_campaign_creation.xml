@@ -62,6 +62,9 @@
         android:name="com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment"
         android:label="BlazeCampaignCreationEditAdFragment" >
         <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
             android:name="tagline"
             app:argType="string"
             android:defaultValue="" />
