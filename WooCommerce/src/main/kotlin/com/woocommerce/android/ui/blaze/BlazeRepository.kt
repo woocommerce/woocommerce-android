@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeAdSuggestionEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
@@ -25,6 +26,11 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val ONE_DAY_IN_MILLIS = 1000 * 60 * 60 * 24
     }
+
+    fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
+        .map { it.map { language -> Language(language.id, language.name) } }
+
+    suspend fun fetchLanguages() = blazeCampaignsStore.fetchBlazeTargetingLanguages()
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
