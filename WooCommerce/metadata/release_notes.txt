@@ -1,2 +1,1 @@
-- [*] [Internal] Fixed crash when going to background from the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10600]
-
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
