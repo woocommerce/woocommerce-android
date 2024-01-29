@@ -220,7 +220,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val pluginsInformation: MutableStateFlow<Map<String, WooPlugin>> =
         savedState.getStateFlow(
             scope = viewModelScope,
-            initialValue = HashMap()
+            initialValue = HashMap(),
+            key = "plugins_information"
         )
 
     val isGiftCardExtensionEnabled

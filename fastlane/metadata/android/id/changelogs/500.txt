@@ -1,0 +1,2 @@
+17.0:
+Nikmati pengalaman pengguna yang lebih mulus dengan pembaruan terakhir kami! Kami sudah mengatasi bug yang membuat kartu hadiah tidak muncul di bagian 'total' dalam proses pembuatan dan pengeditan pesanan. Mengelola penjualan dengan aplikasi WooCommerce kini jauh lebih mudah. Perbarui sekarang lalu nikmati fitur dan fungsi aplikasi tanpa repot!

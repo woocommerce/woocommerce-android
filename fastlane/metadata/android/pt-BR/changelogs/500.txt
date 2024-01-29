@@ -1,0 +1,2 @@
+17.0:
+Prepare-se para uma experiência mais tranquila com a nossa mais nova atualização. Eliminamos o bug irritante que impedia que vales-presentes aparecessem na seção de totais na criação e edição do pedido. O gerenciamento das suas vendas no app do WooCommerce ficou mais simples do que nunca! Atualize agora e aproveite as melhorias descomplicadas.

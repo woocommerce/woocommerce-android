@@ -39,6 +39,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
@@ -169,13 +170,20 @@ private fun AdDataSection(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        WCOutlinedTextField(
-            value = viewState.tagLine,
-            onValueChange = onTagLineChanged,
-            label = stringResource(id = string.blaze_campaign_edit_ad_change_tagline_title),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-        )
+        Box {
+            WCOutlinedTextField(
+                value = viewState.tagLine,
+                onValueChange = onTagLineChanged,
+                label = stringResource(id = string.blaze_campaign_edit_ad_change_tagline_title),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+
+            CornerCharacterWarning(
+                charsLeft = viewState.taglineCharactersRemaining,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
 
         Text(
             text = stringResource(
@@ -189,16 +197,24 @@ private fun AdDataSection(
                 .fillMaxWidth()
         )
 
-        WCOutlinedTextField(
-            value = viewState.description,
-            onValueChange = onDescriptionChanged,
-            label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
-            maxLines = 3,
-            minLines = 3,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        Box(
             modifier = Modifier
                 .padding(top = dimensionResource(id = dimen.major_150))
-        )
+        ) {
+            WCOutlinedTextField(
+                value = viewState.description,
+                onValueChange = onDescriptionChanged,
+                label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
+                maxLines = 3,
+                minLines = 3,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+
+            CornerCharacterWarning(
+                charsLeft = viewState.descriptionCharactersRemaining,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
 
         Text(
             text = stringResource(
@@ -244,6 +260,23 @@ private fun AdDataSection(
                 modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
             )
         }
+    }
+}
+
+@Composable
+private fun CornerCharacterWarning(charsLeft: Int, modifier: Modifier = Modifier) {
+    if (charsLeft < 10) {
+        Text(
+            text = charsLeft.toString(),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = color.color_error),
+            textAlign = TextAlign.End,
+            modifier = modifier
+                .padding(
+                    top = dimensionResource(id = dimen.major_75),
+                    end = dimensionResource(id = dimen.minor_75)
+                )
+        )
     }
 }
 
@@ -332,8 +365,6 @@ fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
-                tagLine = "From 45.00 USD",
-                description = "Get the latest white t-shirts",
                 adImageUrl = "https://rb.gy/gmjuwb"
             ),
             onTagLineChanged = { },
