@@ -8,6 +8,5 @@ interface OrderListListener {
         allOrderIds: List<Long>,
         orderStatus: String,
         sharedView: View? = null,
-        orderItemPosition: Int = -1,
     )
 }

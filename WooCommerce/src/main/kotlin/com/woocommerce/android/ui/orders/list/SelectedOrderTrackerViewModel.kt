@@ -10,10 +10,10 @@ class SelectedOrderTrackerViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val _selectedOrderId = MutableLiveData<Pair<Int, Long>>()
-    val selectedOrderId: LiveData<Pair<Int, Long>> = _selectedOrderId
+    private val _selectedOrderId = MutableLiveData<Long>()
+    val selectedOrderId: LiveData<Long> = _selectedOrderId
 
-    fun selectOrder(orderId: Pair<Int, Long>) {
+    fun selectOrder(orderId: Long) {
         _selectedOrderId.value = orderId
     }
 }

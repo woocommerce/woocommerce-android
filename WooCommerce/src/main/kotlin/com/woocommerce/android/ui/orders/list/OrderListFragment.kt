@@ -337,8 +337,7 @@ class OrderListFragment :
         // setup observers
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
             viewModel.updateOrderSelectedStatus(
-                orderId = selectedOrder.selectedOrderId.value?.second ?: -1,
-                position = selectedOrder.selectedOrderId.value?.first ?: -1,
+                orderId = selectedOrder.selectedOrderId.value ?: -1,
             )
         }
 
@@ -364,8 +363,7 @@ class OrderListFragment :
                 binding.orderListView.openFirstOrder()
             }
             viewModel.updateOrderSelectedStatus(
-                orderId = selectedOrder.selectedOrderId.value?.second ?: -1,
-                position = selectedOrder.selectedOrderId.value?.first ?: -1,
+                orderId = selectedOrder.selectedOrderId.value ?: -1,
             )
             updatePagedListData(it)
         }
@@ -388,7 +386,7 @@ class OrderListFragment :
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
                 }
-                is OrderListViewModel.OrderListEvent.NotifyOrderSelectionChanged -> {
+                OrderListViewModel.OrderListEvent.NotifyOrderSelectionChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyDataSetChanged()
                 }
                 is MultiLiveEvent.Event.ShowUndoSnackbar -> {
@@ -551,7 +549,6 @@ class OrderListFragment :
         allOrderIds: List<Long>,
         orderStatus: String,
         sharedView: View?,
-        orderItemPosition: Int,
     ) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
@@ -573,8 +570,8 @@ class OrderListFragment :
                 null
             }
             navHostFragment?.let {
-                selectedOrder.selectOrder(Pair(orderItemPosition, orderId))
-                viewModel.updateOrderSelectedStatus(orderItemPosition, orderId)
+                selectedOrder.selectOrder(orderId)
+                viewModel.updateOrderSelectedStatus(orderId)
                 showOrderDetail(orderId, it)
             } ?: run {
                 // Phone layout

@@ -131,7 +131,6 @@ class OrderListAdapter(
                     allOrderIds = allOrderIds,
                     orderStatus = firstOrderItem.status,
                     sharedView = null,
-                    orderItemPosition = 1
                 )
             }
         }
@@ -185,7 +184,6 @@ class OrderListAdapter(
                     allOrderIds = allOrderIds,
                     orderStatus = orderItemUI.status,
                     sharedView = viewBinding.root,
-                    orderItemPosition = absoluteAdapterPosition
                 )
             }
         }
