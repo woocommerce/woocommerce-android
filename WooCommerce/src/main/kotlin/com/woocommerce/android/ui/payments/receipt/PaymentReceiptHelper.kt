@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.payments.receipt
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -15,6 +14,7 @@ class PaymentReceiptHelper @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val orderStore: WCOrderStore,
+    private val isDevSiteSupported: IsDevSiteSupported,
 ) {
     fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
         selectedSite.get().let {
@@ -83,10 +83,9 @@ class PaymentReceiptHelper @Inject constructor(
             WooCommerceStore.WooPlugin.WOO_CORE
         )
         return if (sitePlugin == null) {
-            if (BuildConfig.DEBUG) {
+            if (isDevSiteSupported()) {
                 wooCommerceStore.getSitePlugins(selectedSite.get())
-                    .firstOrNull { it.name == "woocommerce-dev/woocommerce" }
-                    ?.let { it.version }
+                                .firstOrNull { it.name == "woocommerce-dev/woocommerce" }?.version
             } else {
                 ""
             }
@@ -100,5 +99,9 @@ class PaymentReceiptHelper @Inject constructor(
         const val WC_CAN_GENERATE_RECEIPTS_VERSION = "6.4.0"
 
         const val RECEIPT_EXPIRATION_DAYS = 365
+    }
+
+    class IsDevSiteSupported @Inject constructor() {
+        operator fun invoke() = true
     }
 }
