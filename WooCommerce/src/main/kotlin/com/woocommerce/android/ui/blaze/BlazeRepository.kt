@@ -32,6 +32,11 @@ class BlazeRepository @Inject constructor(
 
     suspend fun fetchLanguages() = blazeCampaignsStore.fetchBlazeTargetingLanguages()
 
+    fun observeDevices() = blazeCampaignsStore.observeBlazeTargetingDevices()
+        .map { it.map { device -> Device(device.id, device.name) } }
+
+    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingDevices()
+
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
     suspend fun getAdSuggestions(productId: Long): List<AiSuggestionForAd>? {

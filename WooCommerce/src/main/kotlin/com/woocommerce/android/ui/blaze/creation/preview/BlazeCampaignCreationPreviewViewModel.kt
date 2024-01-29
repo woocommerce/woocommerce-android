@@ -100,6 +100,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         launch {
             when (targetType) {
                 LANGUAGE -> selectedLanguages.update { selectedIds }
+                DEVICE -> selectedDevices.update { selectedIds }
                 else -> Unit
             }
         }
@@ -108,6 +109,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private fun loadData() {
         launch {
             blazeRepository.fetchLanguages()
+            blazeRepository.fetchDevices()
             blazeRepository.getAdSuggestions(navArgs.productId).let { suggestions ->
                 adDetails.update {
                     AdDetails(
@@ -146,7 +148,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
                 displayValue = devices.joinToString { it.name }
                     .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = { /* TODO Add device selection */ },
+                onItemSelected = {
+                    triggerEvent(NavigateToTargetSelectionScreen(DEVICE, devices.map { it.id }))
+                },
             ),
             CampaignDetailItemUi(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),

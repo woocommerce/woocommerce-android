@@ -15,7 +15,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
@@ -38,7 +37,14 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
                 )
             }
         }
-        else -> flowOf(emptyList())
+        else -> blazeRepository.observeDevices().map { devices ->
+            devices.map { device ->
+                TargetItem(
+                    id = device.id,
+                    value = device.name
+                )
+            }
+        }
     }
 
     private val selectedIds = savedStateHandle.getStateFlow(viewModelScope, navArgs.selectedIds.toSet())
@@ -49,7 +55,7 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
             selectedItems = selectedIds.map { id -> items.first { it.id == id } },
             title = when (navArgs.targetType) {
                 BlazeTargetType.LANGUAGE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
-                else -> ""
+                else -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
             }
         )
     }.asLiveData()
