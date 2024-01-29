@@ -103,9 +103,13 @@ class OrderDetailViewModel @Inject constructor(
         get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
             viewState = viewState.copy(
-                orderInfo = OrderDetailViewState.OrderInfo(
+                orderInfo = viewState.orderInfo?.copy(
+                    order = value,
+                    isPaymentCollectableWithCardReader = viewState.orderInfo?.isPaymentCollectableWithCardReader
+                        ?: false
+                ) ?: OrderDetailViewState.OrderInfo(
                     value,
-                    viewState.orderInfo?.isPaymentCollectableWithCardReader ?: false
+                    isPaymentCollectableWithCardReader = false
                 )
             )
         }
