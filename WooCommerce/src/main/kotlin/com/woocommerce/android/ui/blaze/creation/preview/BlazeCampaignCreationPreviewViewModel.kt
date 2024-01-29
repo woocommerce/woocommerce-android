@@ -47,6 +47,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private val languages = blazeRepository.observeLanguages()
     private val devices = blazeRepository.observeDevices()
+    private val interests = blazeRepository.observeInterests()
     private val selectedLanguages = savedStateHandle.getStateFlow<List<String>>(
         scope = viewModelScope,
         initialValue = emptyList(),
@@ -124,6 +125,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         launch {
             blazeRepository.fetchLanguages()
             blazeRepository.fetchDevices()
+            blazeRepository.fetchInterests()
+
             blazeRepository.getAdSuggestions(navArgs.productId).let { suggestions ->
                 adDetails.update {
                     AdDetails(
