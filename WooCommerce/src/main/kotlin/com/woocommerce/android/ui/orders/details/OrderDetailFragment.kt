@@ -437,7 +437,7 @@ class OrderDetailFragment :
     private fun showOrderDetail(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
-        isReceiptButtonsVisible: Boolean
+        receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
@@ -449,7 +449,7 @@ class OrderDetailFragment :
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-            isReceiptAvailable = isReceiptButtonsVisible,
+            receiptButtonStatus = receiptButtonStatus,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },
             onSeeReceiptClickListener = {

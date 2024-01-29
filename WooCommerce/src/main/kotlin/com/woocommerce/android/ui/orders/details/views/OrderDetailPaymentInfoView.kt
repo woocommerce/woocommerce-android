@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsLineBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     @Suppress("LongParameterList")
     fun updatePaymentInfo(
         order: Order,
-        isReceiptAvailable: Boolean,
+        receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus,
         isPaymentCollectableWithCardReader: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onSeeReceiptClickListener: (view: View) -> Unit,
@@ -88,7 +89,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         updateFeesSection(order, formatCurrencyForDisplay)
         updateRefundSection(order, formatCurrencyForDisplay, onIssueRefundClickListener)
         updateCollectPaymentSection(order, onCollectPaymentClickListener)
-        updateSeeReceiptSection(isReceiptAvailable, onSeeReceiptClickListener)
+        updateSeeReceiptSection(receiptButtonStatus, onSeeReceiptClickListener)
         updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
     }
 
@@ -192,16 +193,20 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     }
 
     private fun updateSeeReceiptSection(
-        isReceiptAvailable: Boolean,
+        receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus,
         onSeeReceiptClickListener: (view: View) -> Unit
     ) {
-        if (isReceiptAvailable) {
-            binding.paymentInfoSeeReceiptButton.visibility = VISIBLE
-            binding.paymentInfoSeeReceiptButton.setOnClickListener(
-                onSeeReceiptClickListener
-            )
-        } else {
-            binding.paymentInfoSeeReceiptButton.visibility = GONE
+        when (receiptButtonStatus) {
+            OrderDetailViewState.ReceiptButtonStatus.Loading -> {
+
+            }
+            OrderDetailViewState.ReceiptButtonStatus.Hidden -> binding.paymentInfoSeeReceiptButton.visibility = GONE
+            OrderDetailViewState.ReceiptButtonStatus.Visible -> {
+                binding.paymentInfoSeeReceiptButton.visibility = VISIBLE
+                binding.paymentInfoSeeReceiptButton.setOnClickListener(
+                    onSeeReceiptClickListener
+                )
+            }
         }
     }
 
