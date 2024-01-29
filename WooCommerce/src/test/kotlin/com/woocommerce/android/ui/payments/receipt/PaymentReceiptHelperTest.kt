@@ -53,7 +53,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given selected site and saved url, when getReceiptUrl, then url returned`() =testBlocking {
+    fun `given selected site and saved url, when getReceiptUrl, then url returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
         whenever(appPrefsWrapper.getReceiptUrl(site.id, site.siteId, site.selfHostedSiteId, 1)).thenReturn("url")
