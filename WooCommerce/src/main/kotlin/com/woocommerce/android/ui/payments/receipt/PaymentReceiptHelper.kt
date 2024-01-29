@@ -85,7 +85,7 @@ class PaymentReceiptHelper @Inject constructor(
         return if (sitePlugin == null) {
             if (isDevSiteSupported()) {
                 wooCommerceStore.getSitePlugins(selectedSite.get())
-                                .firstOrNull { it.name == "woocommerce-dev/woocommerce" }?.version
+                    .firstOrNull { it.name == "woocommerce-dev/woocommerce" }?.version
             } else {
                 ""
             }
@@ -102,6 +102,7 @@ class PaymentReceiptHelper @Inject constructor(
     }
 
     class IsDevSiteSupported @Inject constructor() {
+        @Suppress("FunctionOnlyReturningConstant")
         operator fun invoke() = true
     }
 }
