@@ -395,7 +395,7 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            if (selectedOrder.selectedOrderId.value == null) {
+            if (selectedOrder.selectedOrderId.value == null && isTablet()) {
                 binding.orderListView.openFirstOrder()
             }
             viewModel.updateOrderSelectedStatus(
