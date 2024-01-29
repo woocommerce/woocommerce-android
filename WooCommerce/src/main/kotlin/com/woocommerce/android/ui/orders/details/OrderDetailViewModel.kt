@@ -347,7 +347,21 @@ class OrderDetailViewModel @Inject constructor(
     fun onSeeReceiptClicked() {
         launch {
             tracker.trackReceiptViewTapped(order.id, order.status)
+
+            viewState = viewState.copy(
+                orderInfo = viewState.orderInfo?.copy(
+                    receiptButtonStatus = OrderDetailViewState.ReceiptButtonStatus.Loading
+                )
+            )
+
             val receiptResult = paymentReceiptHelper.getReceiptUrl(order.id)
+
+            viewState = viewState.copy(
+                orderInfo = viewState.orderInfo?.copy(
+                    receiptButtonStatus = OrderDetailViewState.ReceiptButtonStatus.Visible
+                )
+            )
+
             if (receiptResult.isSuccess) {
                 triggerEvent(PreviewReceipt(order.billingAddress.email, receiptResult.getOrThrow(), order.id))
             } else {
