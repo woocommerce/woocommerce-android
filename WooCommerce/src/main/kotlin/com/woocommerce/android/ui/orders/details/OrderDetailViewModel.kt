@@ -581,7 +581,7 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
-                isReceiptButtonsVisible = paymentReceiptHelper.isReceiptAvailable(order.id),
+                isReceiptButtonsVisible = paymentReceiptHelper.isReceiptAvailable(order.id) && order.isOrderPaid,
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(
