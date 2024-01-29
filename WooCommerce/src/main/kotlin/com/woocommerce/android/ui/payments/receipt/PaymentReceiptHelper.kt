@@ -89,8 +89,14 @@ class PaymentReceiptHelper @Inject constructor(
         )
         return if (sitePlugin == null) {
             if (isDevSiteSupported()) {
-                wooCommerceStore.getSitePlugins(selectedSite.get())
-                    .firstOrNull { it.name == "woocommerce-dev/woocommerce" }?.version
+                val devPlugin = wooCommerceStore.getSitePlugins(selectedSite.get())
+                    .firstOrNull { it.name == "woocommerce-dev/woocommerce" }
+                if (devPlugin != null) {
+                    // return this version so we use the backend to generate receipts for testing
+                    WC_CAN_GENERATE_RECEIPTS_VERSION
+                } else {
+                    ""
+                }
             } else {
                 ""
             }
@@ -101,7 +107,7 @@ class PaymentReceiptHelper @Inject constructor(
 
     private companion object {
         const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
-        const val WC_CAN_GENERATE_RECEIPTS_VERSION = "6.4.0"
+        const val WC_CAN_GENERATE_RECEIPTS_VERSION = "8.7.0"
 
         const val RECEIPT_EXPIRATION_DAYS = 365
     }
