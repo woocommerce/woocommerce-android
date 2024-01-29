@@ -326,12 +326,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given receipt is available, when view model started, then state with receipt isReceiptButtonsVisible true emitted`() =
+    fun `given receipt is available and order is paid, when view model started, then state with receipt isReceiptButtonsVisible true emitted`() =
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
             whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
-            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order.copy(
+                datePaid = Date()
+            ))
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
             whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
@@ -347,6 +349,32 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(detailViewState!!.orderInfo!!.isReceiptButtonsVisible).isTrue()
+        }
+
+    @Test
+    fun `given receipt is available and order not paid, when view model started, then state with receipt isReceiptButtonsVisible false emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order.copy(
+                datePaid = null
+            ))
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.isReceiptButtonsVisible).isFalse()
         }
 
     @Test
