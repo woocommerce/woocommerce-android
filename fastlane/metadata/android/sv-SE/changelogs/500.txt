@@ -1,0 +1,2 @@
+17.0:
+Gör dig redo för en smidigare upplevelse med vår senaste uppdatering. Vi har åtgärdat den irriterande buggen som hindrade presentkort från att visas i sektionen "Totalsummor" vid skapande och redigering av beställningar. Att hantera din försäljning med vår WooCommerce-app är nu mer sömlöst än någonsin. Uppdatera nu och ta del av förbättringar utan krångel.

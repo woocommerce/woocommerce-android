@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,23 +42,23 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
-import ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
         BlazeCampaignCreationPreviewScreen(
             previewState,
-            viewModel::onBackPressed
+            viewModel::onBackPressed,
+            viewModel::onEditAdClicked
         )
     }
 }
@@ -65,7 +66,8 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
 @Composable
 private fun BlazeCampaignCreationPreviewScreen(
     previewState: CampaignPreviewUiState,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onEditAdClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -87,7 +89,10 @@ private fun BlazeCampaignCreationPreviewScreen(
 
             when {
                 previewState.isLoading -> AdDetailsLoading()
-                else -> AdDetailsHeader(state = previewState)
+                else -> AdDetailsHeader(
+                    state = previewState,
+                    onEditAdClicked = onEditAdClicked
+                )
             }
 
             CampaignDetails(
@@ -165,7 +170,7 @@ private fun AdDetailsLoading(
             onClick = { /* No action expected for disabled button */ },
             enabled = false,
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad))
         }
     }
 }
@@ -173,10 +178,12 @@ private fun AdDetailsLoading(
 @Composable
 fun AdDetailsHeader(
     state: CampaignPreviewUiState,
+    onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CampaignHeader(
         adDetails = state.adDetails,
+        onEditAdClicked = onEditAdClicked,
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
@@ -186,7 +193,11 @@ fun AdDetailsHeader(
 }
 
 @Composable
-fun CampaignHeader(adDetails: AdDetailsUi, modifier: Modifier = Modifier) {
+fun CampaignHeader(
+    adDetails: AdDetailsUi,
+    onEditAdClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -233,7 +244,7 @@ fun CampaignHeader(adDetails: AdDetailsUi, modifier: Modifier = Modifier) {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = adDetails.title,
+                        text = adDetails.description,
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Bold,
                     )
@@ -252,9 +263,9 @@ fun CampaignHeader(adDetails: AdDetailsUi, modifier: Modifier = Modifier) {
         }
         WCTextButton(
             modifier = Modifier.padding(top = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = onEditAdClicked,
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad_button))
+            Text(stringResource(id = R.string.blaze_campaign_preview_edit_ad))
         }
     }
 }
@@ -315,6 +326,7 @@ private fun CampaignPropertyItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { item.onItemSelected() }
             .padding(
                 start = 16.dp,
                 end = 16.dp,
@@ -357,7 +369,7 @@ fun CampaignScreenPreview() {
             isLoading = false,
             adDetails = AdDetailsUi(
                 productId = 123,
-                title = "Get the latest white t-shirts",
+                description = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",
                 campaignImageUrl = "https://rb.gy/gmjuwb",
             ),
@@ -365,33 +377,40 @@ fun CampaignScreenPreview() {
                 budget = CampaignDetailItemUi(
                     displayTitle = stringResource(R.string.blaze_campaign_preview_details_budget),
                     displayValue = "140 USD, 7 days from Jan 14",
+                    onItemSelected = {},
                 ),
                 targetDetails = listOf(
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_language),
                         displayValue = "English, Spanish",
+                        onItemSelected = {},
                     ),
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_devices),
                         displayValue = "USA, Poland, Japan",
+                        onItemSelected = {},
                     ),
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_location),
                         displayValue = "Samsung, Apple, Xiaomi",
+                        onItemSelected = {},
                     ),
                     CampaignDetailItemUi(
                         displayTitle = stringResource(R.string.blaze_campaign_preview_details_interests),
                         displayValue = "Fashion, Clothing, T-shirts",
+                        onItemSelected = {},
                     ),
                 ),
                 destinationUrl = CampaignDetailItemUi(
                     displayTitle = "Destination URL",
                     displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
+                    onItemSelected = {},
                     maxLinesValue = 1,
                 )
             )
         ),
-        onBackPressed = { }
+        onBackPressed = { },
+        onEditAdClicked = { }
     )
 }
 

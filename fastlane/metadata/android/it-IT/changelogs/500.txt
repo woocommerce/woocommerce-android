@@ -1,0 +1,2 @@
+17.0:
+Preparati a un'esperienza più fluida con il nostro ultimo aggiornamento! Abbiamo risolto il fastidioso bug che impediva alle gift card di comparire nella sezione "totali" durante la creazione e la modifica degli ordini. La gestione delle vendite con la nostra app WooCommerce è ora più semplice che mai. Effettua l'aggiornamento e goditi i miglioramenti senza stress!

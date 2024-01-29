@@ -50,5 +50,36 @@
             android:name="productId"
             android:defaultValue="-1L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignCreationEditAdFragment"
+            app:destination="@id/blazeCampaignCreationEditAdFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignBudgetFragment"
+            app:destination="@id/blazeCampaignBudgetFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignCreationEditAdFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment"
+        android:label="BlazeCampaignCreationEditAdFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="tagline"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="description"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="adImageUrl"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignBudgetFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
+        android:label="BlazeCampaignBudgetFragment" />
 </navigation>

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
+import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeAdSuggestionEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -14,13 +15,29 @@ class BlazeRepository @Inject constructor(
     private val timezoneProvider: TimezoneProvider,
 ) {
     companion object {
-        const val DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
+        const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
         const val DEFAULT_CAMPAIGN_TOTAL_BUDGET = 35F // USD
+        const val CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT = 5F // USD
+        const val CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT = 50F // USD
+        const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val ONE_DAY_IN_MILLIS = 1000 * 60 * 60 * 24
     }
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
+
+    suspend fun getAdSuggestions(productId: Long): List<AiSuggestionForAd>? {
+        fun List<BlazeAdSuggestionEntity>.mapToUiModel(): List<AiSuggestionForAd> {
+            return map { AiSuggestionForAd(it.tagLine, it.description) }
+        }
+
+        val suggestions = blazeCampaignsStore.getBlazeAdSuggestions(selectedSite.get(), productId)
+        return if (suggestions.isNotEmpty()) {
+            suggestions.mapToUiModel()
+        } else {
+            blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId).model?.mapToUiModel()
+        }
+    }
 
     fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
         val product = productDetailRepository.getProduct(productId)
@@ -30,7 +47,7 @@ class BlazeRepository @Inject constructor(
             budget = Budget(
                 totalBudget = DEFAULT_CAMPAIGN_TOTAL_BUDGET,
                 spentBudget = 0f,
-                currencyCode = DEFAULT_CURRENCY_CODE,
+                currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
                 durationInDays = DEFAULT_CAMPAIGN_DURATION,
                 startDate = Date().apply { time += ONE_DAY_IN_MILLIS }, // By default start tomorrow
             ),
@@ -60,8 +77,8 @@ class BlazeRepository @Inject constructor(
     )
 
     data class AiSuggestionForAd(
-        val title: String,
         val tagLine: String,
+        val description: String,
     )
 
     data class Budget(
