@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.receipt
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -113,7 +114,6 @@ class PaymentReceiptHelper @Inject constructor(
     }
 
     class IsDevSiteSupported @Inject constructor() {
-        @Suppress("FunctionOnlyReturningConstant")
-        operator fun invoke() = true
+        operator fun invoke() = BuildConfig.DEBUG
     }
 }
