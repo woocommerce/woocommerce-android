@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Location
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -24,7 +26,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -43,21 +44,34 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private val adDetails = savedStateHandle.getStateFlow<AdDetailsUi>(viewModelScope, Loading)
     private val budget = savedStateHandle.getStateFlow(viewModelScope, getDefaultBudget())
+
     private val languages = blazeRepository.observeLanguages()
-    private val selectedLanguages = savedStateHandle.getStateFlow<List<String>>(viewModelScope, emptyList())
+    private val devices = blazeRepository.observeDevices()
+    private val selectedLanguages = savedStateHandle.getStateFlow<List<String>>(
+        scope = viewModelScope,
+        initialValue = emptyList(),
+        key = "selectedLanguages"
+    )
+    private val selectedDevices = savedStateHandle.getStateFlow<List<String>>(
+        scope = viewModelScope,
+        initialValue = emptyList(),
+        key = "selectedDevices"
+    )
 
     val viewState = combine(
         adDetails,
         budget,
         languages,
-        selectedLanguages
-    ) { adDetails, budget, languages, selectedLanguages ->
+        devices,
+        selectedLanguages,
+        selectedDevices
+    ) { adDetails, budget, languages, devices, selectedLanguages, selectedDevices ->
         CampaignPreviewUiState(
             adDetails = adDetails,
             campaignDetails = campaign.toCampaignDetailsUi(
                 budget,
                 languages.filter { it.code in selectedLanguages },
-                emptyList(),
+                devices.filter { it.id in selectedDevices },
                 emptyList(),
                 emptyList()
             )
