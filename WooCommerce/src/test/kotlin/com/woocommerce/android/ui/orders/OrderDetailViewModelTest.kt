@@ -331,9 +331,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
             whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
-            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order.copy(
-                datePaid = Date()
-            ))
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(
+                order.copy(
+                    datePaid = Date()
+                )
+            )
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
             whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
@@ -357,9 +359,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
             whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
-            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order.copy(
-                datePaid = null
-            ))
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(
+                order.copy(
+                    datePaid = null
+                )
+            )
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
             whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
