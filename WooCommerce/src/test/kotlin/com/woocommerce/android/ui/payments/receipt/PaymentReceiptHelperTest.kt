@@ -90,11 +90,11 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given version 6_4_0 site and remote call success, when getReceiptUrl, then url returned`() = testBlocking {
+    fun `given version 8_7_0 site and remote call success, when getReceiptUrl, then url returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
         val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("6.4.0")
+            on { version }.thenReturn("8.7.0")
         }
         whenever(
             wooCommerceStore.getSitePlugin(
@@ -114,11 +114,11 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given version 6_4_0 site and remote call fails, when getReceiptUrl, then failure returned`() = testBlocking {
+    fun `given version 8_7_0 site and remote call fails, when getReceiptUrl, then failure returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
         val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("6.4.0")
+            on { version }.thenReturn("8.7.0")
         }
         whenever(
             wooCommerceStore.getSitePlugin(
@@ -149,7 +149,6 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
         // GIVEN
         val site = selectedSite.get()
         val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("6.4.0")
             on { name }.thenReturn("woocommerce-dev/woocommerce")
         }
         whenever(
@@ -177,11 +176,10 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given version dev usage enabled and 6_4_0 and remote call success, when getReceiptUrl, then failure returned`() = testBlocking {
+    fun `given version dev usage enabled and remote call success, when getReceiptUrl, then failure returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
         val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("6.4.0")
             on { name }.thenReturn("woocommerce-dev/woocommerce")
         }
         whenever(
@@ -193,29 +191,6 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
             WooPayload(OrderReceiptResponse("url", "date"))
         )
         whenever(isDevSiteSupported()).thenReturn(true)
-
-        // WHEN
-        val result = helper.getReceiptUrl(1)
-
-        // THEN
-        assertThat(result.getOrThrow()).isEqualTo("url")
-    }
-
-    @Test
-    fun `given version dev usage enabled and 6_3_0 and locally stored receipt, when getReceiptUrl, then url returned`() = testBlocking {
-        // GIVEN
-        val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("6.3.0")
-            on { name }.thenReturn("woocommerce-dev/woocommerce")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugins(
-                selectedSite.get(),
-            )
-        ).thenReturn(listOf(plugin))
-        whenever(isDevSiteSupported()).thenReturn(true)
-        whenever(appPrefsWrapper.getReceiptUrl(site.id, site.siteId, site.selfHostedSiteId, 1)).thenReturn("url")
 
         // WHEN
         val result = helper.getReceiptUrl(1)
@@ -284,10 +259,10 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given version 6_4_0, when isReceiptAvailable, then true returned`() = testBlocking {
+    fun `given version 8_7_0, when isReceiptAvailable, then true returned`() = testBlocking {
         // GIVEN
         val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("6.4.0")
+            on { version }.thenReturn("8.7.0")
         }
         whenever(
             wooCommerceStore.getSitePlugin(
@@ -304,7 +279,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given version empty 6_3_9 and empty local storage, when isReceiptAvailable, then false returned`() = testBlocking {
+    fun `given version empty and empty local storage, when isReceiptAvailable, then false returned`() = testBlocking {
         // GIVEN
         val plugin = mock<SitePluginModel> {
             on { version }.thenReturn("")
