@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.blaze.BlazeRepository
-import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ViewState.Suggestion
+import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -45,7 +45,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         viewModelScope.launch {
             blazeRepository.getAdSuggestions(navArgs.productId)?.let { list ->
                 val index = list.indexOfFirst { it.tagLine == navArgs.tagline && it.description == navArgs.description }
-                val suggestions = list.map { Suggestion(it.tagLine, it.description) }
+                val suggestions = list.map { AiSuggestionForAd(it.tagLine, it.description) }
                 if (index != -1) {
                     _viewState.update {
                         _viewState.value.copy(
@@ -56,7 +56,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                 } else {
                     _viewState.update {
                         _viewState.value.copy(
-                            suggestions = listOf(Suggestion(navArgs.tagline, navArgs.description)) + suggestions,
+                            suggestions = listOf(AiSuggestionForAd(navArgs.tagline, navArgs.description)) + suggestions,
                             suggestionIndex = 0
                         )
                     }
@@ -109,11 +109,11 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onTagLineChanged(tagLine: String) {
-        updateSuggestion(Suggestion(tagLine.take(TAGLINE_MAX_LENGTH), _viewState.value.description))
+        updateSuggestion(AiSuggestionForAd(tagLine.take(TAGLINE_MAX_LENGTH), _viewState.value.description))
     }
 
     fun onDescriptionChanged(description: String) {
-        updateSuggestion(Suggestion(_viewState.value.tagLine, description.take(TAGLINE_MAX_LENGTH)))
+        updateSuggestion(AiSuggestionForAd(_viewState.value.tagLine, description.take(TAGLINE_MAX_LENGTH)))
     }
 
     fun onImageChanged(url: String) {
@@ -122,7 +122,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         }
     }
 
-    private fun updateSuggestion(suggestion: Suggestion) {
+    private fun updateSuggestion(suggestion: AiSuggestionForAd) {
         _viewState.update {
             val suggestions = _viewState.value.suggestions.toMutableList()
             suggestions[_viewState.value.suggestionIndex] = suggestion
@@ -141,7 +141,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val adImageUrl: String?,
-        val suggestions: List<Suggestion> = emptyList(),
+        val suggestions: List<AiSuggestionForAd> = emptyList(),
         val suggestionIndex: Int = 0,
         val isMediaPickerDialogVisible: Boolean = false
     ) : Parcelable {
@@ -157,12 +157,6 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
             get() = suggestionIndex > 0
         val isNextSuggestionButtonEnabled: Boolean
             get() = suggestionIndex < suggestions.size - 1
-
-        @Parcelize
-        data class Suggestion(
-            var tagLine: String,
-            var description: String
-        ) : Parcelable
     }
 
     @Parcelize
