@@ -37,7 +37,6 @@ sealed class OrderListItemUIType {
         val currencyCode: String,
         val isLastItemInSection: Boolean = false,
         var isSelected: Boolean = false,
-        var selectedOrderItemAdapterPosition: Int = -1,
     ) : OrderListItemUIType()
 
     override fun equals(other: Any?) = other?.let { this::class == other::class } ?: false
