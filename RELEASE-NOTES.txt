@@ -8,9 +8,13 @@
 -----
 - [*] [Internal] Tracking of "country" and "currency" properties for entry and exit of the payments flows [https://github.com/woocommerce/woocommerce-android/pull/10528]
 - [*] Fixed bug when gift card was not displayed in the "totals" sections on the order creation/editing screens [https://github.com/woocommerce/woocommerce-android/pull/10546]
+17.2
+-----
+
 
 17.1
 -----
+- [*] [Internal] Fixed crash when going to background from the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10600]
 
 17.0
 -----
