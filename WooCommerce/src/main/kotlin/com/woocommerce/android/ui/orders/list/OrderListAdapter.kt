@@ -187,20 +187,6 @@ class OrderListAdapter(
                     sharedView = viewBinding.root,
                     orderItemPosition = absoluteAdapterPosition
                 )
-//                val currentList = getCurrentList()
-//                val lastSelectedPosition = currentList?.indexOfFirst {
-//                    (it as? OrderListItemUI)?.isSelected == true
-//                } ?: -1
-//
-//                if (lastSelectedPosition != -1) {
-//                    // Deselect the previously selected order
-//                    (currentList?.get(lastSelectedPosition) as? OrderListItemUI)?.isSelected = false
-//                    notifyItemChanged(lastSelectedPosition)
-//                }
-//
-//                // Select the new order
-//                orderItemUI.isSelected = true
-//                notifyItemChanged(absoluteAdapterPosition)
             }
         }
 
