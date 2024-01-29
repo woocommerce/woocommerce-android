@@ -2297,6 +2297,44 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given get receipt url fails, when user clicks on print receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.failure(Exception()))
+
+            // WHEN
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(R.string.receipt_fetching_error)
+        }
+
+    @Test
+    fun `given get receipt url succeeds, when user clicks on print receipt button, then PrintReceipt emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            val receiptUrl = "testUrl"
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as PrintReceipt).receiptUrl).isEqualTo(receiptUrl)
+            assertThat((viewModel.event.value as PrintReceipt).documentName).isEqualTo("receipt-order-1")
+        }
+
+    @Test
     fun `when OS accepts the print request, then print success event tracked`() {
         viewModel.onPrintResult(STARTED)
 
@@ -2318,7 +2356,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given external reader, when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given external reader and receipt fetching success, when user clicks on send receipt button, then SendReceipt event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -2331,7 +2369,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given built in reader, when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given built in reader  and receipt fetching success, when user clicks on send receipt button, then SendReceipt event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -2344,6 +2382,38 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+        }
+
+    @Test
+    fun `given external reader and receipt fetching fails, when user clicks on send receipt button, then ShowSnackabar event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.failure(Exception()))
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(R.string.receipt_fetching_error)
+        }
+
+    @Test
+    fun `given built reader and receipt fetching fails, when user clicks on send receipt button, then ShowSnackabar event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.failure(Exception()))
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(R.string.receipt_fetching_error)
         }
 
     @Test
