@@ -71,13 +71,13 @@ import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
+@Suppress("LargeClass")
 class OrderListFragment :
     TopLevelFragment(R.layout.fragment_order_list),
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener
-{
+    SwipeToComplete.OnSwipeListener {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -242,7 +242,7 @@ class OrderListFragment :
         searchHandler.postDelayed({
             binding.orderListView.clearAdapterData()
         }, 100)
-        return true  // Return true to expand the action view
+        return true // Return true to expand the action view
     }
 
     private fun handleSearchViewCollapse(): Boolean {
