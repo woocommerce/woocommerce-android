@@ -382,15 +382,24 @@
                     style="@style/Woo.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:gravity="start|center_vertical"
                     android:paddingStart="@dimen/major_100"
                     android:paddingEnd="@dimen/major_100"
-                    android:gravity="start"
                     android:text="@string/orderdetail_see_receipt_button"
                     android:textAllCaps="false"
+                    app:layout_constraintEnd_toStartOf="@id/paymentInfo_seeReceiptButton_progressBar"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/paymentInfo_seeReceiptButton_progressBar"
+                    android:layout_width="@dimen/major_100"
+                    android:layout_height="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    app:layout_constraintBottom_toBottomOf="@id/paymentInfo_seeReceiptButton"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="@dimen/minor_100" />
+                    app:layout_constraintTop_toTopOf="@id/paymentInfo_seeReceiptButton" />
 
                 <!-- Accept Card Present Payment button -->
                 <com.google.android.material.button.MaterialButton
@@ -398,11 +407,13 @@
                     style="@style/Woo.Button.Colored"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/major_100"
                     android:text="@string/orderdetail_collect_payment_button"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_seeReceiptButton"
-                    android:layout_marginTop="@dimen/minor_100" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_seeReceiptButton" />
 
                 <!-- Refund button -->
                 <com.google.android.material.button.MaterialButton
@@ -410,11 +421,12 @@
                     style="@style/Woo.Button.Outlined"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
                     android:text="@string/orderdetail_issue_refund_button"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_collectCardPresentPaymentButton"
-                    android:layout_marginTop="@dimen/minor_100" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_collectCardPresentPaymentButton" />
 
                 <!-- Show Printing Instructions button -->
                 <com.google.android.material.textview.MaterialTextView
@@ -422,14 +434,16 @@
                     style="@style/Woo.TextView.Caption"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:background="?attr/selectableItemBackground"
                     android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
                     android:drawablePadding="@dimen/major_100"
-                    android:background="?attr/selectableItemBackground"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/orderdetail_printing_instructions_button"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_issueRefundButton"
-                    android:layout_marginTop="@dimen/major_100" />
-
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_issueRefundButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

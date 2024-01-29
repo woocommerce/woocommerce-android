@@ -198,10 +198,16 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     ) {
         when (receiptButtonStatus) {
             OrderDetailViewState.ReceiptButtonStatus.Loading -> {
-
+                binding.paymentInfoSeeReceiptButton.visibility = VISIBLE
+                binding.paymentInfoSeeReceiptButton.isEnabled = false
+                binding.paymentInfoSeeReceiptButtonProgressBar.visibility = VISIBLE
             }
-            OrderDetailViewState.ReceiptButtonStatus.Hidden -> binding.paymentInfoSeeReceiptButton.visibility = GONE
+            OrderDetailViewState.ReceiptButtonStatus.Hidden -> {
+                binding.paymentInfoSeeReceiptButton.visibility = GONE
+                binding.paymentInfoSeeReceiptButtonProgressBar.visibility = GONE
+            }
             OrderDetailViewState.ReceiptButtonStatus.Visible -> {
+                binding.paymentInfoSeeReceiptButtonProgressBar.visibility = GONE
                 binding.paymentInfoSeeReceiptButton.visibility = VISIBLE
                 binding.paymentInfoSeeReceiptButton.setOnClickListener(
                     onSeeReceiptClickListener
