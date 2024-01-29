@@ -117,7 +117,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
     private val paymentReceiptHelper: PaymentReceiptHelper = mock {
-        onBlocking { isReceiptAvailable(any()) }.thenReturn( false)
+        onBlocking { isReceiptAvailable(any()) }.thenReturn(false)
         onBlocking { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
     }
 

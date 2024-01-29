@@ -37,7 +37,12 @@ class PaymentReceiptHelper @Inject constructor(
                 Result.success(result.receiptUrl)
             }
         } else {
-            Result.success(getReceiptUrlFromAppPrefs(orderId))
+            val urlFromAppPrefs = getReceiptUrlFromAppPrefs(orderId)
+            if (urlFromAppPrefs.isEmpty()) {
+                Result.failure(Exception("Receipt url not found"))
+            } else {
+                Result.success(urlFromAppPrefs)
+            }
         }
 
     suspend fun isReceiptAvailable(orderId: Long) =
