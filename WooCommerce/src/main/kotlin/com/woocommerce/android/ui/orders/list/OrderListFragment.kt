@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
@@ -13,13 +12,11 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
@@ -54,6 +51,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -78,8 +76,8 @@ class OrderListFragment :
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener,
-    MenuProvider {
+    SwipeToComplete.OnSwipeListener
+{
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -139,6 +137,9 @@ class OrderListFragment :
 
     private val selectedOrder: SelectedOrderTrackerViewModel by activityViewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
@@ -155,25 +156,12 @@ class OrderListFragment :
         reenterTransition = fadeThroughTransition
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_list_fragment, menu)
-
-        orderListMenu = menu
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getSearchQueryHint()
-    }
-
     private fun getSearchQueryHint(): String {
         return if (viewModel.viewState.isFilteringActive) {
             getString(R.string.orderlist_search_hint_active_filters)
         } else {
             getString(R.string.orderlist_search_hint)
         }
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
-        refreshOptionsMenu()
     }
 
     override fun onCreateView(
@@ -189,9 +177,7 @@ class OrderListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
+        setupToolbar()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         uiMessageResolver.anchorViewId = binding.createOrderButton.id
@@ -216,6 +202,56 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.title = getString(R.string.orders)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_order_list_fragment)
+        binding.toolbar.navigationIcon = null
+        setupToolbarMenu(binding.toolbar.menu)
+    }
+
+    private fun setupToolbarMenu(menu: Menu) {
+        orderListMenu = menu
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.queryHint = getSearchQueryHint()
+
+        // Set listeners for search view expansion and collapse
+        searchMenuItem?.setOnActionExpandListener(object : OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                return handleSearchViewExpand()
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                return handleSearchViewCollapse()
+            }
+        })
+        refreshOptionsMenu()
+    }
+
+    private fun handleSearchViewExpand(): Boolean {
+        isSearching = true
+        refreshOptionsMenu()
+        checkOrientation()
+        onSearchViewActiveChanged(isActive = true)
+        binding.orderFiltersCard.isVisible = false
+        searchHandler.postDelayed({
+            binding.orderListView.clearAdapterData()
+        }, 100)
+        return true  // Return true to expand the action view
+    }
+
+    private fun handleSearchViewCollapse(): Boolean {
+        clearSearchResults()
+        searchMenuItem?.isVisible = true
+        viewModel.onSearchClosed()
+        binding.orderFiltersCard.isVisible = true
+        onSearchViewActiveChanged(isActive = false)
+        return true // Return true to collapse the action view
     }
 
     private fun displayTwoPaneLayoutIfTablet() {
@@ -290,7 +326,7 @@ class OrderListFragment :
         }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
