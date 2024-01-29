@@ -388,7 +388,7 @@
                     android:paddingEnd="@dimen/major_100"
                     android:text="@string/orderdetail_see_receipt_button"
                     android:textAllCaps="false"
-                    app:layout_constraintEnd_toStartOf="@id/paymentInfo_seeReceiptButton_progressBar"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
