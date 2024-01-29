@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.receipt
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -10,17 +11,21 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
-class PaymentReceiptHelperTest {
+class PaymentReceiptHelperTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(mock())
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val orderStore: WCOrderStore = mock()
+    private val isDevSiteSupported: PaymentReceiptHelper.IsDevSiteSupported = mock()
 
-    private val helper = PaymentReceiptHelper(selectedSite, wooCommerceStore, appPrefsWrapper)
+    private val helper =
+        PaymentReceiptHelper(selectedSite, wooCommerceStore, appPrefsWrapper, orderStore, isDevSiteSupported)
 
     @Test
     fun `given selected site, when storeReceiptUrl, then url is stored`() {
@@ -35,7 +40,7 @@ class PaymentReceiptHelperTest {
     }
 
     @Test
-    fun `given selected site and no saved url, when getReceiptUrl, then null returned`() {
+    fun `given selected site and no saved url, when getReceiptUrl, then null returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
         whenever(appPrefsWrapper.getReceiptUrl(site.id, site.siteId, site.selfHostedSiteId, 1)).thenReturn(null)
@@ -48,7 +53,7 @@ class PaymentReceiptHelperTest {
     }
 
     @Test
-    fun `given selected site and saved url, when getReceiptUrl, then url returned`() {
+    fun `given selected site and saved url, when getReceiptUrl, then url returned`() =testBlocking {
         // GIVEN
         val site = selectedSite.get()
         whenever(appPrefsWrapper.getReceiptUrl(site.id, site.siteId, site.selfHostedSiteId, 1)).thenReturn("url")

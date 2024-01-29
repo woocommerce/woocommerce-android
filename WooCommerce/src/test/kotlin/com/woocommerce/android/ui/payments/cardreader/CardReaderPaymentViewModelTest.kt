@@ -241,11 +241,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             flow<BluetoothCardReaderMessages> {}
         }
         whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
-        whenever(paymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn("test url")
+        whenever(paymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn(Result.success("test url"))
         whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn("test description")
         whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
-        whenever(cardReaderPaymentOrderHelper.getReceiptDocumentName(mockedOrder)).thenReturn("receipt-order-1")
+        whenever(cardReaderPaymentOrderHelper.getReceiptDocumentName(mockedOrder.id)).thenReturn("receipt-order-1")
         whenever(cardReaderManager.batteryStatus).thenAnswer { flow { emit(CardReaderBatteryStatus.Unknown) } }
     }
 
