@@ -63,7 +63,7 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
             selectedItems = selectedIds.map { id -> items.first { it.id == id } },
             title = when (navArgs.targetType) {
                 BlazeTargetType.LANGUAGE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
-                BlazeTargetType.INTEREST -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
+                BlazeTargetType.DEVICE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
                 else -> resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
             }
         )
