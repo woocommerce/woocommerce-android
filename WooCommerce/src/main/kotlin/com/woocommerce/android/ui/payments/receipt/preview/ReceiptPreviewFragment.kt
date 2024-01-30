@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.receipt
+package com.woocommerce.android.ui.payments.receipt.preview
 
 import android.os.Bundle
 import android.view.Menu
@@ -14,9 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReceiptPreviewBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers

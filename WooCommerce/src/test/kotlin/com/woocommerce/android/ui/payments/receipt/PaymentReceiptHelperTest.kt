@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.payment
+package com.woocommerce.android.ui.payments.receipt
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -12,13 +12,13 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class CardReaderPaymentReceiptHelperTest {
+class PaymentReceiptHelperTest {
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(mock())
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
-    private val helper = CardReaderPaymentReceiptHelper(selectedSite, appPrefsWrapper)
+    private val helper = PaymentReceiptHelper(selectedSite, appPrefsWrapper)
 
     @Test
     fun `given selected site, when storeReceiptUrl, then url is stored`() {

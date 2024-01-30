@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.payment
+package com.woocommerce.android.ui.payments.receipt
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.WCPAY_RECEIPTS_
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
-class CardReaderPaymentReceiptHelper @Inject constructor(
+class PaymentReceiptHelper @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper
 ) {
