@@ -102,7 +102,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
                 WooCommerceStore.WooPlugin.WOO_CORE
             )
         ).thenReturn(plugin)
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 365)).thenReturn(
+        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(OrderReceiptResponse("url", "date"))
         )
 
@@ -126,7 +126,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
                 WooCommerceStore.WooPlugin.WOO_CORE
             )
         ).thenReturn(plugin)
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 365)).thenReturn(
+        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(
                 WooError(
                     type = WooErrorType.API_ERROR,
@@ -156,7 +156,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
                 selectedSite.get(),
             )
         ).thenReturn(listOf(plugin))
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 365)).thenReturn(
+        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(
                 WooError(
                     type = WooErrorType.API_ERROR,
@@ -187,7 +187,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
                 selectedSite.get(),
             )
         ).thenReturn(listOf(plugin))
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 365)).thenReturn(
+        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(OrderReceiptResponse("url", "date"))
         )
         whenever(isDevSiteSupported()).thenReturn(true)
