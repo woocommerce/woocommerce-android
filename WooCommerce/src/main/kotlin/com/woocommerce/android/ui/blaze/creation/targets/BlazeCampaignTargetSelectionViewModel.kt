@@ -37,11 +37,19 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
                 )
             }
         }
-        else -> blazeRepository.observeDevices().map { devices ->
+        BlazeTargetType.DEVICE -> blazeRepository.observeDevices().map { devices ->
             devices.map { device ->
                 TargetItem(
                     id = device.id,
                     value = device.name
+                )
+            }
+        }
+        else -> blazeRepository.observeInterests().map { interests ->
+            interests.map { interest ->
+                TargetItem(
+                    id = interest.id,
+                    value = interest.description
                 )
             }
         }
@@ -55,7 +63,8 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
             selectedItems = selectedIds.map { id -> items.first { it.id == id } },
             title = when (navArgs.targetType) {
                 BlazeTargetType.LANGUAGE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
-                else -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
+                BlazeTargetType.DEVICE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
+                else -> resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
             }
         )
     }.asLiveData()
