@@ -1,13 +1,13 @@
 package com.woocommerce.android.ui.payments.receipt.preview
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
@@ -16,6 +16,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -23,13 +24,11 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class ReceiptPreviewViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ReceiptPreviewViewModel
 
-    private val selectedSite: SelectedSite = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
@@ -43,7 +42,6 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         viewModel = ReceiptPreviewViewModel(savedState, tracker, paymentsFlowTracker, paymentReceiptShare)
-        whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
     }
 
     @Test
@@ -80,6 +78,80 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
             viewModel.onShareClicked()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+        }
+
+    @Test
+    fun `given sharing success, when onShareClicked, then no events emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Success
+            )
+
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(LoadUrl::class.java)
+        }
+
+    @Test
+    fun `given sharing failed with file cretion, when onShareClicked, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation
+            )
+
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_stored
+            )
+            verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation
+            )
+        }
+
+    @Test
+    fun `given sharing failed with file downloading, when onShareClicked, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload
+            )
+
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_downloaded
+            )
+            verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload
+            )
+        }
+
+    @Test
+    fun `given sharing failed with file sharing, when onShareClicked, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            val sharing = PaymentReceiptShare.ReceiptShareResult.Error.Sharing(Exception())
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(sharing)
+
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_app_to_share_not_found
+            )
+            verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
+                sharing
+            )
         }
 
     @Test
