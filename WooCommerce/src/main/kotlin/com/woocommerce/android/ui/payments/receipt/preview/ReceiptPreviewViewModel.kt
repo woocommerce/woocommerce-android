@@ -11,9 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -32,7 +30,7 @@ class ReceiptPreviewViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite,
+    private val paymentReceiptShare: PaymentReceiptShare,
 ) : ScopedViewModel(savedState) {
     private val args: ReceiptPreviewFragmentArgs by savedState.navArgs()
 
@@ -52,28 +50,42 @@ class ReceiptPreviewViewModel
         triggerEvent(PrintReceipt(args.receiptUrl, "receipt-order-${args.orderId}"))
     }
 
-    fun onSendEmailClicked() {
+    fun onShareClicked() {
         launch {
             tracker.track(RECEIPT_EMAIL_TAPPED)
-            triggerEvent(
-                SendReceipt(
-                    content = UiStringRes(
-                        string.card_reader_payment_receipt_email_content,
-                        listOf(UiStringText(args.receiptUrl))
-                    ),
-                    subject = UiStringRes(
-                        string.card_reader_payment_receipt_email_subject,
-                        listOf(UiStringText(selectedSite.get().name.orEmpty()))
-                    ),
-                    address = args.billingEmail
-                )
-            )
+            when (val sharingResult = paymentReceiptShare(args.receiptUrl)) {
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                    tracker.track(
+                        RECEIPT_EMAIL_FAILED,
+                        errorContext = this@ReceiptPreviewViewModel.javaClass.simpleName,
+                        errorType = "file_creation_failed",
+                        errorDescription = "File creation failed"
+                    )
+                    triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_can_not_be_stored))
+                }
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                    tracker.track(
+                        RECEIPT_EMAIL_FAILED,
+                        errorContext = this@ReceiptPreviewViewModel.javaClass.simpleName,
+                        errorType = "file_download_failed",
+                        errorDescription = "File download failed"
+                    )
+                    triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_can_not_be_downloaded))
+                }
+                is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
+                    tracker.track(
+                        RECEIPT_EMAIL_FAILED,
+                        errorContext = this@ReceiptPreviewViewModel.javaClass.simpleName,
+                        errorType = "no_app_found",
+                        errorDescription = sharingResult.exception.message
+                    )
+                    triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_app_to_share_not_found))
+                }
+                PaymentReceiptShare.ReceiptShareResult.Success -> {
+                    // no-op
+                }
+            }
         }
-    }
-
-    fun onEmailActivityNotFound() {
-        tracker.track(RECEIPT_EMAIL_FAILED)
-        triggerEvent(ShowSnackbar(string.card_reader_payment_email_client_not_found))
     }
 
     fun onPrintResult(result: PrintJobResult) {

@@ -1910,7 +1910,7 @@ Language: tr
     <string name="variable_product_attributes">Varyasyon nitelikleri.</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Mobil cihazda Bluetooth\'u açın</string>
     <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
-    <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>

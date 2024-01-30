@@ -1909,7 +1909,7 @@ Language: zh_CN
     <string name="empty_product_add_product_button">添加产品</string>
     <string name="variable_product_attributes">变体属性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">打开移动设备蓝牙</string>
-    <string name="card_reader_payment_email_client_not_found">未侦测到您的电子邮件客户端应用</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">未侦测到您的电子邮件客户端应用</string>
     <string name="card_reader_payment_receipt_email_subject">来自 %s 的收据</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">刷新订单</string>
     <string name="card_reader_payment_fetch_order_loading_header">更新应用程序状态</string>

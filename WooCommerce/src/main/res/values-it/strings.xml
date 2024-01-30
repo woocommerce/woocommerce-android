@@ -1910,7 +1910,7 @@ Language: it
     <string name="variable_product_attributes">Attributi della variante</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Attiva il Bluetooth del dispositivo mobile</string>
     <string name="card_reader_refetching_order_failed">Errore durante il recupero dell\'ordine. Lo stato nell\'ordine dell\'app potrebbe essere obsoleto.</string>
-    <string name="card_reader_payment_email_client_not_found">Impossibile rilevare il client e-mail della tua app</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">Impossibile rilevare il client e-mail della tua app</string>
     <string name="card_reader_payment_receipt_email_subject">La tua ricevuta da %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Aggiornamento dell\'ordine</string>
     <string name="card_reader_payment_fetch_order_loading_header">Aggiornamento dello stato dell\'app</string>

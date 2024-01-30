@@ -75,7 +75,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on send email, then send receipt event emitted`() =
         testBlocking {
-            viewModel.onSendEmailClicked()
+            viewModel.onShareClicked()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
         }
@@ -83,7 +83,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on send email, then event tracked`() =
         testBlocking {
-            viewModel.onSendEmailClicked()
+            viewModel.onShareClicked()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
         }
@@ -91,7 +91,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     @Test
     fun `when email application not found, then SnackBar with error shown`() =
         testBlocking {
-            viewModel.onEmailActivityNotFound()
+            viewModel.onActivityToShareNotFound()
 
             assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
         }
@@ -99,7 +99,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     @Test
     fun `when email application not found, then event tracked`() =
         testBlocking {
-            viewModel.onEmailActivityNotFound()
+            viewModel.onActivityToShareNotFound()
 
             verify(tracker).track(RECEIPT_EMAIL_FAILED)
         }

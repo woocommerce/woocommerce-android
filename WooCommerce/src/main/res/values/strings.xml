@@ -1507,7 +1507,9 @@
     <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
-    <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">Unable to detect any application to which the receipt can be shared</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Unable to download the receipt</string>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Unable to store the receipt</string>
     <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>

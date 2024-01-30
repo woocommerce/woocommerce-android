@@ -1910,7 +1910,7 @@ Language: pt_BR
     <string name="variable_product_attributes">Atributos das variações</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Ativar o Bluetooth do dispositivo móvel</string>
     <string name="card_reader_refetching_order_failed">Erro ao buscar o pedido. O status do pedido pode estar desatualizado no aplicativo.</string>
-    <string name="card_reader_payment_email_client_not_found">Não é possível detectar seu aplicativo cliente de e-mail</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">Não é possível detectar seu aplicativo cliente de e-mail</string>
     <string name="card_reader_payment_receipt_email_subject">Seu recibo de %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Atualizando pedido</string>
     <string name="card_reader_payment_fetch_order_loading_header">Atualizando estado do aplicativo</string>

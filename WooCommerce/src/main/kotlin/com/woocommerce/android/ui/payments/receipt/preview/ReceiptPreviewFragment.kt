@@ -52,7 +52,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
                 true
             }
             R.id.menu_send -> {
-                viewModel.onSendEmailClicked()
+                viewModel.onShareClicked()
                 true
             }
             else -> false
@@ -111,7 +111,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
 
     private fun composeEmail(event: SendReceipt) {
         ActivityUtils.sendEmail(requireActivity(), event.address, event.subject, event.content) {
-            viewModel.onEmailActivityNotFound()
+            viewModel.onActivityToShareNotFound()
         }
     }
 }

@@ -1910,7 +1910,7 @@ Language: ar
     <string name="variable_product_attributes">سمات المجموعات</string>
     <string name="card_reader_detail_not_connected_third_hint_label">تشغيل بلوتوث الجهاز المحمول</string>
     <string name="card_reader_refetching_order_failed">حدث خطأ في أثناء إحضار الطلب. قد تكون حالة الطلب الموجودة في التطبيق قديمة.</string>
-    <string name="card_reader_payment_email_client_not_found">لا يمكن اكتشاف تطبيق عميل البريد الإلكتروني الخاص بك</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">لا يمكن اكتشاف تطبيق عميل البريد الإلكتروني الخاص بك</string>
     <string name="card_reader_payment_receipt_email_subject">إيصالك من %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">تحديث الطلب</string>
     <string name="card_reader_payment_fetch_order_loading_header">تحديث حالة التطبيق</string>

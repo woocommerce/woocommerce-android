@@ -34,17 +34,21 @@ class PaymentReceiptShare @Inject constructor(
             putExtra(Intent.EXTRA_STREAM, uri)
         }
         return try {
-            context.startActivity(Intent.createChooser(intent, null))
+            context.startActivity(
+                Intent.createChooser(intent, null).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            )
             ReceiptShareResult.Success
         } catch (e: Exception) {
-            ReceiptShareResult.Error.Sharing
+            ReceiptShareResult.Error.Sharing(e)
         }
     }
 
     sealed class ReceiptShareResult {
         object Success : ReceiptShareResult()
         sealed class Error : ReceiptShareResult() {
-            object Sharing : Error()
+            data class Sharing(val exception: Exception) : Error()
             object FileCreation : Error()
             object FileDownload : Error()
         }

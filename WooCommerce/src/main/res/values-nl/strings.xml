@@ -1903,7 +1903,7 @@ Language: nl
     <string name="variable_product_attributes">Variatie-eigenschappen</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Zet de Bluetooth aan op je mobiele apparaat</string>
     <string name="card_reader_refetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
-    <string name="card_reader_payment_email_client_not_found">Detectie van mailclient-app mislukt</string>
+    <string name="card_reader_payment_receipt_app_to_share_not_found">Detectie van mailclient-app mislukt</string>
     <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
