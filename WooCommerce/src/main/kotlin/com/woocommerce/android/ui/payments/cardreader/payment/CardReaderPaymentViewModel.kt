@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -117,6 +118,7 @@ class CardReaderPaymentViewModel
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
+    private val paymentReceiptShare: PaymentReceiptShare,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -611,9 +613,7 @@ class CardReaderPaymentViewModel
             val onSaveUserClicked = {
                 onSaveForLaterClicked()
             }
-            val onSendReceiptClicked = {
-                onSendReceiptClicked(order.billingAddress.email)
-            }
+            val onSendReceiptClicked = { onSendReceiptClicked() }
 
             if (order.billingAddress.email.isBlank()) {
                 viewState.postValue(
@@ -723,27 +723,36 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun onSendReceiptClicked(billingEmail: String) {
+    private fun onSendReceiptClicked() {
         launch {
             tracker.trackEmailReceiptTapped()
+            val stateBeforeLoading = viewState.value!!
+            viewState.postValue(ViewState.SharingReceiptState)
             val receiptResult = paymentReceiptHelper.getReceiptUrl(orderId)
+
             if (receiptResult.isSuccess) {
-                triggerEvent(
-                    SendReceipt(
-                        content = UiStringRes(
-                            R.string.card_reader_payment_receipt_email_content,
-                            listOf(UiStringText(receiptResult.getOrThrow()))
-                        ),
-                        subject = UiStringRes(
-                            R.string.card_reader_payment_receipt_email_subject,
-                            listOf(UiStringText(selectedSite.get().name.orEmpty()))
-                        ),
-                        address = billingEmail
-                    )
-                )
+                when (val sharingResult = paymentReceiptShare(receiptResult.getOrThrow(), orderId)) {
+                    is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                        tracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_can_not_be_stored))
+                    }
+                    is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                        tracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_can_not_be_downloaded))
+                    }
+                    is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
+                        tracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_app_to_share_not_found))
+                    }
+                    PaymentReceiptShare.ReceiptShareResult.Success -> {
+                        // no-op
+                    }
+                }
             } else {
                 triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
             }
+
+            viewState.postValue(stateBeforeLoading)
         }
     }
 
