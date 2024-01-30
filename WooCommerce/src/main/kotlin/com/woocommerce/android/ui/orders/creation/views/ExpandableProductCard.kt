@@ -217,7 +217,7 @@ fun ExpandableProductCard(
                 color = if (product.item.isSynced()) {
                     colorResource(id = R.color.color_on_surface_disabled)
                 } else {
-                    colorResource(id = R.color.woo_red_70)
+                    colorResource(id = com.google.android.material.R.color.mtrl_btn_transparent_bg_color)
                 }
             )
             Text(
