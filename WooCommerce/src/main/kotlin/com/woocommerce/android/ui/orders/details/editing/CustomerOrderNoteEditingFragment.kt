@@ -54,7 +54,10 @@ class CustomerOrderNoteEditingFragment :
     }
 
     private fun setupToolbarMenu() {
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_gridicons_cross_24dp)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_gridicons_cross_24dp
+        )
         binding.toolbar.setNavigationOnClickListener {
             navigateUp()
         }
