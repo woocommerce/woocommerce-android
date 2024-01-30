@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
+import android.os.Bundle
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -11,9 +12,7 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_SHIPPING_ADDRESS
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override val storedAddress: Address
         get() = sharedViewModel.order.shippingAddress
