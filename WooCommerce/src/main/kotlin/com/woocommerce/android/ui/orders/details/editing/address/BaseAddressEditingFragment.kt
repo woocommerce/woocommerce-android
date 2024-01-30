@@ -60,6 +60,7 @@ abstract class BaseAddressEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
+        setupToolbar()
         replicateAddressSwitch = SwitchMaterial(requireContext())
         _binding?.form?.root?.addView(replicateAddressSwitch)
         replicateAddressSwitch.apply {
@@ -73,6 +74,7 @@ abstract class BaseAddressEditingFragment :
         replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
+        onPrepareMenu()
         bindTextWatchers()
 
         binding.form.countrySpinner.setClickListener {
@@ -90,6 +92,22 @@ abstract class BaseAddressEditingFragment :
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding.toolbar.menu.findItem(R.id.menu_done)
+        setupToolbarMenu()
+    }
+
+    private fun setupToolbarMenu() {
+        binding.toolbar.setNavigationOnClickListener {
+            navigateUp()
+        }
     }
 
     override fun hasChanges() =
