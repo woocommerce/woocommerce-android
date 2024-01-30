@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
@@ -14,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
@@ -30,6 +30,7 @@ class ReceiptPreviewViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val paymentReceiptShare: PaymentReceiptShare,
 ) : ScopedViewModel(savedState) {
     private val args: ReceiptPreviewFragmentArgs by savedState.navArgs()
@@ -56,31 +57,16 @@ class ReceiptPreviewViewModel
 
             tracker.track(RECEIPT_EMAIL_TAPPED)
             when (val sharingResult = paymentReceiptShare(args.receiptUrl, args.orderId)) {
-                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
-                    tracker.track(
-                        RECEIPT_EMAIL_FAILED,
-                        errorContext = this@ReceiptPreviewViewModel.javaClass.simpleName,
-                        errorType = "file_creation_failed",
-                        errorDescription = "File creation failed"
-                    )
+                is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                    paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
                     triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_can_not_be_stored))
                 }
-                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
-                    tracker.track(
-                        RECEIPT_EMAIL_FAILED,
-                        errorContext = this@ReceiptPreviewViewModel.javaClass.simpleName,
-                        errorType = "file_download_failed",
-                        errorDescription = "File download failed"
-                    )
+                is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                    paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
                     triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_can_not_be_downloaded))
                 }
                 is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
-                    tracker.track(
-                        RECEIPT_EMAIL_FAILED,
-                        errorContext = this@ReceiptPreviewViewModel.javaClass.simpleName,
-                        errorType = "no_app_found",
-                        errorDescription = sharingResult.exception.message
-                    )
+                    paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
                     triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_app_to_share_not_found))
                 }
                 PaymentReceiptShare.ReceiptShareResult.Success -> {
