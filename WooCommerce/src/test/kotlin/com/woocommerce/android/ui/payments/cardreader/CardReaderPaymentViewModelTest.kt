@@ -68,7 +68,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.U
 import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
 import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.payment.PurchaseCardReader
-import com.woocommerce.android.ui.payments.cardreader.payment.SendReceipt
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
@@ -90,6 +89,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CurrencyFormatter
@@ -182,6 +182,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderConfig: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
+    private val paymentReceiptShare: PaymentReceiptShare = mock()
 
     @Suppress("LongMethod")
     @Before
@@ -209,6 +210,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
+            paymentReceiptShare = paymentReceiptShare,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -2356,16 +2358,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given external reader and receipt fetching success, when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given external reader and receipt fetching and sharing success, when user clicks on send receipt button, then nothing emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentCompleted("")) }
+                flow { emit(PaymentCompleted("url")) }
             }
+            whenever(paymentReceiptShare("url", 1L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Success
+            )
             viewModel.start()
 
             (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+            assertThat(viewModel.event.value).isNull()
         }
 
     @Test
@@ -2380,8 +2385,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
-
-            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
         }
 
     @Test
@@ -4401,6 +4404,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
+            paymentReceiptShare = paymentReceiptShare,
         )
     }
 
@@ -4433,6 +4437,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
+            paymentReceiptShare = paymentReceiptShare,
         )
     }
 }

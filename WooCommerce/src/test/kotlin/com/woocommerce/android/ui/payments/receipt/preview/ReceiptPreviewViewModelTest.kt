@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.payments.receipt.preview
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
@@ -9,13 +8,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -31,6 +31,8 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
+    private val paymentReceiptShare: PaymentReceiptShare = mock()
 
     private val savedState: SavedStateHandle = ReceiptPreviewFragmentArgs(
         receiptUrl = "testing url",
@@ -40,7 +42,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        viewModel = ReceiptPreviewViewModel(savedState, tracker, selectedSite)
+        viewModel = ReceiptPreviewViewModel(savedState, tracker, paymentsFlowTracker, paymentReceiptShare)
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
     }
 
@@ -73,35 +75,11 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on send email, then send receipt event emitted`() =
-        testBlocking {
-            viewModel.onShareClicked()
-
-            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
-        }
-
-    @Test
     fun `when user clicks on send email, then event tracked`() =
         testBlocking {
             viewModel.onShareClicked()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
-        }
-
-    @Test
-    fun `when email application not found, then SnackBar with error shown`() =
-        testBlocking {
-            viewModel.onActivityToShareNotFound()
-
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
-        }
-
-    @Test
-    fun `when email application not found, then event tracked`() =
-        testBlocking {
-            viewModel.onActivityToShareNotFound()
-
-            verify(tracker).track(RECEIPT_EMAIL_FAILED)
         }
 
     @Test
