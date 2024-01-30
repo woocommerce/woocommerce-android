@@ -52,6 +52,8 @@ class ReceiptPreviewViewModel
 
     fun onShareClicked() {
         launch {
+            viewState.value = Loading
+
             tracker.track(RECEIPT_EMAIL_TAPPED)
             when (val sharingResult = paymentReceiptShare(args.receiptUrl)) {
                 PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
@@ -85,6 +87,8 @@ class ReceiptPreviewViewModel
                     // no-op
                 }
             }
+
+            viewState.value = Content
         }
     }
 
