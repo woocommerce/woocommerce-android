@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.ActivityUtils.dialPhoneNumber
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.isViewVisibleInScrollView
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -215,6 +216,35 @@ class EditShippingLabelAddressFragment :
             }
             new.isContactCustomerButtonVisible.takeIfNotEqualTo(old?.isContactCustomerButtonVisible) { isVisible ->
                 binding.contactCustomerButton.isVisible = isVisible
+            }
+
+            scrollToFirstErrorFieldIfNeeded(new, binding)
+        }
+    }
+
+    private fun scrollToFirstErrorFieldIfNeeded(
+        viewState: EditShippingLabelAddressViewModel.ViewState,
+        binding: FragmentEditShippingLabelAddressBinding
+    ) {
+        val firstErrorField: Pair<InputField<*>, View>? = listOf<Pair<InputField<*>, View>>(
+            viewState.nameField to binding.name,
+            viewState.companyField to binding.company,
+            viewState.phoneField to binding.phone,
+            viewState.address1Field to binding.address1,
+            viewState.address2Field to binding.address2,
+            viewState.cityField to binding.city,
+            viewState.zipField to binding.zip,
+            viewState.stateField to if (viewState.isStateFieldSpinner == true) binding.stateSpinner else binding.state,
+            viewState.countryField to binding.countrySpinner
+        ).firstOrNull { it.first.error != null }
+
+        firstErrorField?.let { (_, view) ->
+            if (!isViewVisibleInScrollView(binding.scrollView, view)) {
+                ActivityUtils.hideKeyboard(requireActivity())
+
+                binding.scrollView.post {
+                    binding.scrollView.smoothScrollTo(0, view.top)
+                }
             }
         }
     }
