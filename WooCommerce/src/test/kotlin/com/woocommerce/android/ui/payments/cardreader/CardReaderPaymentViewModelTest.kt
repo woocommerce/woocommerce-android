@@ -2358,23 +2358,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given external reader and receipt fetching and sharing success, when user clicks on send receipt button, then nothing emitted`() =
+    fun `given external reader and receipt fetching and sharing success, when user clicks on send receipt button, then PlayChaChing emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("url")) }
             }
-            whenever(paymentReceiptShare("url", 1L)).thenReturn(
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(
                 PaymentReceiptShare.ReceiptShareResult.Success
             )
             viewModel.start()
 
             (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isNull()
+            assertThat(viewModel.event.value).isEqualTo(PlayChaChing)
         }
 
     @Test
-    fun `given built in reader  and receipt fetching success, when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given built in reader and receipt fetching  and sharing success, when user clicks on send receipt button, then PlayChaChing emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -2385,6 +2385,64 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(PlayChaChing)
+        }
+
+    @Test
+    fun `given receipt fetching success and receipt file not created, when user clicks on send receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("url")) }
+            }
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation
+            )
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_stored
+            )
+            verify(tracker).trackPaymentsReceiptSharingFailed(PaymentReceiptShare.ReceiptShareResult.Error.FileCreation)
+        }
+
+    @Test
+    fun `given receipt fetching success and receipt file not downloaded, when user clicks on send receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("url")) }
+            }
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload
+            )
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_downloaded
+            )
+            verify(tracker).trackPaymentsReceiptSharingFailed(PaymentReceiptShare.ReceiptShareResult.Error.FileDownload)
+        }
+
+    @Test
+    fun `given receipt fetching success and receipt file not shared, when user clicks on send receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("url")) }
+            }
+            val sharing = PaymentReceiptShare.ReceiptShareResult.Error.Sharing(Exception())
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(sharing)
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_app_to_share_not_found
+            )
+            verify(tracker).trackPaymentsReceiptSharingFailed(sharing)
         }
 
     @Test
