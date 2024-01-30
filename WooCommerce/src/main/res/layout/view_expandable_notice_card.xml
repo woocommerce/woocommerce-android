@@ -70,10 +70,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/minor_100"
-                tools:text="@string/error_troubleshooting"
+                android:layout_marginStart="@dimen/minor_00"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_secondaryAction"
-                app:layout_constraintTop_toBottomOf="@+id/notice_message" />
+                app:layout_constraintTop_toBottomOf="@+id/notice_message"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="@string/error_troubleshooting" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
