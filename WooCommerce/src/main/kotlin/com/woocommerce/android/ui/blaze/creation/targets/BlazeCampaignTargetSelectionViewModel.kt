@@ -71,7 +71,13 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
     }
 
     fun onAllButtonTapped() {
-        selectedIds.update { emptySet() }
+        selectedIds.update {
+            if (it.size == viewState.value?.items?.size) {
+                emptySet()
+            } else {
+                viewState.value?.items?.map { item -> item.id }?.toSet() ?: emptySet()
+            }
+        }
     }
 
     fun onBackPressed() {
