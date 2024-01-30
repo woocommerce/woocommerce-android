@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -45,8 +47,11 @@ private fun TargetSelectionScreen(
                 title = state.title,
                 onNavigationButtonClick = onBackPressed,
                 navigationIcon = Filled.ArrowBack,
-                actionButtonText = stringResource(id = string.save).uppercase(),
-                onActionButtonClick = onSaveTapped
+                actions = {
+                    TextButton(onClick = onSaveTapped, enabled = state.selectedItems.isNotEmpty()) {
+                        Text(stringResource(id = string.save).uppercase())
+                    }
+                }
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
