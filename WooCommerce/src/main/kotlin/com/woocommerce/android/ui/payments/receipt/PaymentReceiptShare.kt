@@ -13,11 +13,11 @@ class PaymentReceiptShare @Inject constructor(
     private val fileDownloader: FileDownloader,
     private val context: Application,
 ) {
-    suspend operator fun invoke(receiptUrl: String): ReceiptShareResult {
+    suspend operator fun invoke(receiptUrl: String, orderNumber: Long): ReceiptShareResult {
         val receiptFile = fileUtils.createTempTimeStampedFile(
             storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                 ?: context.filesDir,
-            prefix = "receipt",
+            prefix = "receipt_$orderNumber",
             fileExtension = "html"
         ) ?: return ReceiptShareResult.Error.FileCreation
         if (!fileDownloader.downloadFile(receiptUrl, receiptFile)) {

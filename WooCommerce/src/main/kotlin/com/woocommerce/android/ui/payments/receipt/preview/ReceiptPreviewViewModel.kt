@@ -55,7 +55,7 @@ class ReceiptPreviewViewModel
             viewState.value = Loading
 
             tracker.track(RECEIPT_EMAIL_TAPPED)
-            when (val sharingResult = paymentReceiptShare(args.receiptUrl)) {
+            when (val sharingResult = paymentReceiptShare(args.receiptUrl, args.orderId)) {
                 PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
                     tracker.track(
                         RECEIPT_EMAIL_FAILED,
