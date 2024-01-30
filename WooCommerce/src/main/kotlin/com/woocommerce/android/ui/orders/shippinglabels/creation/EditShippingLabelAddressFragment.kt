@@ -240,10 +240,13 @@ class EditShippingLabelAddressFragment :
 
         firstErrorField?.let { (_, view) ->
             if (!isViewVisibleInScrollView(binding.scrollView, view)) {
+                binding.root.clearFocus()
+
                 ActivityUtils.hideKeyboard(requireActivity())
 
                 binding.scrollView.post {
                     binding.scrollView.smoothScrollTo(0, view.top)
+                    view.requestFocus()
                 }
             }
         }
