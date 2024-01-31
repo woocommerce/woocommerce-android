@@ -64,7 +64,8 @@ class EditShippingLabelAddressFragment :
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -146,6 +147,7 @@ class EditShippingLabelAddressFragment :
                 viewModel.onDoneButtonClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -228,33 +230,26 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    private fun scrollToFirstErrorFieldIfNeeded(
-        viewState: EditShippingLabelAddressViewModel.ViewState,
-        binding: FragmentEditShippingLabelAddressBinding
-    ) {
-        val firstErrorField: Pair<InputField<*>, View>? = listOf(
-            viewState.nameField to binding.name,
-            viewState.companyField to binding.company,
-            viewState.phoneField to binding.phone,
-            viewState.address1Field to binding.address1,
-            viewState.address2Field to binding.address2,
-            viewState.cityField to binding.city,
-            viewState.zipField to binding.zip,
-            viewState.stateField to if (viewState.isStateFieldSpinner == true) binding.stateSpinner else binding.state,
-            viewState.countryField to binding.countrySpinner
-        ).firstOrNull { it.first.error != null }
-
-        firstErrorField?.let { (_, errorView) ->
-            binding.root.clearFocus()
-
-            ActivityUtils.hideKeyboard(requireActivity())
-
-            binding.scrollView.postDelayed({
-                binding.scrollView.smoothScrollTo(0, errorView.top)
-
-                errorView.requestFocus()
-            }, 300)
+    private fun scrollToFirstErrorField(field: EditShippingLabelAddressViewModel.Field, isStateFieldSpinner: Boolean?) {
+        val errorView = when (field) {
+            Field.Name -> binding.name
+            Field.Company -> binding.company
+            Field.Phone -> binding.phone
+            Field.Address1 -> binding.address1
+            Field.Address2 -> binding.address2
+            Field.City -> binding.city
+            Field.Zip -> binding.zip
+            Field.State -> if (isStateFieldSpinner == true) binding.stateSpinner else binding.state
+            Field.Country -> binding.countrySpinner
         }
+
+        binding.root.clearFocus()
+        ActivityUtils.hideKeyboard(requireActivity())
+
+        binding.scrollView.postDelayed({
+            binding.scrollView.smoothScrollTo(0, errorView.top)
+            errorView.requestFocus()
+        }, 300)
     }
 
     @SuppressLint("SetTextI18n")
@@ -273,6 +268,7 @@ class EditShippingLabelAddressFragment :
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
                         items = event.locations.map {
@@ -287,6 +283,7 @@ class EditShippingLabelAddressFragment :
                     )
                     findNavController().navigateSafely(action)
                 }
+
                 is ShowStateSelector -> {
                     val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
                         items = event.locations.map {
@@ -301,9 +298,13 @@ class EditShippingLabelAddressFragment :
                     )
                     findNavController().navigateSafely(action)
                 }
+
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)
                 is DialPhoneNumber -> dialPhoneNumber(requireContext(), event.phoneNumber)
-                is CreateShippingLabelEvent.ScrollToFirstErrorField -> scrollToFirstErrorFieldIfNeeded(event.viewState, binding)
+                is CreateShippingLabelEvent.ScrollToFirstErrorField -> scrollToFirstErrorField(
+                    event.field,
+                    event.isStateFieldSpinner
+                )
 
                 else -> event.isHandled = false
             }

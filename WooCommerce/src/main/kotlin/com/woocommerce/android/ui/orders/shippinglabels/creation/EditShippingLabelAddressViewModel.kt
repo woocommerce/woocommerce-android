@@ -115,8 +115,27 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
-        }else {
-            triggerEvent(CreateShippingLabelEvent.ScrollToFirstErrorField(viewState))
+        } else {
+            triggerScrollToFirstErrorFieldEvent()
+        }
+    }
+
+    private fun triggerScrollToFirstErrorFieldEvent() {
+        val firstErrorField = when {
+            viewState.nameField.error != null -> Field.Name
+            viewState.companyField.error != null -> Field.Company
+            viewState.phoneField.error != null -> Field.Phone
+            viewState.address1Field.error != null -> Field.Address1
+            viewState.address2Field.error != null -> Field.Address2
+            viewState.cityField.error != null -> Field.City
+            viewState.zipField.error != null -> Field.Zip
+            viewState.stateField.error != null -> Field.State
+            viewState.countryField.error != null -> Field.Country
+            else -> null
+        }
+
+        firstErrorField?.let {
+            triggerEvent(CreateShippingLabelEvent.ScrollToFirstErrorField(it, viewState.isStateFieldSpinner))
         }
     }
 
@@ -149,6 +168,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             ValidationResult.Valid -> {
                 exitWithAddress(address)
             }
+
             is ValidationResult.Invalid -> {
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
