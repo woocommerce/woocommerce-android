@@ -421,28 +421,53 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    fun trackPrintReceiptTapped() {
-        track(RECEIPT_PRINT_TAPPED)
+    suspend fun trackPrintReceiptTapped() {
+        track(
+            RECEIPT_PRINT_TAPPED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackEmailReceiptTapped() {
-        track(RECEIPT_EMAIL_TAPPED)
+    suspend fun trackEmailReceiptTapped() {
+        track(
+            RECEIPT_EMAIL_TAPPED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackEmailReceiptFailed() {
-        track(RECEIPT_EMAIL_FAILED)
+    suspend fun trackEmailReceiptFailed() {
+        track(
+            RECEIPT_EMAIL_FAILED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackPrintReceiptCancelled() {
-        track(RECEIPT_PRINT_CANCELED)
+    suspend fun trackPrintReceiptCancelled() {
+        track(
+            RECEIPT_PRINT_CANCELED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackPrintReceiptFailed() {
-        track(RECEIPT_PRINT_FAILED)
+    suspend fun trackPrintReceiptFailed() {
+        track(
+            RECEIPT_PRINT_FAILED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackPrintReceiptSucceeded() {
-        track(RECEIPT_PRINT_SUCCESS)
+    suspend fun trackPrintReceiptSucceeded() {
+        track(
+            RECEIPT_PRINT_SUCCESS,
+            properties = mutableMapOf(getReceiptSource())
+        )
+    }
+
+    suspend fun trackReceiptViewTapped() {
+        track(
+            AnalyticsEvent.RECEIPT_VIEW_TAPPED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
     fun trackPaymentCancelled(currentPaymentState: String?) {
