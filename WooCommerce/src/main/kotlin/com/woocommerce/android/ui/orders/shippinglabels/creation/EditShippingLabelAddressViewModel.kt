@@ -116,6 +116,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
         } else {
+            triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
             triggerScrollToFirstErrorFieldEvent()
         }
     }
