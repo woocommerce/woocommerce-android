@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LOCATION
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -49,6 +50,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val languages = blazeRepository.observeLanguages()
     private val devices = blazeRepository.observeDevices()
     private val interests = blazeRepository.observeInterests()
+
     private val selectedLanguages = savedStateHandle.getStateFlow<List<String>>(
         scope = viewModelScope,
         initialValue = emptyList(),
@@ -64,6 +66,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         initialValue = emptyList(),
         key = "selectedInterests"
     )
+    private val selectedLocations = savedStateHandle.getStateFlow<List<Location>>(
+        scope = viewModelScope,
+        initialValue = emptyList()
+    )
 
     val viewState = combine(
         adDetails,
@@ -73,16 +79,17 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         interests,
         selectedLanguages,
         selectedDevices,
-        selectedInterests
-    ) { adDetails, budget, languages, devices, interests, selectedLanguages, selectedDevices, selectedInterests ->
+        selectedInterests,
+        selectedLocations
+    ) { ad, budget, languages, devices, interests, chosenLanguages, chosenDevices, chosenInterests, chosenLocations ->
         CampaignPreviewUiState(
-            adDetails = adDetails,
+            adDetails = ad,
             campaignDetails = campaign.toCampaignDetailsUi(
                 budget,
-                languages.filter { it.code in selectedLanguages },
-                devices.filter { it.id in selectedDevices },
-                interests.filter { it.id in selectedInterests },
-                emptyList()
+                languages.filter { it.code in chosenLanguages },
+                devices.filter { it.id in chosenDevices },
+                interests.filter { it.id in chosenInterests },
+                chosenLocations
             )
         )
     }.asLiveData()
@@ -128,6 +135,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 else -> Unit
             }
         }
+    }
+
+    fun onTargetLocationsUpdated(locations: List<Location>) {
+        selectedLocations.update { locations }
     }
 
     private fun loadData() {
@@ -182,7 +193,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
                 displayValue = locations.joinToString { it.name }
                     .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = { /* TODO Add location selection */ },
+                onItemSelected = {
+                    triggerEvent(NavigateToTargetSelectionScreen(LOCATION, interests.map { it.id }))
+                },
             ),
             CampaignDetailItemUi(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
