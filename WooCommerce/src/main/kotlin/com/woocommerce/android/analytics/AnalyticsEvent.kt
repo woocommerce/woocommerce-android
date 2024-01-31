@@ -452,6 +452,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     RECEIPT_PRINT_CANCELED,
     RECEIPT_PRINT_SUCCESS,
     RECEIPT_VIEW_TAPPED,
+    RECEIPT_URL_FETCHING_FAILS,
 
     // -- Top-level navigation
     MAIN_MENU_SETTINGS_TAPPED,
