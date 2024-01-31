@@ -142,7 +142,10 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             val neutralActionName: String? = null,
             val cancelable: Boolean = true
         ) : Event() {
-            fun showIn(fragmentManager: androidx.fragment.app.FragmentManager, listener: WooDialogFragment.DialogInteractionListener) {
+            fun showIn(
+                fragmentManager: androidx.fragment.app.FragmentManager,
+                listener: WooDialogFragment.DialogInteractionListener
+            ) {
                 val dialogParams = DialogParams(
                     titleId = titleId,
                     messageId = messageId,
