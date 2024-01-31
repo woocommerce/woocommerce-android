@@ -718,6 +718,9 @@ class CardReaderPaymentViewModel
                     )
                 )
             } else {
+                tracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
                 triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
             }
         }
@@ -749,6 +752,9 @@ class CardReaderPaymentViewModel
                     }
                 }
             } else {
+                tracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
                 triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
             }
 
