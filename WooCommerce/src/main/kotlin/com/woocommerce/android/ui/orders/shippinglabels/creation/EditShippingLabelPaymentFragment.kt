@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -22,7 +23,9 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Error
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Loading
@@ -43,8 +46,7 @@ class EditShippingLabelPaymentFragment :
     BaseFragment(
         R.layout.fragment_edit_shipping_label_payment
     ),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
@@ -63,18 +65,11 @@ class EditShippingLabelPaymentFragment :
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentEditShippingLabelPaymentBinding.bind(view)
+        setupToolbar(binding)
         binding.paymentMethodsList.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = paymentMethodsAdapter
@@ -92,7 +87,24 @@ class EditShippingLabelPaymentFragment :
         setupResultHandlers()
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun setupToolbar(binding: FragmentEditShippingLabelPaymentBinding) {
+        binding.toolbar.title = getString(R.string.orderdetail_shipping_label_item_payment)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding.toolbar.menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
+    }
+
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked()
@@ -188,13 +200,20 @@ class EditShippingLabelPaymentFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is AddPaymentMethod -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
+                    (activity as? MainActivity)?.navigateToWebViewNew(
+                        MainActivityViewModel.ViewUrlInWebViewNew(
+                            AppUrls.WPCOM_ADD_PAYMENT_METHOD,
                             urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
                             title = getFragmentTitle()
                         )
                     )
+//                    findNavController().navigate(
+//                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+//                            urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
+//                            urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
+//                            title = getFragmentTitle()
+//                        )
+//                    )
                 }
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PAYMENTS_RESULT, event.data)
