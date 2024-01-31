@@ -137,9 +137,6 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             @StringRes val positiveButtonId: Int? = null,
             @StringRes val negativeButtonId: Int? = null,
             @StringRes val neutralButtonId: Int? = null,
-            val positiveActionName: String? = null,
-            val negativeActionName: String? = null,
-            val neutralActionName: String? = null,
             val cancelable: Boolean = true
         ) : Event() {
             fun showIn(
