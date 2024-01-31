@@ -456,10 +456,14 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    suspend fun trackReceiptViewTapped() {
+    suspend fun trackReceiptViewTapped(properties: Map<String, Any>) {
         track(
             AnalyticsEvent.RECEIPT_VIEW_TAPPED,
-            properties = mutableMapOf(getReceiptSource())
+            properties = properties.toMutableMap().also {
+                it.putAll(
+                    mapOf(getReceiptSource())
+                )
+            }
         )
     }
 
