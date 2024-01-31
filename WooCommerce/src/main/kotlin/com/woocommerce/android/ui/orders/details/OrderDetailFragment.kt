@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.livedata.observeAsState
@@ -201,7 +202,14 @@ class OrderDetailFragment :
 
     private fun setupToolbarMenu(menu: Menu) {
         onPrepareMenu(menu)
-        binding.toolbar.navigationIcon = null
+        if (isTablet()) {
+            binding.toolbar.navigationIcon = null
+        } else {
+            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
+            binding.toolbar.setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
+        }
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
         menuEditOrder.isVisible = true
     }
@@ -290,7 +298,10 @@ class OrderDetailFragment :
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
             }
-            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
+            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {
+                screenTitle = it
+                binding.toolbar.title = it
+            }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
                 showAddShipmentTracking(it)
