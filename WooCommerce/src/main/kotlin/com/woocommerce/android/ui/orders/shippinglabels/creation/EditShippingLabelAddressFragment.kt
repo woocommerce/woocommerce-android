@@ -10,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -54,8 +55,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class EditShippingLabelAddressFragment :
     BaseFragment(R.layout.fragment_edit_shipping_label_address),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
@@ -95,12 +95,25 @@ class EditShippingLabelAddressFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentEditShippingLabelAddressBinding.bind(view)
+        setupToolbar(binding)
 
         initializeViewModel(binding)
         initializeViews(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentEditShippingLabelAddressBinding) {
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
     }
 
     private fun initializeViewModel(binding: FragmentEditShippingLabelAddressBinding) {
@@ -126,11 +139,7 @@ class EditShippingLabelAddressFragment :
 
     override fun getFragmentTitle() = screenTitle
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
