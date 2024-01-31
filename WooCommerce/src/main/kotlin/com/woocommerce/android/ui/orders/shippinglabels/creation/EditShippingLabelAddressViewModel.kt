@@ -121,22 +121,14 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     private fun triggerScrollToFirstErrorFieldEvent() {
-        val firstErrorField = when {
-            viewState.nameField.error != null -> Field.Name
-            viewState.companyField.error != null -> Field.Company
-            viewState.phoneField.error != null -> Field.Phone
-            viewState.address1Field.error != null -> Field.Address1
-            viewState.address2Field.error != null -> Field.Address2
-            viewState.cityField.error != null -> Field.City
-            viewState.zipField.error != null -> Field.Zip
-            viewState.stateField.error != null -> Field.State
-            viewState.countryField.error != null -> Field.Country
-            else -> null
-        }
-
+        val firstErrorField = viewState.findFirstErrorField()
         firstErrorField?.let {
             triggerEvent(CreateShippingLabelEvent.ScrollToFirstErrorField(it, viewState.isStateFieldSpinner))
         }
+    }
+
+    private fun ViewState.findFirstErrorField(): Field? {
+        return Field.values().firstOrNull { this[it].error != null }
     }
 
     private fun loadCountriesAndStates() {

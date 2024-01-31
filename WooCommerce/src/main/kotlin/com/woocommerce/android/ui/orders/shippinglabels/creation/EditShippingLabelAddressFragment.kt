@@ -230,7 +230,7 @@ class EditShippingLabelAddressFragment :
         }
     }
 
-    private fun scrollToFirstErrorField(field: EditShippingLabelAddressViewModel.Field, isStateFieldSpinner: Boolean?) {
+    private fun scrollToFirstErrorField(field: Field, isStateFieldSpinner: Boolean?) {
         val errorView = when (field) {
             Field.Name -> binding.name
             Field.Company -> binding.company
@@ -243,13 +243,9 @@ class EditShippingLabelAddressFragment :
             Field.Country -> binding.countrySpinner
         }
 
-        binding.root.clearFocus()
-        ActivityUtils.hideKeyboard(requireActivity())
-
-        binding.scrollView.postDelayed({
+        if (!isViewVisibleInScrollView(binding.scrollView, errorView)) {
             binding.scrollView.smoothScrollTo(0, errorView.top)
-            errorView.requestFocus()
-        }, 300)
+        }
     }
 
     @SuppressLint("SetTextI18n")
