@@ -417,6 +417,9 @@ class ProductListFragment :
                     one = R.string.product_selection_count_single
                 )
             }
+            new.isSearchActive?.takeIfNotEqualTo(old?.isSearchActive) { isSearchActive ->
+                binding.productsRefreshLayout.isEnabled = !isSearchActive
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner) {
