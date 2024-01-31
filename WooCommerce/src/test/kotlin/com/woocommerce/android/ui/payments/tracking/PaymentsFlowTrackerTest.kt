@@ -26,7 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -77,13 +76,13 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     }
 
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock() {
+    private val appPrefsWrapper: AppPrefsWrapper = mock {
         on(it.getCardReaderPreferredPlugin(anyInt(), anyLong(), anyLong())).thenReturn(WOOCOMMERCE_PAYMENTS)
     }
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
-    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider = mock() {
+    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider = mock {
         on { trackingInfo }.thenReturn(
             TrackingInfo(
                 country = COUNTRY_CODE,
@@ -1043,40 +1042,160 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when user clicks on print receipt button, then RECEIPT_PRINT_TAPPED tracked`() =
+    fun `given wc core can generate receipts, when trackPrintReceiptTapped, then RECEIPT_PRINT_TAPPED tracked`() =
         testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(true)
+
             paymentsFlowTracker.trackPrintReceiptTapped()
 
-            verify(trackerWrapper).track(eq(RECEIPT_PRINT_TAPPED), any())
+            verify(trackerWrapper).track(
+                eq(RECEIPT_PRINT_TAPPED),
+                check { assertThat(it["source"]).isEqualTo("backend") }
+            )
         }
 
     @Test
-    fun `when OS accepts the print request, then RECEIPT_PRINT_SUCCESS tracked`() = testBlocking {
-        paymentsFlowTracker.trackPrintReceiptSucceeded()
-
-        verify(trackerWrapper).track(eq(RECEIPT_PRINT_SUCCESS), any())
-    }
-
-    @Test
-    fun `when OS refuses the print request, then RECEIPT_PRINT_FAILED tracked`() = testBlocking {
-        paymentsFlowTracker.trackPrintReceiptFailed()
-
-        verify(trackerWrapper).track(eq(RECEIPT_PRINT_FAILED), any())
-    }
-
-    @Test
-    fun `when manually cancels the print request, then RECEIPT_PRINT_CANCELED tracked`() = testBlocking {
-        paymentsFlowTracker.trackPrintReceiptCancelled()
-
-        verify(trackerWrapper).track(eq(RECEIPT_PRINT_CANCELED), any())
-    }
-
-    @Test
-    fun `when user clicks on send receipt button, then RECEIPT_EMAIL_TAPPED tracked`() =
+    fun `given new wc core can not generate receipts, when trackPrintReceiptTapped, then RECEIPT_PRINT_TAPPED tracked`() =
         testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(false)
+
+            paymentsFlowTracker.trackPrintReceiptTapped()
+
+            verify(trackerWrapper).track(
+                eq(RECEIPT_PRINT_TAPPED),
+                check { assertThat(it["source"]).isEqualTo("local") }
+            )
+        }
+
+    @Test
+    fun `given wc core can generate receipts, when trackPrintReceiptSucceeded, then RECEIPT_PRINT_SUCCESS tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(true)
+
+            paymentsFlowTracker.trackPrintReceiptSucceeded()
+
+            verify(trackerWrapper).track(
+                eq(RECEIPT_PRINT_SUCCESS),
+                check { assertThat(it["source"]).isEqualTo("backend") }
+            )
+        }
+
+    @Test
+    fun `given wc core can not generate receipts, when trackPrintReceiptSucceeded, then RECEIPT_PRINT_SUCCESS tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(false)
+
+            paymentsFlowTracker.trackPrintReceiptSucceeded()
+
+            verify(trackerWrapper).track(
+                eq(RECEIPT_PRINT_SUCCESS),
+                check { assertThat(it["source"]).isEqualTo("local") }
+            )
+        }
+
+    @Test
+    fun `given wc core can generate receipts, when trackPrintReceiptCancelled, then RECEIPT_PRINT_CANCELED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(true)
+
+            paymentsFlowTracker.trackPrintReceiptCancelled()
+
+            verify(trackerWrapper).track(
+                eq(RECEIPT_PRINT_CANCELED),
+                check { assertThat(it["source"]).isEqualTo("backend") }
+            )
+        }
+
+    @Test
+    fun `given wc core can not generate receipts, when trackPrintReceiptCancelled, then RECEIPT_PRINT_CANCELED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(false)
+
+            paymentsFlowTracker.trackPrintReceiptCancelled()
+
+            verify(trackerWrapper).track(
+                eq(RECEIPT_PRINT_CANCELED),
+                check { assertThat(it["source"]).isEqualTo("local") }
+            )
+        }
+
+    @Test
+    fun `given wc core can generate receipts, when trackEmailReceiptTapped, then RECEIPT_EMAIL_TAPPED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(true)
+
             paymentsFlowTracker.trackEmailReceiptTapped()
 
-            verify(trackerWrapper).track(eq(RECEIPT_EMAIL_TAPPED), any())
+            verify(trackerWrapper).track(
+                eq(RECEIPT_EMAIL_TAPPED),
+                check { assertThat(it["source"]).isEqualTo("backend") }
+            )
+        }
+
+    @Test
+    fun `given wc core can generate receipts, when trackPrintReceiptFailed, then RECEIPT_PRINT_FAILED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(true)
+
+            paymentsFlowTracker.trackPrintReceiptFailed()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.RECEIPT_PRINT_FAILED),
+                check { assertThat(it["source"]).isEqualTo("backend") }
+            )
+        }
+
+    @Test
+    fun `given wc core can not generate receipts, when trackPrintReceiptFailed, then RECEIPT_PRINT_FAILED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(false)
+
+            paymentsFlowTracker.trackPrintReceiptFailed()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.RECEIPT_PRINT_FAILED),
+                check { assertThat(it["source"]).isEqualTo("local") }
+            )
+        }
+
+    @Test
+    fun `given wc core can not generate receipts, when trackReceiptViewTapped, then RECEIPT_VIEW_TAPPED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(false)
+
+            paymentsFlowTracker.trackReceiptViewTapped(
+                properties = mapOf(
+                    "key" to "value"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.RECEIPT_VIEW_TAPPED),
+                check {
+                    assertThat(it["source"]).isEqualTo("local")
+                    assertThat(it["key"]).isEqualTo("value")
+                }
+            )
+        }
+
+    @Test
+    fun `given wc core can generate receipts, when trackReceiptViewTapped, then RECEIPT_VIEW_TAPPED tracked`() =
+        testBlocking {
+            whenever(paymentReceiptHelper.isWCCanGenerateReceipts()).thenReturn(true)
+
+            paymentsFlowTracker.trackReceiptViewTapped(
+                properties = mapOf(
+                    "key" to "value"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.RECEIPT_VIEW_TAPPED),
+                check {
+                    assertThat(it["source"]).isEqualTo("backend")
+                    assertThat(it["key"]).isEqualTo("value")
+                }
+            )
         }
 
     @Test

@@ -162,9 +162,9 @@ class PaymentsFlowTracker @Inject constructor(
 
     private suspend fun getReceiptSource(): Pair<String, String> =
         if (paymentReceiptHelper.isWCCanGenerateReceipts()) {
-            "source" to "backend"
+            AnalyticsTracker.KEY_SOURCE to "backend"
         } else {
-            "source" to "local"
+            AnalyticsTracker.KEY_SOURCE to "local"
         }
 
     @Suppress("ComplexMethod")
