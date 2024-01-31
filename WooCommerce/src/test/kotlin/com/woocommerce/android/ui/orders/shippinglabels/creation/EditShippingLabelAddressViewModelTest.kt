@@ -381,7 +381,6 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             assertThat(viewState.areAllRequiredFieldsValid).isTrue()
         }
 
-
     @Test
     fun `when validation fails for a set of fields, ScrollToFirstErrorField event is triggered with correct field`() = testBlocking {
 
