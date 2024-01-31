@@ -53,6 +53,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_URL_FETCHING_FAILS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -464,6 +465,18 @@ class PaymentsFlowTracker @Inject constructor(
                     mapOf(getReceiptSource())
                 )
             }
+        )
+    }
+
+    suspend fun trackReceiptUrlFetchingFails(
+        errorDescription: String,
+        errorType: String,
+    ) {
+        track(
+            RECEIPT_URL_FETCHING_FAILS,
+            properties = mutableMapOf(getReceiptSource()),
+            errorDescription = errorDescription,
+            errorType = errorType,
         )
     }
 
