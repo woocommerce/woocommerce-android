@@ -103,9 +103,13 @@ class OrderDetailViewModel @Inject constructor(
         get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
             viewState = viewState.copy(
-                orderInfo = OrderDetailViewState.OrderInfo(
+                orderInfo = viewState.orderInfo?.copy(
+                    order = value,
+                    isPaymentCollectableWithCardReader = viewState.orderInfo?.isPaymentCollectableWithCardReader
+                        ?: false
+                ) ?: OrderDetailViewState.OrderInfo(
                     value,
-                    viewState.orderInfo?.isPaymentCollectableWithCardReader ?: false
+                    isPaymentCollectableWithCardReader = false
                 )
             )
         }
@@ -347,7 +351,21 @@ class OrderDetailViewModel @Inject constructor(
     fun onSeeReceiptClicked() {
         launch {
             tracker.trackReceiptViewTapped(order.id, order.status)
+
+            viewState = viewState.copy(
+                orderInfo = viewState.orderInfo?.copy(
+                    receiptButtonStatus = OrderDetailViewState.ReceiptButtonStatus.Loading
+                )
+            )
+
             val receiptResult = paymentReceiptHelper.getReceiptUrl(order.id)
+
+            viewState = viewState.copy(
+                orderInfo = viewState.orderInfo?.copy(
+                    receiptButtonStatus = OrderDetailViewState.ReceiptButtonStatus.Visible
+                )
+            )
+
             if (receiptResult.isSuccess) {
                 triggerEvent(PreviewReceipt(order.billingAddress.email, receiptResult.getOrThrow(), order.id))
             } else {
@@ -584,7 +602,11 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
-                isReceiptButtonsVisible = paymentReceiptHelper.isReceiptAvailable(order.id) && order.isOrderPaid,
+                receiptButtonStatus = if (paymentReceiptHelper.isReceiptAvailable(order.id) && order.isOrderPaid) {
+                    OrderDetailViewState.ReceiptButtonStatus.Visible
+                } else {
+                    OrderDetailViewState.ReceiptButtonStatus.Hidden
+                }
             ),
             orderStatus = orderStatus,
             toolbarTitle = resourceProvider.getString(

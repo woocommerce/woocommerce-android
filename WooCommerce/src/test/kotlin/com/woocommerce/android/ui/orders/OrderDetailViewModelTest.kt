@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -326,7 +327,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given receipt is available and order is paid, when view model started, then state with receipt isReceiptButtonsVisible true emitted`() =
+    fun `given receipt is available and order is paid, when view model started, then state with receipt is visible emitted`() =
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
@@ -350,11 +351,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // THEN
-            assertThat(detailViewState!!.orderInfo!!.isReceiptButtonsVisible).isTrue()
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Visible
+            )
         }
 
     @Test
-    fun `given receipt is available and order not paid, when view model started, then state with receipt isReceiptButtonsVisible false emitted`() =
+    fun `given receipt is available and order not paid, when view model started, then state with receipt is hidden emitted`() =
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
@@ -378,11 +381,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // THEN
-            assertThat(detailViewState!!.orderInfo!!.isReceiptButtonsVisible).isFalse()
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Hidden
+            )
         }
 
     @Test
-    fun `given receipt is not available, when view model started, then state with receipt isReceiptButtonsVisible false emitted`() =
+    fun `given receipt is not available, when view model started, then state with receipt is hidden emitted`() =
         testBlocking {
             // GIVEN
             whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(false)
@@ -402,7 +407,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             // THEN
-            assertThat(detailViewState!!.orderInfo!!.isReceiptButtonsVisible).isFalse()
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Hidden
+            )
         }
 
     @Test
@@ -1277,6 +1284,32 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             assertThat((viewModel.event.value as PreviewReceipt).orderId).isEqualTo(order.id)
             assertThat((viewModel.event.value as PreviewReceipt).receiptUrl).isEqualTo(receiptUrl)
             assertThat((viewModel.event.value as PreviewReceipt).billingEmail).isEqualTo(order.billingAddress.email)
+        }
+
+    @Test
+    fun `when onSeeReceiptClicked clicked, then loading receipt status emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+            val receiptUrl = "https://example.com"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            val states = viewModel.viewStateData.liveData.captureValues()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((states.last()).orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Visible
+            )
+            assertThat((states[states.size - 2]).orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Loading
+            )
         }
 
     @Test
