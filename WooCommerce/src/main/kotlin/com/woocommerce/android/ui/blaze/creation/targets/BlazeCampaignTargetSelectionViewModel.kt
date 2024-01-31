@@ -4,8 +4,13 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LOCATION
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -13,13 +18,16 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class BlazeCampaignTargetSelectionViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
@@ -28,8 +36,11 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignTargetSelectionFragmentArgs by savedStateHandle.navArgs()
 
+    private val selectedIds = savedStateHandle.getStateFlow(viewModelScope, navArgs.selectedIds.toSet())
+    private val searchQuery = savedStateHandle.getStateFlow(viewModelScope, initialValue = "")
+
     private val items: Flow<List<TargetItem>> = when (navArgs.targetType) {
-        BlazeTargetType.LANGUAGE -> blazeRepository.observeLanguages().map { languages ->
+        LANGUAGE -> blazeRepository.observeLanguages().map { languages ->
             languages.map { language ->
                 TargetItem(
                     id = language.code,
@@ -37,7 +48,7 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
                 )
             }
         }
-        BlazeTargetType.DEVICE -> blazeRepository.observeDevices().map { devices ->
+        DEVICE -> blazeRepository.observeDevices().map { devices ->
             devices.map { device ->
                 TargetItem(
                     id = device.id,
@@ -45,7 +56,7 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
                 )
             }
         }
-        else -> blazeRepository.observeInterests().map { interests ->
+        INTEREST -> blazeRepository.observeInterests().map { interests ->
             interests.map { interest ->
                 TargetItem(
                     id = interest.id,
@@ -53,19 +64,40 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
                 )
             }
         }
+        LOCATION -> searchQuery
+            .debounce { query ->
+                if (query.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+            }.map { query ->
+                blazeRepository.fetchLocations(query)?.map { location ->
+                    TargetItem(
+                        id = location.id.toString(),
+                        value = location.name
+                    )
+                } ?: emptyList()
+            }
     }
 
-    private val selectedIds = savedStateHandle.getStateFlow(viewModelScope, navArgs.selectedIds.toSet())
-
-    val viewState = combine(items, selectedIds) { items, selectedIds ->
+    val viewState = combine(items, selectedIds, searchQuery) { items, selectedIds, searchQuery ->
         ViewState(
             items = items,
             selectedItems = selectedIds.map { id -> items.first { it.id == id } },
             title = when (navArgs.targetType) {
-                BlazeTargetType.LANGUAGE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
-                BlazeTargetType.DEVICE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
-                else -> resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
-            }
+                LANGUAGE -> {
+                    resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
+                }
+                DEVICE -> {
+                    resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
+                }
+                INTEREST -> {
+                    resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
+                }
+                LOCATION -> {
+                    resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
+                }
+            },
+            isSearchVisible = navArgs.targetType == LOCATION,
+            searchQuery = searchQuery,
+            searchHint = resourceProvider.getString(R.string.blaze_campaign_preview_target_location_search_hint)
         )
     }.asLiveData()
 
@@ -102,6 +134,10 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
         triggerEvent(ExitWithResult(TargetSelectionResult(navArgs.targetType, result)))
     }
 
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.update { query }
+    }
+
     data class TargetItem(
         val id: String,
         val value: String,
@@ -110,7 +146,10 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
     data class ViewState(
         val items: List<TargetItem>,
         val selectedItems: List<TargetItem>,
-        val title: String
+        val title: String,
+        val isSearchVisible: Boolean,
+        val searchQuery: String,
+        val searchHint: String
     )
 
     @Parcelize
