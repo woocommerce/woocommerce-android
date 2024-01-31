@@ -54,6 +54,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_URL_FETCHING_FAILS
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_VIEW_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -459,7 +460,7 @@ class PaymentsFlowTracker @Inject constructor(
 
     suspend fun trackReceiptViewTapped(properties: Map<String, Any>) {
         track(
-            AnalyticsEvent.RECEIPT_VIEW_TAPPED,
+            RECEIPT_VIEW_TAPPED,
             properties = properties.toMutableMap().also {
                 it.putAll(
                     mapOf(getReceiptSource())
@@ -635,6 +636,7 @@ class PaymentsFlowTracker @Inject constructor(
                     properties = mutableMapOf(getReceiptSource())
                 )
             }
+
             is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
                 track(
                     RECEIPT_EMAIL_FAILED,
@@ -643,6 +645,7 @@ class PaymentsFlowTracker @Inject constructor(
                     properties = mutableMapOf(getReceiptSource())
                 )
             }
+
             is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
                 track(
                     RECEIPT_EMAIL_FAILED,
