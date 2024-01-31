@@ -2569,14 +2569,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when email activity not found, then event tracked`() =
-        testBlocking {
-            viewModel.onEmailActivityNotFound()
-
-            verify(tracker).trackEmailReceiptFailed()
-        }
-
-    @Test
     fun `given user presses back button, when re-fetching order, then ReFetchingOrderState shown`() =
         testBlocking {
             simulateFetchOrderJobState(inProgress = true)

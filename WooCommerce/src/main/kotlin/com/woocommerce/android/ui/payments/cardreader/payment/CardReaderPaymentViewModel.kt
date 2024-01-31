@@ -756,11 +756,6 @@ class CardReaderPaymentViewModel
         }
     }
 
-    fun onEmailActivityNotFound() {
-        tracker.trackEmailReceiptFailed()
-        triggerEvent(ShowSnackbarInDialog(R.string.card_reader_payment_receipt_app_to_share_not_found))
-    }
-
     fun onPrintResult(result: PrintJobResult) {
         showPaymentSuccessfulState()
 
