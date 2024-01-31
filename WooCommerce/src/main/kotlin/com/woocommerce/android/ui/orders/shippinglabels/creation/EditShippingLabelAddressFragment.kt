@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,7 +10,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -62,6 +65,7 @@ class EditShippingLabelAddressFragment :
         const val SELECT_STATE_REQUEST = "select_state_request"
         const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
+        const val ERROR_SCROLL_DELAY = 300L
     }
 
     @Inject
@@ -244,7 +248,10 @@ class EditShippingLabelAddressFragment :
         }
 
         if (!isViewVisibleInScrollView(binding.scrollView, errorView)) {
-            binding.scrollView.smoothScrollTo(0, errorView.top)
+            binding.scrollView.postDelayed({
+                binding.scrollView.smoothScrollTo(0, errorView.top)
+                errorView.requestFocus()
+            }, ERROR_SCROLL_DELAY)
         }
     }
 
