@@ -380,4 +380,37 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.liveData.value!!
             assertThat(viewState.areAllRequiredFieldsValid).isTrue()
         }
+
+
+    @Test
+    fun `when validation fails for a set of fields, ScrollToFirstErrorField event is triggered with correct field`() = testBlocking {
+
+        viewModel.onFieldEdited(Field.Name, "")
+        viewModel.onFieldEdited(Field.Company, "")
+
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onDoneButtonClicked()
+
+        verify(addressValidator, never()).validateAddress(any(), any(), any())
+
+        assertThat(event).isInstanceOf(CreateShippingLabelEvent.ScrollToFirstErrorField::class.java)
+        if (event is CreateShippingLabelEvent.ScrollToFirstErrorField) {
+            assertThat((event as CreateShippingLabelEvent.ScrollToFirstErrorField).field).isEqualTo(Field.Name)
+        }
+    }
+
+    @Test
+    fun `when all fields are valid, ScrollToFirstErrorField event is not triggered`() = testBlocking {
+
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onDoneButtonClicked()
+
+        verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
+
+        assertThat(event).isNotInstanceOf(CreateShippingLabelEvent.ScrollToFirstErrorField::class.java)
+    }
 }
