@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 17.2
 -----
-- [**] Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
+- [**] (For users with WooCommerce version of 8.7+) Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
 
 17.1
 -----
