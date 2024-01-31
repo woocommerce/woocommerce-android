@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
@@ -81,7 +82,8 @@ class PaymentsFlowTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider
+    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider,
+    private val paymentReceiptHelper: PaymentReceiptHelper,
 ) {
     @VisibleForTesting
     fun track(
@@ -155,6 +157,13 @@ class PaymentsFlowTracker @Inject constructor(
             properties["card_reader_model"] = cardReaderModel
         }
     }
+
+    private suspend fun getReceiptSource(): Pair<String, String> =
+        if (paymentReceiptHelper.isWCCanGenerateReceipts()) {
+            "source" to "backend"
+        } else {
+            "source" to "local"
+        }
 
     @Suppress("ComplexMethod")
     private fun getOnboardingNotCompletedReason(state: CardReaderOnboardingState): String? =
@@ -581,27 +590,30 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    fun trackPaymentsReceiptSharingFailed(sharingResult: PaymentReceiptShare.ReceiptShareResult.Error) {
+    suspend fun trackPaymentsReceiptSharingFailed(sharingResult: PaymentReceiptShare.ReceiptShareResult.Error) {
         when (sharingResult) {
             is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
                 track(
                     RECEIPT_EMAIL_FAILED,
                     errorType = "file_creation_failed",
-                    errorDescription = "File creation failed"
+                    errorDescription = "File creation failed",
+                    properties = mutableMapOf(getReceiptSource())
                 )
             }
             is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
                 track(
                     RECEIPT_EMAIL_FAILED,
                     errorType = "file_download_failed",
-                    errorDescription = "File download failed"
+                    errorDescription = "File download failed",
+                    properties = mutableMapOf(getReceiptSource())
                 )
             }
             is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
                 track(
                     RECEIPT_EMAIL_FAILED,
                     errorType = "no_app_found",
-                    errorDescription = sharingResult.exception.message
+                    errorDescription = sharingResult.exception.message,
+                    properties = mutableMapOf(getReceiptSource())
                 )
             }
         }
