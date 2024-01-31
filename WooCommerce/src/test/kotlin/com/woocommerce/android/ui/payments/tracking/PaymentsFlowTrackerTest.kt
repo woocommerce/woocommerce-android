@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRI
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -93,11 +94,14 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
         )
     }
 
+    private val paymentReceiptHelper: PaymentReceiptHelper = mock()
+
     private val paymentsFlowTracker = PaymentsFlowTracker(
         trackerWrapper,
         appPrefsWrapper,
         selectedSite,
-        cardReaderTrackingInfoProvider
+        cardReaderTrackingInfoProvider,
+        paymentReceiptHelper,
     )
 
     @Test
@@ -1047,21 +1051,21 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when OS accepts the print request, then RECEIPT_PRINT_SUCCESS tracked`() {
+    fun `when OS accepts the print request, then RECEIPT_PRINT_SUCCESS tracked`() = testBlocking {
         paymentsFlowTracker.trackPrintReceiptSucceeded()
 
         verify(trackerWrapper).track(eq(RECEIPT_PRINT_SUCCESS), any())
     }
 
     @Test
-    fun `when OS refuses the print request, then RECEIPT_PRINT_FAILED tracked`() {
+    fun `when OS refuses the print request, then RECEIPT_PRINT_FAILED tracked`() = testBlocking {
         paymentsFlowTracker.trackPrintReceiptFailed()
 
         verify(trackerWrapper).track(eq(RECEIPT_PRINT_FAILED), any())
     }
 
     @Test
-    fun `when manually cancels the print request, then RECEIPT_PRINT_CANCELED tracked`() {
+    fun `when manually cancels the print request, then RECEIPT_PRINT_CANCELED tracked`() = testBlocking {
         paymentsFlowTracker.trackPrintReceiptCancelled()
 
         verify(trackerWrapper).track(eq(RECEIPT_PRINT_CANCELED), any())

@@ -2,12 +2,6 @@ package com.woocommerce.android.ui.payments.receipt.preview
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
@@ -29,7 +23,6 @@ import org.mockito.kotlin.whenever
 class ReceiptPreviewViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ReceiptPreviewViewModel
 
-    private val tracker: AnalyticsTrackerWrapper = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
 
@@ -41,7 +34,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        viewModel = ReceiptPreviewViewModel(savedState, tracker, paymentsFlowTracker, paymentReceiptShare)
+        viewModel = ReceiptPreviewViewModel(savedState, paymentsFlowTracker, paymentReceiptShare)
     }
 
     @Test
@@ -77,7 +70,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onShareClicked()
 
-            verify(tracker).track(RECEIPT_EMAIL_TAPPED)
+            verify(paymentsFlowTracker).trackEmailReceiptTapped()
         }
 
     @Test
@@ -167,7 +160,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onPrintClicked()
 
-            verify(tracker).track(RECEIPT_PRINT_TAPPED)
+            verify(paymentsFlowTracker).trackPrintReceiptTapped()
         }
 
     @Test
@@ -175,7 +168,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onPrintResult(FAILED)
 
-            verify(tracker).track(RECEIPT_PRINT_FAILED)
+            verify(paymentsFlowTracker).trackPrintReceiptFailed()
         }
 
     @Test
@@ -183,7 +176,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onPrintResult(CANCELLED)
 
-            verify(tracker).track(RECEIPT_PRINT_CANCELED)
+            verify(paymentsFlowTracker).trackPrintReceiptCancelled()
         }
 
     @Test
@@ -191,6 +184,6 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onPrintResult(STARTED)
 
-            verify(tracker).track(RECEIPT_PRINT_SUCCESS)
+            verify(paymentsFlowTracker).trackPrintReceiptSucceeded()
         }
 }
