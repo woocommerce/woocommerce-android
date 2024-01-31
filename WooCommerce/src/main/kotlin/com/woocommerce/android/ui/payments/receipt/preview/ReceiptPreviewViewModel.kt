@@ -4,12 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
@@ -29,7 +23,6 @@ import javax.inject.Inject
 class ReceiptPreviewViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
-    private val tracker: AnalyticsTrackerWrapper,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val paymentReceiptShare: PaymentReceiptShare,
 ) : ScopedViewModel(savedState) {
@@ -47,15 +40,17 @@ class ReceiptPreviewViewModel
     }
 
     fun onPrintClicked() {
-        tracker.track(RECEIPT_PRINT_TAPPED)
-        triggerEvent(PrintReceipt(args.receiptUrl, "receipt-order-${args.orderId}"))
+        launch {
+            paymentsFlowTracker.trackPrintReceiptTapped()
+            triggerEvent(PrintReceipt(args.receiptUrl, "receipt-order-${args.orderId}"))
+        }
     }
 
     fun onShareClicked() {
         launch {
             viewState.value = Loading
 
-            tracker.track(RECEIPT_EMAIL_TAPPED)
+            paymentsFlowTracker.trackEmailReceiptTapped()
             when (val sharingResult = paymentReceiptShare(args.receiptUrl, args.orderId)) {
                 is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
                     paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
@@ -79,13 +74,13 @@ class ReceiptPreviewViewModel
     }
 
     fun onPrintResult(result: PrintJobResult) {
-        tracker.track(
+        launch {
             when (result) {
-                CANCELLED -> RECEIPT_PRINT_CANCELED
-                FAILED -> RECEIPT_PRINT_FAILED
-                STARTED -> RECEIPT_PRINT_SUCCESS
+                CANCELLED -> paymentsFlowTracker.trackPrintReceiptCancelled()
+                FAILED -> paymentsFlowTracker.trackPrintReceiptFailed()
+                STARTED -> paymentsFlowTracker.trackPrintReceiptSucceeded()
             }
-        )
+        }
     }
 
     sealed class ReceiptPreviewViewState(

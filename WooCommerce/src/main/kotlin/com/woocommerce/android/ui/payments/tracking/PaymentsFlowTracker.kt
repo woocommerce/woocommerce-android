@@ -435,13 +435,6 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    suspend fun trackEmailReceiptFailed() {
-        track(
-            RECEIPT_EMAIL_FAILED,
-            properties = mutableMapOf(getReceiptSource())
-        )
-    }
-
     suspend fun trackPrintReceiptCancelled() {
         track(
             RECEIPT_PRINT_CANCELED,
