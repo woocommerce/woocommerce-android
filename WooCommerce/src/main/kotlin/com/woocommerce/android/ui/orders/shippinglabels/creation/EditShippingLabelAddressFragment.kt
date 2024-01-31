@@ -70,6 +70,9 @@ class EditShippingLabelAddressFragment :
 
     val viewModel: EditShippingLabelAddressViewModel by viewModels()
 
+    private var _binding: FragmentEditShippingLabelAddressBinding? = null
+    private val binding get() = _binding!!
+
     private var screenTitle = ""
         set(value) {
             field = value
@@ -93,12 +96,17 @@ class EditShippingLabelAddressFragment :
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
-        val binding = FragmentEditShippingLabelAddressBinding.bind(view)
+        _binding = FragmentEditShippingLabelAddressBinding.bind(view)
 
         initializeViewModel(binding)
         initializeViews(binding)
@@ -217,8 +225,6 @@ class EditShippingLabelAddressFragment :
             new.isContactCustomerButtonVisible.takeIfNotEqualTo(old?.isContactCustomerButtonVisible) { isVisible ->
                 binding.contactCustomerButton.isVisible = isVisible
             }
-
-            scrollToFirstErrorFieldIfNeeded(new, binding)
         }
     }
 
@@ -226,7 +232,7 @@ class EditShippingLabelAddressFragment :
         viewState: EditShippingLabelAddressViewModel.ViewState,
         binding: FragmentEditShippingLabelAddressBinding
     ) {
-        val firstErrorField: Pair<InputField<*>, View>? = listOf<Pair<InputField<*>, View>>(
+        val firstErrorField: Pair<InputField<*>, View>? = listOf(
             viewState.nameField to binding.name,
             viewState.companyField to binding.company,
             viewState.phoneField to binding.phone,
@@ -238,17 +244,16 @@ class EditShippingLabelAddressFragment :
             viewState.countryField to binding.countrySpinner
         ).firstOrNull { it.first.error != null }
 
-        firstErrorField?.let { (_, view) ->
-            if (!isViewVisibleInScrollView(binding.scrollView, view)) {
-                binding.root.clearFocus()
+        firstErrorField?.let { (_, errorView) ->
+            binding.root.clearFocus()
 
-                ActivityUtils.hideKeyboard(requireActivity())
+            ActivityUtils.hideKeyboard(requireActivity())
 
-                binding.scrollView.post {
-                    binding.scrollView.smoothScrollTo(0, view.top)
-                    view.requestFocus()
-                }
-            }
+            binding.scrollView.postDelayed({
+                binding.scrollView.smoothScrollTo(0, errorView.top)
+
+                errorView.requestFocus()
+            }, 300)
         }
     }
 
@@ -298,6 +303,8 @@ class EditShippingLabelAddressFragment :
                 }
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)
                 is DialPhoneNumber -> dialPhoneNumber(requireContext(), event.phoneNumber)
+                is CreateShippingLabelEvent.ScrollToFirstErrorField -> scrollToFirstErrorFieldIfNeeded(event.viewState, binding)
+
                 else -> event.isHandled = false
             }
         }

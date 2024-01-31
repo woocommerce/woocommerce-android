@@ -68,4 +68,5 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
     data class ShowPrintShippingLabels(val orderId: Long, val labels: List<ShippingLabel>) : CreateShippingLabelEvent()
 
     object ShowWooDiscountBottomSheet : CreateShippingLabelEvent()
+    data class ScrollToFirstErrorField(val viewState: EditShippingLabelAddressViewModel.ViewState) : CreateShippingLabelEvent()
 }

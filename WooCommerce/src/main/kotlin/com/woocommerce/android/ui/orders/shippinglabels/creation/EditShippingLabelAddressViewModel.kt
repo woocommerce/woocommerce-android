@@ -115,6 +115,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
             }
+        }else {
+            triggerEvent(CreateShippingLabelEvent.ScrollToFirstErrorField(viewState))
         }
     }
 
