@@ -759,10 +759,12 @@ class CardReaderPaymentViewModel
     fun onPrintResult(result: PrintJobResult) {
         showPaymentSuccessfulState()
 
-        when (result) {
-            CANCELLED -> tracker.trackPrintReceiptCancelled()
-            FAILED -> tracker.trackPrintReceiptFailed()
-            STARTED -> tracker.trackPrintReceiptSucceeded()
+        launch {
+            when (result) {
+                CANCELLED -> tracker.trackPrintReceiptCancelled()
+                FAILED -> tracker.trackPrintReceiptFailed()
+                STARTED -> tracker.trackPrintReceiptSucceeded()
+            }
         }
     }
 
