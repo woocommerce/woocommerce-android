@@ -469,15 +469,11 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    suspend fun trackReceiptUrlFetchingFails(
-        errorDescription: String,
-        errorType: String,
-    ) {
+    suspend fun trackReceiptUrlFetchingFails(errorDescription: String) {
         track(
             RECEIPT_URL_FETCHING_FAILS,
             properties = mutableMapOf(getReceiptSource()),
             errorDescription = errorDescription,
-            errorType = errorType,
         )
     }
 
