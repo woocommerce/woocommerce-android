@@ -153,6 +153,7 @@
     <string name="show_password_content_description">Show password</string>
     <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
+    <string name="receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
 
     <!--
         Date/Time Labels

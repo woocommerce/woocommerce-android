@@ -210,8 +210,6 @@ sealed class ViewState(
 
     data class PrintingReceiptState(
         override val amountWithCurrencyLabel: String,
-        val receiptUrl: String,
-        val documentName: String
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_completed_payment_header,
         illustration = null,
