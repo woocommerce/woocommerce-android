@@ -1,0 +1,2 @@
+17.0 :
+Préparez-vous à connaître une expérience plus fluide grâce à notre dernière mise à jour ! Nous nous sommes débarrassés de ce bug agaçant à cause duquel les cartes-cadeaux apparaissaient sans cesse dans la section « Totaux » lors de la création et de la modification de la commande. Gérer vos ventes avec notre application WooCommerce est désormais plus fluide de jamais. Faites la mise à jour dès à présent et bénéficiez des améliorations sans prise de tête !

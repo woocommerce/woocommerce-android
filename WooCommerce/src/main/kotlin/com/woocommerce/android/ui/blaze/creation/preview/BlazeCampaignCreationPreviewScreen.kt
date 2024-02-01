@@ -42,7 +42,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
@@ -87,10 +88,10 @@ private fun BlazeCampaignCreationPreviewScreen(
                 .background(color = MaterialTheme.colors.surface)
         ) {
 
-            when {
-                previewState.isLoading -> AdDetailsLoading()
+            when (previewState.adDetails) {
+                is Loading -> AdDetailsLoading()
                 else -> AdDetailsHeader(
-                    state = previewState,
+                    previewState.adDetails as AdDetails,
                     onEditAdClicked = onEditAdClicked
                 )
             }
@@ -110,7 +111,7 @@ private fun BlazeCampaignCreationPreviewScreen(
                     .padding(bottom = 8.dp),
                 text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
                 onClick = { /*TODO*/ },
-                enabled = !previewState.isLoading
+                enabled = previewState.adDetails != Loading
             )
         }
     }
@@ -177,12 +178,12 @@ private fun AdDetailsLoading(
 
 @Composable
 fun AdDetailsHeader(
-    state: CampaignPreviewUiState,
+    adDetails: AdDetails,
     onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CampaignHeader(
-        adDetails = state.adDetails,
+        adDetails = adDetails,
         onEditAdClicked = onEditAdClicked,
         modifier = modifier
             .fillMaxWidth()
@@ -194,7 +195,7 @@ fun AdDetailsHeader(
 
 @Composable
 fun CampaignHeader(
-    adDetails: AdDetailsUi,
+    adDetails: AdDetails,
     onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -366,8 +367,7 @@ private fun CampaignPropertyItem(
 fun CampaignScreenPreview() {
     BlazeCampaignCreationPreviewScreen(
         CampaignPreviewUiState(
-            isLoading = false,
-            adDetails = AdDetailsUi(
+            adDetails = AdDetails(
                 productId = 123,
                 description = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",

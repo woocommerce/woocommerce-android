@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentD
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
-import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReceiptHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
 import com.woocommerce.android.ui.payments.cardreader.payment.EnableNfc
@@ -67,7 +66,9 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
+import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.payment.PurchaseCardReader
+import com.woocommerce.android.ui.payments.cardreader.payment.SendReceipt
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
@@ -88,8 +89,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.Processi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CurrencyFormatter
@@ -178,7 +178,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
     private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
-    private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
+    private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderConfig: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
@@ -206,7 +206,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
-            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
         )
@@ -240,8 +240,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
             flow<BluetoothCardReaderMessages> {}
         }
-        whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
-        whenever(cardReaderPaymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn("test url")
+        whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
+        whenever(paymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn("test url")
         whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn("test description")
         whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
@@ -1916,7 +1916,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(cardReaderPaymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
+            verify(paymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
         }
 
     @Test
@@ -3054,7 +3054,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given plugin can not be send, when flow started, then wc pay can send receipt is false`() =
         testBlocking {
             // Given
-            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(false)
+            whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(false)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -3069,7 +3069,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given plugin can be send, when flow started, then wc pay can send receipt is true`() =
         testBlocking {
             // Given
-            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
+            whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -4328,7 +4328,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
-            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
         )
@@ -4360,7 +4360,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
-            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
         )

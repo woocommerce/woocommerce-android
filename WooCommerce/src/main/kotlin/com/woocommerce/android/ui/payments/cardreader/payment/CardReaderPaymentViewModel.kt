@@ -67,8 +67,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.Processi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -115,7 +114,7 @@ class CardReaderPaymentViewModel
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider,
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
-    private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper,
+    private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
 ) : ScopedViewModel(savedState) {
@@ -302,7 +301,7 @@ class CardReaderPaymentViewModel
                 currency = order.currency,
                 orderKey = order.orderKey,
                 customerEmail = customerEmail.ifEmpty { null },
-                isPluginCanSendReceipt = cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(site),
+                isPluginCanSendReceipt = paymentReceiptHelper.isPluginCanSendReceipt(site),
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
@@ -457,7 +456,7 @@ class CardReaderPaymentViewModel
         paymentStatus: PaymentCompleted,
         orderId: Long,
     ) {
-        cardReaderPaymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
         triggerEvent(PlayChaChing)
         showPaymentSuccessfulState()
@@ -606,7 +605,7 @@ class CardReaderPaymentViewModel
         launch {
             val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
             val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
-            val receiptUrl = cardReaderPaymentReceiptHelper.getReceiptUrl(order.id)
+            val receiptUrl = paymentReceiptHelper.getReceiptUrl(order.id)
             val onPrintReceiptClicked = {
                 onPrintReceiptClicked(
                     amountLabel,
@@ -719,7 +718,7 @@ class CardReaderPaymentViewModel
                 ?: throw IllegalStateException("Order URL not available.")
             triggerEvent(
                 PrintReceipt(
-                    cardReaderPaymentReceiptHelper.getReceiptUrl(order.id),
+                    paymentReceiptHelper.getReceiptUrl(order.id),
                     cardReaderPaymentOrderHelper.getReceiptDocumentName(order)
                 )
             )
