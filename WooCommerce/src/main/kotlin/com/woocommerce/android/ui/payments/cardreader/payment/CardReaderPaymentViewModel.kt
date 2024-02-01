@@ -745,7 +745,7 @@ class CardReaderPaymentViewModel
                     }
                     is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
                         tracker.trackPaymentsReceiptSharingFailed(sharingResult)
-                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_app_to_share_not_found))
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_email_client_not_found))
                     }
                     PaymentReceiptShare.ReceiptShareResult.Success -> {
                         // no-op

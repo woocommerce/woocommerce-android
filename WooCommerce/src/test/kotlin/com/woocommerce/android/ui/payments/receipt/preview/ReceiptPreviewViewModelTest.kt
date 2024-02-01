@@ -140,7 +140,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
-                R.string.card_reader_payment_receipt_app_to_share_not_found
+                R.string.card_reader_payment_email_client_not_found
             )
             verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
                 sharing
