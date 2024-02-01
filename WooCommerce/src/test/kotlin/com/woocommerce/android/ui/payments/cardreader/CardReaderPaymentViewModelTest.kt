@@ -2440,7 +2440,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
-                R.string.card_reader_payment_receipt_app_to_share_not_found
+                R.string.card_reader_payment_email_client_not_found
             )
             verify(tracker).trackPaymentsReceiptSharingFailed(sharing)
         }
