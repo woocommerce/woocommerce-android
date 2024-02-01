@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
