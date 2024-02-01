@@ -382,7 +382,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when validation fails for a set of fields, ScrollToFirstErrorField event is triggered with correct field`() = testBlocking {
+    fun `given validation fails for a set of fields, when on done clicked, then ScrollToFirstErrorField event is triggered with correct field`() = testBlocking {
 
         viewModel.onFieldEdited(Field.Name, "")
         viewModel.onFieldEdited(Field.Company, "")
@@ -401,7 +401,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when all fields are valid, ScrollToFirstErrorField event is not triggered`() = testBlocking {
+    fun `given all fields are valid, when on done clicked, then ScrollToFirstErrorField event is not triggered`() = testBlocking {
 
         var event: Event? = null
         viewModel.event.observeForever { event = it }
