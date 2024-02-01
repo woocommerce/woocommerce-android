@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-23 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="blaze_campaign_preview_details_confirm_details_button">Confirmer les détails</string>
+    <string name="blaze_campaign_preview_details_destination_url">Destination de la publicité</string>
+    <string name="blaze_campaign_preview_details_interests">Intérêts</string>
+    <string name="blaze_campaign_preview_details_location">Emplacement</string>
+    <string name="blaze_campaign_preview_details_devices">Appareils</string>
+    <string name="blaze_campaign_preview_details_language">Langue</string>
+    <string name="blaze_campaign_preview_details_budget">Budget</string>
+    <string name="blaze_campaign_preview_details_section_title">Détails</string>
+    <string name="blaze_campaign_preview_shop_now_button">Acheter maintenant</string>
+    <string name="blaze_campaign_preview_edit_ad_button">Modifier la publicité</string>
+    <string name="blaze_campaign_screen_fragment_title">Aperçu</string>
     <string name="disabled">Désactivé</string>
+    <string name="order_configuration_product_selection_control">Sélection de produits</string>
+    <string name="order_configuration_product_selection">Sélectionner le produit %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;Mise en ligne :&lt;/b&gt; observez les débuts de votre campagne promotionnelle et suivez son succès.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;Examen rapide :&lt;/b&gt; envoyez votre publicité pour une vérification rapide par un modérateur.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;Fixer votre budget :&lt;/b&gt; établissez vos dépenses et la durée de votre campagne.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;Personnaliser la cible :&lt;/b&gt; sélectionnez le public par emplacement ou intérêts et découvrez la portée potentielle.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;Choisir un produit :&lt;/b&gt; choisissez ce que vous voulez promouvoir avec Blaze.</string>
+    <string name="scan_to_update_inventory_manage_stock">Gérer le stock</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Stock non géré</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Voir comment fonctionne Blaze</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Lancer votre campagne</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Vos publicités sur des millions de sites des réseaux WordPress.com et Tumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Accéder à un large public</string>
@@ -125,6 +146,7 @@ Language: fr
     <string name="configuration_quantity_between"> entre %1$s et %2$s éléments </string>
     <string name="configuration_quantity_item_plural">%d éléments</string>
     <string name="configuration_quantity_item">%d élément</string>
+    <string name="order_configuration_change_product_quantity">Modifier la quantité de produit de %1$.2f à %2$.2f</string>
     <string name="save_configuration">Enregistrer la configuration</string>
     <string name="product_configuration_title">Configuration</string>
     <string name="default_product_title">Produit %s</string>

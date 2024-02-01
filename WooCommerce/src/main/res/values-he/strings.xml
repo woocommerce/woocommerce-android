@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-23 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="blaze_campaign_preview_details_confirm_details_button">לאשר את הפרטים</string>
+    <string name="blaze_campaign_preview_details_destination_url">היעד של הפרסומת</string>
+    <string name="blaze_campaign_preview_details_interests">תחומי עניין</string>
+    <string name="blaze_campaign_preview_details_location">מיקום</string>
+    <string name="blaze_campaign_preview_details_devices">מכשירים</string>
+    <string name="blaze_campaign_preview_details_language">שפה</string>
+    <string name="blaze_campaign_preview_details_budget">תקציב</string>
+    <string name="blaze_campaign_preview_details_section_title">פרטים</string>
+    <string name="blaze_campaign_preview_shop_now_button">לרכישה כעת</string>
+    <string name="blaze_campaign_preview_edit_ad_button">לערוך את הפרסומת</string>
+    <string name="blaze_campaign_screen_fragment_title">תצוגה מקדימה</string>
     <string name="disabled">נָכֶה</string>
+    <string name="order_configuration_product_selection_control">בחירת מוצרים</string>
+    <string name="order_configuration_product_selection">יש לבחור מוצר %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;לפרסם באינטרנט:&lt;/b&gt; לראות את הביצועים כאשר מבצע הקידום מתחיל ולעקוב אחר הצלחתו.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;סקירה מהירה:&lt;/b&gt; לשלוח את הפרסומת לבדיקה מהירה של המנהלים.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;להגדיר את התקציב שלך:&lt;/b&gt; להחליט לגבי ההוצאה ומשך הקמפיין.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;להתאים אישית את מיקוד הקהל:&lt;/b&gt; לבחור קהל לפי מיקום או תחום עניין ולראות את הפוטנציאל לחשיפה.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;לבחור מוצר:&lt;/b&gt; לבחור מה לקדם עם Blaze.</string>
+    <string name="scan_to_update_inventory_manage_stock">ניהול מלאי</string>
+    <string name="scan_to_update_inventory_stock_not_managed">המלאי לא מנוהל</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">ללמוד איך Blaze פועל</string>
     <string name="blaze_campaign_creation_new_intro_start_button">להתחיל קמפיין</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">המודעות שלך יוצגו במיליוני אתרים ברשת WordPress.com וברשת Tumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">לגשת לקהל עצום</string>
@@ -125,6 +146,7 @@ Language: he_IL
     <string name="configuration_quantity_between"> ⁦%1$s⁩ עד ⁦%2$s⁩ פריטים </string>
     <string name="configuration_quantity_item_plural">%d פריטים</string>
     <string name="configuration_quantity_item">פריט %d</string>
+    <string name="order_configuration_change_product_quantity">לשנות את כמות המוצר מ-%1$.2f ל-%2$.2f</string>
     <string name="save_configuration">לשמור הגדרות תצורה</string>
     <string name="product_configuration_title">הגדרות תצורה</string>
     <string name="default_product_title">מוצר %s</string>
