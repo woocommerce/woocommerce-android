@@ -144,7 +144,6 @@ class EditShippingLabelAddressFragment :
     override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked()
                 true
             }
@@ -247,7 +246,7 @@ class EditShippingLabelAddressFragment :
         if (!isViewVisibleInScrollView(binding.scrollView, errorView)) {
             binding.scrollView.postDelayed({
                 binding.scrollView.smoothScrollTo(0, errorView.top)
-                errorView.requestFocus()
+                errorView.editText?.requestFocusFromTouch()
             }, ERROR_SCROLL_DELAY)
         }
     }
@@ -305,6 +304,9 @@ class EditShippingLabelAddressFragment :
                     event.field,
                     event.isStateFieldSpinner
                 )
+                CreateShippingLabelEvent.CloseKeyboard -> {
+                    activity?.let { ActivityUtils.hideKeyboard(it) }
+                }
 
                 else -> event.isHandled = false
             }

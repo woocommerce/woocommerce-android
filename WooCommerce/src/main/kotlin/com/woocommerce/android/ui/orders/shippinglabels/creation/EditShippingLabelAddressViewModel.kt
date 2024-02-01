@@ -102,6 +102,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         viewState = viewState.validateAllFields()
         val address = viewState.getAddress()
         if (viewState.areAllRequiredFieldsValid) {
+            triggerEvent(CreateShippingLabelEvent.CloseKeyboard)
             launch {
                 viewState = viewState.copy(
                     isValidationProgressDialogVisible = true,
@@ -224,9 +225,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         // Validate fields locally
         viewState = viewState.validateAllFields()
         if (viewState.areAllRequiredFieldsValid) {
+            triggerEvent(CreateShippingLabelEvent.CloseKeyboard)
             exitWithAddress(viewState.getAddress())
         } else {
             triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
+            triggerScrollToFirstErrorFieldEvent()
         }
     }
 
