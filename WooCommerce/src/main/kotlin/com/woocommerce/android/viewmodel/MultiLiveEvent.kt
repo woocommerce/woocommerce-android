@@ -12,9 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.dialog.DialogParams
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.dialog.WooDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 

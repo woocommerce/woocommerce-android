@@ -31,8 +31,6 @@ import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.dialog.WooDialogFragment
-import com.woocommerce.android.ui.dialog.WooDialogFragment.DialogInteractionListener
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -50,7 +48,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -64,8 +61,7 @@ class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener,
-    MenuProvider,
-    DialogInteractionListener {
+    MenuProvider {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
@@ -99,16 +95,9 @@ class VariationDetailFragment :
 
         _binding = FragmentVariationDetailBinding.bind(view)
 
-        reattachDialogInteractionListener()
-
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         initializeViewModel()
-    }
-
-    private fun reattachDialogInteractionListener() {
-        val dialogFragment = parentFragmentManager.findFragmentByTag(WooDialogFragment.TAG) as? WooDialogFragment
-        dialogFragment?.setDialogInteractionListener(this)
     }
 
     override fun onDestroyView() {
@@ -287,23 +276,10 @@ class VariationDetailFragment :
 
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
-                is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 else -> event.isHandled = false
             }
         }
-    }
-
-    override fun onPositiveButtonClicked() {
-        viewModel.onDeleteVariationConfirmed()
-    }
-
-    override fun onNegativeButtonClicked() {
-        viewModel.onDeleteVariationCancelled()
-    }
-
-    override fun onNeutralButtonClicked() {
-        // no-op
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
