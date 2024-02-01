@@ -412,4 +412,51 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         assertThat(event).isNotInstanceOf(CreateShippingLabelEvent.ScrollToFirstErrorField::class.java)
     }
+
+    @Test
+    fun `given all fields are valid, when onDoneButtonClicked, then CloseKeyboard event is triggered`() = testBlocking {
+
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onDoneButtonClicked()
+
+        assertThat(event).isEqualTo(CreateShippingLabelEvent.CloseKeyboard)
+    }
+
+    @Test
+    fun `given all fields are valid, when onUseAddressAsIsButtonClicked, then CloseKeyboard event is triggered`() = testBlocking {
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever { events.add(it) }
+
+        viewModel.onUseAddressAsIsButtonClicked()
+
+        assertThat(events).contains(CreateShippingLabelEvent.CloseKeyboard)
+    }
+
+    @Test
+    fun `given fields are invalid, when onDoneButtonClicked, then CloseKeyboard event is not triggered`() = testBlocking {
+        viewModel.onFieldEdited(Field.Name, "")
+        viewModel.onFieldEdited(Field.Company, "")
+
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onDoneButtonClicked()
+
+        assertThat(event).isNotEqualTo(CreateShippingLabelEvent.CloseKeyboard)
+    }
+
+    @Test
+    fun `given fields are invalid, when onUseAddressAsIsButtonClicked, then CloseKeyboard event is not triggered`() = testBlocking {
+        viewModel.onFieldEdited(Field.Name, "")
+        viewModel.onFieldEdited(Field.Company, "")
+
+        var event: Event? = null
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onUseAddressAsIsButtonClicked()
+
+        assertThat(event).isNotEqualTo(CreateShippingLabelEvent.CloseKeyboard)
+    }
 }
