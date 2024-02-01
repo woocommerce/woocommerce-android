@@ -230,7 +230,7 @@ fun ExpandableProductCard(
                 color = if (product.item.isSynced()) {
                     MaterialTheme.colors.onSurface
                 } else {
-                    MaterialTheme.colors.error
+                    colorResource(id = com.google.android.material.R.color.mtrl_btn_transparent_bg_color)
                 }
             )
         }
