@@ -123,7 +123,7 @@ ext {
     mlkitBarcodeScanningVersion = '17.2.0'
     mlkitTextRecognitionVersion = '16.0.0'
     androidxCameraVersion = '1.2.3'
-    guavaVersion = '31.0.1-android'
+    guavaVersion = '33.0.0-android'
 
     // Apache
     commonsText = '1.10.0'
