@@ -12,7 +12,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.dialog.DialogParams
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.dialog.WooDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -135,12 +137,12 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
             @StringRes val positiveButtonId: Int? = null,
             @StringRes val negativeButtonId: Int? = null,
             @StringRes val neutralButtonId: Int? = null,
+            val positiveActionName: String? = null,
+            val negativeActionName: String? = null,
+            val neutralActionName: String? = null,
             val cancelable: Boolean = true
         ) : Event() {
-            fun showIn(
-                fragmentManager: androidx.fragment.app.FragmentManager,
-                listener: WooDialogFragment.DialogInteractionListener
-            ) {
+            fun showIn(fragmentManager: androidx.fragment.app.FragmentManager, listener: WooDialogFragment.DialogInteractionListener) {
                 val dialogParams = DialogParams(
                     titleId = titleId,
                     messageId = messageId,
