@@ -5,6 +5,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,6 +21,7 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.PrintCustomsFormAdapter.PrintCustomsFormViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModel.PrintCustomsForm
@@ -42,6 +44,8 @@ class PrintShippingLabelCustomsFormFragment :
 
     private val invoicesAdapter by lazy { PrintCustomsFormAdapter(viewModel::onInvoicePrintButtonClicked) }
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
     override fun getFragmentTitle(): String = getString(R.string.shipping_label_print_customs_form_screen_title)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +57,20 @@ class PrintShippingLabelCustomsFormFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentPrintLabelCustomsFormBinding.bind(view)
+        setupToolbar(binding)
         setupObservers(binding)
         setupView(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentPrintLabelCustomsFormBinding) {
+        binding.toolbar.title = getString(R.string.shipping_label_print_customs_form_screen_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
     }
 
     private fun setupObservers(binding: FragmentPrintLabelCustomsFormBinding) {

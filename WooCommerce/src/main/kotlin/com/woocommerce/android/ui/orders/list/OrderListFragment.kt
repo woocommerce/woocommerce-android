@@ -196,9 +196,6 @@ class OrderListFragment :
         initObservers()
         initializeResultHandlers()
         displayTwoPaneLayoutIfTablet()
-        if (isSearching) {
-            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
-        }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
@@ -312,7 +309,6 @@ class OrderListFragment :
     private fun refreshOptionsMenu() {
         if (!isChildFragmentShowing() && isSearching) {
             val savedSearchQuery = searchQuery
-            searchMenuItem?.expandActionView()
             enableSearchListeners()
             searchQuery = savedSearchQuery
             searchView?.setQuery(searchQuery, false)

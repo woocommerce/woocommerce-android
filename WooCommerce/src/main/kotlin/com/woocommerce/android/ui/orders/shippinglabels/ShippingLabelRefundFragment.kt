@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -15,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -33,6 +35,9 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -41,7 +46,19 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingLabelRefundBinding.bind(view)
+        setupToolbar(binding)
         setupObservers(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentShippingLabelRefundBinding) {
+        binding.toolbar.title = getString(R.string.orderdetail_shipping_label_request_refund)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
     }
 
     private fun setupObservers(binding: FragmentShippingLabelRefundBinding) {

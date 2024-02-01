@@ -6,14 +6,18 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
@@ -39,6 +43,9 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
 
     private var progressDialog: CustomProgressDialog? = null
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun getFragmentTitle(): String {
         return getString(viewModel.screenTitle)
     }
@@ -47,10 +54,21 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentPrintShippingLabelBinding.bind(view)
+        setupToolbar(binding)
 
         initUi(binding)
         setupObservers(viewModel, binding)
         setupResultHandlers(viewModel)
+    }
+
+    private fun setupToolbar(binding: FragmentPrintShippingLabelBinding) {
+        binding.toolbar.title = getString(viewModel.screenTitle)
+        binding.toolbar.setNavigationOnClickListener {
+            when {
+                isTablet() && onRequestAllowBackPress() -> findNavController().navigateUp()
+                else -> (activity as? MainActivity)?.onBackPressed()
+            }
+        }
     }
 
     private fun initUi(binding: FragmentPrintShippingLabelBinding) {
