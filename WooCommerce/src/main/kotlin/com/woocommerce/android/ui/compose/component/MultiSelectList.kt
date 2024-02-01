@@ -44,7 +44,7 @@ fun <T> MultiSelectList(
         allItemsButton?.let {
             MultiSelectItem(
                 item = it.text,
-                isSelected = selectedItems.isEmpty(),
+                isSelected = selectedItems.size == items.size,
                 onItemToggled = it.onClicked,
                 modifier = Modifier.fillMaxWidth()
             )

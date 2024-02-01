@@ -13,6 +13,9 @@ import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdF
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetSelectionScreen
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.TargetSelectionResult
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -45,13 +48,20 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment()
                 )
-                is NavigateToEditAdScreen -> findNavController().navigate(
+                is NavigateToEditAdScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
                             event.productId,
                             event.tagLine,
                             event.description,
                             event.campaignImageUrl
+                        )
+                )
+                is NavigateToTargetSelectionScreen -> findNavController().navigateSafely(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetSelectionFragment(
+                            event.targetType,
+                            event.selectedIds.toTypedArray()
                         )
                 )
             }
@@ -61,6 +71,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
     private fun handleResults() {
         handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
             viewModel.onAdUpdated(it.tagline, it.description, it.campaignImageUrl)
+        }
+        handleResult<TargetSelectionResult>(BlazeCampaignTargetSelectionFragment.BLAZE_TARGET_SELECTION_RESULT) {
+            viewModel.onTargetSelectionUpdated(it.targetType, it.selectedIds)
         }
     }
 }

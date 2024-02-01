@@ -288,6 +288,8 @@ class AnalyticsTracker private constructor(
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
 
         const val KEY_COUPONS_COUNT = "coupons_count"
+        const val KEY_USE_GIFT_CARD = "use_gift_card"
+        const val KEY_IS_GIFT_CARD_REMOVED = "removed"
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
