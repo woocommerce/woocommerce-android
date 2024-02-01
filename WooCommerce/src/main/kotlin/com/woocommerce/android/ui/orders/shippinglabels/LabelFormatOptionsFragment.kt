@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLabelFormatOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity
 
 class LabelFormatOptionsFragment : BaseFragment(R.layout.fragment_label_format_options) {
     override val activityAppBarStatus: AppBarStatus
