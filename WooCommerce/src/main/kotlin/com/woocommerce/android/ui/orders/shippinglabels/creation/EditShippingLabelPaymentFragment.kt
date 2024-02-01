@@ -200,20 +200,13 @@ class EditShippingLabelPaymentFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is AddPaymentMethod -> {
-                    (activity as? MainActivity)?.navigateToWebViewNew(
-                        MainActivityViewModel.ViewUrlInWebViewNew(
+                    (activity as? MainActivity)?.navigateToWebView(
+                        MainActivityViewModel.ViewUrlInWebView(
                             AppUrls.WPCOM_ADD_PAYMENT_METHOD,
                             urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
                             title = getFragmentTitle()
                         )
                     )
-//                    findNavController().navigate(
-//                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-//                            urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
-//                            urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
-//                            title = getFragmentTitle()
-//                        )
-//                    )
                 }
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PAYMENTS_RESULT, event.data)
