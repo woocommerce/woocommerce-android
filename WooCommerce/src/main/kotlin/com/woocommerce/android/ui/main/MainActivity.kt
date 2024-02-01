@@ -907,6 +907,7 @@ class MainActivity :
         )
     }
 
+    @Suppress("LongParameterList")
     fun navigateToGlobalInfoScreenFragment(
         screenTitle: Int,
         heading: Int,
