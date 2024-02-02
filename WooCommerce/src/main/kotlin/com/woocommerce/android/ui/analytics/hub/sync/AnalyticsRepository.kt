@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
-import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
