@@ -2337,21 +2337,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when OS accepts the print request, then print success event tracked`() {
+    fun `when OS accepts the print request, then print success event tracked`() = testBlocking {
         viewModel.onPrintResult(STARTED)
 
         verify(tracker).trackPrintReceiptSucceeded()
     }
 
     @Test
-    fun `when OS refuses the print request, then print failed event tracked`() {
+    fun `when OS refuses the print request, then print failed event tracked`() = testBlocking {
         viewModel.onPrintResult(FAILED)
 
         verify(tracker).trackPrintReceiptFailed()
     }
 
     @Test
-    fun `when manually cancels the print request, then print cancelled event tracked`() {
+    fun `when manually cancels the print request, then print cancelled event tracked`() = testBlocking {
         viewModel.onPrintResult(CANCELLED)
 
         verify(tracker).trackPrintReceiptCancelled()
@@ -2566,14 +2566,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
-        }
-
-    @Test
-    fun `when email activity not found, then event tracked`() =
-        testBlocking {
-            viewModel.onEmailActivityNotFound()
-
-            verify(tracker).trackEmailReceiptFailed()
         }
 
     @Test

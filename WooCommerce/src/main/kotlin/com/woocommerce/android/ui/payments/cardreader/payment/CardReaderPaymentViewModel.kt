@@ -718,6 +718,9 @@ class CardReaderPaymentViewModel
                     )
                 )
             } else {
+                tracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
                 triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
             }
         }
@@ -749,6 +752,9 @@ class CardReaderPaymentViewModel
                     }
                 }
             } else {
+                tracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
                 triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
             }
 
@@ -756,18 +762,15 @@ class CardReaderPaymentViewModel
         }
     }
 
-    fun onEmailActivityNotFound() {
-        tracker.trackEmailReceiptFailed()
-        triggerEvent(ShowSnackbarInDialog(R.string.card_reader_payment_email_client_not_found))
-    }
-
     fun onPrintResult(result: PrintJobResult) {
         showPaymentSuccessfulState()
 
-        when (result) {
-            CANCELLED -> tracker.trackPrintReceiptCancelled()
-            FAILED -> tracker.trackPrintReceiptFailed()
-            STARTED -> tracker.trackPrintReceiptSucceeded()
+        launch {
+            when (result) {
+                CANCELLED -> tracker.trackPrintReceiptCancelled()
+                FAILED -> tracker.trackPrintReceiptFailed()
+                STARTED -> tracker.trackPrintReceiptSucceeded()
+            }
         }
     }
 

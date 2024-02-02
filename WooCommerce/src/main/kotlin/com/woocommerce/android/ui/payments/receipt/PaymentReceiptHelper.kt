@@ -77,7 +77,7 @@ class PaymentReceiptHelper @Inject constructor(
         }
     }
 
-    private suspend fun isWCCanGenerateReceipts(): Boolean {
+    suspend fun isWCCanGenerateReceipts(): Boolean {
         val currentWooCoreVersion = getWoocommerceCorePluginVersion()
 
         return currentWooCoreVersion.semverCompareTo(WC_CAN_GENERATE_RECEIPTS_VERSION) >= 0

@@ -1250,7 +1250,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
             whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
 
-            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.failure(Exception("")))
+            val errorMessage = "error"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.failure(Exception(errorMessage)))
 
             // WHEN
             viewModel.start()
@@ -1259,6 +1260,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(string.receipt_fetching_error)
+            verify(paymentsFlowTracker).trackReceiptUrlFetchingFails(
+                errorDescription = errorMessage
+            )
         }
 
     @Test

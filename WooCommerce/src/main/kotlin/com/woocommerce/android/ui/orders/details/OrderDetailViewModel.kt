@@ -369,6 +369,9 @@ class OrderDetailViewModel @Inject constructor(
             if (receiptResult.isSuccess) {
                 triggerEvent(PreviewReceipt(order.billingAddress.email, receiptResult.getOrThrow(), order.id))
             } else {
+                paymentsFlowTracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
                 triggerEvent(ShowSnackbar(string.receipt_fetching_error))
             }
         }
