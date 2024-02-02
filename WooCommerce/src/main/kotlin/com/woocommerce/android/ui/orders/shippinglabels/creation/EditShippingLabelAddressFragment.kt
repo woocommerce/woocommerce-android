@@ -248,7 +248,7 @@ class EditShippingLabelAddressFragment :
         if (!isViewVisibleInScrollView(binding.scrollView, errorView)) {
             binding.scrollView.postDelayed({
                 binding.scrollView.smoothScrollTo(0, errorView.top)
-                errorView.editText?.requestFocusFromTouch()
+                errorView.editText?.requestFocus()
             }, ERROR_SCROLL_DELAY)
         }
     }
