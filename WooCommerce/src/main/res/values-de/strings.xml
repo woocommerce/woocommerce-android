@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 13:54:03+0000
+Translation-Revision-Date: 2024-01-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Von KI vorgeschlagen</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d weitere Zeichen möglich</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Beschreibung</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Untertitel</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Bild ändern</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Übernehmen</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Beginnt</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s Tage</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Dauer festlegen</string>
+    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Fertig</string>
+    <string name="blaze_campaign_budget_impressions_title">Aufrufe</string>
+    <string name="blaze_campaign_budget_update_button">Update</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Bearbeiten</string>
+    <string name="blaze_campaign_budget_duration_section_title">Dauer</string>
+    <string name="blaze_campaign_budget_reach_forecast">Geschätzte Anzahl erreichter Personen pro Tag</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s täglich</string>
+    <string name="blaze_campaign_budget_days_duration">für %1$s Tage</string>
+    <string name="blaze_campaign_budget_total_spend">Gesamtbestellwert</string>
+    <string name="blaze_campaign_budget_subtitle">Wie viel möchtest du für deine Produkt-Werbekampagne ausgeben?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Dein Budget festlegen</string>
+    <string name="blaze_campaign_preview_target_default_value">Alle</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s Tage seit %2$s</string>
+    <string name="product_creation_survey_button_dont_show_again">Nicht erneut anzeigen</string>
+    <string name="product_creation_survey_button_remind_me_later">Später daran erinnern</string>
+    <string name="product_creation_survey_description">Hast du eine Minute? Hilf uns mit einem kurzen Feedback, unsere KI-gestützten Funktionen zu verbessern.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Details bestätigen</string>
     <string name="blaze_campaign_preview_details_destination_url">Ziel der Werbung</string>
     <string name="blaze_campaign_preview_details_interests">Interessen</string>
@@ -15,7 +41,7 @@ Language: de
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_shop_now_button">Jetzt einkaufen</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Werbung bearbeiten</string>
+    <string name="blaze_campaign_preview_edit_ad">Werbung bearbeiten</string>
     <string name="blaze_campaign_screen_fragment_title">Vorschau</string>
     <string name="disabled">Deaktiviert</string>
     <string name="order_configuration_product_selection_control">Produktauswahl</string>
@@ -63,7 +89,6 @@ Language: de
     <string name="theme_picker_current_theme_title">Aktuelles Theme</string>
     <string name="theme_picker_settings_title">Teste einen neuen Look</string>
     <string name="product_creation_survey_button_open">Befragung starten</string>
-    <string name="product_creation_survey_description">Du hast unsere KI-unterstützte Funktion verwendet, um Produkte mehrfach hinzuzufügen. Wir würden uns über Feedback freuen, damit wir die Funktion weiter verbessern können.</string>
     <string name="product_creation_survey_title">Deine Meinung ist uns wichtig!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Wenn „Persönliche Zahlung“ aktiviert ist, können Kunden für Online-Bestellungen bei Zustellung in bar oder mit Karte zahlen.\n\nBestellungen kannst du auch ohne Aktivierung dieser Funktion weiterhin manuell erstellen.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Möchtest du „Persönliche Zahlung“ zu deinem Web-Bezahlvorgang hinzufügen?</string>
