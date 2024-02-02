@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.2
+Our latest update ensures every order comes with a handy receipt that you can easily share across your favorite apps. This feature is exclusive to those running WooCommerce version 8.7 or higher. Keep your business organized and your customers informed with our newest addition.
+
 ## 17.1
 This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
 
