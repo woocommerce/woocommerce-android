@@ -201,38 +201,32 @@ fun ExpandableProductCard(
                 color = colorResource(id = R.color.color_on_surface_disabled)
             )
         } else {
-            Text(
-                modifier = Modifier
-                    .constrainAs(quantity) {
-                        start.linkTo(name.start)
-                        top.linkTo(stock.bottom)
-                    }
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.major_100),
-                    ),
-                style = MaterialTheme.typography.body2,
-                text = getQuantityWithTotalText(product),
-                color = if (product.item.isSynced()) {
-                    colorResource(id = R.color.color_on_surface_disabled)
-                } else {
-                    colorResource(id = com.google.android.material.R.color.mtrl_btn_transparent_bg_color)
-                }
-            )
-            Text(
-                modifier = Modifier.constrainAs(price) {
-                    end.linkTo(chevron.start)
-                    top.linkTo(quantity.top)
-                },
-                style = MaterialTheme.typography.body2,
-                text = product.productInfo.priceAfterDiscount,
-                color = if (product.item.isSynced()) {
-                    MaterialTheme.colors.onSurface
-                } else {
-                    colorResource(id = com.google.android.material.R.color.mtrl_btn_transparent_bg_color)
-                }
-            )
+            if (product.item.isSynced()) {
+                Text(
+                    modifier = Modifier
+                        .constrainAs(quantity) {
+                            start.linkTo(name.start)
+                            top.linkTo(stock.bottom)
+                        }
+                        .padding(
+                            start = dimensionResource(id = R.dimen.major_100),
+                            end = dimensionResource(id = R.dimen.major_100),
+                            bottom = dimensionResource(id = R.dimen.major_100),
+                        ),
+                    style = MaterialTheme.typography.body2,
+                    text = getQuantityWithTotalText(product),
+                    color = colorResource(id = R.color.color_on_surface_disabled)
+                )
+                Text(
+                    modifier = Modifier.constrainAs(price) {
+                        end.linkTo(chevron.start)
+                        top.linkTo(quantity.top)
+                    },
+                    style = MaterialTheme.typography.body2,
+                    text = product.productInfo.priceAfterDiscount,
+                    color = MaterialTheme.colors.onSurface
+                )
+            }
         }
         IconButton(
             onClick = {
