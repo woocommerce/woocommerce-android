@@ -1,2 +1,1 @@
-- [**] [Available for users with WooCommerce version of 8.7+, which is not released yet] Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
-
+This version includes optimizations for speed and reliability. We are committed to continuously improving the app, making managing your online store more efficient and hassle-free.
