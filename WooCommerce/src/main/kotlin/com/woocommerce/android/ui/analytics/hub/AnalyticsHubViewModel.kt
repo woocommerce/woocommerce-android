@@ -13,6 +13,7 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
@@ -22,6 +23,7 @@ import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInfo
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -70,6 +72,8 @@ class AnalyticsHubViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
     private val dateUtils: DateUtils,
+    private val analyticsRepository: AnalyticsRepository,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -130,6 +134,17 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onNewRangeSelection(selectionType: SelectionType) {
         rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
+    }
+
+    fun onSeeReport(url: String) {
+        selectedSite.getOrNull()?.let { site ->
+            val event = if (site.isWpComStore) {
+                AnalyticsViewEvent.OpenWPComWebView(url)
+            } else {
+                AnalyticsViewEvent.OpenUrl(url)
+            }
+            triggerEvent(event)
+        } ?: triggerEvent(AnalyticsViewEvent.OpenUrl(url))
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
@@ -310,7 +325,8 @@ class AnalyticsHubViewModel @Inject constructor(
             stats.conversionRate,
             null,
             listOf()
-        )
+        ),
+        reportUrl = null
     )
 
     private fun buildRevenueDataViewState(revenueStat: RevenueStat) =
@@ -328,6 +344,7 @@ class AnalyticsHubViewModel @Inject constructor(
                 if (revenueStat.netDelta is DeltaPercentage.Value) revenueStat.netDelta.value else null,
                 revenueStat.netRevenueByInterval.map { it.toFloat() }
             ),
+            reportUrl = analyticsRepository.getRevenueAdminPanelUrl()
         )
 
     private fun buildOrdersDataViewState(ordersStats: OrdersStat) =
@@ -352,7 +369,8 @@ class AnalyticsHubViewModel @Inject constructor(
                     null
                 },
                 ordersStats.avgOrderValueByInterval.map { it.toFloat() }
-            )
+            ),
+            reportUrl = analyticsRepository.getOrdersAdminPanelUrl()
         )
 
     private fun buildProductsDataState(productsStat: ProductsStat): ProductsViewState.DataViewState {
@@ -379,7 +397,8 @@ class AnalyticsHubViewModel @Inject constructor(
                         ),
                         index != products.size - 1
                     )
-                }
+                },
+            reportUrl = analyticsRepository.getProductsAdminPanelUrl()
         )
     }
 

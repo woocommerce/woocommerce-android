@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
@@ -29,8 +30,7 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 @AndroidEntryPoint
-class AnalyticsHubFragment :
-    BaseFragment(R.layout.fragment_analytics) {
+class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     companion object {
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
         const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
@@ -110,6 +110,9 @@ class AnalyticsHubFragment :
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
+        binding.analyticsOrdersCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url) }
+        binding.analyticsRevenueCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url) }
+        binding.analyticsProductsCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url) }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
