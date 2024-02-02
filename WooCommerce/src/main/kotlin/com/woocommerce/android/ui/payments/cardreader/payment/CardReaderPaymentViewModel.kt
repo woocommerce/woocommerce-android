@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -117,6 +118,7 @@ class CardReaderPaymentViewModel
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
+    private val paymentReceiptShare: PaymentReceiptShare,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -605,20 +607,13 @@ class CardReaderPaymentViewModel
         launch {
             val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
             val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
-            val receiptUrl = paymentReceiptHelper.getReceiptUrl(order.id)
             val onPrintReceiptClicked = {
-                onPrintReceiptClicked(
-                    amountLabel,
-                    receiptUrl,
-                    cardReaderPaymentOrderHelper.getReceiptDocumentName(order)
-                )
+                onPrintReceiptClicked(amountLabel)
             }
             val onSaveUserClicked = {
                 onSaveForLaterClicked()
             }
-            val onSendReceiptClicked = {
-                onSendReceiptClicked(receiptUrl, order.billingAddress.email)
-            }
+            val onSendReceiptClicked = { onSendReceiptClicked() }
 
             if (order.billingAddress.email.isBlank()) {
                 viewState.postValue(
@@ -698,9 +693,9 @@ class CardReaderPaymentViewModel
         onCancelPaymentFlow()
     }
 
-    private fun onPrintReceiptClicked(amountWithCurrencyLabel: String, receiptUrl: String, documentName: String) {
+    private fun onPrintReceiptClicked(amountWithCurrencyLabel: String) {
         launch {
-            viewState.value = PrintingReceiptState(amountWithCurrencyLabel, receiptUrl, documentName)
+            viewState.value = PrintingReceiptState(amountWithCurrencyLabel)
             tracker.trackPrintReceiptTapped()
             startPrintingFlow()
         }
@@ -714,48 +709,68 @@ class CardReaderPaymentViewModel
 
     private fun startPrintingFlow() {
         launch {
-            val order = orderRepository.getOrderById(orderId)
-                ?: throw IllegalStateException("Order URL not available.")
-            triggerEvent(
-                PrintReceipt(
-                    paymentReceiptHelper.getReceiptUrl(order.id),
-                    cardReaderPaymentOrderHelper.getReceiptDocumentName(order)
+            val receiptResult = paymentReceiptHelper.getReceiptUrl(orderId)
+            if (receiptResult.isSuccess) {
+                triggerEvent(
+                    PrintReceipt(
+                        receiptResult.getOrThrow(),
+                        cardReaderPaymentOrderHelper.getReceiptDocumentName(orderId)
+                    )
                 )
-            )
+            } else {
+                tracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
+                triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
+            }
         }
     }
 
-    private fun onSendReceiptClicked(receiptUrl: String, billingEmail: String) {
+    private fun onSendReceiptClicked() {
         launch {
             tracker.trackEmailReceiptTapped()
-            triggerEvent(
-                SendReceipt(
-                    content = UiStringRes(
-                        R.string.card_reader_payment_receipt_email_content,
-                        listOf(UiStringText(receiptUrl))
-                    ),
-                    subject = UiStringRes(
-                        R.string.card_reader_payment_receipt_email_subject,
-                        listOf(UiStringText(selectedSite.get().name.orEmpty()))
-                    ),
-                    address = billingEmail
-                )
-            )
-        }
-    }
+            val stateBeforeLoading = viewState.value!!
+            viewState.postValue(ViewState.SharingReceiptState)
+            val receiptResult = paymentReceiptHelper.getReceiptUrl(orderId)
 
-    fun onEmailActivityNotFound() {
-        tracker.trackEmailReceiptFailed()
-        triggerEvent(ShowSnackbarInDialog(R.string.card_reader_payment_email_client_not_found))
+            if (receiptResult.isSuccess) {
+                when (val sharingResult = paymentReceiptShare(receiptResult.getOrThrow(), orderId)) {
+                    is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                        tracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_can_not_be_stored))
+                    }
+                    is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                        tracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_can_not_be_downloaded))
+                    }
+                    is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
+                        tracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                        triggerEvent(ShowSnackbar(R.string.card_reader_payment_email_client_not_found))
+                    }
+                    PaymentReceiptShare.ReceiptShareResult.Success -> {
+                        // no-op
+                    }
+                }
+            } else {
+                tracker.trackReceiptUrlFetchingFails(
+                    errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
+                )
+                triggerEvent(ShowSnackbar(R.string.receipt_fetching_error))
+            }
+
+            viewState.postValue(stateBeforeLoading)
+        }
     }
 
     fun onPrintResult(result: PrintJobResult) {
         showPaymentSuccessfulState()
 
-        when (result) {
-            CANCELLED -> tracker.trackPrintReceiptCancelled()
-            FAILED -> tracker.trackPrintReceiptFailed()
-            STARTED -> tracker.trackPrintReceiptSucceeded()
+        launch {
+            when (result) {
+                CANCELLED -> tracker.trackPrintReceiptCancelled()
+                FAILED -> tracker.trackPrintReceiptFailed()
+                STARTED -> tracker.trackPrintReceiptSucceeded()
+            }
         }
     }
 

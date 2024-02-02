@@ -4,18 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
@@ -31,8 +23,8 @@ import javax.inject.Inject
 class ReceiptPreviewViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
-    private val tracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
+    private val paymentReceiptShare: PaymentReceiptShare,
 ) : ScopedViewModel(savedState) {
     private val args: ReceiptPreviewFragmentArgs by savedState.navArgs()
 
@@ -48,42 +40,47 @@ class ReceiptPreviewViewModel
     }
 
     fun onPrintClicked() {
-        tracker.track(RECEIPT_PRINT_TAPPED)
-        triggerEvent(PrintReceipt(args.receiptUrl, "receipt-order-${args.orderId}"))
-    }
-
-    fun onSendEmailClicked() {
         launch {
-            tracker.track(RECEIPT_EMAIL_TAPPED)
-            triggerEvent(
-                SendReceipt(
-                    content = UiStringRes(
-                        string.card_reader_payment_receipt_email_content,
-                        listOf(UiStringText(args.receiptUrl))
-                    ),
-                    subject = UiStringRes(
-                        string.card_reader_payment_receipt_email_subject,
-                        listOf(UiStringText(selectedSite.get().name.orEmpty()))
-                    ),
-                    address = args.billingEmail
-                )
-            )
+            paymentsFlowTracker.trackPrintReceiptTapped()
+            triggerEvent(PrintReceipt(args.receiptUrl, "receipt-order-${args.orderId}"))
         }
     }
 
-    fun onEmailActivityNotFound() {
-        tracker.track(RECEIPT_EMAIL_FAILED)
-        triggerEvent(ShowSnackbar(string.card_reader_payment_email_client_not_found))
+    fun onShareClicked() {
+        launch {
+            viewState.value = Loading
+
+            paymentsFlowTracker.trackEmailReceiptTapped()
+            when (val sharingResult = paymentReceiptShare(args.receiptUrl, args.orderId)) {
+                is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                    paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                    triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_can_not_be_stored))
+                }
+                is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                    paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                    triggerEvent(ShowSnackbar(string.card_reader_payment_receipt_can_not_be_downloaded))
+                }
+                is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
+                    paymentsFlowTracker.trackPaymentsReceiptSharingFailed(sharingResult)
+                    triggerEvent(ShowSnackbar(string.card_reader_payment_email_client_not_found))
+                }
+                PaymentReceiptShare.ReceiptShareResult.Success -> {
+                    // no-op
+                }
+            }
+
+            viewState.value = Content
+        }
     }
 
     fun onPrintResult(result: PrintJobResult) {
-        tracker.track(
+        launch {
             when (result) {
-                CANCELLED -> RECEIPT_PRINT_CANCELED
-                FAILED -> RECEIPT_PRINT_FAILED
-                STARTED -> RECEIPT_PRINT_SUCCESS
+                CANCELLED -> paymentsFlowTracker.trackPrintReceiptCancelled()
+                FAILED -> paymentsFlowTracker.trackPrintReceiptFailed()
+                STARTED -> paymentsFlowTracker.trackPrintReceiptSucceeded()
             }
-        )
+        }
     }
 
     sealed class ReceiptPreviewViewState(
