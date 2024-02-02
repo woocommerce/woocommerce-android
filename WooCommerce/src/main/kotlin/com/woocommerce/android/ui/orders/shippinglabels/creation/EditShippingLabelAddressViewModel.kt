@@ -76,7 +76,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             val fullCountriesList = dataStore.getCountries()
             val supportedCountries = if (arguments.addressType == ORIGIN) {
                 fullCountriesList.filter { ACCEPTED_USPS_ORIGIN_COUNTRIES.contains(it.code) }
-            } else fullCountriesList
+            } else {
+                fullCountriesList
+            }
             return supportedCountries.map { it.toAppModel() }
         }
 
@@ -169,8 +171,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 viewState = viewState.copy(
                     address1Field = viewState.address1Field.copy(validationError = validationErrorMessage).validate(),
                     bannerMessage = resourceProvider.getString(
-                        if (arguments.addressType == ORIGIN) R.string.shipping_label_edit_origin_address_error_warning
-                        else R.string.shipping_label_edit_address_error_warning
+                        if (arguments.addressType == ORIGIN) {
+                            R.string.shipping_label_edit_origin_address_error_warning
+                        } else {
+                            R.string.shipping_label_edit_address_error_warning
+                        }
                     )
                 )
             }
@@ -456,8 +461,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val companyContent: String
     ) : InputField<NameField>(content) {
         override fun validateInternal(): UiString? {
-            return if (content.isNotBlank() || companyContent.isNotBlank()) null
-            else UiStringRes(R.string.error_required_field)
+            return if (content.isNotBlank() || companyContent.isNotBlank()) {
+                null
+            } else {
+                UiStringRes(R.string.error_required_field)
+            }
         }
     }
 
@@ -482,8 +490,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val addressType: AddressType
     ) : InputField<PhoneField>(content) {
         override fun validateInternal(): UiString? {
-            return if (content.isValidPhoneNumber(addressType, isCustomsFormRequired)) null
-            else {
+            return if (content.isValidPhoneNumber(addressType, isCustomsFormRequired)) {
+                null
+            } else {
                 when {
                     content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
                     addressType == ORIGIN ->
@@ -504,8 +513,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         val isRequired: Boolean = false
     ) : InputField<LocationField>(location.name) {
         override fun validateInternal(): UiString? {
-            return if (isRequired && content.isBlank()) UiStringRes(R.string.error_required_field)
-            else null
+            return if (isRequired && content.isBlank()) {
+                UiStringRes(R.string.error_required_field)
+            } else {
+                null
+            }
         }
     }
 

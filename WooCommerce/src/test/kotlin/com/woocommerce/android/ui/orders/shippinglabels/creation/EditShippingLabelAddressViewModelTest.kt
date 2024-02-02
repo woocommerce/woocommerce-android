@@ -384,40 +384,39 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given validation fails for a set of fields, when on done clicked, then ScrollToFirstErrorField event is triggered with correct field`() = testBlocking {
+    fun `given validation fails for a set of fields, when on done clicked, then ScrollToFirstErrorField event is triggered with correct field`() =
+        testBlocking {
+            viewModel.onFieldEdited(Field.Name, "")
+            viewModel.onFieldEdited(Field.Company, "")
 
-        viewModel.onFieldEdited(Field.Name, "")
-        viewModel.onFieldEdited(Field.Company, "")
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
 
-        var event: Event? = null
-        viewModel.event.observeForever { event = it }
+            viewModel.onDoneButtonClicked()
 
-        viewModel.onDoneButtonClicked()
+            verify(addressValidator, never()).validateAddress(any(), any(), any())
 
-        verify(addressValidator, never()).validateAddress(any(), any(), any())
-
-        assertThat(event).isInstanceOf(ScrollToFirstErrorField::class.java)
-        if (event is ScrollToFirstErrorField) {
-            assertThat((event as ScrollToFirstErrorField).field).isEqualTo(Field.Name)
+            assertThat(event).isInstanceOf(ScrollToFirstErrorField::class.java)
+            if (event is ScrollToFirstErrorField) {
+                assertThat((event as ScrollToFirstErrorField).field).isEqualTo(Field.Name)
+            }
         }
-    }
 
     @Test
-    fun `given all fields are valid, when on done clicked, then ScrollToFirstErrorField event is not triggered`() = testBlocking {
+    fun `given all fields are valid, when on done clicked, then ScrollToFirstErrorField event is not triggered`() =
+        testBlocking {
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
 
-        var event: Event? = null
-        viewModel.event.observeForever { event = it }
+            viewModel.onDoneButtonClicked()
 
-        viewModel.onDoneButtonClicked()
+            verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
-        verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
-
-        assertThat(event).isNotInstanceOf(ScrollToFirstErrorField::class.java)
-    }
+            assertThat(event).isNotInstanceOf(ScrollToFirstErrorField::class.java)
+        }
 
     @Test
     fun `given all fields are valid, when onDoneButtonClicked, then CloseKeyboard event is triggered`() = testBlocking {
-
         var event: Event? = null
         viewModel.event.observeForever { event = it }
 
@@ -427,38 +426,41 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given all fields are valid, when onUseAddressAsIsButtonClicked, then CloseKeyboard event is triggered`() = testBlocking {
-        val events = mutableListOf<Event>()
-        viewModel.event.observeForever { events.add(it) }
+    fun `given all fields are valid, when onUseAddressAsIsButtonClicked, then CloseKeyboard event is triggered`() =
+        testBlocking {
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever { events.add(it) }
 
-        viewModel.onUseAddressAsIsButtonClicked()
+            viewModel.onUseAddressAsIsButtonClicked()
 
-        assertThat(events).contains(CloseKeyboard)
-    }
-
-    @Test
-    fun `given fields are invalid, when onDoneButtonClicked, then CloseKeyboard event is not triggered`() = testBlocking {
-        viewModel.onFieldEdited(Field.Name, "")
-        viewModel.onFieldEdited(Field.Company, "")
-
-        var event: Event? = null
-        viewModel.event.observeForever { event = it }
-
-        viewModel.onDoneButtonClicked()
-
-        assertThat(event).isNotEqualTo(CloseKeyboard)
-    }
+            assertThat(events).contains(CloseKeyboard)
+        }
 
     @Test
-    fun `given fields are invalid, when onUseAddressAsIsButtonClicked, then CloseKeyboard event is not triggered`() = testBlocking {
-        viewModel.onFieldEdited(Field.Name, "")
-        viewModel.onFieldEdited(Field.Company, "")
+    fun `given fields are invalid, when onDoneButtonClicked, then CloseKeyboard event is not triggered`() =
+        testBlocking {
+            viewModel.onFieldEdited(Field.Name, "")
+            viewModel.onFieldEdited(Field.Company, "")
 
-        var event: Event? = null
-        viewModel.event.observeForever { event = it }
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
 
-        viewModel.onUseAddressAsIsButtonClicked()
+            viewModel.onDoneButtonClicked()
 
-        assertThat(event).isNotEqualTo(CloseKeyboard)
-    }
+            assertThat(event).isNotEqualTo(CloseKeyboard)
+        }
+
+    @Test
+    fun `given fields are invalid, when onUseAddressAsIsButtonClicked, then CloseKeyboard event is not triggered`() =
+        testBlocking {
+            viewModel.onFieldEdited(Field.Name, "")
+            viewModel.onFieldEdited(Field.Company, "")
+
+            var event: Event? = null
+            viewModel.event.observeForever { event = it }
+
+            viewModel.onUseAddressAsIsButtonClicked()
+
+            assertThat(event).isNotEqualTo(CloseKeyboard)
+        }
 }
