@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
 
@@ -578,6 +579,32 @@ class PaymentsFlowTracker @Inject constructor(
                 AnalyticsTracker.KEY_AMOUNT_NORMALIZED to amountNormalized,
             )
         )
+    }
+
+    fun trackPaymentsReceiptSharingFailed(sharingResult: PaymentReceiptShare.ReceiptShareResult.Error) {
+        when (sharingResult) {
+            is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                track(
+                    RECEIPT_EMAIL_FAILED,
+                    errorType = "file_creation_failed",
+                    errorDescription = "File creation failed"
+                )
+            }
+            is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                track(
+                    RECEIPT_EMAIL_FAILED,
+                    errorType = "file_download_failed",
+                    errorDescription = "File download failed"
+                )
+            }
+            is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
+                track(
+                    RECEIPT_EMAIL_FAILED,
+                    errorType = "no_app_found",
+                    errorDescription = sharingResult.exception.message
+                )
+            }
+        }
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {

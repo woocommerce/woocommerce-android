@@ -1,21 +1,22 @@
 package com.woocommerce.android.ui.payments.receipt.preview
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -23,14 +24,14 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class ReceiptPreviewViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ReceiptPreviewViewModel
 
-    private val selectedSite: SelectedSite = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val paymentsFlowTracker: PaymentsFlowTracker = mock()
+    private val paymentReceiptShare: PaymentReceiptShare = mock()
 
     private val savedState: SavedStateHandle = ReceiptPreviewFragmentArgs(
         receiptUrl = "testing url",
@@ -40,8 +41,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        viewModel = ReceiptPreviewViewModel(savedState, tracker, selectedSite)
-        whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" })
+        viewModel = ReceiptPreviewViewModel(savedState, tracker, paymentsFlowTracker, paymentReceiptShare)
     }
 
     @Test
@@ -73,35 +73,85 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on send email, then send receipt event emitted`() =
-        testBlocking {
-            viewModel.onSendEmailClicked()
-
-            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
-        }
-
-    @Test
     fun `when user clicks on send email, then event tracked`() =
         testBlocking {
-            viewModel.onSendEmailClicked()
+            viewModel.onShareClicked()
 
             verify(tracker).track(RECEIPT_EMAIL_TAPPED)
         }
 
     @Test
-    fun `when email application not found, then SnackBar with error shown`() =
+    fun `given sharing success, when onShareClicked, then no events emitted`() =
         testBlocking {
-            viewModel.onEmailActivityNotFound()
+            // GIVEN
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Success
+            )
 
-            assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(LoadUrl::class.java)
         }
 
     @Test
-    fun `when email application not found, then event tracked`() =
+    fun `given sharing failed with file cretion, when onShareClicked, then ShowSnackbar emitted`() =
         testBlocking {
-            viewModel.onEmailActivityNotFound()
+            // GIVEN
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation
+            )
 
-            verify(tracker).track(RECEIPT_EMAIL_FAILED)
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_stored
+            )
+            verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation
+            )
+        }
+
+    @Test
+    fun `given sharing failed with file downloading, when onShareClicked, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload
+            )
+
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_downloaded
+            )
+            verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload
+            )
+        }
+
+    @Test
+    fun `given sharing failed with file sharing, when onShareClicked, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            val sharing = PaymentReceiptShare.ReceiptShareResult.Error.Sharing(Exception())
+            whenever(paymentReceiptShare("testing url", 999L)).thenReturn(sharing)
+
+            // WHEN
+            viewModel.onShareClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as MultiLiveEvent.Event.ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_email_client_not_found
+            )
+            verify(paymentsFlowTracker).trackPaymentsReceiptSharingFailed(
+                sharing
+            )
         }
 
     @Test

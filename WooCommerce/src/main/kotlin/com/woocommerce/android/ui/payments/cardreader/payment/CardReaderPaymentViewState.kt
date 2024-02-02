@@ -219,6 +219,15 @@ sealed class ViewState(
         override val isProgressVisible = true
     }
 
+    object SharingReceiptState : ViewState(
+        headerLabel = R.string.card_reader_payment_completed_payment_header,
+        illustration = null,
+        primaryActionLabel = null,
+        secondaryActionLabel = null,
+    ) {
+        override val isProgressVisible = true
+    }
+
     object ReFetchingOrderState : ViewState(
         headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
         hintLabel = R.string.card_reader_payment_fetch_order_loading_hint,
