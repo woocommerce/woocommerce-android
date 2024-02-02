@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 09:54:13+0000
+Translation-Revision-Date: 2024-01-30 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">AI 建议</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">还可输入 %d 个字符</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">描述</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">标语</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">更换图片</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">应用</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">开始</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s 天</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">设置时长</string>
+    <string name="blaze_campaign_budget_impressions_done_button">完成</string>
+    <string name="blaze_campaign_budget_impressions_title">展示次数</string>
+    <string name="blaze_campaign_budget_update_button">更新</string>
+    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
+    <string name="blaze_campaign_budget_edit_duration_button">编辑</string>
+    <string name="blaze_campaign_budget_duration_section_title">时长</string>
+    <string name="blaze_campaign_budget_reach_forecast">每天的预计受众人数</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s 每天</string>
+    <string name="blaze_campaign_budget_days_duration">共计 %1$s 天</string>
+    <string name="blaze_campaign_budget_total_spend">总支出</string>
+    <string name="blaze_campaign_budget_subtitle">您愿意在产品推广活动上花费多少资金？</string>
+    <string name="blaze_campaign_budget_toolbar_title">设置您的预算</string>
+    <string name="blaze_campaign_preview_target_default_value">所有</string>
+    <string name="blaze_campaign_preview_days_duration">从 %2$s 起 %1$s 天</string>
+    <string name="product_creation_survey_button_dont_show_again">不再显示</string>
+    <string name="product_creation_survey_button_remind_me_later">稍后提醒我</string>
+    <string name="product_creation_survey_description">有时间吗？ 请提供快速反馈，以帮助我们改进人工智能辅助功能。</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">确认详情</string>
     <string name="blaze_campaign_preview_details_destination_url">广告目的地</string>
     <string name="blaze_campaign_preview_details_interests">兴趣</string>
@@ -15,8 +41,8 @@ Language: zh_CN
     <string name="blaze_campaign_preview_details_budget">预算</string>
     <string name="blaze_campaign_preview_details_section_title">详情</string>
     <string name="blaze_campaign_preview_shop_now_button">立即购买</string>
-    <string name="blaze_campaign_preview_edit_ad_button">编辑广告</string>
     <string name="blaze_campaign_screen_fragment_title">预览</string>
+    <string name="blaze_campaign_preview_edit_ad">编辑广告</string>
     <string name="disabled">禁用</string>
     <string name="order_configuration_product_selection_control">产品选择</string>
     <string name="order_configuration_product_selection">选择产品 %s</string>
@@ -63,7 +89,6 @@ Language: zh_CN
     <string name="theme_picker_current_theme_title">当前主题</string>
     <string name="theme_picker_settings_title">试用新外观</string>
     <string name="product_creation_survey_button_open">开始调查</string>
-    <string name="product_creation_survey_description">您已多次使用我们的人工智能辅助功能添加产品。 我们想听听您对这项功能的看法，以便进一步改进。</string>
     <string name="product_creation_survey_title">您的宝贵意见对我们非常重要！</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">启用“现场付款”功能，让客户能在收货时通过现金或银行卡为在线订单付款。\n\n即使不启用此功能，您仍然可以手动创建订单。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">您想在结账页面中添加“现场付款”功能吗？</string>

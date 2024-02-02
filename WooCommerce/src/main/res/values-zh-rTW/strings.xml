@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 13:54:03+0000
+Translation-Revision-Date: 2024-01-30 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">由 AI 建議</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">剩餘 %d 個字元</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">描述</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">標語</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">變更圖片</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">套用</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">開始時間</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s 天</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">設定期間</string>
+    <string name="blaze_campaign_budget_impressions_info">曝光數反映了廣告向潛在顧客顯示的頻率。\n\n\n        因為線上流量和使用者行為會波動，無法確定確切數字，但我們會致力讓廣告的實際曝光數盡可能符合你的目標次數。\n\n\n        切記，曝光數與能見度有關，而非觀眾採取的行動。</string>
+    <string name="blaze_campaign_budget_impressions_done_button">完成</string>
+    <string name="blaze_campaign_budget_impressions_title">曝光數</string>
+    <string name="blaze_campaign_budget_update_button">更新</string>
+    <string name="blaze_campaign_budget_edit_duration_button">編輯</string>
+    <string name="blaze_campaign_budget_duration_section_title">時間長度</string>
+    <string name="blaze_campaign_budget_reach_forecast">預估每天觸及的人數</string>
+    <string name="blaze_campaign_budget_daily_spend">每日 %1$s</string>
+    <string name="blaze_campaign_budget_days_duration">%1$s 天</string>
+    <string name="blaze_campaign_budget_total_spend">總預算</string>
+    <string name="blaze_campaign_budget_subtitle">你打算在商品推廣行銷活動上花費多少預算？</string>
+    <string name="blaze_campaign_budget_toolbar_title">設定預算</string>
+    <string name="blaze_campaign_preview_target_default_value">全部</string>
+    <string name="blaze_campaign_preview_days_duration">從 %2$s起共 %1$s 天</string>
+    <string name="product_creation_survey_button_dont_show_again">不要再顯示</string>
+    <string name="product_creation_survey_button_remind_me_later">稍後再提醒我</string>
+    <string name="product_creation_survey_description">有空嗎？ 簡短的意見回饋就能幫助我們改善 AI 輔助功能。</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">確認詳細資料</string>
     <string name="blaze_campaign_preview_details_destination_url">廣告目的地</string>
     <string name="blaze_campaign_preview_details_interests">興趣</string>
@@ -15,7 +41,7 @@ Language: zh_TW
     <string name="blaze_campaign_preview_details_budget">預算</string>
     <string name="blaze_campaign_preview_details_section_title">詳細資料</string>
     <string name="blaze_campaign_preview_shop_now_button">立即選購</string>
-    <string name="blaze_campaign_preview_edit_ad_button">編輯廣告</string>
+    <string name="blaze_campaign_preview_edit_ad">編輯廣告</string>
     <string name="blaze_campaign_screen_fragment_title">預覽</string>
     <string name="disabled">殘障人士</string>
     <string name="order_configuration_product_selection_control">商品選擇</string>
@@ -63,7 +89,6 @@ Language: zh_TW
     <string name="theme_picker_current_theme_title">目前的佈景主題</string>
     <string name="theme_picker_settings_title">嘗試新的外觀</string>
     <string name="product_creation_survey_button_open">開始進行調查</string>
-    <string name="product_creation_survey_description">你目前已使用 AI 功能多次新增產品。 歡迎與我們分享想法，讓體驗更好。</string>
     <string name="product_creation_survey_title">我們很重視你的意見！</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">若你啟用親自收款功能，可以讓顧客在到貨時以現金或卡片支付線上訂單款項。\n\n即使不啟用這項功能，你仍可手動建立訂單。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">你想將親自收款新增至網頁結帳功能嗎？</string>

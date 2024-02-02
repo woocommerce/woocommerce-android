@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 13:54:03+0000
+Translation-Revision-Date: 2024-01-29 19:54:14+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">مقترح بواسطة الذكاء الاصطناعي</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">يتبقى %d من الأحرف</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">وصف</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">الشعار</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">تغيير الصورة</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">تطبيق</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">يبدأ في</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">⁦%1$s⁩ من الأيام</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">تعيين المدة</string>
+    <string name="blaze_campaign_budget_impressions_info">تعكس الانطباعات عدد مرات ظهور إعلانك للعملاء المحتملين.\n\n\n        على الرغم من تعذر التأكد من الأرقام الدقيقة بسبب تأرجح حركة المرور على الإنترنت وسلوك المستخدمين، فإننا نهدف إلى مطابقة الانطباعات الفعلية على إعلانك قدر المستطاع مع العدد المستهدف.\n\n\n        تذكر أن الانطباعات تدور حول الرؤية وليس الإجراء الذي يتخذه المشاهدون. </string>
+    <string name="blaze_campaign_budget_impressions_done_button">تم</string>
+    <string name="blaze_campaign_budget_impressions_title">الانطباعات</string>
+    <string name="blaze_campaign_budget_update_button">تحديث</string>
+    <string name="blaze_campaign_budget_edit_duration_button">تحرير</string>
+    <string name="blaze_campaign_budget_duration_section_title">المدة</string>
+    <string name="blaze_campaign_budget_reach_forecast">عدد الأشخاص المتوقع وصولهم يوميًا</string>
+    <string name="blaze_campaign_budget_daily_spend">⁦%1$s⁩ يوميًا</string>
+    <string name="blaze_campaign_budget_days_duration">لمدة ⁦%1$s⁩ من الأيام</string>
+    <string name="blaze_campaign_budget_total_spend">إجمالي الإنفاق</string>
+    <string name="blaze_campaign_budget_subtitle">ما المبلغ الذي تود إنفاقه على حملة الترويج لمنتجك؟</string>
+    <string name="blaze_campaign_budget_toolbar_title">تعيين ميزانيتك</string>
+    <string name="blaze_campaign_preview_target_default_value">الكل</string>
+    <string name="blaze_campaign_preview_days_duration">⁦%1$s⁩ من الأيام من ⁦%2$s⁩</string>
+    <string name="product_creation_survey_button_dont_show_again">عدم العرض مجددًا</string>
+    <string name="product_creation_survey_button_remind_me_later">تذكيري لاحقًا</string>
+    <string name="product_creation_survey_description">هل لديك دقيقة؟ ساعدنا على تحسين الميزات التي تدعم الذكاء الاصطناعي من خلال ملاحظاتك السريعة.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">تأكيد التفاصيل</string>
     <string name="blaze_campaign_preview_details_destination_url">وجهة الإعلان</string>
     <string name="blaze_campaign_preview_details_interests">مجالات الاهتمام</string>
@@ -15,7 +41,7 @@ Language: ar
     <string name="blaze_campaign_preview_details_budget">الميزانية</string>
     <string name="blaze_campaign_preview_details_section_title">تفاصيل</string>
     <string name="blaze_campaign_preview_shop_now_button">التسوق الآن</string>
-    <string name="blaze_campaign_preview_edit_ad_button">تحرير الإعلان</string>
+    <string name="blaze_campaign_preview_edit_ad">تحرير الإعلان</string>
     <string name="blaze_campaign_screen_fragment_title">معاينة</string>
     <string name="disabled">تعطيل المزامنة</string>
     <string name="order_configuration_product_selection_control"> تحديد المنتج</string>
@@ -63,7 +89,6 @@ Language: ar
     <string name="theme_picker_current_theme_title">القالب الحالي</string>
     <string name="theme_picker_settings_title">تجربة مظهر جديد</string>
     <string name="product_creation_survey_button_open">بدء الاستبيان</string>
-    <string name="product_creation_survey_description">لقد استخدمت ميزتنا المدعومة بالذكاء الاصطناعي لإضافة المنتجات مرات عديدة الآن. نرغب في التعرُّف على أفكارك لتحسين الميزة.</string>
     <string name="product_creation_survey_title">إسهاماتك محل تقدير!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">يؤدي تمكين Pay In Person إلى السماح للعملاء بالدفع إليك للحصول على الطلبات على الإنترنت عند التسليم نقدًا أو باستخدام البطاقة.\n\nلا يزال بالإمكان إنشاء الطلبات يدويًا من دون تمكين هذه الميزة.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">هل تريد إضافة Pay In Person إلى طرق السداد الخاصة بك على الويب؟</string>
