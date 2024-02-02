@@ -34,6 +34,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ScrollToFirstErrorField
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CloseKeyboard
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
@@ -300,11 +302,11 @@ class EditShippingLabelAddressFragment :
 
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)
                 is DialPhoneNumber -> dialPhoneNumber(requireContext(), event.phoneNumber)
-                is CreateShippingLabelEvent.ScrollToFirstErrorField -> scrollToFirstErrorField(
+                is ScrollToFirstErrorField -> scrollToFirstErrorField(
                     event.field,
                     event.isStateFieldSpinner
                 )
-                CreateShippingLabelEvent.CloseKeyboard -> {
+                CloseKeyboard -> {
                     activity?.let { ActivityUtils.hideKeyboard(it) }
                 }
 

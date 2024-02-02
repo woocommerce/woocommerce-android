@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CloseKeyboard
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -102,7 +103,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         viewState = viewState.validateAllFields()
         val address = viewState.getAddress()
         if (viewState.areAllRequiredFieldsValid) {
-            triggerEvent(CreateShippingLabelEvent.CloseKeyboard)
+            triggerEvent(CloseKeyboard)
             launch {
                 viewState = viewState.copy(
                     isValidationProgressDialogVisible = true,
@@ -225,7 +226,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         // Validate fields locally
         viewState = viewState.validateAllFields()
         if (viewState.areAllRequiredFieldsValid) {
-            triggerEvent(CreateShippingLabelEvent.CloseKeyboard)
+            triggerEvent(CloseKeyboard)
             exitWithAddress(viewState.getAddress())
         } else {
             triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))

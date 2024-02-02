@@ -7,6 +7,8 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ScrollToFirstErrorField
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CloseKeyboard
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
@@ -394,9 +396,9 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         verify(addressValidator, never()).validateAddress(any(), any(), any())
 
-        assertThat(event).isInstanceOf(CreateShippingLabelEvent.ScrollToFirstErrorField::class.java)
-        if (event is CreateShippingLabelEvent.ScrollToFirstErrorField) {
-            assertThat((event as CreateShippingLabelEvent.ScrollToFirstErrorField).field).isEqualTo(Field.Name)
+        assertThat(event).isInstanceOf(ScrollToFirstErrorField::class.java)
+        if (event is ScrollToFirstErrorField) {
+            assertThat((event as ScrollToFirstErrorField).field).isEqualTo(Field.Name)
         }
     }
 
@@ -410,7 +412,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
 
-        assertThat(event).isNotInstanceOf(CreateShippingLabelEvent.ScrollToFirstErrorField::class.java)
+        assertThat(event).isNotInstanceOf(ScrollToFirstErrorField::class.java)
     }
 
     @Test
@@ -421,7 +423,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onDoneButtonClicked()
 
-        assertThat(event).isEqualTo(CreateShippingLabelEvent.CloseKeyboard)
+        assertThat(event).isEqualTo(CloseKeyboard)
     }
 
     @Test
@@ -431,7 +433,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onUseAddressAsIsButtonClicked()
 
-        assertThat(events).contains(CreateShippingLabelEvent.CloseKeyboard)
+        assertThat(events).contains(CloseKeyboard)
     }
 
     @Test
@@ -444,7 +446,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onDoneButtonClicked()
 
-        assertThat(event).isNotEqualTo(CreateShippingLabelEvent.CloseKeyboard)
+        assertThat(event).isNotEqualTo(CloseKeyboard)
     }
 
     @Test
@@ -457,6 +459,6 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
 
         viewModel.onUseAddressAsIsButtonClicked()
 
-        assertThat(event).isNotEqualTo(CreateShippingLabelEvent.CloseKeyboard)
+        assertThat(event).isNotEqualTo(CloseKeyboard)
     }
 }
