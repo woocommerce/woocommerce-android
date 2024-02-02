@@ -3994,5 +3994,6 @@
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
+    <string name="see_report">See Report</string>
 
 </resources>
