@@ -87,7 +87,6 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         } else {
             binding.reportGroup.visibility = GONE
         }
-
     }
 
     private fun setNoDataViewState(viewState: NoDataState) {

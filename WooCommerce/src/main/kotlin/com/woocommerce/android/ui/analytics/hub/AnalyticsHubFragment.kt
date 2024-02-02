@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
