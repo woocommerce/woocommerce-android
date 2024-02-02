@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -225,6 +226,16 @@ fun ExpandableProductCard(
                     style = MaterialTheme.typography.body2,
                     text = product.productInfo.priceAfterDiscount,
                     color = MaterialTheme.colors.onSurface
+                )
+            } else {
+                // Spacer here because otherwise the layouts will jump in size when the product is synced
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(quantity) { // Use the same constraints as the quantity Text
+                            start.linkTo(name.start)
+                            top.linkTo(stock.bottom)
+                        }
+                        .height(dimensionResource(id = R.dimen.major_200))
                 )
             }
         }
