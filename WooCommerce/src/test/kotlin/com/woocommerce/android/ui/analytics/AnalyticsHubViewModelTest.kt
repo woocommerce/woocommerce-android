@@ -707,6 +707,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             feedbackRepository,
             tracker,
             dateUtils,
+            mock(),
+            mock(),
             savedState
         )
     }
@@ -765,7 +767,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                     value = defaultSessionStat.conversionRate,
                     delta = null,
                     chartInfo = emptyList()
-                )
+                ),
+                reportUrl = null
             )
         )
     }
