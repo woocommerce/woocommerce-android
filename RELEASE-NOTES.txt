@@ -1,6 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.2
+-----
+- [**] [Available for users with WooCommerce version of 8.7+, which is not released yet] Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
+
 17.1
 -----
+- [*] [Internal] Fixed crash when going to background from the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10600]
+- [*] [Internal] Improvement to the autofocus logic in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10605]
+- [*] [Internal] Collapse bottom drawer with totals on the order creation/editing screen when scrolling down [https://github.com/woocommerce/woocommerce-android/pull/10573]
 
 17.0
 -----

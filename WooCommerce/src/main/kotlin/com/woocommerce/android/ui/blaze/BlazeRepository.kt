@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.blaze
 
+import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
+import kotlinx.coroutines.flow.map
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeAdSuggestionEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -23,24 +27,40 @@ class BlazeRepository @Inject constructor(
         const val ONE_DAY_IN_MILLIS = 1000 * 60 * 60 * 24
     }
 
+    fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
+        .map { it.map { language -> Language(language.id, language.name) } }
+
+    suspend fun fetchLanguages() = blazeCampaignsStore.fetchBlazeTargetingLanguages()
+
+    fun observeDevices() = blazeCampaignsStore.observeBlazeTargetingDevices()
+        .map { it.map { device -> Device(device.id, device.name) } }
+
+    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingTopics()
+
+    fun observeInterests() = blazeCampaignsStore.observeBlazeTargetingTopics()
+        .map { it.map { interest -> Interest(interest.id, interest.description) } }
+
+    suspend fun fetchInterests() = blazeCampaignsStore.fetchBlazeTargetingTopics()
+
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
+
+    suspend fun getAdSuggestions(productId: Long): List<AiSuggestionForAd>? {
+        fun List<BlazeAdSuggestionEntity>.mapToUiModel(): List<AiSuggestionForAd> {
+            return map { AiSuggestionForAd(it.tagLine, it.description) }
+        }
+
+        val suggestions = blazeCampaignsStore.getBlazeAdSuggestions(selectedSite.get(), productId)
+        return if (suggestions.isNotEmpty()) {
+            suggestions.mapToUiModel()
+        } else {
+            blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId).model?.mapToUiModel()
+        }
+    }
 
     fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
         val product = productDetailRepository.getProduct(productId)
         return CampaignPreview(
             productId = productId,
-            aiSuggestions = listOf(),
-            budget = Budget(
-                totalBudget = DEFAULT_CAMPAIGN_TOTAL_BUDGET,
-                spentBudget = 0f,
-                currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
-                durationInDays = DEFAULT_CAMPAIGN_DURATION,
-                startDate = Date().apply { time += ONE_DAY_IN_MILLIS }, // By default start tomorrow
-            ),
-            languages = listOf(),
-            devices = listOf(),
-            locations = listOf(),
-            interests = listOf(),
             userTimeZone = timezoneProvider.deviceTimezone.displayName,
             targetUrl = product?.permalink ?: "",
             urlParams = null,
@@ -48,50 +68,51 @@ class BlazeRepository @Inject constructor(
         )
     }
 
+    @Parcelize
     data class CampaignPreview(
         val productId: Long,
-        val aiSuggestions: List<AiSuggestionForAd>,
-        val budget: Budget,
-        val languages: List<Language>,
-        val devices: List<Device>,
-        val locations: List<Location>,
-        val interests: List<Interest>,
         val userTimeZone: String,
         val targetUrl: String,
         val urlParams: Pair<String, String>?,
         val campaignImageUrl: String?,
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class AiSuggestionForAd(
-        val title: String,
         val tagLine: String,
-    )
+        val description: String,
+    ) : Parcelable
 
+    @Parcelize
     data class Budget(
         val totalBudget: Float,
         val spentBudget: Float,
         val currencyCode: String,
         val durationInDays: Int,
         val startDate: Date,
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class Location(
         val id: String,
         val name: String,
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class Language(
         val code: String,
         val name: String,
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class Device(
         val id: String,
         val name: String,
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class Interest(
         val id: String,
         val description: String,
-    )
+    ) : Parcelable
 }
