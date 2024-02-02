@@ -196,10 +196,6 @@ class AnalyticsRepository @Inject constructor(
             )
     }
 
-    fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
-    fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
-    fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
-
     private suspend fun getCurrentPeriodStats(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
@@ -321,13 +317,8 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-    private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrlOrDefault
 
     companion object {
-        const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
-        const val ANALYTICS_ORDERS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Forders"
-        const val ANALYTICS_PRODUCTS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Fproducts"
-
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
         const val ONE_H_PERCENT = 100
