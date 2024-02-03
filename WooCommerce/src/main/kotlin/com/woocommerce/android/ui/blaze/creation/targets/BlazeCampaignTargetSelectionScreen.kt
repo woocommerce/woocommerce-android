@@ -46,15 +46,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.Hidden
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.Inactive
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.NoResults
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.Ready
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.Results
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.Results.SearchItem
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.SearchState.Searching
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.ViewState
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.ViewState.SelectionItem
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Hidden
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Inactive
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.NoResults
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Ready
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Results
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Results.SearchItem
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Searching
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SelectionItem
 import com.woocommerce.android.ui.compose.component.MultiSelectAllItemsButton
 import com.woocommerce.android.ui.compose.component.MultiSelectList
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -62,7 +61,7 @@ import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
-fun BlazeCampaignTargetSelectionScreen(viewModel: BlazeCampaignTargetSelectionViewModel) {
+fun BlazeCampaignTargetSelectionScreen(viewModel: TargetSelectionViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         TargetSelectionScreen(
             state = state,
@@ -79,7 +78,7 @@ fun BlazeCampaignTargetSelectionScreen(viewModel: BlazeCampaignTargetSelectionVi
 
 @Composable
 private fun TargetSelectionScreen(
-    state: ViewState,
+    state: TargetSelectionViewState,
     onBackPressed: () -> Unit,
     onSaveTapped: () -> Unit,
     onItemTapped: (SelectionItem) -> Unit,
@@ -176,7 +175,7 @@ private fun TargetSelectionScreen(
 
 @Composable
 private fun SearchList(
-    state: ViewState,
+    state: TargetSelectionViewState,
     focusManager: FocusManager,
     onSearchItemTapped: (SearchItem) -> Unit,
     modifier: Modifier = Modifier
@@ -290,7 +289,7 @@ private fun SearchListItem(
 @Composable
 fun PreviewTargetSelectionScreen() {
     TargetSelectionScreen(
-        state = ViewState(
+        state = TargetSelectionViewState(
             items = listOf(
                 SelectionItem("1", "Item 1"),
                 SelectionItem("2", "Item 2"),
