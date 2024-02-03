@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
@@ -88,7 +87,7 @@ class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
     private fun observeSearchQuery() {
         searchQuery
             .debounce { query -> if (query.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS }
-            .onEach{ query ->
+            .onEach { query ->
                 if (query.length > 2) {
                     searchState.update { Searching }
 

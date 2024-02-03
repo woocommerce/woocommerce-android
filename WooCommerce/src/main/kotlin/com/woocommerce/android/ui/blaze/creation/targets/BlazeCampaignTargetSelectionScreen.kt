@@ -143,7 +143,7 @@ private fun TargetSelectionScreen(
                 )
             }
 
-            when(state.searchState) {
+            when (state.searchState) {
                 is Searching, is Results, is NoResults, is Ready -> {
                     SearchList(
                         state = state,

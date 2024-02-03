@@ -40,7 +40,17 @@ inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> combine(
     flow9: Flow<T9>,
     crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9) -> R
 ): Flow<R> {
-    return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6, flow7, flow8, flow9) { args: Array<*> ->
+    return kotlinx.coroutines.flow.combine(
+        flow,
+        flow2,
+        flow3,
+        flow4,
+        flow5,
+        flow6,
+        flow7,
+        flow8,
+        flow9
+    ) { args: Array<*> ->
         @Suppress("UNCHECKED_CAST", "MagicNumber")
         transform(
             args[0] as T1,
