@@ -37,7 +37,7 @@ fun <T> MultiSelectList(
     onItemToggled: (T) -> Unit,
     isAllButtonToggled: Boolean,
     modifier: Modifier = Modifier,
-    itemFormatter: T.() -> String = { toString() },
+    titleFormatter: T.() -> String = { toString() },
     itemKey: ((T) -> Any)? = null,
     allItemsButton: MultiSelectAllItemsButton? = null,
 ) {
@@ -55,8 +55,8 @@ fun <T> MultiSelectList(
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(items, key = itemKey) { item ->
                 MultiSelectItem(
-                    item = itemFormatter(item),
-                    isSelected = selectedItems.contains(item),
+                    title = titleFormatter(item),
+                    isSelected = item in selectedItems,
                     onItemToggled = { onItemToggled(item) },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -67,10 +67,10 @@ fun <T> MultiSelectList(
 
 @Composable
 private fun MultiSelectItem(
-    item: String,
+    title: String,
     isSelected: Boolean,
     onItemToggled: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -84,7 +84,7 @@ private fun MultiSelectItem(
             .heightIn(min = dimensionResource(id = R.dimen.major_300))
     ) {
         Text(
-            text = item,
+            text = title,
             modifier = Modifier
                 .weight(1f)
         )
