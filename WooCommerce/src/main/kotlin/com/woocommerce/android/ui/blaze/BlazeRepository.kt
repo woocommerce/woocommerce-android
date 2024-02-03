@@ -42,6 +42,9 @@ class BlazeRepository @Inject constructor(
 
     suspend fun fetchInterests() = blazeCampaignsStore.fetchBlazeTargetingTopics()
 
+    suspend fun fetchLocations(query: String) = blazeCampaignsStore.fetchBlazeTargetingLocations(query).model
+        ?.map { location -> Location(location.id, location.name, location.parent?.name, location.type) }
+
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
     suspend fun getAdSuggestions(productId: Long): List<AiSuggestionForAd>? {
@@ -94,8 +97,10 @@ class BlazeRepository @Inject constructor(
 
     @Parcelize
     data class Location(
-        val id: String,
+        val id: Long,
         val name: String,
+        val parent: String? = null,
+        val type: String? = null
     ) : Parcelable
 
     @Parcelize
