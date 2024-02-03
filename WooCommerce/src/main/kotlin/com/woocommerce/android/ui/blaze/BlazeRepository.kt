@@ -94,30 +94,30 @@ class BlazeRepository @Inject constructor(
         val durationInDays: Int,
         val startDate: Date,
     ) : Parcelable
-
-    @Parcelize
-    data class Location(
-        val id: Long,
-        val name: String,
-        val parent: String? = null,
-        val type: String? = null
-    ) : Parcelable
-
-    @Parcelize
-    data class Language(
-        val code: String,
-        val name: String,
-    ) : Parcelable
-
-    @Parcelize
-    data class Device(
-        val id: String,
-        val name: String,
-    ) : Parcelable
-
-    @Parcelize
-    data class Interest(
-        val id: String,
-        val description: String,
-    ) : Parcelable
 }
+
+@Parcelize
+data class Location(
+    val id: Long,
+    val name: String,
+    val parent: String? = null,
+    val type: String? = null
+) : Parcelable
+
+@Parcelize
+data class Language(
+    val code: String,
+    val name: String,
+) : Parcelable
+
+@Parcelize
+data class Device(
+    val id: String,
+    val name: String,
+) : Parcelable
+
+@Parcelize
+data class Interest(
+    val id: String,
+    val description: String,
+) : Parcelable
