@@ -35,7 +35,7 @@ class BlazeRepository @Inject constructor(
     fun observeDevices() = blazeCampaignsStore.observeBlazeTargetingDevices()
         .map { it.map { device -> Device(device.id, device.name) } }
 
-    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingTopics()
+    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingDevices()
 
     fun observeInterests() = blazeCampaignsStore.observeBlazeTargetingTopics()
         .map { it.map { interest -> Interest(interest.id, interest.description) } }
