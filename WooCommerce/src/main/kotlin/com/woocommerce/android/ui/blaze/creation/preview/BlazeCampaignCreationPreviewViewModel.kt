@@ -10,17 +10,16 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
-import com.woocommerce.android.ui.blaze.BlazeRepository.Device
-import com.woocommerce.android.ui.blaze.BlazeRepository.Interest
-import com.woocommerce.android.ui.blaze.BlazeRepository.Language
-import com.woocommerce.android.ui.blaze.BlazeRepository.Location
+import com.woocommerce.android.ui.blaze.Device
+import com.woocommerce.android.ui.blaze.Interest
+import com.woocommerce.android.ui.blaze.Language
+import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
-import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LOCATION
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -194,7 +193,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 displayValue = locations.joinToString { it.name }
                     .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
                 onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(LOCATION, interests.map { it.id }))
+                    triggerEvent(NavigateToTargetLocationSelectionScreen(locations))
                 },
             ),
             CampaignDetailItemUi(
@@ -274,8 +273,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     object NavigateToBudgetScreen : MultiLiveEvent.Event()
+
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToTargetLocationSelectionScreen(
+        val locations: List<Location>
     ) : MultiLiveEvent.Event()
 }
