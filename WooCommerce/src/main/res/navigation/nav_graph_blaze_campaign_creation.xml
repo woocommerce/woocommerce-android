@@ -59,6 +59,9 @@
         <action
             android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignTargetSelectionFragment"
             app:destination="@id/blazeCampaignTargetSelectionFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignCreationAdDestinationFragment"
+            app:destination="@id/blazeCampaignCreationAdDestinationFragment" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignCreationEditAdFragment"
@@ -96,4 +99,8 @@
             android:name="selectedIds"
             app:argType="string[]" />
     </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignCreationAdDestinationFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment"
+        android:label="BlazeCampaignCreationAdDestinationFragment" />
 </navigation>
