@@ -12,7 +12,7 @@ class GetReportUrl @Inject constructor(
     operator fun invoke(
         selection: StatsTimeRangeSelection,
         card: ReportCard
-    ): String {
+    ): String? {
         return selectedSite.getOrNull()?.let { siteModel ->
             val adminURL = siteModel.adminUrlOrDefault
             val page = "page=wc-admin"
@@ -24,7 +24,7 @@ class GetReportUrl @Inject constructor(
             val period = getPeriod(selection)
             val compare = "compare=previous_period"
             "${adminURL}admin.php?$page&$path&$period&$compare"
-        } ?: ""
+        }
     }
 
     private fun getPeriod(selection: StatsTimeRangeSelection): String {

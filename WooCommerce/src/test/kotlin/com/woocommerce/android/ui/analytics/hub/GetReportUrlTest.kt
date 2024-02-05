@@ -6,8 +6,8 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -20,9 +20,7 @@ class GetReportUrlTest : BaseUnitTest() {
     private val defaultSite = SiteModel().apply {
         adminUrl = sampleAdminURL
     }
-    val selectedSite: SelectedSite = mock { site ->
-        on(site.getOrNull()) doReturn defaultSite
-    }
+    val selectedSite: SelectedSite = mock()
 
     val formatter = SimpleDateFormat("yyyy-MM-dd")
 
@@ -34,7 +32,22 @@ class GetReportUrlTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the selected site returns null then the report url should be null`() {
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+        val selectedRange = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = formatter.parse("2024-02-02")!!,
+            referenceEndDate = formatter.parse("2024-02-02")!!,
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
+        val expectedURL = null
+        val result = sut(selection = selectedRange, card = ReportCard.Revenue)
+        assertEquals(result, expectedURL)
+    }
+
+    @Test
     fun `when today range is selected then return expected URL for revenue`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
             referenceStartDate = formatter.parse("2024-02-02")!!,
             referenceEndDate = formatter.parse("2024-02-02")!!,
@@ -49,6 +62,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when today range is selected then return expected URL for orders`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
             referenceStartDate = formatter.parse("2024-02-02")!!,
             referenceEndDate = formatter.parse("2024-02-02")!!,
@@ -63,6 +77,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when today range is selected then return expected URL for products`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
             referenceStartDate = formatter.parse("2024-02-02")!!,
             referenceEndDate = formatter.parse("2024-02-02")!!,
@@ -77,6 +92,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when quarter to date range is selected then return expected URL for revenue`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = formatter.parse("2024-01-01")!!,
             referenceEndDate = formatter.parse("2024-02-02")!!,
@@ -91,6 +107,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when quarter to date range is selected then return expected URL for orders`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = formatter.parse("2024-01-01")!!,
             referenceEndDate = formatter.parse("2024-02-02")!!,
@@ -105,6 +122,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when quarter to date range is selected then return expected URL for products`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = formatter.parse("2024-01-01")!!,
             referenceEndDate = formatter.parse("2024-02-02")!!,
@@ -119,6 +137,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when last week range is selected then return expected URL for revenue`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.LAST_WEEK.generateSelectionData(
             referenceStartDate = formatter.parse("2024-01-27")!!,
             referenceEndDate = formatter.parse("2024-01-21")!!,
@@ -133,6 +152,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when last week range is selected then return expected URL for orders`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.LAST_WEEK.generateSelectionData(
             referenceStartDate = formatter.parse("2024-01-27")!!,
             referenceEndDate = formatter.parse("2024-01-21")!!,
@@ -147,6 +167,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when last week range is selected then return expected URL for products`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val selectedRange = StatsTimeRangeSelection.SelectionType.LAST_WEEK.generateSelectionData(
             referenceStartDate = formatter.parse("2024-01-27")!!,
             referenceEndDate = formatter.parse("2024-01-21")!!,
@@ -161,6 +182,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when custom range is selected then return expected URL for revenue`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val startDate = "2024-01-25"
         val endDate = "2024-01-20"
         val selectedRange = StatsTimeRangeSelection.SelectionType.CUSTOM.generateSelectionData(
@@ -177,6 +199,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when custom range is selected then return expected URL for orders`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val startDate = "2024-01-25"
         val endDate = "2024-01-20"
         val selectedRange = StatsTimeRangeSelection.SelectionType.CUSTOM.generateSelectionData(
@@ -193,6 +216,7 @@ class GetReportUrlTest : BaseUnitTest() {
 
     @Test
     fun `when custom range is selected then return expected URL for products`() {
+        whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         val startDate = "2024-01-25"
         val endDate = "2024-01-20"
         val selectedRange = StatsTimeRangeSelection.SelectionType.CUSTOM.generateSelectionData(
