@@ -158,7 +158,7 @@ private fun TargetSelectionScreen(
                     MultiSelectList(
                         items = state.items,
                         selectedItems = state.selectedItems,
-                        titleFormatter = { title },
+                        itemFormatter = { title },
                         onItemToggled = onItemTapped,
                         isAllButtonToggled = state.isAllButtonToggled,
                         allItemsButton = MultiSelectAllItemsButton(
