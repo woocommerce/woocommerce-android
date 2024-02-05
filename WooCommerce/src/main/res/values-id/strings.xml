@@ -1,12 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Disarankan oleh AI</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d karakter tersisa</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Deskripsi</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Slogan</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Ganti gambar</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Terapkan</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Mulai</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s hari</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Tentukan durasi</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Selesai</string>
+    <string name="blaze_campaign_budget_impressions_title">Tayangan</string>
+    <string name="blaze_campaign_budget_update_button">Perbarui</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
+    <string name="blaze_campaign_budget_duration_section_title">Durasi</string>
+    <string name="blaze_campaign_budget_reach_forecast">Estimasi orang yang dijangkau per hari</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s harian</string>
+    <string name="blaze_campaign_budget_days_duration">selama %1$s hari</string>
+    <string name="blaze_campaign_budget_total_spend">Total pengeluaran</string>
+    <string name="blaze_campaign_budget_subtitle">Berapa banyak dana yang ingin Anda keluarkan untuk kampanye promosi produk?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
+    <string name="blaze_campaign_preview_target_default_value">Semua</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
+    <string name="product_creation_survey_button_dont_show_again">Jangan Tampilkan Lagi</string>
+    <string name="product_creation_survey_button_remind_me_later">Ingatkan Saya Nanti</string>
+    <string name="product_creation_survey_description">Boleh minta waktunya sebentar? Bantu kami memperbaiki fitur berbantuan AI dengan feedback cepat.</string>
+    <string name="blaze_campaign_preview_details_confirm_details_button">Konfirmasi Detail</string>
+    <string name="blaze_campaign_preview_details_destination_url">Tujuan iklan</string>
+    <string name="blaze_campaign_preview_details_interests">Minat</string>
+    <string name="blaze_campaign_preview_details_location">Lokasi</string>
+    <string name="blaze_campaign_preview_details_devices">Perangkat</string>
+    <string name="blaze_campaign_preview_details_language">Bahasa</string>
+    <string name="blaze_campaign_preview_details_budget">Anggaran</string>
+    <string name="blaze_campaign_preview_details_section_title">Detail</string>
+    <string name="blaze_campaign_preview_shop_now_button">Belanja sekarang</string>
+    <string name="blaze_campaign_preview_edit_ad">Edit iklan</string>
+    <string name="blaze_campaign_screen_fragment_title">Pratinjau</string>
     <string name="disabled">Non-aktif</string>
+    <string name="order_configuration_product_selection_control">Pilihan produk</string>
+    <string name="order_configuration_product_selection">Pilih produk %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;Luncurkan:&lt;/b&gt; Pantau progres dan keberhasilan promosi Anda.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;Tinjau cepat:&lt;/b&gt; Kirimkan iklan untuk pemeriksaan cepat oleh moderator.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;Tetapkan anggaran:&lt;/b&gt; Tetapkan biaya dan durasi kampanye.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;Sesuaikan sasaran:&lt;/b&gt; Pilih audiens berdasarkan lokasi atau minat, dan lihat potensi jangkauannya.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;Pilih produk:&lt;/b&gt; Pilih produk yang ingin dipromosikan dengan Blaze.</string>
+    <string name="scan_to_update_inventory_manage_stock">Kelola Stok</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Stok tidak dikelola</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Ketahui cara kerja Blaze</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Buat kampanye Anda</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Jutaan situs dalam jaringan WordPress.com dan Tumblr jadi ruang iklan Anda.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Jangkau audiens yang besar</string>
@@ -41,9 +88,7 @@ Language: id
     <string name="theme_picker_carousel_info_item_description_settings">Temukan tema ideal Anda di Toko Tema WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema saat ini</string>
     <string name="theme_picker_settings_title">Coba tampilan baru</string>
-    <string name="product_creation_survey_button_skip">Lewati</string>
     <string name="product_creation_survey_button_open">Mulai Survei</string>
-    <string name="product_creation_survey_description">Anda telah menggunakan fitur yang didukung AI untuk menambahkan produk beberapa kali. Sampaikan masukan Anda agar kami bisa meningkatkan fitur.</string>
     <string name="product_creation_survey_title">Kami menghargai masukan Anda!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mengaktifkan Pembayaran Langsung memungkinkan pelanggan membayar pesanan online saat pesanan diterima dengan uang tunai atau kartu.\n\nPesanan dapat dibuat secara manual tanpa mengaktifkan fitur ini.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Apakah Anda ingin menambahkan fitur Pembayaran Langsung saat checkout di situs web?</string>
@@ -126,6 +171,7 @@ Language: id
     <string name="configuration_quantity_between"> antara %1$s dan %2$s item </string>
     <string name="configuration_quantity_item_plural">%d item</string>
     <string name="configuration_quantity_item">%d item</string>
+    <string name="order_configuration_change_product_quantity">Ubah jumlah produk dari %1$.2f menjadi %2$.2f</string>
     <string name="save_configuration">Simpan konfigurasi</string>
     <string name="product_configuration_title">Konfigurasi</string>
     <string name="default_product_title">Produk %s</string>

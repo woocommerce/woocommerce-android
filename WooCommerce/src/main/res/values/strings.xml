@@ -153,6 +153,7 @@
     <string name="show_password_content_description">Show password</string>
     <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
+    <string name="receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
 
     <!--
         Date/Time Labels
@@ -1506,7 +1507,9 @@
     <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
-    <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
+    <string name="card_reader_payment_email_client_not_found">Unable to detect any application to which the receipt can be shared</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Unable to download the receipt</string>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Unable to store the receipt</string>
     <string name="card_reader_refetching_order_failed">Error fetching order. Order state in the app might be outdated.</string>
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
@@ -2041,9 +2044,10 @@
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
     <string name="product_creation_survey_title">We value your input!</string>
-    <string name="product_creation_survey_description">You\'ve used our AI-assisted feature to add products multiple times now. We\'d love to hear your thoughts to make it even better.</string>
+    <string name="product_creation_survey_description">Got a minute? Help us improve our AI-assisted features with your quick feedback.</string>
     <string name="product_creation_survey_button_open">Start the Survey</string>
-    <string name="product_creation_survey_button_skip">Skip</string>
+    <string name="product_creation_survey_button_remind_me_later">Remind Me Later</string>
+    <string name="product_creation_survey_button_dont_show_again">Don\’t show it Again</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3840,7 +3844,25 @@
     <!--
     Blaze campaign budget screen
     -->
-    <string name="blaze_campaign_budget_title">Set your budget</string>
+    <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
+    <string name="blaze_campaign_budget_subtitle">How much would you like to spend on your product promotion campaign?</string>
+    <string name="blaze_campaign_budget_total_spend">Total spend</string>
+    <string name="blaze_campaign_budget_days_duration">for %1$s days</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
+    <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
+    <string name="blaze_campaign_budget_duration_section_title">Duration</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
+    <string name="blaze_campaign_budget_update_button">Update</string>
+    <string name="blaze_campaign_budget_impressions_title">Impressions</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Done</string>
+    <string name="blaze_campaign_budget_impressions_info">Impressions reflect the frequency with which your ad appears to potential customers.\n\n
+        While exact numbers can\'t be assured due to fluctuating online traffic and user behavior, we aim to match your ad\'s actual impressions as closely as possible to your target count.\n\n
+        Remember, impressions are about visibility, not action taken by viewers.</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Set duration</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
+
     <!--
     Blaze campaign edit-ad screen
     -->

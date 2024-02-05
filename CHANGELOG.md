@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.2
+This version includes optimizations for speed and reliability. We are committed to continuously improving the app, making managing your online store more efficient and hassle-free.
+
+## 17.1
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
 ## 17.0
 Get ready for a smoother experience with our latest update! We've ironed out the pesky bug that kept gift cards from showing up in the 'totals' section during order creation and editing. Managing your sales with our WooCommerce app is now more seamless than ever. Update now and enjoy the hassle-free enhancements!
 

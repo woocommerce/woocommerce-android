@@ -194,6 +194,8 @@ class AnalyticsTracker private constructor(
         const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
         const val KEY_DATE_RANGE = "date_range"
+        const val KEY_DATE = "date"
+        const val KEY_GRANULARITY = "granularity"
         const val KEY_SOURCE = "source"
         const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
@@ -286,6 +288,8 @@ class AnalyticsTracker private constructor(
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
 
         const val KEY_COUPONS_COUNT = "coupons_count"
+        const val KEY_USE_GIFT_CARD = "use_gift_card"
+        const val KEY_IS_GIFT_CARD_REMOVED = "removed"
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
