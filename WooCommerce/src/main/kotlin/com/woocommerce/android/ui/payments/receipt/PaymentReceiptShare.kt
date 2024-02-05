@@ -17,7 +17,6 @@ class PaymentReceiptShare @Inject constructor(
     private val context: Application,
     private val selectedSite: SelectedSite,
 ) {
-    @Suppress("TooGenericExceptionCaught")
     suspend operator fun invoke(receiptUrl: String, orderNumber: Long): ReceiptShareResult {
         val receiptFile = fileUtils.createTempTimeStampedFile(
             storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -32,6 +31,7 @@ class PaymentReceiptShare @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun tryShare(receiptFile: File): ReceiptShareResult {
         val uri = FileProvider.getUriForFile(
             context,
