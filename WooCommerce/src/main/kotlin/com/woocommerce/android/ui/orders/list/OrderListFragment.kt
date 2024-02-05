@@ -19,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
@@ -139,6 +140,8 @@ class OrderListFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    private val navArgs: OrderListFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
@@ -367,6 +370,10 @@ class OrderListFragment :
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
+        selectedOrder.refreshOrders.observe(viewLifecycleOwner) {
+            refreshOrders()
+        }
+
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
             viewModel.updateOrderSelectedStatus(
                 orderId = selectedOrder.selectedOrderId.value ?: -1,
@@ -391,12 +398,19 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            if (selectedOrder.selectedOrderId.value == null && isTablet()) {
-                binding.orderListView.openFirstOrder()
+            if (isTablet()) {
+                val isNoSelectedOrder = selectedOrder.selectedOrderId.value == null && viewModel.orderId.value == -1L
+                val isSpecificOrderToOpen = viewModel.orderId.value != -1L
+
+                if (isNoSelectedOrder) {
+                    openFirstOrder()
+                } else if (isSpecificOrderToOpen) {
+                    openSpecificOrder()
+                    clearSelectedOrderIdInViewModel()
+                }
+
+                updateOrderSelectedStatus()
             }
-            viewModel.updateOrderSelectedStatus(
-                orderId = selectedOrder.selectedOrderId.value ?: -1,
-            )
             updatePagedListData(it)
         }
 
@@ -517,6 +531,22 @@ class OrderListFragment :
             }
         }
     }
+    private fun openFirstOrder() {
+        binding.orderListView.openFirstOrder()
+    }
+
+    private fun openSpecificOrder() {
+        binding.orderListView.openOrder(viewModel.orderId.value ?: -1L)
+    }
+
+    private fun clearSelectedOrderIdInViewModel() {
+        viewModel.clearOrderId()
+    }
+
+    private fun updateOrderSelectedStatus() {
+        val selectedOrderId = selectedOrder.selectedOrderId.value ?: -1
+        viewModel.updateOrderSelectedStatus(orderId = selectedOrderId)
+    }
 
     private fun initJitm(jitmEnabled: Boolean) {
         if (jitmEnabled) {
@@ -584,7 +614,11 @@ class OrderListFragment :
     ) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
-        _binding?.createOrderButton?.hide()
+        if (isTablet()) {
+            _binding?.createOrderButton?.show()
+        } else {
+            _binding?.createOrderButton?.hide()
+        }
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)
