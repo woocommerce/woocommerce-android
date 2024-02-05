@@ -38,7 +38,6 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -100,6 +99,10 @@ class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
     BackPressListener,
     MenuProvider {
+    private companion object {
+        private const val TABLET_PANES_WIDTH_RATIO = 0.5F
+        private const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
+    }
     private val viewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     @Inject
@@ -131,7 +134,8 @@ class OrderCreateEditFormFragment :
 
     override fun onStart() {
         super.onStart()
-        val navController = childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
+        val navController =
+            childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
         val args = ProductSelectorFragmentArgs(
             selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
             selectedItems = emptyArray(),
@@ -215,9 +219,9 @@ class OrderCreateEditFormFragment :
     private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
         if (DisplayUtils.isTablet(context)) {
             productSelectorNavContainer.isVisible = true
-            twoPaneLayoutGuideline.setGuidelinePercent(0.5f)
+            twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
         } else if (DisplayUtils.isXLargeTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(0.68f)
+            twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
         } else {
             productSelectorNavContainer.isVisible = false
             twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
