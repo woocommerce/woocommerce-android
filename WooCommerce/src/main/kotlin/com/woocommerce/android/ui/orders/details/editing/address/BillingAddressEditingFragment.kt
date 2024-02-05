@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
+import android.os.Bundle
+import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
@@ -26,5 +28,10 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override fun onViewBound(binding: FragmentBaseEditAddressBinding) {
         binding.form.addressSectionHeader.text = getString(R.string.order_detail_billing_address_section)
         replicateAddressSwitch.text = getString(R.string.order_detail_use_as_shipping_address)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.title = getString(R.string.order_detail_billing_address_section)
     }
 }
