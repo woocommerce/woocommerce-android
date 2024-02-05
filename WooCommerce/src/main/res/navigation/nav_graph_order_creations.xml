@@ -55,6 +55,16 @@
             android:id="@+id/action_orderCreationFragment_to_customerListFragment"
             app:destination="@id/customerListFragment" />
         <action
+            android:id="@+id/action_orderCreationFragment_to_orderListFragment"
+            app:destination="@id/orders"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        </action>
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders"
             app:enterAnim="@anim/default_enter_anim"
