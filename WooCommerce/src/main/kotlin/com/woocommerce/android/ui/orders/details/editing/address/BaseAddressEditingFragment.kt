@@ -43,7 +43,7 @@ abstract class BaseAddressEditingFragment :
     abstract fun onViewBound(binding: FragmentBaseEditAddressBinding)
 
     private var _binding: FragmentBaseEditAddressBinding? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
     protected lateinit var replicateAddressSwitch: SwitchMaterial
 
