@@ -18,7 +18,8 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         ViewState(
             destinationUrl = resourceProvider.getString(R.string.blaze_campaign_edit_ad_destination_empty_url_message),
-            parameters = resourceProvider.getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
+            parameters = resourceProvider
+                .getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
         )
     )
 
