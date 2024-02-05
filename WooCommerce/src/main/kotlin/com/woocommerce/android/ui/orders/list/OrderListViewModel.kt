@@ -153,6 +153,8 @@ class OrderListViewModel @Inject constructor(
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
+    val orderId: LiveData<Long> = savedState.getLiveData<Long>("orderId")
+
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData(
             offset = EMPTY_VIEW_THROTTLE,
@@ -588,6 +590,10 @@ class OrderListViewModel @Inject constructor(
             }
         }
         triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
+    }
+
+    fun clearOrderId() {
+        savedState["orderId"] = -1L
     }
 
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
