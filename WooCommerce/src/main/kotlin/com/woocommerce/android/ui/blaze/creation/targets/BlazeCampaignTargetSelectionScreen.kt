@@ -22,7 +22,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -58,6 +57,7 @@ import com.woocommerce.android.ui.compose.component.MultiSelectAllItemsButton
 import com.woocommerce.android.ui.compose.component.MultiSelectList
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCSearchField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
@@ -99,9 +99,11 @@ private fun TargetSelectionScreen(
                 navigationIcon = Filled.ArrowBack,
                 actions = {
                     if (state.searchState is Hidden || state.searchState is Inactive) {
-                        TextButton(onClick = onSaveTapped, enabled = state.isSaveButtonEnabled) {
-                            Text(stringResource(id = string.save).uppercase())
-                        }
+                        WCTextButton(
+                            onClick = onSaveTapped,
+                            enabled = state.isSaveButtonEnabled,
+                            text = stringResource(string.save)
+                        )
                     }
                 }
             )
