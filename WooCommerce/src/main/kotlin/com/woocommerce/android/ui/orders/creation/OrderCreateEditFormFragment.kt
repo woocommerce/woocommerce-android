@@ -90,6 +90,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
@@ -211,8 +212,10 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
-        if (isTablet()) {
+        if (DisplayUtils.isTablet(context)) {
             productSelectorNavContainer.isVisible = true
+            twoPaneLayoutGuideline.setGuidelinePercent(0.5f)
+        } else if (DisplayUtils.isXLargeTablet(context)) {
             twoPaneLayoutGuideline.setGuidelinePercent(0.68f)
         } else {
             productSelectorNavContainer.isVisible = false
