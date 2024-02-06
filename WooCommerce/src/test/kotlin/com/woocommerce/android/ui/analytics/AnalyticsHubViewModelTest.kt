@@ -735,10 +735,12 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when see report is pressed then interaction tracked`() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply {
-            setIsWpComStore(true)
-            adminUrl = "https://report-url/wc-admin"
-        })
+        whenever(selectedSite.getOrNull()).thenReturn(
+            SiteModel().apply {
+                setIsWpComStore(true)
+                adminUrl = "https://report-url/wc-admin"
+            }
+        )
         whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
         configureSuccessfulStatsResponse()
         sut = givenAViewModel()
