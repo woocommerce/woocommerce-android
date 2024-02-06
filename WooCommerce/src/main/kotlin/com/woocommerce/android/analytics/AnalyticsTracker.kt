@@ -294,6 +294,10 @@ class AnalyticsTracker private constructor(
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
 
+        const val KEY_PERIOD = "period"
+        const val KEY_REPORT = "report"
+        const val KEY_COMPARE = "compare"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
