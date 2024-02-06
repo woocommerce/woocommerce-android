@@ -459,3 +459,5 @@ class AnalyticsHubViewModel @Inject constructor(
         shouldAskForFeedback()
     }
 }
+
+enum class ReportCard { Revenue, Orders, Products }
