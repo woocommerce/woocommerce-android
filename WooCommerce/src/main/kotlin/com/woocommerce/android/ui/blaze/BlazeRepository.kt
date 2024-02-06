@@ -35,12 +35,15 @@ class BlazeRepository @Inject constructor(
     fun observeDevices() = blazeCampaignsStore.observeBlazeTargetingDevices()
         .map { it.map { device -> Device(device.id, device.name) } }
 
-    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingTopics()
+    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingDevices()
 
     fun observeInterests() = blazeCampaignsStore.observeBlazeTargetingTopics()
         .map { it.map { interest -> Interest(interest.id, interest.description) } }
 
     suspend fun fetchInterests() = blazeCampaignsStore.fetchBlazeTargetingTopics()
+
+    suspend fun fetchLocations(query: String) = blazeCampaignsStore.fetchBlazeTargetingLocations(query).model
+        ?.map { location -> Location(location.id, location.name, location.parent?.name, location.type) }
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
@@ -91,28 +94,30 @@ class BlazeRepository @Inject constructor(
         val durationInDays: Int,
         val startDate: Date,
     ) : Parcelable
-
-    @Parcelize
-    data class Location(
-        val id: String,
-        val name: String,
-    ) : Parcelable
-
-    @Parcelize
-    data class Language(
-        val code: String,
-        val name: String,
-    ) : Parcelable
-
-    @Parcelize
-    data class Device(
-        val id: String,
-        val name: String,
-    ) : Parcelable
-
-    @Parcelize
-    data class Interest(
-        val id: String,
-        val description: String,
-    ) : Parcelable
 }
+
+@Parcelize
+data class Location(
+    val id: Long,
+    val name: String,
+    val parent: String? = null,
+    val type: String? = null
+) : Parcelable
+
+@Parcelize
+data class Language(
+    val code: String,
+    val name: String,
+) : Parcelable
+
+@Parcelize
+data class Device(
+    val id: String,
+    val name: String,
+) : Parcelable
+
+@Parcelize
+data class Interest(
+    val id: String,
+    val description: String,
+) : Parcelable
