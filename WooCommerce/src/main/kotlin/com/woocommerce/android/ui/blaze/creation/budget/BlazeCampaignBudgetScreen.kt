@@ -53,7 +53,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onBackPressed = viewModel::onBackPressed,
             onEditDurationTapped = viewModel::onEditDurationTapped,
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
-            onBudgetUpdated = viewModel::onTotalBudgetUpdated,
+            onBudgetUpdated = viewModel::onBudgetUpdated,
             onCampaignDurationUpdated = viewModel::onCampaignDurationUpdated,
         )
     }
@@ -181,7 +181,7 @@ private fun EditBudgetSection(
         )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            value = state.totalBudget,
+            value = state.sliderValue,
             valueRange = state.budgetRange,
             onValueChange = { onBudgetUpdated(it) },
             colors = SliderDefaults.colors(
@@ -347,6 +347,7 @@ private fun CampaignBudgetScreenPreview() {
     CampaignBudgetScreen(
         state = BlazeCampaignBudgetViewModel.BudgetUiState(
             totalBudget = 35f,
+            sliderValue = 35f,
             spentBudget = 0f,
             budgetRange = 35f..350f,
             currencyCode = "USD",

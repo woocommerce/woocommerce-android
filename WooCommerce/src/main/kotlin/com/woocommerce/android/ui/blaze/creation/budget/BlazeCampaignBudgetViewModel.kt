@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIM
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_TOTAL_BUDGET
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -24,10 +23,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     private val _viewState = MutableLiveData(
         BudgetUiState(
             currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
-            totalBudget = DEFAULT_CAMPAIGN_TOTAL_BUDGET,
+            totalBudget = CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT * DEFAULT_CAMPAIGN_DURATION,
+            sliderValue = CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT * DEFAULT_CAMPAIGN_DURATION,
             spentBudget = 0f,
             budgetRange = getBudgetRange(DEFAULT_CAMPAIGN_DURATION),
-            dailySpending = getDailySpending(DEFAULT_CAMPAIGN_TOTAL_BUDGET, DEFAULT_CAMPAIGN_DURATION),
+            dailySpending = formatDailySpend(
+                dailySpend = (CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT * DEFAULT_CAMPAIGN_DURATION) / DEFAULT_CAMPAIGN_DURATION
+            ),
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
             durationRangeDays = getDurationRange(),
             startDateMmmDdYyyy = Date().formatToMMMddYYYY(),
@@ -58,32 +60,43 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         )
     }
 
-    fun onTotalBudgetUpdated(totalBudget: Float) {
+    fun onBudgetUpdated(sliderValue: Float) {
+        if (sliderValue.toInt().mod(viewState.value?.durationInDays!!) == 0) {
+            val dailySpending = sliderValue / viewState.value?.durationInDays!!
+            _viewState.value = _viewState.value?.copy(
+                totalBudget = sliderValue,
+                dailySpending = formatDailySpend(dailySpending)
+            )
+        }
         _viewState.value = _viewState.value?.copy(
-            totalBudget = totalBudget,
-            dailySpending = getDailySpending(totalBudget, viewState.value?.durationInDays!!)
+            sliderValue = sliderValue,
         )
     }
 
     fun onCampaignDurationUpdated(duration: Int) {
+        val currentDailyExpend = viewState.value?.totalBudget!! / viewState.value?.durationInDays!!
+        val newTotalBudget = duration * currentDailyExpend
         _viewState.value = _viewState.value?.copy(
-            budgetRange = getBudgetRange(duration),
             durationInDays = duration,
-            dailySpending = getDailySpending(viewState.value?.totalBudget!!, duration)
+            budgetRange = getBudgetRange(duration),
+            dailySpending = formatDailySpend(currentDailyExpend),
+            totalBudget = newTotalBudget,
+            sliderValue = newTotalBudget,
         )
     }
 
-    private fun getDailySpending(totalBudget: Float, duration: Int) =
-        currencyFormatter.formatCurrency((totalBudget / duration).toBigDecimal(), BLAZE_DEFAULT_CURRENCY_CODE)
+    private fun formatDailySpend(dailySpend: Float) =
+        currencyFormatter.formatCurrency(dailySpend.toBigDecimal(), BLAZE_DEFAULT_CURRENCY_CODE)
 
-    private fun getBudgetRange(currentDuration: Int) =
-        currentDuration * CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT..currentDuration * CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT
+    private fun getBudgetRange(duration: Int) =
+        duration * CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT..duration * CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT
 
     private fun getDurationRange() = 1f..CAMPAIGN_MAX_DURATION.toFloat()
 
     data class BudgetUiState(
         val currencyCode: String,
         val totalBudget: Float,
+        val sliderValue: Float,
         val spentBudget: Float,
         val budgetRange: ClosedFloatingPointRange<Float>,
         val dailySpending: String,

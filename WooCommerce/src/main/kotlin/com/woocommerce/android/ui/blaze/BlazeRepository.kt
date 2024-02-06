@@ -20,7 +20,6 @@ class BlazeRepository @Inject constructor(
     companion object {
         const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
-        const val DEFAULT_CAMPAIGN_TOTAL_BUDGET = 35F // USD
         const val CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT = 5F // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT = 50F // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
