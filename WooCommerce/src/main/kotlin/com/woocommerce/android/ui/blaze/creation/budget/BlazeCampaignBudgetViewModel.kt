@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class BlazeCampaignBudgetViewModel @Inject constructor(
@@ -86,7 +87,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     private fun formatDailySpend(dailySpend: Float) =
-        currencyFormatter.formatCurrency(dailySpend.toBigDecimal(), BLAZE_DEFAULT_CURRENCY_CODE)
+        currencyFormatter.formatCurrency(dailySpend.roundToInt().toBigDecimal(), BLAZE_DEFAULT_CURRENCY_CODE)
 
     private fun getBudgetRange(duration: Int) =
         duration * CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT..duration * CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT
