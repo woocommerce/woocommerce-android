@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDe
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
@@ -121,12 +122,7 @@ class OrderCreateEditFormFragment :
     private val args: OrderCreateEditFormFragmentArgs by navArgs()
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = when (viewModel.mode) {
-                Creation -> R.drawable.ic_back_24dp
-                is Edit -> null
-            }
-        )
+        get() = AppBarStatus.Hidden
 
     private val View?.customAmountAdapter
         get() = (this as? RecyclerView)
@@ -223,8 +219,35 @@ class OrderCreateEditFormFragment :
         } else if (DisplayUtils.isXLargeTablet(context)) {
             twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
         } else {
+            // not a tablet
             productSelectorNavContainer.isVisible = false
             twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
+        }
+        setupToolbars(DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context))
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.setupToolbars(isTablet: Boolean) {
+        orderCreationAuxiliaryToolbar.isVisible = isTablet
+        if (isTablet) {
+            orderCreationToolbar.navigationIcon = null
+            orderCreationToolbar.title = getString(R.string.order_creation_tablet_mode_fragment_title)
+            orderCreationAuxiliaryToolbar.title = getTitle()
+            orderCreationAuxiliaryToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
+        } else {
+            val navigationIcon = when (viewModel.mode) {
+                Creation -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
+                is Edit -> null
+            }
+            orderCreationToolbar.navigationIcon = navigationIcon
+            orderCreationToolbar.title = getTitle()
+        }
+    }
+
+    private fun getTitle(): CharSequence = when (viewModel.mode) {
+        Creation -> getString(R.string.order_creation_fragment_title)
+        is Edit -> {
+            val orderId = (viewModel.mode as Edit).orderId.toString()
+            getString(R.string.orderdetail_orderstatus_ordernum, orderId)
         }
     }
 
@@ -1094,14 +1117,6 @@ class OrderCreateEditFormFragment :
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
-    }
-
-    override fun getFragmentTitle() = when (viewModel.mode) {
-        Creation -> getString(R.string.order_creation_fragment_title)
-        is Edit -> {
-            val orderId = (viewModel.mode as Edit).orderId.toString()
-            getString(R.string.orderdetail_orderstatus_ordernum, orderId)
-        }
     }
 
     override fun onRequestAllowBackPress(): Boolean {

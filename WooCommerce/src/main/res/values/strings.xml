@@ -538,6 +538,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_tablet_mode_fragment_title">Order Summary</string>
     <string name="order_creation_price_after_discount">Price after discount</string>
     <string name="order_creation_products_order_count">Order count</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>

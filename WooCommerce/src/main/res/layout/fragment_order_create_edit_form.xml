@@ -5,22 +5,39 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/order_creation_auxiliary_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/product_selector_nav_container"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:defaultNavHost="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loadingProgress" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/two_pane_layout_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical" />
+        android:orientation="vertical"
+        tools:layout_constraintGuide_percent="0.5"/>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/order_creation_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/loadingProgress"
@@ -30,7 +47,7 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/order_creation_toolbar"
         android:visibility="gone"/>
 
     <androidx.core.widget.NestedScrollView
