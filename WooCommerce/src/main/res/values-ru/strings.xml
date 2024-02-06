@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 19:54:03+0000
+Translation-Revision-Date: 2024-01-30 20:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Выбрано ИИ</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">Осталось символов: %d</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Описание</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Ключевая фраза</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Изменить изображение</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Применить</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Начало</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s дн.</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Задать продолжительность</string>
+    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Готово</string>
+    <string name="blaze_campaign_budget_impressions_title">Показы</string>
+    <string name="blaze_campaign_budget_update_button">Обновить</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Изменить</string>
+    <string name="blaze_campaign_budget_duration_section_title">Продолжительность</string>
+    <string name="blaze_campaign_budget_reach_forecast">Приблизительный ежедневный охват пользователей</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s ежедневно</string>
+    <string name="blaze_campaign_budget_days_duration">на %1$s дн.</string>
+    <string name="blaze_campaign_budget_total_spend">Общие расходы</string>
+    <string name="blaze_campaign_budget_subtitle">Сколько вы хотите потратить на кампанию по продвижению товара?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Настройте бюджет</string>
+    <string name="blaze_campaign_preview_target_default_value">Все</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s дн. с %2$s</string>
+    <string name="product_creation_survey_button_dont_show_again">Больше не показывать</string>
+    <string name="product_creation_survey_button_remind_me_later">Напомнить позже</string>
+    <string name="product_creation_survey_description">Есть свободная минутка? Оставьте краткий отзыв и помогите нам улучшить функции на базе ИИ.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Подтвердить сведения</string>
     <string name="blaze_campaign_preview_details_destination_url">Размещение рекламного объявления</string>
     <string name="blaze_campaign_preview_details_interests">Интересы</string>
@@ -15,7 +41,7 @@ Language: ru
     <string name="blaze_campaign_preview_details_budget">Бюджет</string>
     <string name="blaze_campaign_preview_details_section_title">Сведения</string>
     <string name="blaze_campaign_preview_shop_now_button">Купить сейчас</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Редактировать рекламное объявление</string>
+    <string name="blaze_campaign_preview_edit_ad">Редактировать рекламное объявление</string>
     <string name="blaze_campaign_screen_fragment_title">Предварительный просмотр</string>
     <string name="disabled">Отключено</string>
     <string name="order_configuration_product_selection_control">Выбор товара</string>
@@ -63,7 +89,6 @@ Language: ru
     <string name="theme_picker_current_theme_title">Текущая тема</string>
     <string name="theme_picker_settings_title">Попробуйте новый дизайн</string>
     <string name="product_creation_survey_button_open">Начать опрос</string>
-    <string name="product_creation_survey_description">Вы уже несколько раз воспользовались нашей функцией добавления товаров при помощи ИИ. Мы хотели бы узнать ваши впечатления, чтобы сделать её ещё лучше.</string>
     <string name="product_creation_survey_title">Мы высоко ценим ваше мнение!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Активация функции очной оплаты даёт возможность клиенту оплачивать заказ при доставке наличными или банковской картой.\n\nЗаказы можно по-прежнему создавать вручную, не активируя этой функции.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Хотите добавить функцию очной оплаты к оформлению заказа онлайн?</string>
