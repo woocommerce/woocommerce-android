@@ -259,19 +259,18 @@ class NotificationMessageHandler @Inject constructor(
 
     @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
-        val keysToRemove = mutableListOf<Int>()
-
-        ACTIVE_NOTIFICATIONS_MAP.forEach { (key, _) ->
-            if (key == localPushId) {
-                keysToRemove.add(key)
+        val keptNotifs = HashMap<Int, Notification>()
+        ACTIVE_NOTIFICATIONS_MAP.asSequence()
+            .forEach { row ->
+                if (row.key == localPushId) {
+                    notificationBuilder.cancelNotification(row.key)
+                } else {
+                    keptNotifs[row.key] = row.value
+                }
             }
-        }
 
-        keysToRemove.forEach { key ->
-            notificationBuilder.cancelNotification(key)
-            ACTIVE_NOTIFICATIONS_MAP.remove(key)
-        }
-
+        clearNotifications()
+        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
         updateNotificationsState()
     }
 
