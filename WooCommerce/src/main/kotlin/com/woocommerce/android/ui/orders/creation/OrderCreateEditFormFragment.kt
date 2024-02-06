@@ -227,22 +227,22 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.setupToolbars(isTablet: Boolean) {
-        orderCreationAuxiliaryToolbar.isVisible = isTablet
+        twoPaneModeToolbar.isVisible = isTablet
         if (isTablet) {
-            orderCreationToolbar.navigationIcon = null
-            orderCreationToolbar.title = getString(R.string.order_creation_tablet_mode_fragment_title)
-            orderCreationAuxiliaryToolbar.title = getTitle()
-            orderCreationAuxiliaryToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
+            mainToolbar.navigationIcon = null
+            mainToolbar.title = getString(R.string.order_creation_tablet_mode_fragment_title)
+            twoPaneModeToolbar.title = getTitle()
+            twoPaneModeToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
         } else {
             val navigationIcon = when (viewModel.mode) {
                 Creation -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
                 is Edit -> null
             }
-            orderCreationToolbar.navigationIcon = navigationIcon
-            orderCreationToolbar.title = getTitle()
+            mainToolbar.navigationIcon = navigationIcon
+            mainToolbar.title = getTitle()
         }
-        orderCreationToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
-        orderCreationAuxiliaryToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
+        mainToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
+        twoPaneModeToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
     }
 
     private fun getTitle(): CharSequence = when (viewModel.mode) {

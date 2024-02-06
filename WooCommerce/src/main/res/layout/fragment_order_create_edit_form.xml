@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/order_creation_auxiliary_toolbar"
+        android:id="@+id/two_pane_mode_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
@@ -32,7 +32,7 @@
         tools:layout_constraintGuide_percent="0.5"/>
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/order_creation_toolbar"
+        android:id="@+id/main_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +47,7 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/order_creation_toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
         android:visibility="gone"/>
 
     <androidx.core.widget.NestedScrollView
