@@ -10,6 +10,7 @@
 17.2
 -----
 - [**] [Available for users with WooCommerce version of 8.7+, which is not released yet] Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
+- [*] Fix login for sites with Jetpack Connection Package [https://github.com/woocommerce/woocommerce-android/pull/10688]
 
 17.1
 -----
