@@ -150,13 +150,12 @@ class AnalyticsHubViewModel @Inject constructor(
     private fun trackSeeReportInteraction(card: ReportCard) {
         val period = ranges.selectionType.name.lowercase()
         val report = card.name.lowercase()
-        val compare = "previous_period"
         tracker.track(
             AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_PERIOD to period,
                 AnalyticsTracker.KEY_REPORT to report,
-                AnalyticsTracker.KEY_COMPARE to compare
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
             )
         )
     }
