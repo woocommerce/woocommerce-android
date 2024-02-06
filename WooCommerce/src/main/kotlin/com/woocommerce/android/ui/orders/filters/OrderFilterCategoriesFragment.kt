@@ -71,7 +71,9 @@ class OrderFilterCategoriesFragment :
             R.drawable.ic_gridicons_cross_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
-            (activity as? MainActivity)?.onBackPressed()
+            if (onRequestAllowBackPress()) {
+                dismiss()
+            }
         }
         binding.toolbar.inflateMenu(R.menu.menu_clear)
         onPrepareMenu(binding.toolbar.menu)
