@@ -19,7 +19,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
@@ -275,7 +274,6 @@ class OrderListFragment :
         detailContainerLayoutParams.marginStart = (windowWidth * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
         detailContainerLayoutParams.marginEnd = (windowWidth * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
     }
-
 
     private fun adjustLayoutForNonTablet(
         detailContainer: NavHostFragment,
