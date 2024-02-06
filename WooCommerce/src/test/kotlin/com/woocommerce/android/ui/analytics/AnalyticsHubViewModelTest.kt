@@ -713,6 +713,23 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
     }
 
+    @Test
+    fun `when see report is pressed then track see report event`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        verify(tracker).track(
+            AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_PERIOD to WEEK_TO_DATE.name.lowercase(),
+                AnalyticsTracker.KEY_REPORT to ReportCard.Revenue.name.lowercase(),
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
+            )
+        )
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
