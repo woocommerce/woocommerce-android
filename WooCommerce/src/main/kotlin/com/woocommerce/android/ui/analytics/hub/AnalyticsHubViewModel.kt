@@ -147,7 +147,7 @@ class AnalyticsHubViewModel @Inject constructor(
         } ?: triggerEvent(AnalyticsViewEvent.OpenUrl(url))
     }
 
-    private fun trackSeeReportInteraction(card: ReportCard){
+    private fun trackSeeReportInteraction(card: ReportCard) {
         val period = ranges.selectionType.name.lowercase()
         val report = card.name.lowercase()
         val compare = "previous_period"
