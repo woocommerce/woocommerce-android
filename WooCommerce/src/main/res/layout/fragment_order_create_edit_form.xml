@@ -23,7 +23,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loadingProgress" />
+        app:layout_constraintTop_toBottomOf="@+id/two_pane_mode_toolbar" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/two_pane_layout_guideline"
@@ -41,17 +41,6 @@
         app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/loadingProgress"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
-        android:visibility="gone"/>
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -60,7 +49,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/loadingProgress">
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/order_creation_root"
@@ -153,5 +142,16 @@
         android:layout_height="wrap_content"
         tools:visibility="visible"
         android:visibility="gone" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/loadingProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
