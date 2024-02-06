@@ -109,9 +109,13 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
-        binding.analyticsOrdersCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url) }
-        binding.analyticsRevenueCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url) }
-        binding.analyticsProductsCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url) }
+        binding.analyticsOrdersCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url, ReportCard.Orders) }
+        binding.analyticsRevenueCard.onSeeReportClickListener = { url ->
+            viewModel.onSeeReport(url, ReportCard.Revenue)
+        }
+        binding.analyticsProductsCard.onSeeReportClickListener = { url ->
+            viewModel.onSeeReport(url, ReportCard.Products)
+        }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
