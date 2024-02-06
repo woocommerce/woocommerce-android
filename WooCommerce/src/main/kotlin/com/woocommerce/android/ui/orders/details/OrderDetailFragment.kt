@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.ui.orders.list.SelectedOrderTrackerViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -97,6 +99,7 @@ class OrderDetailFragment :
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
+    private val selectedOrder: SelectedOrderTrackerViewModel by activityViewModels()
     private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
     @Inject
@@ -297,6 +300,7 @@ class OrderDetailFragment :
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
                 if (isTablet()) {
+                    selectedOrder.refreshOrders()
                     orderEditingViewModel.setOrderId(it.order.id)
                 }
                 onPrepareMenu(binding.toolbar.menu)

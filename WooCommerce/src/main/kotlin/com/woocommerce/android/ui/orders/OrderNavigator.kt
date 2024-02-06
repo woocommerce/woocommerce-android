@@ -179,14 +179,11 @@ class OrderNavigator @Inject constructor() {
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is EditOrder -> {
-                OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderCreationFragment(
-                        OrderCreateEditViewModel.Mode.Edit(target.orderId),
-                        sku = null,
-                        barcodeFormat = null,
-                        giftCardCode = target.giftCard,
-                        giftCardAmount = target.appliedDiscount
-                    ).let { fragment.findNavController().navigateSafely(it) }
+                (fragment.activity as? MainActivity)?.showOrderCreation(
+                    OrderCreateEditViewModel.Mode.Edit(target.orderId),
+                    target.giftCard,
+                    target.appliedDiscount
+                )
             }
             is OrderNavigationTarget.ShowOrder -> {
                 OrderDetailFragmentDirections
