@@ -243,6 +243,7 @@ class OrderCreateEditFormFragment :
         }
         mainToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
         twoPaneModeToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
+        mainToolbar.addMenuProvider(this@OrderCreateEditFormFragment, viewLifecycleOwner)
     }
 
     private fun getTitle(): CharSequence = when (viewModel.mode) {
