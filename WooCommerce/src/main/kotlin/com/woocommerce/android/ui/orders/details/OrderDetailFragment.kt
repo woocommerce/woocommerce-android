@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabe
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -160,6 +161,24 @@ class OrderDetailFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        /**
+         * In tablet split view, when the app window is initially narrow,
+         * the order detail occupies the full screen as a single pane.
+         * Below code takes care of transition handling:
+         * if the app window is then expanded in the split view,
+         * the layout should adapt from the single-pane full-screen mode to a two-pane layout,
+         * ensuring a seamless user experience across varying app window sizes.
+         *
+         * This code identifies scenarios where the device is a tablet and the order detail currently
+         * occupies the entire window (typical in a transition from single-pane to two-pane layout).
+         * It then navigates up to the order list screen, which is responsible for managing the two-pane
+         * layout effectively.
+         */
+        if (parentFragment?.parentFragment !is OrderListFragment && isTablet()) {
+            findNavController().navigateUp()
+            return
+        }
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
