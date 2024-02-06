@@ -85,7 +85,7 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
-        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.15f
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.10f
     }
 
     @Inject
