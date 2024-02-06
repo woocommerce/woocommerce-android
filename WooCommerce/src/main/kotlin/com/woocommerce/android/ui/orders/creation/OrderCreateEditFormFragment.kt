@@ -241,6 +241,8 @@ class OrderCreateEditFormFragment :
             orderCreationToolbar.navigationIcon = navigationIcon
             orderCreationToolbar.title = getTitle()
         }
+        orderCreationToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
+        orderCreationAuxiliaryToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
     }
 
     private fun getTitle(): CharSequence = when (viewModel.mode) {
