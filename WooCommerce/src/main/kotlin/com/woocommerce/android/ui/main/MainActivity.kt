@@ -116,6 +116,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
@@ -1132,6 +1133,22 @@ class MainActivity :
             selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
+    }
+
+    fun showOrderCreation(
+        mode: OrderCreateEditViewModel.Mode,
+        giftCardCode: String?,
+        giftCardAmount: BigDecimal?
+    ) {
+        NavGraphMainDirections.actionGlobalToOrdercreationfragment(
+            mode = mode,
+            barcodeFormat = null,
+            giftCardCode = giftCardCode,
+            giftCardAmount = giftCardAmount,
+            sku = null,
+        ).apply {
+            navController.navigateSafely(this)
+        }
     }
 
     override fun showOrderDetail(
