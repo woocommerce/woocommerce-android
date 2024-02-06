@@ -10,7 +10,7 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Device
 import com.woocommerce.android.ui.blaze.BlazeRepository.Interest
@@ -217,7 +217,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     private fun getDefaultBudget() = Budget(
-        totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT,
+        totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND,
         spentBudget = 0f,
         currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
         durationInDays = DEFAULT_CAMPAIGN_DURATION,

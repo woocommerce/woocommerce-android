@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.BLAZE_DEFAULT_CURRENCY_CODE
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,13 +24,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     private val _viewState = MutableLiveData(
         BudgetUiState(
             currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
-            totalBudget = CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT * DEFAULT_CAMPAIGN_DURATION,
-            sliderValue = CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT * DEFAULT_CAMPAIGN_DURATION,
+            totalBudget = CAMPAIGN_MINIMUM_DAILY_SPEND * DEFAULT_CAMPAIGN_DURATION,
+            sliderValue = CAMPAIGN_MINIMUM_DAILY_SPEND * DEFAULT_CAMPAIGN_DURATION,
             spentBudget = 0f,
             budgetRange = getBudgetRange(DEFAULT_CAMPAIGN_DURATION),
-            dailySpending = formatDailySpend(
-                dailySpend = (CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT * DEFAULT_CAMPAIGN_DURATION) / DEFAULT_CAMPAIGN_DURATION
-            ),
+            dailySpending = formatDailySpend(dailySpend = CAMPAIGN_MINIMUM_DAILY_SPEND),
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
             durationRangeDays = getDurationRange(),
             startDateMmmDdYyyy = Date().formatToMMMddYYYY(),
@@ -38,7 +36,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 isLoaded = false,
                 impressionsMin = 0,
                 impressionsMax = 0
-            )
+            ),
+            campaignDurationDates = "",
         )
     )
     val viewState = _viewState
@@ -90,7 +89,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         currencyFormatter.formatCurrency(dailySpend.roundToInt().toBigDecimal(), BLAZE_DEFAULT_CURRENCY_CODE)
 
     private fun getBudgetRange(duration: Int) =
-        duration * CAMPAIGN_MINIMUM_DAILY_SPEND_LIMIT..duration * CAMPAIGN_MAXIMUM_DAILY_SPEND_LIMIT
+        duration * CAMPAIGN_MINIMUM_DAILY_SPEND..duration * CAMPAIGN_MAXIMUM_DAILY_SPEND
 
     private fun getDurationRange() = 1f..CAMPAIGN_MAX_DURATION.toFloat()
 
@@ -107,6 +106,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val forecast: ForecastUi,
         val showImpressionsBottomSheet: Boolean = false,
         val showCampaignDurationBottomSheet: Boolean = false,
+        val campaignDurationDates: String,
     )
 
     data class ForecastUi(
