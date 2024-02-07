@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 13:54:03+0000
+Translation-Revision-Date: 2024-01-30 13:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">הומלץ על ידי בינה מלאכותית</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d תווים נותרו</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">תיאור</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">תיאור האתר</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">להחליף תמונה</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">להחיל</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">מתחיל במועד</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">⁦%1$s⁩ ימים</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">להגדיר מיקום</string>
+    <string name="blaze_campaign_budget_impressions_info">הצפיות מייצגות את התדירות שבה הפרסומת שלך מוצגת ללקוחות פוטנציאליים.\n\n\n        אומנם לא ניתן להבטיח שהמספרים יהיו מדויקים עקב שינויים בתעבורה המקוונת והתנהגות המשתמשים, אך אנחנו שואפים להתאים כמה שאפשר את מספר הצפיות במודעה שלך בפועל למספר היעד שהצבת.\n\n\n        חשוב לזכור, הצפיות משקפות את הנראות של הפרסומת, לא את הפעולה שבוצעה על ידי הצופים.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">סיימתי</string>
+    <string name="blaze_campaign_budget_impressions_title">צפיות</string>
+    <string name="blaze_campaign_budget_update_button">לעדכן</string>
+    <string name="blaze_campaign_budget_edit_duration_button">לערוך</string>
+    <string name="blaze_campaign_budget_duration_section_title">משך זמן</string>
+    <string name="blaze_campaign_budget_reach_forecast">מספר האנשים שיראו את התוכן בכל יום</string>
+    <string name="blaze_campaign_budget_daily_spend">⁦%1$s⁩ בכל יום</string>
+    <string name="blaze_campaign_budget_days_duration">ל-⁦%1$s⁩ ימים</string>
+    <string name="blaze_campaign_budget_total_spend">הוצאה כוללת</string>
+    <string name="blaze_campaign_budget_subtitle">כמה ברצונך להוציא על קמפיין הקידום של המוצר שלך?</string>
+    <string name="blaze_campaign_budget_toolbar_title">להגדיר את תקציב שלך</string>
+    <string name="blaze_campaign_preview_target_default_value">הכול</string>
+    <string name="blaze_campaign_preview_days_duration">⁦%1$s⁩ ימים מ-⁦%2$s⁩</string>
+    <string name="product_creation_survey_button_dont_show_again">אל תציגו לי את זה שוב</string>
+    <string name="product_creation_survey_button_remind_me_later">הזכירו לי מאוחר יותר</string>
+    <string name="product_creation_survey_description">אפשר רגע מזמנך? אנחנו רוצים לבקש את עזרתך בשיפור האפשרויות שמבוססות על בינה מלאכותית על ידי מענה על משוב קצר.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">לאשר את הפרטים</string>
     <string name="blaze_campaign_preview_details_destination_url">היעד של הפרסומת</string>
     <string name="blaze_campaign_preview_details_interests">תחומי עניין</string>
@@ -15,7 +41,7 @@ Language: he_IL
     <string name="blaze_campaign_preview_details_budget">תקציב</string>
     <string name="blaze_campaign_preview_details_section_title">פרטים</string>
     <string name="blaze_campaign_preview_shop_now_button">לרכישה כעת</string>
-    <string name="blaze_campaign_preview_edit_ad_button">לערוך את הפרסומת</string>
+    <string name="blaze_campaign_preview_edit_ad">לערוך את הפרסומת</string>
     <string name="blaze_campaign_screen_fragment_title">תצוגה מקדימה</string>
     <string name="disabled">נָכֶה</string>
     <string name="order_configuration_product_selection_control">בחירת מוצרים</string>
@@ -63,7 +89,6 @@ Language: he_IL
     <string name="theme_picker_current_theme_title">ערכת העיצוב הנוכחית</string>
     <string name="theme_picker_settings_title">לנסות מראה חדש</string>
     <string name="product_creation_survey_button_open">להתחיל לענות על הסקר</string>
-    <string name="product_creation_survey_description">כבר השתמשת מספר פעמים באפשרות שנעזרת בבינה מלאכותית כדי להוסיף מוצרים. נשמח לשמוע מה דעתך על האפשרות כדי לשפר אותה.</string>
     <string name="product_creation_survey_title">אנחנו מעריכים את המשוב שלך!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">הפעלת האפשרות \'לשלם באופן אישי\' תאפשר ללקוחות לשלם לך על הזמנות מקוונות במעמד המשלוח באמצעות מזומן או כרטיס.\n\nעדיין ניתן ליצור הזמנות באופן ידני ללא הפעלת האפשרות הזו.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">האם ברצונך להוסיף את \'לשלם באופן אישי\' אל תהליך התשלום בקופה באתר?</string>

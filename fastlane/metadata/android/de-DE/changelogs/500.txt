@@ -1,2 +1,0 @@
-17.0:
-Genieße dank unserem neuesten Update ein reibungsloseres Erlebnis! Wir haben den lästigen Fehler behoben, wodurch Geschenkkarten während der Bestellerstellung und -bearbeitung nicht im Abschnitt „Gesamtbeträge“ angezeigt wurden. Die Verwaltung deiner Verkäufe mit unserer WooCommerce-App funktioniert nun reibungsloser als je zuvor. Führe jetzt ein Update durch, um von den praktischen Verbesserungen zu profitieren!

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-22 17:54:04+0000
+Translation-Revision-Date: 2024-01-30 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggerito dall\'IA</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d caratteri rimanenti</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Descrizione</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Slogan</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Cambia immagine</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Applica</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Inizia</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s giorni</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Imposta durata</string>
+    <string name="blaze_campaign_budget_impressions_info">Le impressioni riflettono la frequenza con cui il tuo annuncio appare ai potenziali clienti.\n\n\n        Anche se i numeri esatti non possono essere garantiti a causa delle fluttuazioni del traffico online e del comportamento degli utenti, il nostro obiettivo è far avvicinare il più possibile le impressioni effettive del tuo annuncio al numero di destinatari.\n\n\n        Ricorda, le impressioni riguardano la visibilità, non l\'azione intrapresa dai visitatori.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Fatto</string>
+    <string name="blaze_campaign_budget_impressions_title">Impressioni</string>
+    <string name="blaze_campaign_budget_update_button">Aggiorna</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Modifica</string>
+    <string name="blaze_campaign_budget_duration_section_title">Durata</string>
+    <string name="blaze_campaign_budget_reach_forecast">Persone stimate raggiunte al giorno</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s giornaliero</string>
+    <string name="blaze_campaign_budget_days_duration">per %1$s giorni</string>
+    <string name="blaze_campaign_budget_total_spend">Spesa totale</string>
+    <string name="blaze_campaign_budget_subtitle">Quanto vorresti spendere per la tua campagna promozionale?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Imposta il tuo budget</string>
+    <string name="blaze_campaign_preview_target_default_value">Tutti</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s giorni da %2$s</string>
+    <string name="product_creation_survey_button_dont_show_again">Non mostrare più</string>
+    <string name="product_creation_survey_button_remind_me_later">Ricordamelo più tardi</string>
+    <string name="product_creation_survey_description">Hai un minuto? Aiutaci a migliorare le nostre funzionalità assistite dall\'intelligenza artificiale con un rapido feedback.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Conferma dettagli</string>
     <string name="blaze_campaign_preview_details_destination_url">Destinazione annuncio</string>
     <string name="blaze_campaign_preview_details_interests">Interessi</string>
@@ -15,7 +41,7 @@ Language: it
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_section_title">Dettagli</string>
     <string name="blaze_campaign_preview_shop_now_button">Acquista ora</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Modifica annuncio</string>
+    <string name="blaze_campaign_preview_edit_ad">Modifica annuncio</string>
     <string name="blaze_campaign_screen_fragment_title">Anteprima</string>
     <string name="disabled">Disabilitato</string>
     <string name="order_configuration_product_selection_control">Selezione prodotto</string>
@@ -63,7 +89,6 @@ Language: it
     <string name="theme_picker_current_theme_title">Tema corrente</string>
     <string name="theme_picker_settings_title">Prova un nuovo aspetto</string>
     <string name="product_creation_survey_button_open">Inizia il sondaggio</string>
-    <string name="product_creation_survey_description">Hai usato la nostra funzionalità assistita dall\'intelligenza artificiale per aggiungere prodotti più volte. Ci piacerebbe sapere cosa ne pensi per migliorare ancora di più.</string>
     <string name="product_creation_survey_title">Apprezziamo il tuo contributo!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L\'attivazione di Paga di persona consente al cliente di pagare gli ordini online alla consegna tramite contanti o carta.\n\nGli ordini possono comunque essere creati manualmente senza attivare questa funzione.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vuoi aggiungere Paga di persona al pagamento web?</string>
