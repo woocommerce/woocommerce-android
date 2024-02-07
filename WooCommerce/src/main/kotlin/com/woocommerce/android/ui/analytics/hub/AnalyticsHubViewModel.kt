@@ -148,7 +148,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun trackSeeReportInteraction(card: ReportCard) {
-        val period = ranges.selectionType.name.lowercase()
+        val period = ranges.selectionType.identifier
         val report = card.name.lowercase()
         tracker.track(
             AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
