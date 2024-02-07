@@ -122,6 +122,7 @@ private fun CampaignBudgetScreen(
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
+                    campaignDurationDates = state.campaignDurationDates,
                     onEditDurationTapped = {
                         onEditDurationTapped()
                         coroutineScope.launch { modalSheetState.show() }
@@ -209,6 +210,7 @@ private fun EditBudgetSection(
 
 @Composable
 private fun EditDurationSection(
+    campaignDurationDates: String,
     onEditDurationTapped: () -> Unit
 ) {
     Column {
@@ -230,7 +232,7 @@ private fun EditDurationSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Dec 13 – Dec 19, 2023",
+                    text = campaignDurationDates,
                     style = MaterialTheme.typography.subtitle2,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -346,20 +348,21 @@ private fun EditDurationBottomSheet(
 private fun CampaignBudgetScreenPreview() {
     CampaignBudgetScreen(
         state = BlazeCampaignBudgetViewModel.BudgetUiState(
+            currencyCode = "USD",
             totalBudget = 35f,
             sliderValue = 35f,
             spentBudget = 0f,
             budgetRange = 35f..350f,
-            currencyCode = "USD",
-            durationInDays = 7,
             dailySpending = "$5",
-            startDateMmmDdYyyy = "Dec 13, 2023",
+            durationInDays = 7,
             durationRangeDays = 1f..28f,
+            startDateMmmDdYyyy = "Dec 13, 2023",
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoaded = false,
                 impressionsMin = 0,
                 impressionsMax = 0
-            )
+            ),
+            campaignDurationDates = "Dec 13 - Dec 20, 2023",
         ),
         onBackPressed = {},
         onEditDurationTapped = {},

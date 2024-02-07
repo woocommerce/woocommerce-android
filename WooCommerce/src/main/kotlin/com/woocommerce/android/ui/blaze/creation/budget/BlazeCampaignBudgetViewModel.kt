@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.blaze.creation.budget
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.BLAZE_DEFAULT_CURRENCY_CODE
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.ONE_DAY_IN_MILLIS
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -37,7 +39,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 impressionsMin = 0,
                 impressionsMax = 0
             ),
-            campaignDurationDates = "",
+            campaignDurationDates = getCampaignDurationDisplayDate(Date(), DEFAULT_CAMPAIGN_DURATION),
         )
     )
     val viewState = _viewState
@@ -82,7 +84,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             dailySpending = formatDailySpend(currentDailyExpend),
             totalBudget = newTotalBudget,
             sliderValue = newTotalBudget,
+            campaignDurationDates = getCampaignDurationDisplayDate(Date(), duration)
         )
+    }
+
+    private fun getCampaignDurationDisplayDate(startDate: Date, duration: Int): String {
+        val endDate = Date(startDate.time + duration * ONE_DAY_IN_MILLIS)
+        return "${startDate.formatToMMMdd()} - ${endDate.formatToMMMddYYYY()}"
     }
 
     private fun formatDailySpend(dailySpend: Float) =
