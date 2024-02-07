@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -29,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -345,6 +347,7 @@ private fun EditDurationBottomSheet(
         )
         Row(
             modifier = Modifier.padding(top = 40.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 modifier = Modifier.weight(1f),
@@ -352,7 +355,11 @@ private fun EditDurationBottomSheet(
                 style = MaterialTheme.typography.body1,
             )
             Text(
-                modifier = Modifier.clickable { showDatePicker = !showDatePicker },
+                modifier = Modifier
+                    .clickable { showDatePicker = !showDatePicker }
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(colorResource(id = color.divider_color))
+                    .padding(8.dp),
                 text = Date(startDateMillis).formatToMMMddYYYY(),
                 style = MaterialTheme.typography.body1,
             )
