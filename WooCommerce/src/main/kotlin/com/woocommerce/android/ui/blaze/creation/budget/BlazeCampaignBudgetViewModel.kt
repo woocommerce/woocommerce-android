@@ -31,14 +31,14 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             spentBudget = 0f,
             budgetRange = getBudgetRange(DEFAULT_CAMPAIGN_DURATION),
             dailySpending = formatDailySpend(dailySpend = CAMPAIGN_MINIMUM_DAILY_SPEND),
-            durationInDays = DEFAULT_CAMPAIGN_DURATION,
-            durationRangeDays = getDurationRange(),
-            startDateMmmDdYyyy = Date().formatToMMMddYYYY(),
             forecast = ForecastUi(
                 isLoaded = false,
                 impressionsMin = 0,
                 impressionsMax = 0
             ),
+            durationInDays = DEFAULT_CAMPAIGN_DURATION,
+            durationRangeDays = getDurationRange(),
+            campaignStartDateMillis = Date().time,
             campaignDurationDates = getCampaignDurationDisplayDate(Date(), DEFAULT_CAMPAIGN_DURATION),
         )
     )
@@ -88,6 +88,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         )
     }
 
+    fun onStartDateChanged(newStartDate: Date) {
+        _viewState.value = _viewState.value?.copy(
+            campaignStartDateMillis = newStartDate.time,
+            campaignDurationDates = getCampaignDurationDisplayDate(newStartDate, viewState.value?.durationInDays!!)
+        )
+    }
+
     private fun getCampaignDurationDisplayDate(startDate: Date, duration: Int): String {
         val endDate = Date(startDate.time + duration * ONE_DAY_IN_MILLIS)
         return "${startDate.formatToMMMdd()} - ${endDate.formatToMMMddYYYY()}"
@@ -108,12 +115,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val spentBudget: Float,
         val budgetRange: ClosedFloatingPointRange<Float>,
         val dailySpending: String,
+        val forecast: ForecastUi,
         val durationInDays: Int,
         val durationRangeDays: ClosedFloatingPointRange<Float>,
-        val startDateMmmDdYyyy: String,
-        val forecast: ForecastUi,
         val showImpressionsBottomSheet: Boolean = false,
         val showCampaignDurationBottomSheet: Boolean = false,
+        val campaignStartDateMillis: Long,
         val campaignDurationDates: String,
     )
 

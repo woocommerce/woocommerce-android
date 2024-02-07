@@ -21,8 +21,12 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -37,13 +41,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
+import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
@@ -55,6 +62,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
             onBudgetUpdated = viewModel::onBudgetUpdated,
             onCampaignDurationUpdated = viewModel::onCampaignDurationUpdated,
+            onStartDateChanged = viewModel::onStartDateChanged
         )
     }
 }
@@ -68,6 +76,7 @@ private fun CampaignBudgetScreen(
     onImpressionsInfoTapped: () -> Unit,
     onBudgetUpdated: (Float) -> Unit,
     onCampaignDurationUpdated: (Int) -> Unit,
+    onStartDateChanged: (Date) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -98,9 +107,10 @@ private fun CampaignBudgetScreen(
 
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
                             duration = state.durationInDays,
-                            startDate = state.startDateMmmDdYyyy,
+                            startDateMillis = state.campaignStartDateMillis,
                             onDurationChanged = { onCampaignDurationUpdated(it.toInt()) },
                             durationRange = state.durationRangeDays,
+                            onStartDateChanged = { onStartDateChanged(it) },
                             onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
                         )
                     }
@@ -288,12 +298,25 @@ private fun ImpressionsInfoBottomSheet(
 @Composable
 private fun EditDurationBottomSheet(
     duration: Int,
-    startDate: String,
     durationRange: ClosedFloatingPointRange<Float>,
+    startDateMillis: Long,
     onDurationChanged: (Float) -> Unit,
-    onApplyTapped: () -> Unit,
+    onStartDateChanged: (Date) -> Unit,
+    onApplyTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    if (showDatePicker) {
+        DatePickerDialog(
+            currentDate = Date(startDateMillis),
+            onDateSelected = {
+                onStartDateChanged(it)
+                showDatePicker = false
+            },
+            onDismissRequest = { showDatePicker = false }
+        )
+    }
+
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
@@ -329,7 +352,8 @@ private fun EditDurationBottomSheet(
                 style = MaterialTheme.typography.body1,
             )
             Text(
-                text = startDate,
+                modifier = Modifier.clickable { showDatePicker = !showDatePicker },
+                text = Date(startDateMillis).formatToMMMddYYYY(),
                 style = MaterialTheme.typography.body1,
             )
         }
@@ -356,12 +380,12 @@ private fun CampaignBudgetScreenPreview() {
             dailySpending = "$5",
             durationInDays = 7,
             durationRangeDays = 1f..28f,
-            startDateMmmDdYyyy = "Dec 13, 2023",
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoaded = false,
                 impressionsMin = 0,
                 impressionsMax = 0
             ),
+            campaignStartDateMillis = Date().time,
             campaignDurationDates = "Dec 13 - Dec 20, 2023",
         ),
         onBackPressed = {},
@@ -369,6 +393,7 @@ private fun CampaignBudgetScreenPreview() {
         onImpressionsInfoTapped = {},
         onBudgetUpdated = {},
         onCampaignDurationUpdated = {},
+        onStartDateChanged = {}
     )
 }
 
@@ -383,9 +408,9 @@ private fun CampaignImpressionsBottomSheetPreview() {
 private fun EditDurationBottomSheetPreview() {
     EditDurationBottomSheet(
         duration = 7,
-        startDate = "Dec 13, 2023",
+        startDateMillis = Date().time,
         durationRange = 1f..28f,
         onDurationChanged = {},
-        onApplyTapped = {},
+        onStartDateChanged = {},
     )
 }
