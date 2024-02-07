@@ -300,7 +300,6 @@ class OrderDetailFragment :
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
                 if (isTablet()) {
-                    selectedOrder.refreshOrders()
                     orderEditingViewModel.setOrderId(it.order.id)
                 }
                 onPrepareMenu(binding.toolbar.menu)

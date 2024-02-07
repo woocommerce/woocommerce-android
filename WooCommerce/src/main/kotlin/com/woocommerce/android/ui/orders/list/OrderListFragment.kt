@@ -310,6 +310,9 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        if (isTablet()) {
+            refreshOrders()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
