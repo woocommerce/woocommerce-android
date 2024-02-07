@@ -12,10 +12,10 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
-import com.woocommerce.android.ui.blaze.BlazeRepository.Device
-import com.woocommerce.android.ui.blaze.BlazeRepository.Interest
-import com.woocommerce.android.ui.blaze.BlazeRepository.Language
-import com.woocommerce.android.ui.blaze.BlazeRepository.Location
+import com.woocommerce.android.ui.blaze.Device
+import com.woocommerce.android.ui.blaze.Interest
+import com.woocommerce.android.ui.blaze.Language
+import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
@@ -29,6 +29,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -51,40 +52,57 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val languages = blazeRepository.observeLanguages()
     private val devices = blazeRepository.observeDevices()
     private val interests = blazeRepository.observeInterests()
-    private val selectedLanguages = savedStateHandle.getStateFlow<List<String>>(
+
+    private val selectedLanguageCodes = savedStateHandle.getStateFlow<List<String>>(
         scope = viewModelScope,
         initialValue = emptyList(),
         key = "selectedLanguages"
     )
-    private val selectedDevices = savedStateHandle.getStateFlow<List<String>>(
+
+    private val selectedLanguages = combine(languages, selectedLanguageCodes) { languages, selectedCodes ->
+        languages.filter { it.code in selectedCodes }
+    }
+
+    private val selectedDeviceIds = savedStateHandle.getStateFlow<List<String>>(
         scope = viewModelScope,
         initialValue = emptyList(),
         key = "selectedDevices"
     )
-    private val selectedInterests = savedStateHandle.getStateFlow<List<String>>(
+
+    private val selectedDevices = combine(devices, selectedDeviceIds) { devices, selectedIds ->
+        devices.filter { it.id in selectedIds }
+    }
+    private val selectedInterestIds = savedStateHandle.getStateFlow<List<String>>(
         scope = viewModelScope,
         initialValue = emptyList(),
         key = "selectedInterests"
     )
 
+    private val selectedInterests = combine(interests, selectedInterestIds) { interests, selectedIds ->
+        interests.filter { it.id in selectedIds }
+    }
+
+    private val selectedLocations = savedStateHandle.getStateFlow<List<Location>>(
+        scope = viewModelScope,
+        initialValue = emptyList()
+    )
+
     val viewState = combine(
         adDetails,
         budget,
-        languages,
-        devices,
-        interests,
         selectedLanguages,
         selectedDevices,
-        selectedInterests
-    ) { adDetails, budget, languages, devices, interests, selectedLanguages, selectedDevices, selectedInterests ->
+        selectedInterests,
+        selectedLocations
+    ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations ->
         CampaignPreviewUiState(
-            adDetails = adDetails,
+            adDetails = ad,
             campaignDetails = campaign.toCampaignDetailsUi(
                 budget,
-                languages.filter { it.code in selectedLanguages },
-                devices.filter { it.id in selectedDevices },
-                interests.filter { it.id in selectedInterests },
-                emptyList()
+                selectedLanguages,
+                selectedDevices,
+                selectedInterests,
+                selectedLocations
             )
         )
     }.asLiveData()
@@ -136,12 +154,16 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     fun onTargetSelectionUpdated(targetType: BlazeTargetType, selectedIds: List<String>) {
         launch {
             when (targetType) {
-                LANGUAGE -> selectedLanguages.update { selectedIds }
-                DEVICE -> selectedDevices.update { selectedIds }
-                INTEREST -> selectedInterests.update { selectedIds }
+                LANGUAGE -> selectedLanguageCodes.update { selectedIds }
+                DEVICE -> selectedDeviceIds.update { selectedIds }
+                INTEREST -> selectedInterestIds.update { selectedIds }
                 else -> Unit
             }
         }
+    }
+
+    fun onTargetLocationsUpdated(locations: List<Location>) {
+        selectedLocations.update { locations }
     }
 
     private fun loadData() {
@@ -205,7 +227,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
                 displayValue = locations.joinToString { it.name }
                     .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = { /* TODO Add location selection */ },
+                onItemSelected = {
+                    triggerEvent(NavigateToTargetLocationSelectionScreen(locations))
+                },
             ),
             CampaignDetailItemUi(
                 displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
@@ -289,9 +313,12 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val campaignStartDateMillis: Long,
         val currencyCode: String
     ) : MultiLiveEvent.Event()
-
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToTargetLocationSelectionScreen(
+        val locations: List<Location>
     ) : MultiLiveEvent.Event()
 }

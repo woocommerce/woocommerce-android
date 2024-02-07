@@ -15,7 +15,10 @@ import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragm
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.EditBudgetAndDurationResult
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetLocationSelectionScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetSelectionScreen
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionFragment
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionViewModel.TargetLocationResult
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.TargetSelectionResult
 import com.woocommerce.android.ui.compose.composeView
@@ -73,6 +76,12 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                             event.selectedIds.toTypedArray()
                         )
                 )
+                is NavigateToTargetLocationSelectionScreen -> findNavController().navigateSafely(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetLocationSelectionFragment(
+                            event.locations.toTypedArray()
+                        )
+                )
             }
         }
     }
@@ -86,6 +95,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         }
         handleResult<TargetSelectionResult>(BlazeCampaignTargetSelectionFragment.BLAZE_TARGET_SELECTION_RESULT) {
             viewModel.onTargetSelectionUpdated(it.targetType, it.selectedIds)
+        }
+        handleResult<TargetLocationResult>(BlazeCampaignTargetLocationSelectionFragment.BLAZE_TARGET_LOCATION_RESULT) {
+            viewModel.onTargetLocationsUpdated(it.locations)
         }
     }
 }
