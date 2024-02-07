@@ -112,7 +112,7 @@ private fun CampaignBudgetScreen(
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
                             duration = state.durationInDays,
                             startDateMillis = state.campaignStartDateMillis,
-                            onDurationChanged = { onCampaignDurationUpdated(it.toInt()) },
+                            onDurationChanged = { onCampaignDurationUpdated(it) },
                             durationRange = state.durationRangeDays,
                             onStartDateChanged = { onStartDateChanged(it) },
                             onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
@@ -306,7 +306,7 @@ private fun EditDurationBottomSheet(
     duration: Int,
     durationRange: ClosedFloatingPointRange<Float>,
     startDateMillis: Long,
-    onDurationChanged: (Float) -> Unit,
+    onDurationChanged: (Int) -> Unit,
     onStartDateChanged: (Long) -> Unit,
     onApplyTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -323,6 +323,7 @@ private fun EditDurationBottomSheet(
         )
     }
 
+    var sliderPosition by remember { mutableStateOf(duration) }
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
@@ -333,7 +334,7 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 40.dp)
                 .fillMaxWidth(),
-            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration, duration),
+            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration, sliderPosition),
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
@@ -342,9 +343,10 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
-            value = duration.toFloat(),
+            value = sliderPosition.toFloat(),
             valueRange = durationRange,
-            onValueChange = onDurationChanged,
+            onValueChange = { sliderPosition = it.toInt() },
+            onValueChangeFinished = { onDurationChanged(sliderPosition) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
