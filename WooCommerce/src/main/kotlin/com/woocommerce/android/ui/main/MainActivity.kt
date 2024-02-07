@@ -148,10 +148,6 @@ class MainActivity :
 
         const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
 
-        private const val KEY_ORDER_ID = "orderId"
-        private const val KEY_ALL_ORDER_IDS = "allOrderIds"
-        private const val KEY_REMOTE_NOTE_ID = "remoteNoteId"
-
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
