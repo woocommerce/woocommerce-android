@@ -18,6 +18,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -27,6 +28,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleDialogNotice
@@ -35,6 +37,7 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isTablet
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -120,6 +123,8 @@ class OrderDetailFragment :
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
 
+    private val navArgs: OrderDetailFragmentArgs by navArgs()
+
     private var screenTitle = ""
         set(value) {
             field = value
@@ -176,7 +181,7 @@ class OrderDetailFragment :
          * layout effectively.
          */
         if (parentFragment?.parentFragment !is OrderListFragment && isTablet()) {
-            findNavController().popBackStack()
+            navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
             return
         }
 

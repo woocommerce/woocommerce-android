@@ -32,6 +32,7 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isTablet
@@ -621,6 +622,11 @@ class OrderListFragment :
         }
         handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
+        }
+        handleResult<Long>(KEY_ORDER_ID) {
+            if (isTablet()) {
+                openSpecificOrder(it)
+            }
         }
     }
 
