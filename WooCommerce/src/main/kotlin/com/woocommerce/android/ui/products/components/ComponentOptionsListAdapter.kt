@@ -10,7 +10,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ComponentOptionItemViewBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.ui.products.ComponentOption
 import org.wordpress.android.util.PhotonUtils
 
@@ -59,7 +59,7 @@ class ComponentOptionViewHolder(val viewBinding: ComponentOptionItemViewBinding)
             else -> {
                 size = imageSize
                 val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                GlideApp.with(viewBinding.componentOptionImage).load(photonUrl)
+                Glide.with(viewBinding.componentOptionImage).load(photonUrl)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius)).placeholder(R.drawable.ic_product)
                     .into(viewBinding.componentOptionImage)
             }

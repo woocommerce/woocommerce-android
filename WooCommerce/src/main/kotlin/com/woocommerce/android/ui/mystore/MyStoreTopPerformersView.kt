@@ -17,7 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -135,7 +135,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             holder.viewBinding.itemsSoldTextView.text = topPerformer.timesOrdered
             holder.viewBinding.netSalesTextView.text = topPerformer.netSales
             holder.viewBinding.divider.isVisible = position < itemCount - 1
-            GlideApp.with(holder.itemView.context)
+            Glide.with(holder.itemView.context)
                 .load(topPerformer.imageUrl)
                 .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                 .placeholder(ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_product))

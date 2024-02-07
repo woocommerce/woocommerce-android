@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.MediaUploadErrorItemBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.ui.media.MediaUploadErrorListAdapter.MediaUploadErrorListItemViewHolder
 import com.woocommerce.android.ui.media.MediaUploadErrorListViewModel.ErrorUiModel
 import java.io.File
@@ -54,7 +54,7 @@ class MediaUploadErrorListAdapter : RecyclerView.Adapter<MediaUploadErrorListIte
                 viewBinding.mediaFileName.text = fileName
                 viewBinding.mediaFileErrorText.text = errorMessage
                 if (filePath.isNotBlank()) {
-                    GlideApp.with(viewBinding.root.context)
+                    Glide.with(viewBinding.root.context)
                         .load(File(filePath))
                         .into(viewBinding.productImage)
                 }

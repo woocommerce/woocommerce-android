@@ -8,7 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductChildItemBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.tools.ProductImageMap
@@ -88,7 +88,7 @@ class OrderDetailProductChildItemListAdapter(
             productImage?.let {
                 val imageCornerRadius = itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
-                GlideApp.with(binding.productInfoIcon)
+                Glide.with(binding.productInfoIcon)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_product)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))

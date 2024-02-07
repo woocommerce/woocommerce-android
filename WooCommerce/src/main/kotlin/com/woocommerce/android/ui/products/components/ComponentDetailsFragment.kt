@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentComponentDetailsBinding
-import com.woocommerce.android.di.GlideApp
+import com.bumptech.glide.Glide
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.ui.base.BaseFragment
@@ -111,7 +111,7 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
             else -> {
                 val imageSize = resources.getDimensionPixelSize(R.dimen.image_major_120)
                 val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                GlideApp.with(requireContext()).load(photonUrl)
+                Glide.with(requireContext()).load(photonUrl)
                     .transform(CenterCrop()).placeholder(R.drawable.ic_product)
                     .into(binding.componentImage)
             }
