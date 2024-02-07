@@ -12,11 +12,13 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragmentArgs
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubViewModel
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewState
+import com.woocommerce.android.ui.analytics.hub.GetReportUrl
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
@@ -57,6 +59,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -90,6 +93,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
+
+    private val selectedSite: SelectedSite = mock()
+    private val getReportUrl: GetReportUrl = GetReportUrl(selectedSite)
 
     private lateinit var sut: AnalyticsHubViewModel
 
@@ -690,6 +696,22 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
     }
 
+    @Test
+    fun `when site is a wpcom and see report is pressed then open a wpcom webview`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+        sut = givenAViewModel()
+        sut.onSeeReport("https://report-url")
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `when site is not a wpcom and see report is pressed then open the default webview`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(false) })
+        sut = givenAViewModel()
+        sut.onSeeReport("https://report-url")
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -707,6 +729,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             feedbackRepository,
             tracker,
             dateUtils,
+            selectedSite,
+            getReportUrl,
             savedState
         )
     }
@@ -765,7 +789,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                     value = defaultSessionStat.conversionRate,
                     delta = null,
                     chartInfo = emptyList()
-                )
+                ),
+                reportUrl = null
             )
         )
     }

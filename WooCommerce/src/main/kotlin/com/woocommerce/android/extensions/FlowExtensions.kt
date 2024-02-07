@@ -12,7 +12,14 @@ inline fun <T1, T2, T3, T4, T5, T6, R> combine(
     flow6: Flow<T6>,
     crossinline transform: suspend (T1, T2, T3, T4, T5, T6) -> R
 ): Flow<R> {
-    return kotlinx.coroutines.flow.combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
+    return kotlinx.coroutines.flow.combine(
+        flow,
+        flow2,
+        flow3,
+        flow4,
+        flow5,
+        flow6,
+    ) { args: Array<*> ->
         @Suppress("UNCHECKED_CAST", "MagicNumber")
         transform(
             args[0] as T1,
@@ -20,7 +27,7 @@ inline fun <T1, T2, T3, T4, T5, T6, R> combine(
             args[2] as T3,
             args[3] as T4,
             args[4] as T5,
-            args[5] as T6,
+            args[5] as T6
         )
     }
 }

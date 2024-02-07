@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 17:54:03+0000
+Translation-Revision-Date: 2024-01-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d tecken återstår</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Beskrivning</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Slogan</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Ändra bild</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Tillämpa</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Startar</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dagar</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Ställ in varaktighet</string>
+    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Klar</string>
+    <string name="blaze_campaign_budget_impressions_title">Visningar</string>
+    <string name="blaze_campaign_budget_update_button">Uppdatera</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Redigera</string>
+    <string name="blaze_campaign_budget_duration_section_title">Varaktighet</string>
+    <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
+    <string name="blaze_campaign_budget_days_duration">i %1$s dagar</string>
+    <string name="blaze_campaign_budget_total_spend">Totalt spenderat</string>
+    <string name="blaze_campaign_budget_subtitle">Hur mycket skulle du vilja spendera på din produktmarknadsföringskampanj?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Ställ in din budget</string>
+    <string name="blaze_campaign_preview_target_default_value">Alla</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s dagar från %2$s</string>
+    <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
+    <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
+    <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Bekräfta detaljer</string>
     <string name="blaze_campaign_preview_details_destination_url">Annonsdestination</string>
     <string name="blaze_campaign_preview_details_interests">Intressen</string>
@@ -15,7 +41,7 @@ Language: sv_SE
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_section_title">Detaljer</string>
     <string name="blaze_campaign_preview_shop_now_button">Handla nu</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Redigera annons</string>
+    <string name="blaze_campaign_preview_edit_ad">Redigera annons</string>
     <string name="blaze_campaign_screen_fragment_title">Förhandsgranska</string>
     <string name="disabled">Inaktiverad (originalstorlek)</string>
     <string name="order_configuration_product_selection_control">Produktval</string>
@@ -63,7 +89,6 @@ Language: sv_SE
     <string name="theme_picker_current_theme_title">Nuvarande tema</string>
     <string name="theme_picker_settings_title">Prova ett nytt utseende</string>
     <string name="product_creation_survey_button_open">Börja undersökningen</string>
-    <string name="product_creation_survey_description">Du har använt vår AI-assisterade funktion för att lägga till produkter flera gånger nu. Vi vill gärna ta del av dina tankar om hur vi kan göra den ännu bättre.</string>
     <string name="product_creation_survey_title">Vi värdesätter dina åsikter!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Om du aktiverar alternativet Betala personligen kan kunden betala kontant eller med kort för onlinebeställningar vid leverans.\n\nBeställningar kan fortfarande skapas manuellt utan att aktivera denna funktion.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vill du lägga till alternativet Betala personligen i din kassa?</string>

@@ -275,7 +275,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
-                onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() },
+                onHeightChanged = { onTotalsSectionHeightChanged(it) }
             )
         }
 
@@ -1155,14 +1156,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onExpandCollapseTotalsClicked(expanded: Boolean) {
+    private fun onExpandCollapseTotalsClicked() {
+        val newTotalsExpandedState = !viewState.isTotalsExpanded
+        viewState = viewState.copy(isTotalsExpanded = newTotalsExpandedState)
         tracker.track(
             AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_EXPANDED to expanded
+                KEY_EXPANDED to newTotalsExpandedState
             )
         )
+    }
+
+    private fun onTotalsSectionHeightChanged(newHeight: Int) {
+        triggerEvent(OnTotalsSectionHeightChanged(newHeight))
     }
 
     private fun onTotalsSectionPrimaryButtonClicked() {
@@ -1712,6 +1719,12 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onScreenScrolledVertically(scrollY: Int, oldScrollY: Int) {
+        if (scrollY > oldScrollY && viewState.isTotalsExpanded) {
+            viewState = viewState.copy(isTotalsExpanded = false)
+        }
+    }
+
     fun orderContainsProductsOrCustomAmounts() =
         orderDraft.value?.hasProducts() == true || orderDraft.value?.hasCustomAmounts() == true
 
@@ -1769,6 +1782,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isAddGiftCardButtonEnabled: Boolean = false,
         val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
+        val isTotalsExpanded: Boolean = false,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
         val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
@@ -1842,6 +1856,10 @@ object OnCouponRejectedByBackend : Event() {
     @StringRes
     val message: Int = string.order_sync_coupon_removed
 }
+
+data class OnTotalsSectionHeightChanged(
+    val newHeight: Int
+) : Event()
 
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-23 09:54:06+0000
+Translation-Revision-Date: 2024-01-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Yapay Zeka Tarafından Önerildi</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d karakter kaldı</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Açıklama</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Site sloganı</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Görseli değiştir</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Uygula</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Başlangıç Tarihi</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s gün</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Süre ayarlayın</string>
+    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Tamam</string>
+    <string name="blaze_campaign_budget_impressions_title">İzlenimler</string>
+    <string name="blaze_campaign_budget_update_button">Güncelle</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Düzenle</string>
+    <string name="blaze_campaign_budget_duration_section_title">Süre</string>
+    <string name="blaze_campaign_budget_reach_forecast">Gün başına ulaşılan tahmini insan sayısı</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s günlük</string>
+    <string name="blaze_campaign_budget_days_duration">%1$s gün için</string>
+    <string name="blaze_campaign_budget_total_spend">Toplam harcama</string>
+    <string name="blaze_campaign_budget_subtitle">Ürün tanıtım kampanyanıza ne kadar harcamak istiyorsunuz?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Bütçenizi oluşturun</string>
+    <string name="blaze_campaign_preview_target_default_value">Tümü</string>
+    <string name="blaze_campaign_preview_days_duration">%2$s tarihinden itibaren %1$s gün</string>
+    <string name="product_creation_survey_button_dont_show_again">Bunu tekrar gösterme</string>
+    <string name="product_creation_survey_button_remind_me_later">Daha Sonra Hatırlat</string>
+    <string name="product_creation_survey_description">Bir dakikanız var mı? Hızlı bir geri bildirim göndererek yapay zeka destekli özelliklerimizi geliştirmemize yardımcı olun.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Ayrıntıları Onayla</string>
     <string name="blaze_campaign_preview_details_destination_url">Reklam hedefi</string>
     <string name="blaze_campaign_preview_details_interests">İlgi alanları</string>
@@ -15,7 +41,7 @@ Language: tr
     <string name="blaze_campaign_preview_details_budget">Bütçe</string>
     <string name="blaze_campaign_preview_details_section_title">Ayrıntılar</string>
     <string name="blaze_campaign_preview_shop_now_button">Hemen satın al</string>
-    <string name="blaze_campaign_preview_edit_ad_button">Reklamı düzenle</string>
+    <string name="blaze_campaign_preview_edit_ad">Reklamı düzenle</string>
     <string name="blaze_campaign_screen_fragment_title">Önizleme</string>
     <string name="disabled">Devre Dışı Bırakıldı</string>
     <string name="order_configuration_product_selection_control">Ürün seçimi</string>
@@ -63,7 +89,6 @@ Language: tr
     <string name="theme_picker_current_theme_title">Geçerli tema</string>
     <string name="theme_picker_settings_title">Yeni bir görünüm deneyin</string>
     <string name="product_creation_survey_button_open">Anketi Başlat</string>
-    <string name="product_creation_survey_description">Birkaç kere ürün eklemek için yapay zeka destekli özelliğimizi kullandınız. Daha da iyi hale getirmek için düşüncelerinizi duymak isteriz.</string>
     <string name="product_creation_survey_title">Fikirlerinize değer veriyoruz!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Şahsen Ödemeyi etkinleştirmek, müşterinin çevrimiçi siparişler için ödemeyi nakit veya kart aracılığıyla teslimat sırasında yapmasını sağlar.\n\nSiparişler bu özellik etkinleştirilmeden manuel olarak da oluşturulabilir.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Web ödemenize Şahsen Ödeme özelliğini eklemek istiyor musunuz?</string>
