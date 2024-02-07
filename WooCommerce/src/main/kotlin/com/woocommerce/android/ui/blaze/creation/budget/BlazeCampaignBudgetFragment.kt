@@ -6,14 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.EditBudgetAndDurationResult
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BlazeCampaignBudgetFragment : BaseFragment() {
+    companion object {
+        const val EDIT_BUDGET_AND_DURATION_RESULT = "edit_budget_and_duration_result"
+    }
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -34,6 +41,12 @@ class BlazeCampaignBudgetFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(
+                        EDIT_BUDGET_AND_DURATION_RESULT,
+                        event.data as EditBudgetAndDurationResult
+                    )
+                }
             }
         }
     }

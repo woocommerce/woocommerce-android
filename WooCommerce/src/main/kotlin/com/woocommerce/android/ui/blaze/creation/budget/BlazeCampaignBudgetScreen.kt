@@ -64,7 +64,8 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
             onBudgetUpdated = viewModel::onBudgetUpdated,
             onCampaignDurationUpdated = viewModel::onCampaignDurationUpdated,
-            onStartDateChanged = viewModel::onStartDateChanged
+            onStartDateChanged = viewModel::onStartDateChanged,
+            onUpdateTapped = viewModel::onUpdateTapped
         )
     }
 }
@@ -79,6 +80,7 @@ private fun CampaignBudgetScreen(
     onBudgetUpdated: (Float) -> Unit,
     onCampaignDurationUpdated: (Int) -> Unit,
     onStartDateChanged: (Date) -> Unit,
+    onUpdateTapped: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -138,7 +140,8 @@ private fun CampaignBudgetScreen(
                     onEditDurationTapped = {
                         onEditDurationTapped()
                         coroutineScope.launch { modalSheetState.show() }
-                    }
+                    },
+                    onUpdateTapped = onUpdateTapped
                 )
             }
         }
@@ -223,7 +226,8 @@ private fun EditBudgetSection(
 @Composable
 private fun EditDurationSection(
     campaignDurationDates: String,
-    onEditDurationTapped: () -> Unit
+    onEditDurationTapped: () -> Unit,
+    onUpdateTapped: () -> Unit,
 ) {
     Column {
         Divider()
@@ -256,7 +260,7 @@ private fun EditDurationSection(
             }
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /* TODO */ },
+                onClick = onUpdateTapped,
                 text = stringResource(id = R.string.blaze_campaign_budget_update_button)
             )
         }
@@ -403,7 +407,8 @@ private fun CampaignBudgetScreenPreview() {
         onImpressionsInfoTapped = {},
         onBudgetUpdated = {},
         onCampaignDurationUpdated = {},
-        onStartDateChanged = {}
+        onStartDateChanged = {},
+        onUpdateTapped = {}
     )
 }
 

@@ -11,6 +11,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
+import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment
+import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.EditBudgetAndDurationResult
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetSelectionScreen
@@ -48,6 +50,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment()
                 )
+
                 is NavigateToEditAdScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
@@ -57,6 +60,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                             event.campaignImageUrl
                         )
                 )
+
                 is NavigateToTargetSelectionScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetSelectionFragment(
@@ -71,6 +75,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
     private fun handleResults() {
         handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
             viewModel.onAdUpdated(it.tagline, it.description, it.campaignImageUrl)
+        }
+        handleResult<EditBudgetAndDurationResult>(BlazeCampaignBudgetFragment.EDIT_BUDGET_AND_DURATION_RESULT) {
+            viewModel.onBudgetAndDurationUpdated(it.totalBudget, it.durationInDays, it.campaignStartDateMillis)
         }
         handleResult<TargetSelectionResult>(BlazeCampaignTargetSelectionFragment.BLAZE_TARGET_SELECTION_RESULT) {
             viewModel.onTargetSelectionUpdated(it.targetType, it.selectedIds)

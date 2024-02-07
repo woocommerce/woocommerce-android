@@ -121,6 +121,18 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onBudgetAndDurationUpdated(totalBudget: Float, durationInDays: Int, campaignStartDateMillis: Long) {
+        budget.update {
+            Budget(
+                totalBudget = totalBudget,
+                spentBudget = 0f,
+                currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
+                durationInDays = durationInDays,
+                startDate = Date(campaignStartDateMillis)
+            )
+        }
+    }
+
     fun onTargetSelectionUpdated(targetType: BlazeTargetType, selectedIds: List<String>) {
         launch {
             when (targetType) {

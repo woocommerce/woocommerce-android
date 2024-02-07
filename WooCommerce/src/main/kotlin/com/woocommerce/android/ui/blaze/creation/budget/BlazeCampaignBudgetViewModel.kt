@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.budget
 
+import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.formatToMMMdd
@@ -12,8 +13,10 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAI
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.ONE_DAY_IN_MILLIS
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -46,6 +49,18 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     fun onBackPressed() {
         triggerEvent(Exit)
+    }
+
+    fun onUpdateTapped() {
+        triggerEvent(
+            ExitWithResult(
+                EditBudgetAndDurationResult(
+                    totalBudget = viewState.value?.totalBudget!!,
+                    durationInDays = viewState.value?.durationInDays!!,
+                    campaignStartDateMillis = viewState.value?.campaignStartDateMillis!!
+                )
+            )
+        )
     }
 
     fun onEditDurationTapped() {
@@ -129,4 +144,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val impressionsMin: Int,
         val impressionsMax: Int
     )
+
+    @Parcelize
+    data class EditBudgetAndDurationResult(
+        val totalBudget: Float,
+        val durationInDays: Int,
+        val campaignStartDateMillis: Long
+    ) : Parcelable
 }
