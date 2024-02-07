@@ -219,10 +219,11 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         ),
         destinationUrl = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = targetUrl,
+            displayValue = targetUrl
+                ?: resourceProvider.getString(string.blaze_campaign_edit_ad_destination_url_property_title),
             maxLinesValue = 1,
             onItemSelected = {
-                triggerEvent(NavigateToAdDestinationScreen)
+                triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
             }
         )
     )
@@ -281,7 +282,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     object NavigateToBudgetScreen : MultiLiveEvent.Event()
 
-    object NavigateToAdDestinationScreen : MultiLiveEvent.Event()
+    data class NavigateToAdDestinationScreen(
+        val targetUrl: String?,
+        val productId: Long
+    ) : MultiLiveEvent.Event()
 
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
