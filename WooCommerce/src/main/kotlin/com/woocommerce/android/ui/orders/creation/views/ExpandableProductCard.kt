@@ -688,7 +688,8 @@ fun ExpandableProductCardPreview() {
     val item = Order.Item.EMPTY.copy(
         name = "Test Product Long Long Long Long Long Long Name",
         quantity = 3.0f,
-        sku = "123"
+        sku = "123",
+        itemId = 10L
     )
     val product = OrderCreationProduct.ProductItem(
         item = item,
@@ -712,6 +713,41 @@ fun ExpandableProductCardPreview() {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
+
+
+@Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ExpandableProductCardUnsyncedPreview() {
+    val item = Order.Item.EMPTY.copy(
+        name = "Test Product Long Long Long Long Long Long Name",
+        quantity = 3.0f,
+        sku = "123",
+        itemId = 0L
+    )
+    val product = OrderCreationProduct.ProductItem(
+        item = item,
+        productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = true,
+            stockQuantity = 3.0,
+            stockStatus = ProductStockStatus.InStock,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$30",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            hasDiscount = true,
+            isConfigurable = false,
+            productType = ProductType.SIMPLE
+        )
+    )
+    val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
+    WooThemeWithBackground {
+        ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
+    }
+}
+
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -756,7 +792,8 @@ fun ExtendedConfigurableProductCardContentPreview() {
         quantity = 3.0f,
         total = 23.toBigDecimal(),
         subtotal = 30.toBigDecimal(),
-        sku = "SKU123"
+        sku = "SKU123",
+        itemId = 10L
     )
     val product = OrderCreationProduct.ProductItem(
         item = item,
@@ -779,57 +816,4 @@ fun ExtendedConfigurableProductCardContentPreview() {
     WooThemeWithBackground {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
-}
-
-@SuppressLint("UnrememberedMutableState")
-@Composable
-@Preview
-fun PreviewExpandableProductCard() {
-    val state = mutableStateOf<OrderCreateEditViewModel.ViewState?>(null)
-    val mockAttribute = Order.Item.Attribute("", "")
-    val mockOrderItem = Order.Item(
-        1,
-        0,
-        "",
-        BigDecimal("0"),
-        "",
-        0.0f,
-        BigDecimal("0"),
-        BigDecimal("0"),
-        BigDecimal("0"),
-        0,
-        listOf(mockAttribute),
-        0,
-        null,
-        0
-    )
-
-    val productInfo = ProductInfo(
-        "imageUrl",
-        true,
-        10.0,
-        ProductStockStatus.InStock,
-        ProductType.SIMPLE,
-        false,
-        "100",
-        "100",
-        "100",
-        "10",
-        "90",
-        true
-    )
-
-    val product = OrderCreationProduct.ProductItem(
-        item = mockOrderItem,
-        productInfo = productInfo
-    )
-
-    ExpandableProductCard(
-        state = state,
-        product = product,
-        onRemoveProductClicked = {},
-        onDiscountButtonClicked = {},
-        onItemAmountChanged = { _ -> }, onEditConfigurationClicked = {}, // No operation during preview
-        onProductExpanded = { _, _ -> }
-    )
 }
