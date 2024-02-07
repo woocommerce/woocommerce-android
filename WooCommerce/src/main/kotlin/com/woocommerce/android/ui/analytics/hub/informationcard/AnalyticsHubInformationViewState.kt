@@ -7,6 +7,7 @@ sealed class AnalyticsHubInformationViewState {
     data class DataViewState(
         val title: String,
         val leftSection: AnalyticsHubInformationSectionViewState,
-        val rightSection: AnalyticsHubInformationSectionViewState
+        val rightSection: AnalyticsHubInformationSectionViewState,
+        val reportUrl: String?
     ) : AnalyticsHubInformationViewState()
 }
