@@ -6,6 +6,11 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LOCATION
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SelectionItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -25,51 +30,59 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     blazeRepository: BlazeRepository,
     savedStateHandle: SavedStateHandle,
-) : ScopedViewModel(savedStateHandle) {
+) : TargetSelectionViewModel, ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignTargetSelectionFragmentArgs by savedStateHandle.navArgs()
-
-    private val items: Flow<List<TargetItem>> = when (navArgs.targetType) {
-        BlazeTargetType.LANGUAGE -> blazeRepository.observeLanguages().map { languages ->
-            languages.map { language ->
-                TargetItem(
-                    id = language.code,
-                    value = language.name
-                )
-            }
-        }
-        BlazeTargetType.DEVICE -> blazeRepository.observeDevices().map { devices ->
-            devices.map { device ->
-                TargetItem(
-                    id = device.id,
-                    value = device.name
-                )
-            }
-        }
-        else -> blazeRepository.observeInterests().map { interests ->
-            interests.map { interest ->
-                TargetItem(
-                    id = interest.id,
-                    value = interest.description
-                )
-            }
-        }
-    }
 
     private val selectedIds = savedStateHandle.getStateFlow(viewModelScope, navArgs.selectedIds.toSet())
 
-    val viewState = combine(items, selectedIds) { items, selectedIds ->
-        ViewState(
+    private val items: Flow<List<SelectionItem>> = when (navArgs.targetType) {
+        LANGUAGE -> blazeRepository.observeLanguages().map { languages ->
+            languages.map { language ->
+                SelectionItem(
+                    id = language.code,
+                    title = language.name
+                )
+            }
+        }
+        DEVICE -> blazeRepository.observeDevices().map { devices ->
+            devices.map { device ->
+                SelectionItem(
+                    id = device.id,
+                    title = device.name
+                )
+            }
+        }
+        INTEREST -> blazeRepository.observeInterests().map { interests ->
+            interests.map { interest ->
+                SelectionItem(
+                    id = interest.id,
+                    title = interest.description
+                )
+            }
+        }
+        LOCATION -> throw IllegalStateException("Location selection should not use this view model")
+    }
+
+    private val screenTitle: String
+        get() = when (navArgs.targetType) {
+            LANGUAGE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
+            DEVICE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
+            INTEREST -> resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
+            LOCATION -> throw IllegalStateException("Location selection should not use this view model")
+        }
+
+    override val viewState = combine(
+        items,
+        selectedIds,
+    ) { items, selectedIds ->
+        TargetSelectionViewState(
             items = items,
             selectedItems = selectedIds.map { id -> items.first { it.id == id } },
-            title = when (navArgs.targetType) {
-                BlazeTargetType.LANGUAGE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_language)
-                BlazeTargetType.DEVICE -> resourceProvider.getString(R.string.blaze_campaign_preview_details_devices)
-                else -> resourceProvider.getString(R.string.blaze_campaign_preview_details_interests)
-            }
+            title = screenTitle
         )
     }.asLiveData()
 
-    fun onItemTapped(item: TargetItem) {
+    override fun onItemToggled(item: SelectionItem) {
         selectedIds.update { selectedIds ->
             if (selectedIds.contains(item.id)) {
                 selectedIds - item.id
@@ -79,7 +92,7 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
         }
     }
 
-    fun onAllButtonTapped() {
+    override fun onAllButtonTapped() {
         selectedIds.update {
             if (it.size == viewState.value?.items?.size) {
                 emptySet()
@@ -89,29 +102,19 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
         }
     }
 
-    fun onBackPressed() {
+    override fun onBackPressed() {
         triggerEvent(Exit)
     }
 
-    fun onSaveTapped() {
+    override fun onSaveTapped() {
         // Empty selection set means all items are selected
         val result = if (selectedIds.value.size == viewState.value?.items?.size)
             emptyList()
         else
             selectedIds.value.toList()
+
         triggerEvent(ExitWithResult(TargetSelectionResult(navArgs.targetType, result)))
     }
-
-    data class TargetItem(
-        val id: String,
-        val value: String,
-    )
-
-    data class ViewState(
-        val items: List<TargetItem>,
-        val selectedItems: List<TargetItem>,
-        val title: String
-    )
 
     @Parcelize
     data class TargetSelectionResult(

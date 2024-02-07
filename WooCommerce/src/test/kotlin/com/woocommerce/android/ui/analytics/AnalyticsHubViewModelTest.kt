@@ -726,7 +726,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         verify(tracker).track(
             AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_PERIOD to WEEK_TO_DATE.name.lowercase(),
+                AnalyticsTracker.KEY_PERIOD to WEEK_TO_DATE.identifier,
                 AnalyticsTracker.KEY_REPORT to ReportCard.Revenue.name.lowercase(),
                 AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
             )

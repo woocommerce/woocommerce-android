@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.receipt
 
 import android.app.Application
 import com.woocommerce.android.media.FileUtils
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FileDownloader
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,11 +23,13 @@ class PaymentReceiptShareTest : BaseUnitTest() {
     private val context: Application = mock {
         on { getExternalFilesDir(anyOrNull()) }.thenReturn(file)
     }
+    private val selectedSite: SelectedSite = mock()
 
     private val sut = PaymentReceiptShare(
         fileUtils = fileUtils,
         fileDownloader = fileDownloader,
         context = context,
+        selectedSite,
     )
 
     @Test

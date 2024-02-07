@@ -11,9 +11,13 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToAdDestinationScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetLocationSelectionScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetSelectionScreen
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionFragment
+import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionViewModel.TargetLocationResult
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.TargetSelectionResult
 import com.woocommerce.android.ui.compose.composeView
@@ -64,6 +68,16 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                             event.selectedIds.toTypedArray()
                         )
                 )
+                is NavigateToTargetLocationSelectionScreen -> findNavController().navigateSafely(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetLocationSelectionFragment(
+                            event.locations.toTypedArray()
+                        )
+                )
+                is NavigateToAdDestinationScreen -> findNavController().navigateSafely(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment()
+                )
             }
         }
     }
@@ -74,6 +88,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         }
         handleResult<TargetSelectionResult>(BlazeCampaignTargetSelectionFragment.BLAZE_TARGET_SELECTION_RESULT) {
             viewModel.onTargetSelectionUpdated(it.targetType, it.selectedIds)
+        }
+        handleResult<TargetLocationResult>(BlazeCampaignTargetLocationSelectionFragment.BLAZE_TARGET_LOCATION_RESULT) {
+            viewModel.onTargetLocationsUpdated(it.locations)
         }
     }
 }
