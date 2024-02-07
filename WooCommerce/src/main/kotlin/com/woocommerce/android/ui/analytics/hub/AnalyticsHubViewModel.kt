@@ -135,7 +135,8 @@ class AnalyticsHubViewModel @Inject constructor(
         rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
     }
 
-    fun onSeeReport(url: String) {
+    fun onSeeReport(url: String, card: ReportCard) {
+        trackSeeReportInteraction(card)
         selectedSite.getOrNull()?.let { site ->
             val event = if (site.isWpComStore) {
                 AnalyticsViewEvent.OpenWPComWebView(url)
@@ -144,6 +145,19 @@ class AnalyticsHubViewModel @Inject constructor(
             }
             triggerEvent(event)
         } ?: triggerEvent(AnalyticsViewEvent.OpenUrl(url))
+    }
+
+    private fun trackSeeReportInteraction(card: ReportCard) {
+        val period = ranges.selectionType.identifier
+        val report = card.name.lowercase()
+        tracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_PERIOD to period,
+                AnalyticsTracker.KEY_REPORT to report,
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
+            )
+        )
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
@@ -459,3 +473,5 @@ class AnalyticsHubViewModel @Inject constructor(
         shouldAskForFeedback()
     }
 }
+
+enum class ReportCard { Revenue, Orders, Products }
