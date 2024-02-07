@@ -176,7 +176,7 @@ class OrderDetailFragment :
          * layout effectively.
          */
         if (parentFragment?.parentFragment !is OrderListFragment && isTablet()) {
-            findNavController().navigateUp()
+            findNavController().popBackStack()
             return
         }
 
