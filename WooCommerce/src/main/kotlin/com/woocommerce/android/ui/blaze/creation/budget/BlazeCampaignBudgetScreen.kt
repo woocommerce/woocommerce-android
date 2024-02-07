@@ -323,7 +323,7 @@ private fun EditDurationBottomSheet(
         )
     }
 
-    var sliderPosition by remember { mutableStateOf(duration) }
+    var sliderPosition by remember { mutableStateOf(duration.toFloat()) }
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
@@ -334,7 +334,10 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 40.dp)
                 .fillMaxWidth(),
-            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration, sliderPosition),
+            text = stringResource(
+                id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
+                sliderPosition.toInt()
+            ),
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
@@ -343,10 +346,10 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
-            value = sliderPosition.toFloat(),
+            value = sliderPosition,
             valueRange = durationRange,
-            onValueChange = { sliderPosition = it.toInt() },
-            onValueChangeFinished = { onDurationChanged(sliderPosition) },
+            onValueChange = { sliderPosition = it },
+            onValueChangeFinished = { onDurationChanged(sliderPosition.toInt()) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
