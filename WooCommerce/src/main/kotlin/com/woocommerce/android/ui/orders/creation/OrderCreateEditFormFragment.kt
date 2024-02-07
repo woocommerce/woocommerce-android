@@ -1112,7 +1112,12 @@ class OrderCreateEditFormFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked()
+        val controller = childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
+        if (controller!= null) {
+            controller.popBackStack()
+        } else {
+            viewModel.onBackButtonClicked()
+        }
         return false
     }
 
