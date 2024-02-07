@@ -212,7 +212,7 @@ class OrderListViewModel @Inject constructor(
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
-            isErrorFetchingDataBannerVisible = true
+            isErrorFetchingDataBannerVisible = false
         )
         activatePagedListWrapper(ordersPagedListWrapper!!)
         fetchOrdersAndOrderDependencies()
@@ -251,14 +251,14 @@ class OrderListViewModel @Inject constructor(
      */
     fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
-            viewState = viewState.copy(isErrorFetchingDataBannerVisible = true)
+            viewState = viewState.copy(isErrorFetchingDataBannerVisible = false)
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
-            viewState = viewState.copy(isRefreshPending = true, isErrorFetchingDataBannerVisible = true)
+            viewState = viewState.copy(isRefreshPending = true, isErrorFetchingDataBannerVisible = false)
             showOfflineSnack()
         }
     }
