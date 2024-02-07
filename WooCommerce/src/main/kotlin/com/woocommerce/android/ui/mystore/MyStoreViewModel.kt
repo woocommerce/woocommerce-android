@@ -61,6 +61,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
@@ -270,7 +271,10 @@ class MyStoreViewModel @Inject constructor(
         )
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
-            mapOf(AnalyticsTracker.KEY_RANGE to selectedGranularity.name.lowercase())
+            buildMap {
+                put(AnalyticsTracker.KEY_RANGE, selectedGranularity.name.lowercase())
+                putIfNotNull(AnalyticsTracker.KEY_ID to it.stats?.rangeId)
+            }
         )
     }
 
@@ -367,7 +371,8 @@ class MyStoreViewModel @Inject constructor(
             intervalList = getIntervalList().toStatsIntervalUiModelList(),
             totalOrdersCount = totals?.ordersCount,
             totalSales = totals?.totalSales,
-            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
+            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
+            rangeId = rangeId
         )
     }
 

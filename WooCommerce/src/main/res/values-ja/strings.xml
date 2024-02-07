@@ -1,12 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-01-30 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">AI による提案</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">残り%d文字です</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">説明</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">キャッチフレーズ</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">画像を変更</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">適用</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">開始</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s日間</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">期間を設定する</string>
+    <string name="blaze_campaign_budget_impressions_info">インプレッションには、広告が潜在顧客に表示される頻度が反映されます。\n\n\n        オンライントラフィックやユーザーの行動は変動するため正確な数を保証することはできないものの、広告の実際のインプレッションを目標の数に可能な限り近づけることを目指します。\n\n\n        インプレッションは可視性のことであり、閲覧者が取ったアクションではありません。</string>
+    <string name="blaze_campaign_budget_impressions_done_button">完了</string>
+    <string name="blaze_campaign_budget_impressions_title">インプレッション</string>
+    <string name="blaze_campaign_budget_update_button">更新</string>
+    <string name="blaze_campaign_budget_edit_duration_button">編集</string>
+    <string name="blaze_campaign_budget_duration_section_title">期間</string>
+    <string name="blaze_campaign_budget_reach_forecast">1日あたりの推定リーチ数</string>
+    <string name="blaze_campaign_budget_daily_spend">1日 %1$s</string>
+    <string name="blaze_campaign_budget_days_duration">%1$s日間</string>
+    <string name="blaze_campaign_budget_total_spend">総支出</string>
+    <string name="blaze_campaign_budget_subtitle">商品プロモーションキャンペーンにいくら使いますか ?</string>
+    <string name="blaze_campaign_budget_toolbar_title">予算を設定する</string>
+    <string name="blaze_campaign_preview_target_default_value">すべて</string>
+    <string name="blaze_campaign_preview_days_duration">%2$sから%1$s日間</string>
+    <string name="product_creation_survey_button_dont_show_again">今後表示しない</string>
+    <string name="product_creation_survey_button_remind_me_later">後で再通知</string>
+    <string name="product_creation_survey_description">少々お時間がございましたら、 簡単なフィードバックをお寄せいただき、AI 搭載機能の改善にご協力ください。</string>
+    <string name="blaze_campaign_preview_details_confirm_details_button">詳細を確認</string>
+    <string name="blaze_campaign_preview_details_destination_url">広告の掲載先</string>
+    <string name="blaze_campaign_preview_details_interests">興味</string>
+    <string name="blaze_campaign_preview_details_location">場所</string>
+    <string name="blaze_campaign_preview_details_devices">デバイス</string>
+    <string name="blaze_campaign_preview_details_language">言語</string>
+    <string name="blaze_campaign_preview_details_budget">予算</string>
+    <string name="blaze_campaign_preview_details_section_title">詳細</string>
+    <string name="blaze_campaign_preview_shop_now_button">今すぐ購入</string>
+    <string name="blaze_campaign_preview_edit_ad">広告を編集</string>
+    <string name="blaze_campaign_screen_fragment_title">プレビュー</string>
     <string name="disabled">無効</string>
+    <string name="order_configuration_product_selection_control">商品の選択</string>
+    <string name="order_configuration_product_selection">商品を選択 %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;実行:&lt;/b&gt; プロモーションの開始を監視し、その成果を追跡します。</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;クイックレビュー:&lt;/b&gt; 広告を送信してモデレーターによる迅速なチェックを受けてください。</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;予算を設定:&lt;/b&gt; 費用とキャンペーン期間を決めます。</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;ターゲティングをカスタマイズ:&lt;/b&gt; 場所や興味に基づいて閲覧者を選択し、潜在的なリーチを確認します。</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;商品を選択:&lt;/b&gt; Blaze で宣伝するものを選択します。</string>
+    <string name="scan_to_update_inventory_manage_stock">在庫を管理</string>
+    <string name="scan_to_update_inventory_stock_not_managed">在庫が管理されていません</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Blaze のしくみを知る</string>
     <string name="blaze_campaign_creation_new_intro_start_button">キャンペーンを開始</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">広告は WordPress.com と Tumblr ネットワーク内の何百万ものサイトに表示されます。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">多数の読者にアクセス</string>
@@ -42,7 +89,6 @@ Language: ja_JP
     <string name="theme_picker_current_theme_title">現在のテーマ</string>
     <string name="theme_picker_settings_title">新しいデザインを試す</string>
     <string name="product_creation_survey_button_open">アンケートをスタート</string>
-    <string name="product_creation_survey_description">これまでに AI によるサポート機能を使用して商品を複数回追加しました。 改善を重ねてまいりますので、ぜひご意見をお寄せください。</string>
     <string name="product_creation_survey_title">お待ちしています。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">「直接支払い」を有効化すると、顧客はオンライン注文の代金を配達時に現金またはカードで支払うことができます。\n\nこの機能を有効化しなくても、注文は手動で作成できます。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">ウェブでの購入手続きに「直接支払い」を追加しますか ?</string>
@@ -125,6 +171,7 @@ Language: ja_JP
     <string name="configuration_quantity_between"> %1$s～%2$s個のアイテム </string>
     <string name="configuration_quantity_item_plural">%d個のアイテム</string>
     <string name="configuration_quantity_item">%d個のアイテム</string>
+    <string name="order_configuration_change_product_quantity">商品数量を%1$.2fから%2$.2fに変更する</string>
     <string name="save_configuration">設定を保存する</string>
     <string name="product_configuration_title">設定</string>
     <string name="default_product_title">商品 %s</string>

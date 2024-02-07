@@ -56,11 +56,20 @@
         <action
             android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignBudgetFragment"
             app:destination="@id/blazeCampaignBudgetFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignTargetSelectionFragment"
+            app:destination="@id/blazeCampaignTargetSelectionFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignTargetLocationSelectionFragment"
+            app:destination="@id/blazeCampaignTargetLocationSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignCreationEditAdFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment"
         android:label="BlazeCampaignCreationEditAdFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
         <argument
             android:name="tagline"
             app:argType="string"
@@ -79,4 +88,23 @@
         android:id="@+id/blazeCampaignBudgetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
         android:label="BlazeCampaignBudgetFragment" />
+    <fragment
+        android:id="@+id/blazeCampaignTargetSelectionFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment"
+        android:label="BlazeCampaignTargetSelectionFragment" >
+        <argument
+            android:name="targetType"
+            app:argType="com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType" />
+        <argument
+            android:name="selectedIds"
+            app:argType="string[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignTargetLocationSelectionFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionFragment"
+        android:label="BlazeCampaignTargetLocationSelectionFragment" >
+        <argument
+            android:name="locations"
+            app:argType="com.woocommerce.android.ui.blaze.Location[]" />
+    </fragment>
 </navigation>

@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.barcodescanner
 import android.content.res.Configuration
 import android.util.Size
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
@@ -33,6 +35,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import java.util.concurrent.TimeUnit
 import androidx.camera.core.Preview as CameraPreview
 
 @Suppress("TooGenericExceptionCaught")
@@ -75,7 +78,26 @@ fun BarcodeScanner(
                         }
 
                     cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(lifecycleOwner, selector, cameraPreview, imageAnalysisUseCase)
+                    val camera = cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        selector,
+                        cameraPreview,
+                        imageAnalysisUseCase
+                    )
+
+                    val factory = SurfaceOrientedMeteringPointFactory(
+                        previewView.width.toFloat(),
+                        previewView.height.toFloat()
+                    )
+                    val centerPoint = factory.createPoint(
+                        previewView.width.toFloat() / 2,
+                        previewView.height.toFloat() / 2
+                    )
+                    val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
+                        // Confusing naming - that means focus and metering will reset after 2 seconds
+                        setAutoCancelDuration(2, TimeUnit.SECONDS)
+                    }.build()
+                    camera.cameraControl.startFocusAndMetering(action)
                 } catch (e: Exception) {
                     onBindingException(e)
                 }

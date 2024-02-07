@@ -1,1 +1,1 @@
-Get ready for a smoother experience with our latest update! We've ironed out the pesky bug that kept gift cards from showing up in the 'totals' section during order creation and editing. Managing your sales with our WooCommerce app is now more seamless than ever. Update now and enjoy the hassle-free enhancements!
+This version includes optimizations for speed and reliability. We are committed to continuously improving the app, making managing your online store more efficient and hassle-free.
