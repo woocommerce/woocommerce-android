@@ -93,7 +93,7 @@
             app:argType="float" />
         <argument
             android:name="durationInDays"
-            app:argType="int" />
+            app:argType="integer" />
         <argument
             android:name="campaignStartDateMillis"
             app:argType="long" />
