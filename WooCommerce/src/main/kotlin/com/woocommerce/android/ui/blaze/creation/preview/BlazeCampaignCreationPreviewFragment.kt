@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToAdDestinationScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToTargetLocationSelectionScreen
@@ -72,6 +73,10 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetLocationSelectionFragment(
                             event.locations.toTypedArray()
                         )
+                )
+                is NavigateToAdDestinationScreen -> findNavController().navigateSafely(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment()
                 )
             }
         }
