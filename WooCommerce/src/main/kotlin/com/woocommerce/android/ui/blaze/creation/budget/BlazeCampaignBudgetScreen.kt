@@ -79,7 +79,7 @@ private fun CampaignBudgetScreen(
     onImpressionsInfoTapped: () -> Unit,
     onBudgetUpdated: (Float) -> Unit,
     onCampaignDurationUpdated: (Int) -> Unit,
-    onStartDateChanged: (Date) -> Unit,
+    onStartDateChanged: (Long) -> Unit,
     onUpdateTapped: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -307,7 +307,7 @@ private fun EditDurationBottomSheet(
     durationRange: ClosedFloatingPointRange<Float>,
     startDateMillis: Long,
     onDurationChanged: (Float) -> Unit,
-    onStartDateChanged: (Date) -> Unit,
+    onStartDateChanged: (Long) -> Unit,
     onApplyTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -316,7 +316,7 @@ private fun EditDurationBottomSheet(
         DatePickerDialog(
             currentDate = Date(startDateMillis),
             onDateSelected = {
-                onStartDateChanged(it)
+                onStartDateChanged(it.time)
                 showDatePicker = false
             },
             onDismissRequest = { showDatePicker = false }
@@ -389,7 +389,6 @@ private fun CampaignBudgetScreenPreview() {
             currencyCode = "USD",
             totalBudget = 35f,
             sliderValue = 35f,
-            spentBudget = 0f,
             budgetRange = 35f..350f,
             dailySpending = "$5",
             durationInDays = 7,

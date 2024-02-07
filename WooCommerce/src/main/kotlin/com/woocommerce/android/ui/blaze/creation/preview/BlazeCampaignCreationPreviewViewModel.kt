@@ -173,7 +173,16 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         budget = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
-            onItemSelected = { triggerEvent(NavigateToBudgetScreen) },
+            onItemSelected = {
+                triggerEvent(
+                    NavigateToBudgetScreen(
+                        totalBudget = budget.totalBudget,
+                        durationInDays = budget.durationInDays,
+                        campaignStartDateMillis = budget.startDate.time,
+                        currencyCode = budget.currencyCode
+                    )
+                )
+            },
         ),
         targetDetails = listOf(
             CampaignDetailItemUi(
@@ -274,7 +283,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val maxLinesValue: Int? = null,
     )
 
-    object NavigateToBudgetScreen : MultiLiveEvent.Event()
+    data class NavigateToBudgetScreen(
+        val totalBudget: Float,
+        val durationInDays: Int,
+        val campaignStartDateMillis: Long,
+        val currencyCode: String
+    ) : MultiLiveEvent.Event()
+
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>

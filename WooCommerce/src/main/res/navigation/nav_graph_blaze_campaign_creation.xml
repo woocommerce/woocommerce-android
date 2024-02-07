@@ -84,7 +84,20 @@
     <fragment
         android:id="@+id/blazeCampaignBudgetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
-        android:label="BlazeCampaignBudgetFragment"></fragment>
+        android:label="BlazeCampaignBudgetFragment">
+        <argument
+            android:name="totalBudget"
+            app:argType="float" />
+        <argument
+            android:name="durationInDays"
+            app:argType="int" />
+        <argument
+            android:name="campaignStartDateMillis"
+            app:argType="long" />
+        <argument
+            android:name="currencyCode"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/blazeCampaignTargetSelectionFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment"

@@ -48,7 +48,12 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is Exit -> findNavController().popBackStack()
                 is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment()
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(
+                            event.totalBudget,
+                            event.durationInDays,
+                            event.campaignStartDateMillis,
+                            event.currencyCode
+                        )
                 )
 
                 is NavigateToEditAdScreen -> findNavController().navigateSafely(
