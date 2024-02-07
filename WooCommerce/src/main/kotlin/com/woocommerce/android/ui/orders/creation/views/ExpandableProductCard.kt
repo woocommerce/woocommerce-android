@@ -780,3 +780,56 @@ fun ExtendedConfigurableProductCardContentPreview() {
         ExtendedProductCardContent(state, product, {}, {}, {}) {}
     }
 }
+
+@SuppressLint("UnrememberedMutableState")
+@Composable
+@Preview
+fun PreviewExpandableProductCard() {
+    val state = mutableStateOf<OrderCreateEditViewModel.ViewState?>(null)
+    val mockAttribute = Order.Item.Attribute("", "")
+    val mockOrderItem = Order.Item(
+        1,
+        0,
+        "",
+        BigDecimal("0"),
+        "",
+        0.0f,
+        BigDecimal("0"),
+        BigDecimal("0"),
+        BigDecimal("0"),
+        0,
+        listOf(mockAttribute),
+        0,
+        null,
+        0
+    )
+
+    val productInfo = ProductInfo(
+        "imageUrl",
+        true,
+        10.0,
+        ProductStockStatus.InStock,
+        ProductType.SIMPLE,
+        false,
+        "100",
+        "100",
+        "100",
+        "10",
+        "90",
+        true
+    )
+
+    val product = OrderCreationProduct.ProductItem(
+        item = mockOrderItem,
+        productInfo = productInfo
+    )
+
+    ExpandableProductCard(
+        state = state,
+        product = product,
+        onRemoveProductClicked = {},
+        onDiscountButtonClicked = {},
+        onItemAmountChanged = { _ -> }, onEditConfigurationClicked = {}, // No operation during preview
+        onProductExpanded = { _, _ -> }
+    )
+}
