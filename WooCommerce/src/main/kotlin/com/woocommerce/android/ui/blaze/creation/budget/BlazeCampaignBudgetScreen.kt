@@ -366,7 +366,10 @@ private fun EditDurationBottomSheet(
         }
         WCColoredButton(
             modifier = Modifier
-                .padding(top = 40.dp)
+                .padding(
+                    top = 30.dp,
+                    bottom = 16.dp
+                )
                 .fillMaxWidth(),
             onClick = onApplyTapped,
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
