@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.compose.foundation.border
@@ -407,7 +406,6 @@ class OrderCreateEditFormFragment :
             }
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isEnabled = it
-                Log.d("OrderCreateEditForm", "canCreateOrder: $it createOrderMenuItem: $createOrderMenuItem")
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->
                 updateProgressBarsVisibility(binding, !idle)
