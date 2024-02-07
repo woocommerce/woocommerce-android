@@ -133,15 +133,13 @@
     </androidx.core.widget.NestedScrollView>
 
     <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/totals_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
-        android:id="@+id/totals_section"
-        tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsFullViewKt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        tools:visibility="visible"
-        android:visibility="gone" />
+        tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsFullViewKt" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/loadingProgress"
