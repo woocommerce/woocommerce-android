@@ -167,6 +167,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import androidx.lifecycle.map
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -288,6 +289,16 @@ class OrderCreateEditViewModel @Inject constructor(
                 .sortedBy { creationProduct -> creationProduct.item.productId }
         }
         .asLiveData()
+
+    val selectedItems: LiveData<List<SelectedItem>> = orderDraft.map { order ->
+        order.items.map { item ->
+            if (item.isVariation) {
+                SelectedItem.ProductVariation(item.productId, item.variationId)
+            } else {
+                Product(item.productId)
+            }
+        }
+    }
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }

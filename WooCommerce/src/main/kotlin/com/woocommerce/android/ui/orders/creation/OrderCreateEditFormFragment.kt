@@ -129,9 +129,10 @@ class OrderCreateEditFormFragment :
         val navController =
             childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
         val args = ProductSelectorFragmentArgs(
-            selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
-            selectedItems = emptyArray(),
+            selectionHandling = ProductSelectorViewModel.SelectionHandling.NORMAL,
+            selectedItems = viewModel.selectedItems.value?.toTypedArray()?: emptyArray(), // TODO
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            selectionMode = ProductSelectorViewModel.SelectionMode.LIVE,
         )
         navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
     }

@@ -47,9 +47,7 @@ class ProductSelectorFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             id = R.id.product_selector_compose_view
-
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
             setContent {
                 WooThemeWithBackground {
                     ProductSelectorScreen(viewModel)

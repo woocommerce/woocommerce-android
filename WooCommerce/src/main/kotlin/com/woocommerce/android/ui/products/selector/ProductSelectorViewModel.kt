@@ -414,7 +414,7 @@ class ProductSelectorViewModel @Inject constructor(
                 selectedItems.value = listOf(item)
             }
 
-            SelectionMode.MULTIPLE -> {
+            SelectionMode.MULTIPLE, SelectionMode.LIVE -> {
                 selectedItems.update { items ->
                     if (items.containsItemWith(item.id)) {
                         tracker.trackItemUnselected(productSelectorFlow)
@@ -602,7 +602,7 @@ class ProductSelectorViewModel @Inject constructor(
             val newItem = SelectedItem.ConfigurableProduct(productId, productConfiguration)
             when (navArgs.selectionMode) {
                 SelectionMode.SINGLE -> listOf(newItem)
-                SelectionMode.MULTIPLE -> items + newItem
+                SelectionMode.MULTIPLE, SelectionMode.LIVE -> items + newItem
             }
         }
     }
@@ -753,7 +753,13 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     enum class SelectionMode {
-        SINGLE, MULTIPLE
+        SINGLE,
+        MULTIPLE,
+        /**
+         * Used e.g. in two-pane UI when product selector is always visible next to order summary.
+         * In this mode the confirmation button and toolbar are hidden.
+         */
+        LIVE
     }
 
     enum class SelectionHandling {

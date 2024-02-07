@@ -360,6 +360,14 @@ class ProductNavigator @Inject constructor() {
                             productId = target.productId
                         )
                     }
+                    ProductSelectorViewModel.SelectionMode.LIVE -> {
+                        ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                            productId = target.productId,
+                            variationIds = target.selectedVariationIds.toLongArray(),
+                            productSelectorFlow = target.productSelectorFlow,
+                            productSource = target.productSourceForTracking,
+                        )
+                    }
                 }
 
                 fragment.findNavController().navigateSafely(action)
