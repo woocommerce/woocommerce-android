@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.products.adapters
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.BundledProductItemViewBinding
-import com.bumptech.glide.Glide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.BundledProduct
 import com.woocommerce.android.ui.products.ProductStockStatus

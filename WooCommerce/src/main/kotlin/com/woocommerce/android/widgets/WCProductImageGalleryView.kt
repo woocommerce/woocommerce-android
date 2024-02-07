@@ -21,13 +21,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ImageGalleryItemBinding
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
 import com.woocommerce.android.model.Product
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.PhotonUtils

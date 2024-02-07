@@ -7,10 +7,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentComponentDetailsBinding
-import com.bumptech.glide.Glide
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.ui.base.BaseFragment
