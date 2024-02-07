@@ -94,6 +94,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
@@ -1127,11 +1128,7 @@ class MainActivity :
             remoteNoteId
         )
         navHostFragment?.navController?.let { navController ->
-            val bundle = Bundle().apply {
-                putLong(KEY_ORDER_ID, orderId)
-                putLongArray(KEY_ALL_ORDER_IDS, arrayOf(orderId).toLongArray())
-                putLong(KEY_REMOTE_NOTE_ID, remoteNoteId)
-            }
+            val bundle = OrderDetailFragmentArgs(orderId, longArrayOf(orderId), remoteNoteId).toBundle()
             navController.navigate(R.id.orderDetailFragment, bundle)
         } ?: run {
             navController.navigateSafely(action)
