@@ -2,8 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.compose.foundation.border
@@ -22,7 +21,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -98,8 +96,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     private companion object {
         private const val TABLET_PANES_WIDTH_RATIO = 0.5F
         private const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
@@ -141,7 +138,6 @@ class OrderCreateEditFormFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
@@ -170,29 +166,6 @@ class OrderCreateEditFormFragment :
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
             viewModel.onCouponEditResult(it)
-        }
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_creation, menu)
-
-        createOrderMenuItem = menu.findItem(R.id.menu_create).apply {
-            when (viewModel.mode) {
-                Creation -> title = resources.getString(R.string.create)
-                is Edit -> isVisible = false
-            }
-            isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
-        }
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_create -> {
-                viewModel.onCreateOrderClicked(viewModel.currentDraft)
-                true
-            }
-
-            else -> false
         }
     }
 
@@ -243,7 +216,23 @@ class OrderCreateEditFormFragment :
         }
         mainToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
         twoPaneModeToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
-        mainToolbar.addMenuProvider(this@OrderCreateEditFormFragment, viewLifecycleOwner)
+        mainToolbar.inflateMenu(R.menu.menu_order_creation)
+        createOrderMenuItem = mainToolbar.menu.findItem(R.id.menu_create).apply {
+            when (viewModel.mode) {
+                Creation -> title = resources.getString(R.string.create)
+                is Edit -> isVisible = false
+            }
+            isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
+        }
+        mainToolbar.setOnMenuItemClickListener { item ->
+            return@setOnMenuItemClickListener when (item.itemId) {
+                R.id.menu_create -> {
+                    viewModel.onCreateOrderClicked(viewModel.currentDraft)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun getTitle(): CharSequence = when (viewModel.mode) {
@@ -418,6 +407,7 @@ class OrderCreateEditFormFragment :
             }
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isEnabled = it
+                Log.d("OrderCreateEditForm", "canCreateOrder: $it createOrderMenuItem: $createOrderMenuItem")
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->
                 updateProgressBarsVisibility(binding, !idle)
