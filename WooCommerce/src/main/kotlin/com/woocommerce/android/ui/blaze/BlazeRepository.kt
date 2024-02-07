@@ -65,7 +65,7 @@ class BlazeRepository @Inject constructor(
         return CampaignPreview(
             productId = productId,
             userTimeZone = timezoneProvider.deviceTimezone.displayName,
-            targetUrl = product?.permalink ?: "",
+            targetUrl = product?.permalink,
             urlParams = null,
             campaignImageUrl = product?.firstImageUrl
         )
@@ -75,7 +75,7 @@ class BlazeRepository @Inject constructor(
     data class CampaignPreview(
         val productId: Long,
         val userTimeZone: String,
-        val targetUrl: String,
+        val targetUrl: String?,
         val urlParams: Pair<String, String>?,
         val campaignImageUrl: String?,
     ) : Parcelable
