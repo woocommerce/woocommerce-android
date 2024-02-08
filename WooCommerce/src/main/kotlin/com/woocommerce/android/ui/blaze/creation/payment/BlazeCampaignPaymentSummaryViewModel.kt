@@ -4,14 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class BlazeCampaignPaymentSummaryViewModel(
+class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository
 ) : ScopedViewModel(savedStateHandle) {
@@ -30,10 +32,14 @@ class BlazeCampaignPaymentSummaryViewModel(
         fetchPaymentMethodData()
     }
 
+    fun onBackClicked() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     private fun fetchPaymentMethodData() {
         paymentMethodState.value = PaymentMethodState.Loading
         launch {
-            blazeRepository.fetchPaymentMethods().fold(
+            paymentMethodState.value = blazeRepository.fetchPaymentMethods().fold(
                 onSuccess = {
                     PaymentMethodState.Success(
                         it,
