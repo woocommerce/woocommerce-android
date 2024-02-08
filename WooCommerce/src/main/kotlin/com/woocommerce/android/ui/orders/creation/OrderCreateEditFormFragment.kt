@@ -217,13 +217,13 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
+        productSelectorNavContainer.isVisible =
+            DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
         if (DisplayUtils.isTablet(context)) {
-            productSelectorNavContainer.isVisible = true
             twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
         } else if (DisplayUtils.isXLargeTablet(context)) {
             twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
         } else {
-            productSelectorNavContainer.isVisible = false
             twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
         }
     }
