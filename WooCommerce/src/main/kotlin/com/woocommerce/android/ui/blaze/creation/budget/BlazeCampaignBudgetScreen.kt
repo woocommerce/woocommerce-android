@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -217,11 +219,20 @@ private fun EditBudgetSection(
                 contentDescription = null
             )
         }
-        Text(
-            text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
-            fontWeight = FontWeight.SemiBold,
-            lineHeight = 24.sp,
-        )
+        if (state.forecast.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .size(16.dp),
+            )
+        } else {
+            Text(
+                text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 24.sp,
+            )
+        }
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
