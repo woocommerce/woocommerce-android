@@ -302,6 +302,15 @@ class OrderListFragment :
         orderListViewLayoutParams.weight = 0f
     }
 
+    private fun hideDetailPane(
+        detailContainer: NavHostFragment,
+        orderListViewLayoutParams: LinearLayout.LayoutParams
+    ) {
+        detailContainer.view?.visibility = View.GONE
+        orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+        orderListViewLayoutParams.weight = 0f
+    }
+
     private fun initSwipeBehaviour() {
         val swipeToComplete = SwipeToComplete(requireContext(), this)
         val swipeHelper = ItemTouchHelper(swipeToComplete)
@@ -319,14 +328,12 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-
+        super.onSaveInstanceState(outState)
         val navHostFragment = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
         val currentDestinationId = navHostFragment.navController.currentDestination?.id
         if (isTablet()) {
             outState.putInt("current_nav_destination", currentDestinationId ?: -1)
         }
-
-        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {
@@ -539,6 +546,9 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
+                        val detailContainer = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
+                        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams as LinearLayout.LayoutParams
+                        hideDetailPane(detailContainer, orderListViewLayoutParams)
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
