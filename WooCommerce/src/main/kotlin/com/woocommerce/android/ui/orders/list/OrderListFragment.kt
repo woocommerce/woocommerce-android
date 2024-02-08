@@ -87,6 +87,7 @@ class OrderListFragment :
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.10f
+        private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
     }
 
     @Inject
@@ -149,7 +150,7 @@ class OrderListFragment :
         savedInstanceState?.let { bundle ->
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-            savedDestinationId = savedInstanceState.getInt("current_nav_destination", -1)
+            savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
 
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
@@ -261,7 +262,7 @@ class OrderListFragment :
             adjustLayoutForTablet(detailContainer)
         } else {
             adjustLayoutForNonTablet(detailContainer, orderListViewLayoutParams)
-            savedInstanceState?.putInt("current_nav_destination", -1)
+            savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
         }
     }
 
@@ -332,7 +333,7 @@ class OrderListFragment :
         val navHostFragment = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
         val currentDestinationId = navHostFragment.navController.currentDestination?.id
         if (isTablet()) {
-            outState.putInt("current_nav_destination", currentDestinationId ?: -1)
+            outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
         }
     }
 
