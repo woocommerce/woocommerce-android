@@ -60,14 +60,16 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
+    suspend fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
         val product = productDetailRepository.getProduct(productId)
+            ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
+
         return CampaignPreview(
             productId = productId,
             userTimeZone = timezoneProvider.deviceTimezone.displayName,
-            targetUrl = product?.permalink,
+            targetUrl = product.permalink,
             urlParams = null,
-            campaignImageUrl = product?.firstImageUrl
+            campaignImageUrl = product.firstImageUrl
         )
     }
 
@@ -75,7 +77,7 @@ class BlazeRepository @Inject constructor(
     data class CampaignPreview(
         val productId: Long,
         val userTimeZone: String,
-        val targetUrl: String?,
+        val targetUrl: String,
         val urlParams: Pair<String, String>?,
         val campaignImageUrl: String?,
     ) : Parcelable

@@ -42,7 +42,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
-    private val campaign = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
+    private suspend fun getCampaign() = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
 
     private val adDetails = savedStateHandle.getStateFlow<AdDetailsUi>(viewModelScope, Loading)
     private val budget = savedStateHandle.getStateFlow(viewModelScope, getDefaultBudget())
@@ -95,7 +95,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations ->
         CampaignPreviewUiState(
             adDetails = ad,
-            campaignDetails = campaign.toCampaignDetailsUi(
+            campaignDetails = getCampaign().toCampaignDetailsUi(
                 budget,
                 selectedLanguages,
                 selectedDevices,
@@ -164,7 +164,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         productId = navArgs.productId,
                         description = suggestions?.firstOrNull()?.description ?: "",
                         tagLine = suggestions?.firstOrNull()?.tagLine ?: "",
-                        campaignImageUrl = campaign.campaignImageUrl
+                        campaignImageUrl = getCampaign().campaignImageUrl
                     )
                 }
             }
@@ -219,8 +219,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         ),
         destinationUrl = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = targetUrl
-                ?: resourceProvider.getString(string.blaze_campaign_edit_ad_destination_url_property_title),
+            displayValue = targetUrl,
             maxLinesValue = 1,
             onItemSelected = {
                 triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
