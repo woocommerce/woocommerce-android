@@ -63,6 +63,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         budgetUiState.copy(forecast = forecast)
     }.asLiveData()
 
+    init {
+        fetchAdForecast()
+    }
+
     fun onBackPressed() {
         triggerEvent(Exit)
     }
@@ -138,6 +142,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     fun onBudgetChangeFinished() {
+        fetchAdForecast()
+    }
+
+    private fun fetchAdForecast() {
         campaignForecastState.update { it.copy(isLoading = true) }
         launch {
             repository.fetchAdForecast(
