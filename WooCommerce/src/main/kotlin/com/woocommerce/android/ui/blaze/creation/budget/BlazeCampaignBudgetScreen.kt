@@ -65,6 +65,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onBudgetUpdated = viewModel::onBudgetUpdated,
             onCampaignDurationUpdated = viewModel::onCampaignDurationUpdated,
             onStartDateChanged = viewModel::onStartDateChanged,
+            onBudgetChangeFinished = viewModel::onBudgetChangeFinished,
             onUpdateTapped = viewModel::onUpdateTapped
         )
     }
@@ -80,6 +81,7 @@ private fun CampaignBudgetScreen(
     onBudgetUpdated: (Float) -> Unit,
     onCampaignDurationUpdated: (Int) -> Unit,
     onStartDateChanged: (Long) -> Unit,
+    onBudgetChangeFinished: () -> Unit,
     onUpdateTapped: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -131,6 +133,7 @@ private fun CampaignBudgetScreen(
                         coroutineScope.launch { modalSheetState.show() }
                     },
                     onBudgetUpdated = onBudgetUpdated,
+                    onBudgetChangeFinished = onBudgetChangeFinished,
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
@@ -151,6 +154,7 @@ private fun EditBudgetSection(
     state: BlazeCampaignBudgetViewModel.BudgetUiState,
     onBudgetUpdated: (Float) -> Unit,
     onImpressionsInfoTapped: () -> Unit,
+    onBudgetChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -198,6 +202,7 @@ private fun EditBudgetSection(
             value = state.sliderValue,
             valueRange = state.budgetRangeMin..state.budgetRangeMax,
             onValueChange = { onBudgetUpdated(it) },
+            onValueChangeFinished = { onBudgetChangeFinished() },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
@@ -213,7 +218,7 @@ private fun EditBudgetSection(
             )
         }
         Text(
-            text = "2400  --  3000",
+            text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
             fontWeight = FontWeight.SemiBold,
             lineHeight = 24.sp,
         )
@@ -403,6 +408,8 @@ private fun CampaignBudgetScreenPreview() {
             ),
             campaignStartDateMillis = Date().time,
             campaignDurationDates = "Dec 13 - Dec 20, 2023",
+            showImpressionsBottomSheet = false,
+            showCampaignDurationBottomSheet = false
         ),
         onBackPressed = {},
         onEditDurationTapped = {},
@@ -410,7 +417,8 @@ private fun CampaignBudgetScreenPreview() {
         onBudgetUpdated = {},
         onCampaignDurationUpdated = {},
         onStartDateChanged = {},
-        onUpdateTapped = {}
+        onUpdateTapped = {},
+        onBudgetChangeFinished = {}
     )
 }
 

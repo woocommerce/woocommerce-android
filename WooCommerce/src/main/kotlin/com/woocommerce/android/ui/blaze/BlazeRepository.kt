@@ -8,6 +8,7 @@ import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
@@ -39,6 +40,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch languages: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(Unit)
         }
     }
@@ -54,6 +56,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch devices: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(Unit)
         }
     }
@@ -69,6 +72,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch interests: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(Unit)
         }
     }
@@ -84,6 +88,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch locations: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(
                 result.model?.map { location ->
                     Location(location.id, location.name, location.parent?.name, location.type)
@@ -106,6 +111,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch ad suggestions: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(result.model?.mapToUiModel() ?: emptyList())
         }
     }
@@ -119,6 +125,27 @@ class BlazeRepository @Inject constructor(
             urlParams = null,
             campaignImageUrl = product?.firstImageUrl
         )
+    }
+
+    suspend fun fetchAdForecast(
+        startDate: Date,
+        campaignDurationDays: Int,
+        totalBudget: Float
+    ): Result<BlazeAdForecast> {
+        val result = blazeCampaignsStore.fetchBlazeAdForecast(
+            selectedSite.get(),
+            startDate,
+            Date(startDate.time + campaignDurationDays * ONE_DAY_IN_MILLIS),
+            totalBudget.toDouble(),
+        )
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch ad forecast: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> Result.success(result.model!!)
+        }
     }
 
     @Parcelize
