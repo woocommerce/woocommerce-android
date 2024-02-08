@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.blaze.creation.budget
 
 import android.os.Parcelable
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
@@ -13,8 +14,11 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
@@ -27,27 +31,33 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()
 
-    private val _viewState = MutableLiveData(
+    private val campaignForecastState = savedStateHandle.getStateFlow(viewModelScope, getLoadingForecastUi())
+    private val budgetUiState = savedStateHandle.getStateFlow(
+        viewModelScope,
         BudgetUiState(
             currencyCode = navArgs.currencyCode,
             totalBudget = navArgs.totalBudget,
             sliderValue = navArgs.totalBudget,
-            budgetRange = getBudgetRange(navArgs.durationInDays),
+            budgetRangeMin = navArgs.durationInDays * CAMPAIGN_MINIMUM_DAILY_SPEND,
+            budgetRangeMax = navArgs.durationInDays * CAMPAIGN_MAXIMUM_DAILY_SPEND,
             dailySpending = formatDailySpend(dailySpend = navArgs.totalBudget / navArgs.durationInDays),
-            forecast = ForecastUi(
-                isLoaded = false,
-                impressionsMin = 0,
-                impressionsMax = 0
-            ),
+            forecast = getLoadingForecastUi(),
             durationInDays = navArgs.durationInDays,
-            durationRangeDays = getDurationRange(),
+            durationRangeMin = 1f,
+            durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
             campaignStartDateMillis = navArgs.campaignStartDateMillis,
             campaignDurationDates = getCampaignDurationDisplayDate(
                 navArgs.campaignStartDateMillis, navArgs.durationInDays
             ),
         )
     )
-    val viewState = _viewState
+
+    val viewState = combine(
+        campaignForecastState,
+        budgetUiState
+    ) { forecast, budgetUiState ->
+        budgetUiState.copy(forecast = forecast)
+    }.asLiveData()
 
     fun onBackPressed() {
         triggerEvent(Exit)
@@ -57,65 +67,70 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         triggerEvent(
             ExitWithResult(
                 EditBudgetAndDurationResult(
-                    totalBudget = viewState.value?.totalBudget!!,
-                    durationInDays = viewState.value?.durationInDays!!,
-                    campaignStartDateMillis = viewState.value?.campaignStartDateMillis!!
+                    totalBudget = budgetUiState.value.totalBudget,
+                    durationInDays = budgetUiState.value.durationInDays,
+                    campaignStartDateMillis = budgetUiState.value.campaignStartDateMillis
                 )
             )
         )
     }
 
     fun onEditDurationTapped() {
-        _viewState.value = _viewState.value?.copy(
-            showCampaignDurationBottomSheet = true,
-            showImpressionsBottomSheet = false
-        )
+        budgetUiState.update {
+            it.copy(
+                showCampaignDurationBottomSheet = true,
+                showImpressionsBottomSheet = false
+            )
+        }
     }
 
     fun onImpressionsInfoTapped() {
-        _viewState.value = _viewState.value?.copy(
-            showImpressionsBottomSheet = true,
-            showCampaignDurationBottomSheet = false
-        )
+        budgetUiState.update {
+            it.copy(
+                showImpressionsBottomSheet = true,
+                showCampaignDurationBottomSheet = false
+            )
+        }
     }
 
     fun onBudgetUpdated(sliderValue: Float) {
-        if (sliderValue.toInt().mod(viewState.value?.durationInDays!!) == 0) {
-            val dailySpending = sliderValue / viewState.value?.durationInDays!!
-            _viewState.value = _viewState.value?.copy(
-                totalBudget = sliderValue,
-                dailySpending = formatDailySpend(dailySpending)
-            )
+        budgetUiState.update { it.copy(sliderValue = sliderValue) }
+        if (sliderValue.toInt().mod(budgetUiState.value.durationInDays) == 0) {
+            budgetUiState.update {
+                it.copy(
+                    totalBudget = sliderValue,
+                    dailySpending = formatDailySpend(sliderValue / it.durationInDays)
+                )
+            }
         }
-        _viewState.value = _viewState.value?.copy(
-            sliderValue = sliderValue,
-        )
     }
 
     fun onCampaignDurationUpdated(duration: Int) {
-        val currentDailyExpend = viewState.value?.totalBudget!! / viewState.value?.durationInDays!!
+        val currentDailyExpend = budgetUiState.value.totalBudget / budgetUiState.value.durationInDays
         val newTotalBudget = duration * currentDailyExpend
-        _viewState.value = _viewState.value?.copy(
-            durationInDays = duration,
-            budgetRange = getBudgetRange(duration),
-            dailySpending = formatDailySpend(currentDailyExpend),
-            totalBudget = newTotalBudget,
-            sliderValue = newTotalBudget,
-            campaignDurationDates = getCampaignDurationDisplayDate(
-                viewState.value?.campaignStartDateMillis!!,
-                duration
+        budgetUiState.update {
+            it.copy(
+                durationInDays = duration,
+                budgetRangeMin = duration * CAMPAIGN_MINIMUM_DAILY_SPEND,
+                budgetRangeMax = duration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
+                dailySpending = formatDailySpend(currentDailyExpend),
+                totalBudget = newTotalBudget,
+                sliderValue = newTotalBudget,
+                campaignDurationDates = getCampaignDurationDisplayDate(it.campaignStartDateMillis, duration)
             )
-        )
+        }
     }
 
     fun onStartDateChanged(newStartDateMillis: Long) {
-        _viewState.value = _viewState.value?.copy(
-            campaignStartDateMillis = newStartDateMillis,
-            campaignDurationDates = getCampaignDurationDisplayDate(
-                newStartDateMillis,
-                viewState.value?.durationInDays!!
+        budgetUiState.update {
+            it.copy(
+                campaignStartDateMillis = newStartDateMillis,
+                campaignDurationDates = getCampaignDurationDisplayDate(
+                    newStartDateMillis,
+                    it.durationInDays
+                )
             )
-        )
+        }
     }
 
     private fun getCampaignDurationDisplayDate(startDateMillis: Long, duration: Int): String {
@@ -126,31 +141,36 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     private fun formatDailySpend(dailySpend: Float) =
         currencyFormatter.formatCurrency(dailySpend.roundToInt().toBigDecimal(), navArgs.currencyCode)
 
-    private fun getBudgetRange(duration: Int) =
-        duration * CAMPAIGN_MINIMUM_DAILY_SPEND..duration * CAMPAIGN_MAXIMUM_DAILY_SPEND
+    private fun getLoadingForecastUi() = ForecastUi(
+        isLoading = true,
+        impressionsMin = 0,
+        impressionsMax = 0
+    )
 
-    private fun getDurationRange() = 1f..CAMPAIGN_MAX_DURATION.toFloat()
-
+    @Parcelize
     data class BudgetUiState(
         val currencyCode: String,
         val totalBudget: Float,
         val sliderValue: Float,
-        val budgetRange: ClosedFloatingPointRange<Float>,
+        val budgetRangeMin: Float,
+        val budgetRangeMax: Float,
         val dailySpending: String,
         val forecast: ForecastUi,
         val durationInDays: Int,
-        val durationRangeDays: ClosedFloatingPointRange<Float>,
+        val durationRangeMin: Float,
+        val durationRangeMax: Float,
         val showImpressionsBottomSheet: Boolean = false,
         val showCampaignDurationBottomSheet: Boolean = false,
         val campaignStartDateMillis: Long,
         val campaignDurationDates: String,
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class ForecastUi(
-        val isLoaded: Boolean = false,
+        val isLoading: Boolean = false,
         val impressionsMin: Int,
         val impressionsMax: Int
-    )
+    ) : Parcelable
 
     @Parcelize
     data class EditBudgetAndDurationResult(

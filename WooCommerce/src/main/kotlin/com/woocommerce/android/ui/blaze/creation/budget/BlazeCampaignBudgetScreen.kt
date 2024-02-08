@@ -110,10 +110,8 @@ private fun CampaignBudgetScreen(
                         )
 
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
-                            duration = state.durationInDays,
-                            startDateMillis = state.campaignStartDateMillis,
+                            budgetUiState = state,
                             onDurationChanged = { onCampaignDurationUpdated(it) },
-                            durationRange = state.durationRangeDays,
                             onStartDateChanged = { onStartDateChanged(it) },
                             onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
                         )
@@ -198,7 +196,7 @@ private fun EditBudgetSection(
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
             value = state.sliderValue,
-            valueRange = state.budgetRange,
+            valueRange = state.budgetRangeMin..state.budgetRangeMax,
             onValueChange = { onBudgetUpdated(it) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
@@ -303,18 +301,16 @@ private fun ImpressionsInfoBottomSheet(
 
 @Composable
 private fun EditDurationBottomSheet(
-    duration: Int,
-    durationRange: ClosedFloatingPointRange<Float>,
-    startDateMillis: Long,
+    budgetUiState: BlazeCampaignBudgetViewModel.BudgetUiState,
     onDurationChanged: (Int) -> Unit,
     onStartDateChanged: (Long) -> Unit,
-    onApplyTapped: () -> Unit = {},
+    onApplyTapped: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     if (showDatePicker) {
         DatePickerDialog(
-            currentDate = Date(startDateMillis),
+            currentDate = Date(budgetUiState.campaignStartDateMillis),
             onDateSelected = {
                 onStartDateChanged(it.time)
                 showDatePicker = false
@@ -323,7 +319,7 @@ private fun EditDurationBottomSheet(
         )
     }
 
-    var sliderPosition by remember { mutableStateOf(duration.toFloat()) }
+    var sliderPosition by remember { mutableStateOf(budgetUiState.durationInDays.toFloat()) }
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
@@ -347,7 +343,7 @@ private fun EditDurationBottomSheet(
                 .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
             value = sliderPosition,
-            valueRange = durationRange,
+            valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
             onValueChange = { sliderPosition = it },
             onValueChangeFinished = { onDurationChanged(sliderPosition.toInt()) },
             colors = SliderDefaults.colors(
@@ -369,7 +365,7 @@ private fun EditDurationBottomSheet(
                     .clip(RoundedCornerShape(4.dp))
                     .background(colorResource(id = color.divider_color))
                     .padding(8.dp),
-                text = Date(startDateMillis).formatToMMMddYYYY(),
+                text = Date(budgetUiState.campaignStartDateMillis).formatToMMMddYYYY(),
                 style = MaterialTheme.typography.body1,
             )
         }
@@ -394,12 +390,14 @@ private fun CampaignBudgetScreenPreview() {
             currencyCode = "USD",
             totalBudget = 35f,
             sliderValue = 35f,
-            budgetRange = 35f..350f,
+            budgetRangeMin = 5f,
+            budgetRangeMax = 35f,
             dailySpending = "$5",
             durationInDays = 7,
-            durationRangeDays = 1f..28f,
+            durationRangeMin = 1f,
+            durationRangeMax = 28f,
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
-                isLoaded = false,
+                isLoading = false,
                 impressionsMin = 0,
                 impressionsMax = 0
             ),
@@ -420,16 +418,4 @@ private fun CampaignBudgetScreenPreview() {
 @Composable
 private fun CampaignImpressionsBottomSheetPreview() {
     ImpressionsInfoBottomSheet(onDoneTapped = {})
-}
-
-@LightDarkThemePreviews
-@Composable
-private fun EditDurationBottomSheetPreview() {
-    EditDurationBottomSheet(
-        duration = 7,
-        startDateMillis = Date().time,
-        durationRange = 1f..28f,
-        onDurationChanged = {},
-        onStartDateChanged = {},
-    )
 }
