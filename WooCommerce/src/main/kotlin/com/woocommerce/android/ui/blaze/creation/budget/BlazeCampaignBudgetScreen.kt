@@ -222,9 +222,9 @@ private fun EditBudgetSection(
         if (state.forecast.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = 8.dp)
                     .align(Alignment.CenterHorizontally)
-                    .size(16.dp),
+                    .size(20.dp),
             )
         } else {
             Text(
