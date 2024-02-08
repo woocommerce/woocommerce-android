@@ -72,6 +72,7 @@ class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
     }
 
     private suspend fun fetchLocations(query: String) = blazeRepository.fetchLocations(query)
+        .getOrNull()
         ?.asSequence()
         ?.filterNot { location ->
             location.id in items.value.map { it.location.id }

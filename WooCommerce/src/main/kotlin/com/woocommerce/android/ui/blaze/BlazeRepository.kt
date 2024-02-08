@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeAdSuggestionEntity
+import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -30,33 +32,82 @@ class BlazeRepository @Inject constructor(
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
         .map { it.map { language -> Language(language.id, language.name) } }
 
-    suspend fun fetchLanguages() = blazeCampaignsStore.fetchBlazeTargetingLanguages()
+    suspend fun fetchLanguages(): Result<Unit> {
+        val result = blazeCampaignsStore.fetchBlazeTargetingLanguages(selectedSite.get())
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch languages: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+            else -> Result.success(Unit)
+        }
+    }
 
     fun observeDevices() = blazeCampaignsStore.observeBlazeTargetingDevices()
         .map { it.map { device -> Device(device.id, device.name) } }
 
-    suspend fun fetchDevices() = blazeCampaignsStore.fetchBlazeTargetingDevices()
+    suspend fun fetchDevices(): Result<Unit> {
+        val result = blazeCampaignsStore.fetchBlazeTargetingDevices(selectedSite.get())
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch devices: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+            else -> Result.success(Unit)
+        }
+    }
 
     fun observeInterests() = blazeCampaignsStore.observeBlazeTargetingTopics()
         .map { it.map { interest -> Interest(interest.id, interest.description) } }
 
-    suspend fun fetchInterests() = blazeCampaignsStore.fetchBlazeTargetingTopics()
+    suspend fun fetchInterests(): Result<Unit> {
+        val result = blazeCampaignsStore.fetchBlazeTargetingTopics(selectedSite.get())
 
-    suspend fun fetchLocations(query: String) = blazeCampaignsStore.fetchBlazeTargetingLocations(query).model
-        ?.map { location -> Location(location.id, location.name, location.parent?.name, location.type) }
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch interests: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+            else -> Result.success(Unit)
+        }
+    }
+
+    suspend fun fetchLocations(query: String): Result<List<Location>> {
+        val result = blazeCampaignsStore.fetchBlazeTargetingLocations(
+            selectedSite.get(),
+            query
+        )
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch locations: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+            else -> Result.success(
+                result.model?.map { location ->
+                    Location(location.id, location.name, location.parent?.name, location.type)
+                } ?: emptyList()
+            )
+        }
+    }
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
-    suspend fun getAdSuggestions(productId: Long): List<AiSuggestionForAd>? {
-        fun List<BlazeAdSuggestionEntity>.mapToUiModel(): List<AiSuggestionForAd> {
+    suspend fun fetchAdSuggestions(productId: Long): Result<List<AiSuggestionForAd>> {
+        fun List<BlazeAdSuggestion>.mapToUiModel(): List<AiSuggestionForAd> {
             return map { AiSuggestionForAd(it.tagLine, it.description) }
         }
 
-        val suggestions = blazeCampaignsStore.getBlazeAdSuggestions(selectedSite.get(), productId)
-        return if (suggestions.isNotEmpty()) {
-            suggestions.mapToUiModel()
-        } else {
-            blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId).model?.mapToUiModel()
+        val result = blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId)
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch ad suggestions: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+            else -> Result.success(result.model?.mapToUiModel() ?: emptyList())
         }
     }
 
