@@ -546,8 +546,11 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
-                        val detailContainer = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
-                        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams as LinearLayout.LayoutParams
+                        val detailContainer = childFragmentManager.findFragmentById(
+                            R.id.detail_nav_container
+                        ) as NavHostFragment
+                        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams
+                            as LinearLayout.LayoutParams
                         hideDetailPane(detailContainer, orderListViewLayoutParams)
                     }
 
