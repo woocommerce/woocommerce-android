@@ -99,8 +99,9 @@ private fun DomainSearchForm(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column(modifier = modifier
-        .background(MaterialTheme.colors.surface)
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface)
     ) {
         Column(
             modifier = modifier
@@ -168,7 +169,8 @@ private fun DomainSearchForm(
                     else -> {
                         item {
                             Text(
-                                text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
+                                text = stringResource(id = string.store_creation_domain_picker_suggestions_title)
+                                    .uppercase(),
                                 style = MaterialTheme.typography.caption,
                                 color = colorResource(id = R.color.color_on_surface_medium),
                             )
@@ -346,6 +348,7 @@ private fun DomainSuggestionItem(
                                 }
                             )
                         }
+
                         is OnSale -> {
                             Text(
                                 text = buildAnnotatedString {
@@ -371,6 +374,7 @@ private fun DomainSuggestionItem(
                                 }
                             )
                         }
+
                         is Paid -> {
                             Text(
                                 text = buildAnnotatedString {
@@ -382,6 +386,7 @@ private fun DomainSuggestionItem(
                                 }
                             )
                         }
+
                         is Free -> Unit
                     }
                 }
