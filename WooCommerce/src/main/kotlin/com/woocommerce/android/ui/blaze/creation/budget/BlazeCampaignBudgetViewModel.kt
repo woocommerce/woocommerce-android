@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class BlazeCampaignBudgetViewModel @Inject constructor(
@@ -139,7 +138,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     private fun formatDailySpend(dailySpend: Float) =
-        currencyFormatter.formatCurrency(dailySpend.roundToInt().toBigDecimal(), navArgs.currencyCode)
+        currencyFormatter.formatCurrencyRounded(dailySpend.toDouble(), navArgs.currencyCode)
 
     private fun getLoadingForecastUi() = ForecastUi(
         isLoading = true,
