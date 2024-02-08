@@ -17,11 +17,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -33,6 +33,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
@@ -80,7 +82,6 @@ fun DomainPickerScreen(viewModel: DomainSuggestionsViewModel, onDomainSelected: 
                 onDomainSuggestionSelected = onDomainSelected,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(padding)
             )
         }
@@ -97,16 +98,137 @@ private fun DomainSearchForm(
     modifier: Modifier = Modifier
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
-    val textColor = colorResource(id = R.color.color_on_surface_medium_selector)
 
-    Column(
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .padding(dimensionResource(id = R.dimen.major_125))
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+    Column(modifier = modifier
+        .background(MaterialTheme.colors.surface)
     ) {
+        Column(
+            modifier = modifier
+                .weight(1f)
+        ) {
+            val configuration = LocalConfiguration.current
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                SearchField(
+                    state,
+                    domainQuery,
+                    onDomainQueryChanged,
+                    keyboardController,
+                    modifier = Modifier.padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        top = dimensionResource(id = R.dimen.major_100)
+                    )
+                )
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        top = dimensionResource(id = R.dimen.major_100)
+                    )
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
+            ) {
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    item {
+                        SearchField(state, domainQuery, onDomainQueryChanged, keyboardController)
+                    }
+                }
+
+                when {
+                    state.loadingState == Loading -> item {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.major_200))
+                                    .align(Alignment.Center)
+                            )
+                        }
+                    }
+
+                    state.domainSuggestionsUi.isEmpty() && domainQuery.isBlank() -> item {
+                        Image(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            painter = painterResource(R.drawable.domain_example),
+                            contentDescription = null
+                        )
+                    }
+
+                    state.domainSuggestionsUi.isEmpty() -> item {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
+                    else -> {
+                        item {
+                            Text(
+                                text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
+                                style = MaterialTheme.typography.caption,
+                                color = colorResource(id = R.color.color_on_surface_medium),
+                            )
+                        }
+
+                        itemsIndexed(state.domainSuggestionsUi) { index, suggestion ->
+                            DomainSuggestionItem(
+                                domainSuggestion = suggestion,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        keyboardController?.hide()
+                                        onDomainSuggestionSelected(suggestion.domain)
+                                    }
+                            )
+                            if (index < state.domainSuggestionsUi.lastIndex) {
+                                Divider(
+                                    color = colorResource(id = R.color.divider_color),
+                                    thickness = dimensionResource(id = R.dimen.minor_10),
+                                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
+
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            onClick = onContinueClicked,
+            enabled = state.loadingState == Idle && state.selectedDomain.isNotEmpty(),
+        ) {
+            Text(text = stringResource(id = state.confirmButtonTitle))
+        }
+    }
+}
+
+@Composable
+private fun SearchField(
+    state: DomainSearchState,
+    domainQuery: String,
+    onDomainQueryChanged: (String) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+    ) {
+        val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
+        val textColor = colorResource(id = R.color.color_on_surface_medium_selector)
+
         if (state.freeUrl != null) {
             Text(
                 text = stringResource(id = string.domains_search_domains),
@@ -134,7 +256,7 @@ private fun DomainSearchForm(
                 style = MaterialTheme.typography.h5,
             )
             Text(
-                text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
+                text = stringResource(id = string.store_creation_domain_picker_subtitle),
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -143,7 +265,7 @@ private fun DomainSearchForm(
         WCSearchField(
             value = domainQuery,
             onValueChange = onDomainQueryChanged,
-            hint = stringResource(id = R.string.store_creation_domain_picker_hint),
+            hint = stringResource(id = string.store_creation_domain_picker_hint),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
@@ -158,77 +280,6 @@ private fun DomainSearchForm(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
         )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = dimensionResource(id = R.dimen.minor_100))
-        ) {
-            when {
-                state.loadingState == Loading -> CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                state.domainSuggestionsUi.isEmpty() && domainQuery.isBlank() ->
-                    ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
-
-                state.domainSuggestionsUi.isEmpty() ->
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions)
-                    )
-
-                else -> DomainSuggestionList(
-                    suggestions = state.domainSuggestionsUi,
-                    onDomainSuggestionSelected = onDomainSuggestionSelected,
-                    keyboardController = keyboardController
-                )
-            }
-        }
-        WCColoredButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onContinueClicked,
-            enabled = state.loadingState == Idle && state.selectedDomain.isNotEmpty(),
-        ) {
-            Text(text = stringResource(id = state.confirmButtonTitle))
-        }
-    }
-}
-
-@Composable
-fun ShowEmptyImage(modifier: Modifier) {
-    Image(
-        modifier = modifier,
-        painter = painterResource(R.drawable.domain_example), contentDescription = null
-    )
-}
-
-@Composable
-private fun DomainSuggestionList(
-    suggestions: List<DomainSuggestionUi>,
-    onDomainSuggestionSelected: (String) -> Unit,
-    keyboardController: SoftwareKeyboardController?
-) {
-    Column {
-        Text(
-            text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
-            style = MaterialTheme.typography.caption,
-            color = colorResource(id = R.color.color_on_surface_medium)
-        )
-        suggestions.forEachIndexed { index, suggestion ->
-            DomainSuggestionItem(
-                domainSuggestion = suggestion,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        keyboardController?.hide()
-                        onDomainSuggestionSelected(suggestion.domain)
-                    }
-            )
-            if (index < suggestions.lastIndex)
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
-                )
-        }
     }
 }
 
@@ -242,11 +293,7 @@ private fun DomainSuggestionItem(
     val yellowColor = colorResource(id = R.color.color_alert)
     val greenColor = colorResource(id = R.color.color_info)
     Row(
-        modifier = modifier
-            .padding(
-                top = dimensionResource(id = R.dimen.major_75),
-                bottom = dimensionResource(id = R.dimen.major_75)
-            ),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
@@ -355,10 +402,50 @@ private fun DomainSuggestionItem(
 @ExperimentalFoundationApi
 @Preview
 @Composable
+fun LoadingPickerPreview() {
+    WooThemeWithBackground {
+        DomainSearchForm(
+            domainQuery = "Test",
+            state = DomainSearchState(
+                confirmButtonTitle = R.string.domains_select_domain,
+                freeUrl = "www.cnn.com",
+                loadingState = Loading,
+                domainSuggestionsUi = listOf()
+            ),
+            onDomainQueryChanged = {},
+            onContinueClicked = {},
+            onDomainSuggestionSelected = {}
+        )
+    }
+}
+
+@ExperimentalFoundationApi
+@Preview
+@Composable
 fun EmptyDomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
-            domainQuery = "White Christmas Trees",
+            domainQuery = "Test",
+            state = DomainSearchState(
+                confirmButtonTitle = R.string.domains_select_domain,
+                freeUrl = "www.cnn.com",
+                loadingState = Idle,
+                domainSuggestionsUi = listOf()
+            ),
+            onDomainQueryChanged = {},
+            onContinueClicked = {},
+            onDomainSuggestionSelected = {}
+        )
+    }
+}
+
+@ExperimentalFoundationApi
+@Preview
+@Composable
+fun NoResultsPickerPreview() {
+    WooThemeWithBackground {
+        DomainSearchForm(
+            domainQuery = "",
             state = DomainSearchState(
                 confirmButtonTitle = R.string.domains_select_domain,
                 freeUrl = "www.cnn.com",
@@ -382,7 +469,7 @@ fun EmptyDomainPickerPreview() {
 fun DomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
-            domainQuery = "White Christmas Trees",
+            domainQuery = "",
             state = DomainSearchState(
                 confirmButtonTitle = R.string.domains_select_domain,
                 freeUrl = "www.cnn.com",
