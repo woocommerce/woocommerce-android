@@ -12,7 +12,7 @@
         style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:elevation="@dimen/minor_50"
+        android:elevation="@dimen/appbar_elevation"
         app:layout_collapseMode="pin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
