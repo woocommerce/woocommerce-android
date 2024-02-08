@@ -176,7 +176,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 )
             ) + taxLines.map {
                 TotalsSectionsState.Line.SimpleSmall(
-                    label = "${it.label} · ${it.ratePercent}",
+                    label = "${it.label} · ${it.ratePercent}%",
                     value = bigDecimalFormatter(BigDecimal(it.taxTotal))
                 )
             } + TotalsSectionsState.Line.LearnMore(

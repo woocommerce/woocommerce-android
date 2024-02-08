@@ -172,7 +172,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             blazeRepository.fetchDevices()
             blazeRepository.fetchInterests()
 
-            blazeRepository.getAdSuggestions(navArgs.productId).let { suggestions ->
+            blazeRepository.fetchAdSuggestions(navArgs.productId).getOrNull().let { suggestions ->
                 adDetails.update {
                     AdDetails(
                         productId = navArgs.productId,
