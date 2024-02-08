@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsViewState
 import com.woocommerce.android.ui.analytics.hub.GetReportUrl
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
@@ -700,7 +701,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `when site is a wpcom and see report is pressed then open a wpcom webview`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
         sut = givenAViewModel()
-        sut.onSeeReport("https://report-url")
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
     }
 
@@ -708,8 +709,25 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `when site is not a wpcom and see report is pressed then open the default webview`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(false) })
         sut = givenAViewModel()
-        sut.onSeeReport("https://report-url")
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+    }
+
+    @Test
+    fun `when see report is pressed then track see report event`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        verify(tracker).track(
+            AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_PERIOD to WEEK_TO_DATE.identifier,
+                AnalyticsTracker.KEY_REPORT to ReportCard.Revenue.name.lowercase(),
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
+            )
+        )
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {

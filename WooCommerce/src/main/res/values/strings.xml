@@ -3882,7 +3882,13 @@
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
     <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
-
+    <!--
+    Blaze edit ad destination
+    -->
+    <string name="blaze_campaign_edit_ad_destination_empty_url_message">Ad link destination</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Enter manually</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">Destination URL</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL parameters</string>
     <!--
     Highlights tooltip
     -->

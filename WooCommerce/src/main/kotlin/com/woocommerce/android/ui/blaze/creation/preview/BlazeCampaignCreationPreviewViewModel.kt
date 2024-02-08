@@ -243,8 +243,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         destinationUrl = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
             displayValue = targetUrl,
-            onItemSelected = { /* TODO Add destination url selection */ },
             maxLinesValue = 1,
+            onItemSelected = {
+                triggerEvent(NavigateToAdDestinationScreen)
+            }
         )
     )
 
@@ -268,13 +270,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         durationInDays = DEFAULT_CAMPAIGN_DURATION,
         startDate = Date().apply { time += BlazeRepository.ONE_DAY_IN_MILLIS }, // By default start tomorrow
     )
-
-    data class NavigateToEditAdScreen(
-        val productId: Long,
-        val tagLine: String,
-        val description: String,
-        val campaignImageUrl: String?
-    ) : MultiLiveEvent.Event()
 
     data class CampaignPreviewUiState(
         val adDetails: AdDetailsUi,
@@ -312,7 +307,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val durationInDays: Int,
         val campaignStartDateMillis: Long,
         val currencyCode: String
-    ) : MultiLiveEvent.Event()
+    ) : MultiLiveEvent.Event()object NavigateToAdDestinationScreen : MultiLiveEvent.Event()
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>
@@ -320,5 +315,12 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     data class NavigateToTargetLocationSelectionScreen(
         val locations: List<Location>
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToEditAdScreen(
+        val productId: Long,
+        val tagLine: String,
+        val description: String,
+        val campaignImageUrl: String?
     ) : MultiLiveEvent.Event()
 }
