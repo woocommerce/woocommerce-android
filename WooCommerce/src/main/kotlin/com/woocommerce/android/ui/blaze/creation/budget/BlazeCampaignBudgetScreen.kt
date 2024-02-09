@@ -219,19 +219,27 @@ private fun EditBudgetSection(
                 contentDescription = null
             )
         }
+        Spacer(modifier = Modifier.height(6.dp))
         if (state.forecast.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
-                    .padding(top = 8.dp)
                     .align(Alignment.CenterHorizontally)
                     .size(20.dp),
             )
         } else {
-            Text(
-                text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp,
-            )
+            if (state.forecast.isError) {
+                Text(
+                    modifier = Modifier.clickable { onBudgetChangeFinished() },
+                    text = stringResource(id = R.string.blaze_campaign_budget_error_fetching_forecast),
+                    color = colorResource(id = color.color_on_surface_medium)
+                )
+            } else {
+                Text(
+                    text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 24.sp,
+                )
+            }
         }
         Spacer(modifier = Modifier.height(24.dp))
     }
@@ -415,7 +423,8 @@ private fun CampaignBudgetScreenPreview() {
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoading = false,
                 impressionsMin = 0,
-                impressionsMax = 0
+                impressionsMax = 0,
+                isError = false
             ),
             campaignStartDateMillis = Date().time,
             campaignDurationDates = "Dec 13 - Dec 20, 2023",

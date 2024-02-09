@@ -156,8 +156,16 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 campaignForecastState.update {
                     it.copy(
                         isLoading = false,
+                        isError = false,
                         impressionsMin = fetchAdForecastResult.minImpressions,
                         impressionsMax = fetchAdForecastResult.maxImpressions
+                    )
+                }
+            }.onFailure {
+                campaignForecastState.update {
+                    it.copy(
+                        isLoading = false,
+                        isError = true
                     )
                 }
             }
@@ -175,7 +183,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     private fun getLoadingForecastUi() = ForecastUi(
         isLoading = true,
         impressionsMin = 0,
-        impressionsMax = 0
+        impressionsMax = 0,
+        isError = false
     )
 
     @Parcelize
@@ -198,9 +207,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     @Parcelize
     data class ForecastUi(
-        val isLoading: Boolean = false,
+        val isLoading: Boolean,
         val impressionsMin: Int,
-        val impressionsMax: Int
+        val impressionsMax: Int,
+        val isError: Boolean
     ) : Parcelable
 
     @Parcelize
