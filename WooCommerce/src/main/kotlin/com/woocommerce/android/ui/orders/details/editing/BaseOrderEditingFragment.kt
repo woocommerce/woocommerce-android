@@ -3,13 +3,10 @@ package com.woocommerce.android.ui.orders.details.editing
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
-import androidx.core.view.MenuProvider
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
