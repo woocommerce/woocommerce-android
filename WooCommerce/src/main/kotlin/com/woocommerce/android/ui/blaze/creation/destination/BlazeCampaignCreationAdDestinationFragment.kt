@@ -49,7 +49,7 @@ class BlazeCampaignCreationAdDestinationFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<String>(BLAZE_DESTINATION_PARAMETERS_RESULT) { url ->
-            viewModel.onDestinationUrlChanged(url)
+            viewModel.onTargetUrlUpdated(url)
         }
     }
 }

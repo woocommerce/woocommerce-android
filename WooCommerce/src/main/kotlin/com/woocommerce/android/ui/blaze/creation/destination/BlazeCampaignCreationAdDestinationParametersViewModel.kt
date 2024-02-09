@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.blaze.creation.destination
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.util.getBaseUrl
+import com.woocommerce.android.util.joinToUrl
+import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -22,8 +25,8 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            baseUrl = getBaseUrl(navArgs.url),
-            parameters = parseParameters(navArgs.url)
+            baseUrl = navArgs.url.getBaseUrl(),
+            parameters = navArgs.url.parseParameters()
         )
     )
 
@@ -48,31 +51,14 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
     }
 
-    private fun getBaseUrl(url: String): String {
-        return url.split("?").getOrNull(0) ?: url
-    }
-
-    private fun parseParameters(url: String): Map<String, String> {
-        val parameters = url.split("?").getOrNull(1) ?: return emptyMap()
-        return parameters.split("&").associate {
-            val (key, value) = it.split("=")
-            key to value
-        }
-    }
-
     data class ViewState(
         private val baseUrl: String,
         val parameters: Map<String, String>
     ) {
-        val url: String
-            get() = buildString {
-                append(baseUrl)
-                append("?")
-                append(parameters.entries.joinToString("&") { (key, value) ->
-                    "$key=$value"
-                })
-            }
-        
+        val url by lazy {
+            parameters.joinToUrl(baseUrl)
+        }
+
         val charactersRemaining: Int
             get() = MAX_CHARACTERS - url.length
     }

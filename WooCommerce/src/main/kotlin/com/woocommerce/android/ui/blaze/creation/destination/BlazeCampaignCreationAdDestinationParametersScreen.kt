@@ -77,7 +77,7 @@ fun AdDestinationParametersScreen(
                 .padding(paddingValues)
                 .fillMaxSize(),
         ) {
-            item {
+            item(key = "header") {
                 WCTextButton(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,7 +90,7 @@ fun AdDestinationParametersScreen(
 
             itemsIndexed(
                 items = viewState.parameters.entries.toList(),
-                key = { _, item -> item.key }
+                key = { _, item -> "key${item.key}" }
             ) { index, (key, value) ->
                 Column(
                     modifier = Modifier
@@ -142,34 +142,40 @@ fun AdDestinationParametersScreen(
                 }
             }
 
-            item {
-                Text(
+            item(key = "footer") {
+                Column(
                     modifier = Modifier
-                        .padding(
-                            start = dimensionResource(id = R.dimen.major_100),
-                            end = dimensionResource(id = R.dimen.major_100),
-                            top = dimensionResource(id = R.dimen.major_100),
-                            bottom = dimensionResource(id = R.dimen.minor_100)
+                        .animateItemPlacement()
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(
+                                start = dimensionResource(id = R.dimen.major_100),
+                                end = dimensionResource(id = R.dimen.major_100),
+                                top = dimensionResource(id = R.dimen.major_100),
+                                bottom = dimensionResource(id = R.dimen.minor_100)
+                            ),
+                        text = stringResource(
+                            R.string.blaze_campaign_edit_ad_characters_remaining,
+                            viewState.charactersRemaining
                         ),
-                    text = stringResource(
-                        R.string.blaze_campaign_edit_ad_characters_remaining,
-                        viewState.charactersRemaining
-                    ),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium)
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.major_100),
+                        style = MaterialTheme.typography.caption,
+                        color = colorResource(id = R.color.color_on_surface_medium)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = dimensionResource(id = R.dimen.major_100),
+                            ),
+                        text = stringResource(
+                            R.string.blaze_campaign_edit_ad_destination_destination_with_parameters,
+                            viewState.url
                         ),
-                    text = stringResource(
-                        R.string.blaze_campaign_edit_ad_destination_destination_with_parameters,
-                        viewState.url
-                    ),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium)
-                )
+                        style = MaterialTheme.typography.caption,
+                        color = colorResource(id = R.color.color_on_surface_medium)
+                    )
+                }
             }
         }
     }
