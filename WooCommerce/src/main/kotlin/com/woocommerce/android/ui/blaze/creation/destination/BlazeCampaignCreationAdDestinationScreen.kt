@@ -84,7 +84,8 @@ fun AdDestinationScreen(
             Divider()
             AdDestinationProperty(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
-                value = viewState.parameters,
+                value = viewState.parameters
+                    ?: stringResource(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message),
                 onPropertyTapped = onParametersPropertyTapped
             )
         }
@@ -221,10 +222,10 @@ fun PreviewAdDestinationScreen() {
     WooThemeWithBackground {
         AdDestinationScreen(
             viewState = ViewState(
-                parameters = "utm_source=woocommerce\nutm_medium=android\nutm_campaign=blaze",
                 productUrl = "https://woocommerce.com/products/1",
                 siteUrl = "https://woocommerce.com",
-                targetUrl = "https://woocommerce.com/products/12",
+                targetUrl = "https://woocommerce.com/products/12" +
+                    "?utm_source=woocommerce_android&utm_medium=ad&utm_campaign=blaze",
                 isUrlDialogVisible = true
             ),
             onBackPressed = {},
