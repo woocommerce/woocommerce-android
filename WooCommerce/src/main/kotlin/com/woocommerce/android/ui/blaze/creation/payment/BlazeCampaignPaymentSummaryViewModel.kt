@@ -63,6 +63,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             val onClick: () -> Unit
         ) : PaymentMethodState {
             val selectedPaymentMethod = paymentMethodsData.savedPaymentMethods.firstOrNull()
+            val isPaymentMethodSelected = selectedPaymentMethod != null
         }
 
         data class Error(val onRetry: () -> Unit) : PaymentMethodState

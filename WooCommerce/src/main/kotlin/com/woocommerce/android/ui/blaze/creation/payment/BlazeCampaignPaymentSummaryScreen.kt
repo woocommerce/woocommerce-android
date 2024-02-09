@@ -94,6 +94,8 @@ fun BlazeCampaignPaymentSummaryScreen(
             WCColoredButton(
                 onClick = { /*TODO*/ },
                 text = stringResource(id = R.string.blaze_campaign_payment_summary_submit_campaign),
+                enabled = (state.paymentMethodState as? BlazeCampaignPaymentSummaryViewModel.PaymentMethodState.Success)
+                    ?.isPaymentMethodSelected == true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
