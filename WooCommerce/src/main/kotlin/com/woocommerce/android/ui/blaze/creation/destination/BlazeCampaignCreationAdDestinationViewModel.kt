@@ -2,11 +2,10 @@ package com.woocommerce.android.ui.blaze.creation.destination
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    resourceProvider: ResourceProvider,
     selectedSite: SelectedSite,
     productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedStateHandle) {
@@ -27,11 +25,9 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            parameters = resourceProvider
-                .getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message),
             productUrl = productUrl,
             siteUrl = selectedSite.get().url,
-            targetUrl = navArgs.targetUrl,
+            targetUrl = navArgs.targetUrl + "?utm_source=woocommerce_android&utm_medium=ad&utm_campaign=blaze",
             isUrlDialogVisible = false
         )
     )
@@ -47,7 +43,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     }
 
     fun onParameterPropertyTapped() {
-        /* TODO */
+        triggerEvent(NavigateToParametersScreen(_viewState.value.targetUrl))
     }
 
     fun onDestinationUrlChanged(destinationUrl: String) {
@@ -58,10 +54,19 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val parameters: String,
         val productUrl: String,
         val siteUrl: String,
         val targetUrl: String,
         val isUrlDialogVisible: Boolean
-    )
+    ) {
+        val parameters: String?
+            get() = getParameters(targetUrl)
+
+        private fun getParameters(url: String): String? {
+            val parameters = url.split("?").getOrNull(1) ?: return null
+            return parameters.replace("&", "\n")
+        }
+    }
+
+    data class NavigateToParametersScreen(val url: String) : MultiLiveEvent.Event()
 }
