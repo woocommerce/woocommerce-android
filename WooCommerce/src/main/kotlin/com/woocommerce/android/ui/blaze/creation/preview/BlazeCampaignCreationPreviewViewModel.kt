@@ -10,6 +10,8 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
 import com.woocommerce.android.ui.blaze.Device
 import com.woocommerce.android.ui.blaze.Interest
 import com.woocommerce.android.ui.blaze.Language
@@ -137,6 +139,18 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onBudgetAndDurationUpdated(totalBudget: Float, durationInDays: Int, campaignStartDateMillis: Long) {
+        budget.update {
+            Budget(
+                totalBudget = totalBudget,
+                spentBudget = 0f,
+                currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
+                durationInDays = durationInDays,
+                startDate = Date(campaignStartDateMillis)
+            )
+        }
+    }
+
     fun onTargetSelectionUpdated(targetType: BlazeTargetType, selectedIds: List<String>) {
         launch {
             when (targetType) {
@@ -181,7 +195,16 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         budget = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
-            onItemSelected = { triggerEvent(NavigateToBudgetScreen) },
+            onItemSelected = {
+                triggerEvent(
+                    NavigateToBudgetScreen(
+                        totalBudget = budget.totalBudget,
+                        durationInDays = budget.durationInDays,
+                        campaignStartDateMillis = budget.startDate.time,
+                        currencyCode = budget.currencyCode
+                    )
+                )
+            },
         ),
         targetDetails = listOf(
             CampaignDetailItemUi(
@@ -241,10 +264,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     private fun getDefaultBudget() = Budget(
-        totalBudget = BlazeRepository.DEFAULT_CAMPAIGN_TOTAL_BUDGET,
+        totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND,
         spentBudget = 0f,
         currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
-        durationInDays = BlazeRepository.DEFAULT_CAMPAIGN_DURATION,
+        durationInDays = DEFAULT_CAMPAIGN_DURATION,
         startDate = Date().apply { time += BlazeRepository.ONE_DAY_IN_MILLIS }, // By default start tomorrow
     )
 
@@ -279,13 +302,15 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val maxLinesValue: Int? = null,
     )
 
-    object NavigateToBudgetScreen : MultiLiveEvent.Event()
-
-    data class NavigateToAdDestinationScreen(
+    data class NavigateToBudgetScreen(
+        val totalBudget: Float,
+        val durationInDays: Int,
+        val campaignStartDateMillis: Long,
+        val currencyCode: String
+    ) : MultiLiveEvent.Event()data class NavigateToAdDestinationScreen(
         val targetUrl: String,
         val productId: Long
     ) : MultiLiveEvent.Event()
-
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>
