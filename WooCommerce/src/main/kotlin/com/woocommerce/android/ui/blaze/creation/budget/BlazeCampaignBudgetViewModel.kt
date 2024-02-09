@@ -146,7 +146,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         budgetUiState.update {
             it.copy(totalBudget = roundedBudgetToDurationMultiple.toFloat())
         }
-
     }
 
     private fun fetchAdForecast() {
