@@ -72,32 +72,45 @@
     <fragment
         android:id="@+id/blazeCampaignCreationEditAdFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment"
-        android:label="BlazeCampaignCreationEditAdFragment" >
+        android:label="BlazeCampaignCreationEditAdFragment">
         <argument
             android:name="productId"
             app:argType="long" />
         <argument
             android:name="tagline"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
         <argument
             android:name="description"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
         <argument
             android:name="adImageUrl"
-            app:argType="string"
             android:defaultValue="@null"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignBudgetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
-        android:label="BlazeCampaignBudgetFragment" />
+        android:label="BlazeCampaignBudgetFragment">
+        <argument
+            android:name="totalBudget"
+            app:argType="float" />
+        <argument
+            android:name="durationInDays"
+            app:argType="integer" />
+        <argument
+            android:name="campaignStartDateMillis"
+            app:argType="long" />
+        <argument
+            android:name="currencyCode"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/blazeCampaignTargetSelectionFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment"
-        android:label="BlazeCampaignTargetSelectionFragment" >
+        android:label="BlazeCampaignTargetSelectionFragment">
         <argument
             android:name="targetType"
             app:argType="com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType" />
