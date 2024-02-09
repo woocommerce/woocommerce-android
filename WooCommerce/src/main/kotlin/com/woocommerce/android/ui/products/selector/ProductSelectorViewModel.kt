@@ -377,7 +377,7 @@ class ProductSelectorViewModel @Inject constructor(
             isVariable() && numVariations > 0
 
         if (item.hasVariations()) {
-            val variationSelectorScreenMode = when(navArgs.selectionMode) {
+            val variationSelectorScreenMode = when (navArgs.selectionMode) {
                 SelectionMode.SINGLE, SelectionMode.MULTIPLE -> VariationSelectorViewModel.ScreenMode.FULLSCREEN
                 SelectionMode.LIVE -> VariationSelectorViewModel.ScreenMode.DIALOG
             }

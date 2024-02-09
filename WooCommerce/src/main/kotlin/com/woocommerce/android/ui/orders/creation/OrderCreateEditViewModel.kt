@@ -8,6 +8,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -167,7 +168,6 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import androidx.lifecycle.map
 
 @HiltViewModel
 @Suppress("LargeClass")
