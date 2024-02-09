@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class BlazeCampaignBudgetViewModel @Inject constructor(
@@ -39,7 +40,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         BudgetUiState(
             currencyCode = navArgs.currencyCode,
             totalBudget = navArgs.totalBudget,
-            sliderValue = navArgs.totalBudget,
             budgetRangeMin = navArgs.durationInDays * CAMPAIGN_MINIMUM_DAILY_SPEND,
             budgetRangeMax = navArgs.durationInDays * CAMPAIGN_MAXIMUM_DAILY_SPEND,
             dailySpending = formatDailySpend(dailySpend = navArgs.totalBudget / navArgs.durationInDays),
@@ -102,14 +102,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     fun onBudgetUpdated(sliderValue: Float) {
-        budgetUiState.update { it.copy(sliderValue = sliderValue) }
-        if (sliderValue.toInt().mod(budgetUiState.value.durationInDays) == 0) {
-            budgetUiState.update {
-                it.copy(
-                    totalBudget = sliderValue,
-                    dailySpending = formatDailySpend(sliderValue / it.durationInDays)
-                )
-            }
+        budgetUiState.update {
+            it.copy(
+                totalBudget = sliderValue,
+                dailySpending = formatDailySpend(sliderValue / it.durationInDays)
+            )
         }
     }
 
@@ -123,7 +120,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 budgetRangeMax = duration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
                 dailySpending = formatDailySpend(currentDailyExpend),
                 totalBudget = newTotalBudget,
-                sliderValue = newTotalBudget,
                 campaignDurationDates = getCampaignDurationDisplayDate(it.campaignStartDateMillis, duration)
             )
         }
@@ -144,6 +140,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     fun onBudgetChangeFinished() {
         fetchAdForecast()
+        val roundedBudgetToDurationMultiple =
+            (budgetUiState.value.totalBudget / budgetUiState.value.durationInDays).roundToInt() *
+                budgetUiState.value.durationInDays
+        budgetUiState.update {
+            it.copy(totalBudget = roundedBudgetToDurationMultiple.toFloat())
+        }
+
     }
 
     private fun fetchAdForecast() {
@@ -192,7 +195,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     data class BudgetUiState(
         val currencyCode: String,
         val totalBudget: Float,
-        val sliderValue: Float,
         val budgetRangeMin: Float,
         val budgetRangeMax: Float,
         val dailySpending: String,
