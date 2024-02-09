@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -136,7 +137,7 @@ class BlazeRepository @Inject constructor(
             selectedSite.get(),
             startDate,
             Date(startDate.time + campaignDurationDays * ONE_DAY_IN_MILLIS),
-            totalBudget.toDouble(),
+            totalBudget.roundToInt().toDouble(),
         )
         return when {
             result.isError -> {
