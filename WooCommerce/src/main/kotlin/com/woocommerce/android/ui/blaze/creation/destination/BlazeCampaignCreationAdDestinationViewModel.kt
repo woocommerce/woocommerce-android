@@ -22,8 +22,6 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
-    private val targetUrlPrompt = resourceProvider
-        .getString(R.string.blaze_campaign_edit_ad_destination_empty_url_message)
     private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId))
         .permalink
 
