@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorViewModel.ShowCreatePackageScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -26,6 +27,9 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
     companion object {
         const val SELECTED_PACKAGE_RESULT = "selected-package"
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     val viewModel: ShippingPackageSelectorViewModel by viewModels()

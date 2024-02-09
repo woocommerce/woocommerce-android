@@ -26,6 +26,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InputField
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
@@ -65,6 +66,9 @@ class EditShippingLabelAddressFragment :
     private var progressDialog: CustomProgressDialog? = null
 
     val viewModel: EditShippingLabelAddressViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private var screenTitle = ""
         set(value) {
@@ -184,7 +188,7 @@ class EditShippingLabelAddressFragment :
                 binding.countrySpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
             }
             new.title?.takeIfNotEqualTo(old?.title) {
-                screenTitle = getString(it)
+                binding.toolbar.title = getString(it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
                 if (it.isBlank()) {

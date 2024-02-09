@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
@@ -50,6 +51,9 @@ class ShippingLabelAddressSuggestionFragment :
             updateActivityTitle()
         }
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -70,7 +74,6 @@ class ShippingLabelAddressSuggestionFragment :
     }
 
     private fun setupToolbar() {
-//        binding.toolbar.title = getString(screenTitle)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
             R.drawable.ic_back_24dp
@@ -83,8 +86,6 @@ class ShippingLabelAddressSuggestionFragment :
     private fun initializeViewModel() {
         subscribeObservers()
     }
-
-    override fun getFragmentTitle() = getString(screenTitle)
 
     @SuppressLint("SetTextI18n")
     private fun subscribeObservers() {
@@ -104,7 +105,7 @@ class ShippingLabelAddressSuggestionFragment :
                 binding.useSuggestedAddressButton.isEnabled = it
             }
             new.title?.takeIfNotEqualTo(old?.title) {
-                screenTitle = it
+                binding.toolbar.title = getString(it)
             }
         }
 
