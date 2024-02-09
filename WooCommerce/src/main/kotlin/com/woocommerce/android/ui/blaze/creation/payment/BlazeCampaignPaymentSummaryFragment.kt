@@ -41,7 +41,8 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         BlazeCampaignPaymentSummaryFragmentDirections
                             .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignPaymentMethodsListFragment(
-                                event.paymentMethodsData
+                                paymentMethodsData = event.paymentMethodsData,
+                                selectedPaymentMethodId = event.selectedPaymentMethodId
                             )
                     )
                 }

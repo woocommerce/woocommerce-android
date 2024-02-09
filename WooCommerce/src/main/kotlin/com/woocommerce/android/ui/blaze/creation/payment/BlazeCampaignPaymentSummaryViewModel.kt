@@ -43,7 +43,15 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
                 onSuccess = { paymentMethodsData ->
                     PaymentMethodState.Success(
                         paymentMethodsData = paymentMethodsData,
-                        onClick = { triggerEvent(NavigateToPaymentsListScreen(paymentMethodsData)) }
+                        onClick = {
+                            triggerEvent(
+                                NavigateToPaymentsListScreen(
+                                    paymentMethodsData = paymentMethodsData,
+                                    // TODO we should handle selecting different payment methods
+                                    selectedPaymentMethodId = paymentMethodsData.savedPaymentMethods.firstOrNull()?.id
+                                )
+                            )
+                        }
                     )
                 },
                 onFailure = { PaymentMethodState.Error { fetchPaymentMethodData() } }
@@ -70,6 +78,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     }
 
     data class NavigateToPaymentsListScreen(
-        val paymentMethodsData: PaymentMethodsData
+        val paymentMethodsData: PaymentMethodsData,
+        val selectedPaymentMethodId: String?
     ) : MultiLiveEvent.Event()
 }

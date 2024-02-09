@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -65,6 +66,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList -> {
                 PaymentMethodsList(
                     paymentMethods = viewState.paymentMethods,
+                    selectedPaymentMethod = viewState.selectedPaymentMethod!!,
                     onPaymentMethodClicked = viewState.onPaymentMethodClicked,
                     onAddPaymentMethodClicked = viewState.onAddPaymentMethodClicked,
                     modifier = Modifier.padding(paddingValues)
@@ -82,10 +84,10 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
     }
 }
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 private fun PaymentMethodsList(
     paymentMethods: List<PaymentMethod>,
+    selectedPaymentMethod: PaymentMethod,
     onPaymentMethodClicked: (PaymentMethod) -> Unit,
     onAddPaymentMethodClicked: () -> Unit,
     modifier: Modifier
@@ -102,6 +104,7 @@ private fun PaymentMethodsList(
         } else {
             PaymentMethodsListView(
                 paymentMethods = paymentMethods,
+                selectedPaymentMethod = selectedPaymentMethod,
                 onPaymentMethodClicked = onPaymentMethodClicked,
                 onAddPaymentMethodClicked = onAddPaymentMethodClicked,
                 modifier = modifier
@@ -128,6 +131,7 @@ private fun PaymentMethodsHeader(modifier: Modifier = Modifier) {
 @Composable
 private fun PaymentMethodsListView(
     paymentMethods: List<PaymentMethod>,
+    selectedPaymentMethod: PaymentMethod,
     onPaymentMethodClicked: (PaymentMethod) -> Unit,
     onAddPaymentMethodClicked: () -> Unit,
     modifier: Modifier
@@ -138,7 +142,7 @@ private fun PaymentMethodsListView(
                 PaymentMethodItem(
                     paymentMethod = paymentMethod,
                     onPaymentMethodClicked = { onPaymentMethodClicked(paymentMethod) },
-                    isSelected = true
+                    isSelected = paymentMethod == selectedPaymentMethod
                 )
             }
             Divider()
@@ -243,6 +247,7 @@ private fun EmptyPaymentMethodsListPreview() {
         BlazeCampaignPaymentMethodsListScreen(
             viewState = BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList(
                 paymentMethods = emptyList(),
+                selectedPaymentMethod = null,
                 onPaymentMethodClicked = {},
                 onAddPaymentMethodClicked = {},
                 onDismiss = {}
@@ -255,23 +260,27 @@ private fun EmptyPaymentMethodsListPreview() {
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun PaymentMethodsListPreview() {
+    val paymentMethods = remember {
+        listOf(
+            PaymentMethod(
+                id = "1",
+                name = "Visa",
+                subtitle = "John Doe",
+                type = PaymentMethod.PaymentMethodType.CreditCard(CreditCardType.VISA)
+            ),
+            PaymentMethod(
+                id = "2",
+                name = "MasterCard",
+                subtitle = "John Doe",
+                type = PaymentMethod.PaymentMethodType.CreditCard(CreditCardType.MASTERCARD)
+            )
+        )
+    }
     WooThemeWithBackground {
         BlazeCampaignPaymentMethodsListScreen(
             viewState = BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList(
-                paymentMethods = listOf(
-                    PaymentMethod(
-                        id = "1",
-                        name = "Visa",
-                        subtitle = "John Doe",
-                        type = PaymentMethod.PaymentMethodType.CreditCard(CreditCardType.VISA)
-                    ),
-                    PaymentMethod(
-                        id = "2",
-                        name = "MasterCard",
-                        subtitle = "John Doe",
-                        type = PaymentMethod.PaymentMethodType.CreditCard(CreditCardType.MASTERCARD)
-                    )
-                ),
+                paymentMethods = paymentMethods,
+                selectedPaymentMethod = paymentMethods.first(),
                 onPaymentMethodClicked = {},
                 onAddPaymentMethodClicked = {},
                 onDismiss = {}

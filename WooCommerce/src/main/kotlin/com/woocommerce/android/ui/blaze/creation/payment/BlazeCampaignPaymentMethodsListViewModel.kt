@@ -28,6 +28,9 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
 
     private fun paymentMethodsListState(): ViewState = ViewState.PaymentMethodsList(
         paymentMethods = navArgs.paymentMethodsData.savedPaymentMethods,
+        selectedPaymentMethod = navArgs.paymentMethodsData.savedPaymentMethods.firstOrNull {
+            it.id == navArgs.selectedPaymentMethodId
+        },
         onPaymentMethodClicked = { /* TODO */ },
         onAddPaymentMethodClicked = {
             _viewState.value = addPaymentMethodWebView()
@@ -46,6 +49,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
 
         data class PaymentMethodsList(
             val paymentMethods: List<BlazeRepository.PaymentMethod>,
+            val selectedPaymentMethod: BlazeRepository.PaymentMethod?,
             val onPaymentMethodClicked: (BlazeRepository.PaymentMethod) -> Unit,
             val onAddPaymentMethodClicked: () -> Unit,
             override val onDismiss: () -> Unit

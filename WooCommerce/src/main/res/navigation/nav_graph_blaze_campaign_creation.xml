@@ -154,5 +154,9 @@
         <argument
             android:name="paymentMethodsData"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$PaymentMethodsData" />
+        <argument
+            android:name="selectedPaymentMethodId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>
