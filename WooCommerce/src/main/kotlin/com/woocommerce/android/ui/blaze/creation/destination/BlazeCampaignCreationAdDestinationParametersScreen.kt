@@ -97,13 +97,14 @@ fun AdDestinationParametersScreen(
                         .animateItemPlacement()
                         .fillMaxWidth()
                 ) {
-                    Row(modifier = Modifier
-                        .clickable { onParameterTapped(key) }
-                        .padding(
-                            start = dimensionResource(id = R.dimen.major_100),
-                            top = dimensionResource(id = R.dimen.minor_100),
-                            bottom = dimensionResource(id = R.dimen.minor_100)
-                        ),
+                    Row(
+                        modifier = Modifier
+                            .clickable { onParameterTapped(key) }
+                            .padding(
+                                start = dimensionResource(id = R.dimen.major_100),
+                                top = dimensionResource(id = R.dimen.minor_100),
+                                bottom = dimensionResource(id = R.dimen.minor_100)
+                            ),
                         verticalAlignment = CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {

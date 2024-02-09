@@ -42,7 +42,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     @Suppress("UNUSED_PARAMETER")
     fun onParameterTapped(key: String) {
-        /* TODO: */
+        /* TODO */
     }
 
     fun onDeleteParameterTapped(key: String) {
