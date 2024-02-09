@@ -147,22 +147,17 @@ class BlazeRepository @Inject constructor(
                             PaymentMethod(
                                 id = paymentMethod.id,
                                 name = paymentMethod.name,
-                                subtitle = when (paymentMethod.info) {
+                                info = when (paymentMethod.info) {
                                     is PaymentMethodInfo.CreditCardInfo ->
-                                        (paymentMethod.info as PaymentMethodInfo.CreditCardInfo).cardHolderName
-
-                                    PaymentMethodInfo.Unknown -> null
-                                },
-                                type = when (paymentMethod.info) {
-                                    is PaymentMethodInfo.CreditCardInfo ->
-                                        PaymentMethod.PaymentMethodType.CreditCard(
-                                            CreditCardType.fromString(
-                                                (paymentMethod.info as PaymentMethodInfo.CreditCardInfo).type
+                                        (paymentMethod.info as PaymentMethodInfo.CreditCardInfo).let {
+                                            PaymentMethod.PaymentMethodInfo.CreditCard(
+                                                creditCardType = CreditCardType.fromString(it.type),
+                                                cardHolderName = it.cardHolderName
                                             )
-                                        )
+                                        }
 
                                     PaymentMethodInfo.Unknown -> {
-                                        PaymentMethod.PaymentMethodType.Unknown
+                                        PaymentMethod.PaymentMethodInfo.Unknown
                                     }
                                 }
                             )
@@ -212,17 +207,17 @@ class BlazeRepository @Inject constructor(
     data class PaymentMethod(
         val id: String,
         val name: String,
-        val subtitle: String?,
-        val type: PaymentMethodType
+        val info: PaymentMethodInfo
     ) : Parcelable {
-        sealed interface PaymentMethodType : Parcelable {
+        sealed interface PaymentMethodInfo : Parcelable {
             @Parcelize
             data class CreditCard(
-                val creditCardType: CreditCardType
-            ) : PaymentMethodType
+                val creditCardType: CreditCardType,
+                val cardHolderName: String
+            ) : PaymentMethodInfo
 
             @Parcelize
-            data object Unknown : PaymentMethodType
+            data object Unknown : PaymentMethodInfo
         }
     }
 

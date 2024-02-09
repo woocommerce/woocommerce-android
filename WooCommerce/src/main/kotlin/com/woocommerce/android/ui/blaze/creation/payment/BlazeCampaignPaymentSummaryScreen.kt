@@ -244,9 +244,9 @@ private fun PaymentMethodInfo(
                 modifier = Modifier.weight(1f),
             )
         } else {
-            if (paymentMethod.type is BlazeRepository.PaymentMethod.PaymentMethodType.CreditCard) {
+            if (paymentMethod.info is BlazeRepository.PaymentMethod.PaymentMethodInfo.CreditCard) {
                 Image(
-                    painter = painterResource(id = paymentMethod.type.creditCardType.icon),
+                    painter = painterResource(id = paymentMethod.info.creditCardType.icon),
                     contentDescription = null
                 )
             }
@@ -287,9 +287,9 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
                             BlazeRepository.PaymentMethod(
                                 id = "1",
                                 name = "Visa **** 1234",
-                                subtitle = "Jhon Doe",
-                                type = BlazeRepository.PaymentMethod.PaymentMethodType.CreditCard(
-                                    CreditCardType.VISA
+                                info = BlazeRepository.PaymentMethod.PaymentMethodInfo.CreditCard(
+                                    creditCardType = CreditCardType.VISA,
+                                    cardHolderName = "John Doe"
                                 )
                             )
                         ),
