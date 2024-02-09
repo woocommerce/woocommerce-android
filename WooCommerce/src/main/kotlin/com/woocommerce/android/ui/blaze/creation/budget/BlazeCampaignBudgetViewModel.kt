@@ -127,6 +127,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 campaignDurationDates = getCampaignDurationDisplayDate(it.campaignStartDateMillis, duration)
             )
         }
+        fetchAdForecast()
     }
 
     fun onStartDateChanged(newStartDateMillis: Long) {
