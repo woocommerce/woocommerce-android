@@ -40,10 +40,10 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         paymentMethodState.value = PaymentMethodState.Loading
         launch {
             paymentMethodState.value = blazeRepository.fetchPaymentMethods().fold(
-                onSuccess = {
+                onSuccess = { paymentMethodsData ->
                     PaymentMethodState.Success(
-                        it,
-                        onClick = { /* TODO */ }
+                        paymentMethodsData = paymentMethodsData,
+                        onClick = { triggerEvent(NavigateToPaymentsListScreen(paymentMethodsData)) }
                     )
                 },
                 onFailure = { PaymentMethodState.Error { fetchPaymentMethodData() } }
@@ -67,4 +67,8 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
         data class Error(val onRetry: () -> Unit) : PaymentMethodState
     }
+
+    data class NavigateToPaymentsListScreen(
+        val paymentMethodsData: PaymentMethodsData
+    ) : MultiLiveEvent.Event()
 }
