@@ -76,7 +76,10 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 )
                 is NavigateToAdDestinationScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment()
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment(
+                            event.productId,
+                            event.targetUrl
+                        )
                 )
             }
         }

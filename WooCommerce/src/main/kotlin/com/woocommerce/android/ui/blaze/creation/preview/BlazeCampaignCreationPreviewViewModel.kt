@@ -42,7 +42,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
-    private val campaign = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
+    private suspend fun getCampaign() = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
 
     private val adDetails = savedStateHandle.getStateFlow<AdDetailsUi>(viewModelScope, Loading)
     private val budget = savedStateHandle.getStateFlow(viewModelScope, getDefaultBudget())
@@ -95,7 +95,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations ->
         CampaignPreviewUiState(
             adDetails = ad,
-            campaignDetails = campaign.toCampaignDetailsUi(
+            campaignDetails = getCampaign().toCampaignDetailsUi(
                 budget,
                 selectedLanguages,
                 selectedDevices,
@@ -164,7 +164,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         productId = navArgs.productId,
                         description = suggestions?.firstOrNull()?.description ?: "",
                         tagLine = suggestions?.firstOrNull()?.tagLine ?: "",
-                        campaignImageUrl = campaign.campaignImageUrl
+                        campaignImageUrl = getCampaign().campaignImageUrl
                     )
                 }
             }
@@ -222,7 +222,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             displayValue = targetUrl,
             maxLinesValue = 1,
             onItemSelected = {
-                triggerEvent(NavigateToAdDestinationScreen)
+                triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
             }
         )
     )
@@ -281,7 +281,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     object NavigateToBudgetScreen : MultiLiveEvent.Event()
 
-    object NavigateToAdDestinationScreen : MultiLiveEvent.Event()
+    data class NavigateToAdDestinationScreen(
+        val targetUrl: String?,
+        val productId: Long
+    ) : MultiLiveEvent.Event()
 
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
