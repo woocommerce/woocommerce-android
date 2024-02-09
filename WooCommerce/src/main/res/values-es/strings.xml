@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 17:54:03+0000
+Translation-Revision-Date: 2024-02-07 22:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">No se ha podido guardar el recibo</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">No se ha podido descargar el recibo</string>
+    <string name="card_reader_payment_email_client_not_found">No se ha detectado ninguna aplicación con la que se pueda compartir el recibo</string>
+    <string name="receipt_fetching_error">Lo sentimos, no hemos podido cargar un recibo para este pedido</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Sugerido por la IA</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d caracteres restantes</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Descripción</string>
@@ -1957,7 +1961,6 @@ Language: es
     <string name="variable_product_attributes">Atributos de variaciones</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Activa Bluetooth en el dispositivo móvil</string>
     <string name="card_reader_refetching_order_failed">Error al recuperar el pedido. El estado del pedido en la aplicación podría estar desactualizado.</string>
-    <string name="card_reader_payment_email_client_not_found">No se pudo detectar una aplicación cliente de correo electrónico</string>
     <string name="card_reader_payment_receipt_email_subject">Tu recibo de %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualizando pedido</string>
     <string name="card_reader_payment_fetch_order_loading_header">Actualizando estado en la aplicación</string>

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 15:54:03+0000
+Translation-Revision-Date: 2024-02-07 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Fatura depolanamıyor</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Fatura indirilemiyor</string>
+    <string name="card_reader_payment_email_client_not_found">Faturanın paylaşılabileceği bir uygulama bulunamadı</string>
+    <string name="receipt_fetching_error">Üzgünüz, bu siparişin faturasını yükleyemedik</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Yapay Zeka Tarafından Önerildi</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d karakter kaldı</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Açıklama</string>
@@ -1957,7 +1961,6 @@ Language: tr
     <string name="variable_product_attributes">Varyasyon nitelikleri.</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Mobil cihazda Bluetooth\'u açın</string>
     <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
-    <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
