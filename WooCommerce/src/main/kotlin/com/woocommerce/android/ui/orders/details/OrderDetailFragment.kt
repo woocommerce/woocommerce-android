@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -89,6 +90,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -97,6 +99,7 @@ class OrderDetailFragment :
     OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
+        private const val MARGINS_FOR_TABLET: Float = 0.1F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -187,6 +190,7 @@ class OrderDetailFragment :
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
+        setMarginsIfTablet()
         setupToolbar()
 
         setupObservers(viewModel)
@@ -212,6 +216,15 @@ class OrderDetailFragment :
             binding.scrollView,
             getString(R.string.order_card_detail_transition_name)
         )
+    }
+
+    private fun setMarginsIfTablet() {
+        if (isTablet()) {
+            val layoutParams = binding.scrollView.layoutParams as LinearLayout.LayoutParams
+            val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
+            layoutParams.marginStart = (windowWidth * MARGINS_FOR_TABLET).toInt()
+            layoutParams.marginEnd = (windowWidth * MARGINS_FOR_TABLET).toInt()
+        }
     }
 
     private fun setupToolbar() {

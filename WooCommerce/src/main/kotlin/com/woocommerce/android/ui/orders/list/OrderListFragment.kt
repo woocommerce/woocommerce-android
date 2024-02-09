@@ -86,7 +86,7 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
-        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.10f
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
     }
 
@@ -173,7 +173,6 @@ class OrderListFragment :
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -255,52 +254,35 @@ class OrderListFragment :
     }
 
     private fun displayTwoPaneLayoutIfTablet(savedInstanceState: Bundle?) {
-        val detailContainer = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
-        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams as LinearLayout.LayoutParams
-
         if (isTablet()) {
-            adjustLayoutForTablet(detailContainer)
+            adjustLayoutForTablet()
         } else {
-            adjustLayoutForNonTablet(detailContainer, orderListViewLayoutParams)
+            adjustLayoutForNonTablet()
             savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
         }
     }
 
-    private fun adjustLayoutForTablet(detailContainer: NavHostFragment) {
-        val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
-        val detailContainerLayoutParams = detailContainer.view?.layoutParams as LinearLayout.LayoutParams
-
-        detailContainer.view?.visibility = View.VISIBLE
-        detailContainerLayoutParams.width = 0
-        detailContainerLayoutParams.weight = 2f
-        detailContainerLayoutParams.marginStart = (windowWidth * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
-        detailContainerLayoutParams.marginEnd = (windowWidth * TABLET_LANDSCAPE_WIDTH_RATIO).toInt()
+    private fun adjustLayoutForTablet() {
+        binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
     }
 
-    private fun adjustLayoutForNonTablet(
-        detailContainer: NavHostFragment,
-        orderListViewLayoutParams: LinearLayout.LayoutParams
-    ) {
+    private fun adjustLayoutForNonTablet() {
         if (savedDestinationId != -1) {
-            adjustLayoutForSinglePane(detailContainer)
+            adjustLayoutForSinglePane()
         } else {
-            detailContainer.view?.visibility = View.GONE
-            orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-            orderListViewLayoutParams.weight = 0f
+            _binding?.detailNavContainer?.visibility = View.GONE
+            _binding?.orderRefreshLayout?.visibility = View.VISIBLE
+            _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
         }
     }
 
-    private fun adjustLayoutForSinglePane(detailNavHostFragment: NavHostFragment) {
+    private fun adjustLayoutForSinglePane() {
         // Adjust the detail container to occupy the full width in single-pane mode (e.g., phone)
-        val detailContainerLayoutParams = detailNavHostFragment.view?.layoutParams as LinearLayout.LayoutParams
-        detailNavHostFragment.view?.visibility = View.VISIBLE
-        detailContainerLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-        detailContainerLayoutParams.weight = 0f
+        _binding?.detailNavContainer?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
 
         // Adjust the order list view to be hidden in single-pane mode
-        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams as LinearLayout.LayoutParams
-        orderListViewLayoutParams.width = 0
-        orderListViewLayoutParams.weight = 0f
+        _binding?.orderRefreshLayout?.visibility = View.GONE
     }
 
     private fun hideDetailPane(
