@@ -27,7 +27,7 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5F // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50F // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
-        const val ONE_DAY_IN_MILLIS = 1000 * 60 * 60 * 24
+        const val ONE_DAY_IN_MILLIS: Long = 1000 * 60 * 60 * 24
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
