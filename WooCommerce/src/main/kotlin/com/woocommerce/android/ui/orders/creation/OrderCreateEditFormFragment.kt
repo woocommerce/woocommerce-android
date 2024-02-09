@@ -21,7 +21,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -76,6 +78,7 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentArgs
+import com.woocommerce.android.ui.products.selector.ProductSelectorSharedViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -87,6 +90,8 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
@@ -101,6 +106,7 @@ class OrderCreateEditFormFragment :
         private const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
     }
     private val viewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
@@ -124,6 +130,7 @@ class OrderCreateEditFormFragment :
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
 
+    private var sharedViewModelUpdateJob: Job? = null
     override fun onStart() {
         super.onStart()
         val navController =
@@ -135,6 +142,15 @@ class OrderCreateEditFormFragment :
             selectionMode = ProductSelectorViewModel.SelectionMode.LIVE,
         )
         navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
+        sharedViewModel.updateSelectedItems(viewModel.selectedItems.value ?: emptyList())
+        viewModel.selectedItems.observe(viewLifecycleOwner) {
+            sharedViewModel.updateSelectedItems(it)
+        }
+        sharedViewModelUpdateJob = lifecycleScope.launch {
+            sharedViewModel.selectedItems.collect {
+                viewModel.onProductsSelected(it)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -173,6 +189,12 @@ class OrderCreateEditFormFragment :
         super.onPause()
         progressDialog?.dismiss()
         orderUpdateFailureSnackBar?.dismiss()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        sharedViewModelUpdateJob?.cancel()
+        sharedViewModel.updateSelectedItems(emptyList())
     }
 
     private fun FragmentOrderCreateEditFormBinding.initView() {
@@ -1112,12 +1134,7 @@ class OrderCreateEditFormFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        val controller = childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
-        if (controller!= null) {
-            controller.popBackStack()
-        } else {
-            viewModel.onBackButtonClicked()
-        }
+        viewModel.onBackButtonClicked()
         return false
     }
 
