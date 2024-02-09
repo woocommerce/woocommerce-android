@@ -2,13 +2,15 @@ package com.woocommerce.android.ui.blaze.creation.payment
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,12 +21,26 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
+    private val selectedPaymentMethodId = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "selectedPaymentMethodId"
+    )
     private val paymentMethodState = MutableStateFlow<PaymentMethodState>(PaymentMethodState.Loading)
 
-    val viewState = paymentMethodState.map {
+    val viewState = combine(
+        selectedPaymentMethodId,
+        paymentMethodState
+    ) { selectedPaymentMethodId, paymentMethodState ->
         ViewState(
             budget = navArgs.budget,
-            paymentMethodState = it
+            paymentMethodState = paymentMethodState.let {
+                when (it) {
+                    is PaymentMethodState.Success -> it.copy(selectedPaymentMethodId = selectedPaymentMethodId)
+                    else -> it
+                }
+            }
         )
     }.asLiveData()
 
@@ -36,25 +52,41 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onPaymentMethodSelected(paymentMethodId: String) {
+        selectedPaymentMethodId.value = paymentMethodId
+
+        val paymentMethodState = paymentMethodState.value
+        if (paymentMethodState is PaymentMethodState.Success &&
+            !paymentMethodState.paymentMethodsData.savedPaymentMethods.any { it.id == paymentMethodId }
+        ) {
+            fetchPaymentMethodData()
+        }
+    }
+
     private fun fetchPaymentMethodData() {
         paymentMethodState.value = PaymentMethodState.Loading
         launch {
-            paymentMethodState.value = blazeRepository.fetchPaymentMethods().fold(
+            blazeRepository.fetchPaymentMethods().fold(
                 onSuccess = { paymentMethodsData ->
-                    PaymentMethodState.Success(
+                    if (selectedPaymentMethodId.value == null) {
+                        selectedPaymentMethodId.value = paymentMethodsData.savedPaymentMethods.firstOrNull()?.id
+                    }
+
+                    paymentMethodState.value = PaymentMethodState.Success(
                         paymentMethodsData = paymentMethodsData,
                         onClick = {
                             triggerEvent(
                                 NavigateToPaymentsListScreen(
                                     paymentMethodsData = paymentMethodsData,
-                                    // TODO we should handle selecting different payment methods
-                                    selectedPaymentMethodId = paymentMethodsData.savedPaymentMethods.firstOrNull()?.id
+                                    selectedPaymentMethodId = selectedPaymentMethodId.value
                                 )
                             )
                         }
                     )
                 },
-                onFailure = { PaymentMethodState.Error { fetchPaymentMethodData() } }
+                onFailure = {
+                    paymentMethodState.value = PaymentMethodState.Error { fetchPaymentMethodData() }
+                }
             )
         }
     }
@@ -67,10 +99,13 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     sealed interface PaymentMethodState {
         data object Loading : PaymentMethodState
         data class Success(
-            private val paymentMethodsData: PaymentMethodsData,
+            val paymentMethodsData: PaymentMethodsData,
+            private val selectedPaymentMethodId: String? = null,
             val onClick: () -> Unit
         ) : PaymentMethodState {
-            val selectedPaymentMethod = paymentMethodsData.savedPaymentMethods.firstOrNull()
+            val selectedPaymentMethod = selectedPaymentMethodId?.let { id ->
+                paymentMethodsData.savedPaymentMethods.find { it.id == id }
+            } ?: paymentMethodsData.savedPaymentMethods.firstOrNull()
             val isPaymentMethodSelected = selectedPaymentMethod != null
         }
 

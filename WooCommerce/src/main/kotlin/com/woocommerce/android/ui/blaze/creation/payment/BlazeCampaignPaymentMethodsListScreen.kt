@@ -66,7 +66,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList -> {
                 PaymentMethodsList(
                     paymentMethods = viewState.paymentMethods,
-                    selectedPaymentMethod = viewState.selectedPaymentMethod!!,
+                    selectedPaymentMethod = viewState.selectedPaymentMethod,
                     onPaymentMethodClicked = viewState.onPaymentMethodClicked,
                     onAddPaymentMethodClicked = viewState.onAddPaymentMethodClicked,
                     modifier = Modifier.padding(paddingValues)
@@ -87,7 +87,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
 @Composable
 private fun PaymentMethodsList(
     paymentMethods: List<PaymentMethod>,
-    selectedPaymentMethod: PaymentMethod,
+    selectedPaymentMethod: PaymentMethod?,
     onPaymentMethodClicked: (PaymentMethod) -> Unit,
     onAddPaymentMethodClicked: () -> Unit,
     modifier: Modifier
@@ -104,7 +104,7 @@ private fun PaymentMethodsList(
         } else {
             PaymentMethodsListView(
                 paymentMethods = paymentMethods,
-                selectedPaymentMethod = selectedPaymentMethod,
+                selectedPaymentMethod = selectedPaymentMethod!!,
                 onPaymentMethodClicked = onPaymentMethodClicked,
                 onAddPaymentMethodClicked = onAddPaymentMethodClicked,
                 modifier = modifier
@@ -265,14 +265,18 @@ private fun PaymentMethodsListPreview() {
             PaymentMethod(
                 id = "1",
                 name = "Visa",
-                subtitle = "John Doe",
-                type = PaymentMethod.PaymentMethodType.CreditCard(CreditCardType.VISA)
+                info = PaymentMethod.PaymentMethodInfo.CreditCard(
+                    CreditCardType.VISA,
+                    "John Doe"
+                )
             ),
             PaymentMethod(
                 id = "2",
                 name = "MasterCard",
-                subtitle = "John Doe",
-                type = PaymentMethod.PaymentMethodType.CreditCard(CreditCardType.MASTERCARD)
+                info = PaymentMethod.PaymentMethodInfo.CreditCard(
+                    CreditCardType.MASTERCARD,
+                    "John Doe"
+                )
             )
         )
     }

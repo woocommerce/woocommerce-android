@@ -31,7 +31,9 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         selectedPaymentMethod = navArgs.paymentMethodsData.savedPaymentMethods.firstOrNull {
             it.id == navArgs.selectedPaymentMethodId
         },
-        onPaymentMethodClicked = { /* TODO */ },
+        onPaymentMethodClicked = {
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(it.id))
+        },
         onAddPaymentMethodClicked = {
             _viewState.value = addPaymentMethodWebView()
         },

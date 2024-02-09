@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
@@ -31,6 +32,7 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
+        handleResults()
     }
 
     private fun handleEvents() {
@@ -47,6 +49,12 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
                     )
                 }
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<String>(BlazeCampaignPaymentMethodsListFragment.SELECTED_PAYMENT_METHOD_KEY) {
+            viewModel.onPaymentMethodSelected(it)
         }
     }
 }
