@@ -714,7 +714,6 @@ fun ExpandableProductCardPreview() {
     }
 }
 
-
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -747,7 +746,6 @@ fun ExpandableProductCardUnsyncedPreview() {
         ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
     }
 }
-
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
