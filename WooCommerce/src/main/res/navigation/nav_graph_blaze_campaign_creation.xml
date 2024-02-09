@@ -60,6 +60,9 @@
             android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignTargetSelectionFragment"
             app:destination="@id/blazeCampaignTargetSelectionFragment" />
         <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignCreationAdDestinationFragment"
+            app:destination="@id/blazeCampaignCreationAdDestinationFragment" />
+        <action
             android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignTargetLocationSelectionFragment"
             app:destination="@id/blazeCampaignTargetLocationSelectionFragment" />
     </fragment>
@@ -106,5 +109,15 @@
         <argument
             android:name="locations"
             app:argType="com.woocommerce.android.ui.blaze.Location[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignCreationAdDestinationFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment"
+        android:label="BlazeCampaignCreationAdDestinationFragment" >
+        <argument
+            android:name="targetUrl"
+            app:argType="string" />
+        <argument android:name="productId"
+            app:argType="long" />
     </fragment>
 </navigation>

@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsViewState
 import com.woocommerce.android.ui.analytics.hub.GetReportUrl
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -51,6 +53,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
@@ -89,6 +92,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val dateUtils: DateUtils = mock()
+    private val trackerEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -700,7 +704,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `when site is a wpcom and see report is pressed then open a wpcom webview`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
         sut = givenAViewModel()
-        sut.onSeeReport("https://report-url")
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
     }
 
@@ -708,8 +712,43 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `when site is not a wpcom and see report is pressed then open the default webview`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(false) })
         sut = givenAViewModel()
-        sut.onSeeReport("https://report-url")
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+    }
+
+    @Test
+    fun `when see report is pressed then track see report event`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        verify(tracker).track(
+            AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_PERIOD to WEEK_TO_DATE.identifier,
+                AnalyticsTracker.KEY_REPORT to ReportCard.Revenue.name.lowercase(),
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
+            )
+        )
+    }
+
+    @Test
+    fun `when see report is pressed then interaction tracked`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(
+            SiteModel().apply {
+                setIsWpComStore(true)
+                adminUrl = "https://report-url/wc-admin"
+            }
+        )
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
+        configureSuccessfulStatsResponse()
+        sut = givenAViewModel()
+        // When the view is initialized we track some interactions
+        clearInvocations(trackerEventEmitter)
+
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        verify(trackerEventEmitter).interacted(any())
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -722,7 +761,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             resourceProvider,
             currencyFormatter,
             transactionLauncher,
-            mock(),
+            trackerEventEmitter,
             updateStats,
             observeLastUpdate,
             localeProvider,
