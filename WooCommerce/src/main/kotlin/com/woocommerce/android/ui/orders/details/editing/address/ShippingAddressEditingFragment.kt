@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
-import android.os.Bundle
 import android.view.View
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
