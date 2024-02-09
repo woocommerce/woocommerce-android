@@ -116,8 +116,6 @@
         android:label="BlazeCampaignCreationAdDestinationFragment" >
         <argument
             android:name="targetUrl"
-            android:defaultValue="@null"
-            app:nullable="true"
             app:argType="string" />
         <argument android:name="productId"
             app:argType="long" />

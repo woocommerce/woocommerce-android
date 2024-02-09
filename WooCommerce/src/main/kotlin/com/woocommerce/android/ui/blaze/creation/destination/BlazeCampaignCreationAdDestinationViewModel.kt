@@ -31,7 +31,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
                 .getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message),
             productUrl = productUrl,
             siteUrl = selectedSite.get().url,
-            targetUrl = navArgs.targetUrl ?: targetUrlPrompt,
+            targetUrl = navArgs.targetUrl,
             isUrlDialogVisible = false
         )
     )
