@@ -126,5 +126,11 @@
     <fragment
         android:id="@+id/blazeCampaignCreationAdDestinationFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment"
-        android:label="BlazeCampaignCreationAdDestinationFragment" />
+        android:label="BlazeCampaignCreationAdDestinationFragment" >
+        <argument
+            android:name="targetUrl"
+            app:argType="string" />
+        <argument android:name="productId"
+            app:argType="long" />
+    </fragment>
 </navigation>
