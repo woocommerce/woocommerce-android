@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 09:54:04+0000
+Translation-Revision-Date: 2024-02-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">영수증을 저장할 수 없습니다.</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">영수증을 다운로드할 수 없습니다.</string>
+    <string name="card_reader_payment_email_client_not_found">영수증을 공유할 앱을 찾을 수 없습니다.</string>
+    <string name="receipt_fetching_error">죄송합니다. 이 주문의 영수증을 로드할 수 없습니다.</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">AI 추천</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d자 남음</string>
     <string name="blaze_campaign_edit_ad_change_description_title">설명</string>
@@ -1957,7 +1961,6 @@ Language: ko_KR
     <string name="variable_product_attributes">변형 속성</string>
     <string name="card_reader_detail_not_connected_third_hint_label">모바일 장치 블루투스 켜기</string>
     <string name="card_reader_refetching_order_failed">주문을 가져오는 중 오류가 발생했습니다. 앱의 주문 상태가 기한이 지났을 수 있습니다.</string>
-    <string name="card_reader_payment_email_client_not_found">이메일 클라이언트 앱을 감지할 수 없습니다.</string>
     <string name="card_reader_payment_receipt_email_subject">%s에서 받은 영수증</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">주문 새로 고치기</string>
     <string name="card_reader_payment_fetch_order_loading_header">앱 상태 업데이트하기</string>
