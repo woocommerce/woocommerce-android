@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -230,6 +232,7 @@ private fun PaymentMethodInfo(
     modifier: Modifier
 ) {
     Row(
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable(onClick = onClick)
@@ -242,7 +245,10 @@ private fun PaymentMethodInfo(
             )
         } else {
             if (paymentMethod.type is BlazeRepository.PaymentMethod.PaymentMethodType.CreditCard) {
-                // TODO show credit card icon
+                Image(
+                    painter = painterResource(id = paymentMethod.type.creditCardType.icon),
+                    contentDescription = null
+                )
             }
             Column(Modifier.weight(1f)) {
                 Text(
