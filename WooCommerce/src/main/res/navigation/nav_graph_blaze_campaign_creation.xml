@@ -65,6 +65,9 @@
         <action
             android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignTargetLocationSelectionFragment"
             app:destination="@id/blazeCampaignTargetLocationSelectionFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignPaymentSummaryFragment"
+            app:destination="@id/blazeCampaignPaymentSummaryFragment" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignCreationEditAdFragment"
@@ -132,5 +135,13 @@
             app:argType="string" />
         <argument android:name="productId"
             app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignPaymentSummaryFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryFragment"
+        android:label="BlazeCampaignPaymentSummaryFragment">
+        <argument
+            android:name="budget"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
     </fragment>
 </navigation>

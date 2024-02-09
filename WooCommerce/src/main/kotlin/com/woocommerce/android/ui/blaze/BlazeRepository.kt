@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
@@ -9,6 +10,7 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
+import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodInfo
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -39,6 +41,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch languages: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(Unit)
         }
     }
@@ -54,6 +57,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch devices: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(Unit)
         }
     }
@@ -69,6 +73,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch interests: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(Unit)
         }
     }
@@ -84,6 +89,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch locations: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(
                 result.model?.map { location ->
                     Location(location.id, location.name, location.parent?.name, location.type)
@@ -106,6 +112,7 @@ class BlazeRepository @Inject constructor(
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch ad suggestions: ${result.error}")
                 Result.failure(OnChangedException(result.error))
             }
+
             else -> Result.success(result.model?.mapToUiModel() ?: emptyList())
         }
     }
@@ -121,6 +128,48 @@ class BlazeRepository @Inject constructor(
             urlParams = null,
             campaignImageUrl = product.firstImageUrl
         )
+    }
+
+    suspend fun fetchPaymentMethods(): Result<PaymentMethodsData> {
+        val result = blazeCampaignsStore.fetchBlazePaymentMethods(selectedSite.get())
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch payment methods: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> result.model?.let { paymentMethods ->
+                Result.success(
+                    PaymentMethodsData(
+                        savedPaymentMethods = paymentMethods.savedPaymentMethods.map { paymentMethod ->
+                            PaymentMethod(
+                                id = paymentMethod.id,
+                                name = paymentMethod.name,
+                                info = when (paymentMethod.info) {
+                                    is PaymentMethodInfo.CreditCardInfo ->
+                                        (paymentMethod.info as PaymentMethodInfo.CreditCardInfo).let {
+                                            PaymentMethod.PaymentMethodInfo.CreditCard(
+                                                creditCardType = CreditCardType.fromString(it.type),
+                                                cardHolderName = it.cardHolderName
+                                            )
+                                        }
+
+                                    PaymentMethodInfo.Unknown -> {
+                                        PaymentMethod.PaymentMethodInfo.Unknown
+                                    }
+                                }
+                            )
+                        },
+                        addPaymentMethodUrls = PaymentMethodUrls(
+                            formUrl = paymentMethods.addPaymentMethodUrls.formUrl,
+                            successUrl = paymentMethods.addPaymentMethodUrls.successUrl,
+                            idUrlParameter = paymentMethods.addPaymentMethodUrls.idUrlParameter
+                        )
+                    )
+                )
+            } ?: Result.failure(NullPointerException("API response is null"))
+        }
     }
 
     @Parcelize
@@ -145,6 +194,37 @@ class BlazeRepository @Inject constructor(
         val currencyCode: String,
         val durationInDays: Int,
         val startDate: Date,
+    ) : Parcelable
+
+    @Parcelize
+    data class PaymentMethodsData(
+        val savedPaymentMethods: List<PaymentMethod>,
+        val addPaymentMethodUrls: PaymentMethodUrls
+    ) : Parcelable
+
+    @Parcelize
+    data class PaymentMethod(
+        val id: String,
+        val name: String,
+        val info: PaymentMethodInfo
+    ) : Parcelable {
+        sealed interface PaymentMethodInfo : Parcelable {
+            @Parcelize
+            data class CreditCard(
+                val creditCardType: CreditCardType,
+                val cardHolderName: String
+            ) : PaymentMethodInfo
+
+            @Parcelize
+            data object Unknown : PaymentMethodInfo
+        }
+    }
+
+    @Parcelize
+    data class PaymentMethodUrls(
+        val formUrl: String,
+        val successUrl: String,
+        val idUrlParameter: String
     ) : Parcelable
 }
 
