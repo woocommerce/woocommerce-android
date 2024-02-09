@@ -45,12 +45,6 @@ class ShippingLabelAddressSuggestionFragment :
 
     val viewModel: ShippingLabelAddressSuggestionViewModel by viewModels()
 
-    private var screenTitle = 0
-        set(value) {
-            field = value
-            updateActivityTitle()
-        }
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
