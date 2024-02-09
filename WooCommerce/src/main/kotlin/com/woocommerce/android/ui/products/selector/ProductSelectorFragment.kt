@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
@@ -30,6 +32,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,6 +44,7 @@ class ProductSelectorFragment : BaseFragment() {
     @Inject lateinit var navigator: ProductNavigator
 
     private val viewModel: ProductSelectorViewModel by viewModels()
+    private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -57,8 +61,6 @@ class ProductSelectorFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         setupObservers()
         handleResults()
     }
@@ -75,6 +77,18 @@ class ProductSelectorFragment : BaseFragment() {
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
+            }
+        }
+        if (viewModel.selectionMode == ProductSelectorViewModel.SelectionMode.LIVE) {
+            lifecycleScope.launch {
+                sharedViewModel.selectedItems.collect {
+                    viewModel.updateSelectedItems(it)
+                }
+            }
+            lifecycleScope.launch {
+                viewModel.selectedItems.collect {
+                    sharedViewModel.updateSelectedItems(it)
+                }
             }
         }
     }

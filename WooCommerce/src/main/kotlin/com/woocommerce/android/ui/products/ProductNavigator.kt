@@ -353,6 +353,7 @@ class ProductNavigator @Inject constructor() {
                             variationIds = target.selectedVariationIds.toLongArray(),
                             productSelectorFlow = target.productSelectorFlow,
                             productSource = target.productSourceForTracking,
+                            screenMode = target.screenMode
                         )
                     }
                     ProductSelectorViewModel.SelectionMode.SINGLE -> {
@@ -366,6 +367,7 @@ class ProductNavigator @Inject constructor() {
                             variationIds = target.selectedVariationIds.toLongArray(),
                             productSelectorFlow = target.productSelectorFlow,
                             productSource = target.productSourceForTracking,
+                            screenMode = target.screenMode
                         )
                     }
                 }

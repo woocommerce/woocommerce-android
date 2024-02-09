@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SEL
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -44,6 +45,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
@@ -89,11 +91,12 @@ class ProductSelectorViewModel @Inject constructor(
     private val searchState = savedState.getStateFlow(this, SearchState())
 
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
+    private val _selectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
         viewModelScope,
         navArgs.selectedItems?.toList() ?: emptyList(),
         "key_selected_items"
     )
+    val selectedItems: StateFlow<List<SelectedItem>> = _selectedItems
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val products = listHandler.productsFlow.map { products ->
         products.filterNot { product -> productRestrictions.isProductRestricted(product = product) }
@@ -118,7 +121,7 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow5 = selectedItems,
+        flow5 = _selectedItems,
         flow6 = filterState,
         flow7 = searchState,
     ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState ->
@@ -140,6 +143,8 @@ class ProductSelectorViewModel @Inject constructor(
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
         )
     }.asLiveData()
+
+    val selectionMode = navArgs.selectionMode
 
     init {
         if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
@@ -317,7 +322,7 @@ class ProductSelectorViewModel @Inject constructor(
                 ProductSelectorTracker.ProductSelectorSource.ProductSelector
             )
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedItems.value = emptyList()
+            _selectedItems.value = emptyList()
         }
     }
 
@@ -352,7 +357,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
-        val selectedItem = selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
+        val selectedItem = _selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
         selectedItem?.configuration?.let {
             triggerEvent(
                 ProductNavigationTarget.EditProductConfiguration(
@@ -372,13 +377,18 @@ class ProductSelectorViewModel @Inject constructor(
             isVariable() && numVariations > 0
 
         if (item.hasVariations()) {
+            val variationSelectorScreenMode = when(navArgs.selectionMode) {
+                SelectionMode.SINGLE, SelectionMode.MULTIPLE -> VariationSelectorViewModel.ScreenMode.FULLSCREEN
+                SelectionMode.LIVE -> VariationSelectorViewModel.ScreenMode.DIALOG
+            }
             triggerEvent(
                 NavigateToVariationSelector(
                     productId = item.id,
                     selectedVariationIds = item.selectedVariationIds,
                     productSelectorFlow = productSelectorFlow,
                     productSourceForTracking = productSource,
-                    selectionMode = navArgs.selectionMode
+                    selectionMode = navArgs.selectionMode,
+                    screenMode = variationSelectorScreenMode
                 )
             )
         } else {
@@ -394,10 +404,10 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
-        if (selectedItems.value.containsItemWith(item.id) && navArgs.selectionMode == SelectionMode.MULTIPLE) {
+        if (_selectedItems.value.containsItemWith(item.id) && navArgs.selectionMode == SelectionMode.MULTIPLE) {
             tracker.trackItemUnselected(productSelectorFlow)
             selectedItemsSource.remove(item.id)
-            selectedItems.update { items -> items.filter { it.id != item.id } }
+            _selectedItems.update { items -> items.filter { it.id != item.id } }
         } else {
             tracker.trackConfigurableTapped(productSelectorFlow)
             triggerEvent(
@@ -411,11 +421,11 @@ class ProductSelectorViewModel @Inject constructor(
             SelectionMode.SINGLE -> {
                 tracker.trackItemSelected(productSelectorFlow)
                 selectedItemsSource[item.id] = productSource
-                selectedItems.value = listOf(item)
+                _selectedItems.value = listOf(item)
             }
 
             SelectionMode.MULTIPLE, SelectionMode.LIVE -> {
-                selectedItems.update { items ->
+                _selectedItems.update { items ->
                     if (items.containsItemWith(item.id)) {
                         tracker.trackItemUnselected(productSelectorFlow)
                         selectedItemsSource.remove(item.id)
@@ -446,11 +456,11 @@ class ProductSelectorViewModel @Inject constructor(
     fun onDoneButtonClick() {
         tracker.trackDoneButtonClicked(
             productSelectorFlow,
-            selectedItems.value,
+            _selectedItems.value,
             selectedItemsSource.values.toList(),
             isFilterActive()
         )
-        triggerEvent(ExitWithResult(selectedItems.value))
+        triggerEvent(ExitWithResult(_selectedItems.value))
     }
 
     fun onNavigateBack() {
@@ -503,7 +513,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
         viewModelScope.launch {
-            selectedItems.update { items ->
+            _selectedItems.update { items ->
                 val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
 
                 val oldItems = items.filter {
@@ -524,7 +534,7 @@ class ProductSelectorViewModel @Inject constructor(
                     )
                 }
 
-                selectedItems.value - oldItems.toSet() + newItems
+                _selectedItems.value - oldItems.toSet() + newItems
             }
         }
     }
@@ -598,7 +608,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onConfigurationSaved(productId: Long, productConfiguration: ProductConfiguration) {
         tracker.trackItemSelected(productSelectorFlow)
-        selectedItems.update { items ->
+        _selectedItems.update { items ->
             val newItem = SelectedItem.ConfigurableProduct(productId, productConfiguration)
             when (navArgs.selectionMode) {
                 SelectionMode.SINGLE -> listOf(newItem)
@@ -608,16 +618,20 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onConfigurationEdited(productId: Long, productConfiguration: ProductConfiguration) {
-        val items = selectedItems.value.map { item ->
+        val items = _selectedItems.value.map { item ->
             if (item.id == productId && item is SelectedItem.ConfigurableProduct) {
                 item.copy(configuration = productConfiguration)
             } else item
         }
-        selectedItems.update { items }
+        _selectedItems.update { items }
     }
 
     fun trackConfigurableProduct() {
         tracker.trackConfigurableItem(productSelectorFlow)
+    }
+
+    fun updateSelectedItems(selectedItems: List<SelectedItem>) {
+        _selectedItems.value = selectedItems
     }
 
     data class ViewState(
@@ -758,6 +772,7 @@ class ProductSelectorViewModel @Inject constructor(
         /**
          * Used e.g. in two-pane UI when product selector is always visible next to order summary.
          * In this mode the confirmation button and toolbar are hidden.
+         * The variation selector will appear in a dialog mode.
          */
         LIVE
     }
