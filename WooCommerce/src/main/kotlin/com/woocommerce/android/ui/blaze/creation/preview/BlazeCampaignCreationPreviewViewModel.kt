@@ -282,7 +282,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     object NavigateToBudgetScreen : MultiLiveEvent.Event()
 
     data class NavigateToAdDestinationScreen(
-        val targetUrl: String?,
+        val targetUrl: String,
         val productId: Long
     ) : MultiLiveEvent.Event()
 

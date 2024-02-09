@@ -3885,7 +3885,6 @@
     <!--
     Blaze edit ad destination
     -->
-    <string name="blaze_campaign_edit_ad_destination_empty_url_message">Ad link destination</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Enter manually</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">Destination URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL parameters</string>
