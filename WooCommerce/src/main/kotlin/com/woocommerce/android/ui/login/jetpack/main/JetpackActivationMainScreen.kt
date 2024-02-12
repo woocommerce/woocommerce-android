@@ -110,16 +110,19 @@ fun JetpackActivationMainScreen(
             transition.AnimatedContent(
                 contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) togetherWith
-                        fadeOut(animationSpec = tween(DefaultDurationMillis))
+                    fadeIn(
+                        animationSpec = tween(
+                            DefaultDurationMillis, delayMillis = DefaultDurationMillis
+                        )
+                    ) togetherWith fadeOut(animationSpec = tween(DefaultDurationMillis))
                 },
                 modifier = Modifier.weight(1f)
             ) { targetState ->
                 when (targetState) {
                     is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
-                        viewState = targetState,
-                        onContinueClick = onContinueClick
+                        viewState = targetState, onContinueClick = onContinueClick
                     )
+
                     is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
                         viewState = targetState,
                         onGetHelpClick = onGetHelpClick,
@@ -285,12 +288,9 @@ private fun AnimatedVisibilityScope.ErrorState(
         Spacer(modifier = Modifier.weight(1f))
         val buttonsModifier = Modifier
             .fillMaxWidth()
-            .animateEnterExit(
-                enter = slideInVertically(animationSpec = tween(delayMillis = DefaultDurationMillis)) { fullHeight ->
-                    fullHeight
-                },
-                exit = slideOutVertically { fullHeight -> fullHeight }
-            )
+            .animateEnterExit(enter = slideInVertically(animationSpec = tween(delayMillis = DefaultDurationMillis)) { fullHeight ->
+                fullHeight
+            }, exit = slideOutVertically { fullHeight -> fullHeight })
         if (viewState.errorCode != FORBIDDEN_ERROR_CODE) {
             val retryButton = when (viewState.stepType) {
                 JetpackActivationMainViewModel.StepType.Installation ->
