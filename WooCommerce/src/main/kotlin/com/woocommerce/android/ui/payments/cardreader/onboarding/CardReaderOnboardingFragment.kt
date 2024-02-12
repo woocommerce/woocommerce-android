@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
@@ -27,6 +28,7 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -43,10 +45,25 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     val viewModel: CardReaderOnboardingViewModel by viewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCardReaderOnboardingBinding.bind(view)
+        setupToolbar(binding)
         initObservers(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentCardReaderOnboardingBinding) {
+        binding.toolbar.title = resources.getString(R.string.card_reader_onboarding_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun initObservers(binding: FragmentCardReaderOnboardingBinding) {

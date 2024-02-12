@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -63,9 +64,20 @@ class ShippingLabelAddressSuggestionFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentShippingLabelAddressSuggestionBinding.bind(view)
-
+        setupToolbar()
         initializeViewModel()
         initializeViews()
+    }
+
+    private fun setupToolbar() {
+//        binding.toolbar.title = getString(screenTitle)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
     }
 
     private fun initializeViewModel() {

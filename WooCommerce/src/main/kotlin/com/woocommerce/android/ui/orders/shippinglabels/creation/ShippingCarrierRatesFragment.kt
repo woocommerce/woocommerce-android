@@ -2,11 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -34,8 +32,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ShippingCarrierRatesFragment :
     BaseFragment(R.layout.fragment_shipping_carrier_rates),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val SHIPPING_CARRIERS_CLOSED = "shipping_carriers_closed"
         const val SHIPPING_CARRIERS_RESULT = "shipping_carriers_result"
@@ -73,13 +70,27 @@ class ShippingCarrierRatesFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         _binding = FragmentShippingCarrierRatesBinding.bind(view)
-
+        setupToolbar()
         initializeViewModel()
         initializeViews()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.title = getString(R.string.shipping_label_shipping_carriers_title)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding.toolbar.menu.findItem(R.id.menu_done)
+        doneMenuItem?.isVisible = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
     }
 
     private fun initializeViewModel() {
@@ -101,13 +112,7 @@ class ShippingCarrierRatesFragment :
 
     override fun getFragmentTitle() = getString(R.string.shipping_label_shipping_carriers_title)
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem?.isVisible = viewModel.viewStateData.liveData.value?.isDoneButtonVisible ?: false
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)

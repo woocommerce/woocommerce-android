@@ -50,7 +50,7 @@ object OrderCreateEditNavigator {
 
             is ShowCreatedOrder ->
                 OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderDetailFragment(target.orderId, target.startPaymentFlow)
+                    .actionOrderCreationFragmentToOrderListFragment(target.orderId)
 
             is EditShipping ->
                 OrderCreateEditFormFragmentDirections
