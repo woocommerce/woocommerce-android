@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -30,8 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ShippingCustomsFragment :
     BaseFragment(R.layout.fragment_shipping_customs),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val EDIT_CUSTOMS_CLOSED = "edit_customs_closed"
         const val EDIT_CUSTOMS_RESULT = "edit_customs_result"
@@ -51,13 +48,7 @@ class ShippingCustomsFragment :
         )
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSubmitForm ?: false
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked()
@@ -72,9 +63,8 @@ class ShippingCustomsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentShippingCustomsBinding.bind(view)
+        setupToolbar(binding)
         binding.packagesList.apply {
             this.adapter = customsAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -94,6 +84,23 @@ class ShippingCustomsFragment :
         }
 
         setupObservers(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentShippingCustomsBinding) {
+        binding.toolbar.title = getString(R.string.shipping_label_create_customs)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding.toolbar.menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSubmitForm ?: false
     }
 
     private fun setupObservers(binding: FragmentShippingCustomsBinding) {
