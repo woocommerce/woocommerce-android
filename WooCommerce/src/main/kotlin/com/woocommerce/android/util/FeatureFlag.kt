@@ -13,7 +13,8 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    BLAZE_I3;
+    BLAZE_I3,
+    EXPANDED_ANALYTIC_HUB_M2;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -26,7 +27,8 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            BLAZE_I3 -> PackageUtils.isDebugBuild()
+            BLAZE_I3,
+            EXPANDED_ANALYTIC_HUB_M2 -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
