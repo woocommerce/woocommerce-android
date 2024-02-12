@@ -9,11 +9,14 @@ import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodInfo
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.days
 
 class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -27,7 +30,6 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5F // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50F // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
-        const val ONE_DAY_IN_MILLIS = 1000 * 60 * 60 * 24
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -128,6 +130,27 @@ class BlazeRepository @Inject constructor(
             urlParams = null,
             campaignImageUrl = product.firstImageUrl
         )
+    }
+
+    suspend fun fetchAdForecast(
+        startDate: Date,
+        campaignDurationDays: Int,
+        totalBudget: Float
+    ): Result<BlazeAdForecast> {
+        val result = blazeCampaignsStore.fetchBlazeAdForecast(
+            selectedSite.get(),
+            startDate,
+            Date(startDate.time + campaignDurationDays.days.inWholeMilliseconds),
+            totalBudget.roundToInt().toDouble(),
+        )
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch ad forecast: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> Result.success(result.model!!)
+        }
     }
 
     suspend fun fetchPaymentMethods(): Result<PaymentMethodsData> {

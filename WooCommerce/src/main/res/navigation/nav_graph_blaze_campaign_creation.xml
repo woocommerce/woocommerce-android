@@ -95,17 +95,8 @@
         android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
         android:label="BlazeCampaignBudgetFragment">
         <argument
-            android:name="totalBudget"
-            app:argType="float" />
-        <argument
-            android:name="durationInDays"
-            app:argType="integer" />
-        <argument
-            android:name="campaignStartDateMillis"
-            app:argType="long" />
-        <argument
-            android:name="currencyCode"
-            app:argType="string" />
+            android:name="budget"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignTargetSelectionFragment"
@@ -121,7 +112,7 @@
     <fragment
         android:id="@+id/blazeCampaignTargetLocationSelectionFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionFragment"
-        android:label="BlazeCampaignTargetLocationSelectionFragment" >
+        android:label="BlazeCampaignTargetLocationSelectionFragment">
         <argument
             android:name="locations"
             app:argType="com.woocommerce.android.ui.blaze.Location[]" />
@@ -129,11 +120,12 @@
     <fragment
         android:id="@+id/blazeCampaignCreationAdDestinationFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment"
-        android:label="BlazeCampaignCreationAdDestinationFragment" >
+        android:label="BlazeCampaignCreationAdDestinationFragment">
         <argument
             android:name="targetUrl"
             app:argType="string" />
-        <argument android:name="productId"
+        <argument
+            android:name="productId"
             app:argType="long" />
     </fragment>
     <fragment

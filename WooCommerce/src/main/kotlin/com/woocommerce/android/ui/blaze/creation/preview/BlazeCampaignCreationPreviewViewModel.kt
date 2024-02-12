@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
@@ -139,16 +140,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    fun onBudgetAndDurationUpdated(totalBudget: Float, durationInDays: Int, campaignStartDateMillis: Long) {
-        budget.update {
-            Budget(
-                totalBudget = totalBudget,
-                spentBudget = 0f,
-                currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
-                durationInDays = durationInDays,
-                startDate = Date(campaignStartDateMillis)
-            )
-        }
+    fun onBudgetAndDurationUpdated(updatedBudget: Budget) {
+        budget.update { updatedBudget }
     }
 
     fun onTargetSelectionUpdated(targetType: BlazeTargetType, selectedIds: List<String>) {
@@ -200,14 +193,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
             onItemSelected = {
-                triggerEvent(
-                    NavigateToBudgetScreen(
-                        totalBudget = budget.totalBudget,
-                        durationInDays = budget.durationInDays,
-                        campaignStartDateMillis = budget.startDate.time,
-                        currencyCode = budget.currencyCode
-                    )
-                )
+                triggerEvent(NavigateToBudgetScreen(budget))
             },
         ),
         targetDetails = listOf(
@@ -272,7 +258,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         spentBudget = 0f,
         currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
         durationInDays = DEFAULT_CAMPAIGN_DURATION,
-        startDate = Date().apply { time += BlazeRepository.ONE_DAY_IN_MILLIS }, // By default start tomorrow
+        startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
     )
 
     data class CampaignPreviewUiState(
@@ -307,14 +293,14 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     data class NavigateToBudgetScreen(
-        val totalBudget: Float,
-        val durationInDays: Int,
-        val campaignStartDateMillis: Long,
-        val currencyCode: String
-    ) : MultiLiveEvent.Event()data class NavigateToAdDestinationScreen(
+        val budget: Budget
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToAdDestinationScreen(
         val targetUrl: String,
         val productId: Long
     ) : MultiLiveEvent.Event()
+
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>

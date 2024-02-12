@@ -3863,6 +3863,7 @@
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
 
     <!--
     Blaze campaign edit-ad screen
