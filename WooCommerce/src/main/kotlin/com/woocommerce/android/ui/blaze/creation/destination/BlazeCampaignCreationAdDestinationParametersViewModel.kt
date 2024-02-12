@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.blaze.creation.destination
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Editing
+import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Hidden
 import com.woocommerce.android.util.getBaseUrl
 import com.woocommerce.android.util.joinToUrl
 import com.woocommerce.android.util.parseParameters
@@ -26,7 +28,8 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         ViewState(
             baseUrl = navArgs.url.getBaseUrl(),
-            parameters = navArgs.url.parseParameters()
+            parameters = navArgs.url.parseParameters(),
+            bottomSheetState = Hidden
         )
     )
 
@@ -37,12 +40,23 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     }
 
     fun onAddParameterTapped() {
-        /* TODO */
+        _viewState.update {
+            it.copy(bottomSheetState = Editing(
+                baseUrl = it.baseUrl,
+                parameters = it.parameters
+            ))
+        }
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onParameterTapped(key: String) {
-        /* TODO */
+        _viewState.update {
+            it.copy(bottomSheetState = Editing(
+                baseUrl = it.baseUrl,
+                parameters = it.parameters - key,
+                key = key,
+                value = it.parameters[key] ?: ""
+            ))
+        }
     }
 
     fun onDeleteParameterTapped(key: String) {
@@ -51,9 +65,33 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
     }
 
+    fun onParameterBottomSheetDismissed() {
+        _viewState.update {
+            it.copy(bottomSheetState = Hidden)
+        }
+    }
+
+    fun onParameterChanged(key: String, value: String) {
+        _viewState.update {
+            it.copy(bottomSheetState = (it.bottomSheetState as Editing).copy(key = key, value = value))
+        }
+    }
+
+    fun onParameterSaved(key: String, value: String) {
+        _viewState.update {
+            val params = it.parameters.toMutableMap()
+            params[key] = value
+            it.copy(
+                parameters = params,
+                bottomSheetState = Hidden
+            )
+        }
+    }
+
     data class ViewState(
-        private val baseUrl: String,
-        val parameters: Map<String, String>
+        val baseUrl: String,
+        val parameters: Map<String, String>,
+        val bottomSheetState: ParameterBottomSheetState
     ) {
         val url by lazy {
             parameters.joinToUrl(baseUrl)
@@ -61,5 +99,23 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
         val charactersRemaining: Int
             get() = MAX_CHARACTERS - url.length
+
+        sealed interface ParameterBottomSheetState {
+            data object Hidden : ParameterBottomSheetState
+            data class Editing(
+                val baseUrl: String,
+                val parameters: Map<String, String>,
+                val key: String = "",
+                val value: String = ""
+            ) : ParameterBottomSheetState {
+                val url by lazy {
+                    if (key.isNotEmpty()) {
+                        parameters + (key to value)
+                    } else {
+                        parameters
+                    }.joinToUrl(baseUrl)
+                }
+            }
+        }
     }
 }
