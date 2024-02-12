@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -109,7 +110,7 @@ fun JetpackActivationMainScreen(
             transition.AnimatedContent(
                 contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) with
+                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) togetherWith
                         fadeOut(animationSpec = tween(DefaultDurationMillis))
                 },
                 modifier = Modifier.weight(1f)
