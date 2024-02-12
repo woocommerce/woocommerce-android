@@ -3892,6 +3892,8 @@
     <string name="blaze_campaign_edit_ad_destination_site_url_option">The site home</string>
     <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Add parameter</string>
     <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destination: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Key</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Value</string>
     <!--
     Highlights tooltip
     -->
