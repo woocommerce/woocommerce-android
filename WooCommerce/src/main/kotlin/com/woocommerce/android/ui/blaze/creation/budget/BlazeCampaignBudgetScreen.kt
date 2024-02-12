@@ -201,7 +201,7 @@ private fun EditBudgetSection(
         )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            value = state.sliderValue,
+            value = state.totalBudget,
             valueRange = state.budgetRangeMin..state.budgetRangeMax,
             onValueChange = { onBudgetUpdated(it) },
             onValueChangeFinished = { onBudgetChangeFinished() },
@@ -413,7 +413,6 @@ private fun CampaignBudgetScreenPreview() {
         state = BlazeCampaignBudgetViewModel.BudgetUiState(
             currencyCode = "USD",
             totalBudget = 35f,
-            sliderValue = 35f,
             budgetRangeMin = 5f,
             budgetRangeMax = 35f,
             dailySpending = "$5",
