@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations.selector
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,6 +45,11 @@ class VariationSelectorFragment : DialogFragment() {
                 }
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        viewModel.onBackPress()
+        super.onDismiss(dialog)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
