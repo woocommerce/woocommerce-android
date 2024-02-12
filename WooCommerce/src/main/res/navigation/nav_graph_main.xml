@@ -87,9 +87,6 @@
         <action
             android:id="@+id/action_myStore_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
-        <action
-            android:id="@+id/action_myStore_to_blaze_campaign_creation_success"
-            app:destination="@id/blazeCampaignSuccessBottomSheetFragmentOnMyStore" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -767,7 +764,10 @@
         android:id="@+id/action_global_themeActivationFragmentDialog"
         app:destination="@id/themeActivationFragmentDialog" />
     <dialog
-        android:id="@+id/blazeCampaignSuccessBottomSheetFragmentOnMyStore"
+        android:id="@+id/blazeCampaignSuccessBottomSheetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.success.BlazeCampaignSuccessBottomSheetFragment"
         android:label="BlazeCampaignSuccessBottomSheetFragment" />
+    <action
+        android:id="@+id/action_global_blazeCampaignSuccessBottomSheetFragment"
+        app:destination="@id/blazeCampaignSuccessBottomSheetFragment" />
 </navigation>

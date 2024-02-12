@@ -170,6 +170,7 @@ class ProductDetailFragment :
         )
         initializeViews(savedInstanceState)
         initializeViewModel()
+        viewModel.checkBlazeCampaignCreationSuccess()
     }
 
     override fun onDestroyView() {
@@ -385,6 +386,12 @@ class ProductDetailFragment :
                 )
 
                 is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
+                is ProductDetailViewModel.ShowBlazeCampaignCreationSuccess -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalBlazeCampaignSuccessBottomSheetFragment()
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -396,7 +403,7 @@ class ProductDetailFragment :
         )
     }
 
-    private fun showAIProductDescriptionBottomSheet(title: String, description: String?) {
+    fun showAIProductDescriptionBottomSheet(title: String, description: String?) {
         findNavController().navigateSafely(
             ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(
                 title,

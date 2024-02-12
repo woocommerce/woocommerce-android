@@ -277,7 +277,7 @@ class MyStoreFragment :
 
                 is ShowBlazeCampaignCreationSuccess -> {
                     findNavController().navigateSafely(
-                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignCreationSuccess()
+                        NavGraphMainDirections.actionGlobalBlazeCampaignSuccessBottomSheetFragment()
                     )
                 }
             }
