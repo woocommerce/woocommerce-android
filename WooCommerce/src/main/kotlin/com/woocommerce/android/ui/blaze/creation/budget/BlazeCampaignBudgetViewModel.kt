@@ -23,8 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.days
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
 class BlazeCampaignBudgetViewModel @Inject constructor(
