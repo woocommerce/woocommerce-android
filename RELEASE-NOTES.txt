@@ -6,7 +6,7 @@
 
 17.3
 -----
-
+- [**] Fixed navigation issues [https://github.com/woocommerce/woocommerce-android/pull/10775]
 
 17.3
 -----
