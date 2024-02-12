@@ -176,12 +176,18 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun start() {
-        launch {
-            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-                order = it
-                displayOrderDetails()
-                fetchOrder(showSkeleton = false)
-            } ?: fetchOrder(showSkeleton = true)
+        if (navArgs.orderId != -1L) {
+            launch {
+                orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                    order = it
+                    displayOrderDetails()
+                    fetchOrder(showSkeleton = false)
+                } ?: fetchOrder(showSkeleton = true)
+            }
+        } else {
+            viewState = viewState.copy(
+                isOrderDetailSkeletonShown = true
+            )
         }
     }
 
