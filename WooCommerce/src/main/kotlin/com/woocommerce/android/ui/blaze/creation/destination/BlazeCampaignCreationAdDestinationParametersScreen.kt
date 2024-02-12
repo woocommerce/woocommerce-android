@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -88,59 +88,17 @@ fun AdDestinationParametersScreen(
                 )
             }
 
-            itemsIndexed(
+            items(
                 items = viewState.parameters.entries.toList(),
-                key = { _, item -> "key${item.key}" }
-            ) { index, (key, value) ->
-                Column(
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable { onParameterTapped(key) }
-                            .padding(
-                                start = dimensionResource(id = R.dimen.major_100),
-                                top = dimensionResource(id = R.dimen.minor_100),
-                                bottom = dimensionResource(id = R.dimen.minor_100)
-                            ),
-                        verticalAlignment = CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = key,
-                                style = MaterialTheme.typography.body2,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = value,
-                                style = MaterialTheme.typography.body2,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = colorResource(id = R.color.color_on_surface_medium)
-                            )
-                        }
-                        IconButton(
-                            onClick = { onDeleteParameterTapped(key) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.DeleteOutline,
-                                contentDescription = stringResource(id = R.string.delete),
-                                tint = colorResource(id = R.color.color_on_surface_medium)
-                            )
-                        }
-                    }
-
-                    if (index < viewState.parameters.size) {
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
-                }
+                key = { item -> "key${item.key}" }
+            ) { (key, value) ->
+                ParameterItem(
+                    onParameterTapped = onParameterTapped,
+                    key = key,
+                    value = value,
+                    onDeleteParameterTapped = onDeleteParameterTapped,
+                    modifier = Modifier.animateItemPlacement()
+                )
             }
 
             item(key = "footer") {
@@ -179,6 +137,62 @@ fun AdDestinationParametersScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ParameterItem(
+    key: String,
+    value: String,
+    onParameterTapped: (String) -> Unit,
+    onDeleteParameterTapped: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .clickable { onParameterTapped(key) }
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.minor_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100)
+                ),
+            verticalAlignment = CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = key,
+                    style = MaterialTheme.typography.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = colorResource(id = R.color.color_on_surface_medium)
+                )
+            }
+            IconButton(
+                onClick = { onDeleteParameterTapped(key) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = stringResource(id = R.string.delete),
+                    tint = colorResource(id = R.color.color_on_surface_medium)
+                )
+            }
+        }
+
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
 }
 
