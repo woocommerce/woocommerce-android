@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.3
+We've enhanced the shipping label creation flow to ensure a smoother and more intuitive experience. This improvement aims to streamline your order fulfillment process, making it faster and more efficient. Please continue sending us feedback – we are listening!
+
 ## 17.2
 This version includes optimizations for speed and reliability. We are committed to continuously improving the app, making managing your online store more efficient and hassle-free.
 

@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
@@ -44,7 +45,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
-    private val campaign = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
+    private suspend fun getCampaign() = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
 
     private val adDetails = savedStateHandle.getStateFlow<AdDetailsUi>(viewModelScope, Loading)
     private val budget = savedStateHandle.getStateFlow(viewModelScope, getDefaultBudget())
@@ -97,7 +98,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations ->
         CampaignPreviewUiState(
             adDetails = ad,
-            campaignDetails = campaign.toCampaignDetailsUi(
+            campaignDetails = getCampaign().toCampaignDetailsUi(
                 budget,
                 selectedLanguages,
                 selectedDevices,
@@ -139,16 +140,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    fun onBudgetAndDurationUpdated(totalBudget: Float, durationInDays: Int, campaignStartDateMillis: Long) {
-        budget.update {
-            Budget(
-                totalBudget = totalBudget,
-                spentBudget = 0f,
-                currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
-                durationInDays = durationInDays,
-                startDate = Date(campaignStartDateMillis)
-            )
-        }
+    fun onBudgetAndDurationUpdated(updatedBudget: Budget) {
+        budget.update { updatedBudget }
     }
 
     fun onTargetSelectionUpdated(targetType: BlazeTargetType, selectedIds: List<String>) {
@@ -166,6 +159,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         selectedLocations.update { locations }
     }
 
+    fun onConfirmClicked() {
+        triggerEvent(NavigateToPaymentSummary(budget.value))
+    }
+
     private fun loadData() {
         launch {
             blazeRepository.fetchLanguages()
@@ -178,7 +175,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         productId = navArgs.productId,
                         description = suggestions?.firstOrNull()?.description ?: "",
                         tagLine = suggestions?.firstOrNull()?.tagLine ?: "",
-                        campaignImageUrl = campaign.campaignImageUrl
+                        campaignImageUrl = getCampaign().campaignImageUrl
                     )
                 }
             }
@@ -196,14 +193,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
             onItemSelected = {
-                triggerEvent(
-                    NavigateToBudgetScreen(
-                        totalBudget = budget.totalBudget,
-                        durationInDays = budget.durationInDays,
-                        campaignStartDateMillis = budget.startDate.time,
-                        currencyCode = budget.currencyCode
-                    )
-                )
+                triggerEvent(NavigateToBudgetScreen(budget))
             },
         ),
         targetDetails = listOf(
@@ -245,7 +235,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             displayValue = targetUrl,
             maxLinesValue = 1,
             onItemSelected = {
-                triggerEvent(NavigateToAdDestinationScreen)
+                triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
             }
         )
     )
@@ -268,7 +258,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         spentBudget = 0f,
         currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
         durationInDays = DEFAULT_CAMPAIGN_DURATION,
-        startDate = Date().apply { time += BlazeRepository.ONE_DAY_IN_MILLIS }, // By default start tomorrow
+        startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
     )
 
     data class CampaignPreviewUiState(
@@ -303,11 +293,14 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     data class NavigateToBudgetScreen(
-        val totalBudget: Float,
-        val durationInDays: Int,
-        val campaignStartDateMillis: Long,
-        val currencyCode: String
-    ) : MultiLiveEvent.Event()object NavigateToAdDestinationScreen : MultiLiveEvent.Event()
+        val budget: Budget
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToAdDestinationScreen(
+        val targetUrl: String,
+        val productId: Long
+    ) : MultiLiveEvent.Event()
+
     data class NavigateToTargetSelectionScreen(
         val targetType: BlazeTargetType,
         val selectedIds: List<String>
@@ -322,5 +315,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val tagLine: String,
         val description: String,
         val campaignImageUrl: String?
+    ) : MultiLiveEvent.Event()
+
+    // TODO we need to pass more details to use in the campaign creation
+    data class NavigateToPaymentSummary(
+        val budget: BlazeRepository.Budget
     ) : MultiLiveEvent.Event()
 }

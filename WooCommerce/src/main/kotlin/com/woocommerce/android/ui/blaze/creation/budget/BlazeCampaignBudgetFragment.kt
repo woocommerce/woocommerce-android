@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.EditBudgetAndDurationResult
+import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -44,7 +44,7 @@ class BlazeCampaignBudgetFragment : BaseFragment() {
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(
                         EDIT_BUDGET_AND_DURATION_RESULT,
-                        event.data as EditBudgetAndDurationResult
+                        event.data as Budget
                     )
                 }
             }
