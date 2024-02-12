@@ -84,7 +84,9 @@ class OrderListView @JvmOverloads constructor(
      * clear order list adapter data
      */
     fun clearAdapterData() {
-        ordersAdapter.submitList(null)
+        if (::ordersAdapter.isInitialized) {
+            ordersAdapter.submitList(null)
+        }
     }
 
     /**
