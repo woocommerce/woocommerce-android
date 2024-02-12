@@ -12,9 +12,7 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override val storedAddress: Address
         get() = sharedViewModel.order.billingAddress
