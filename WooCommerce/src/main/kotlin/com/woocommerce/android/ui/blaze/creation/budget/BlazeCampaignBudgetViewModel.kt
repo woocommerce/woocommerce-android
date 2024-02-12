@@ -17,7 +17,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -33,7 +32,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()
 
-    private val campaignForecastState = savedStateHandle.getStateFlow(viewModelScope, getLoadingForecastUi())
     private val budgetUiState = savedStateHandle.getStateFlow(
         viewModelScope,
         BudgetUiState(
@@ -56,12 +54,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         )
     )
 
-    val viewState = combine(
-        campaignForecastState,
-        budgetUiState
-    ) { forecast, budgetUiState ->
-        budgetUiState.copy(forecast = forecast)
-    }.asLiveData()
+    private var campaignForecastState
+        get() = budgetUiState.value.forecast
+        set(value) {
+            budgetUiState.update { it.copy(forecast = value) }
+        }
+
+    val viewState = budgetUiState.asLiveData()
 
     init {
         fetchAdForecast()
@@ -147,28 +146,25 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     private fun fetchAdForecast() {
-        campaignForecastState.update { it.copy(isLoading = true) }
+        campaignForecastState = campaignForecastState.copy(isLoading = true)
         launch {
             repository.fetchAdForecast(
                 startDate = Date(budgetUiState.value.campaignStartDateMillis),
                 campaignDurationDays = budgetUiState.value.durationInDays,
                 totalBudget = budgetUiState.value.totalBudget
             ).onSuccess { fetchAdForecastResult ->
-                campaignForecastState.update {
-                    it.copy(
-                        isLoading = false,
-                        isError = false,
-                        impressionsMin = fetchAdForecastResult.minImpressions,
-                        impressionsMax = fetchAdForecastResult.maxImpressions
-                    )
-                }
+                campaignForecastState = campaignForecastState.copy(
+                    isLoading = false,
+                    isError = false,
+                    impressionsMin = fetchAdForecastResult.minImpressions,
+                    impressionsMax = fetchAdForecastResult.maxImpressions
+                )
             }.onFailure {
-                campaignForecastState.update {
-                    it.copy(
-                        isLoading = false,
-                        isError = true
-                    )
-                }
+
+                campaignForecastState = campaignForecastState.copy(
+                    isLoading = false,
+                    isError = true
+                )
             }
         }
     }
