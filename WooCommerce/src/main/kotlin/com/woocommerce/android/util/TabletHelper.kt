@@ -18,18 +18,19 @@ class TabletHelper @Inject constructor(
     private var screen: Screen? = null
 
     fun onViewCreated(screen: Screen) {
+        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
+
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
+        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
+
         if (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) {
             initNavFragment(screen!!.secondPaneNavigation)
+            adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
         }
-    }
-
-    override fun onStart(owner: LifecycleOwner) {
-        adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
