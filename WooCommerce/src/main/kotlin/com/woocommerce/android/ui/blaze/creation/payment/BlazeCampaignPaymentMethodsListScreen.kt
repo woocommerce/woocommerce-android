@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -35,13 +36,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethod
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun BlazeCampaignPaymentMethodsListScreen(viewModel: BlazeCampaignPaymentMethodsListViewModel) {
@@ -79,10 +78,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(
 
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> {
                 AddPaymentMethodWebView(
-                    formUrl = viewState.formUrl,
-                    onUrlLoaded = viewState.onUrlLoaded,
-                    userAgent = viewState.userAgent,
-                    wpComWebViewAuthenticator = viewState.wpComWebViewAuthenticator,
+                    state = viewState,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -249,17 +245,18 @@ private fun EmptyPaymentMethodsView(
 
 @Composable
 fun AddPaymentMethodWebView(
-    formUrl: String,
-    onUrlLoaded: (String) -> Unit,
-    userAgent: UserAgent,
-    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    state: BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView,
     modifier: Modifier
 ) {
+    BackHandler {
+        state.onDismiss()
+    }
+
     WCWebView(
-        url = formUrl,
-        userAgent = userAgent,
-        wpComAuthenticator = wpComWebViewAuthenticator,
-        onUrlLoaded = onUrlLoaded,
+        url = state.formUrl,
+        userAgent = state.userAgent,
+        wpComAuthenticator = state.wpComWebViewAuthenticator,
+        onUrlLoaded = state.onUrlLoaded,
         modifier = modifier
     )
 }
