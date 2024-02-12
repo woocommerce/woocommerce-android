@@ -3,10 +3,12 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.os.Bundle
 import androidx.constraintlayout.widget.Guideline
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -22,7 +24,7 @@ class TabletHelper @Inject constructor(
 
     override fun onCreate(owner: LifecycleOwner) {
         if (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) {
-            initNavFragment(screen!!.navigation)
+            initNavFragment(screen!!.secondPaneNavigation)
         }
     }
 
@@ -36,11 +38,15 @@ class TabletHelper @Inject constructor(
     }
 
     private fun initNavFragment(navigation: Screen.Navigation) {
-        val navController = navigation.navController!!
-        val navGraphId = navigation.navGraph
+        val fragmentManager = navigation.fragmentManager
+        val navGraphId = navigation.navGraphId
         val bundle = navigation.bundle
 
-        navController.setGraph(navGraphId, bundle)
+        val navHostFragment = NavHostFragment.create(navGraphId, bundle)
+
+        fragmentManager.beginTransaction()
+            .replace(R.id.detail_nav_container, navHostFragment)
+            .commit()
     }
 
     private fun adjustUIForScreenSize(twoPaneLayoutGuideline: Guideline) {
@@ -55,17 +61,17 @@ class TabletHelper @Inject constructor(
 
     private companion object {
         const val TABLET_PANES_WIDTH_RATIO = 0.5F
-        const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
+        const val XL_TABLET_PANES_WIDTH_RATIO = 0.33F
     }
 
     interface Screen {
         val twoPaneLayoutGuideline: Guideline
-        val navigation: Navigation
+        val secondPaneNavigation: Navigation
         val lifecycleKeeper: Lifecycle
 
         data class Navigation(
-            val navController: NavController?,
-            val navGraph: Int,
+            val fragmentManager: FragmentManager,
+            val navGraphId: Int,
             val bundle: Bundle?
         )
     }

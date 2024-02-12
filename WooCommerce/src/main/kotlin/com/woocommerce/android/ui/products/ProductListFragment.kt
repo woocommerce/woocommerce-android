@@ -127,9 +127,9 @@ class ProductListFragment :
     override val lifecycleKeeper: Lifecycle
         get() = viewLifecycleOwner.lifecycle
 
-    override val navigation: TabletHelper.Screen.Navigation
+    override val secondPaneNavigation: TabletHelper.Screen.Navigation
         get() = TabletHelper.Screen.Navigation(
-            childFragmentManager.findFragmentById(R.id.detail_nav_container)?.findNavController(),
+            childFragmentManager,
             R.navigation.nav_graph_products,
             null,
         )
