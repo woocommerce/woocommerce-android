@@ -7,8 +7,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -17,11 +19,27 @@ class TabletLayoutSetupHelper @Inject constructor(
 ) : DefaultLifecycleObserver {
     private var screen: Screen? = null
 
+    private lateinit var navHostFragment: NavHostFragment
+
     fun onViewCreated(screen: Screen) {
         if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
 
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
+    }
+
+    fun onItemClicked(
+        getActionToLaunch: () -> NavDirections,
+        navigateWithRootNavController: () -> Unit
+    ) {
+        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled() ||
+            DisplayUtils.isTablet(context) ||
+            DisplayUtils.isXLargeTablet(context)
+        ) {
+            navigateWithRootNavController()
+        } else {
+            navHostFragment.navController.navigateSafely(getActionToLaunch())
+        }
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -43,7 +61,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         val navGraphId = navigation.navGraphId
         val bundle = navigation.bundle
 
-        val navHostFragment = NavHostFragment.create(navGraphId, bundle)
+        navHostFragment = NavHostFragment.create(navGraphId, bundle)
 
         fragmentManager.beginTransaction()
             .replace(R.id.detail_nav_container, navHostFragment)
@@ -55,9 +73,11 @@ class TabletLayoutSetupHelper @Inject constructor(
             DisplayUtils.isTablet(context) -> {
                 twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
             }
+
             DisplayUtils.isXLargeTablet(context) -> {
                 twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
             }
+
             else -> twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
         }
     }
