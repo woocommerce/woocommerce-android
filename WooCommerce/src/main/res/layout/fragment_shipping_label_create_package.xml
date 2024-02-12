@@ -2,7 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/minor_50"
+        app:layout_collapseMode="pin"
+        style="@style/Widget.Woo.Toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name"/>
+
+    <View
+        android:id="@+id/app_bar_divider"
+        android:layout_gravity="bottom"
+        style="@style/Woo.Divider" />
 
     <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
