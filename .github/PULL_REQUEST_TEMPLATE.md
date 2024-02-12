@@ -9,6 +9,8 @@ Closes: #
 ### Testing instructions
 <!-- Step-by-step testing instructions. When necessary, break out individual scenarios that need testing, and consider including a checklist for the reviewer to go through. -->
 
+- [] I reviewed the dependency diff (in wpmobilebot's comment) introduced by this PR and ensured that it is necessary and safe.
+
 ### Images/gif
 <!-- Include before and after images or gifs when appropriate. -->
 
