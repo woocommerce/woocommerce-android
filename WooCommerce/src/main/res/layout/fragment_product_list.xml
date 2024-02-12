@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/detail_nav_container"
+        app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -120,18 +120,22 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/two_pane_layout_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_constraintGuide_percent=".33" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/detail_nav_container"
-        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:visibility="gone"
         app:defaultNavHost="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/two_pane_layout_guideline"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.67"
-        app:navGraph="@navigation/nav_graph_products"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

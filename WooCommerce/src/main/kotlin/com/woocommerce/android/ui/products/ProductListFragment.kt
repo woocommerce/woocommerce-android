@@ -115,6 +115,15 @@ class ProductListFragment :
             feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
@@ -236,15 +245,6 @@ class ProductListFragment :
         }
 
         super.onViewStateRestored(savedInstanceState)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
-        enterTransition = fadeThroughTransition
-        exitTransition = fadeThroughTransition
-        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
