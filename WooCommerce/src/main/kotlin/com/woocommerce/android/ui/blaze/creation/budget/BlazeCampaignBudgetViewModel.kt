@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
@@ -75,10 +76,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     fun onUpdateTapped() {
         triggerEvent(
             ExitWithResult(
-                EditBudgetAndDurationResult(
+                Budget(
                     totalBudget = budgetUiState.value.totalBudget,
+                    spentBudget = 0f,
                     durationInDays = budgetUiState.value.durationInDays,
-                    campaignStartDateMillis = budgetUiState.value.campaignStartDateMillis
+                    startDate = Date(budgetUiState.value.campaignStartDateMillis),
+                    currencyCode = budgetUiState.value.currencyCode,
                 )
             )
         )
@@ -210,12 +213,5 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val impressionsMin: Int,
         val impressionsMax: Int,
         val isError: Boolean
-    ) : Parcelable
-
-    @Parcelize
-    data class EditBudgetAndDurationResult(
-        val totalBudget: Float,
-        val durationInDays: Int,
-        val campaignStartDateMillis: Long
     ) : Parcelable
 }
