@@ -125,6 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintGuide_percent="1.0"
         tools:layout_constraintGuide_percent=".33" />
 
     <androidx.fragment.app.FragmentContainerView
