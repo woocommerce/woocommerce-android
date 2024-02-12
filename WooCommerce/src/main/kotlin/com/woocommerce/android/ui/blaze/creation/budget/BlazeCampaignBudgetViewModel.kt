@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.ONE_DAY_IN_MILLIS
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -24,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
 class BlazeCampaignBudgetViewModel @Inject constructor(
@@ -174,7 +174,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     private fun getCampaignDurationDisplayDate(startDateMillis: Long, duration: Int): String {
-        val endDate = Date(startDateMillis + duration * ONE_DAY_IN_MILLIS)
+        val endDate = Date(startDateMillis + duration.days.inWholeMilliseconds)
         return "${Date(startDateMillis).formatToMMMdd()} - ${endDate.formatToMMMddYYYY()}"
     }
 

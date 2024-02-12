@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.days
 
 class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -27,7 +28,6 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5F // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50F // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
-        const val ONE_DAY_IN_MILLIS: Long = 1000 * 60 * 60 * 24
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -138,7 +138,7 @@ class BlazeRepository @Inject constructor(
         val result = blazeCampaignsStore.fetchBlazeAdForecast(
             selectedSite.get(),
             startDate,
-            Date(startDate.time + campaignDurationDays * ONE_DAY_IN_MILLIS),
+            Date(startDate.time + campaignDurationDays.days.inWholeMilliseconds),
             totalBudget.roundToInt().toDouble(),
         )
         return when {

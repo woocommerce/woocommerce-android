@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
@@ -268,7 +269,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         spentBudget = 0f,
         currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
         durationInDays = DEFAULT_CAMPAIGN_DURATION,
-        startDate = Date().apply { time += BlazeRepository.ONE_DAY_IN_MILLIS }, // By default start tomorrow
+        startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
     )
 
     data class CampaignPreviewUiState(
