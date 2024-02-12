@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.MenuCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
@@ -121,18 +120,17 @@ class ProductListFragment :
             feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
-    override val twoPaneLayoutGuideline: Guideline
-        get() = binding.twoPaneLayoutGuideline
+    override val twoPaneLayoutGuideline by lazy { binding.twoPaneLayoutGuideline }
 
-    override val lifecycleKeeper: Lifecycle
-        get() = viewLifecycleOwner.lifecycle
+    override val lifecycleKeeper: Lifecycle by lazy { viewLifecycleOwner.lifecycle }
 
-    override val secondPaneNavigation: TabletHelper.Screen.Navigation
-        get() = TabletHelper.Screen.Navigation(
+    override val secondPaneNavigation by lazy {
+        TabletHelper.Screen.Navigation(
             childFragmentManager,
             R.navigation.nav_graph_products,
             null,
         )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
