@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ShowBlazeCampaignCreationSuccess
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -59,12 +60,20 @@ class BlazeCampaignListFragment : BaseFragment() {
                 } else {
                     openBlazeWebView(event.url, event.source)
                 }
+
                 is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
                     event.url,
                     event.urlToTriggerExit
                 )
+
+                is ShowBlazeCampaignCreationSuccess -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalBlazeCampaignSuccessBottomSheetFragment()
+                    )
+                }
             }
         }
+        viewModel.checkBlazeCampaignCreationSuccess()
     }
 
     private fun openBlazeCreationFlow() {

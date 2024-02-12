@@ -95,6 +95,12 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown.value = false
     }
 
+    fun checkBlazeCampaignCreationSuccess() {
+        if (appPrefsWrapper.isComingFromBlazeCampaignCreationSuccess) {
+            triggerEvent(ShowBlazeCampaignCreationSuccess)
+        }
+    }
+
     private suspend fun loadCampaignsFor(page: Int) {
         val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
         if (result.isError || result.model == null) {
@@ -174,4 +180,6 @@ class BlazeCampaignListViewModel @Inject constructor(
         val url: String,
         val urlToTriggerExit: String
     ) : Event()
+
+    object ShowBlazeCampaignCreationSuccess : Event()
 }
