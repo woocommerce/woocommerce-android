@@ -3,13 +3,10 @@ package com.woocommerce.android.ui.orders.details.editing
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
-import androidx.core.view.MenuProvider
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -22,7 +19,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener, MenuProvider {
+abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
@@ -81,18 +78,11 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener, MenuP
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers()
     }
 
     @CallSuper
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-    }
-
-    @CallSuper
-    override fun onPrepareMenu(menu: Menu) {
+    fun onPrepareMenu() {
         updateDoneMenuItem()
     }
 
@@ -111,7 +101,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener, MenuP
     }
 
     @CallSuper
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 if (saveChanges()) {
