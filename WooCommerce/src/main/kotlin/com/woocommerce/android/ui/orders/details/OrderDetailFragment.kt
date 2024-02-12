@@ -183,6 +183,10 @@ class OrderDetailFragment :
          * occupies the entire window (typical in a transition from single-pane to two-pane layout).
          * It then navigates up to the order list screen, which is responsible for managing the two-pane
          * layout effectively.
+         *
+         * The code also determines if the Order Detail screen is invoked following order creation
+         * during the payment collection process. If this is the case, it navigates to the
+         * Select Payment screen on both phone and tablet devices.
          */
         if (isOrderListFragmentNotVisible() && isTablet() && !navArgs.startPaymentFlow) {
             navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)

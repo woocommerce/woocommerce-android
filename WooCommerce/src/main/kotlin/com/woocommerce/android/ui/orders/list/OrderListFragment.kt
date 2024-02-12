@@ -62,7 +62,6 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -628,7 +627,7 @@ class OrderListFragment :
         }
         handleResult<Long>(KEY_START_PAYMENT_FLOW) {
             if (isTablet()) {
-                openSpecificOrder(it,true)
+                openSpecificOrder(it, true)
             }
         }
     }
