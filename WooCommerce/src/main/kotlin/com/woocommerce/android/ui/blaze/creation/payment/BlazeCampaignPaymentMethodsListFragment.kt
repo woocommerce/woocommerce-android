@@ -8,11 +8,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BlazeCampaignPaymentMethodsListFragment : BaseFragment() {
@@ -24,6 +26,8 @@ class BlazeCampaignPaymentMethodsListFragment : BaseFragment() {
         get() = AppBarStatus.Hidden
 
     private val viewModel: BlazeCampaignPaymentMethodsListViewModel by viewModels()
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return composeView {
@@ -45,6 +49,7 @@ class BlazeCampaignPaymentMethodsListFragment : BaseFragment() {
                     key = SELECTED_PAYMENT_METHOD_KEY,
                     result = event.data
                 )
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

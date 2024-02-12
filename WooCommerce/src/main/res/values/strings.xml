@@ -3890,6 +3890,7 @@
     <string name="blaze_campaign_payment_list_header_text">All transactions are secure and encrypted</string>
     <string name="blaze_campaign_payment_list_hint">Credits cards are retrieved from the following WordPress.com account: %1$s &lt;%2$s&gt;</string>
     <string name="blaze_campaign_payment_list_add_new_payment_method_button">Add new card</string>
+    <string name="blaze_campaign_payment_added_successfully">Credit card added successfully</string>
     <!--
     Blaze other
     -->

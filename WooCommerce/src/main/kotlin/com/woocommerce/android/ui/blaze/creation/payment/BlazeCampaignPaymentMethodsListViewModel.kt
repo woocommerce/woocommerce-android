@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.payment
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
@@ -19,8 +20,8 @@ import javax.inject.Inject
 class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
-    val userAgent: UserAgent,
-    val wpComWebViewAuthenticator: WPComWebViewAuthenticator
+    private val userAgent: UserAgent,
+    private val wpComWebViewAuthenticator: WPComWebViewAuthenticator
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<BlazeCampaignPaymentMethodsListFragmentArgs>()
 
@@ -61,8 +62,13 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
                         ?.substringAfter("=")
                         .let { requireNotNull(it) }
                 }.fold(
-                    onSuccess = {
-                        MultiLiveEvent.Event.ExitWithResult(it)
+                    onSuccess = { paymentMethodId ->
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowSnackbar(
+                                R.string.blaze_campaign_payment_added_successfully
+                            )
+                        )
+                        MultiLiveEvent.Event.ExitWithResult(paymentMethodId)
                     },
                     onFailure = {
                         WooLog.e(WooLog.T.BLAZE, "Failed to extract payment method id from URL: $url", it)
