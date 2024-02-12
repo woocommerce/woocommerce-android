@@ -35,19 +35,21 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     private val budgetUiState = savedStateHandle.getStateFlow(
         viewModelScope,
         BudgetUiState(
-            currencyCode = navArgs.currencyCode,
-            totalBudget = navArgs.totalBudget,
-            sliderValue = navArgs.totalBudget,
-            budgetRangeMin = navArgs.durationInDays * CAMPAIGN_MINIMUM_DAILY_SPEND,
-            budgetRangeMax = navArgs.durationInDays * CAMPAIGN_MAXIMUM_DAILY_SPEND,
-            dailySpending = formatDailySpend(dailySpend = navArgs.totalBudget / navArgs.durationInDays),
+            currencyCode = navArgs.budget.currencyCode,
+            totalBudget = navArgs.budget.totalBudget,
+            sliderValue = navArgs.budget.totalBudget,
+            budgetRangeMin = navArgs.budget.durationInDays * CAMPAIGN_MINIMUM_DAILY_SPEND,
+            budgetRangeMax = navArgs.budget.durationInDays * CAMPAIGN_MAXIMUM_DAILY_SPEND,
+            dailySpending = formatDailySpend(
+                dailySpend = navArgs.budget.totalBudget / navArgs.budget.durationInDays
+            ),
             forecast = getLoadingForecastUi(),
-            durationInDays = navArgs.durationInDays,
+            durationInDays = navArgs.budget.durationInDays,
             durationRangeMin = 1f,
             durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
-            campaignStartDateMillis = navArgs.campaignStartDateMillis,
+            campaignStartDateMillis = navArgs.budget.startDate.time,
             campaignDurationDates = getCampaignDurationDisplayDate(
-                navArgs.campaignStartDateMillis, navArgs.durationInDays
+                navArgs.budget.startDate.time, navArgs.budget.durationInDays
             ),
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false
@@ -175,7 +177,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     private fun formatDailySpend(dailySpend: Float) =
-        currencyFormatter.formatCurrencyRounded(dailySpend.toDouble(), navArgs.currencyCode)
+        currencyFormatter.formatCurrencyRounded(dailySpend.toDouble(), navArgs.budget.currencyCode)
 
     private fun getLoadingForecastUi() = ForecastUi(
         isLoading = true,

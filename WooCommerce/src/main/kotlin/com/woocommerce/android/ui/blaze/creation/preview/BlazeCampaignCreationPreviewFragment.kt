@@ -52,12 +52,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is Exit -> findNavController().popBackStack()
                 is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(
-                            event.totalBudget,
-                            event.durationInDays,
-                            event.campaignStartDateMillis,
-                            event.currencyCode
-                        )
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(event.budget)
                 )
 
                 is NavigateToEditAdScreen -> findNavController().navigateSafely(
@@ -77,12 +72,14 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                             event.selectedIds.toTypedArray()
                         )
                 )
+
                 is NavigateToTargetLocationSelectionScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetLocationSelectionFragment(
                             event.locations.toTypedArray()
                         )
                 )
+
                 is NavigateToAdDestinationScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment(
