@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleDialogNotice
@@ -183,8 +184,11 @@ class OrderDetailFragment :
          * It then navigates up to the order list screen, which is responsible for managing the two-pane
          * layout effectively.
          */
-        if (parentFragment?.parentFragment !is OrderListFragment && isTablet()) {
+        if (isOrderListFragmentNotVisible() && isTablet() && !navArgs.startPaymentFlow) {
             navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
+            return
+        } else if (isOrderListFragmentNotVisible() && isTablet() && navArgs.startPaymentFlow) {
+            navigateBackWithResult(KEY_START_PAYMENT_FLOW, navArgs.orderId)
             return
         }
 
@@ -217,6 +221,8 @@ class OrderDetailFragment :
             getString(R.string.order_card_detail_transition_name)
         )
     }
+
+    private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
 
     private fun setMarginsIfTablet() {
         if (isTablet()) {

@@ -20,7 +20,8 @@ interface MainNavigationRouter {
         orderId: Long,
         navHostFragment: NavHostFragment? = null,
         remoteNoteId: Long = 0,
-        launchedFromNotification: Boolean = false
+        launchedFromNotification: Boolean = false,
+        startPaymentsFlow: Boolean = false,
     )
 
     fun showOrderDetailWithSharedTransition(

@@ -33,6 +33,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isTablet
@@ -61,6 +62,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -583,8 +585,8 @@ class OrderListFragment :
         binding.orderListView.openFirstOrder()
     }
 
-    private fun openSpecificOrder(orderId: Long?) {
-        binding.orderListView.openOrder(orderId ?: -1L)
+    private fun openSpecificOrder(orderId: Long?, startPaymentsFlow: Boolean = false) {
+        binding.orderListView.openOrder(orderId ?: -1L, startPaymentsFlow)
     }
 
     private fun clearSelectedOrderIdInViewModel() {
@@ -622,6 +624,11 @@ class OrderListFragment :
         handleResult<Long>(KEY_ORDER_ID) {
             if (isTablet()) {
                 openSpecificOrder(it)
+            }
+        }
+        handleResult<Long>(KEY_START_PAYMENT_FLOW) {
+            if (isTablet()) {
+                openSpecificOrder(it,true)
             }
         }
     }
@@ -664,6 +671,7 @@ class OrderListFragment :
         allOrderIds: List<Long>,
         orderStatus: String,
         sharedView: View?,
+        startPaymentsFlow: Boolean,
     ) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
@@ -691,7 +699,7 @@ class OrderListFragment :
             selectedOrder.selectOrder(orderId)
             viewModel.updateOrderSelectedStatus(orderId, isTablet())
             navHostFragment?.let {
-                showOrderDetail(orderId, it)
+                showOrderDetail(orderId, it, startPaymentsFlow = startPaymentsFlow)
             } ?: run {
                 // Phone layout
                 if (sharedView != null) {

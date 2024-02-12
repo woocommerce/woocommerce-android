@@ -347,7 +347,7 @@ class OrderDetailViewModel @Inject constructor(
         paymentsFlowTracker.trackCollectPaymentTapped()
         triggerEvent(
             StartPaymentFlow(
-                orderId = order.id,
+                orderId = navArgs.orderId,
                 paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
             )
         )

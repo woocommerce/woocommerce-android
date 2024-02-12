@@ -48,9 +48,10 @@ object OrderCreateEditNavigator {
                     currentFeeValue = target.currentFeeValue
                 )
 
-            is ShowCreatedOrder ->
+            is ShowCreatedOrder -> {
                 OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderListFragment(target.orderId)
+                    .actionOrderCreationFragmentToOrderDetailFragment(target.orderId, target.startPaymentFlow)
+            }
 
             is EditShipping ->
                 OrderCreateEditFormFragmentDirections

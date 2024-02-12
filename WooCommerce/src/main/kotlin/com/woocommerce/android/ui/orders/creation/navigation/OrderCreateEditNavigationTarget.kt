@@ -26,6 +26,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     data class ShowCreatedOrder(
         val orderId: Long,
         val startPaymentFlow: Boolean,
+        val isTablet: Boolean = false,
     ) : OrderCreateEditNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) :
         OrderCreateEditNavigationTarget()
