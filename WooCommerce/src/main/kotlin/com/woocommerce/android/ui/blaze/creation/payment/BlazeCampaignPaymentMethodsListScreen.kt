@@ -68,10 +68,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
         when (viewState) {
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList -> {
                 PaymentMethodsList(
-                    paymentMethods = viewState.paymentMethods,
-                    selectedPaymentMethod = viewState.selectedPaymentMethod,
-                    onPaymentMethodClicked = viewState.onPaymentMethodClicked,
-                    onAddPaymentMethodClicked = viewState.onAddPaymentMethodClicked,
+                    state = viewState,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -89,27 +86,26 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
 
 @Composable
 private fun PaymentMethodsList(
-    paymentMethods: List<PaymentMethod>,
-    selectedPaymentMethod: PaymentMethod?,
-    onPaymentMethodClicked: (PaymentMethod) -> Unit,
-    onAddPaymentMethodClicked: () -> Unit,
+    state: BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList,
     modifier: Modifier
 ) {
     Column(modifier) {
         PaymentMethodsHeader(Modifier.fillMaxWidth())
-        if (paymentMethods.isEmpty()) {
+        if (state.paymentMethods.isEmpty()) {
             EmptyPaymentMethodsView(
-                onAddPaymentMethodClicked = onAddPaymentMethodClicked,
+                onAddPaymentMethodClicked = state.onAddPaymentMethodClicked,
                 modifier = modifier
                     .fillMaxWidth()
                     .weight(1f)
             )
         } else {
             PaymentMethodsListView(
-                paymentMethods = paymentMethods,
-                selectedPaymentMethod = selectedPaymentMethod!!,
-                onPaymentMethodClicked = onPaymentMethodClicked,
-                onAddPaymentMethodClicked = onAddPaymentMethodClicked,
+                paymentMethods = state.paymentMethods,
+                accountEmail = state.accountEmail,
+                accountUsername = state.accountUsername,
+                selectedPaymentMethod = state.selectedPaymentMethod!!,
+                onPaymentMethodClicked = state.onPaymentMethodClicked,
+                onAddPaymentMethodClicked = state.onAddPaymentMethodClicked,
                 modifier = modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -135,6 +131,8 @@ private fun PaymentMethodsHeader(modifier: Modifier = Modifier) {
 private fun PaymentMethodsListView(
     paymentMethods: List<PaymentMethod>,
     selectedPaymentMethod: PaymentMethod,
+    accountEmail: String,
+    accountUsername: String,
     onPaymentMethodClicked: (PaymentMethod) -> Unit,
     onAddPaymentMethodClicked: () -> Unit,
     modifier: Modifier
@@ -153,7 +151,11 @@ private fun PaymentMethodsListView(
 
         item {
             Text(
-                text = stringResource(id = R.string.blaze_campaign_payment_list_hint, "username", "email"),
+                text = stringResource(
+                    id = R.string.blaze_campaign_payment_list_hint,
+                    accountUsername,
+                    accountEmail
+                ),
                 style = MaterialTheme.typography.caption,
                 color = MaterialTheme.colors.onSurface.copy(
                     alpha = ContentAlpha.medium
@@ -258,6 +260,8 @@ private fun EmptyPaymentMethodsListPreview() {
             viewState = BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList(
                 paymentMethods = emptyList(),
                 selectedPaymentMethod = null,
+                accountEmail = "email",
+                accountUsername = "username",
                 onPaymentMethodClicked = {},
                 onAddPaymentMethodClicked = {},
                 onDismiss = {}
@@ -295,6 +299,8 @@ private fun PaymentMethodsListPreview() {
             viewState = BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList(
                 paymentMethods = paymentMethods,
                 selectedPaymentMethod = paymentMethods.first(),
+                accountEmail = "email",
+                accountUsername = "username",
                 onPaymentMethodClicked = {},
                 onAddPaymentMethodClicked = {},
                 onDismiss = {}

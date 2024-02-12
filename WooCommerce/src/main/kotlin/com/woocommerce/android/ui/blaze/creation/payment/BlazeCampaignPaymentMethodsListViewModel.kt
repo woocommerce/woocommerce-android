@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.payment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val accountRepository: AccountRepository
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs by savedStateHandle.navArgs<BlazeCampaignPaymentMethodsListFragmentArgs>()
@@ -31,6 +33,8 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         selectedPaymentMethod = navArgs.paymentMethodsData.savedPaymentMethods.firstOrNull {
             it.id == navArgs.selectedPaymentMethodId
         },
+        accountEmail = accountRepository.getUserAccount()?.email ?: "",
+        accountUsername = accountRepository.getUserAccount()?.userName ?: "",
         onPaymentMethodClicked = {
             triggerEvent(MultiLiveEvent.Event.ExitWithResult(it.id))
         },
@@ -52,6 +56,8 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         data class PaymentMethodsList(
             val paymentMethods: List<BlazeRepository.PaymentMethod>,
             val selectedPaymentMethod: BlazeRepository.PaymentMethod?,
+            val accountEmail: String,
+            val accountUsername: String,
             val onPaymentMethodClicked: (BlazeRepository.PaymentMethod) -> Unit,
             val onAddPaymentMethodClicked: () -> Unit,
             override val onDismiss: () -> Unit
