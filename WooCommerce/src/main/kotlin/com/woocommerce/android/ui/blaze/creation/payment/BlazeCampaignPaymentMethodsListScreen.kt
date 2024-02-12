@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -220,12 +223,19 @@ private fun EmptyPaymentMethodsView(
             vertical = dimensionResource(id = R.dimen.major_200)
         )
     ) {
+        Spacer(modifier = Modifier.weight(1f))
         Text(text = stringResource(id = R.string.blaze_campaign_payment_list_empty_state_text))
-        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_orders_all_fulfilled),
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         WCColoredButton(
             onClick = onAddPaymentMethodClicked,
             text = stringResource(id = R.string.blaze_campaign_payment_list_add_payment_method_button)
         )
+        Spacer(modifier = Modifier.weight(2f))
     }
 }
 
