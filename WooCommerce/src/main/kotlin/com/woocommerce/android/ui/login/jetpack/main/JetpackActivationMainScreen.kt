@@ -288,9 +288,12 @@ private fun AnimatedVisibilityScope.ErrorState(
         Spacer(modifier = Modifier.weight(1f))
         val buttonsModifier = Modifier
             .fillMaxWidth()
-            .animateEnterExit(enter = slideInVertically(animationSpec = tween(delayMillis = DefaultDurationMillis)) { fullHeight ->
-                fullHeight
-            }, exit = slideOutVertically { fullHeight -> fullHeight })
+            .animateEnterExit(
+                enter = slideInVertically(animationSpec = tween(delayMillis = DefaultDurationMillis)) { fullHeight ->
+                    fullHeight
+                },
+                exit = slideOutVertically { fullHeight -> fullHeight }
+            )
         if (viewState.errorCode != FORBIDDEN_ERROR_CODE) {
             val retryButton = when (viewState.stepType) {
                 JetpackActivationMainViewModel.StepType.Installation ->
