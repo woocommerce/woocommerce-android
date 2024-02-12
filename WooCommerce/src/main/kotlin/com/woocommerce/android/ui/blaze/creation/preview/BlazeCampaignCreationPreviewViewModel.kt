@@ -159,6 +159,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         selectedLocations.update { locations }
     }
 
+    fun onConfirmClicked() {
+        triggerEvent(NavigateToPaymentSummary(budget.value))
+    }
+
     private fun loadData() {
         launch {
             blazeRepository.fetchLanguages()
@@ -311,5 +315,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val tagLine: String,
         val description: String,
         val campaignImageUrl: String?
+    ) : MultiLiveEvent.Event()
+
+    // TODO we need to pass more details to use in the campaign creation
+    data class NavigateToPaymentSummary(
+        val budget: BlazeRepository.Budget
     ) : MultiLiveEvent.Event()
 }
