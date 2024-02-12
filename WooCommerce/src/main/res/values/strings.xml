@@ -3863,6 +3863,7 @@
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
 
     <!--
     Blaze campaign edit-ad screen
@@ -3873,6 +3874,19 @@
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <!--
+    Blaze campaign payment
+    -->
+    <string name="blaze_campaign_payment_summary_title">Payment</string>
+    <string name="blaze_campaign_payment_summary_totals">Payment totals</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze campaign</string>
+    <string name="blaze_campaign_payment_summary_total_budget">Total</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">Loading payment methods</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">Add payment method</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Loading payment methods failed, please retry by clicking here!</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">Submit campaign</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">By clicking \"Submit campaign\" you agree to the &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Advertising Policy&lt;/u&gt;&lt;/a&gt;, and authorize your payment method to be charged for the budget and duration you chose. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about how budgets and payments for Promoted Posts work.</string>
+
+    <!--
     Blaze other
     -->
     <string name="blaze" translatable="false">Blaze</string>
@@ -3882,7 +3896,14 @@
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
     <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
-
+    <!--
+    Blaze edit ad destination
+    -->
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Enter manually</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">Destination URL</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL parameters</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">The product URL</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">The site home</string>
     <!--
     Highlights tooltip
     -->
@@ -4000,5 +4021,4 @@
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See Report</string>
-
 </resources>

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 15:54:03+0000
+Translation-Revision-Date: 2024-02-08 22:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Beleg konnte nicht gespeichert werden</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Beleg konnte nicht heruntergeladen werden</string>
+    <string name="card_reader_payment_email_client_not_found">Es wurde keine Anwendung gefunden, mit der der Beleg geteilt werden kann</string>
+    <string name="receipt_fetching_error">Es konnte kein Beleg für diese Bestellung geladen werden</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Von KI vorgeschlagen</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d weitere Zeichen möglich</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Beschreibung</string>
@@ -1957,7 +1961,6 @@ Language: de
     <string name="variable_product_attributes">Variantenattribute</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktiviere Bluetooth auf dem Mobilgerät</string>
     <string name="card_reader_refetching_order_failed">Fehler beim Abrufen der Bestellung Der Bestellstatus in der App ist eventuell nicht aktuell.</string>
-    <string name="card_reader_payment_email_client_not_found">E-Mail-Client-App wird nicht erkannt.</string>
     <string name="card_reader_payment_receipt_email_subject">Dein Beleg vom %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestellung aktualisieren</string>
     <string name="card_reader_payment_fetch_order_loading_header">App-Status aktualisieren</string>

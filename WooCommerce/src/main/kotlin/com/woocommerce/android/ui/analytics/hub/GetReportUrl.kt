@@ -47,5 +47,3 @@ class GetReportUrl @Inject constructor(
         }
     }
 }
-
-enum class ReportCard { Revenue, Orders, Products }
