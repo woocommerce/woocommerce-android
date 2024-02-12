@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.MenuCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
@@ -54,11 +55,11 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.TabletHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @Suppress("LargeClass")
@@ -71,13 +72,11 @@ class ProductListFragment :
     OnActionExpandListener,
     WCProductSearchTabView.ProductSearchTypeChangedListener,
     ActionMode.Callback,
-    MenuProvider {
+    MenuProvider,
+    TabletHelper.Screen {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
-
-        private const val TABLET_PANES_WIDTH_RATIO = 0.5F
-        private const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
     }
 
     @Inject
@@ -91,6 +90,9 @@ class ProductListFragment :
 
     @Inject
     lateinit var addProductNavigator: AddProductNavigator
+
+    @Inject
+    lateinit var tabletHelper: TabletHelper
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -119,21 +121,33 @@ class ProductListFragment :
             feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
+    override val twoPaneLayoutGuideline: Guideline
+        get() = binding.twoPaneLayoutGuideline
+
+    override val lifecycleKeeper: Lifecycle
+        get() = viewLifecycleOwner.lifecycle
+
+    override val navigation: TabletHelper.Screen.Navigation
+        get() = TabletHelper.Screen.Navigation(
+            childFragmentManager.findFragmentById(R.id.detail_nav_container)?.findNavController(),
+            R.navigation.nav_graph_products,
+            null,
+        )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
-
-        val navController =
-            childFragmentManager.findFragmentById(R.id.detail_nav_container)?.findNavController()
-        navController?.setGraph(R.navigation.nav_graph_products)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        tabletHelper.onViewCreated(this)
+
         postponeEnterTransition()
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -169,7 +183,6 @@ class ProductListFragment :
 
         initAddProductFab(binding.addProductButton)
         addSelectionTracker()
-        binding.adjustUIForScreenSize()
 
         when {
             productListViewModel.isSearching() -> {
@@ -180,16 +193,6 @@ class ProductListFragment :
             else -> {
                 productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
             }
-        }
-    }
-
-    private fun FragmentProductListBinding.adjustUIForScreenSize() {
-        if (DisplayUtils.isTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
-        } else if (DisplayUtils.isXLargeTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
-        } else {
-            twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
         }
     }
 
