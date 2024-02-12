@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -26,6 +28,7 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingLabelCreatePackageBinding.bind(view)
+        setupToolbar(binding)
         val tabLayout = binding.createPackageTabLayout
         val viewPager = binding.createPackagePager
 
@@ -34,6 +37,17 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
 
         initializeTabs(tabLayout, viewPager)
         setupObservers(viewModel)
+    }
+
+    private fun setupToolbar(binding: FragmentShippingLabelCreatePackageBinding) {
+        binding.toolbar.title = getString(R.string.shipping_label_create_package_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun initializeTabs(tabLayout: TabLayout, viewPager: ViewPager2) {

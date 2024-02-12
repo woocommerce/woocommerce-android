@@ -1,73 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snack_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/minor_50"
+        app:layout_collapseMode="pin"
+        style="@style/Widget.Woo.Toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name"/>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            android:text="@string/shipping_label_customs_form"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/color_on_surface_high" />
+    <View
+        android:id="@+id/app_bar_divider"
+        android:layout_gravity="bottom"
+        style="@style/Woo.Divider" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_200"
-            app:srcCompat="@drawable/img_print_with_phone" />
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            android:layout_marginTop="@dimen/major_200"
-            android:gravity="center"
-            android:text="@string/shipping_label_print_customs_explanation"
-            android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="@color/color_on_surface_high" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/invoices_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/major_200"
-            android:layout_weight="1"
-            tools:itemCount="2"
-            tools:listitem="@layout/print_customs_form_list_item" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/print_button"
-            style="@style/Woo.Button.Colored"
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_200"
-            android:text="@string/shipping_label_print_customs_form"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_paperSize" />
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/save_for_later_button"
-            style="@style/Woo.Button.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/shipping_label_print_save_for_later"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_paperSize" />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                android:text="@string/shipping_label_customs_form"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/color_on_surface_high" />
 
-    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-</ScrollView>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_200"
+                app:srcCompat="@drawable/img_print_with_phone" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_200"
+                android:layout_marginTop="@dimen/major_200"
+                android:gravity="center"
+                android:text="@string/shipping_label_print_customs_explanation"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/color_on_surface_high" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/invoices_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/major_200"
+                android:layout_weight="1"
+                tools:itemCount="2"
+                tools:listitem="@layout/print_customs_form_list_item" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/print_button"
+                style="@style/Woo.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_200"
+                android:text="@string/shipping_label_print_customs_form"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_paperSize" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_for_later_button"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/shipping_label_print_save_for_later"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_paperSize" />
+
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+    </ScrollView>
+</LinearLayout>
