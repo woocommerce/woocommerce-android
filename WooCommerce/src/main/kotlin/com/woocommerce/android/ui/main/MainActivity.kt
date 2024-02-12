@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.InfoScreenFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -896,10 +897,34 @@ class MainActivity :
         }
     }
 
-    private fun navigateToWebView(event: ViewUrlInWebView) {
+    fun navigateToWebView(event: ViewUrlInWebView) {
         navController.navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = event.url,
+                urlsToTriggerExit = event.urlsToTriggerExit,
+                title = event.title
+            )
         )
+    }
+
+    @Suppress("LongParameterList")
+    fun navigateToGlobalInfoScreenFragment(
+        screenTitle: Int,
+        heading: Int,
+        message: Int,
+        linkTitle: Int,
+        imageResource: Int,
+        linkAction: InfoScreenFragment.InfoScreenLinkAction
+    ) {
+        val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+            screenTitle = screenTitle,
+            heading = heading,
+            message = message,
+            linkTitle = linkTitle,
+            imageResource = imageResource,
+            linkAction = linkAction
+        )
+        navController.navigate(action)
     }
 
     private fun showOrderDetail(event: ViewOrderDetail) {
