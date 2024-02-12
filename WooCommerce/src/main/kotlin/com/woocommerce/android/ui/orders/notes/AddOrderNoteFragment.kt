@@ -2,10 +2,8 @@ package com.woocommerce.android.ui.orders.notes
 
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
@@ -31,7 +29,7 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), BackPressListener, MenuProvider {
+class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), BackPressListener {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         const val KEY_ADD_NOTE_RESULT = "key_add_note_result"
@@ -46,16 +44,13 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
     private var addMenuItem: MenuItem? = null
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentAddOrderNoteBinding.bind(view)
+        setupToolbar(binding)
         initUi(binding)
         setupObservers(binding)
 
@@ -63,6 +58,24 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
             binding.addNoteEditor.requestFocus()
             ActivityUtils.showKeyboard(binding.addNoteEditor)
         }
+    }
+
+    private fun setupToolbar(binding: FragmentAddOrderNoteBinding) {
+        binding.toolbar.title = viewModel.screenTitle
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_add)
+        binding.toolbar.setNavigationOnClickListener {
+            viewModel.onBackPressed()
+        }
+        setupToolbarMenu(binding.toolbar.menu)
+    }
+
+    private fun setupToolbarMenu(menu: Menu) {
+        addMenuItem = menu.findItem(R.id.menu_add)
+        addMenuItem!!.isVisible = viewModel.shouldShowAddButton
     }
 
     override fun getFragmentTitle() = viewModel.screenTitle
@@ -80,14 +93,7 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
         }
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_add, menu)
-        addMenuItem = menu.findItem(R.id.menu_add)
-        addMenuItem!!.isVisible = viewModel.shouldShowAddButton
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
