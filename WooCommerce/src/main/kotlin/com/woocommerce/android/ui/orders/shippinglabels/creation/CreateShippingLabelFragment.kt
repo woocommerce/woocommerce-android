@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowAddressEditor
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCustomsForm
@@ -87,15 +89,30 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
 
     private val skeletonView: SkeletonView = SkeletonView()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun getFragmentTitle() = getString(R.string.shipping_label_create_title)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCreateShippingLabelBinding.bind(view)
+        setupToolbar(binding)
 
         initializeViewModel(binding)
         initializeViews(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentCreateShippingLabelBinding) {
+        binding.toolbar.title = getString(R.string.shipping_label_create_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
     }
 
     override fun onStop() {
