@@ -5,12 +5,14 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.wordpress.android.fluxc.network.UserAgent
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,7 +53,24 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         formUrl = navArgs.paymentMethodsData.addPaymentMethodUrls.formUrl,
         userAgent = userAgent,
         wpComWebViewAuthenticator = wpComWebViewAuthenticator,
-        onUrlLoaded = { /* TODO */ },
+        onUrlLoaded = { url ->
+            if (url.startsWith(navArgs.paymentMethodsData.addPaymentMethodUrls.successUrl)) {
+                runCatching {
+                    URL(url).query?.split("&")
+                        ?.firstOrNull { it.startsWith("payment_method_id=") }
+                        ?.substringAfter("=")
+                        .let { requireNotNull(it) }
+                }.fold(
+                    onSuccess = {
+                        MultiLiveEvent.Event.ExitWithResult(it)
+                    },
+                    onFailure = {
+                        WooLog.e(WooLog.T.BLAZE, "Failed to extract payment method id from URL: $url", it)
+                        _viewState.value = paymentMethodsListState()
+                    }
+                )
+            }
+        },
         onDismiss = { _viewState.value = paymentMethodsListState() }
     )
 
