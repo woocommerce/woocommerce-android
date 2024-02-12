@@ -1,110 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <ScrollView
-        android:id="@+id/content_layout"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/minor_50"
+        app:layout_collapseMode="pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
+
+    <View
+        android:id="@+id/app_bar_divider"
+        style="@style/Woo.Divider"
+        android:layout_gravity="bottom" />
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        <ScrollView
+            android:id="@+id/content_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <com.woocommerce.android.widgets.WCWarningBanner
-                android:id="@+id/edit_warning_banner"
+            <com.woocommerce.android.widgets.WCElevatedLinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:text="@string/shipping_label_payments_cant_edit_warning"
-                tools:visibility="visible" />
+                android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/payment_methods_section_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_75"
-                android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/shipping_label_payments_selected_payment_method"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                app:layout_constrainedWidth="true" />
+                <com.woocommerce.android.widgets.WCWarningBanner
+                    android:id="@+id/edit_warning_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:text="@string/shipping_label_payments_cant_edit_warning"
+                    tools:visibility="visible" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/payment_methods_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                tools:itemCount="2"
-                tools:listitem="@layout/shipping_label_payment_method_list_item" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/payment_methods_section_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:text="@string/shipping_label_payments_selected_payment_method"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
+                    app:layout_constrainedWidth="true" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/add_first_payment_method_button"
-                style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_100"
-                android:text="@string/shipping_label_payments_add_first_credit_card"
-                app:icon="@drawable/ic_external"
-                app:iconGravity="textEnd"
-                app:iconPadding="@dimen/minor_100"
-                android:visibility="gone"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/payment_methods_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/shipping_label_payment_method_list_item" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/payments_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:breakStrategy="simple"
-                android:textAppearance="?attr/textAppearanceCaption"
-                tools:ignore="UnusedAttribute"
-                tools:text="Credit cards are retrieved from the following WordPress.com account: username user@email.com" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_first_payment_method_button"
+                    style="@style/Woo.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:text="@string/shipping_label_payments_add_first_credit_card"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_external"
+                    app:iconGravity="textEnd"
+                    app:iconPadding="@dimen/minor_100" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/email_receipts_checkbox"
-                style="@style/Woo.CheckBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_150"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_150"
-                android:gravity="top"
-                android:paddingStart="@dimen/minor_100"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                tools:ignore="RtlSymmetry"
-                tools:text="Email the label purchase receipts to username (username) at user@email.com" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/payments_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:breakStrategy="simple"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    tools:ignore="UnusedAttribute"
+                    tools:text="Credit cards are retrieved from the following WordPress.com account: username user@email.com" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/add_payment_method_button"
-                style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_100"
-                android:text="@string/shipping_label_payments_add_credit_card"
-                app:icon="@drawable/ic_external"
-                app:iconGravity="textEnd"
-                app:iconPadding="@dimen/minor_100" />
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/email_receipts_checkbox"
+                    style="@style/Woo.CheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_150"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_150"
+                    android:gravity="top"
+                    android:paddingStart="@dimen/minor_100"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
+                    tools:ignore="RtlSymmetry"
+                    tools:text="Email the label purchase receipts to username (username) at user@email.com" />
 
-        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_payment_method_button"
+                    style="@style/Woo.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:text="@string/shipping_label_payments_add_credit_card"
+                    app:icon="@drawable/ic_external"
+                    app:iconGravity="textEnd"
+                    app:iconPadding="@dimen/minor_100" />
 
-    </ScrollView>
+            </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 
-    <com.woocommerce.android.widgets.WCEmptyView
-        android:id="@+id/error_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
-</FrameLayout>
+        </ScrollView>
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/error_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>
