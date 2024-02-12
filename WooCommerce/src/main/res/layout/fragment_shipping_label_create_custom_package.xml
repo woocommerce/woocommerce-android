@@ -1,104 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <com.woocommerce.android.widgets.WCElevatedConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/minor_100">
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/minor_50"
+        app:layout_collapseMode="pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/custom_package_form_info"
+    <View
+        android:id="@+id/app_bar_divider"
+        style="@style/Woo.Divider"
+        android:layout_gravity="bottom" />
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.woocommerce.android.widgets.WCElevatedConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_75"
-            android:layout_marginEnd="@dimen/major_100"
-            android:text="@string/shipping_label_create_package_field_info"
-            android:textAppearance="@style/TextAppearance.Woo.Body1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:paddingBottom="@dimen/minor_100">
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-            android:id="@+id/type_spinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_75"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_create_custom_package_field_type"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_package_form_info" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/custom_package_form_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginEnd="@dimen/major_100"
+                android:text="@string/shipping_label_create_package_field_info"
+                android:textAppearance="@style/TextAppearance.Woo.Body1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_create_custom_package_field_name"
-            android:inputType="text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/type_spinner" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                android:id="@+id/type_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_create_custom_package_field_type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/custom_package_form_info" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/length"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_create_custom_package_field_length"
-            android:inputType="numberDecimal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/name" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_175"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_create_custom_package_field_name"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/type_spinner" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/width"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_create_custom_package_field_width"
-            android:inputType="numberDecimal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/length" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/length"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_175"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_create_custom_package_field_length"
+                android:inputType="numberDecimal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/name" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/height"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_create_custom_package_field_height"
-            android:inputType="numberDecimal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/width" />
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/width"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_175"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_create_custom_package_field_width"
+                android:inputType="numberDecimal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/length" />
 
-        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-            android:id="@+id/weight"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_175"
-            android:layout_marginEnd="@dimen/major_100"
-            android:hint="@string/shipping_label_create_custom_package_field_empty_weight"
-            android:inputType="numberDecimal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/height"
-            app:helperText="@string/shipping_label_create_custom_package_field_empty_weight_helper"
-            />
-    </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/height"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_175"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_create_custom_package_field_height"
+                android:inputType="numberDecimal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/width" />
 
-</ScrollView>
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/weight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_175"
+                android:layout_marginEnd="@dimen/major_100"
+                android:hint="@string/shipping_label_create_custom_package_field_empty_weight"
+                android:inputType="numberDecimal"
+                app:helperText="@string/shipping_label_create_custom_package_field_empty_weight_helper"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/height" />
+        </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
+
+    </ScrollView>
+</LinearLayout>
