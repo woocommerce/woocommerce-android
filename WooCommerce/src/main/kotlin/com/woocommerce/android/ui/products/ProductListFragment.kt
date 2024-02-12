@@ -58,6 +58,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @Suppress("LargeClass")
@@ -74,6 +75,9 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+
+        private const val TABLET_PANES_WIDTH_RATIO = 0.5F
+        private const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
     }
 
     @Inject
@@ -122,6 +126,10 @@ class ProductListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
+
+        val navController =
+            childFragmentManager.findFragmentById(R.id.detail_nav_container)?.findNavController()
+        navController?.setGraph(R.navigation.nav_graph_products)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -161,6 +169,7 @@ class ProductListFragment :
 
         initAddProductFab(binding.addProductButton)
         addSelectionTracker()
+        binding.adjustUIForScreenSize()
 
         when {
             productListViewModel.isSearching() -> {
@@ -171,6 +180,16 @@ class ProductListFragment :
             else -> {
                 productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
             }
+        }
+    }
+
+    private fun FragmentProductListBinding.adjustUIForScreenSize() {
+        if (DisplayUtils.isTablet(context)) {
+            twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
+        } else if (DisplayUtils.isXLargeTablet(context)) {
+            twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
+        } else {
+            twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
         }
     }
 
