@@ -14,13 +14,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/minor_50"
+        app:layout_collapseMode="pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
+
+    <View
+        android:id="@+id/app_bar_divider"
+        style="@style/Woo.Divider"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/packages_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_divider"
         app:layout_constraintBottom_toTopOf="@id/packages_createNewContainer"
         app:layout_constraintVertical_bias="0.0"
         tools:itemCount="5"
