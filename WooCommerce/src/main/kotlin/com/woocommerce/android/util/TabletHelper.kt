@@ -51,12 +51,14 @@ class TabletHelper @Inject constructor(
     }
 
     private fun adjustUIForScreenSize(twoPaneLayoutGuideline: Guideline) {
-        if (DisplayUtils.isTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
-        } else if (DisplayUtils.isXLargeTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
-        } else {
-            twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
+        when {
+            DisplayUtils.isTablet(context) -> {
+                twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
+            }
+            DisplayUtils.isXLargeTablet(context) -> {
+                twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
+            }
+            else -> twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
         }
     }
 
