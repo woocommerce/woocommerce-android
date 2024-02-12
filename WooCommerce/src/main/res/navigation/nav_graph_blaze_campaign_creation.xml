@@ -136,8 +136,4 @@
             android:name="budget"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
     </fragment>
-    <fragment
-        android:id="@+id/blazeCampaignSuccessBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.blaze.creation.success.BlazeCampaignSuccessBottomSheetFragment"
-        android:label="BlazeCampaignSuccessBottomSheetFragment" />
 </navigation>

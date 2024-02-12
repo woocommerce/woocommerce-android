@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.payment
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val blazeRepository: BlazeRepository
+    private val blazeRepository: BlazeRepository,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
@@ -57,6 +59,11 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
     fun onSubmitCampaign() {
         // TODO show loading and trigger campaign creation
+        onCampaignCreationSuccess()
+    }
+
+    private fun onCampaignCreationSuccess() {
+        appPrefsWrapper.isComingFromBlazeCampaignCreationSuccess = true
         triggerEvent(NavigateToStartingScreen(campaignCreatedSuccessfully = true))
     }
 
