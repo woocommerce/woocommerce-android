@@ -12,7 +12,7 @@ import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-class TabletHelper @Inject constructor(
+class TabletLayoutSetupHelper @Inject constructor(
     private val context: Context,
 ) : DefaultLifecycleObserver {
     private var screen: Screen? = null

@@ -54,7 +54,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.util.TabletHelper
+import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -72,7 +72,7 @@ class ProductListFragment :
     WCProductSearchTabView.ProductSearchTypeChangedListener,
     ActionMode.Callback,
     MenuProvider,
-    TabletHelper.Screen {
+    TabletLayoutSetupHelper.Screen {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
@@ -91,7 +91,7 @@ class ProductListFragment :
     lateinit var addProductNavigator: AddProductNavigator
 
     @Inject
-    lateinit var tabletHelper: TabletHelper
+    lateinit var tabletLayoutSetupHelper: TabletLayoutSetupHelper
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -125,7 +125,7 @@ class ProductListFragment :
     override val lifecycleKeeper: Lifecycle by lazy { viewLifecycleOwner.lifecycle }
 
     override val secondPaneNavigation by lazy {
-        TabletHelper.Screen.Navigation(
+        TabletLayoutSetupHelper.Screen.Navigation(
             childFragmentManager,
             R.navigation.nav_graph_products,
             null,
@@ -144,7 +144,7 @@ class ProductListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tabletHelper.onViewCreated(this)
+        tabletLayoutSetupHelper.onViewCreated(this)
 
         postponeEnterTransition()
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
