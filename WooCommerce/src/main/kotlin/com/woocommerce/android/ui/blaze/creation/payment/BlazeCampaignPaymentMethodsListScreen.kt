@@ -35,11 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethod
-import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodUrls
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun BlazeCampaignPaymentMethodsListScreen(viewModel: BlazeCampaignPaymentMethodsListViewModel) {
@@ -51,7 +53,9 @@ fun BlazeCampaignPaymentMethodsListScreen(viewModel: BlazeCampaignPaymentMethods
 }
 
 @Composable
-private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymentMethodsListViewModel.ViewState) {
+private fun BlazeCampaignPaymentMethodsListScreen(
+    viewState: BlazeCampaignPaymentMethodsListViewModel.ViewState
+) {
     Scaffold(
         topBar = {
             Toolbar(
@@ -75,8 +79,10 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
 
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> {
                 AddPaymentMethodWebView(
-                    urls = viewState.urls,
+                    formUrl = viewState.formUrl,
                     onUrlLoaded = viewState.onUrlLoaded,
+                    userAgent = viewState.userAgent,
+                    wpComWebViewAuthenticator = viewState.wpComWebViewAuthenticator,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -241,14 +247,21 @@ private fun EmptyPaymentMethodsView(
     }
 }
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 fun AddPaymentMethodWebView(
-    urls: PaymentMethodUrls,
+    formUrl: String,
     onUrlLoaded: (String) -> Unit,
+    userAgent: UserAgent,
+    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     modifier: Modifier
 ) {
-    TODO("Not yet implemented")
+    WCWebView(
+        url = formUrl,
+        userAgent = userAgent,
+        wpComAuthenticator = wpComWebViewAuthenticator,
+        onUrlLoaded = onUrlLoaded,
+        modifier = modifier
+    )
 }
 
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
