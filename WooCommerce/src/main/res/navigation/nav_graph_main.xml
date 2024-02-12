@@ -87,6 +87,9 @@
         <action
             android:id="@+id/action_myStore_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_myStore_to_blaze_campaign_creation_success"
+            app:destination="@id/blazeCampaignSuccessBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -200,7 +203,7 @@
     <fragment
         android:id="@+id/scanToUpdateInventory"
         android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
-        android:label="scan_to_update_inventory"/>
+        android:label="scan_to_update_inventory" />
     <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
@@ -338,8 +341,8 @@
         <argument
             android:name="images"
             android:defaultValue="@null"
-            app:nullable="true"
-            app:argType="string[]" />
+            app:argType="string[]"
+            app:nullable="true" />
         <argument
             android:name="source"
             android:defaultValue="PRODUCT_TAB"

@@ -36,6 +36,10 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun campaignCreatedSuccessfully() {
+        triggerEvent(NavigateToStartingScreen(campaignCreatedSuccessfully = true))
+    }
+
     private fun fetchPaymentMethodData() {
         paymentMethodState.value = PaymentMethodState.Loading
         launch {
@@ -49,6 +53,11 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
                 onFailure = { PaymentMethodState.Error { fetchPaymentMethodData() } }
             )
         }
+    }
+
+    fun onSubmitCampaign() {
+        // TODO show loading and trigger campaign creation
+        triggerEvent(NavigateToStartingScreen(campaignCreatedSuccessfully = true))
     }
 
     data class ViewState(
@@ -67,4 +76,8 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
         data class Error(val onRetry: () -> Unit) : PaymentMethodState
     }
+
+    data class NavigateToStartingScreen(
+        val campaignCreatedSuccessfully: Boolean
+    ) : MultiLiveEvent.Event()
 }

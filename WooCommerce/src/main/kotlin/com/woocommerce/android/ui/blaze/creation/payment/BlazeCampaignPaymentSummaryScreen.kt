@@ -47,7 +47,8 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
     viewModel.viewState.observeAsState().value?.let {
         BlazeCampaignPaymentSummaryScreen(
             state = it,
-            onBackClick = viewModel::onBackClicked
+            onBackClick = viewModel::onBackClicked,
+            onSubmitCampaign = viewModel::onSubmitCampaign
         )
     }
 }
@@ -55,7 +56,8 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
 @Composable
 fun BlazeCampaignPaymentSummaryScreen(
     state: BlazeCampaignPaymentSummaryViewModel.ViewState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSubmitCampaign: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -92,7 +94,7 @@ fun BlazeCampaignPaymentSummaryScreen(
             Divider()
 
             WCColoredButton(
-                onClick = { /*TODO*/ },
+                onClick = onSubmitCampaign,
                 text = stringResource(id = R.string.blaze_campaign_payment_summary_submit_campaign),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -302,7 +304,8 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
                     onClick = {}
                 )
             ),
-            onBackClick = {}
+            onBackClick = {},
+            onSubmitCampaign = {}
         )
     }
 }
