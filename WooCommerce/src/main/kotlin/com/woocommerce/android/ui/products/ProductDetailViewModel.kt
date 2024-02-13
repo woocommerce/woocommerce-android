@@ -1351,6 +1351,7 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         launch {
+            viewState = viewState.copy(isSkeletonShown = true)
             // fetch product
             val productInDb = productRepository.getProductAsync(remoteProductId)
             if (productInDb != null) {
@@ -1363,7 +1364,6 @@ class ProductDetailViewModel @Inject constructor(
                     fetchProductPassword(remoteProductId)
                 }
             } else {
-                viewState = viewState.copy(isSkeletonShown = true)
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
