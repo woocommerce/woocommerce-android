@@ -7,10 +7,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateSafely
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -29,13 +27,17 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     fun onItemClicked(
-        getTabletActionToNavigateTo: () -> NavDirections,
+        tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
         if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled() &&
             (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context))
         ) {
-            navHostFragment.navController.navigateSafely(getTabletActionToNavigateTo())
+            val navigationData = tabletNavigateTo()
+            navHostFragment.navController.navigate(
+                navigationData.first,
+                navigationData.second,
+            )
         } else {
             navigateWithPhoneNavigation()
         }
@@ -58,7 +60,7 @@ class TabletLayoutSetupHelper @Inject constructor(
     private fun initNavFragment(navigation: Screen.Navigation) {
         val fragmentManager = navigation.fragmentManager
         val navGraphId = navigation.navGraphId
-        val bundle = navigation.bundle
+        val bundle = navigation.initialBundle
 
         navHostFragment = NavHostFragment.create(navGraphId, bundle)
 
@@ -94,7 +96,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         data class Navigation(
             val fragmentManager: FragmentManager,
             val navGraphId: Int,
-            val bundle: Bundle?
+            val initialBundle: Bundle?
         )
     }
 }
