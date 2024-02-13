@@ -48,9 +48,6 @@ wc.e2e.real.api.password = password
 # The type of in app update FLEXIBLE = 0; IMMEDIATE = 1
 wc.in_app_update_type = 0
 
-# Necessary for gradle 5
-kapt.incremental.apt=false
-
 # Measuring build times
 tracksEnabled = false
 #tracksUsername = <optional username>

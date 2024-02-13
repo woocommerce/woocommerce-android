@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.NavigateToStartingScreenWithSuccessBottomSheet
@@ -32,14 +33,31 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
+        handleResults()
     }
 
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is BlazeCampaignPaymentSummaryViewModel.NavigateToPaymentsListScreen -> {
+                    findNavController().navigateSafely(
+                        BlazeCampaignPaymentSummaryFragmentDirections
+                            .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignPaymentMethodsListFragment(
+                                paymentMethodsData = event.paymentMethodsData,
+                                selectedPaymentMethodId = event.selectedPaymentMethodId
+                            )
+                    )
+                }
+
                 is NavigateToStartingScreenWithSuccessBottomSheet -> navigateBackToStartingScreen()
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<String>(BlazeCampaignPaymentMethodsListFragment.SELECTED_PAYMENT_METHOD_KEY) {
+            viewModel.onPaymentMethodSelected(it)
         }
     }
 

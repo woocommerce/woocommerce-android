@@ -127,6 +127,17 @@
         <argument
             android:name="productId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_adDestinationFragment_to_adDestinationParametersFragment"
+            app:destination="@id/blazeCampaignCreationAdDestinationParametersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignCreationAdDestinationParametersFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersFragment"
+        android:label="BlazeCampaignCreationAdDestinationParametersFragment">
+        <argument
+            android:name="url"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignPaymentSummaryFragment"
@@ -136,10 +147,25 @@
             android:name="budget"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
         <action
+            android:id="@+id/action_blazeCampaignPaymentSummaryFragment_to_blazeCampaignPaymentMethodsListFragment"
+            app:destination="@id/blazeCampaignPaymentMethodsListFragment" />
+        <action
             android:id="@+id/action_blazeCampaignPaymentSummaryFragment_to_blazeCampaignSuccessBottomSheetFragment"
             app:destination="@id/blazeCampaignSuccessBottomSheetFragment"
             app:popUpTo="@+id/nav_graph_blaze_campaign_creation"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignPaymentMethodsListFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentMethodsListFragment"
+        android:label="BlazeCampaignPaymentMethodsListFragment">
+        <argument
+            android:name="paymentMethodsData"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$PaymentMethodsData" />
+        <argument
+            android:name="selectedPaymentMethodId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/blazeCampaignSuccessBottomSheetFragment"
