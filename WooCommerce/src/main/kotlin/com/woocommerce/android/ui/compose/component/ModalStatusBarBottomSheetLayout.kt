@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.core.view.WindowCompat
@@ -62,7 +65,7 @@ fun ModalStatusBarBottomSheetLayout(
             sheetContent.invoke(this@ModalBottomSheetLayout)
         }
     },
-    modifier = modifier,
+    modifier = modifier.imePadding().navigationBarsPadding().imeNestedScroll(),
     sheetState = sheetState,
     sheetShape = sheetShape,
     sheetElevation = sheetElevation,
@@ -70,15 +73,6 @@ fun ModalStatusBarBottomSheetLayout(
     sheetContentColor = sheetContentColor,
     scrimColor = scrimColor
 ) {
-    fun Context.findActivity(): Activity {
-        var context = this
-        while (context is ContextWrapper) {
-            if (context is Activity) return context
-            context = context.baseContext
-        }
-        throw IllegalStateException("Permissions should be called in the context of an Activity")
-    }
-
     val context = LocalContext.current
     var statusBarColor by remember { mutableStateOf(Color.Transparent) }
     val backgroundColor = remember {
@@ -108,8 +102,15 @@ fun ModalStatusBarBottomSheetLayout(
         }
     }
 
+    val window = remember { context.findActivity().window }
+    val originalNavigationBarColor = remember { window.navigationBarColor }
+    if (sheetState.currentValue != Hidden) {
+        window.navigationBarColor = MaterialTheme.colors.surface.toArgb()
+    } else {
+        window.navigationBarColor = originalNavigationBarColor
+    }
+
     DisposableEffect(Unit) {
-        val window = context.findActivity().window
         val originalStatusBarColor = window.statusBarColor
         statusBarColor = Color(originalStatusBarColor)
 
@@ -118,7 +119,17 @@ fun ModalStatusBarBottomSheetLayout(
 
         onDispose {
             window.statusBarColor = originalStatusBarColor
+            window.navigationBarColor = originalNavigationBarColor
             WindowCompat.setDecorFitsSystemWindows(window, true)
         }
     }
+}
+
+fun Context.findActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    throw IllegalStateException("Permissions should be called in the context of an Activity")
 }

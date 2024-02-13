@@ -89,8 +89,7 @@ fun AdDestinationParametersBottomSheet(
                     modifier = modifier.then(then)
                 )
             }
-        },
-        modifier = Modifier.imePadding().navigationBarsPadding().imeNestedScroll()
+        }
     ) {
         screenContent()
     }
