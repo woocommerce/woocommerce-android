@@ -77,9 +77,8 @@ fun ModalStatusBarBottomSheetLayout(
     var statusBarColor by remember { mutableStateOf(Color.Transparent) }
     val backgroundColor = remember {
         val typedValue = TypedValue()
-        if (context.findActivity().theme
-                .resolveAttribute(android.R.attr.windowBackground, typedValue, true)
-        ) {
+        if (context.findActivity()
+            .theme.resolveAttribute(android.R.attr.windowBackground, typedValue, true)) {
             Color(typedValue.data)
         } else {
             sheetBackgroundColor
