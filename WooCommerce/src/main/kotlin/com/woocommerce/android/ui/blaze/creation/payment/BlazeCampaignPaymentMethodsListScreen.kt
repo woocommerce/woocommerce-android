@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -35,10 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethod
-import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodUrls
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -51,7 +52,9 @@ fun BlazeCampaignPaymentMethodsListScreen(viewModel: BlazeCampaignPaymentMethods
 }
 
 @Composable
-private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymentMethodsListViewModel.ViewState) {
+private fun BlazeCampaignPaymentMethodsListScreen(
+    viewState: BlazeCampaignPaymentMethodsListViewModel.ViewState
+) {
     Scaffold(
         topBar = {
             Toolbar(
@@ -75,8 +78,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(viewState: BlazeCampaignPaymen
 
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> {
                 AddPaymentMethodWebView(
-                    urls = viewState.urls,
-                    onUrlLoaded = viewState.onUrlLoaded,
+                    state = viewState,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -241,14 +243,22 @@ private fun EmptyPaymentMethodsView(
     }
 }
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 fun AddPaymentMethodWebView(
-    urls: PaymentMethodUrls,
-    onUrlLoaded: (String) -> Unit,
+    state: BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView,
     modifier: Modifier
 ) {
-    TODO("Not yet implemented")
+    BackHandler {
+        state.onDismiss()
+    }
+
+    WCWebView(
+        url = state.formUrl,
+        userAgent = state.userAgent,
+        wpComAuthenticator = state.wpComWebViewAuthenticator,
+        onUrlLoaded = state.onUrlLoaded,
+        modifier = modifier
+    )
 }
 
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
