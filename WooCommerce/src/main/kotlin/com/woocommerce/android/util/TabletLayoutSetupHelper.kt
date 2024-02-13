@@ -29,16 +29,15 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     fun onItemClicked(
-        getActionToLaunch: () -> NavDirections,
-        navigateWithRootNavController: () -> Unit
+        getTabletActionToNavigateTo: () -> NavDirections,
+        navigateWithPhoneNavigation: () -> Unit
     ) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled() ||
-            DisplayUtils.isTablet(context) ||
-            DisplayUtils.isXLargeTablet(context)
+        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled() &&
+            (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context))
         ) {
-            navigateWithRootNavController()
+            navHostFragment.navController.navigateSafely(getTabletActionToNavigateTo())
         } else {
-            navHostFragment.navController.navigateSafely(getActionToLaunch())
+            navigateWithPhoneNavigation()
         }
     }
 
