@@ -3885,7 +3885,12 @@
     <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Loading payment methods failed, please retry by clicking here!</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Submit campaign</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">By clicking \"Submit campaign\" you agree to the &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Advertising Policy&lt;/u&gt;&lt;/a&gt;, and authorize your payment method to be charged for the budget and duration you chose. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about how budgets and payments for Promoted Posts work.</string>
-
+    <string name="blaze_campaign_payment_list_screen_title">Payment method</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Please add a new payment method</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Add credit card</string>
+    <string name="blaze_campaign_payment_list_header_text">All transactions are secure and encrypted</string>
+    <string name="blaze_campaign_payment_list_hint">Credits cards are retrieved from the following WordPress.com account: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Add new card</string>
     <!--
     Blaze other
     -->

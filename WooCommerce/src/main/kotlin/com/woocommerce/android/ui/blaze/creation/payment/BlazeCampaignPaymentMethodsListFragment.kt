@@ -6,8 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -16,45 +15,37 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
+class BlazeCampaignPaymentMethodsListFragment : BaseFragment() {
+    companion object {
+        const val SELECTED_PAYMENT_METHOD_KEY = "selectedPaymentMethodId"
+    }
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: BlazeCampaignPaymentSummaryViewModel by viewModels()
+    private val viewModel: BlazeCampaignPaymentMethodsListViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return composeView {
             WooThemeWithBackground {
-                BlazeCampaignPaymentSummaryScreen(viewModel)
+                BlazeCampaignPaymentMethodsListScreen(viewModel)
             }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        handleEvents()
         handleResults()
     }
 
-    private fun handleEvents() {
+    private fun handleResults() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
-                is BlazeCampaignPaymentSummaryViewModel.NavigateToPaymentsListScreen -> {
-                    findNavController().navigateSafely(
-                        BlazeCampaignPaymentSummaryFragmentDirections
-                            .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignPaymentMethodsListFragment(
-                                paymentMethodsData = event.paymentMethodsData,
-                                selectedPaymentMethodId = event.selectedPaymentMethodId
-                            )
-                    )
-                }
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
+                    key = SELECTED_PAYMENT_METHOD_KEY,
+                    result = event.data
+                )
             }
-        }
-    }
-
-    private fun handleResults() {
-        handleResult<String>(BlazeCampaignPaymentMethodsListFragment.SELECTED_PAYMENT_METHOD_KEY) {
-            viewModel.onPaymentMethodSelected(it)
         }
     }
 }

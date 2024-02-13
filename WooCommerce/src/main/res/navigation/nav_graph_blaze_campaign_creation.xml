@@ -146,5 +146,20 @@
         <argument
             android:name="budget"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
+        <action
+            android:id="@+id/action_blazeCampaignPaymentSummaryFragment_to_blazeCampaignPaymentMethodsListFragment"
+            app:destination="@id/blazeCampaignPaymentMethodsListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignPaymentMethodsListFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentMethodsListFragment"
+        android:label="BlazeCampaignPaymentMethodsListFragment" >
+        <argument
+            android:name="paymentMethodsData"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$PaymentMethodsData" />
+        <argument
+            android:name="selectedPaymentMethodId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>
