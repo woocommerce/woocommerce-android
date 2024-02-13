@@ -425,14 +425,14 @@ class OrderListFragment :
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
             if (isTablet()) {
-                val isNoSelectedOrder = selectedOrder.selectedOrderId.value == null && viewModel.orderId.value == -1L
-                val isSpecificOrderToOpen = viewModel.orderId.value != -1L
-
-                if (isNoSelectedOrder) {
-                    openFirstOrder()
-                } else if (isSpecificOrderToOpen) {
-                    openSpecificOrder(viewModel.orderId.value)
-                    clearSelectedOrderIdInViewModel()
+                when {
+                    // A specific order is set to be opened
+                    viewModel.orderId.value != -1L -> {
+                        openSpecificOrder(viewModel.orderId.value)
+                        clearSelectedOrderIdInViewModel()
+                    }
+                    // No order selected and no specific order to open, or no specific condition met
+                    selectedOrder.selectedOrderId.value == null -> openFirstOrder()
                 }
             }
             updateOrderSelectedStatus()
