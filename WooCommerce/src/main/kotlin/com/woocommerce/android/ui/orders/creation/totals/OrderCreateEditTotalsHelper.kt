@@ -174,7 +174,12 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
                     value = bigDecimalFormatter(totalTax)
                 )
-            ) + if (shippingTax > BigDecimal.ZERO) {
+            ) + taxLines.map {
+                TotalsSectionsState.Line.SimpleSmall(
+                    label = "${it.label} · ${it.ratePercent}%",
+                    value = bigDecimalFormatter(BigDecimal(it.taxTotal))
+                )
+            } + if (shippingTax > BigDecimal.ZERO) {
                 listOf(
                     TotalsSectionsState.Line.SimpleSmall(
                         label = resourceProvider.getString(R.string.order_creation_payment_shipping_tax_label),
@@ -183,11 +188,6 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 )
             } else {
                 emptyList()
-            } + taxLines.map {
-                TotalsSectionsState.Line.SimpleSmall(
-                    label = "${it.label} · ${it.ratePercent}%",
-                    value = bigDecimalFormatter(BigDecimal(it.taxTotal))
-                )
             } + TotalsSectionsState.Line.LearnMore(
                 text = taxBasedOnSettingLabel,
                 buttonText = resourceProvider.getString(R.string.learn_more),
