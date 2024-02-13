@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -232,11 +230,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         LOADED
     }
 
-    sealed interface AdDetailsUi : Parcelable {
-        @Parcelize
+    sealed interface AdDetailsUi {
         data object Loading : AdDetailsUi
 
-        @Parcelize
         data class AdDetails(
             val productId: Long,
             val description: String,
