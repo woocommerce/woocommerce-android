@@ -26,49 +26,51 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
-fun BlazeCampaignSuccessBottomSheet(onDoneTapped: () -> Unit) {
+fun BlazeCampaignSuccessBottomSheet(
+    onDoneTapped: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
         shape = RoundedCornerShape(
             topStart = dimensionResource(id = dimen.minor_100),
             topEnd = dimensionResource(id = dimen.minor_100)
         )
     ) {
-        Column {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Spacer(modifier = Modifier.height(8.dp))
             BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(top = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Spacer(modifier = Modifier.height(30.dp))
+            Image(
+                painter = painterResource(id = drawable.blaze_campaign_created_success),
+                contentDescription = ""
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(id = string.blaze_campaign_created_success_title),
+                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colors.onSurface
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                text = stringResource(id = string.blaze_campaign_created_success_description),
+                style = MaterialTheme.typography.body1,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.onSurface
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            WCColoredButton(
+                onClick = onDoneTapped,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Image(
-                    painter = painterResource(id = drawable.blaze_campaign_created_success),
-                    contentDescription = ""
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = stringResource(id = string.blaze_campaign_created_success_title),
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.onSurface
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    text = stringResource(id = string.blaze_campaign_created_success_description),
-                    style = MaterialTheme.typography.body1,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                WCColoredButton(
-                    onClick = onDoneTapped,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(id = string.blaze_campaign_created_success_done_button))
-                }
+                Text(text = stringResource(id = string.blaze_campaign_created_success_done_button))
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
