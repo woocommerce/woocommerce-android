@@ -131,23 +131,25 @@ class VariationDetailViewModel @Inject constructor(
 
     fun onDeleteVariationClicked() {
         triggerEvent(
-            Event.ShowDialog(
-                positiveBtnAction = { _, _ ->
-                    AnalyticsTracker.track(
-                        AnalyticsEvent.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
-                        mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
-                    )
-                    viewState = viewState.copy(isConfirmingDeletion = false)
-                    deleteVariation()
-                },
-                negativeBtnAction = { _, _ ->
-                    viewState = viewState.copy(isConfirmingDeletion = false)
-                },
+            Event.ShowDialogFragment(
                 messageId = string.variation_confirm_delete,
                 positiveButtonId = string.delete,
                 negativeButtonId = string.cancel
             )
         )
+    }
+
+    fun onDeleteVariationConfirmed() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PRODUCT_VARIATION_REMOVE_BUTTON_TAPPED,
+            mapOf(KEY_PRODUCT_ID to viewState.parentProduct?.remoteId)
+        )
+        viewState = viewState.copy(isConfirmingDeletion = false)
+        deleteVariation()
+    }
+
+    fun onDeleteVariationCancelled() {
+        viewState = viewState.copy(isConfirmingDeletion = false)
     }
 
     fun onExit() {
