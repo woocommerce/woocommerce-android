@@ -434,6 +434,8 @@ class OrderListFragment :
                     }
                     // No order selected and no specific order to open, or no specific condition met
                     selectedOrder.selectedOrderId.value == null -> openFirstOrder()
+
+                    viewModel.viewState.filterCount > 0 -> openFirstOrder()
                 }
             }
             updateOrderSelectedStatus()
