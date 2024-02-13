@@ -138,7 +138,7 @@ fun PaymentsHubDepositSummaryView(
             .fillMaxWidth()
             .background(colorResource(id = R.color.color_surface))
     ) {
-        val pagerState = rememberPagerState(initialPage = selectedPage)
+        val pagerState = rememberPagerState(initialPage = selectedPage, pageCount = { pageCount })
         val isInitialLoad = remember { mutableStateOf(true) }
 
         val currencies = overview.infoPerCurrency.keys.toList()
@@ -164,7 +164,6 @@ fun PaymentsHubDepositSummaryView(
         }
 
         HorizontalPager(
-            pageCount = pageCount,
             state = pagerState
         ) { pageIndex ->
             Column(
