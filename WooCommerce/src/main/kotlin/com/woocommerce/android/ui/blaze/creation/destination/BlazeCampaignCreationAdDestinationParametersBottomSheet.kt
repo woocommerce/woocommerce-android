@@ -4,14 +4,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imeNestedScroll
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,9 +38,10 @@ import com.woocommerce.android.ui.compose.component.ModalStatusBarBottomSheetLay
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AdDestinationParametersBottomSheet(
     viewState: ViewState,
@@ -86,6 +83,7 @@ fun AdDestinationParametersBottomSheet(
                     onParameterChanged = onParameterChanged,
                     onParameterSaved = onParameterSaved,
                     url = viewState.bottomSheetState.url,
+                    isSaveButtonEnabled = viewState.bottomSheetState.isSaveButtonEnabled,
                     modifier = modifier.then(then)
                 )
             }
@@ -102,6 +100,7 @@ private fun ParameterBottomSheet(
     onParameterChanged: (String, String) -> Unit,
     onParameterSaved: (String, String) -> Unit,
     url: String,
+    isSaveButtonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -170,7 +169,8 @@ private fun ParameterBottomSheet(
                         top = dimensionResource(id = R.dimen.minor_100)
                     ),
                 onClick = { onParameterSaved(key, value) },
-                text = stringResource(id = R.string.save)
+                text = stringResource(id = R.string.save),
+                enabled = isSaveButtonEnabled
             )
         }
     }
@@ -179,12 +179,15 @@ private fun ParameterBottomSheet(
 @LightDarkThemePreviews
 @Composable
 fun PreviewParameterBottomSheet() {
-    ParameterBottomSheet(
-        key = "key",
-        value = "value",
-        onParameterChanged = { _, _ -> },
-        onParameterSaved = { _, _ -> },
-        url = "https://woocommerce.com",
-        modifier = Modifier.fillMaxWidth()
-    )
+    WooThemeWithBackground {
+        ParameterBottomSheet(
+            key = "key",
+            value = "value",
+            onParameterChanged = { _, _ -> },
+            onParameterSaved = { _, _ -> },
+            url = "https://woocommerce.com",
+            isSaveButtonEnabled = false,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

@@ -108,13 +108,16 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
                 val key: String = "",
                 val value: String = ""
             ) : ParameterBottomSheetState {
-                val url by lazy {
+                val url: String by lazy {
                     if (key.isNotEmpty()) {
                         parameters + (key to value)
                     } else {
                         parameters
                     }.joinToUrl(baseUrl)
                 }
+
+                val isSaveButtonEnabled: Boolean
+                    get() = key.isNotEmpty() && value.isNotEmpty()
             }
         }
     }
