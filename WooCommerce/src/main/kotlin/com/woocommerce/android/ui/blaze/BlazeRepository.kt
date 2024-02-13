@@ -119,16 +119,28 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    suspend fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
+    suspend fun generateDefaultCampaignDetails(productId: Long): CampaignDetails {
+        fun getDefaultBudget() = Budget(
+            totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND,
+            spentBudget = 0f,
+            currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
+            durationInDays = DEFAULT_CAMPAIGN_DURATION,
+            startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
+        )
+
         val product = productDetailRepository.getProduct(productId)
             ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
 
-        return CampaignPreview(
+        return CampaignDetails(
             productId = productId,
             userTimeZone = timezoneProvider.deviceTimezone.displayName,
+            tagLine = "",
+            description = "",
             targetUrl = product.permalink,
-            urlParams = null,
-            campaignImageUrl = product.firstImageUrl
+            urlParams = emptyMap(),
+            campaignImageUrl = product.firstImageUrl,
+            budget = getDefaultBudget(),
+            targetingParameters = TargetingParameters()
         )
     }
 
@@ -196,12 +208,24 @@ class BlazeRepository @Inject constructor(
     }
 
     @Parcelize
-    data class CampaignPreview(
+    data class CampaignDetails(
         val productId: Long,
+        val tagLine: String,
+        val description: String,
         val userTimeZone: String,
         val targetUrl: String,
-        val urlParams: Pair<String, String>?,
+        val urlParams: Map<String, String>,
         val campaignImageUrl: String?,
+        val budget: Budget,
+        val targetingParameters: TargetingParameters
+    ) : Parcelable
+
+    @Parcelize
+    data class TargetingParameters(
+        val locations: List<Location> = emptyList(),
+        val languages: List<Language> = emptyList(),
+        val devices: List<Device> = emptyList(),
+        val interests: List<Interest> = emptyList()
     ) : Parcelable
 
     @Parcelize
