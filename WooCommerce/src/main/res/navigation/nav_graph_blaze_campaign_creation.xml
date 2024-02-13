@@ -137,7 +137,9 @@
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
         <action
             android:id="@+id/action_blazeCampaignPaymentSummaryFragment_to_blazeCampaignSuccessBottomSheetFragment"
-            app:destination="@id/blazeCampaignSuccessBottomSheetFragment" />
+            app:destination="@id/blazeCampaignSuccessBottomSheetFragment"
+            app:popUpTo="@+id/nav_graph_blaze_campaign_creation"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/blazeCampaignSuccessBottomSheetFragment"

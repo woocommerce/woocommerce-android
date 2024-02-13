@@ -6,8 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.NavigateToStartingScreenWithSuccessBottomSheet
@@ -47,11 +45,8 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
 
     private fun navigateBackToStartingScreen() {
         findNavController().navigateSafely(
-            directions = BlazeCampaignPaymentSummaryFragmentDirections
-                .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignSuccessBottomSheetFragment(),
-            navOptions = navOptions {
-                popUpTo(R.id.nav_graph_blaze_campaign_creation) { inclusive = true }
-            }
+            BlazeCampaignPaymentSummaryFragmentDirections
+                .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignSuccessBottomSheetFragment()
         )
     }
 }
