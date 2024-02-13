@@ -48,6 +48,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ViewState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -295,7 +296,7 @@ private fun AdImageSection(viewState: ViewState, onChangeImageTapped: () -> Unit
         ) {
             SubcomposeAsyncImage(
                 model = Builder(LocalContext.current)
-                    .data(viewState.adImageUrl)
+                    .data(viewState.adImage.uri)
                     .crossfade(true)
                     .fallback(drawable.blaze_campaign_product_placeholder)
                     .placeholder(drawable.blaze_campaign_product_placeholder)
@@ -365,7 +366,7 @@ fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
-                adImageUrl = "https://rb.gy/gmjuwb"
+                adImage = BlazeCampaignImage.RemoteImage(0,"https://rb.gy/gmjuwb")
             ),
             onTagLineChanged = { },
             onDescriptionChanged = { },

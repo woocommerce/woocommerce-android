@@ -53,7 +53,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     productId = navArgs.productId,
                     description = campaignDetails.description,
                     tagLine = campaignDetails.tagLine,
-                    campaignImageUrl = campaignDetails.campaignImageUrl
+                    campaignImageUrl = campaignDetails.campaignImage.uri
                 )
             },
             campaignDetails = campaignDetails.toCampaignDetailsUi()
@@ -75,18 +75,18 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     productId = navArgs.productId,
                     tagLine = it.tagLine,
                     description = it.description,
-                    campaignImageUrl = it.campaignImageUrl
+                    campaignImage = it.campaignImage
                 )
             )
         }
     }
 
-    fun onAdUpdated(tagline: String, description: String, campaignImageUrl: String?) {
+    fun onAdUpdated(tagline: String, description: String, campaignImage: BlazeRepository.BlazeCampaignImage) {
         campaignDetails.update {
             it?.copy(
                 tagLine = tagline,
                 description = description,
-                campaignImageUrl = campaignImageUrl
+                campaignImage = campaignImage
             )
         }
     }
@@ -280,7 +280,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val productId: Long,
         val tagLine: String,
         val description: String,
-        val campaignImageUrl: String?
+        val campaignImage: BlazeRepository.BlazeCampaignImage
     ) : MultiLiveEvent.Event()
 
     // TODO we need to pass more details to use in the campaign creation

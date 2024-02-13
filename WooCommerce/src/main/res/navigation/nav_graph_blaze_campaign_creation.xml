@@ -85,10 +85,8 @@
             android:defaultValue=""
             app:argType="string" />
         <argument
-            android:name="adImageUrl"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
+            android:name="adImage"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$BlazeCampaignImage" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignBudgetFragment"

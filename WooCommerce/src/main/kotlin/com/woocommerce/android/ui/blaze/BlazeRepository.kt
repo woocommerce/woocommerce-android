@@ -32,8 +32,8 @@ class BlazeRepository @Inject constructor(
     companion object {
         const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
-        const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5.0 // USD
-        const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50.0 // USD
+        const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
+        const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
     }
 
@@ -127,7 +127,7 @@ class BlazeRepository @Inject constructor(
     suspend fun generateDefaultCampaignDetails(productId: Long): CampaignDetails {
         fun getDefaultBudget() = Budget(
             totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND,
-            spentBudget = 0.0,
+            spentBudget = 0f,
             currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
             startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
@@ -143,7 +143,10 @@ class BlazeRepository @Inject constructor(
             description = "",
             targetUrl = product.permalink,
             urlParams = emptyMap(),
-            campaignImageUrl = product.firstImageUrl,
+            campaignImage = product.images.firstOrNull().let {
+                if (it != null) BlazeCampaignImage.RemoteImage(it.id, it.source)
+                else BlazeCampaignImage.None
+            },
             budget = getDefaultBudget(),
             targetingParameters = TargetingParameters()
         )
@@ -232,7 +235,7 @@ class BlazeRepository @Inject constructor(
                 description = campaignDetails.description,
                 startDate = campaignDetails.budget.startDate,
                 endDate = campaignDetails.budget.endDate,
-                budget = campaignDetails.budget.totalBudget,
+                budget = campaignDetails.budget.totalBudget.toDouble(),
                 targetUrl = campaignDetails.targetUrl,
                 urlParams = campaignDetails.urlParams,
                 mainImage = image,
@@ -269,10 +272,25 @@ class BlazeRepository @Inject constructor(
         val userTimeZone: String,
         val targetUrl: String,
         val urlParams: Map<String, String>,
-        val campaignImageUrl: String?,
+        val campaignImage: BlazeCampaignImage,
         val budget: Budget,
         val targetingParameters: TargetingParameters
     ) : Parcelable
+
+    sealed interface BlazeCampaignImage : Parcelable {
+        val uri: String
+        @Parcelize
+        data object None : BlazeCampaignImage {
+            override val uri: String
+                get() = ""
+        }
+
+        @Parcelize
+        data class LocalImage(override val uri: String) : BlazeCampaignImage
+
+        @Parcelize
+        data class RemoteImage(val mediaId: Long, override val uri: String) : BlazeCampaignImage
+    }
 
     @Parcelize
     data class TargetingParameters(
@@ -290,8 +308,8 @@ class BlazeRepository @Inject constructor(
 
     @Parcelize
     data class Budget(
-        val totalBudget: Double,
-        val spentBudget: Double,
+        val totalBudget: Float,
+        val spentBudget: Float,
         val currencyCode: String,
         val durationInDays: Int,
         val startDate: Date,
