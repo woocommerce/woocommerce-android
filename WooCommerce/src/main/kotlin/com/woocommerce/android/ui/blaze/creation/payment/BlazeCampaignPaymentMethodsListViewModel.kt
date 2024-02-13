@@ -68,7 +68,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
                                 R.string.blaze_campaign_payment_added_successfully
                             )
                         )
-                        MultiLiveEvent.Event.ExitWithResult(paymentMethodId)
+                        triggerEvent(MultiLiveEvent.Event.ExitWithResult(paymentMethodId))
                     },
                     onFailure = {
                         WooLog.e(WooLog.T.BLAZE, "Failed to extract payment method id from URL: $url", it)
