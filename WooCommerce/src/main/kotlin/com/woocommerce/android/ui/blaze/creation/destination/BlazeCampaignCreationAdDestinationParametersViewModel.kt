@@ -21,7 +21,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         // The maximum number of characters allowed in a URL by Chrome
-        private const val MAX_CHARACTERS = 2083
+        private const val MAX_CHARACTERS = 2096
     }
     private val navArgs: BlazeCampaignCreationAdDestinationParametersFragmentArgs by savedStateHandle.navArgs()
 
@@ -98,7 +98,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
 
         val charactersRemaining: Int
-            get() = MAX_CHARACTERS - url.length
+            get() = MAX_CHARACTERS - parameters.entries.joinToString("&").length
 
         sealed interface ParameterBottomSheetState {
             data object Hidden : ParameterBottomSheetState

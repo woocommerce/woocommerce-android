@@ -1,0 +1,2 @@
+17.2:
+Diese Version enthält Optimierungen im Hinblick auf Geschwindigkeit und Zuverlässigkeit. Unser Ziel ist es, die App kontinuierlich zu verbessern, damit du deinen Onlineshop effizient und stressfrei verwalten kannst.

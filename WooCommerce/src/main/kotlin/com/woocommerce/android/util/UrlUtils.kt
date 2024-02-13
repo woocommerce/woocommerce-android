@@ -49,7 +49,5 @@ fun String.parseParameters(): Map<String, String> {
 
 fun Map<String, String>.joinToUrl(baseUrl: String) = buildString {
     append(baseUrl)
-    appendWithIfNotEmpty(joinToString(), "?")
+    appendWithIfNotEmpty(entries.joinToString("&"), "?")
 }
-
-fun Map<String, String>.joinToString() = entries.joinToString("&") { (key, value) -> "$key=$value" }

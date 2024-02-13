@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 17:54:04+0000
+Translation-Revision-Date: 2024-02-07 15:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Impossibile salvare la ricevuta</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Impossibile scaricare la ricevuta</string>
+    <string name="card_reader_payment_email_client_not_found">Impossibile individuare un\'applicazione con cui la ricevuta possa essere condivisa</string>
+    <string name="receipt_fetching_error">Purtroppo non siamo riusciti a caricare una ricevuta per questo ordine</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggerito dall\'IA</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d caratteri rimanenti</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Descrizione</string>
@@ -1957,7 +1961,6 @@ Language: it
     <string name="variable_product_attributes">Attributi della variante</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Attiva il Bluetooth del dispositivo mobile</string>
     <string name="card_reader_refetching_order_failed">Errore durante il recupero dell\'ordine. Lo stato nell\'ordine dell\'app potrebbe essere obsoleto.</string>
-    <string name="card_reader_payment_email_client_not_found">Impossibile rilevare il client e-mail della tua app</string>
     <string name="card_reader_payment_receipt_email_subject">La tua ricevuta da %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Aggiornamento dell\'ordine</string>
     <string name="card_reader_payment_fetch_order_loading_header">Aggiornamento dello stato dell\'app</string>

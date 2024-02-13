@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.getBaseUrl
+import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -31,7 +32,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
         ViewState(
             productUrl = productUrl.trim('/'),
             siteUrl = selectedSite.get().url.trim('/'),
-            destinationUrl = navArgs.targetUrl.getBaseUrl(),
+            destinationUrl = navArgs.targetUrl.getBaseUrl() + "?a=b&c=d",
             parameters = getParameters(navArgs.targetUrl),
             isUrlDialogVisible = false
         )
@@ -70,10 +71,10 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     }
 
     private fun getParameters(url: String): String {
-        return url.split("?")
-            .getOrNull(1)
-            ?.replace("&", "\n")
-            ?: return resourceProvider.getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
+        return url.parseParameters().entries.joinToString(separator = "\n")
+            .ifBlank {
+                resourceProvider.getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
+            }
     }
 
     private fun getTargetUrl(baseUrl: String, parameters: String): String {

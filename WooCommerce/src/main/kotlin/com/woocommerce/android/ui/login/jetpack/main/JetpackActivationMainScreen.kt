@@ -11,7 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -109,8 +109,9 @@ fun JetpackActivationMainScreen(
             transition.AnimatedContent(
                 contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) with
-                        fadeOut(animationSpec = tween(DefaultDurationMillis))
+                    fadeIn(
+                        animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)
+                    ) togetherWith fadeOut(animationSpec = tween(DefaultDurationMillis))
                 },
                 modifier = Modifier.weight(1f)
             ) { targetState ->
@@ -119,6 +120,7 @@ fun JetpackActivationMainScreen(
                         viewState = targetState,
                         onContinueClick = onContinueClick
                     )
+
                     is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
                         viewState = targetState,
                         onGetHelpClick = onGetHelpClick,
@@ -294,10 +296,13 @@ private fun AnimatedVisibilityScope.ErrorState(
             val retryButton = when (viewState.stepType) {
                 JetpackActivationMainViewModel.StepType.Installation ->
                     R.string.login_jetpack_installation_retry_installing
+
                 JetpackActivationMainViewModel.StepType.Activation ->
                     R.string.login_jetpack_installation_retry_activating
+
                 JetpackActivationMainViewModel.StepType.Connection ->
                     R.string.login_jetpack_installation_retry_authorizing
+
                 else -> null
             }
             retryButton?.let {
@@ -328,9 +333,11 @@ private fun JetpackActivationStep(
             JetpackActivationMainViewModel.StepState.Idle -> {
                 IdleCircle(indicatorModifier)
             }
+
             JetpackActivationMainViewModel.StepState.Ongoing -> {
                 CircularProgressIndicator(indicatorModifier)
             }
+
             JetpackActivationMainViewModel.StepState.Success -> {
                 Image(
                     painter = painterResource(id = R.drawable.ic_progress_circle_complete),
@@ -338,6 +345,7 @@ private fun JetpackActivationStep(
                     modifier = indicatorModifier
                 )
             }
+
             is JetpackActivationMainViewModel.StepState.Error -> {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_gridicons_notice),
@@ -385,6 +393,7 @@ private fun ConnectionStepHint(connectionStep: JetpackActivationMainViewModel.Co
                     R.string.login_jetpack_steps_authorizing_validation,
                     R.color.color_on_surface_medium
                 )
+
             else ->
                 Pair(
                     R.string.login_jetpack_steps_authorizing_done,
