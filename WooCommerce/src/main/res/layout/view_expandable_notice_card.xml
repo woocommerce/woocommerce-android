@@ -66,7 +66,7 @@
             app:layout_constraintTop_toBottomOf="@+id/notice_message"
             tools:text="@string/error_troubleshooting" />
 
- <!-- Group to control visibility -->
+        <!-- Group to control visibility -->
         <androidx.constraintlayout.widget.Group
             android:id="@+id/noticeMorePanel"
             android:layout_width="wrap_content"
