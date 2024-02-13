@@ -163,11 +163,11 @@ class ProductListFragment :
             currencyFormatter = currencyFormatter,
             clickListener = { id, sharedView ->
                 tabletLayoutSetupHelper.onItemClicked(
-                    getTabletActionToNavigateTo = {
-                        NavGraphMainDirections.actionGlobalProductDetailFragment(
+                    tabletNavigateTo = {
+                        R.id.nav_graph_products to ProductDetailFragmentArgs(
                             mode = ProductDetailFragment.Mode.ShowProduct(id),
                             isTrashEnabled = true,
-                        )
+                        ).toBundle()
                     },
                     navigateWithPhoneNavigation = {
                         binding.addProductButton.hide()
@@ -338,6 +338,7 @@ class ProductListFragment :
                 enableSearchListeners()
                 true
             }
+
             R.id.menu_scan_barcode -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
                 ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
