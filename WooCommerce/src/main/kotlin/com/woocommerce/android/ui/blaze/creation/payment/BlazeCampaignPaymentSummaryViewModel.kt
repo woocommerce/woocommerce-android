@@ -53,10 +53,6 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
     fun onSubmitCampaign() {
         // TODO show loading and trigger campaign creation
-        onCampaignCreationSuccess()
-    }
-
-    private fun onCampaignCreationSuccess() {
         triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
     }
 

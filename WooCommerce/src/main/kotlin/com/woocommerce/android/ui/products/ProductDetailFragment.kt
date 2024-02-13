@@ -385,7 +385,6 @@ class ProductDetailFragment :
                 )
 
                 is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
-
                 else -> event.isHandled = false
             }
         }
@@ -397,7 +396,7 @@ class ProductDetailFragment :
         )
     }
 
-    fun showAIProductDescriptionBottomSheet(title: String, description: String?) {
+    private fun showAIProductDescriptionBottomSheet(title: String, description: String?) {
         findNavController().navigateSafely(
             ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(
                 title,

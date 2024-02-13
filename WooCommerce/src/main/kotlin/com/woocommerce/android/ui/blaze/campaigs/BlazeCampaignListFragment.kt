@@ -59,7 +59,6 @@ class BlazeCampaignListFragment : BaseFragment() {
                 } else {
                     openBlazeWebView(event.url, event.source)
                 }
-
                 is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
                     event.url,
                     event.urlToTriggerExit
