@@ -3,11 +3,14 @@ package com.woocommerce.android.ui.blaze
 import android.os.Parcelable
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
@@ -27,6 +30,7 @@ class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val productDetailRepository: ProductDetailRepository,
+    private val mediaFilesRepository: MediaFilesRepository,
     private val timezoneProvider: TimezoneProvider,
 ) {
     companion object {
@@ -219,7 +223,7 @@ class BlazeRepository @Inject constructor(
         campaignDetails: CampaignDetails,
         paymentMethodId: String
     ): Result<Unit> {
-        val image = prepareCampaignImage().getOrElse {
+        val image = prepareCampaignImage(campaignDetails.campaignImage).getOrElse {
             return Result.failure(it)
         }
 
@@ -260,8 +264,27 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    private fun prepareCampaignImage(): Result<MediaModel> {
-        TODO()
+    private suspend fun prepareCampaignImage(image: BlazeCampaignImage): Result<MediaModel> {
+        val result = when (image) {
+            is BlazeCampaignImage.LocalImage -> {
+                mediaFilesRepository.uploadFile(image.uri)
+                    .filterNot { it is MediaFilesRepository.UploadResult.UploadProgress }
+                    .first()
+                    .let {
+                        when (it) {
+                            is MediaFilesRepository.UploadResult.UploadFailure -> Result.failure(it.error)
+                            is MediaFilesRepository.UploadResult.UploadSuccess -> Result.success(it.media)
+                            else -> error("Unexpected upload result: $it")
+                        }
+                    }
+            }
+            is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
+            is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
+        }
+
+        return result.onFailure {
+            WooLog.w(WooLog.T.BLAZE, "Failed to prepare campaign image: ${it.message}")
+        }
     }
 
     @Parcelize
