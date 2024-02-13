@@ -69,6 +69,7 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -442,7 +443,7 @@ class MyStoreFragment :
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        remoteProductId = event.productId,
+                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
                         isTrashEnabled = false
                     )
                 )

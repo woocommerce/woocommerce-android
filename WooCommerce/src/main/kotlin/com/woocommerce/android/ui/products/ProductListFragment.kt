@@ -128,7 +128,9 @@ class ProductListFragment :
         TabletLayoutSetupHelper.Screen.Navigation(
             childFragmentManager,
             R.navigation.nav_graph_products,
-            null,
+            ProductDetailFragmentArgs(
+                mode = ProductDetailFragment.Mode.Loading,
+            ).toBundle()
         )
     }
 
@@ -163,7 +165,7 @@ class ProductListFragment :
                 tabletLayoutSetupHelper.onItemClicked(
                     getTabletActionToNavigateTo = {
                         NavGraphMainDirections.actionGlobalProductDetailFragment(
-                            remoteProductId = id,
+                            mode = ProductDetailFragment.Mode.ShowProduct(id),
                             isTrashEnabled = true,
                         )
                     },

@@ -101,6 +101,7 @@ import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -946,7 +947,7 @@ class MainActivity :
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = remoteProductId,
+            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
@@ -957,7 +958,7 @@ class MainActivity :
         val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
 
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = remoteProductId,
+            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(directions = action, extras = extras)
@@ -974,7 +975,7 @@ class MainActivity :
     override fun showAddProduct(imageUris: List<String>) {
         showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            isAddProduct = true,
+            mode = ProductDetailFragment.Mode.AddNewProduct,
             images = imageUris.toTypedArray()
         )
         navController.navigateSafely(action)
