@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.blaze.creation.destination
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.util.getBaseUrl
-import com.woocommerce.android.util.joinToString
 import com.woocommerce.android.util.joinToUrl
 import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -61,6 +60,6 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
 
         val charactersRemaining: Int
-            get() = MAX_CHARACTERS - parameters.joinToString().length
+            get() = MAX_CHARACTERS - parameters.entries.joinToString("&").length
     }
 }
