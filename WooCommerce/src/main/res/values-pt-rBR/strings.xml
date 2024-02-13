@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 13:54:06+0000
+Translation-Revision-Date: 2024-02-08 22:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Não foi possível armazenar o recibo</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Não foi possível fazer download do recibo</string>
+    <string name="card_reader_payment_email_client_not_found">Não foi possível detectar nenhuma aplicação com a qual o recibo possa ser compartilhado</string>
+    <string name="receipt_fetching_error">Não foi possível carregar um recibo para este pedido</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Sugestão gerada por IA</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d caracteres restantes</string>
     <string name="blaze_campaign_edit_ad_change_tagline_title">Descrição</string>
@@ -1956,7 +1960,6 @@ Language: pt_BR
     <string name="empty_product_add_product_button">Adicionar produto</string>
     <string name="variable_product_attributes">Atributos das variações</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Ativar o Bluetooth do dispositivo móvel</string>
-    <string name="card_reader_payment_email_client_not_found">Não é possível detectar seu aplicativo cliente de e-mail</string>
     <string name="card_reader_payment_receipt_email_subject">Seu recibo de %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Atualizando pedido</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">O cliente selecionou %1$s</string>

@@ -57,9 +57,10 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
     viewModel.viewState.observeAsState().value?.let { previewState ->
         BlazeCampaignCreationPreviewScreen(
-            previewState,
-            viewModel::onBackPressed,
-            viewModel::onEditAdClicked
+            previewState = previewState,
+            onBackPressed = viewModel::onBackPressed,
+            onEditAdClicked = viewModel::onEditAdClicked,
+            onConfirmDetailsClicked = viewModel::onConfirmClicked
         )
     }
 }
@@ -68,7 +69,8 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
 private fun BlazeCampaignCreationPreviewScreen(
     previewState: CampaignPreviewUiState,
     onBackPressed: () -> Unit,
-    onEditAdClicked: () -> Unit
+    onEditAdClicked: () -> Unit,
+    onConfirmDetailsClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -110,7 +112,7 @@ private fun BlazeCampaignCreationPreviewScreen(
                     .padding(16.dp)
                     .padding(bottom = 8.dp),
                 text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
-                onClick = { /*TODO*/ },
+                onClick = onConfirmDetailsClicked,
                 enabled = previewState.adDetails != Loading
             )
         }
@@ -410,7 +412,8 @@ fun CampaignScreenPreview() {
             )
         ),
         onBackPressed = { },
-        onEditAdClicked = { }
+        onEditAdClicked = { },
+        onConfirmDetailsClicked = { }
     )
 }
 
