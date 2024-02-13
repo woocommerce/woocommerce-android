@@ -34,7 +34,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         paymentMethodsState
     ) { selectedPaymentMethodId, paymentMethodState ->
         ViewState(
-            budget = navArgs.budget,
+            budget = navArgs.campaignDetails.budget,
             paymentMethodsState = paymentMethodState,
             selectedPaymentMethodId = selectedPaymentMethodId
         )

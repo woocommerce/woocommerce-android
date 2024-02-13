@@ -129,7 +129,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     fun onConfirmClicked() {
         campaignDetails.value?.let {
-            triggerEvent(NavigateToPaymentSummary(it.budget))
+            triggerEvent(NavigateToPaymentSummary(it))
         }
     }
 
@@ -283,8 +283,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val campaignImage: BlazeRepository.BlazeCampaignImage
     ) : MultiLiveEvent.Event()
 
-    // TODO we need to pass more details to use in the campaign creation
     data class NavigateToPaymentSummary(
-        val budget: BlazeRepository.Budget
+        val campaignDetails: BlazeRepository.CampaignDetails
     ) : MultiLiveEvent.Event()
 }

@@ -91,7 +91,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToPaymentSummary -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignPaymentSummaryFragment(
-                            event.budget
+                            event.campaignDetails
                         )
                 )
             }
