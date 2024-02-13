@@ -681,10 +681,12 @@ class ProductDetailFragment :
     @Parcelize
     sealed class Mode : Parcelable {
         @Parcelize
-        data object Loading: Mode()
+        data object Loading : Mode()
+
         @Parcelize
-        data class ShowProduct(val remoteProductId: Long): Mode()
+        data class ShowProduct(val remoteProductId: Long) : Mode()
+
         @Parcelize
-        data object AddNewProduct: Mode()
+        data object AddNewProduct : Mode()
     }
 }
