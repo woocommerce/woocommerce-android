@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.blaze.creation.destination
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Editing
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Hidden
 import com.woocommerce.android.util.getBaseUrl
@@ -20,7 +22,6 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        // The maximum number of characters allowed in a URL by Chrome
         private const val MAX_CHARACTERS = 2096
     }
     private val navArgs: BlazeCampaignCreationAdDestinationParametersFragmentArgs by savedStateHandle.navArgs()
@@ -73,7 +74,25 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     fun onParameterChanged(key: String, value: String) {
         _viewState.update {
-            it.copy(bottomSheetState = (it.bottomSheetState as Editing).copy(key = key, value = value))
+            it.copy(bottomSheetState = (it.bottomSheetState as Editing).copy(
+                key = key,
+                value = value,
+                error = getError(key, value)
+            ))
+        }
+    }
+
+    private fun getError(key: String, value: String): Int {
+        val editingState = _viewState.value.bottomSheetState as Editing
+        val parametersLength = (editingState.parameters + (key to value)).entries.joinToString("&").length
+        return when {
+            editingState.parameters.containsKey(key) -> {
+                R.string.blaze_campaign_edit_ad_destination_key_exists_error
+            }
+            parametersLength >= MAX_CHARACTERS -> {
+                R.string.blaze_campaign_edit_ad_destination_too_long_error
+            }
+            else -> 0
         }
     }
 
@@ -106,7 +125,8 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
                 val baseUrl: String,
                 val parameters: Map<String, String>,
                 val key: String = "",
-                val value: String = ""
+                val value: String = "",
+                @StringRes val error: Int = 0
             ) : ParameterBottomSheetState {
                 val url: String by lazy {
                     if (key.isNotEmpty()) {
@@ -117,7 +137,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
                 }
 
                 val isSaveButtonEnabled: Boolean
-                    get() = key.isNotEmpty() && value.isNotEmpty()
+                    get() = key.isNotEmpty() && value.isNotEmpty() && error == 0
             }
         }
     }

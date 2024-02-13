@@ -3914,6 +3914,8 @@
     <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destination: %s</string>
     <string name="blaze_campaign_edit_ad_destination_parameter_key">Key</string>
     <string name="blaze_campaign_edit_ad_destination_parameter_value">Value</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">The final URL is too long</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">The key already exits</string>
     <!--
     Highlights tooltip
     -->

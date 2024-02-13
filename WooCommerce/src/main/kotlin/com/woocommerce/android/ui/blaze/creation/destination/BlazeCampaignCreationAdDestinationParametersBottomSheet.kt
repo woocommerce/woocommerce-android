@@ -78,12 +78,9 @@ fun AdDestinationParametersBottomSheet(
         sheetContent = {
             if (viewState.bottomSheetState is Editing) {
                 ParameterBottomSheet(
-                    key = viewState.bottomSheetState.key,
-                    value = viewState.bottomSheetState.value,
+                    paramsState = viewState.bottomSheetState,
                     onParameterChanged = onParameterChanged,
                     onParameterSaved = onParameterSaved,
-                    url = viewState.bottomSheetState.url,
-                    isSaveButtonEnabled = viewState.bottomSheetState.isSaveButtonEnabled,
                     modifier = modifier.then(then)
                 )
             }
@@ -95,12 +92,9 @@ fun AdDestinationParametersBottomSheet(
 
 @Composable
 private fun ParameterBottomSheet(
-    key: String,
-    value: String,
+    paramsState: Editing,
     onParameterChanged: (String, String) -> Unit,
     onParameterSaved: (String, String) -> Unit,
-    url: String,
-    isSaveButtonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -131,21 +125,23 @@ private fun ParameterBottomSheet(
             )
 
             WCOutlinedTextField(
-                value = key,
+                value = paramsState.key,
                 label = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameter_key),
                 onValueChange = {
-                    onParameterChanged(it, value)
+                    onParameterChanged(it, paramsState.value)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                isError = paramsState.error != 0,
+                helperText = if (paramsState.error != 0) stringResource(paramsState.error) else null
             )
 
             WCOutlinedTextField(
-                value = value,
+                value = paramsState.value,
                 label = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameter_value),
                 onValueChange = {
-                    onParameterChanged(key, it)
+                    onParameterChanged(paramsState.key, it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -155,7 +151,7 @@ private fun ParameterBottomSheet(
             Text(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(R.string.blaze_campaign_edit_ad_destination_destination_with_parameters, url),
+                text = stringResource(R.string.blaze_campaign_edit_ad_destination_destination_with_parameters, paramsState.url),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -168,9 +164,9 @@ private fun ParameterBottomSheet(
                         end = dimensionResource(id = R.dimen.major_100),
                         top = dimensionResource(id = R.dimen.minor_100)
                     ),
-                onClick = { onParameterSaved(key, value) },
+                onClick = { onParameterSaved(paramsState.key, paramsState.value) },
                 text = stringResource(id = R.string.save),
-                enabled = isSaveButtonEnabled
+                enabled = paramsState.isSaveButtonEnabled
             )
         }
     }
@@ -181,12 +177,14 @@ private fun ParameterBottomSheet(
 fun PreviewParameterBottomSheet() {
     WooThemeWithBackground {
         ParameterBottomSheet(
-            key = "key",
-            value = "value",
+            paramsState = Editing(
+                baseUrl = "https://example.com",
+                parameters = emptyMap(),
+                key = "key",
+                value = "value"
+            ),
             onParameterChanged = { _, _ -> },
             onParameterSaved = { _, _ -> },
-            url = "https://woocommerce.com",
-            isSaveButtonEnabled = false,
             modifier = Modifier.fillMaxWidth()
         )
     }
