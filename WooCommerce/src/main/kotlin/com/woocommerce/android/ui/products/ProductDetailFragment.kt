@@ -88,6 +88,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -676,4 +677,14 @@ class ProductDetailFragment :
     }
 
     override fun getFragmentTitle(): String = productName
+
+    @Parcelize
+    sealed class Mode : Parcelable {
+        @Parcelize
+        data object Loading: Mode()
+        @Parcelize
+        data class ShowProduct(val remoteProductId: Long): Mode()
+        @Parcelize
+        data object AddNewProduct: Mode()
+    }
 }

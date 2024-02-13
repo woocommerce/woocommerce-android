@@ -306,8 +306,8 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
      */
-    val isAddFlowEntryPoint: Boolean
-        get() = navArgs.isAddProduct
+    private val isAddFlowEntryPoint: Boolean
+        get() = navArgs.mode == ProductDetailFragment.Mode.AddNewProduct
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
@@ -353,12 +353,15 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun initializeViewState() {
-        when (isAddFlowEntryPoint) {
-            true -> startAddNewProduct()
-            else -> {
-                loadRemoteProduct(navArgs.remoteProductId)
+        when (val mode = navArgs.mode) {
+            is ProductDetailFragment.Mode.AddNewProduct -> startAddNewProduct()
+            is ProductDetailFragment.Mode.ShowProduct -> {
+                loadRemoteProduct(mode.remoteProductId)
                 if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed)
                     triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
+            }
+            is ProductDetailFragment.Mode.Loading -> {
+                viewState = viewState.copy(isSkeletonShown = true)
             }
         }
     }
@@ -381,10 +384,17 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun initializeStoredProductAfterRestoration() {
         launch {
-            storedProduct.value = if (isAddFlowEntryPoint && !isProductStoredAtSite) {
-                createDefaultProductForAddFlow()
+            if (isAddFlowEntryPoint && !isProductStoredAtSite) {
+                storedProduct.value = createDefaultProductForAddFlow()
             } else {
-                productRepository.getProductAsync(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
+                val mode = navArgs.mode
+                if (mode is ProductDetailFragment.Mode.ShowProduct) {
+                    storedProduct.value = productRepository.getProductAsync(
+                        viewState.productDraft?.remoteId ?: mode.remoteProductId
+                    )
+                } else {
+                    viewState = viewState.copy(isSkeletonShown = true)
+                }
             }
         }
     }
@@ -1340,7 +1350,8 @@ class ProductDetailViewModel @Inject constructor(
 
     fun refreshProduct() {
         launch {
-            fetchProduct(viewState.productDraft?.remoteId ?: navArgs.remoteProductId)
+            val mode = navArgs.mode as ProductDetailFragment.Mode.ShowProduct
+            fetchProduct(viewState.productDraft?.remoteId ?: mode.remoteProductId)
         }
     }
 
