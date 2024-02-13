@@ -260,7 +260,10 @@ class BlazeRepository @Inject constructor(
                 Result.failure(OnChangedException(result.error))
             }
 
-            else -> Result.success(Unit)
+            else -> {
+                WooLog.d(WooLog.T.BLAZE, "Campaign created successfully")
+                Result.success(Unit)
+            }
         }
     }
 
