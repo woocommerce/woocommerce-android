@@ -36,7 +36,7 @@ import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -47,7 +47,8 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
     viewModel.viewState.observeAsState().value?.let {
         BlazeCampaignPaymentSummaryScreen(
             state = it,
-            onBackClick = viewModel::onBackClicked
+            onBackClick = viewModel::onBackClicked,
+            onHelpClick = viewModel::onHelpClicked
         )
     }
 }
@@ -55,13 +56,17 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
 @Composable
 fun BlazeCampaignPaymentSummaryScreen(
     state: BlazeCampaignPaymentSummaryViewModel.ViewState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val context = LocalContext.current
 
     Scaffold(
         topBar = {
-            Toolbar(onNavigationButtonClick = onBackClick)
+            ToolbarWithHelpButton(
+                onNavigationButtonClick = onBackClick,
+                onHelpButtonClick = onHelpClick,
+            )
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
@@ -306,7 +311,8 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
                 ),
                 selectedPaymentMethodId = "1"
             ),
-            onBackClick = {}
+            onBackClick = {},
+            onHelpClick = {}
         )
     }
 }
