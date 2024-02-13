@@ -185,12 +185,6 @@ class MyStoreBlazeViewModel @Inject constructor(
         )
     }
 
-    fun checkBlazeCampaignCreationSuccess() {
-        if (prefsWrapper.isComingFromBlazeCampaignCreationSuccess) {
-            triggerEvent(ShowBlazeCampaignCreationSuccess)
-        }
-    }
-
     sealed interface MyStoreBlazeCampaignState {
         object Hidden : MyStoreBlazeCampaignState
         data class NoCampaign(
@@ -219,6 +213,4 @@ class MyStoreBlazeViewModel @Inject constructor(
         val url: String,
         val urlToTriggerExit: String
     ) : MultiLiveEvent.Event()
-
-    object ShowBlazeCampaignCreationSuccess : MultiLiveEvent.Event()
 }

@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.NavigateToStartingScreen
+import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.NavigateToStartingScreenWithSuccessBottomSheet
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -38,12 +40,18 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
-                is NavigateToStartingScreen -> navigateBackToStartingScreen()
+                is NavigateToStartingScreenWithSuccessBottomSheet -> navigateBackToStartingScreen()
             }
         }
     }
 
     private fun navigateBackToStartingScreen() {
-        findNavController().popBackStack(R.id.blazeCampaignCreationPreviewFragment, inclusive = true)
+        findNavController().navigateSafely(
+            directions = BlazeCampaignPaymentSummaryFragmentDirections
+                .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignSuccessBottomSheetFragment(),
+            navOptions = navOptions {
+                popUpTo(R.id.blazeCampaignCreationPreviewFragment) { inclusive = true }
+            }
+        )
     }
 }

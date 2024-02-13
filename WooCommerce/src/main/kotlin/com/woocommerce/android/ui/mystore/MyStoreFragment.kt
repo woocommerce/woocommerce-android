@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.ShowBlazeCampaignCreationSuccess
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -274,15 +273,8 @@ class MyStoreFragment :
                         )
                     )
                 }
-
-                is ShowBlazeCampaignCreationSuccess -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalBlazeCampaignSuccessBottomSheetFragment()
-                    )
-                }
             }
         }
-        myStoreBlazeViewModel.checkBlazeCampaignCreationSuccess()
     }
 
     private fun openBlazeCreationFlow(productId: Long?) {

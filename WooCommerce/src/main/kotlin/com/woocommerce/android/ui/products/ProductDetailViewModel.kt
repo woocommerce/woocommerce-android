@@ -2418,12 +2418,6 @@ class ProductDetailViewModel @Inject constructor(
         return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
     }
 
-    fun checkBlazeCampaignCreationSuccess() {
-        if (appPrefsWrapper.isComingFromBlazeCampaignCreationSuccess) {
-            triggerEvent(ShowBlazeCampaignCreationSuccess)
-        }
-    }
-
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2472,8 +2466,6 @@ class ProductDetailViewModel @Inject constructor(
     ) : Event()
 
     object ShowAiProductCreationSurveyBottomSheet : Event()
-
-    object ShowBlazeCampaignCreationSuccess : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

@@ -763,11 +763,4 @@
     <action
         android:id="@+id/action_global_themeActivationFragmentDialog"
         app:destination="@id/themeActivationFragmentDialog" />
-    <dialog
-        android:id="@+id/blazeCampaignSuccessBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.blaze.creation.success.BlazeCampaignSuccessBottomSheetFragment"
-        android:label="BlazeCampaignSuccessBottomSheetFragment" />
-    <action
-        android:id="@+id/action_global_blazeCampaignSuccessBottomSheetFragment"
-        app:destination="@id/blazeCampaignSuccessBottomSheetFragment" />
 </navigation>

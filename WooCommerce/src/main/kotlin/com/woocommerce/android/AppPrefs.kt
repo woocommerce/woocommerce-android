@@ -127,8 +127,7 @@ object AppPrefs {
         CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
-        AI_PRODUCT_CREATION_SURVEY_DISMISSED,
-        IS_COMING_FROM_BLAZE_CAMPAIGN_CREATIO_SUCCESS,
+        AI_PRODUCT_CREATION_SURVEY_DISMISSED
     }
 
     /**
@@ -1080,16 +1079,6 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
-            value = value
-        )
-
-    var isComingFromBlazeCampaignCreationSuccess: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.IS_COMING_FROM_BLAZE_CAMPAIGN_CREATIO_SUCCESS,
-            default = false
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.IS_COMING_FROM_BLAZE_CAMPAIGN_CREATIO_SUCCESS,
             value = value
         )
 

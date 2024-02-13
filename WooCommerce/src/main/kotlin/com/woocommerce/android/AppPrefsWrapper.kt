@@ -42,8 +42,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
 
-    var isComingFromBlazeCampaignCreationSuccess by AppPrefs::isComingFromBlazeCampaignCreationSuccess
-
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
