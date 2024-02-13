@@ -34,6 +34,7 @@ class BlazeRepository @Inject constructor(
     private val timezoneProvider: TimezoneProvider,
 ) {
     companion object {
+        private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
         const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
@@ -230,7 +231,7 @@ class BlazeRepository @Inject constructor(
         val result = blazeCampaignsStore.createCampaign(
             selectedSite.get(),
             request = BlazeCampaignCreationRequest(
-                origin = "wc-android",
+                origin = BLAZE_CAMPAIGN_CREATION_ORIGIN,
                 originVersion = BuildConfig.VERSION_NAME,
                 type = BlazeCampaignType.PRODUCT,
                 paymentMethodId = paymentMethodId,
