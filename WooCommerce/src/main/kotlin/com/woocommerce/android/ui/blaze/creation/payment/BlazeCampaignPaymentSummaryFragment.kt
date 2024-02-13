@@ -50,7 +50,7 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
             directions = BlazeCampaignPaymentSummaryFragmentDirections
                 .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignSuccessBottomSheetFragment(),
             navOptions = navOptions {
-                popUpTo(R.id.blazeCampaignCreationPreviewFragment) { inclusive = true }
+                popUpTo(R.id.nav_graph_blaze_campaign_creation) { inclusive = true }
             }
         )
     }
