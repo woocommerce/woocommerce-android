@@ -2,7 +2,7 @@
 
 17.4
 -----
-
+- [*] [Internal] Added the "Shipping Tax" display in the order creation form to enhance tax detail visibility, ensuring comprehensive financial tracking. [https://github.com/woocommerce/woocommerce-android/pull/10794]
 
 17.3
 -----
