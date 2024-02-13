@@ -17,7 +17,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -558,11 +558,11 @@ private fun FundsNumber(
             targetState = valueToDisplay to valueAmount,
             transitionSpec = {
                 if (animationPlayed) {
-                    EnterTransition.None with ExitTransition.None
+                    EnterTransition.None togetherWith ExitTransition.None
                 } else if (targetState.second > initialState.second) {
-                    slideInVertically { -it } with slideOutVertically { it }
+                    slideInVertically { -it } togetherWith slideOutVertically { it }
                 } else {
-                    slideInVertically { it } with slideOutVertically { -it }
+                    slideInVertically { it } togetherWith slideOutVertically { -it }
                 }
             },
             label = "AnimatedFundsNumber"
