@@ -174,6 +174,9 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     label = resourceProvider.getString(R.string.order_creation_payment_tax_label),
                     value = bigDecimalFormatter(totalTax)
                 )
+            ) + TotalsSectionsState.Line.SimpleSmall(
+                label = resourceProvider.getString(R.string.order_creation_payment_shipping_tax_label),
+                value = bigDecimalFormatter(shippingTax)
             ) + taxLines.map {
                 TotalsSectionsState.Line.SimpleSmall(
                     label = "${it.label} · ${it.ratePercent}%",
