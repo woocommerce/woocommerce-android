@@ -160,8 +160,18 @@ class ProductListFragment :
             loadMoreListener = this,
             currencyFormatter = currencyFormatter,
             clickListener = { id, sharedView ->
-                binding.addProductButton.hide()
-                onProductClick(id, sharedView)
+                tabletLayoutSetupHelper.onItemClicked(
+                    getTabletActionToNavigateTo = {
+                        NavGraphMainDirections.actionGlobalProductDetailFragment(
+                            remoteProductId = id,
+                            isTrashEnabled = true,
+                        )
+                    },
+                    navigateWithPhoneNavigation = {
+                        binding.addProductButton.hide()
+                        onProductClick(id, sharedView)
+                    }
+                )
             }
         )
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
