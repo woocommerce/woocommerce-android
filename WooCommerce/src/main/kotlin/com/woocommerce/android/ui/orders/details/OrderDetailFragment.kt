@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -230,7 +230,7 @@ class OrderDetailFragment :
 
     private fun setMarginsIfTablet() {
         if (isTablet()) {
-            val layoutParams = binding.scrollView.layoutParams as LinearLayout.LayoutParams
+            val layoutParams = binding.skeletonView.layoutParams as FrameLayout.LayoutParams
             val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
             layoutParams.marginStart = (windowWidth * MARGINS_FOR_TABLET).toInt()
             layoutParams.marginEnd = (windowWidth * MARGINS_FOR_TABLET).toInt()
