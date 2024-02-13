@@ -4,10 +4,14 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +44,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun AdDestinationParametersBottomSheet(
     viewState: ViewState,
@@ -48,12 +52,13 @@ fun AdDestinationParametersBottomSheet(
     onParameterChanged: (String, String) -> Unit,
     onParameterSaved: (String, String) -> Unit,
     onParameterBottomSheetDismissed: () -> Unit,
-    screenContent: @Composable () -> Unit
+    modifier: Modifier = Modifier,
+    screenContent: @Composable () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val isSheetFullScreen by remember { mutableStateOf(false) }
     val roundedCornerRadius = if (isSheetFullScreen) 0.dp else dimensionResource(id = R.dimen.minor_100)
-    val modifier = if (isSheetFullScreen)
+    val then = if (isSheetFullScreen)
         Modifier.fillMaxSize()
     else
         Modifier.fillMaxWidth()
@@ -81,10 +86,11 @@ fun AdDestinationParametersBottomSheet(
                     onParameterChanged = onParameterChanged,
                     onParameterSaved = onParameterSaved,
                     url = viewState.bottomSheetState.url,
-                    modifier = modifier
+                    modifier = modifier.then(then)
                 )
             }
-        }
+        },
+        modifier = Modifier.imePadding().navigationBarsPadding().imeNestedScroll()
     ) {
         screenContent()
     }

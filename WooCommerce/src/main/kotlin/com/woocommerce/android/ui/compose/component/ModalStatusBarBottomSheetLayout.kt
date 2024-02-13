@@ -7,9 +7,9 @@ import android.util.TypedValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -40,7 +40,7 @@ import androidx.core.view.WindowCompat
  * Source: https://stackoverflow.com/a/76998328
  *
  */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun ModalStatusBarBottomSheetLayout(
     sheetContent: @Composable ColumnScope.() -> Unit,
@@ -57,8 +57,6 @@ fun ModalStatusBarBottomSheetLayout(
     sheetContent = {
         Box(
             modifier = Modifier
-                .imePadding()
-                .navigationBarsPadding()
                 .fillMaxWidth()
         ) {
             sheetContent.invoke(this@ModalBottomSheetLayout)
