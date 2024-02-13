@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.destination
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.util.getBaseUrl
+import com.woocommerce.android.util.joinToString
 import com.woocommerce.android.util.joinToUrl
 import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -19,7 +20,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         // The maximum number of characters allowed in a URL by Chrome
-        private const val MAX_CHARACTERS = 2083
+        private const val MAX_CHARACTERS = 2096
     }
     private val navArgs: BlazeCampaignCreationAdDestinationParametersFragmentArgs by savedStateHandle.navArgs()
 
@@ -60,6 +61,6 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
 
         val charactersRemaining: Int
-            get() = MAX_CHARACTERS - url.length
+            get() = MAX_CHARACTERS - parameters.joinToString().length
     }
 }
