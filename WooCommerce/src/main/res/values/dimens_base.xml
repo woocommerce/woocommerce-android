@@ -79,6 +79,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_major_72">72dp</dimen>
     <dimen name="image_major_100">100dp</dimen>
     <dimen name="image_major_120">128dp</dimen>
+    <dimen name="image_major_140">148dp</dimen>
     <dimen name="image_major_150">156dp</dimen>
     <dimen name="image_major_200">200dp</dimen>
     <dimen name="image_major_300">250dp</dimen>
@@ -132,6 +133,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="floating_dialog_min_width">280dp</dimen>
     <dimen name="tab_indicator_size">8dp</dimen>
+    <dimen name="progress_bar_small">32dp</dimen>
     <dimen name="progress_bar_mid">56dp</dimen>
     <dimen name="progress_bar_large">91dp</dimen>
     <dimen name="whats_new_dialog_heading_top_margin">64dp</dimen>
