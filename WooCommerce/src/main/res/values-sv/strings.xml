@@ -1,14 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-18 13:36:25+0000
+Translation-Revision-Date: 2024-02-07 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Det gick inte att lagra kvittot</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Det gick inte att ladda ner kvittot</string>
+    <string name="card_reader_payment_email_client_not_found">Det gick inte att hitta någon applikation som kvittot kan delas till</string>
+    <string name="receipt_fetching_error">Vi kunde inte ladda något kvitto för den här beställningen</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Beskrivning</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Slogan</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Ändra bild</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Tillämpa</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dagar</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Ställ in varaktighet</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Klar</string>
+    <string name="blaze_campaign_budget_update_button">Uppdatera</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Redigera</string>
+    <string name="blaze_campaign_budget_duration_section_title">Varaktighet</string>
+    <string name="blaze_campaign_budget_toolbar_title">Ställ in din budget</string>
+    <string name="blaze_campaign_budget_days_duration">i %1$s dagar</string>
+    <string name="blaze_campaign_budget_total_spend">Totalt spenderat</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s dagar från %2$s</string>
+    <string name="blaze_campaign_preview_target_default_value">Alla</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d tecken återstår</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Startar</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
+    <string name="blaze_campaign_budget_subtitle">Hur mycket skulle du vilja spendera på din produktmarknadsföringskampanj?</string>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
+    <string name="blaze_campaign_budget_impressions_title">Visningar</string>
+    <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
+    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
+    <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
+    <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
+    <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>
+    <string name="blaze_campaign_preview_details_confirm_details_button">Bekräfta detaljer</string>
+    <string name="blaze_campaign_preview_details_interests">Intressen</string>
+    <string name="blaze_campaign_preview_details_location">Plats</string>
+    <string name="blaze_campaign_preview_details_devices">Enheter</string>
+    <string name="blaze_campaign_preview_details_language">Språk</string>
+    <string name="blaze_campaign_preview_details_budget">Budget</string>
+    <string name="blaze_campaign_preview_details_section_title">Detaljer</string>
+    <string name="blaze_campaign_screen_fragment_title">Förhandsgranska</string>
+    <string name="blaze_campaign_preview_details_destination_url">Annonsdestination</string>
+    <string name="blaze_campaign_preview_shop_now_button">Handla nu</string>
+    <string name="blaze_campaign_preview_edit_ad">Redigera annons</string>
     <string name="disabled">Inaktiverad (originalstorlek)</string>
     <string name="order_configuration_product_selection">Välj produkt %s</string>
     <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;Välj en produkt:&lt;/b&gt; Välj vad som ska marknadsföras med Blaze.</string>
+    <string name="order_configuration_product_selection_control">Produktval</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;Gå live:&lt;/b&gt; Se din kampanj starta och följ dess resultat.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;Snabbgranskning:&lt;/b&gt; Skicka in din annons för en snabb moderatorkontroll.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;Ange din budget:&lt;/b&gt; Bestäm hur mycket du vill spendera och kampanjens längd.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;Anpassa målgrupp:&lt;/b&gt; Välj målgrupp baserat på plats eller intressen och se potentiell räckvidd.</string>
     <string name="scan_to_update_inventory_manage_stock">Hantera lager</string>
     <string name="scan_to_update_inventory_stock_not_managed">Lager inte hanterat</string>
     <string name="blaze_campaign_creation_new_intro_learn_more">Lär dig hur Blaze fungerar</string>
@@ -43,14 +89,12 @@ Language: sv_SE
     <string name="theme_picker_carousel_error_placeholder_message_cta">tryck här</string>
     <string name="theme_picker_current_theme_title">Nuvarande tema</string>
     <string name="theme_picker_settings_title">Prova ett nytt utseende</string>
-    <string name="product_creation_survey_button_skip">Hoppa över</string>
     <string name="product_creation_survey_button_open">Börja undersökningen</string>
     <string name="product_creation_survey_title">Vi värdesätter dina åsikter!</string>
     <string name="card_reader_onboarding_contact_us">Behöver du hjälp? &lt;a href=\'\'&gt;Kontakta oss&lt;/a&gt;</string>
     <string name="scan_to_update_inventory_undo_snackbar">Uppdatering av kvantitet är ångrad</string>
     <string name="theme_picker_carousel_error_placeholder_message">Tyvärr verkar det vara ett problem med hämtningen av mallen. %1$s för en live-demo.</string>
     <string name="theme_picker_carousel_info_item_description_settings">Du hittar ditt perfekta tema i WooCommerce-temabutiken.</string>
-    <string name="product_creation_survey_description">Du har använt vår AI-assisterade funktion för att lägga till produkter flera gånger nu. Vi vill gärna ta del av dina tankar om hur vi kan göra den ännu bättre.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Om du aktiverar alternativet Betala personligen kan kunden betala kontant eller med kort för onlinebeställningar vid leverans.\n\nBeställningar kan fortfarande skapas manuellt utan att aktivera denna funktion.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vill du lägga till alternativet Betala personligen i din kassa?</string>
     <string name="order_refunds_refund_custom_amount">Återbetala anpassat belopp</string>
@@ -1918,7 +1962,6 @@ Language: sv_SE
     <string name="empty_product_message">Börja sälja idag genom att lägga till din första produkt i butiken.</string>
     <string name="variable_product_attributes">Variationsattribut</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktivera Bluetooth på den mobila enheten</string>
-    <string name="card_reader_payment_email_client_not_found">Lyckas inte hitta ditt e-postprogram</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Uppdaterar beställning</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="card_reader_refetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
