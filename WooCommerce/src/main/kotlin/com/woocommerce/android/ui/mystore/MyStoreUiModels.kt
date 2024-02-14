@@ -9,7 +9,8 @@ data class RevenueStatsUiModel(
     val intervalList: List<StatsIntervalUiModel> = emptyList(),
     val totalOrdersCount: Int? = null,
     val totalSales: Double? = null,
-    val currencyCode: String?
+    val currencyCode: String?,
+    val rangeId: String
 )
 
 data class StatsIntervalUiModel(
