@@ -443,6 +443,8 @@ class ProductListViewModel @Inject constructor(
         triggerEvent(ProductListEvent.OpenProduct(productId, sharedView))
     }
 
+    fun isProductHighlighted(productId: Long) = if (!isTablet()) false else productId == openedProduct
+
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
