@@ -7,11 +7,11 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ComponentItemViewBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Component
 import org.wordpress.android.util.PhotonUtils
 
@@ -76,7 +76,7 @@ class ComponentViewHolder(val viewBinding: ComponentItemViewBinding) : RecyclerV
             else -> {
                 size = imageSize
                 val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
-                GlideApp.with(viewBinding.componentImage).load(photonUrl)
+                Glide.with(viewBinding.componentImage).load(photonUrl)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius)).placeholder(R.drawable.ic_product)
                     .into(viewBinding.componentImage)
             }

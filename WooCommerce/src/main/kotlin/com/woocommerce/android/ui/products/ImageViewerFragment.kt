@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -12,7 +13,6 @@ import com.bumptech.glide.request.target.Target
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentImageViewerBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 
 /**
@@ -80,7 +80,7 @@ class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestLis
     private fun loadImage() {
         showProgress(true)
 
-        GlideApp.with(this)
+        Glide.with(this)
             .load(imageUrl)
             .listener(this)
             .into(binding.photoView)
