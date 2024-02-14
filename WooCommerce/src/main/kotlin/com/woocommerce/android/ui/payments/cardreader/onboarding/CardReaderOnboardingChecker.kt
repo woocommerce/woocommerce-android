@@ -54,8 +54,6 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPayment
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-const val WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION = "4.0.0"
-
 /**
  * This class is used to check if the selected store is ready to accept In Person Payments. The app should check store's
  * eligibility every time it attempts to connect to a card reader.

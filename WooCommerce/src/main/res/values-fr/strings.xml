@@ -1,12 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-17 02:10:07+0000
+Translation-Revision-Date: 2024-02-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Impossible d’enregistrer le reçu</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Impossible de télécharger le reçu</string>
+    <string name="card_reader_payment_email_client_not_found">Impossible de détecter une application compatible avec le partage du reçu</string>
+    <string name="receipt_fetching_error">Nous n’avons malheureusement pas été en mesure de charger un reçu pour cette commande</string>
+    <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggéré par l’IA</string>
+    <string name="blaze_campaign_edit_ad_characters_remaining">%d caractères restants</string>
+    <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_title">Description</string>
+    <string name="blaze_campaign_edit_ad_change_image_button">Changer l’image</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Appliquer</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Début</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s jours</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Fixer la durée</string>
+    <string name="blaze_campaign_budget_impressions_info">Les impressions reflètent la fréquence à laquelle votre publicité apparaît pour les clients potentiels.\n\n\n        Il est impossible de donner les chiffres exacts en raison de la fluctuation du trafic en ligne et des comportements des internautes, nous visons à faire correspondre autant que possible les véritables impressions à votre nombre cible.\n\n\n        Rappelez-vous, les impressions sont une affaire de visibilité, pas d’action entreprise par les internautes.</string>
+    <string name="blaze_campaign_budget_impressions_done_button">Terminé</string>
+    <string name="blaze_campaign_budget_impressions_title">Impressions</string>
+    <string name="blaze_campaign_budget_update_button">Mettre à jour</string>
+    <string name="blaze_campaign_budget_edit_duration_button">Modifier</string>
+    <string name="blaze_campaign_budget_duration_section_title">Durée</string>
+    <string name="blaze_campaign_budget_reach_forecast">Estimation du nombre de personnes atteintes par jour</string>
+    <string name="blaze_campaign_budget_daily_spend">%1$s par jour</string>
+    <string name="blaze_campaign_budget_days_duration">pendant %1$s jours</string>
+    <string name="blaze_campaign_budget_total_spend">Dépense totale</string>
+    <string name="blaze_campaign_budget_subtitle">Combien souhaiteriez-vous dépenser pour votre campagne promotionnelle ?</string>
+    <string name="blaze_campaign_budget_toolbar_title">Définir votre budget</string>
+    <string name="blaze_campaign_preview_target_default_value">Tout</string>
+    <string name="blaze_campaign_preview_days_duration">%1$s jours à partir de %2$s</string>
+    <string name="product_creation_survey_button_dont_show_again">Ne plus afficher</string>
+    <string name="product_creation_survey_button_remind_me_later">Me le rappeler ultérieurement</string>
+    <string name="product_creation_survey_description">Vous avez une minute ? Aidez-nous à améliorer nos fonctionnalités d’IA en nous donnant votre avis.</string>
+    <string name="blaze_campaign_preview_details_confirm_details_button">Confirmer les détails</string>
+    <string name="blaze_campaign_preview_details_destination_url">Destination de la publicité</string>
+    <string name="blaze_campaign_preview_details_interests">Intérêts</string>
+    <string name="blaze_campaign_preview_details_location">Emplacement</string>
+    <string name="blaze_campaign_preview_details_devices">Appareils</string>
+    <string name="blaze_campaign_preview_details_language">Langue</string>
+    <string name="blaze_campaign_preview_details_budget">Budget</string>
+    <string name="blaze_campaign_preview_details_section_title">Détails</string>
+    <string name="blaze_campaign_preview_shop_now_button">Acheter maintenant</string>
+    <string name="blaze_campaign_preview_edit_ad">Modifier la publicité</string>
+    <string name="blaze_campaign_screen_fragment_title">Aperçu</string>
     <string name="disabled">Désactivé</string>
+    <string name="order_configuration_product_selection_control">Sélection de produits</string>
+    <string name="order_configuration_product_selection">Sélectionner le produit %s</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_5">&lt;b&gt;Mise en ligne :&lt;/b&gt; observez les débuts de votre campagne promotionnelle et suivez son succès.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_4">&lt;b&gt;Examen rapide :&lt;/b&gt; envoyez votre publicité pour une vérification rapide par un modérateur.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_3">&lt;b&gt;Fixer votre budget :&lt;/b&gt; établissez vos dépenses et la durée de votre campagne.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_2">&lt;b&gt;Personnaliser la cible :&lt;/b&gt; sélectionnez le public par emplacement ou intérêts et découvrez la portée potentielle.</string>
+    <string name="blaze_campaign_creation_new_intro_learn_item_1">&lt;b&gt;Choisir un produit :&lt;/b&gt; choisissez ce que vous voulez promouvoir avec Blaze.</string>
+    <string name="scan_to_update_inventory_manage_stock">Gérer le stock</string>
+    <string name="scan_to_update_inventory_stock_not_managed">Stock non géré</string>
+    <string name="blaze_campaign_creation_new_intro_learn_more">Voir comment fonctionne Blaze</string>
     <string name="blaze_campaign_creation_new_intro_start_button">Lancer votre campagne</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_subtitle">Vos publicités sur des millions de sites des réseaux WordPress.com et Tumblr.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Accéder à un large public</string>
@@ -41,9 +92,7 @@ Language: fr
     <string name="theme_picker_carousel_info_item_description_settings">Vous trouverez le thème parfait dans la boutique de thèmes WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Thème actuel</string>
     <string name="theme_picker_settings_title">Essayer un nouveau look</string>
-    <string name="product_creation_survey_button_skip">Ignorer</string>
     <string name="product_creation_survey_button_open">Commencer l’enquête</string>
-    <string name="product_creation_survey_description">Vous avez utilisé notre fonctionnalité assistée par l’IA pour ajouter des produits à de multiples reprises désormais. Nous aimerions savoir ce que vous en pensez pour l’améliorer.</string>
     <string name="product_creation_survey_title">Nous apprécions vos retours !</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Activer Payez en personne permet à vos clients de vous régler leurs commandes en ligne lors de la livraison, en espèces ou par carte.\n\nLes commandes peuvent toujours être créées manuellement sans activer cette fonctionnalité.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Désirez-vous ajouter Payer en personne à la validation de la commande Web ?</string>
@@ -126,6 +175,7 @@ Language: fr
     <string name="configuration_quantity_between"> entre %1$s et %2$s éléments </string>
     <string name="configuration_quantity_item_plural">%d éléments</string>
     <string name="configuration_quantity_item">%d élément</string>
+    <string name="order_configuration_change_product_quantity">Modifier la quantité de produit de %1$.2f à %2$.2f</string>
     <string name="save_configuration">Enregistrer la configuration</string>
     <string name="product_configuration_title">Configuration</string>
     <string name="default_product_title">Produit %s</string>
@@ -1911,7 +1961,6 @@ Language: fr
     <string name="variable_product_attributes">Attributs des variantes</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Activer le Bluetooth de l’appareil mobile</string>
     <string name="card_reader_refetching_order_failed">Erreur lors de l’extraction de la commande. L’état de la commande dans l’application est peut-être obsolète.</string>
-    <string name="card_reader_payment_email_client_not_found">Aucune application de messagerie détectée</string>
     <string name="card_reader_payment_receipt_email_subject">Votre reçu de %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualisation de la commande</string>
     <string name="card_reader_payment_fetch_order_loading_header">Mise à jour de l’état de l’application</string>
