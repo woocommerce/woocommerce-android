@@ -41,6 +41,9 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
         )
     }
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentShippingPackagesSelectorBinding.bind(view)

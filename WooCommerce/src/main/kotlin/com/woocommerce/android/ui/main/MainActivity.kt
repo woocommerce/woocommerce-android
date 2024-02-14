@@ -95,6 +95,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
@@ -148,10 +149,6 @@ class MainActivity :
         const val FIELD_WIDGET_NAME = "widget-name"
 
         const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
-
-        private const val KEY_ORDER_ID = "orderId"
-        private const val KEY_ALL_ORDER_IDS = "allOrderIds"
-        private const val KEY_REMOTE_NOTE_ID = "remoteNoteId"
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -214,7 +211,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(f is TopLevelFragment)
+                    showToolbar(animate = f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -333,6 +330,7 @@ class MainActivity :
             }
         )
     }
+
     override fun hideProgressDialog() {
         progressDialog?.apply {
             if (isShowing) {
@@ -491,6 +489,9 @@ class MainActivity :
     }
 
     private fun showToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
         if (animate) {
             animatorHelper.animateToolbarHeight(show = true) {
@@ -506,6 +507,9 @@ class MainActivity :
     }
 
     private fun hideToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == 0) return
         if (animate) {
             animatorHelper.animateToolbarHeight(show = false) {
@@ -1169,11 +1173,7 @@ class MainActivity :
             remoteNoteId
         )
         navHostFragment?.navController?.let { navController ->
-            val bundle = Bundle().apply {
-                putLong(KEY_ORDER_ID, orderId)
-                putLongArray(KEY_ALL_ORDER_IDS, arrayOf(orderId).toLongArray())
-                putLong(KEY_REMOTE_NOTE_ID, remoteNoteId)
-            }
+            val bundle = OrderDetailFragmentArgs(orderId, longArrayOf(orderId), remoteNoteId).toBundle()
             navController.navigate(R.id.orderDetailFragment, bundle)
         } ?: run {
             navController.navigateSafely(action)
