@@ -46,6 +46,7 @@ import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -407,7 +408,10 @@ class ProductDetailFragment :
 
     private fun openBlazeCreationFlow(productId: Long) {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(productId = productId)
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON,
+                productId = productId
+            )
         }
     }
 

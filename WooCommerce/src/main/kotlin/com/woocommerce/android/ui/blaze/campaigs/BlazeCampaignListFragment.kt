@@ -69,7 +69,7 @@ class BlazeCampaignListFragment : BaseFragment() {
 
     private fun openBlazeCreationFlow() {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation()
+            blazeCampaignCreationDispatcher.startCampaignCreation(source = BlazeFlowSource.CAMPAIGN_LIST)
         }
     }
 

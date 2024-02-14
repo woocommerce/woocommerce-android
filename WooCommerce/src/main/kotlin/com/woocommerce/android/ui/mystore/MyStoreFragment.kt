@@ -279,7 +279,10 @@ class MyStoreFragment :
 
     private fun openBlazeCreationFlow(productId: Long?) {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(productId)
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                source = BlazeFlowSource.MY_STORE_SECTION,
+                productId = productId
+            )
         }
     }
 

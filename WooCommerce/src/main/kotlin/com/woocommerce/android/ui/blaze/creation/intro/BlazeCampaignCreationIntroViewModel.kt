@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.blaze.creation.intro
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -20,7 +23,8 @@ import javax.inject.Inject
 class BlazeCampaignCreationIntroViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productListRepository: ProductListRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationIntroFragmentArgs by savedStateHandle.navArgs()
     fun onContinueClick() {
@@ -46,6 +50,13 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    init {
+        analyticsTracker.track(
+            stat = BLAZE_INTRO_DISPLAYED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName)
+        )
     }
 
     fun onDismissClick() {
