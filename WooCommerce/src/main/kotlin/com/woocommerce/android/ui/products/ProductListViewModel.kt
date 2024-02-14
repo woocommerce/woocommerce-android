@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -69,6 +70,7 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
+    private val isTablet: IsTablet,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -78,7 +80,7 @@ class ProductListViewModel @Inject constructor(
 
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList.map {
-        selectFirstLoadedProductOnTablet(it)
+        openFirstLoadedProductOnTablet(it)
         it
     }
 
@@ -428,8 +430,8 @@ class ProductListViewModel @Inject constructor(
     }
 
 
-    private fun selectFirstLoadedProductOnTablet(products: List<Product>) {
-        if (openedProduct == null && products.isNotEmpty()) {
+    private fun openFirstLoadedProductOnTablet(products: List<Product>) {
+        if (openedProduct == null && products.isNotEmpty() && isTablet()) {
             openedProduct = products.first().remoteId
             onOpenProduct(openedProduct!!, null)
         }
