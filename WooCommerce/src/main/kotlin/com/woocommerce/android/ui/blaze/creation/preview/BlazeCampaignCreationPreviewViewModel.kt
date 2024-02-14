@@ -49,6 +49,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private val adDetails = savedStateHandle.getStateFlow<AdDetailsUi>(viewModelScope, Loading)
     private val budget = savedStateHandle.getStateFlow(viewModelScope, getDefaultBudget())
+    private val destinationUrl = savedStateHandle.getStateFlow(viewModelScope, "")
 
     private val languages = blazeRepository.observeLanguages()
     private val devices = blazeRepository.observeDevices()
@@ -94,8 +95,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         selectedLanguages,
         selectedDevices,
         selectedInterests,
-        selectedLocations
-    ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations ->
+        selectedLocations,
+        destinationUrl
+    ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations, destinationUrl ->
         CampaignPreviewUiState(
             adDetails = ad,
             campaignDetails = getCampaign().toCampaignDetailsUi(
@@ -103,7 +105,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 selectedLanguages,
                 selectedDevices,
                 selectedInterests,
-                selectedLocations
+                selectedLocations,
+                destinationUrl
             )
         )
     }.asLiveData()
@@ -159,6 +162,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         selectedLocations.update { locations }
     }
 
+    fun onDestinationUrlUpdated(url: String) {
+        destinationUrl.update { url }
+    }
+
     fun onConfirmClicked() {
         triggerEvent(NavigateToPaymentSummary(budget.value))
     }
@@ -182,12 +189,14 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     private fun CampaignPreview.toCampaignDetailsUi(
         budget: Budget,
         languages: List<Language>,
         devices: List<Device>,
         interests: List<Interest>,
-        locations: List<Location>
+        locations: List<Location>,
+        destinationUrl: String
     ) = CampaignDetailsUi(
         budget = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
@@ -232,10 +241,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         ),
         destinationUrl = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = targetUrl,
+            displayValue = destinationUrl.ifBlank { targetUrl },
             maxLinesValue = 1,
             onItemSelected = {
-                triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
+                triggerEvent(NavigateToAdDestinationScreen(destinationUrl.ifBlank { targetUrl }, navArgs.productId))
             }
         )
     )
@@ -268,7 +277,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     sealed interface AdDetailsUi : Parcelable {
         @Parcelize
-        object Loading : AdDetailsUi
+        data object Loading : AdDetailsUi
 
         @Parcelize
         data class AdDetails(
@@ -319,6 +328,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     // TODO we need to pass more details to use in the campaign creation
     data class NavigateToPaymentSummary(
-        val budget: BlazeRepository.Budget
+        val budget: Budget
     ) : MultiLiveEvent.Event()
 }
