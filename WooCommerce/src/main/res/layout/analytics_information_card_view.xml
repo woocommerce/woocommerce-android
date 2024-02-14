@@ -64,6 +64,47 @@
             app:layout_constraintWidth_default="percent"
             app:layout_constraintWidth_percent="0.5" />
 
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/reportDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintTop_toBottomOf="@+id/leftAnalyticsSection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/reportText"
+            style="@style/Woo.Card.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:textSize="@dimen/text_minor_125"
+            android:textStyle="bold"
+            android:text="@string/see_report"
+            tools:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/reportDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            android:padding="@dimen/major_100"
+            android:background="?attr/selectableItemBackground"
+            />
+        <ImageView
+            android:id="@+id/reportIcon"
+            android:layout_width="@dimen/major_200"
+            android:layout_height="@dimen/major_200"
+            android:src="@drawable/ic_arrow_right"
+            app:layout_constraintTop_toTopOf="@+id/reportText"
+            app:layout_constraintBottom_toBottomOf="@+id/reportText"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/minor_100"/>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/reportGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="reportDivider,reportText,reportIcon"
+            android:visibility="gone"
+            />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
 
