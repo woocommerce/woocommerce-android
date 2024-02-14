@@ -1,6 +1,29 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+17.4
+-----
+- [***] The Order Listing and Order Detail screens have been optimized for tablet use, showcasing a two-pane layout on such devices. [https://github.com/woocommerce/woocommerce-android/pull/10591]
+
+17.3
+-----
+
+
+17.3
+-----
+- [*] [Internal] Enhanced user experience in shipping label creation with automatic scrolling to the first invalid field upon form submission failure [https://github.com/woocommerce/woocommerce-android/pull/10657]
+- [*] [Internal] Enhanced product variation delete confirmation dialog visibility and functionality across device rotations [https://github.com/woocommerce/woocommerce-android/pull/10664]
+- [*] [Internal] Added a text along with the receipts file when it is shared [https://github.com/woocommerce/woocommerce-android/pull/10681]
+
+17.2
+-----
+- [**] [Available for users with WooCommerce version of 8.7+, which is not released yet] Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
+- [*] Fix login for sites with Jetpack Connection Package [https://github.com/woocommerce/woocommerce-android/pull/10688]
+
 17.1
 -----
+- [*] [Internal] Fixed crash when going to background from the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/10600]
+- [*] [Internal] Improvement to the autofocus logic in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/10605]
+- [*] [Internal] Collapse bottom drawer with totals on the order creation/editing screen when scrolling down [https://github.com/woocommerce/woocommerce-android/pull/10573]
 
 17.0
 -----
