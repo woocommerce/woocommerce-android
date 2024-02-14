@@ -12,13 +12,16 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragmentArgs
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubViewModel
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewState
+import com.woocommerce.android.ui.analytics.hub.GetReportUrl
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
@@ -34,6 +37,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -49,6 +53,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
@@ -57,6 +62,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -86,10 +92,14 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val dateUtils: DateUtils = mock()
+    private val trackerEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
+
+    private val selectedSite: SelectedSite = mock()
+    private val getReportUrl: GetReportUrl = GetReportUrl(selectedSite)
 
     private lateinit var sut: AnalyticsHubViewModel
 
@@ -690,6 +700,57 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
     }
 
+    @Test
+    fun `when site is a wpcom and see report is pressed then open a wpcom webview`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+        sut = givenAViewModel()
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
+    }
+
+    @Test
+    fun `when site is not a wpcom and see report is pressed then open the default webview`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(false) })
+        sut = givenAViewModel()
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+    }
+
+    @Test
+    fun `when see report is pressed then track see report event`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        verify(tracker).track(
+            AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_PERIOD to WEEK_TO_DATE.identifier,
+                AnalyticsTracker.KEY_REPORT to ReportCard.Revenue.name.lowercase(),
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
+            )
+        )
+    }
+
+    @Test
+    fun `when see report is pressed then interaction tracked`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(
+            SiteModel().apply {
+                setIsWpComStore(true)
+                adminUrl = "https://report-url/wc-admin"
+            }
+        )
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
+        configureSuccessfulStatsResponse()
+        sut = givenAViewModel()
+        // When the view is initialized we track some interactions
+        clearInvocations(trackerEventEmitter)
+
+        sut.onSeeReport("https://report-url", ReportCard.Revenue)
+        verify(trackerEventEmitter).interacted(any())
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -700,13 +761,15 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             resourceProvider,
             currencyFormatter,
             transactionLauncher,
-            mock(),
+            trackerEventEmitter,
             updateStats,
             observeLastUpdate,
             localeProvider,
             feedbackRepository,
             tracker,
             dateUtils,
+            selectedSite,
+            getReportUrl,
             savedState
         )
     }
@@ -765,7 +828,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                     value = defaultSessionStat.conversionRate,
                     delta = null,
                     chartInfo = emptyList()
-                )
+                ),
+                reportUrl = null
             )
         )
     }
