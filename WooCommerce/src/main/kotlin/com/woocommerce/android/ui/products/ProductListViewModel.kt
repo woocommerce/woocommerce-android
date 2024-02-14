@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -71,10 +72,14 @@ class ProductListViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
+        private const val KEY_PRODUCT_OPENED = "key_product_opened"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
-    val productList: LiveData<List<Product>> = _productList
+    val productList: LiveData<List<Product>> = _productList.map {
+        selectFirstLoadedProductOnTablet(it)
+        it
+    }
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -89,6 +94,9 @@ class ProductListViewModel @Inject constructor(
     private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
+    private var openedProduct: Long?
+        get() = savedState[KEY_PRODUCT_OPENED]
+        set(value) = savedState.set(KEY_PRODUCT_OPENED, value)
 
     init {
         EventBus.getDefault().register(this)
@@ -418,6 +426,19 @@ class ProductListViewModel @Inject constructor(
         triggerEvent(SelectProducts(selectedProductsIds))
     }
 
+
+    private fun selectFirstLoadedProductOnTablet(products: List<Product>) {
+        if (openedProduct == null && products.isNotEmpty()) {
+            openedProduct = products.first().remoteId
+            onOpenProduct(openedProduct!!)
+        }
+    }
+
+    fun onOpenProduct(productId: Long) {
+        openedProduct = productId
+        triggerEvent(ProductListEvent.OpenProduct(productId))
+    }
+
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
@@ -697,6 +718,7 @@ class ProductListViewModel @Inject constructor(
             data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
             data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
         }
+        data class OpenProduct(val productId: Long) : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }
