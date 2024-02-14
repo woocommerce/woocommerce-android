@@ -201,7 +201,7 @@ class EditShippingLabelAddressFragment :
                 binding.countrySpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
             }
             new.title?.takeIfNotEqualTo(old?.title) {
-                screenTitle = getString(it)
+                binding.toolbar.title = getString(it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
                 if (it.isBlank()) {

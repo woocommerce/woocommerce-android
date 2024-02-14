@@ -107,7 +107,7 @@ class ShippingLabelAddressSuggestionFragment :
                 binding.useSuggestedAddressButton.isEnabled = it
             }
             new.title?.takeIfNotEqualTo(old?.title) {
-                screenTitle = it
+                binding.toolbar.title = getString(it)
             }
         }
 
