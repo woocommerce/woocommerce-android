@@ -3807,6 +3807,7 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
+
     <!--
     Blaze campaign creation intro
     -->
@@ -3822,7 +3823,7 @@
     Blaze campaign creation celebration
     -->
     <string name="blaze_campaign_creation_celebration_header">All set!</string>
-    <string name="blaze_campaign_ceation_celebration_message">The ad has been submistted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
+    <string name="blaze_campaign_ceation_celebration_message">The ad has been submitted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
     <string name="blaze_campaign_ceation_celebration_button">Got it</string>
 
     <!--
@@ -3842,6 +3843,7 @@
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
+
     <!--
     Blaze campaign budget screen
     -->
@@ -3873,6 +3875,7 @@
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
+
     <!--
     Blaze campaign payment
     -->
@@ -3902,6 +3905,7 @@
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
     <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
+
     <!--
     Blaze edit ad destination
     -->
@@ -3916,6 +3920,14 @@
     <string name="blaze_campaign_edit_ad_destination_parameter_value">Value</string>
     <string name="blaze_campaign_edit_ad_destination_too_long_error">The final URL is too long</string>
     <string name="blaze_campaign_edit_ad_destination_key_exists_error">The key already exits</string>
+
+    <!--
+    Blaze campaign created success
+    -->
+    <string name="blaze_campaign_created_success_title">Ready to Go!</string>
+    <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
+    <string name="blaze_campaign_created_success_done_button">Done</string>
+
     <!--
     Highlights tooltip
     -->

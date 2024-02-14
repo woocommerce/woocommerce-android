@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
@@ -117,6 +118,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onHelpTapped() {
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.BLAZE_CAMPAIGN_CREATION))
     }
 
     fun onEditAdClicked() {
