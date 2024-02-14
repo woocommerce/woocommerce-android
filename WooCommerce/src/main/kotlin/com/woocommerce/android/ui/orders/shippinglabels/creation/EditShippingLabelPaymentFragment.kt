@@ -6,21 +6,22 @@ import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.NavGraphOrdersDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Error
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Loading
@@ -198,9 +199,9 @@ class EditShippingLabelPaymentFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is AddPaymentMethod -> {
-                    (activity as? MainActivity)?.navigateToWebView(
-                        MainActivityViewModel.ViewUrlInWebView(
-                            AppUrls.WPCOM_ADD_PAYMENT_METHOD,
+                    findNavController().navigateSafely(
+                        NavGraphOrdersDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
                             urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
                             title = getFragmentTitle()
                         )
