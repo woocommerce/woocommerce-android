@@ -185,6 +185,13 @@ android {
     }
 }
 
+for (taskName in gradle.startParameter.taskNames) {
+    if (taskName.contains("UnitTest")) {
+        tasks.matching { it.name.startsWith("ksp") || it.name.startsWith("hilt") }
+                .configureEach { enabled = false }
+    }
+}
+
 dependencies {
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
