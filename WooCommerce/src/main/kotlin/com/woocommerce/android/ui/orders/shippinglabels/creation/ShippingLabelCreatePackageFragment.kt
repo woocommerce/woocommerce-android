@@ -13,6 +13,7 @@ import com.woocommerce.android.databinding.FragmentShippingLabelCreatePackageBin
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment.Companion.SELECTED_PACKAGE_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,6 +25,9 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ShippingLabelCreatePackageViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
