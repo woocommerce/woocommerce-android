@@ -22,9 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignCreationIntroViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    analyticsTracker: AnalyticsTrackerWrapper,
     private val productListRepository: ProductListRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationIntroFragmentArgs by savedStateHandle.navArgs()
     fun onContinueClick() {
