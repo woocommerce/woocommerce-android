@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.receipt
+package com.woocommerce.android.ui.payments.receipt.preview
 
 import android.os.Bundle
 import android.view.Menu
@@ -14,10 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReceiptPreviewBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptPreviewViewModel.ReceiptPreviewEvent.LoadUrl
-import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -55,7 +51,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
                 true
             }
             R.id.menu_send -> {
-                viewModel.onSendEmailClicked()
+                viewModel.onShareClicked()
                 true
             }
             else -> false
@@ -105,16 +101,9 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
             when (it) {
                 is LoadUrl -> binding.receiptPreviewPreviewWebview.loadUrl(it.url)
                 is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), it.receiptUrl, it.documentName)
-                is SendReceipt -> composeEmail(it)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 else -> it.isHandled = false
             }
-        }
-    }
-
-    private fun composeEmail(event: SendReceipt) {
-        ActivityUtils.sendEmail(requireActivity(), event.address, event.subject, event.content) {
-            viewModel.onEmailActivityNotFound()
         }
     }
 }

@@ -35,6 +35,7 @@ fun <T> MultiSelectList(
     items: List<T>,
     selectedItems: List<T>,
     onItemToggled: (T) -> Unit,
+    isAllButtonToggled: Boolean,
     modifier: Modifier = Modifier,
     itemFormatter: T.() -> String = { toString() },
     itemKey: ((T) -> Any)? = null,
@@ -44,7 +45,7 @@ fun <T> MultiSelectList(
         allItemsButton?.let {
             MultiSelectItem(
                 item = it.text,
-                isSelected = selectedItems.isEmpty(),
+                isSelected = isAllButtonToggled,
                 onItemToggled = it.onClicked,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -55,7 +56,7 @@ fun <T> MultiSelectList(
             items(items, key = itemKey) { item ->
                 MultiSelectItem(
                     item = itemFormatter(item),
-                    isSelected = selectedItems.contains(item),
+                    isSelected = item in selectedItems,
                     onItemToggled = { onItemToggled(item) },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -69,7 +70,7 @@ private fun MultiSelectItem(
     item: String,
     isSelected: Boolean,
     onItemToggled: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -137,6 +138,7 @@ private fun MultiSelectListPreview() {
                 selectedItems = if (selectedItems.contains(it)) selectedItems - it else selectedItems + it
             },
             allItemsButton = allItemsButton,
+            isAllButtonToggled = selectedItems.size == items.size,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.surface)

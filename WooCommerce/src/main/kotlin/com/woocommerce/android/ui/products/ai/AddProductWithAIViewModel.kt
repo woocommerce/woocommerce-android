@@ -117,7 +117,6 @@ class AddProductWithAIViewModel @Inject constructor(
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
             } else {
                 triggerEvent(NavigateToProductDetailScreen(productId))
-                appsPrefsWrapper.numberOfProductsCreatedUsingAi = appsPrefsWrapper.numberOfProductsCreatedUsingAi + 1
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
             }
         }
