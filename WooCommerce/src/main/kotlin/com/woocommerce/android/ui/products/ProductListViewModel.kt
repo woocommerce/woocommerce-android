@@ -439,8 +439,17 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
+        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProduct } ?: 0
         openedProduct = productId
-        triggerEvent(ProductListEvent.OpenProduct(productId, sharedView))
+        val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
+        triggerEvent(
+            ProductListEvent.OpenProduct(
+                productId = productId,
+                oldPosition = oldPositionInList,
+                newPosition = newPositionInList,
+                sharedView = sharedView,
+            )
+        )
     }
 
     fun isProductHighlighted(productId: Long) = if (!isTablet()) false else productId == openedProduct
@@ -726,6 +735,8 @@ class ProductListViewModel @Inject constructor(
         }
         data class OpenProduct(
             val productId: Long,
+            val oldPosition: Int,
+            val newPosition: Int,
             val sharedView: View?
         ) : ProductListEvent()
     }

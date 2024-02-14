@@ -466,7 +466,8 @@ class ProductListFragment :
                 is OpenProduct -> {
                     tabletLayoutSetupHelper.onItemClicked(
                         tabletNavigateTo = {
-
+                            productAdapter.notifyItemChanged(event.oldPosition)
+                            productAdapter.notifyItemChanged(event.newPosition)
                             R.id.nav_graph_products to ProductDetailFragmentArgs(
                                 mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
                                 isTrashEnabled = true,
