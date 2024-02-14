@@ -13,6 +13,8 @@ import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInfo
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 
+typealias SeeReportClickListener = (url: String) -> Unit
+
 class AnalyticsHubInformationCardView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -20,6 +22,8 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
+
+    var onSeeReportClickListener: SeeReportClickListener? = null
 
     internal fun updateInformation(viewState: AnalyticsHubInformationViewState) {
         visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
@@ -49,6 +53,14 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
         binding.leftAnalyticsSection.visibility = VISIBLE
         binding.rightAnalyticsSection.visibility = VISIBLE
         binding.noDataText.visibility = GONE
+        if (viewState.reportUrl != null) {
+            binding.reportGroup.visibility = VISIBLE
+            binding.reportText.setOnClickListener {
+                onSeeReportClickListener?.let { it(viewState.reportUrl) }
+            }
+        } else {
+            binding.reportGroup.visibility = GONE
+        }
         visibility = VISIBLE
     }
 

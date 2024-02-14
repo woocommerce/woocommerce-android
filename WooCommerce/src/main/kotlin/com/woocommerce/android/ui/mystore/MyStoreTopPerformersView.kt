@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.card.MaterialCardView
@@ -17,7 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.SkeletonView
@@ -135,7 +135,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             holder.viewBinding.itemsSoldTextView.text = topPerformer.timesOrdered
             holder.viewBinding.netSalesTextView.text = topPerformer.netSales
             holder.viewBinding.divider.isVisible = position < itemCount - 1
-            GlideApp.with(holder.itemView.context)
+            Glide.with(holder.itemView.context)
                 .load(topPerformer.imageUrl)
                 .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                 .placeholder(ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_product))
