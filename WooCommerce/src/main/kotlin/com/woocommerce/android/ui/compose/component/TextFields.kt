@@ -72,6 +72,7 @@ fun WCOutlinedTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
     placeholderText: String? = null
@@ -99,6 +100,7 @@ fun WCOutlinedTextField(
             keyboardActions = keyboardActions,
             singleLine = singleLine,
             maxLines = maxLines,
+            minLines = minLines,
             interactionSource = interactionSource,
             placeholder = {
                 placeholderText?.let {
