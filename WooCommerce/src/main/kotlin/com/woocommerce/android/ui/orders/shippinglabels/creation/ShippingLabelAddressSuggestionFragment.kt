@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.EditSelectedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.UseSelectedAddress
@@ -44,6 +45,9 @@ class ShippingLabelAddressSuggestionFragment :
 
     val viewModel: ShippingLabelAddressSuggestionViewModel by viewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private var screenTitle = 0
         set(value) {
             field = value
@@ -70,7 +74,6 @@ class ShippingLabelAddressSuggestionFragment :
     }
 
     private fun setupToolbar() {
-//        binding.toolbar.title = getString(screenTitle)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
             R.drawable.ic_back_24dp
