@@ -4,6 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -30,7 +34,8 @@ import kotlin.time.Duration.Companion.days
 class BlazeCampaignBudgetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
-    private val repository: BlazeRepository
+    private val repository: BlazeRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()
 
@@ -85,6 +90,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 )
             )
         )
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_CREATION_EDIT_BUDGET_SAVE_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_DURATION to budgetUiState.value.durationInDays,
+                AnalyticsTracker.KEY_BLAZE_TOTAL_BUDGET to budgetUiState.value.totalBudget,
+            )
+        )
     }
 
     fun onEditDurationTapped() {
@@ -128,6 +140,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             )
         }
         fetchAdForecast()
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_DURATION to budgetUiState.value.durationInDays,
+            )
+        )
     }
 
     fun onStartDateChanged(newStartDateMillis: Long) {
