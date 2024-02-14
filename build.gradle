@@ -8,6 +8,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' apply false
     id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
+    id 'com.google.devtools.ksp' apply false
 }
 
 measureBuilds {
@@ -96,8 +97,8 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2.65.0'
-    glideVersion = '4.13.2'
+    fluxCVersion = '2.66.0'
+    glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'

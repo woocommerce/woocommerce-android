@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 09:54:04+0000
+Translation-Revision-Date: 2024-02-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Tidak dapat menyimpan tanda terima</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Tidak dapat mengunduh tanda terima</string>
+    <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi yang dapat digunakan untuk membagikan tanda terima</string>
+    <string name="receipt_fetching_error">Maaf, kami tidak dapat memuat tanda terima untuk pesanan ini</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Disarankan oleh AI</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d karakter tersisa</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Deskripsi</string>
@@ -1957,7 +1961,6 @@ Language: id
     <string name="variable_product_attributes">Atribut variasi</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Aktifkan bluetooth perangkat seluler</string>
     <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
-    <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
