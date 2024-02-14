@@ -223,7 +223,6 @@ class ProductListFragment :
                 override fun onSelectionChanged() {
                     val selectionCount = tracker?.selection?.size() ?: 0
                     productListViewModel.onSelectionChanged(selectionCount)
-                    super.onSelectionChanged()
                 }
             })
     }
