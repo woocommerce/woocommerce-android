@@ -4,13 +4,13 @@ import se.bjurr.violations.lib.model.SEVERITY
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.kapt'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'com.google.dagger.hilt.android'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.gms.google-services'
+    id 'com.google.devtools.ksp'
 }
 
 sentry {
@@ -191,10 +191,10 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation platform('com.google.firebase:firebase-bom:30.3.0')
-    implementation 'com.google.firebase:firebase-messaging-ktx'
-    implementation 'com.google.firebase:firebase-config-ktx'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation platform('com.google.firebase:firebase-bom:32.7.1')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-config'
+    implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
@@ -270,19 +270,20 @@ dependencies {
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
 
-    kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
-    kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+    ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
-    kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
+    ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
-    kapt "com.github.bumptech.glide:compiler:$glideVersion"
+    ksp "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
-    implementation "com.google.android.play:core:$googlePlayCoreVersion"
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
+    implementation 'com.google.android.play:review-ktx:2.0.1'
 
-    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
+    implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
 
     implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
@@ -322,7 +323,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    kspAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
     // Dependencies for screenshots

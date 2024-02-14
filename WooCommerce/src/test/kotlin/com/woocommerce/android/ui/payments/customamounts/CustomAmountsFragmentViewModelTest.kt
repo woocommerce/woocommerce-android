@@ -85,7 +85,17 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when percentage is not zero, then done button is enabled`() {
+    fun `when percentage is not zero and order total is not zero, then done button is enabled`() {
+        val args = CustomAmountsFragmentArgs(
+            customAmountUIModel = CustomAmountUIModel(
+                id = 0L,
+                amount = BigDecimal.TEN,
+                name = "",
+                type = PERCENTAGE_CUSTOM_AMOUNT
+            ),
+            orderTotal = "100"
+        )
+        viewModel = CustomAmountsViewModel(args.toSavedStateHandle(), tracker)
         viewModel.currentPercentage = BigDecimal.TEN
 
         assertTrue(viewModel.viewState.isDoneButtonEnabled)
@@ -193,5 +203,40 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when order total is zero, then current percentage is zero`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "0"
+            ).toSavedStateHandle(),
+            tracker
+        )
+
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `when order total is null, then current percentage is zero`() {
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker
+        )
+
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
+    }
     //endregion
 }

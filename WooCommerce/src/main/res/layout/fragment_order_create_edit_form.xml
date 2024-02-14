@@ -114,9 +114,7 @@
         android:id="@+id/totals_section"
         tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsFullViewKt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:visibility="visible"
-        android:visibility="gone" />
+        android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
