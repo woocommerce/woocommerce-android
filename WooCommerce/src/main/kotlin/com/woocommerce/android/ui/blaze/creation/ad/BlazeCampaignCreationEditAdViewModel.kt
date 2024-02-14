@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -21,8 +24,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository,
-    savedStateHandle: SavedStateHandle
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val TAGLINE_MAX_LENGTH = 32
@@ -66,6 +70,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onNextSuggestionTapped() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED)
         _viewState.update {
             val index = _viewState.value.suggestionIndex
             _viewState.value.copy(suggestionIndex = index + 1)
@@ -73,6 +78,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onPreviousSuggestionTapped() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED)
         _viewState.update {
             val index = _viewState.value.suggestionIndex
             _viewState.value.copy(suggestionIndex = index - 1)
@@ -80,6 +86,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onSaveTapped() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_AD_SAVE_TAPPED)
         triggerEvent(
             ExitWithResult(
                 EditAdResult(
