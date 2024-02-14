@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.blaze.creation.destination
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.getBaseUrl
@@ -22,7 +24,8 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
     productDetailRepository: ProductDetailRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
     private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId))
@@ -64,6 +67,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     }
 
     fun onDestinationUrlChanged(destinationUrl: String) {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED)
         _viewState.value = _viewState.value.copy(
             destinationUrl = destinationUrl,
             isUrlDialogVisible = false
