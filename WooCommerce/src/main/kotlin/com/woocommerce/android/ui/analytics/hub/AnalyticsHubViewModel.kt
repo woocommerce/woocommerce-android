@@ -13,6 +13,7 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
@@ -70,6 +71,8 @@ class AnalyticsHubViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
     private val dateUtils: DateUtils,
+    private val selectedSite: SelectedSite,
+    private val getReportUrl: GetReportUrl,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -130,6 +133,32 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onNewRangeSelection(selectionType: SelectionType) {
         rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
+    }
+
+    fun onSeeReport(url: String, card: ReportCard) {
+        trackSeeReportInteraction(card)
+        selectedSite.getOrNull()?.let { site ->
+            val event = if (site.isWpComStore) {
+                AnalyticsViewEvent.OpenWPComWebView(url)
+            } else {
+                AnalyticsViewEvent.OpenUrl(url)
+            }
+            triggerEvent(event)
+        } ?: triggerEvent(AnalyticsViewEvent.OpenUrl(url))
+    }
+
+    private fun trackSeeReportInteraction(card: ReportCard) {
+        onTrackableUIInteraction()
+        val period = ranges.selectionType.identifier
+        val report = card.name.lowercase()
+        tracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_PERIOD to period,
+                AnalyticsTracker.KEY_REPORT to report,
+                AnalyticsTracker.KEY_COMPARE to AnalyticsTracker.VALUE_PREVIOUS_PERIOD
+            )
+        )
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
@@ -310,7 +339,8 @@ class AnalyticsHubViewModel @Inject constructor(
             stats.conversionRate,
             null,
             listOf()
-        )
+        ),
+        reportUrl = null
     )
 
     private fun buildRevenueDataViewState(revenueStat: RevenueStat) =
@@ -328,6 +358,10 @@ class AnalyticsHubViewModel @Inject constructor(
                 if (revenueStat.netDelta is DeltaPercentage.Value) revenueStat.netDelta.value else null,
                 revenueStat.netRevenueByInterval.map { it.toFloat() }
             ),
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.Revenue
+            )
         )
 
     private fun buildOrdersDataViewState(ordersStats: OrdersStat) =
@@ -352,6 +386,10 @@ class AnalyticsHubViewModel @Inject constructor(
                     null
                 },
                 ordersStats.avgOrderValueByInterval.map { it.toFloat() }
+            ),
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.Orders
             )
         )
 
@@ -379,7 +417,11 @@ class AnalyticsHubViewModel @Inject constructor(
                         ),
                         index != products.size - 1
                     )
-                }
+                },
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.Products
+            )
         )
     }
 
@@ -432,3 +474,5 @@ class AnalyticsHubViewModel @Inject constructor(
         shouldAskForFeedback()
     }
 }
+
+enum class ReportCard { Revenue, Orders, Products }

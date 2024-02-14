@@ -4,11 +4,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 class OrderDetailTracker @Inject constructor(
-    private val trackerWrapper: AnalyticsTrackerWrapper
+    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val paymentsFlowTracker: PaymentsFlowTracker,
 ) {
     fun trackCustomFieldsTapped() {
         trackerWrapper.track(AnalyticsEvent.ORDER_VIEW_CUSTOM_FIELDS_TAPPED)
@@ -24,9 +26,8 @@ class OrderDetailTracker @Inject constructor(
         )
     }
 
-    fun trackReceiptViewTapped(orderId: Long, orderStatus: Order.Status) {
-        trackerWrapper.track(
-            AnalyticsEvent.RECEIPT_VIEW_TAPPED,
+    suspend fun trackReceiptViewTapped(orderId: Long, orderStatus: Order.Status) {
+        paymentsFlowTracker.trackReceiptViewTapped(
             mapOf(
                 AnalyticsTracker.KEY_ORDER_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
+import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState
@@ -26,6 +27,7 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsListCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
+    var onSeeReportClickListener: SeeReportClickListener? = null
 
     internal fun updateInformation(viewState: AnalyticsHubListViewState) {
         when (viewState) {
@@ -77,6 +79,14 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         binding.analyticsListLeftHeader.visibility = VISIBLE
         binding.analyticsListRightHeader.visibility = VISIBLE
         binding.noDataText.visibility = GONE
+        if (viewState.reportUrl != null) {
+            binding.reportGroup.visibility = VISIBLE
+            binding.reportText.setOnClickListener {
+                onSeeReportClickListener?.let { it(viewState.reportUrl) }
+            }
+        } else {
+            binding.reportGroup.visibility = GONE
+        }
     }
 
     private fun setNoDataViewState(viewState: NoDataState) {
