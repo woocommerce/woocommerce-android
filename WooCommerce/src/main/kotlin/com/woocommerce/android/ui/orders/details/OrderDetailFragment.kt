@@ -276,7 +276,7 @@ class OrderDetailFragment :
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
-                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
+                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.receiptButtonStatus)
                 if (isTablet()) {
                     orderEditingViewModel.setOrderId(it.order.id)
                 }
