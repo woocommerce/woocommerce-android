@@ -111,18 +111,18 @@ platform :android do
   #####################################################################################
   desc 'Creates a new release branch from the current trunk'
   lane :start_code_freeze do |options|
-    # Ensure we use the latest version of the toolkit
-    check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
-
+    # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
+    # Check out the up-to-date default branch, the designated starting point for the code freeze
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
 
     message = <<-MESSAGE
 
-     Building a new release branch starting from #{DEFAULT_BRANCH}.
-     Current version: #{release_version_current} (#{build_code_current}).
-     New beta version to start the code freeze: #{beta_version_first} (#{build_code_next}).
+    Code Freeze:
+      • New release branch from #{DEFAULT_BRANCH}: release/#{release_version_next}
+      • Current release version and build code: #{release_version_current} (#{build_code_current}).
+      • New beta version and build code: #{beta_version_first} (#{build_code_next}).
 
     MESSAGE
 
@@ -133,7 +133,6 @@ platform :android do
 
     # Create the release branch
     UI.message 'Creating release branch...'
-    ensure_git_branch(branch: DEFAULT_BRANCH)
     Fastlane::Helper::GitHelper.create_branch("release/#{release_version_next}", from: DEFAULT_BRANCH)
     UI.success("Done! New release branch is: #{git_branch}")
 
@@ -165,6 +164,7 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
+    # Update GitHub branch protection and milestone name
     copy_branch_protection(
       repository: GITHUB_REPO,
       from_branch: DEFAULT_BRANCH,
@@ -190,6 +190,9 @@ platform :android do
   #####################################################################################
   desc 'Creates a new release branch from the current trunk'
   lane :complete_code_freeze do |options|
+    # Ensure we use the latest version of the toolkit
+    check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
+
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
@@ -207,6 +210,13 @@ platform :android do
     push_to_git_remote(tags: false)
 
     trigger_release_build(branch_to_build: "release/#{release_version_current}")
+
+    # Create an intermediate branch
+    new_intermediate_branch_name = "merge/#{release_version_current}-code-freeze-into-#{DEFAULT_BRANCH}"
+    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
+
+    # Push up the intermediate branch
+    push_to_git_remote(tags: false)
 
     create_release_management_pull_request(
       base_branch: DEFAULT_BRANCH,
@@ -256,22 +266,21 @@ platform :android do
   # new_beta_release
   # -----------------------------------------------------------------------------------
   # This lane updates the release branch for a new beta release. It will update the
-  # current release branch by default. If you want to update a different branch
-  # (i.e. hotfix branch) pass the related version with the 'base_version' param
-  # (example: base_version:10.6.1 will work on the 10.6.1 branch)
+  # current release branch by default.
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane new_beta_release [skip_confirm:<skip confirm>] [base_version:<version>]
+  # bundle exec fastlane new_beta_release [skip_confirm:<skip confirm>]
   #
   # Example:
   # bundle exec fastlane new_beta_release
   # bundle exec fastlane new_beta_release skip_confirm:true
-  # bundle exec fastlane new_beta_release base_version:10.6.1
   #####################################################################################
   desc 'Updates a release branch for a new beta release'
   lane :new_beta_release do |options|
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
+
+    ensure_git_branch_is_release_branch
 
     # Check versions
     message = <<-MESSAGE
@@ -283,14 +292,6 @@ platform :android do
       New build code: #{build_code_next}
 
     MESSAGE
-
-    # Check branch
-    unless !options[:base_version].nil? || Fastlane::Helper::GitHelper.checkout_and_pull(release: release_version_current)
-      UI.user_error!("Release branch for version #{release_version_current} doesn't exist.")
-    end
-
-    # Check user override
-    override_default_release_branch(options[:base_version]) unless options[:base_version].nil?
 
     UI.important(message)
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
@@ -312,17 +313,20 @@ platform :android do
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
-    # Create an intermediate branch
-    new_beta_branch_name = "new_beta/#{version_name_current}"
-    Fastlane::Helper::GitHelper.create_branch(new_beta_branch_name)
-
     push_to_git_remote(tags: false)
 
     trigger_release_build(branch_to_build: "release/#{release_version_current}")
 
+    # Create an intermediate branch
+    new_intermediate_branch_name = "merge/#{version_name_current}-into-#{DEFAULT_BRANCH}"
+    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
+
+    # Push up the intermediate branch
+    push_to_git_remote(tags: false)
+
     create_release_management_pull_request(
-      base_branch: "release/#{release_version_current}",
-      title: "Merge #{version_name_current} to release/#{release_version_current}"
+      base_branch: DEFAULT_BRANCH,
+      title: "Merge #{version_name_current} into #{DEFAULT_BRANCH}"
     )
   end
 
@@ -401,19 +405,38 @@ platform :android do
   #####################################################################################
   desc 'Finalizes a hotfix release by triggering a release build'
   lane :finalize_hotfix_release do |options|
-    ensure_git_branch_is_release_branch
-
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
-    UI.important("Triggering hotfix build for version: #{release_version_current}")
+    ensure_git_branch_is_release_branch
+
+    hotfix_version = release_version_current
+
+    UI.important("Pushing changes to remote and triggering hotfix build for version: #{version}")
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{release_version_current}")
+    trigger_release_build(branch_to_build: "release/#{hotfix_version}")
+
+    # Retrieve the current non-hotfix release version
+    Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
+    non_hotfix_release_version = release_version_current
+
+    # Create an intermediate branch
+    Fastlane::Helper::GitHelper.checkout_and_pull("release/#{hotfix_version}")
+    new_intermediate_branch_name = "merge/#{hotfix_version}-hotfix-into-release-#{non_hotfix_release_version}"
+    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
+
+    # Push up the intermediate branch
+    push_to_git_remote(tags: false)
+
+    create_release_management_pull_request(
+      base_branch: "release/#{non_hotfix_release_version}",
+      title: "Merge #{hotfix_version} hotfix into release/#{non_hotfix_release_version}"
+    )
   end
 
   #####################################################################################
@@ -449,10 +472,11 @@ platform :android do
   desc 'Updates store metadata and runs the release checks'
   lane :finalize_release do |options|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
-    ensure_git_branch_is_release_branch
 
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
+
+    ensure_git_branch_is_release_branch
 
     UI.important("Finalizing release: #{release_version_current}")
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
@@ -512,9 +536,16 @@ platform :android do
 
     trigger_release_build(branch_to_build: "release/#{version}")
 
+    # Create an intermediate branch
+    new_intermediate_branch_name = "merge/#{release_version_current}-final-into-#{DEFAULT_BRANCH}"
+    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
+
+    # Push up the intermediate branch
+    push_to_git_remote(tags: false)
+
     create_release_management_pull_request(
       base_branch: DEFAULT_BRANCH,
-      title: "Merge #{version_name_current} final to #{DEFAULT_BRANCH}"
+      title: "Merge #{release_version_current} final into #{DEFAULT_BRANCH}"
     )
   end
 
@@ -1228,13 +1259,6 @@ platform :android do
 
       "#{branch}-#{commit}"
     end
-  end
-
-  def override_default_release_branch(version)
-    success = Fastlane::Helper::GitHelper.checkout_and_pull(release: version)
-    UI.user_error!("Release branch for version #{version} doesn't exist. Abort.") unless success
-
-    UI.message "Checked out branch `#{git_branch}` as requested by user.\n"
   end
 
   #####################################################################################

@@ -53,6 +53,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_URL_FETCHING_FAILS
+import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_VIEW_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -74,6 +76,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
 
@@ -81,7 +85,8 @@ class PaymentsFlowTracker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider
+    private val cardReaderTrackingInfoProvider: CardReaderTrackingInfoProvider,
+    private val paymentReceiptHelper: PaymentReceiptHelper,
 ) {
     @VisibleForTesting
     fun track(
@@ -155,6 +160,13 @@ class PaymentsFlowTracker @Inject constructor(
             properties["card_reader_model"] = cardReaderModel
         }
     }
+
+    private suspend fun getReceiptSource(): Pair<String, String> =
+        if (paymentReceiptHelper.isWCCanGenerateReceipts()) {
+            AnalyticsTracker.KEY_SOURCE to "backend"
+        } else {
+            AnalyticsTracker.KEY_SOURCE to "local"
+        }
 
     @Suppress("ComplexMethod")
     private fun getOnboardingNotCompletedReason(state: CardReaderOnboardingState): String? =
@@ -412,28 +424,58 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    fun trackPrintReceiptTapped() {
-        track(RECEIPT_PRINT_TAPPED)
+    suspend fun trackPrintReceiptTapped() {
+        track(
+            RECEIPT_PRINT_TAPPED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackEmailReceiptTapped() {
-        track(RECEIPT_EMAIL_TAPPED)
+    suspend fun trackEmailReceiptTapped() {
+        track(
+            RECEIPT_EMAIL_TAPPED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackEmailReceiptFailed() {
-        track(RECEIPT_EMAIL_FAILED)
+    suspend fun trackPrintReceiptCancelled() {
+        track(
+            RECEIPT_PRINT_CANCELED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackPrintReceiptCancelled() {
-        track(RECEIPT_PRINT_CANCELED)
+    suspend fun trackPrintReceiptFailed() {
+        track(
+            RECEIPT_PRINT_FAILED,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackPrintReceiptFailed() {
-        track(RECEIPT_PRINT_FAILED)
+    suspend fun trackPrintReceiptSucceeded() {
+        track(
+            RECEIPT_PRINT_SUCCESS,
+            properties = mutableMapOf(getReceiptSource())
+        )
     }
 
-    fun trackPrintReceiptSucceeded() {
-        track(RECEIPT_PRINT_SUCCESS)
+    suspend fun trackReceiptViewTapped(properties: Map<String, Any>) {
+        track(
+            RECEIPT_VIEW_TAPPED,
+            properties = properties.toMutableMap().also {
+                it.putAll(
+                    mapOf(getReceiptSource())
+                )
+            }
+        )
+    }
+
+    suspend fun trackReceiptUrlFetchingFails(errorDescription: String) {
+        track(
+            RECEIPT_URL_FETCHING_FAILS,
+            properties = mutableMapOf(getReceiptSource()),
+            errorDescription = errorDescription,
+        )
     }
 
     fun trackPaymentCancelled(currentPaymentState: String?) {
@@ -582,6 +624,37 @@ class PaymentsFlowTracker @Inject constructor(
                 AnalyticsTracker.KEY_AMOUNT_NORMALIZED to amountNormalized,
             )
         )
+    }
+
+    suspend fun trackPaymentsReceiptSharingFailed(sharingResult: PaymentReceiptShare.ReceiptShareResult.Error) {
+        when (sharingResult) {
+            is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
+                track(
+                    RECEIPT_EMAIL_FAILED,
+                    errorType = "file_creation_failed",
+                    errorDescription = "File creation failed",
+                    properties = mutableMapOf(getReceiptSource())
+                )
+            }
+
+            is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
+                track(
+                    RECEIPT_EMAIL_FAILED,
+                    errorType = "file_download_failed",
+                    errorDescription = "File download failed",
+                    properties = mutableMapOf(getReceiptSource())
+                )
+            }
+
+            is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
+                track(
+                    RECEIPT_EMAIL_FAILED,
+                    errorType = "no_app_found",
+                    errorDescription = sharingResult.exception.message,
+                    properties = mutableMapOf(getReceiptSource())
+                )
+            }
+        }
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {

@@ -35,9 +35,9 @@ class GetWidgetStats @Inject constructor(
                 // If siteModel is null, exit the function with WidgetStatsFailure
                 siteModel == null -> WidgetStatsResult.WidgetStatsFailure("No site selected")
                 else -> {
-                    // Fetch stats, always force to refresh data
                     val areVisitorStatsSupported = siteModel.connectionType == SiteConnectionType.Jetpack
 
+                    // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(
                         granularity = granularity,
                         forced = true,
@@ -47,7 +47,7 @@ class GetWidgetStats @Inject constructor(
                     if (fetchedStats.isError) {
                         WidgetStatsResult.WidgetStatsFailure(fetchedStats.error.message)
                     } else {
-                        WidgetStatsResult.WidgetStats(fetchedStats.model!!, areVisitorStatsSupported)
+                        WidgetStatsResult.WidgetStats(fetchedStats.model!!)
                     }
                 }
             }
@@ -62,15 +62,13 @@ class GetWidgetStats @Inject constructor(
         data class WidgetStats(
             private val revenueModel: WCRevenueStatsModel?,
             private val visitorsMap: Map<String, Int>?,
-            val currencyCode: String,
-            val areVisitorStatsSupported: Boolean
+            val currencyCode: String
         ) : WidgetStatsResult() {
             constructor(
                 stats: StatsRepository.SiteStats,
-                areVisitorStatsSupported: Boolean
-            ) : this(stats.revenue, stats.visitors, stats.currencyCode, areVisitorStatsSupported)
+            ) : this(stats.revenue, stats.visitors, stats.currencyCode)
 
-            val visitorsTotal: Int
+            val visitorsTotal: Int?
             val ordersTotal: Int
             val revenueGross: Double
 
@@ -82,7 +80,7 @@ class GetWidgetStats @Inject constructor(
                     orderCount = total.ordersCount ?: 0
                 }
 
-                visitorsTotal = visitorsMap?.values?.sum() ?: 0
+                visitorsTotal = visitorsMap?.values?.sum()
                 ordersTotal = orderCount
                 revenueGross = grossRevenue
             }

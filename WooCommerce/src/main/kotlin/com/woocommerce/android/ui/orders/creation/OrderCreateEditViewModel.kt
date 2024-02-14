@@ -54,6 +54,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_GIFT_CARD_REMOVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
@@ -64,6 +65,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_USE_GIFT_CARD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteType.CUSTOMER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PRODUCT_TYPES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
@@ -148,6 +150,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -218,8 +222,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private val pluginsInformation: MutableStateFlow<Map<String, WooPlugin>> =
         savedState.getStateFlow(
             scope = viewModelScope,
-            initialValue = HashMap()
+            initialValue = HashMap(),
+            key = "plugins_information"
         )
+
     val isGiftCardExtensionEnabled
         get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
             ?.isOperational ?: false
@@ -271,7 +277,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
-                onExpandCollapseClicked = { onExpandCollapseTotalsClicked(it) }
+                onExpandCollapseClicked = { onExpandCollapseTotalsClicked() },
+                onHeightChanged = { onTotalsSectionHeightChanged(it) }
             )
         }
 
@@ -337,6 +344,9 @@ class OrderCreateEditViewModel @Inject constructor(
         get() = _orderDraft.value
 
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
+
+    private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
+        savedState.getStateFlow(viewModelScope, false)
 
     init {
         monitorPluginAvailabilityChanges()
@@ -703,11 +713,15 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
-        viewState = viewState.copy(
-            isAddGiftCardButtonEnabled = order.hasProducts() &&
-                order.isEditable &&
-                _selectedGiftCard.value.isEmpty()
-        )
+        val shouldEnableAddGiftCardButton = order.hasProducts() &&
+            order.isEditable &&
+            _selectedGiftCard.value.isEmpty()
+
+        viewState = viewState.copy(isAddGiftCardButtonEnabled = shouldEnableAddGiftCardButton)
+
+        if (shouldEnableAddGiftCardButton) {
+            giftCardWasEnabledAtLeastOnce.update { true }
+        }
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -1114,10 +1128,13 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddGiftCardButtonClicked() {
+        trackGiftCardCTAClicked()
         triggerEvent(OrderCreateEditNavigationTarget.AddGiftCard)
     }
 
     fun onGiftCardSelected(selectedGiftCard: String) {
+        val giftCardWasRemoved = selectedGiftCard.isEmpty() && _selectedGiftCard.value.isNotEmpty()
+        trackGiftCardSet(giftCardWasRemoved)
         _selectedGiftCard.update { selectedGiftCard }
     }
 
@@ -1143,14 +1160,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onExpandCollapseTotalsClicked(expanded: Boolean) {
+    private fun onExpandCollapseTotalsClicked() {
+        val newTotalsExpandedState = !viewState.isTotalsExpanded
+        viewState = viewState.copy(isTotalsExpanded = newTotalsExpandedState)
         tracker.track(
             AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_EXPANDED to expanded
+                KEY_EXPANDED to newTotalsExpandedState
             )
         )
+    }
+
+    private fun onTotalsSectionHeightChanged(newHeight: Int) {
+        triggerEvent(OnTotalsSectionHeightChanged(newHeight))
     }
 
     private fun onTotalsSectionPrimaryButtonClicked() {
@@ -1185,6 +1208,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         timeElapsed.toString()
                 }
                 mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
+                mutableMap[KEY_USE_GIFT_CARD] = orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
             }
         )
     }
@@ -1299,9 +1323,15 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             pluginsInformation
                 .onEach {
-                    val isGiftCardExtensionEnabled = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
-                    viewState = viewState.copy(shouldDisplayAddGiftCardButton = isGiftCardExtensionEnabled)
+                    viewState = viewState.copy(
+                        shouldDisplayAddGiftCardButton = it[WOO_GIFT_CARDS.pluginName]?.isOperational ?: false
+                    )
                 }.launchIn(viewModelScope)
+
+            giftCardWasEnabledAtLeastOnce
+                .filter { it && isGiftCardExtensionEnabled }
+                .onEach { trackGiftCardCTAAvailable() }
+                .launchIn(viewModelScope)
 
             pluginsInformation.update {
                 orderCreateEditRepository.fetchOrderSupportedPlugins()
@@ -1335,7 +1365,8 @@ class OrderCreateEditViewModel @Inject constructor(
             mapOf(
                 KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 KEY_ERROR_TYPE to (it as? WooException)?.error?.type?.name,
-                KEY_ERROR_DESC to it.message
+                KEY_ERROR_DESC to it.message,
+                KEY_USE_GIFT_CARD to orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
             )
         )
     }
@@ -1352,7 +1383,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun trackOrderSyncFailed(throwable: Throwable) {
         tracker.track(
             stat = AnalyticsEvent.ORDER_SYNC_FAILED,
-            properties = mapOf(KEY_FLOW to flow),
+            properties = mapOf(
+                KEY_FLOW to flow,
+                KEY_USE_GIFT_CARD to orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
+            ),
             errorContext = this::class.java.simpleName,
             errorType = (throwable as? WooException)?.error?.type?.name,
             errorDescription = (throwable as? WooException)?.error?.message
@@ -1689,6 +1723,12 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onScreenScrolledVertically(scrollY: Int, oldScrollY: Int) {
+        if (scrollY > oldScrollY && viewState.isTotalsExpanded) {
+            viewState = viewState.copy(isTotalsExpanded = false)
+        }
+    }
+
     fun orderContainsProductsOrCustomAmounts() =
         orderDraft.value?.hasProducts() == true || orderDraft.value?.hasCustomAmounts() == true
 
@@ -1719,6 +1759,30 @@ class OrderCreateEditViewModel @Inject constructor(
         return AnalyticsTracker.VALUE_DEVICE_TYPE_COMPACT
     }
 
+    private fun trackGiftCardCTAAvailable() {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_ADD_GIFT_CARD_CTA_SHOWN,
+            mapOf(KEY_FLOW to flow)
+        )
+    }
+
+    private fun trackGiftCardCTAClicked() {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_ADD_GIFT_CARD_CTA_TAPPED,
+            mapOf(KEY_FLOW to flow)
+        )
+    }
+
+    private fun trackGiftCardSet(giftCardWasRemoved: Boolean) {
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_IS_GIFT_CARD_REMOVED to giftCardWasRemoved
+            )
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
@@ -1730,6 +1794,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isAddGiftCardButtonEnabled: Boolean = false,
         val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
+        val isTotalsExpanded: Boolean = false,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
         val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
@@ -1803,6 +1868,10 @@ object OnCouponRejectedByBackend : Event() {
     @StringRes
     val message: Int = string.order_sync_coupon_removed
 }
+
+data class OnTotalsSectionHeightChanged(
+    val newHeight: Int
+) : Event()
 
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType

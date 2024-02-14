@@ -28,9 +28,6 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
         const val SELECTED_PACKAGE_RESULT = "selected-package"
     }
 
-    override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Hidden
-
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     val viewModel: ShippingPackageSelectorViewModel by viewModels()
 
@@ -40,6 +37,9 @@ class ShippingPackageSelectorFragment : BaseFragment(R.layout.fragment_shipping_
             viewModel::onPackageSelected
         )
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

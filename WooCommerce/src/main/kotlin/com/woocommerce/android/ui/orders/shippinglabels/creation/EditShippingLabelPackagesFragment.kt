@@ -64,10 +64,10 @@ class EditShippingLabelPackagesFragment :
         )
     }
 
-    private val skeletonView: SkeletonView = SkeletonView()
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    private val skeletonView: SkeletonView = SkeletonView()
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
 

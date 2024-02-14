@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.OpenShippingInstructions
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -59,6 +60,9 @@ class ShippingCustomsFragment :
     }
 
     override fun getFragmentTitle(): String = getString(R.string.shipping_label_create_customs)
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

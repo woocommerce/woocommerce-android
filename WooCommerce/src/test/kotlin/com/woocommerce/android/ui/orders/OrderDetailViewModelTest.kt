@@ -35,10 +35,12 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -115,6 +117,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val paymentReceiptHelper: PaymentReceiptHelper = mock {
+        onBlocking { isReceiptAvailable(any()) }.thenReturn(false)
+        onBlocking { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
+    }
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -177,7 +183,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 getOrderSubscriptions,
                 giftCardRepository,
                 orderProductMapper,
-                productDetailRepository
+                productDetailRepository,
+                paymentReceiptHelper,
             )
         )
     }
@@ -201,7 +208,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 getOrderSubscriptions,
                 giftCardRepository,
                 orderProductMapper,
-                productDetailRepository
+                productDetailRepository,
+                paymentReceiptHelper
             )
         )
     }
@@ -317,6 +325,92 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         assertThat(refunds).isEmpty()
         assertThat(shippingLabels).isEmpty()
     }
+
+    @Test
+    fun `given receipt is available and order is paid, when view model started, then state with receipt is visible emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(
+                order.copy(
+                    datePaid = Date()
+                )
+            )
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Visible
+            )
+        }
+
+    @Test
+    fun `given receipt is available and order not paid, when view model started, then state with receipt is hidden emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(true)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(
+                order.copy(
+                    datePaid = null
+                )
+            )
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Hidden
+            )
+        }
+
+    @Test
+    fun `given receipt is not available, when view model started, then state with receipt is hidden emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(paymentReceiptHelper.isReceiptAvailable(any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(false)
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(true)
+            whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
+            whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
+            whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
+            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            // WHEN
+            var detailViewState: OrderDetailViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> detailViewState = new }
+
+            viewModel.start()
+
+            // THEN
+            assertThat(detailViewState!!.orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Hidden
+            )
+        }
 
     @Test
     fun `collect button hidden if payment is not collectable`() =
@@ -1126,8 +1220,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn("testing url")
-                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
@@ -1142,14 +1234,82 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn("testing url")
-                .whenever(appPrefsWrapper).getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             viewModel.start()
 
             viewModel.onSeeReceiptClicked()
 
             verify(orderDetailTracker).trackReceiptViewTapped(order.id, order.status)
+        }
+
+    @Test
+    fun `given receipt request returns error, when user taps on see receipt, then snackbar event emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+
+            val errorMessage = "error"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.failure(Exception(errorMessage)))
+
+            // WHEN
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(string.receipt_fetching_error)
+            verify(paymentsFlowTracker).trackReceiptUrlFetchingFails(
+                errorDescription = errorMessage
+            )
+        }
+
+    @Test
+    fun `given receipt request returns success, when user taps on see receipt, then PreviewReceipt event emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+            val receiptUrl = "https://example.com"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as PreviewReceipt).orderId).isEqualTo(order.id)
+            assertThat((viewModel.event.value as PreviewReceipt).receiptUrl).isEqualTo(receiptUrl)
+            assertThat((viewModel.event.value as PreviewReceipt).billingEmail).isEqualTo(order.billingAddress.email)
+        }
+
+    @Test
+    fun `when onSeeReceiptClicked clicked, then loading receipt status emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+            whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+            val receiptUrl = "https://example.com"
+            whenever(paymentReceiptHelper.getReceiptUrl(order.id)).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            val states = viewModel.viewStateData.liveData.captureValues()
+
+            viewModel.onSeeReceiptClicked()
+
+            // THEN
+            assertThat((states.last()).orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Visible
+            )
+            assertThat((states[states.size - 2]).orderInfo!!.receiptButtonStatus).isEqualTo(
+                OrderDetailViewState.ReceiptButtonStatus.Loading
+            )
         }
 
     @Test

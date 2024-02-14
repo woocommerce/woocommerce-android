@@ -12,13 +12,13 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -184,7 +184,7 @@ class ReviewDetailFragment :
         val avatarUrl = UrlUtils.removeQuery(review.reviewerAvatarUrl) + "?s=" + size + "&d=404"
 
         // Populate reviewer section
-        GlideApp.with(binding.reviewGravatar.context)
+        Glide.with(binding.reviewGravatar.context)
             .load(avatarUrl)
             .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_user_circle_24dp))
             .circleCrop()
@@ -227,7 +227,7 @@ class ReviewDetailFragment :
         // call this method to show the image for the just-downloaded product model
         productImageMap.get(remoteProductId)?.let { productImage ->
             val imageUrl = PhotonUtils.getPhotonImageUrl(productImage, productIconSize, productIconSize)
-            GlideApp.with(activity as Context)
+            Glide.with(activity as Context)
                 .load(imageUrl)
                 .placeholder(ContextCompat.getDrawable(requireContext(), R.drawable.ic_product))
                 .into(binding.reviewProductIcon)

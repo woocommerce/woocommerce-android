@@ -194,6 +194,8 @@ class AnalyticsTracker private constructor(
         const val KEY_SOFTWARE_UPDATE_TYPE = "software_update_type"
         const val KEY_SUBJECT = "subject"
         const val KEY_DATE_RANGE = "date_range"
+        const val KEY_DATE = "date"
+        const val KEY_GRANULARITY = "granularity"
         const val KEY_SOURCE = "source"
         const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
@@ -254,6 +256,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_SUPPORT = "support"
         const val VALUE_WP_COM = "wp_com"
         const val VALUE_NO_WP_COM = "no_wp_com"
+        const val VALUE_PREVIOUS_PERIOD = "previous_period"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
@@ -290,9 +293,15 @@ class AnalyticsTracker private constructor(
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
 
         const val KEY_COUPONS_COUNT = "coupons_count"
+        const val KEY_USE_GIFT_CARD = "use_gift_card"
+        const val KEY_IS_GIFT_CARD_REMOVED = "removed"
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
+
+        const val KEY_PERIOD = "period"
+        const val KEY_REPORT = "report"
+        const val KEY_COMPARE = "compare"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),

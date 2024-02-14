@@ -215,7 +215,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(f is TopLevelFragment)
+                    showToolbar(animate = f is TopLevelFragment)
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -334,6 +334,7 @@ class MainActivity :
             }
         )
     }
+
     override fun hideProgressDialog() {
         progressDialog?.apply {
             if (isShowing) {
@@ -492,6 +493,9 @@ class MainActivity :
     }
 
     private fun showToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
         if (animate) {
             animatorHelper.animateToolbarHeight(show = true) {
@@ -507,6 +511,9 @@ class MainActivity :
     }
 
     private fun hideToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == 0) return
         if (animate) {
             animatorHelper.animateToolbarHeight(show = false) {
