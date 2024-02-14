@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -29,15 +30,18 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         key = "selectedPaymentMethodId"
     )
     private val paymentMethodsState = MutableStateFlow<PaymentMethodsState>(PaymentMethodsState.Loading)
+    private val campaignCreationState = MutableStateFlow<CampaignCreationState?>(null)
 
     val viewState = combine(
         selectedPaymentMethodId,
-        paymentMethodsState
-    ) { selectedPaymentMethodId, paymentMethodState ->
+        paymentMethodsState,
+        campaignCreationState
+    ) { selectedPaymentMethodId, paymentMethodState, campaignCreationState ->
         ViewState(
             budget = navArgs.campaignDetails.budget,
             paymentMethodsState = paymentMethodState,
-            selectedPaymentMethodId = selectedPaymentMethodId
+            selectedPaymentMethodId = selectedPaymentMethodId,
+            campaignCreationState = campaignCreationState
         )
     }.asLiveData()
 
@@ -93,14 +97,32 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     }
 
     fun onSubmitCampaign() {
-        // TODO show loading and trigger campaign creation
-        triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
+        if (campaignCreationState.value == CampaignCreationState.Loading) {
+            return
+        }
+
+        launch {
+            campaignCreationState.value = CampaignCreationState.Loading
+            blazeRepository.createCampaign(
+                campaignDetails = navArgs.campaignDetails,
+                paymentMethodId = requireNotNull(selectedPaymentMethodId.value)
+            ).fold(
+                onSuccess = {
+                    campaignCreationState.value = null
+                    triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
+                },
+                onFailure = {
+                    TODO()
+                }
+            )
+        }
     }
 
     data class ViewState(
         val budget: BlazeRepository.Budget,
         val paymentMethodsState: PaymentMethodsState,
-        private val selectedPaymentMethodId: String?
+        private val selectedPaymentMethodId: String?,
+        val campaignCreationState: CampaignCreationState? = null
     ) {
         private val paymentMethodsData
             get() = (paymentMethodsState as? PaymentMethodsState.Success)?.paymentMethodsData
@@ -120,6 +142,11 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         ) : PaymentMethodsState
 
         data class Error(val onRetry: () -> Unit) : PaymentMethodsState
+    }
+
+    sealed interface CampaignCreationState {
+        data object Loading : CampaignCreationState
+        data class Failed(@StringRes val errorMessage: Int) : CampaignCreationState
     }
 
     data class NavigateToPaymentsListScreen(

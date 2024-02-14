@@ -34,6 +34,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.CampaignCreationState
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -61,8 +62,6 @@ fun BlazeCampaignPaymentSummaryScreen(
     onSubmitCampaign: () -> Unit,
     onHelpClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
@@ -72,70 +71,88 @@ fun BlazeCampaignPaymentSummaryScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
-        Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(vertical = dimensionResource(id = R.dimen.major_100))
-        ) {
-            Text(
-                text = stringResource(id = R.string.blaze_campaign_payment_summary_title),
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
-
-            PaymentTotals(
-                budget = state.budget,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            PaymentMethod(
-                paymentMethodsState = state.paymentMethodsState,
-                selectedPaymentMethod = state.selectedPaymentMethod,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-            Divider()
-
-            WCColoredButton(
-                onClick = onSubmitCampaign,
-                text = stringResource(id = R.string.blaze_campaign_payment_summary_submit_campaign),
-                enabled = state.isPaymentMethodSelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
-
-            val termsOfServices = annotatedStringRes(
-                stringResId = R.string.blaze_campaign_payment_summary_terms_and_conditions
-            )
-            ClickableText(
-                text = termsOfServices,
-                style = MaterialTheme.typography.caption.copy(
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-                ),
-                onClick = { offset ->
-                    termsOfServices.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = offset, end = offset)
-                        .firstOrNull()
-                        ?.let { annotation ->
-                            when (annotation.item) {
-                                "termsOfService" ->
-                                    ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
-
-                                "advertisingPolicy" ->
-                                    ChromeCustomTabUtils.launchUrl(context, AppUrls.ADVERTISING_POLICY)
-
-                                "learnMore" ->
-                                    ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_SUPPORT)
-                            }
-                        }
-                },
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        when (state.campaignCreationState) {
+            is CampaignCreationState.Loading -> TODO()
+            is CampaignCreationState.Failed -> TODO()
+            else -> PaymenSummaryContent(
+                state = state,
+                onSubmitCampaign = onSubmitCampaign,
+                modifier = Modifier.padding(paddingValues)
             )
         }
+    }
+}
+
+@Composable
+private fun PaymenSummaryContent(
+    state: BlazeCampaignPaymentSummaryViewModel.ViewState,
+    onSubmitCampaign: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = stringResource(id = R.string.blaze_campaign_payment_summary_title),
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
+
+        PaymentTotals(
+            budget = state.budget,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        PaymentMethod(
+            paymentMethodsState = state.paymentMethodsState,
+            selectedPaymentMethod = state.selectedPaymentMethod,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+        Divider()
+
+        WCColoredButton(
+            onClick = onSubmitCampaign,
+            text = stringResource(id = R.string.blaze_campaign_payment_summary_submit_campaign),
+            enabled = state.isPaymentMethodSelected,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
+
+        val termsOfServices = annotatedStringRes(
+            stringResId = R.string.blaze_campaign_payment_summary_terms_and_conditions
+        )
+        ClickableText(
+            text = termsOfServices,
+            style = MaterialTheme.typography.caption.copy(
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            ),
+            onClick = { offset ->
+                termsOfServices.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = offset, end = offset)
+                    .firstOrNull()
+                    ?.let { annotation ->
+                        when (annotation.item) {
+                            "termsOfService" ->
+                                ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
+
+                            "advertisingPolicy" ->
+                                ChromeCustomTabUtils.launchUrl(context, AppUrls.ADVERTISING_POLICY)
+
+                            "learnMore" ->
+                                ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_SUPPORT)
+                        }
+                    }
+            },
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
     }
 }
 
