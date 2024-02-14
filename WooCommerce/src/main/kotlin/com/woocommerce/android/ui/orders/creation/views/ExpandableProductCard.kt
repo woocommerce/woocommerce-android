@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -201,30 +202,42 @@ fun ExpandableProductCard(
                 color = colorResource(id = R.color.color_on_surface_disabled)
             )
         } else {
-            Text(
-                modifier = Modifier
-                    .constrainAs(quantity) {
-                        start.linkTo(name.start)
-                        top.linkTo(stock.bottom)
-                    }
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.major_100),
-                    ),
-                style = MaterialTheme.typography.body2,
-                text = getQuantityWithTotalText(product),
-                color = colorResource(id = R.color.color_on_surface_disabled)
-            )
-            Text(
-                modifier = Modifier.constrainAs(price) {
-                    end.linkTo(chevron.start)
-                    top.linkTo(quantity.top)
-                },
-                style = MaterialTheme.typography.body2,
-                text = product.productInfo.priceAfterDiscount,
-                color = MaterialTheme.colors.onSurface
-            )
+            if (product.item.isSynced()) {
+                Text(
+                    modifier = Modifier
+                        .constrainAs(quantity) {
+                            start.linkTo(name.start)
+                            top.linkTo(stock.bottom)
+                        }
+                        .padding(
+                            start = dimensionResource(id = R.dimen.major_100),
+                            end = dimensionResource(id = R.dimen.major_100),
+                            bottom = dimensionResource(id = R.dimen.major_100),
+                        ),
+                    style = MaterialTheme.typography.body2,
+                    text = getQuantityWithTotalText(product),
+                    color = colorResource(id = R.color.color_on_surface_disabled)
+                )
+                Text(
+                    modifier = Modifier.constrainAs(price) {
+                        end.linkTo(chevron.start)
+                        top.linkTo(quantity.top)
+                    },
+                    style = MaterialTheme.typography.body2,
+                    text = product.productInfo.priceAfterDiscount,
+                    color = MaterialTheme.colors.onSurface
+                )
+            } else {
+                // Spacer here because otherwise the layouts will jump in size when the product is synced
+                Spacer(
+                    modifier = Modifier
+                        .constrainAs(quantity) { // Use the same constraints as the quantity Text
+                            start.linkTo(name.start)
+                            top.linkTo(stock.bottom)
+                        }
+                        .height(dimensionResource(id = R.dimen.major_200))
+                )
+            }
         }
         IconButton(
             onClick = {
@@ -675,7 +688,41 @@ fun ExpandableProductCardPreview() {
     val item = Order.Item.EMPTY.copy(
         name = "Test Product Long Long Long Long Long Long Name",
         quantity = 3.0f,
-        sku = "123"
+        sku = "123",
+        itemId = 10L
+    )
+    val product = OrderCreationProduct.ProductItem(
+        item = item,
+        productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = true,
+            stockQuantity = 3.0,
+            stockStatus = ProductStockStatus.InStock,
+            pricePreDiscount = "$10",
+            priceTotal = "$30",
+            priceSubtotal = "$30",
+            discountAmount = "$5",
+            priceAfterDiscount = "$25",
+            hasDiscount = true,
+            isConfigurable = false,
+            productType = ProductType.SIMPLE
+        )
+    )
+    val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
+    WooThemeWithBackground {
+        ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> })
+    }
+}
+
+@Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ExpandableProductCardUnsyncedPreview() {
+    val item = Order.Item.EMPTY.copy(
+        name = "Test Product Long Long Long Long Long Long Name",
+        quantity = 3.0f,
+        sku = "123",
+        itemId = 0L
     )
     val product = OrderCreationProduct.ProductItem(
         item = item,
@@ -743,7 +790,8 @@ fun ExtendedConfigurableProductCardContentPreview() {
         quantity = 3.0f,
         total = 23.toBigDecimal(),
         subtotal = 30.toBigDecimal(),
-        sku = "SKU123"
+        sku = "SKU123",
+        itemId = 10L
     )
     val product = OrderCreationProduct.ProductItem(
         item = item,

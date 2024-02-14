@@ -114,6 +114,8 @@ object AppUrls {
     const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woo.com/document/woopayments/startup-guide/"
     const val STORE_ONBOARDING_PAYMENTS_SETUP_GUIDE =
         "https://woo.com/documentation/woocommerce/getting-started/sell-products/core-payment-options/"
+    const val ADVERTISING_POLICY = "https://automattic.com/advertising-policy/"
+    const val BLAZE_SUPPORT = "https://wordpress.com/support/promote-a-post/"
 
     fun getScreenshotUrl(themeDemoUrl: String) =
         "https://s0.wp.com/mshots/v1/$themeDemoUrl?demo=true/?w=1200&h=2400&vpw=400&vph=800"
