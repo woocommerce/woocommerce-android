@@ -58,12 +58,10 @@ class NotificationMessageHandler @Inject constructor(
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
 
-    @Synchronized
     fun onPushNotificationDismissed(notificationId: Int) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
     }
 
-    @Synchronized
     fun onLocalNotificationDismissed(notificationId: Int, notificationType: String) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
         AnalyticsTracker.track(
@@ -240,7 +238,6 @@ class NotificationMessageHandler @Inject constructor(
         notificationBuilder.cancelAllNotifications()
     }
 
-    @Synchronized
     fun removeNotificationByRemoteIdFromSystemsBar(remoteNoteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
@@ -257,7 +254,6 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
-    @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
@@ -274,7 +270,6 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
-    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         // Using a copy of the map to avoid concurrency problems

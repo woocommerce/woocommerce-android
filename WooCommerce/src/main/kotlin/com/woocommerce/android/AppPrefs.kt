@@ -126,7 +126,8 @@ object AppPrefs {
         CREATED_STORE_SITE_ID,
         CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
-        NUMBER_OF_PRODUCTS_CREATED_WITH_AI,
+        TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
+        AI_PRODUCT_CREATION_SURVEY_DISMISSED,
     }
 
     /**
@@ -288,10 +289,6 @@ object AppPrefs {
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
-
-    var numberOfProductsCreatedUsingAi: Int
-        get() = getInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, 0)
-        set(value) = setInt(DeletablePrefKey.NUMBER_OF_PRODUCTS_CREATED_WITH_AI, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -1062,6 +1059,26 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
+            value = value
+        )
+
+    var timesAiProductCreationSurveyDisplayed: Int
+        get() = getInt(
+            key = DeletablePrefKey.TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
+            default = 0
+        )
+        set(value) = setInt(
+            key = DeletablePrefKey.TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
+            value = value
+        )
+
+    var isAiProductCreationSurveyDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
             value = value
         )
 

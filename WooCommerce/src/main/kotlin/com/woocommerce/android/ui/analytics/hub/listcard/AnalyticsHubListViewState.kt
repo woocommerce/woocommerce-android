@@ -10,7 +10,8 @@ sealed class AnalyticsHubListViewState {
         val delta: Int?,
         val listLeftHeader: String,
         val listRightHeader: String,
-        val items: List<AnalyticsHubListCardItemViewState>
+        val items: List<AnalyticsHubListCardItemViewState>,
+        val reportUrl: String?
     ) : AnalyticsHubListViewState() {
         val sign: String
             get() = when {

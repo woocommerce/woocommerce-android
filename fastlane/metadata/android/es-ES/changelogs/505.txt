@@ -1,0 +1,2 @@
+17.2:
+Esta versión incluye optimizaciones de velocidad y fiabilidad. Nuestro compromiso es que mejoraremos continuamente la aplicación, para que puedas gestionar tu tienda en Internet de forma eficaz y sin ningún problema.

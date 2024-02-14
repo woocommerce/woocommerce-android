@@ -23,6 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -90,6 +91,16 @@ open class Screen {
         private fun isElementDisplayed(element: ViewInteraction): Boolean {
             return try {
                 element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
+        private fun isElementEnabled(element: Int): Boolean {
+            return try {
+                onView(withId(element))
+                    .check(matches(isEnabled()))
                 true
             } catch (e: Throwable) {
                 false
@@ -305,6 +316,14 @@ open class Screen {
     protected fun pressBack() {
         Espresso.pressBack()
         idleFor(1000) // allow for transitions
+    }
+
+    fun waitForElementToBeEnabled(elementID: Int) {
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementEnabled(elementID)
+            }
+        )
     }
 
     fun waitForElementToBeDisplayed(elementID: Int) {
