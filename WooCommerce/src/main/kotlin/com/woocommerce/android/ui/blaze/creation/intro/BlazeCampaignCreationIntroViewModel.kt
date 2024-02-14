@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.intro
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -23,13 +24,17 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignCreationIntroViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTracker: AnalyticsTrackerWrapper,
     private val productListRepository: ProductListRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationIntroFragmentArgs by savedStateHandle.navArgs()
     fun onContinueClick() {
         suspend fun getPublishedProducts() = withContext(coroutineDispatchers.io) {
+            analyticsTracker.track(
+                stat = BLAZE_ENTRY_POINT_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.INTRO_VIEW.trackingName)
+            )
             productListRepository.getProductList(
                 productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
                 sortType = ProductSorting.DATE_DESC,

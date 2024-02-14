@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher.BlazeCampaignCreationDispatcherEvent
@@ -19,6 +20,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
     private val productListRepository: ProductListRepository = mock()
     private val blazeRepository: BlazeRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var dispatcher: BlazeCampaignCreationDispatcher
 
@@ -29,7 +31,8 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
         dispatcher = BlazeCampaignCreationDispatcher(
             blazeRepository = blazeRepository,
             productListRepository = productListRepository,
-            coroutineDispatchers = coroutinesTestRule.testDispatchers
+            coroutineDispatchers = coroutinesTestRule.testDispatchers,
+            analyticsTracker = analyticsTracker
         )
     }
 

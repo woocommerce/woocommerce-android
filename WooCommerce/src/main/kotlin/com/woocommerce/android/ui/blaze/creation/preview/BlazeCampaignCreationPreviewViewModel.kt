@@ -5,9 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -43,7 +40,6 @@ import kotlin.time.Duration.Companion.days
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val blazeRepository: BlazeRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter
@@ -114,10 +110,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     init {
         loadData()
-        analyticsTrackerWrapper.track(
-            stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName)
-        )
     }
 
     fun onBackPressed() {

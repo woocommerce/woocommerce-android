@@ -6,6 +6,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -32,7 +35,8 @@ import javax.inject.Inject
 class BlazeCampaignCreationDispatcher @Inject constructor(
     private val blazeRepository: BlazeRepository,
     private val productListRepository: ProductListRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) {
     private var fragmentReference: WeakReference<BaseFragment> = WeakReference(null)
 
@@ -56,7 +60,13 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(productId, source)
             )
 
-            else -> startCampaignCreationWithoutIntro(productId, source, handler)
+            else -> {
+                analyticsTracker.track(
+                    stat = BLAZE_ENTRY_POINT_TAPPED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+                )
+                startCampaignCreationWithoutIntro(productId, source, handler)
+            }
         }
     }
 
