@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentD
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
-import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReceiptHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
 import com.woocommerce.android.ui.payments.cardreader.payment.EnableNfc
@@ -67,6 +66,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
+import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.payment.PurchaseCardReader
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
@@ -88,8 +88,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.Processi
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
+import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CurrencyFormatter
@@ -178,10 +178,11 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
     private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
-    private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
+    private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderConfig: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
+    private val paymentReceiptShare: PaymentReceiptShare = mock()
 
     @Suppress("LongMethod")
     @Before
@@ -206,9 +207,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
-            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
+            paymentReceiptShare = paymentReceiptShare,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -240,12 +242,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
             flow<BluetoothCardReaderMessages> {}
         }
-        whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
-        whenever(cardReaderPaymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn("test url")
+        whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
+        whenever(paymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn(Result.success("test url"))
         whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn("test description")
         whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
             .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
-        whenever(cardReaderPaymentOrderHelper.getReceiptDocumentName(mockedOrder)).thenReturn("receipt-order-1")
+        whenever(cardReaderPaymentOrderHelper.getReceiptDocumentName(mockedOrder.id)).thenReturn("receipt-order-1")
         whenever(cardReaderManager.batteryStatus).thenAnswer { flow { emit(CardReaderBatteryStatus.Unknown) } }
     }
 
@@ -1916,7 +1918,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(cardReaderPaymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
+            verify(paymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
         }
 
     @Test
@@ -2297,41 +2299,82 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when OS accepts the print request, then print success event tracked`() {
+    fun `given get receipt url fails, when user clicks on print receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.failure(Exception()))
+
+            // WHEN
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(R.string.receipt_fetching_error)
+        }
+
+    @Test
+    fun `given get receipt url succeeds, when user clicks on print receipt button, then PrintReceipt emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            val receiptUrl = "testUrl"
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.success(receiptUrl))
+
+            // WHEN
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            // THEN
+            assertThat((viewModel.event.value as PrintReceipt).receiptUrl).isEqualTo(receiptUrl)
+            assertThat((viewModel.event.value as PrintReceipt).documentName).isEqualTo("receipt-order-1")
+        }
+
+    @Test
+    fun `when OS accepts the print request, then print success event tracked`() = testBlocking {
         viewModel.onPrintResult(STARTED)
 
         verify(tracker).trackPrintReceiptSucceeded()
     }
 
     @Test
-    fun `when OS refuses the print request, then print failed event tracked`() {
+    fun `when OS refuses the print request, then print failed event tracked`() = testBlocking {
         viewModel.onPrintResult(FAILED)
 
         verify(tracker).trackPrintReceiptFailed()
     }
 
     @Test
-    fun `when manually cancels the print request, then print cancelled event tracked`() {
+    fun `when manually cancels the print request, then print cancelled event tracked`() = testBlocking {
         viewModel.onPrintResult(CANCELLED)
 
         verify(tracker).trackPrintReceiptCancelled()
     }
 
     @Test
-    fun `given external reader, when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given external reader and receipt fetching and sharing success, when user clicks on send receipt button, then PlayChaChing emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentCompleted("")) }
+                flow { emit(PaymentCompleted("url")) }
             }
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Success
+            )
             viewModel.start()
 
             (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+            assertThat(viewModel.event.value).isEqualTo(PlayChaChing)
         }
 
     @Test
-    fun `given built in reader, when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given built in reader and receipt fetching  and sharing success, when user clicks on send receipt button, then PlayChaChing emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -2343,7 +2386,95 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+            assertThat(viewModel.event.value).isEqualTo(PlayChaChing)
+        }
+
+    @Test
+    fun `given receipt fetching success and receipt file not created, when user clicks on send receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("url")) }
+            }
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileCreation
+            )
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_stored
+            )
+            verify(tracker).trackPaymentsReceiptSharingFailed(PaymentReceiptShare.ReceiptShareResult.Error.FileCreation)
+        }
+
+    @Test
+    fun `given receipt fetching success and receipt file not downloaded, when user clicks on send receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("url")) }
+            }
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(
+                PaymentReceiptShare.ReceiptShareResult.Error.FileDownload
+            )
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_receipt_can_not_be_downloaded
+            )
+            verify(tracker).trackPaymentsReceiptSharingFailed(PaymentReceiptShare.ReceiptShareResult.Error.FileDownload)
+        }
+
+    @Test
+    fun `given receipt fetching success and receipt file not shared, when user clicks on send receipt button, then ShowSnackbar emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("url")) }
+            }
+            val sharing = PaymentReceiptShare.ReceiptShareResult.Error.Sharing(Exception())
+            whenever(paymentReceiptShare("test url", 1L)).thenReturn(sharing)
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(
+                R.string.card_reader_payment_email_client_not_found
+            )
+            verify(tracker).trackPaymentsReceiptSharingFailed(sharing)
+        }
+
+    @Test
+    fun `given external reader and receipt fetching fails, when user clicks on send receipt button, then ShowSnackabar event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.failure(Exception()))
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(R.string.receipt_fetching_error)
+        }
+
+    @Test
+    fun `given built reader and receipt fetching fails, when user clicks on send receipt button, then ShowSnackabar event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            whenever(paymentReceiptHelper.getReceiptUrl(any())).thenReturn(Result.failure(Exception()))
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat((viewModel.event.value as ShowSnackbar).message).isEqualTo(R.string.receipt_fetching_error)
         }
 
     @Test
@@ -2435,14 +2566,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
-        }
-
-    @Test
-    fun `when email activity not found, then event tracked`() =
-        testBlocking {
-            viewModel.onEmailActivityNotFound()
-
-            verify(tracker).trackEmailReceiptFailed()
         }
 
     @Test
@@ -3054,7 +3177,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given plugin can not be send, when flow started, then wc pay can send receipt is false`() =
         testBlocking {
             // Given
-            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(false)
+            whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(false)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -3069,7 +3192,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given plugin can be send, when flow started, then wc pay can send receipt is true`() =
         testBlocking {
             // Given
-            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
+            whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -4328,9 +4451,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
-            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
+            paymentReceiptShare = paymentReceiptShare,
         )
     }
 
@@ -4360,9 +4484,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
-            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             cardReaderConfigProvider = cardReaderConfigProvider,
+            paymentReceiptShare = paymentReceiptShare,
         )
     }
 }
