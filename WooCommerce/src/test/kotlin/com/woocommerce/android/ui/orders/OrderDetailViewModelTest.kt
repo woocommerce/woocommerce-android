@@ -1356,7 +1356,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onCollectPaymentClicked()
 
             // Then
-            verify(paymentsFlowTracker).trackCollectPaymentTapped()
+            verify(paymentsFlowTracker).trackCollectPaymentTapped(any())
         }
 
     @Test

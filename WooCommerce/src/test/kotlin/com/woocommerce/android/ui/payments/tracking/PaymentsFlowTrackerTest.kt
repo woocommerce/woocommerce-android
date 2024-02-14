@@ -1093,7 +1093,7 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     @Test
     fun `when user taps collect payment button, then CARD_PRESENT_COLLECT_PAYMENT_TAPPED tracked`() =
         testBlocking {
-            paymentsFlowTracker.trackCollectPaymentTapped()
+            paymentsFlowTracker.trackCollectPaymentTapped(any())
 
             verify(trackerWrapper).track(eq(PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED), any())
         }
