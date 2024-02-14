@@ -431,8 +431,10 @@ class ProductListViewModel @Inject constructor(
 
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (openedProduct == null && products.isNotEmpty() && isTablet()) {
-            openedProduct = products.first().remoteId
+        if (products.isNotEmpty() && isTablet()) {
+            if (openedProduct == null) {
+                openedProduct = products.first().remoteId
+            }
             onOpenProduct(openedProduct!!, null)
         }
     }
