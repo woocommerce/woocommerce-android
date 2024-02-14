@@ -55,6 +55,10 @@ class MainAnimatorHelper @Inject constructor(private val resourceProvider: Resou
         }
     }
 
+    fun cancelToolbarAnimation() {
+        toolbarAnimator.cancel()
+    }
+
     private companion object {
         private const val COLLAPSING_ANIMATION_DURATION = 200L
         private const val TOOLBAR_ANIMATION_DURATION = 300L
