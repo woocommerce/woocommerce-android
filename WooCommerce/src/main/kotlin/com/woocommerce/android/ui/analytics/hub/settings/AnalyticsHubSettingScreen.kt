@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -82,28 +81,19 @@ fun AnalyticsHubSettingScreen(
     onSelectionChange: (Long, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 24.dp),
-            text = stringResource(id = R.string.analytic_cards).uppercase(),
-            style = MaterialTheme.typography.caption,
-            fontWeight = FontWeight.Bold
-        )
-
-        LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-            itemsIndexed(cards) { i, card ->
-                AnalyticCardItem(
-                    showTopDivider = i == 0,
-                    id = card.id,
-                    title = card.title,
-                    isSelected = card.isVisible,
-                    onSelectionChange = onSelectionChange
-                )
-            }
+        itemsIndexed(cards) { i, card ->
+            AnalyticCardItem(
+                showTopDivider = i == 0,
+                id = card.id,
+                title = card.title,
+                isSelected = card.isVisible,
+                onSelectionChange = onSelectionChange
+            )
         }
     }
 }
