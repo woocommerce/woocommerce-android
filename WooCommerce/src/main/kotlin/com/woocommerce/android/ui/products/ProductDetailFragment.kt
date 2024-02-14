@@ -160,7 +160,7 @@ class ProductDetailFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        blazeCampaignCreationDispatcher.attachFragment(this)
+        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)
 
         _binding = FragmentProductDetailBinding.bind(view)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)

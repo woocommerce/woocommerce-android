@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -37,11 +38,16 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
 
         launch {
             if (navArgs.productId != -1L) {
-                triggerEvent(ShowCampaignCreationForm(navArgs.productId))
+                triggerEvent(ShowCampaignCreationForm(navArgs.productId, BlazeFlowSource.INTRO_VIEW))
             } else {
                 val products = getPublishedProducts()
                 when {
-                    products.size == 1 -> triggerEvent(ShowCampaignCreationForm(products.first().remoteId))
+                    products.size == 1 -> triggerEvent(
+                        ShowCampaignCreationForm(
+                            products.first().remoteId, BlazeFlowSource.INTRO_VIEW
+                        )
+                    )
+
                     products.isNotEmpty() -> triggerEvent(ShowProductSelector)
                     else -> {
                         WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
@@ -64,9 +70,9 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
     }
 
     fun onProductSelected(productId: Long) {
-        triggerEvent(ShowCampaignCreationForm(productId))
+        triggerEvent(ShowCampaignCreationForm(productId, BlazeFlowSource.INTRO_VIEW))
     }
 
     object ShowProductSelector : MultiLiveEvent.Event()
-    data class ShowCampaignCreationForm(val productId: Long) : MultiLiveEvent.Event()
+    data class ShowCampaignCreationForm(val productId: Long, val source: BlazeFlowSource) : MultiLiveEvent.Event()
 }

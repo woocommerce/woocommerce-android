@@ -36,10 +36,13 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
 ) {
     private var fragmentReference: WeakReference<BaseFragment> = WeakReference(null)
 
-    fun attachFragment(fragment: BaseFragment) {
+    fun attachFragment(fragment: BaseFragment, source: BlazeFlowSource) {
         this.fragmentReference = WeakReference(fragment)
         fragment.handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
-            this.fragmentReference.get()?.showCampaignPreview(it.first().id)
+            this.fragmentReference.get()?.showCampaignPreview(
+                productId = it.first().id,
+                source = source
+            )
         }
     }
 
@@ -103,7 +106,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 ?.showIntro(event.productId, event.blazeSource)
 
             is BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm -> fragmentReference.get()
-                ?.showCampaignPreview(event.productId)
+                ?.showCampaignPreview(event.productId, event.blazeSource)
 
             is BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen -> fragmentReference.get()
                 ?.showProductSelector()
@@ -120,10 +123,13 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         )
     }
 
-    private fun BaseFragment.showCampaignPreview(productId: Long) {
+    private fun BaseFragment.showCampaignPreview(productId: Long, source: BlazeFlowSource) {
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.blazeCampaignCreationPreviewFragment,
-            bundle = BlazeCampaignCreationPreviewFragmentArgs(productId).toBundle()
+            bundle = BlazeCampaignCreationPreviewFragmentArgs(
+                productId = productId,
+                source = source
+            ).toBundle()
         )
     }
 
