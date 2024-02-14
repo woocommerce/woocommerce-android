@@ -38,7 +38,9 @@ class AppPrefsWrapper @Inject constructor() {
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
 
-    var numberOfProductsCreatedUsingAi by AppPrefs::numberOfProductsCreatedUsingAi
+    var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
+
+    var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
