@@ -134,7 +134,7 @@
     <fragment
         android:id="@+id/blazeCampaignCreationAdDestinationParametersFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersFragment"
-        android:label="BlazeCampaignCreationAdDestinationParametersFragment" >
+        android:label="BlazeCampaignCreationAdDestinationParametersFragment">
         <argument
             android:name="url"
             app:argType="string" />
@@ -149,11 +149,16 @@
         <action
             android:id="@+id/action_blazeCampaignPaymentSummaryFragment_to_blazeCampaignPaymentMethodsListFragment"
             app:destination="@id/blazeCampaignPaymentMethodsListFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignPaymentSummaryFragment_to_blazeCampaignSuccessBottomSheetFragment"
+            app:destination="@id/blazeCampaignSuccessBottomSheetFragment"
+            app:popUpTo="@+id/nav_graph_blaze_campaign_creation"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignPaymentMethodsListFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentMethodsListFragment"
-        android:label="BlazeCampaignPaymentMethodsListFragment" >
+        android:label="BlazeCampaignPaymentMethodsListFragment">
         <argument
             android:name="paymentMethodsData"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$PaymentMethodsData" />
@@ -162,4 +167,8 @@
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <dialog
+        android:id="@+id/blazeCampaignSuccessBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.success.BlazeCampaignSuccessBottomSheetFragment"
+        android:label="BlazeCampaignSuccessBottomSheetFragment" />
 </navigation>
