@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsTabletLogicNeeded
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -70,7 +70,7 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val isTablet: IsTablet,
+    private val isTabletLogicNeeded: IsTabletLogicNeeded
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -430,7 +430,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (products.isNotEmpty() && isTablet()) {
+        if (products.isNotEmpty() && isTabletLogicNeeded()) {
             if (openedProduct == null) {
                 openedProduct = products.first().remoteId
             }
@@ -452,7 +452,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun isProductHighlighted(productId: Long) = if (!isTablet()) false else productId == openedProduct
+    fun isProductHighlighted(productId: Long) = if (isTabletLogicNeeded()) productId == openedProduct else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
