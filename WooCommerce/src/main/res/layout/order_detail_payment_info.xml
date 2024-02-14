@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -370,65 +370,83 @@
                         tools:text="$34.00"/>
                 </LinearLayout>
             </LinearLayout>
+
+            <!-- Refund button & In-Person Payments section -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- See Receipt button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/paymentInfo_seeReceiptButton"
+                    style="@style/Woo.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/major_100"
+                    android:paddingEnd="@dimen/major_100"
+                    android:text="@string/orderdetail_see_receipt_button"
+                    android:textAllCaps="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/paymentInfo_seeReceiptButton_progressBar"
+                    android:layout_width="@dimen/major_100"
+                    android:layout_height="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    app:layout_constraintBottom_toBottomOf="@id/paymentInfo_seeReceiptButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/paymentInfo_seeReceiptButton" />
+
+                <!-- Accept Card Present Payment button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/paymentInfo_collectCardPresentPaymentButton"
+                    style="@style/Woo.Button.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:text="@string/orderdetail_collect_payment_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_seeReceiptButton" />
+
+                <!-- Refund button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/paymentInfo_issueRefundButton"
+                    style="@style/Woo.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:text="@string/orderdetail_issue_refund_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_collectCardPresentPaymentButton" />
+
+                <!-- Show Printing Instructions button -->
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_printingInstructions"
+                    style="@style/Woo.TextView.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:background="?attr/selectableItemBackground"
+                    android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
+                    android:drawablePadding="@dimen/major_100"
+                    android:gravity="center_vertical"
+                    android:text="@string/orderdetail_printing_instructions_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentInfo_issueRefundButton" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
 
-        <!-- Refund button & In-Person Payments section -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- See Receipt button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/paymentInfo_seeReceiptButton"
-                style="@style/Woo.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginTop="@dimen/minor_100"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/major_100"
-                android:paddingEnd="@dimen/major_100"
-                android:text="@string/orderdetail_see_receipt_button"
-                android:textAllCaps="false" />
-
-            <!-- Accept Card Present Payment button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/paymentInfo_collectCardPresentPaymentButton"
-                style="@style/Woo.Button.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100"
-                android:layout_gravity="end|center_vertical"
-                android:text="@string/orderdetail_collect_payment_button"/>
-
-            <!-- Refund button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/paymentInfo_issueRefundButton"
-                style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center_vertical"
-                android:text="@string/orderdetail_issue_refund_button"/>
-
-            <!-- Show Printing Instructions button -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/paymentInfo_printingInstructions"
-                android:gravity="center_vertical"
-                style="@style/Woo.TextView.Caption"
-                android:layout_width="match_parent"
-                android:textColor="@color/color_on_surface_medium"
-                android:layout_marginVertical="@dimen/major_100"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
-                android:drawablePadding="@dimen/major_100"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/orderdetail_printing_instructions_button"/>
-        </LinearLayout>
     </LinearLayout>
 </merge>

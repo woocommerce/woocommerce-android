@@ -29,7 +29,7 @@ style:
   MagicNumber:
     ignoreAnnotated: [ 'Composable' ]
   UnusedPrivateMember:
-    ignoreAnnotated: [ 'Preview' ]
+    ignoreAnnotated: [ 'Preview', 'LightDarkThemePreviews', 'OrientationPreviews', 'FontScalePreviews', 'LayoutDirectionPreviews' ]
   MaxLineLength:
     active: false
 
