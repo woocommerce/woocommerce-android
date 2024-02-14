@@ -285,6 +285,11 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    /**
+     * This function will return the site stats optional including visitor stats.
+     * Even if the includeVisitorStats flag is set to true, errors fetching visitor
+     * will be handled as null and only errors fetching the revenue stats will be processed.
+     */
     suspend fun fetchStats(
         granularity: StatsGranularity,
         forced: Boolean,
@@ -314,7 +319,10 @@ class StatsRepository @Inject constructor(
         val revenueStats = fetchRevenueStats.await()
         val siteCurrencyCode = wooCommerceStore.getSiteSettings(site)?.currencyCode.orEmpty()
 
-        return@coroutineScope if (visitorStats.isError || revenueStats.isError) {
+        // If there was an error fetching the visitor stats chances are that is because
+        // jetpack is not properly configure to return stats. So we take into account
+        // only revenue stats to return process the error response.
+        return@coroutineScope if (revenueStats.isError) {
             val error = WooError(
                 type = WooErrorType.GENERIC_ERROR,
                 original = BaseRequest.GenericErrorType.UNKNOWN,
