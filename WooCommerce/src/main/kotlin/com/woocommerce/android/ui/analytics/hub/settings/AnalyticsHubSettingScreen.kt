@@ -130,7 +130,7 @@ fun AnalyticCardItem(
                 onSelectionChange = { onSelectionChange(id, !isSelected) }
             )
             Text(
-                text = title.uppercase(),
+                text = title,
                 modifier
                     .weight(2f)
                     .padding(horizontal = 16.dp)
