@@ -1011,6 +1011,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
     BLAZE_INTRO_DISPLAYED,
     BLAZE_VIEW_DISMISSED,
+    BLAZE_INTRO_LEARN_MORE_TAPPED,
 
     // Hazmat Shipping Declaration
     CONTAINS_HAZMAT_CHECKED,

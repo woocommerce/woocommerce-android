@@ -42,7 +42,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
     private suspend fun getCampaign() = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
