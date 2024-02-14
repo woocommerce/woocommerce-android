@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation
 
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher.BlazeCampaignCreationDispatcherEvent
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -39,9 +40,14 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
         }
 
         var event: BlazeCampaignCreationDispatcherEvent? = null
-        dispatcher.startCampaignCreation { event = it }
+        dispatcher.startCampaignCreation(source = BlazeFlowSource.MY_STORE_SECTION) { event = it }
 
-        assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(null))
+        assertThat(event).isEqualTo(
+            BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(
+                productId = null,
+                blazeSource = BlazeFlowSource.MY_STORE_SECTION
+            )
+        )
     }
 
     @Test
@@ -58,7 +64,7 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
             }
 
             var event: BlazeCampaignCreationDispatcherEvent? = null
-            dispatcher.startCampaignCreation { event = it }
+            dispatcher.startCampaignCreation(source = BlazeFlowSource.MY_STORE_SECTION) { event = it }
 
             assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
         }
@@ -77,9 +83,17 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
             }
 
             var event: BlazeCampaignCreationDispatcherEvent? = null
-            dispatcher.startCampaignCreation(productId = 1L) { event = it }
+            dispatcher.startCampaignCreation(
+                source = BlazeFlowSource.MY_STORE_SECTION,
+                productId = 1L
+            ) { event = it }
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(1L))
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(
+                    productId = 1L,
+                    blazeSource = BlazeFlowSource.MY_STORE_SECTION
+                )
+            )
         }
 
     @Test
@@ -96,8 +110,13 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
             }
 
             var event: BlazeCampaignCreationDispatcherEvent? = null
-            dispatcher.startCampaignCreation { event = it }
+            dispatcher.startCampaignCreation(source = BlazeFlowSource.MY_STORE_SECTION) { event = it }
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(1L))
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(
+                    productId = 1L,
+                    blazeSource = BlazeFlowSource.MY_STORE_SECTION,
+                )
+            )
         }
 }
