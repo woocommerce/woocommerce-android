@@ -26,9 +26,12 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InputField
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CloseKeyboard
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ScrollToFirstErrorField
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
@@ -38,6 +41,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.ActivityUtils.dialPhoneNumber
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.isViewVisibleInScrollView
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -58,13 +62,21 @@ class EditShippingLabelAddressFragment :
         const val SELECT_STATE_REQUEST = "select_state_request"
         const val EDIT_ADDRESS_RESULT = "key_edit_address_dialog_result"
         const val EDIT_ADDRESS_CLOSED = "key_edit_address_dialog_closed"
+        const val ERROR_SCROLL_DELAY = 300L
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
 
     val viewModel: EditShippingLabelAddressViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
+    private var _binding: FragmentEditShippingLabelAddressBinding? = null
+    private val binding get() = _binding!!
 
     private var screenTitle = ""
         set(value) {
@@ -89,10 +101,15 @@ class EditShippingLabelAddressFragment :
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentEditShippingLabelAddressBinding.bind(view)
+        _binding = FragmentEditShippingLabelAddressBinding.bind(view)
         setupToolbar(binding)
 
         initializeViewModel(binding)
@@ -139,10 +156,10 @@ class EditShippingLabelAddressFragment :
     fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
                 viewModel.onDoneButtonClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -225,6 +242,27 @@ class EditShippingLabelAddressFragment :
         }
     }
 
+    private fun scrollToFirstErrorField(field: Field, isStateFieldSpinner: Boolean?) {
+        val errorView = when (field) {
+            Field.Name -> binding.name
+            Field.Company -> binding.company
+            Field.Phone -> binding.phone
+            Field.Address1 -> binding.address1
+            Field.Address2 -> binding.address2
+            Field.City -> binding.city
+            Field.Zip -> binding.zip
+            Field.State -> if (isStateFieldSpinner == true) binding.stateSpinner else binding.state
+            Field.Country -> binding.countrySpinner
+        }
+
+        if (!isViewVisibleInScrollView(binding.scrollView, errorView)) {
+            binding.scrollView.postDelayed({
+                binding.scrollView.smoothScrollTo(0, errorView.top)
+                errorView.editText?.requestFocus()
+            }, ERROR_SCROLL_DELAY)
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -241,6 +279,7 @@ class EditShippingLabelAddressFragment :
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is ShowCountrySelector -> {
                     val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
                         items = event.locations.map {
@@ -255,6 +294,7 @@ class EditShippingLabelAddressFragment :
                     )
                     findNavController().navigateSafely(action)
                 }
+
                 is ShowStateSelector -> {
                     val action = EditShippingLabelAddressFragmentDirections.actionSearchFilterFragment(
                         items = event.locations.map {
@@ -269,8 +309,17 @@ class EditShippingLabelAddressFragment :
                     )
                     findNavController().navigateSafely(action)
                 }
+
                 is OpenMapWithAddress -> launchMapsWithAddress(event.address)
                 is DialPhoneNumber -> dialPhoneNumber(requireContext(), event.phoneNumber)
+                is ScrollToFirstErrorField -> scrollToFirstErrorField(
+                    event.field,
+                    event.isStateFieldSpinner
+                )
+                CloseKeyboard -> {
+                    activity?.let { ActivityUtils.hideKeyboard(it) }
+                }
+
                 else -> event.isHandled = false
             }
         }
