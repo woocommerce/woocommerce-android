@@ -68,9 +68,8 @@ class NotificationsProcessingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Offload to a separate thread.
         actionProcessor = ActionProcessor(intent, startId)
-        Thread { actionProcessor.process() }.start()
+        actionProcessor.process()
 
         return START_NOT_STICKY
     }

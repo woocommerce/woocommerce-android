@@ -14,3 +14,5 @@ object ContactSupport : Event()
 object EnableNfc : Event()
 
 data class PurchaseCardReader(val url: String) : Event()
+
+data class PrintReceipt(val receiptUrl: String, val documentName: String) : Event()
