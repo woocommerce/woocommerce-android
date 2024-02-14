@@ -429,7 +429,6 @@ class ProductListViewModel @Inject constructor(
         triggerEvent(SelectProducts(selectedProductsIds))
     }
 
-
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
         if (products.isNotEmpty() && isTablet()) {
             if (openedProduct == null) {
