@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.NavigateToStartingScreenWithSuccessBottomSheet
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -50,6 +51,8 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
                             )
                     )
                 }
+
+                is NavigateToStartingScreenWithSuccessBottomSheet -> navigateBackToStartingScreen()
             }
         }
     }
@@ -58,5 +61,12 @@ class BlazeCampaignPaymentSummaryFragment : BaseFragment() {
         handleResult<String>(BlazeCampaignPaymentMethodsListFragment.SELECTED_PAYMENT_METHOD_KEY) {
             viewModel.onPaymentMethodSelected(it)
         }
+    }
+
+    private fun navigateBackToStartingScreen() {
+        findNavController().navigateSafely(
+            BlazeCampaignPaymentSummaryFragmentDirections
+                .actionBlazeCampaignPaymentSummaryFragmentToBlazeCampaignSuccessBottomSheetFragment()
+        )
     }
 }

@@ -48,6 +48,7 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
         BlazeCampaignPaymentSummaryScreen(
             state = it,
             onBackClick = viewModel::onBackClicked,
+            onSubmitCampaign = viewModel::onSubmitCampaign,
             onHelpClick = viewModel::onHelpClicked
         )
     }
@@ -57,6 +58,7 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
 fun BlazeCampaignPaymentSummaryScreen(
     state: BlazeCampaignPaymentSummaryViewModel.ViewState,
     onBackClick: () -> Unit,
+    onSubmitCampaign: () -> Unit,
     onHelpClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -98,7 +100,7 @@ fun BlazeCampaignPaymentSummaryScreen(
             Divider()
 
             WCColoredButton(
-                onClick = { /*TODO*/ },
+                onClick = onSubmitCampaign,
                 text = stringResource(id = R.string.blaze_campaign_payment_summary_submit_campaign),
                 enabled = state.isPaymentMethodSelected,
                 modifier = Modifier
@@ -312,6 +314,7 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
                 selectedPaymentMethodId = "1"
             ),
             onBackClick = {},
+            onSubmitCampaign = {},
             onHelpClick = {}
         )
     }

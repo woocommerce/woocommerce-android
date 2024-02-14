@@ -92,6 +92,11 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         }
     }
 
+    fun onSubmitCampaign() {
+        // TODO show loading and trigger campaign creation
+        triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
+    }
+
     data class ViewState(
         val budget: BlazeRepository.Budget,
         val paymentMethodsState: PaymentMethodsState,
@@ -121,4 +126,6 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         val paymentMethodsData: PaymentMethodsData,
         val selectedPaymentMethodId: String?
     ) : MultiLiveEvent.Event()
+
+    object NavigateToStartingScreenWithSuccessBottomSheet : MultiLiveEvent.Event()
 }
