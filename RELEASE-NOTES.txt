@@ -10,6 +10,10 @@
 - [*] [Internal] Added a text along with the receipts file when it is shared [https://github.com/woocommerce/woocommerce-android/pull/10681]
 - [**] Fixed navigation issues [https://github.com/woocommerce/woocommerce-android/pull/10775]
 
+17.2.1
+-----
+- [**] Fixed navigation bug causing app to crash in some scenarios [https://github.com/woocommerce/woocommerce-android/pull/10786]
+
 17.2
 -----
 - [**] [Available for users with WooCommerce version of 8.7+, which is not released yet] Every order have a receipt now. The receipts can be shared via many apps installed on the phone [https://github.com/woocommerce/woocommerce-android/pull/10650]
