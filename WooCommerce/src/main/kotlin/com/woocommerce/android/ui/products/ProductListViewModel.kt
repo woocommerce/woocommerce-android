@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -430,13 +431,13 @@ class ProductListViewModel @Inject constructor(
     private fun selectFirstLoadedProductOnTablet(products: List<Product>) {
         if (openedProduct == null && products.isNotEmpty()) {
             openedProduct = products.first().remoteId
-            onOpenProduct(openedProduct!!)
+            onOpenProduct(openedProduct!!, null)
         }
     }
 
-    fun onOpenProduct(productId: Long) {
+    fun onOpenProduct(productId: Long, sharedView: View?) {
         openedProduct = productId
-        triggerEvent(ProductListEvent.OpenProduct(productId))
+        triggerEvent(ProductListEvent.OpenProduct(productId, sharedView))
     }
 
     fun onSelectAllProductsClicked() {
@@ -718,7 +719,10 @@ class ProductListViewModel @Inject constructor(
             data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
             data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
         }
-        data class OpenProduct(val productId: Long) : ProductListEvent()
+        data class OpenProduct(
+            val productId: Long,
+            val sharedView: View?
+        ) : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }
