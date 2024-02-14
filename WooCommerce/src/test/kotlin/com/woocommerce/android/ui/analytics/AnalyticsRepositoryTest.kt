@@ -8,9 +8,6 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Companion.ANALYTICS_ORDERS_PATH
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Companion.ANALYTICS_PRODUCTS_PATH
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Companion.ANALYTICS_REVENUE_PATH
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersData
@@ -861,39 +858,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
         }
 
-    @Test
-    fun `when get revenue admin url panel, then is expected`() {
-        val siteModel: SiteModel = mock()
-        whenever(siteModel.adminUrl).thenReturn(ANY_URL)
-        whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-
-        val adminPanelUrl = sut.getRevenueAdminPanelUrl()
-
-        assertEquals(ANY_URL + ANALYTICS_REVENUE_PATH, adminPanelUrl)
-    }
-
-    @Test
-    fun `when get orders admin url panel, then is expected`() {
-        val siteModel: SiteModel = mock()
-        whenever(siteModel.adminUrl).thenReturn(ANY_URL)
-        whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-
-        val adminPanelUrl = sut.getOrdersAdminPanelUrl()
-
-        assertEquals(ANY_URL + ANALYTICS_ORDERS_PATH, adminPanelUrl)
-    }
-
-    @Test
-    fun `when get products admin url panel, then is expected`() {
-        val siteModel: SiteModel = mock()
-        whenever(siteModel.adminUrl).thenReturn(ANY_URL)
-        whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-
-        val adminPanelUrl = sut.getProductsAdminPanelUrl()
-
-        assertEquals(ANY_URL + ANALYTICS_PRODUCTS_PATH, adminPanelUrl)
-    }
-
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {
         val stats: WCRevenueStatsModel = mock()
         val interval: WCRevenueStatsModel.Interval = mock()
@@ -972,7 +936,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         const val ZERO_DELTA = 0
         const val ONE_HUNDRED_DECREASE = -100
 
-        const val ANY_URL = "https://a8c.com"
         val anyFetchStrategy = ForceNew
 
         const val CURRENCY = "EUR"

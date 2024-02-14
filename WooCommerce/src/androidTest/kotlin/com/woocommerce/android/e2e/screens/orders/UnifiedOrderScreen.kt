@@ -14,12 +14,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.NestedScrollViewExtension
 import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.CoreMatchers.endsWith
-import org.hamcrest.Matchers
 import org.hamcrest.core.AllOf.allOf
 
 class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     fun createOrder(): SingleOrderScreen {
-        clickOn(R.id.menu_create)
+        waitForElementToBeEnabled(R.id.menu_create)
+        Espresso.onView(withId(R.id.menu_create)).perform(click())
         return SingleOrderScreen()
     }
 
@@ -60,18 +60,9 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
         return this
     }
 
-    fun editCustomerNote(note: String): UnifiedOrderScreen {
-        waitForElementToBeDisplayedWithoutFailure(R.id.notes_section)
-        scrollTo(R.id.notes_section)
+    fun addCustomerNote(note: String): UnifiedOrderScreen {
+        Espresso.onView(withText(R.string.order_creation_add_customer_note)).perform(click())
 
-        val editNoteButton = Espresso.onView(
-            Matchers.allOf(
-                isDescendantOfA(withId(R.id.notes_section)),
-                withId(R.id.edit_button)
-            )
-        )
-
-        clickOn(editNoteButton)
         typeTextInto(R.id.customerOrderNote_editor, note)
         clickOn(R.id.menu_done)
         return this
