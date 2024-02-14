@@ -56,6 +56,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ENABLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_GATEWAY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_REASON
@@ -442,8 +443,11 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    fun trackCollectPaymentTapped() {
-        trackerWrapper.track(PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED)
+    fun trackCollectPaymentTapped(deviceType: String) {
+        trackerWrapper.track(
+            PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceType)
+        )
     }
 
     fun trackDisconnectTapped() {
