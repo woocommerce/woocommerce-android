@@ -1,9 +1,9 @@
 package com.woocommerce.android.analytics
 
-import com.google.firebase.analytics.ktx.ParametersBuilder
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.ParametersBuilder
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import javax.inject.Inject
 
 class FirebaseTracker @Inject constructor() : ExperimentTracker {

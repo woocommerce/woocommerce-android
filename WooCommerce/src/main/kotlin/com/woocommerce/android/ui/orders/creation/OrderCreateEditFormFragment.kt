@@ -193,6 +193,14 @@ class OrderCreateEditFormFragment :
         initProductsSection()
         initAdditionalInfoCollectionSection()
         initTaxRateSelectorSection()
+        initTotalsSection()
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initTotalsSection() {
+        scrollView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+            viewModel.onScreenScrolledVertically(scrollY, oldScrollY)
+        }
+        totalsSection.setContent { OrderCreateEditTotalsView(viewModel) }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
@@ -335,19 +343,9 @@ class OrderCreateEditFormFragment :
             bindCustomAmountsSection(binding.customAmountsSection, it)
         }
 
-        viewModel.totalsData.observe(viewLifecycleOwner) {
-            binding.totalsSection.show()
-            binding.totalsSection.setContent {
-                OrderCreateEditTotalsView(state = it)
-            }
-            binding.scrollView.post {
-                binding.scrollView.setPadding(0, 0, 0, binding.totalsSection.height)
-            }
-        }
-
         observeViewStateChanges(binding)
 
-        viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+        viewModel.event.observe(viewLifecycleOwner, { handleViewModelEvents(it, binding) })
     }
 
     @Suppress("LongMethod")
@@ -972,7 +970,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun handleViewModelEvents(event: Event) {
+    private fun handleViewModelEvents(event: Event, binding: FragmentOrderCreateEditFormBinding) {
         when (event) {
             is OrderCreateEditNavigationTarget -> OrderCreateEditNavigator.navigate(this, event)
             is ViewOrderStatusSelector ->
@@ -1021,6 +1019,10 @@ class OrderCreateEditFormFragment :
                         orderTotal = viewModel.orderDraft.value?.total.toString(),
                     )
                 )
+            }
+
+            is OnTotalsSectionHeightChanged -> {
+                binding.scrollView.setPadding(0, 0, 0, event.newHeight)
             }
 
             is Exit -> findNavController().navigateUp()

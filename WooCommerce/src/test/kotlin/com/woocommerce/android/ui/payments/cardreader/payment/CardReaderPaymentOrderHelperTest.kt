@@ -82,7 +82,7 @@ class CardReaderPaymentOrderHelperTest {
         }
 
         // WHEN
-        val result = helper.getReceiptDocumentName(order)
+        val result = helper.getReceiptDocumentName(order.id)
 
         // THEN
         assertThat(result).isEqualTo("receipt-order-1")
