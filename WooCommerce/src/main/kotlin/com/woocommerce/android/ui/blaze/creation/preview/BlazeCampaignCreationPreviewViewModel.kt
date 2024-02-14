@@ -167,9 +167,12 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 displayValue = targetingParameters.languages.joinToString { it.name }
                     .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
                 onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(
-                        targetType = LANGUAGE,
-                        selectedIds = targetingParameters.languages.map { it.code }))
+                    triggerEvent(
+                        NavigateToTargetSelectionScreen(
+                            targetType = LANGUAGE,
+                            selectedIds = targetingParameters.languages.map { it.code }
+                        )
+                    )
                 },
             ),
             CampaignDetailItemUi(

@@ -366,7 +366,7 @@ fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
-                adImage = BlazeCampaignImage.RemoteImage(0,"https://rb.gy/gmjuwb")
+                adImage = BlazeCampaignImage.RemoteImage(0, "https://rb.gy/gmjuwb")
             ),
             onTagLineChanged = { },
             onDescriptionChanged = { },
