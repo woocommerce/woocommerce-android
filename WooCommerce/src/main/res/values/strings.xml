@@ -3920,10 +3920,18 @@
     <!--
     Blaze campaign creation
     -->
-    <string name="blaze_campaign_creation_loading">Creating your campaign</string>
     <string name="blaze_campaign_created_success_title">Ready to Go!</string>
     <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
     <string name="blaze_campaign_created_success_done_button">Done</string>
+    <string name="blaze_campaign_creation_loading">Creating your campaign</string>
+    <string name="blaze_campaign_creation_error_title">Error creating campaign</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Error creating campaign</string>
+    <string name="blaze_campaign_creation_error_help_hint">Please try again, or contact support for assistance.</string>
+    <string name="blaze_campaign_creation_error_get_support">Get support</string>
+    <string name="blaze_campaign_creation_error_cancel">Cancel campaign</string>
+    <string name="blaze_campaign_creation_error_media_upload">Failed to upload campaign image.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Failed to fetch campaign image details</string>
+    <string name="blaze_campaign_creation_error">Something’s not quite right.\nWe couldn\'t create your campaign.</string>
 
     <!--
     Highlights tooltip

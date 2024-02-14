@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -37,8 +41,10 @@ import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.CampaignCreationState
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -65,10 +71,14 @@ fun BlazeCampaignPaymentSummaryScreen(
 ) {
     Scaffold(
         topBar = {
-            ToolbarWithHelpButton(
-                onNavigationButtonClick = onBackClick,
-                onHelpButtonClick = onHelpClick,
-            )
+            if (state.campaignCreationState == null) {
+                ToolbarWithHelpButton(
+                    onNavigationButtonClick = onBackClick,
+                    onHelpButtonClick = onHelpClick,
+                )
+            } else {
+                Toolbar(onNavigationButtonClick = onBackClick)
+            }
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
@@ -77,7 +87,13 @@ fun BlazeCampaignPaymentSummaryScreen(
                 modifier = Modifier.padding(paddingValues)
             )
 
-            is CampaignCreationState.Failed -> TODO()
+            is CampaignCreationState.Failed -> CampaignCreationErrorUi(
+                errorMessage = state.campaignCreationState.errorMessage,
+                onRetryClick = onSubmitCampaign,
+                onHelpClick = onHelpClick,
+                onCancelClick = onBackClick,
+                modifier = Modifier.padding(paddingValues)
+            )
             else -> PaymenSummaryContent(
                 state = state,
                 onSubmitCampaign = onSubmitCampaign,
@@ -177,6 +193,72 @@ private fun CampaignCreationLoadingUi(modifier: Modifier = Modifier) {
         )
         Text(text = stringResource(id = R.string.blaze_campaign_creation_loading))
         CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun CampaignCreationErrorUi(
+    @StringRes errorMessage: Int,
+    onRetryClick: () -> Unit,
+    onHelpClick: () -> Unit,
+    onCancelClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ErrorOutline,
+                contentDescription = null,
+                tint = MaterialTheme.colors.error,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_64))
+            )
+
+            Text(
+                text = stringResource(id = R.string.blaze_campaign_creation_error_title),
+                style = MaterialTheme.typography.h5
+            )
+
+            Text(
+                text = stringResource(errorMessage),
+                style = MaterialTheme.typography.body2
+            )
+
+            Text(
+                text = stringResource(id = R.string.blaze_campaign_creation_error_payment_hint),
+                style = MaterialTheme.typography.subtitle1,
+            )
+
+            Text(
+                text = stringResource(id = R.string.blaze_campaign_creation_error_help_hint),
+                style = MaterialTheme.typography.body2,
+            )
+
+            WCTextButton(
+                onClick = onHelpClick,
+                text = stringResource(id = R.string.blaze_campaign_creation_error_get_support),
+                icon = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
+                allCaps = false,
+                contentPadding = PaddingValues(vertical = dimensionResource(id = R.dimen.minor_100))
+            )
+        }
+
+        WCColoredButton(
+            onClick = onRetryClick,
+            text = stringResource(id = R.string.try_again),
+            modifier = Modifier.fillMaxWidth()
+        )
+        WCTextButton(
+            onClick = onCancelClick,
+            text = stringResource(id = R.string.blaze_campaign_creation_error_cancel),
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -365,5 +447,19 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
 private fun BlazeCampaignCreationLoadingPreview() {
     WooThemeWithBackground {
         CampaignCreationLoadingUi(modifier = Modifier.size(width = 360.dp, height = 640.dp))
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BlazeCampaignCreationErrorPreview() {
+    WooThemeWithBackground {
+        CampaignCreationErrorUi(
+            errorMessage = R.string.error_generic,
+            onRetryClick = {},
+            onHelpClick = {},
+            onCancelClick = {},
+            modifier = Modifier.size(width = 360.dp, height = 640.dp)
+        )
     }
 }

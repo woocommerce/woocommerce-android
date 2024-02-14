@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
@@ -112,7 +113,14 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
                 onFailure = {
-                    TODO()
+                    val errorMessage = when (it) {
+                        is BlazeRepository.CampaignCreationError.MediaUploadError ->
+                            R.string.blaze_campaign_creation_error_media_upload
+                        is BlazeRepository.CampaignCreationError.MediaFetchError ->
+                            R.string.blaze_campaign_creation_error_media_fetch
+                        else -> R.string.blaze_campaign_creation_error
+                    }
+                    campaignCreationState.value = CampaignCreationState.Failed(errorMessage)
                 }
             )
         }

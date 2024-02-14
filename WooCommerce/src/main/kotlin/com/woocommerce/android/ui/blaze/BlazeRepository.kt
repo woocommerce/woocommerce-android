@@ -225,7 +225,11 @@ class BlazeRepository @Inject constructor(
         paymentMethodId: String
     ): Result<Unit> {
         val image = prepareCampaignImage(campaignDetails.campaignImage).getOrElse {
-            return Result.failure(it)
+            return Result.failure(when (it) {
+                is MediaFilesRepository.MediaUploadException -> CampaignCreationError.MediaUploadError(it.message)
+                is OnChangedException -> CampaignCreationError.MediaFetchError(it.message)
+                else -> it
+            })
         }
 
         val result = blazeCampaignsStore.createCampaign(
@@ -258,7 +262,7 @@ class BlazeRepository @Inject constructor(
         return when {
             result.isError -> {
                 WooLog.w(WooLog.T.BLAZE, "Failed to create campaign: ${result.error}")
-                Result.failure(OnChangedException(result.error))
+                Result.failure(CampaignCreationError.CampaignApiError(result.error.message))
             }
 
             else -> {
@@ -375,6 +379,12 @@ class BlazeRepository @Inject constructor(
         val successUrl: String,
         val idUrlParameter: String
     ) : Parcelable
+
+    sealed class CampaignCreationError(message: String?): Exception(message) {
+        class MediaUploadError(message: String?): CampaignCreationError(message)
+        class MediaFetchError(message: String?): CampaignCreationError(message)
+        class CampaignApiError(message: String?): CampaignCreationError(message)
+    }
 }
 
 @Parcelize
