@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
+import android.R.attr
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -65,7 +66,10 @@ fun ModalStatusBarBottomSheetLayout(
             sheetContent.invoke(this@ModalBottomSheetLayout)
         }
     },
-    modifier = modifier.imePadding().navigationBarsPadding().imeNestedScroll(),
+    modifier = modifier
+        .imePadding()
+        .navigationBarsPadding()
+        .imeNestedScroll(),
     sheetState = sheetState,
     sheetShape = sheetShape,
     sheetElevation = sheetElevation,
@@ -77,8 +81,7 @@ fun ModalStatusBarBottomSheetLayout(
     var statusBarColor by remember { mutableStateOf(Color.Transparent) }
     val backgroundColor = remember {
         val typedValue = TypedValue()
-        if (context.findActivity()
-            .theme.resolveAttribute(android.R.attr.windowBackground, typedValue, true)) {
+        if (context.findActivity().theme.resolveAttribute(attr.windowBackground, typedValue, true)) {
             Color(typedValue.data)
         } else {
             sheetBackgroundColor

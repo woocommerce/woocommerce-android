@@ -24,6 +24,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     companion object {
         private const val MAX_CHARACTERS = 2096
     }
+
     private val navArgs: BlazeCampaignCreationAdDestinationParametersFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = MutableStateFlow(
@@ -42,21 +43,25 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     fun onAddParameterTapped() {
         _viewState.update {
-            it.copy(bottomSheetState = Editing(
-                baseUrl = it.baseUrl,
-                parameters = it.parameters
-            ))
+            it.copy(
+                bottomSheetState = Editing(
+                    baseUrl = it.baseUrl,
+                    parameters = it.parameters
+                )
+            )
         }
     }
 
     fun onParameterTapped(key: String) {
         _viewState.update {
-            it.copy(bottomSheetState = Editing(
-                baseUrl = it.baseUrl,
-                parameters = it.parameters - key,
-                key = key,
-                value = it.parameters[key] ?: ""
-            ))
+            it.copy(
+                bottomSheetState = Editing(
+                    baseUrl = it.baseUrl,
+                    parameters = it.parameters - key,
+                    key = key,
+                    value = it.parameters[key] ?: ""
+                )
+            )
         }
     }
 
@@ -74,11 +79,13 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     fun onParameterChanged(key: String, value: String) {
         _viewState.update {
-            it.copy(bottomSheetState = (it.bottomSheetState as Editing).copy(
-                key = key,
-                value = value,
-                error = getError(key, value)
-            ))
+            it.copy(
+                bottomSheetState = (it.bottomSheetState as Editing).copy(
+                    key = key,
+                    value = value,
+                    error = getError(key, value)
+                )
+            )
         }
     }
 
@@ -89,9 +96,11 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
             editingState.parameters.containsKey(key) -> {
                 R.string.blaze_campaign_edit_ad_destination_key_exists_error
             }
+
             parametersLength >= MAX_CHARACTERS -> {
                 R.string.blaze_campaign_edit_ad_destination_too_long_error
             }
+
             else -> 0
         }
     }
