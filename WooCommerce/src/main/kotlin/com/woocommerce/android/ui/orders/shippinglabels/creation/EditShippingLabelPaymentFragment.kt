@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainActivityViewModel
@@ -56,6 +57,9 @@ class EditShippingLabelPaymentFragment :
 
     private lateinit var doneMenuItem: MenuItem
     private var progressDialog: CustomProgressDialog? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
 
