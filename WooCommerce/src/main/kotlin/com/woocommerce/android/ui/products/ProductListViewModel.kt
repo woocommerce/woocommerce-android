@@ -425,7 +425,7 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun enterSelectionMode(count: Int) {
+    private fun enterSelectionMode(count: Int) {
         viewState = viewState.copy(
             productListState = ProductListState.Selecting,
             isAddProductButtonVisible = false,
@@ -433,7 +433,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun exitSelectionMode() {
+    private fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
             isAddProductButtonVisible = true,
@@ -441,7 +441,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun refreshProducts(scrollToTop: Boolean = false) {
+    private fun refreshProducts(scrollToTop: Boolean = false) {
         if (checkConnection()) {
             loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
         } else {
