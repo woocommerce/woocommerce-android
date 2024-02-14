@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.blaze.creation.destination
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Editing
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Hidden
@@ -11,10 +13,12 @@ import com.woocommerce.android.util.joinToUrl
 import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,8 +31,9 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     private val navArgs: BlazeCampaignCreationAdDestinationParametersFragmentArgs by savedStateHandle.navArgs()
 
-    private val _viewState = MutableStateFlow(
-        ViewState(
+    private val _viewState = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = ViewState(
             baseUrl = navArgs.url.getBaseUrl(),
             parameters = navArgs.url.parseParameters(),
             bottomSheetState = Hidden
@@ -116,11 +121,13 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
     }
 
+    @Parcelize
     data class ViewState(
         val baseUrl: String,
         val parameters: Map<String, String>,
         val bottomSheetState: ParameterBottomSheetState
-    ) {
+    ) : Parcelable {
+        @IgnoredOnParcel
         val url by lazy {
             parameters.joinToUrl(baseUrl)
         }
@@ -128,8 +135,11 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         val charactersRemaining: Int
             get() = MAX_CHARACTERS - parameters.entries.joinToString("&").length
 
-        sealed interface ParameterBottomSheetState {
+        sealed interface ParameterBottomSheetState : Parcelable {
+            @Parcelize
             data object Hidden : ParameterBottomSheetState
+
+            @Parcelize
             data class Editing(
                 val baseUrl: String,
                 val parameters: Map<String, String>,
@@ -137,6 +147,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
                 val value: String = "",
                 @StringRes val error: Int = 0
             ) : ParameterBottomSheetState {
+                @IgnoredOnParcel
                 val url: String by lazy {
                     if (key.isNotEmpty()) {
                         parameters + (key to value)
