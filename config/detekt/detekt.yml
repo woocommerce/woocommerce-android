@@ -33,6 +33,10 @@ style:
   MaxLineLength:
     active: false
 
+potential-bugs:
+  ElseCaseInsteadOfExhaustiveWhen:
+    active: true
+
 naming:
   FunctionNaming:
     ignoreAnnotated: [ 'Composable' ]
