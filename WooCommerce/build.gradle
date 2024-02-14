@@ -280,7 +280,8 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
-    implementation "com.google.android.play:core:$googlePlayCoreVersion"
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
+    implementation 'com.google.android.play:review-ktx:2.0.1'
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
 
