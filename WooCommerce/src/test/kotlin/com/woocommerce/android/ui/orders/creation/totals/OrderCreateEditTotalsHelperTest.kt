@@ -123,7 +123,8 @@ class OrderCreateEditTotalsHelperTest {
         val onGiftClicked = mock<() -> Unit>()
         val onTaxesLearnMore = mock<() -> Unit>()
         val onMainButtonClicked = mock<() -> Unit>()
-        val onExpandCollapseClicked = mock<(Boolean) -> Unit>()
+        val onExpandCollapseClicked = mock<() -> Unit>()
+        val onHeightChanged = mock<(Int) -> Unit>()
 
         val taxBasedOnSettingLabel = "tax based on billing address"
 
@@ -140,6 +141,7 @@ class OrderCreateEditTotalsHelperTest {
             onTaxesLearnMore,
             onMainButtonClicked,
             onExpandCollapseClicked,
+            onHeightChanged,
         )
 
         // THEN
@@ -179,9 +181,9 @@ class OrderCreateEditTotalsHelperTest {
         val taxesLines = (actual.lines[5] as TotalsSectionsState.Line.Block).lines
         assertThat((taxesLines[0] as TotalsSectionsState.Line.Simple).label).isEqualTo("Taxes")
         assertThat((taxesLines[0] as TotalsSectionsState.Line.Simple).value).isEqualTo("16.00$")
-        assertThat((taxesLines[1] as TotalsSectionsState.Line.SimpleSmall).label).isEqualTo("tax 1 · 5.0")
+        assertThat((taxesLines[1] as TotalsSectionsState.Line.SimpleSmall).label).isEqualTo("tax 1 · 5.0%")
         assertThat((taxesLines[1] as TotalsSectionsState.Line.SimpleSmall).value).isEqualTo("10.00$")
-        assertThat((taxesLines[2] as TotalsSectionsState.Line.SimpleSmall).label).isEqualTo("tax 2 · 6.0")
+        assertThat((taxesLines[2] as TotalsSectionsState.Line.SimpleSmall).label).isEqualTo("tax 2 · 6.0%")
         assertThat((taxesLines[2] as TotalsSectionsState.Line.SimpleSmall).value).isEqualTo("11.00$")
         assertThat((taxesLines[3] as TotalsSectionsState.Line.LearnMore).text).isEqualTo(taxBasedOnSettingLabel)
         assertThat((taxesLines[3] as TotalsSectionsState.Line.LearnMore).buttonText).isEqualTo("learn More")
@@ -208,6 +210,7 @@ class OrderCreateEditTotalsHelperTest {
             localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
+            {},
             {},
             {},
             {},
@@ -246,6 +249,7 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
+            {},
         )
 
         // THEN
@@ -274,6 +278,7 @@ class OrderCreateEditTotalsHelperTest {
             localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
+            {},
             {},
             {},
             {},

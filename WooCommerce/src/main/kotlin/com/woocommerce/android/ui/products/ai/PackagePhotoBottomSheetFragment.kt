@@ -62,6 +62,7 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment(), MediaPick
             }
         }
     }
+
     override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
         if (imageUris.isNotEmpty()) {
             onImageSelected(imageUris.first().toString())
