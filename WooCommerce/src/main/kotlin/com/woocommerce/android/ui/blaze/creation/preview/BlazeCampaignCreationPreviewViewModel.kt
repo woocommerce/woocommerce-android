@@ -5,9 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_CONFIRM_DETAILS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
@@ -171,7 +171,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     fun onConfirmClicked() {
-        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_CONFIRM_DETAILS_TAPPED)
         triggerEvent(NavigateToPaymentSummary(budget.value))
     }
 

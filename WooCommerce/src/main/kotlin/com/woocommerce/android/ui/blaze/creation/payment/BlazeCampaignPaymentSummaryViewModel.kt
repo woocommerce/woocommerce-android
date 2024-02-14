@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.blaze.creation.payment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val blazeRepository: BlazeRepository
+    private val blazeRepository: BlazeRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
@@ -89,6 +92,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
     fun onSubmitCampaign() {
         // TODO show loading and trigger campaign creation
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
         triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
     }
 
