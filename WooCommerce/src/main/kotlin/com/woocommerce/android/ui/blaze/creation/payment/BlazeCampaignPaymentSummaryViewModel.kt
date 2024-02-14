@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.payment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -48,6 +49,10 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onHelpClicked() {
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.BLAZE_CAMPAIGN_CREATION))
+    }
+
     fun onPaymentMethodSelected(paymentMethodId: String) {
         selectedPaymentMethodId.value = paymentMethodId
 
@@ -87,6 +92,11 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         }
     }
 
+    fun onSubmitCampaign() {
+        // TODO show loading and trigger campaign creation
+        triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
+    }
+
     data class ViewState(
         val budget: BlazeRepository.Budget,
         val paymentMethodsState: PaymentMethodsState,
@@ -116,4 +126,6 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         val paymentMethodsData: PaymentMethodsData,
         val selectedPaymentMethodId: String?
     ) : MultiLiveEvent.Event()
+
+    object NavigateToStartingScreenWithSuccessBottomSheet : MultiLiveEvent.Event()
 }

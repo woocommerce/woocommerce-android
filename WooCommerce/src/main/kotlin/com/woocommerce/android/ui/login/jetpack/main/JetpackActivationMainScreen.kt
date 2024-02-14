@@ -110,15 +110,16 @@ fun JetpackActivationMainScreen(
                 contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
                 transitionSpec = {
                     fadeIn(
-                        animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)
+                        animationSpec = tween(
+                            DefaultDurationMillis, delayMillis = DefaultDurationMillis
+                        )
                     ) togetherWith fadeOut(animationSpec = tween(DefaultDurationMillis))
                 },
                 modifier = Modifier.weight(1f)
             ) { targetState ->
                 when (targetState) {
                     is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
-                        viewState = targetState,
-                        onContinueClick = onContinueClick
+                        viewState = targetState, onContinueClick = onContinueClick
                     )
 
                     is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
