@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import java.util.Date
@@ -72,7 +73,10 @@ fun BlazeCampaignPaymentSummaryScreen(
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         when (state.campaignCreationState) {
-            is CampaignCreationState.Loading -> TODO()
+            is CampaignCreationState.Loading -> CampaignCreationLoadingUi(
+                modifier = Modifier.padding(paddingValues)
+            )
+
             is CampaignCreationState.Failed -> TODO()
             else -> PaymenSummaryContent(
                 state = state,
@@ -153,6 +157,26 @@ private fun PaymenSummaryContent(
             },
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
+    }
+}
+
+@Composable
+private fun CampaignCreationLoadingUi(modifier: Modifier = Modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = dimensionResource(id = R.dimen.major_150),
+            alignment = Alignment.CenterVertically
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_timer),
+            contentDescription = null,
+            modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_72))
+        )
+        Text(text = stringResource(id = R.string.blaze_campaign_creation_loading))
+        CircularProgressIndicator()
     }
 }
 
@@ -294,10 +318,9 @@ private fun PaymentMethodInfo(
     }
 }
 
-@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@LightDarkThemePreviews
 @Composable
-fun BlazeCampaignPaymentSummaryScreenPreview() {
+private fun BlazeCampaignPaymentSummaryScreenPreview() {
     WooThemeWithBackground {
         BlazeCampaignPaymentSummaryScreen(
             state = BlazeCampaignPaymentSummaryViewModel.ViewState(
@@ -334,5 +357,13 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
             onSubmitCampaign = {},
             onHelpClick = {}
         )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BlazeCampaignCreationLoadingPreview() {
+    WooThemeWithBackground {
+        CampaignCreationLoadingUi(modifier = Modifier.size(width = 360.dp, height = 640.dp))
     }
 }

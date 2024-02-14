@@ -3918,8 +3918,9 @@
     <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destination: %s</string>
 
     <!--
-    Blaze campaign created success
+    Blaze campaign creation
     -->
+    <string name="blaze_campaign_creation_loading">Creating your campaign</string>
     <string name="blaze_campaign_created_success_title">Ready to Go!</string>
     <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
     <string name="blaze_campaign_created_success_done_button">Done</string>
