@@ -18,7 +18,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -48,11 +47,9 @@ class OrdersUITest : TestBase() {
         TabNavComponent().gotoOrdersScreen()
     }
 
-    @Ignore
     @Test
     fun e2eCreateOrderTest() {
         val note = "Just a placeholder text"
-        val status = "Processing"
         val ordersJSONArray = MocksReader().readOrderToArray()
 
         for (orderJSON in ordersJSONArray.iterator()) {
@@ -63,12 +60,10 @@ class OrdersUITest : TestBase() {
             OrderListScreen()
                 .createFABTap()
                 .assertNewOrderScreen()
-                .updateOrderStatus(status)
+                .addCustomerNote(note)
                 .addProductTap()
                 .assertProductsSelectorScreen(composeTestRule)
                 .selectProduct(composeTestRule, orderData.productName)
-                .editCustomerNote(note)
-                .addShipping()
                 .createOrder()
                 .assertSingleOrderScreenWithProduct(orderData)
                 .goBackToOrdersScreen()
