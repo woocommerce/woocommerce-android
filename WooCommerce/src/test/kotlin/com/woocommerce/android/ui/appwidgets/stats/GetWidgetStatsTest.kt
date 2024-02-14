@@ -133,7 +133,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when fetchStats succeed then get stats respond with WidgetStatsFailure`() =
+    fun `when fetchStats succeed then get stats respond with WidgetStats`() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and network is working fine
             whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
@@ -146,7 +146,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
 
             // When GetWidgetStats is invoked
             val result = sut.invoke(defaultGranularity, defaultSiteModel)
-            val expected = GetWidgetStats.WidgetStatsResult.WidgetStats(defaultResponse, true)
+            val expected = GetWidgetStats.WidgetStatsResult.WidgetStats(defaultResponse)
 
             // Then the result is WidgetStatsFailure
             assertThat(result).isEqualTo(expected)
