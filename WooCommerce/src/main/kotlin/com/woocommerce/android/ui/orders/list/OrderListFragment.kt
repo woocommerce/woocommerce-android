@@ -10,6 +10,7 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.ViewGroupCompat
@@ -154,6 +155,17 @@ class OrderListFragment :
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
             savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isTablet()) {
+                        selectedOrder.selectOrder(-1L)
+                        findNavController().popBackStack()
+                    }
+                }
+            }
+        )
 
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
@@ -435,7 +447,7 @@ class OrderListFragment :
                         clearSelectedOrderIdInViewModel()
                     }
                     // No order selected and no specific order to open, or no specific condition met
-                    selectedOrder.selectedOrderId.value == null -> {
+                    selectedOrder.selectedOrderId.value == null || selectedOrder.selectedOrderId.value == -1L -> {
                         // The first time the user logs in, we need to add some delay
                         // before opening the first order.
                         handler.postDelayed({
