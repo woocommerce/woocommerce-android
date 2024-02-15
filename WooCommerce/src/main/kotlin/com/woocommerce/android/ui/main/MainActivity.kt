@@ -61,7 +61,6 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -206,9 +205,6 @@ class MainActivity :
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             if (f is DialogFragment) return
-
-            if (f is BlazeCampaignCreationPreviewFragment) // Context on why this is needed check GH issue #10563
-                animatorHelper.cancelToolbarAnimation()
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -490,6 +486,9 @@ class MainActivity :
     }
 
     private fun showToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
         if (animate) {
             animatorHelper.animateToolbarHeight(show = true) {
@@ -505,6 +504,9 @@ class MainActivity :
     }
 
     private fun hideToolbar(animate: Boolean) {
+        // Cancel any pending toolbar animations
+        animatorHelper.cancelToolbarAnimation()
+
         if (binding.collapsingToolbar.layoutParams.height == 0) return
         if (animate) {
             animatorHelper.animateToolbarHeight(show = false) {

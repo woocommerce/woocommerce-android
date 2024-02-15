@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 09:54:04+0000
+Translation-Revision-Date: 2024-02-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">无法存储此收据</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">无法下载此收据</string>
+    <string name="card_reader_payment_email_client_not_found">无法检测到任何可共享收据的应用程序</string>
+    <string name="receipt_fetching_error">很抱歉，我们无法加载此订单的收据</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">AI 建议</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">还可输入 %d 个字符</string>
     <string name="blaze_campaign_edit_ad_change_description_title">描述</string>
@@ -1956,7 +1960,6 @@ Language: zh_CN
     <string name="empty_product_add_product_button">添加产品</string>
     <string name="variable_product_attributes">变体属性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">打开移动设备蓝牙</string>
-    <string name="card_reader_payment_email_client_not_found">未侦测到您的电子邮件客户端应用</string>
     <string name="card_reader_payment_receipt_email_subject">来自 %s 的收据</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">刷新订单</string>
     <string name="card_reader_payment_fetch_order_loading_header">更新应用程序状态</string>

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 20:54:03+0000
+Translation-Revision-Date: 2024-02-07 15:54:06+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Не удалось сохранить чек</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Не удалось загрузить чек</string>
+    <string name="card_reader_payment_email_client_not_found">Не удалось обнаружить ни одного приложения, в котором можно опубликовать чек</string>
+    <string name="receipt_fetching_error">Не удалось загрузить чек за этот заказ</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Выбрано ИИ</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">Осталось символов: %d</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Описание</string>
@@ -1957,7 +1961,6 @@ Language: ru
     <string name="variable_product_attributes">Атрибуты вариантов</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Включите Bluetooth на мобильном устройстве</string>
     <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
-    <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
