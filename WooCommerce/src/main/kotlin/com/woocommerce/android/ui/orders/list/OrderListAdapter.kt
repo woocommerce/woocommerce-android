@@ -137,12 +137,13 @@ class OrderListAdapter(
         }
     }
 
-    fun openOrder(orderId: Long) {
+    fun openOrder(orderId: Long, startPaymentsFlow: Boolean = false) {
         listener.openOrderDetail(
             orderId = orderId,
             allOrderIds = allOrderIds,
             orderStatus = "",
             sharedView = null,
+            startPaymentsFlow = startPaymentsFlow
         )
     }
 

@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSelectPaymentMethodBinding
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -222,8 +223,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToOrderList -> {
-                    val action =
+                    val action = if (isTablet()) {
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
+                            orderId = event.order.id
+                        )
+                    } else {
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                    }
                     findNavController().navigateSafely(action)
                 }
 

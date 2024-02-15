@@ -1140,13 +1140,15 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
-    fun onCreateOrderClicked(order: Order) {
+    fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
         when (mode) {
             Mode.Creation -> {
                 trackCreateOrderButtonClick()
                 createOrder(order) {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
-                    triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = false))
+                    triggerEvent(
+                        ShowCreatedOrder(it.id, startPaymentFlow = false, isTablet = isTablet)
+                    )
                 }
             }
 

@@ -64,8 +64,8 @@ class OrderListView @JvmOverloads constructor(
         ordersAdapter.openFirstOrder()
     }
 
-    fun openOrder(orderId: Long) {
-        ordersAdapter.openOrder(orderId)
+    fun openOrder(orderId: Long, startPaymentsFlow: Boolean = false) {
+        ordersAdapter.openOrder(orderId, startPaymentsFlow)
     }
 
     /**

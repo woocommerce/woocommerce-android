@@ -1159,7 +1159,8 @@ class MainActivity :
         orderId: Long,
         navHostFragment: NavHostFragment?,
         remoteNoteId: Long,
-        launchedFromNotification: Boolean
+        launchedFromNotification: Boolean,
+        startPaymentsFlow: Boolean,
     ) {
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
@@ -1173,7 +1174,12 @@ class MainActivity :
             remoteNoteId
         )
         navHostFragment?.navController?.let { navController ->
-            val bundle = OrderDetailFragmentArgs(orderId, longArrayOf(orderId), remoteNoteId).toBundle()
+            val bundle = OrderDetailFragmentArgs(
+                orderId,
+                longArrayOf(orderId),
+                remoteNoteId,
+                startPaymentsFlow
+            ).toBundle()
             navController.navigate(R.id.orderDetailFragment, bundle)
         } ?: run {
             navController.navigateSafely(action)
