@@ -87,8 +87,6 @@ class ShippingLabelAddressSuggestionFragment :
         subscribeObservers()
     }
 
-    override fun getFragmentTitle() = getString(screenTitle)
-
     @SuppressLint("SetTextI18n")
     private fun subscribeObservers() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -107,7 +105,7 @@ class ShippingLabelAddressSuggestionFragment :
                 binding.useSuggestedAddressButton.isEnabled = it
             }
             new.title?.takeIfNotEqualTo(old?.title) {
-                screenTitle = it
+                binding.toolbar.title = getString(it)
             }
         }
 
