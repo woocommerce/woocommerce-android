@@ -34,6 +34,7 @@ style:
     active: false
 
 potential-bugs:
+  active: true
   ElseCaseInsteadOfExhaustiveWhen:
     active: true
 
