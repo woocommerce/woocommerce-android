@@ -16,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnalyticsHubSettingsViewModel @Inject constructor(
-
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     private val saveAnalyticsCardsConfiguration: SaveAnalyticsCardsConfiguration,
     savedState: SavedStateHandle
@@ -30,19 +29,19 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         LiveDataDelegate(savedState, AnalyticsHubSettingsViewState.Loading)
 
     private var viewState by viewStateData
-    private lateinit var _currentConfiguration: List<AnalyticCardConfiguration>
-    private lateinit var _draftConfiguration: List<AnalyticCardConfiguration>
+    private lateinit var currentConfiguration: List<AnalyticCardConfiguration>
+    private lateinit var draftConfiguration: List<AnalyticCardConfiguration>
 
-    private fun hasChanges() = _currentConfiguration != _draftConfiguration
+    private fun hasChanges() = currentConfiguration != draftConfiguration
 
     init {
         launch {
             delay(LOADING_DELAY_MS)
             observeAnalyticsCardsConfiguration().first().let {
-                _currentConfiguration = it
-                _draftConfiguration = _currentConfiguration
+                currentConfiguration = it
+                draftConfiguration = currentConfiguration
                 viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
-                    cardsConfiguration = _draftConfiguration,
+                    cardsConfiguration = draftConfiguration,
                     showDismissDialog = false,
                     isSaveButtonEnabled = hasChanges()
                 )
@@ -54,7 +53,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         when {
             viewState is AnalyticsHubSettingsViewState.CardsConfiguration && hasChanges() -> {
                 viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
-                    cardsConfiguration = _draftConfiguration,
+                    cardsConfiguration = draftConfiguration,
                     showDismissDialog = true,
                     isSaveButtonEnabled = hasChanges()
                 )
@@ -65,7 +64,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
 
     fun onDismissDiscardChanges() {
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
-            cardsConfiguration = _draftConfiguration,
+            cardsConfiguration = draftConfiguration,
             showDismissDialog = false,
             isSaveButtonEnabled = hasChanges()
         )
@@ -78,19 +77,19 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
     fun onSaveChanges() {
         launch {
             viewState = AnalyticsHubSettingsViewState.Loading
-            saveAnalyticsCardsConfiguration(_draftConfiguration)
+            saveAnalyticsCardsConfiguration(draftConfiguration)
             delay(LOADING_DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)
         }
     }
 
     fun onSelectionChange(id: Int, isSelected: Boolean) {
-        _draftConfiguration = _draftConfiguration.map { card ->
+        draftConfiguration = draftConfiguration.map { card ->
             if (card.id == id) card.copy(isVisible = isSelected)
             else card
         }
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
-            cardsConfiguration = _draftConfiguration,
+            cardsConfiguration = draftConfiguration,
             showDismissDialog = false,
             isSaveButtonEnabled = hasChanges()
         )
