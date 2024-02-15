@@ -48,12 +48,6 @@ class ShippingLabelAddressSuggestionFragment :
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private var screenTitle = 0
-        set(value) {
-            field = value
-            updateActivityTitle()
-        }
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
