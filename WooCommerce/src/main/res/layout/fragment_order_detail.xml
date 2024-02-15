@@ -36,6 +36,7 @@
 
             <!-- The FrameLayout is needed to display the skeleton view dynamically -->
             <FrameLayout
+                android:id="@+id/skeleton_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

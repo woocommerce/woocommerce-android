@@ -75,7 +75,6 @@ class OrderFilterCategoriesFragment :
             }
         }
         binding.toolbar.inflateMenu(R.menu.menu_clear)
-        onPrepareMenu(binding.toolbar.menu)
     }
 
     fun onPrepareMenu(menu: Menu) {
@@ -113,7 +112,6 @@ class OrderFilterCategoriesFragment :
             )
         }
     }
-
     private fun setUpFiltersRecyclerView(binding: FragmentOrderFilterListBinding) {
         orderFilterCategoryAdapter = OrderFilterCategoryAdapter(
             onFilterCategoryClicked = { selectedFilterCategory ->
@@ -141,6 +139,9 @@ class OrderFilterCategoriesFragment :
     private fun setUpObservers(viewModel: OrderFilterCategoriesViewModel) {
         viewModel.categories.observe(viewLifecycleOwner) { _, newValue ->
             showOrderFilters(newValue.list)
+        }
+        viewModel.orderFilterCategoryViewState.observe(viewLifecycleOwner) {
+            onPrepareMenu(binding.toolbar.menu)
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

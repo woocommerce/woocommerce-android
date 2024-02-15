@@ -89,6 +89,7 @@ class OrderListFragment :
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
+        private const val OPEN_FIRST_ORDER_DELAY = 200L
     }
 
     @Inject
@@ -124,7 +125,7 @@ class OrderListFragment :
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private val searchHandler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -239,7 +240,7 @@ class OrderListFragment :
         checkOrientation()
         onSearchViewActiveChanged(isActive = true)
         binding.orderFiltersCard.isVisible = false
-        searchHandler.postDelayed({
+        handler.postDelayed({
             binding.orderListView.clearAdapterData()
         }, 100)
         return true // Return true to expand the action view
@@ -322,6 +323,7 @@ class OrderListFragment :
 
     override fun onDestroyView() {
         disableSearchListeners()
+        handler.removeCallbacksAndMessages(null)
         searchView = null
         orderListMenu = null
         searchMenuItem = null
@@ -433,7 +435,13 @@ class OrderListFragment :
                         clearSelectedOrderIdInViewModel()
                     }
                     // No order selected and no specific order to open, or no specific condition met
-                    selectedOrder.selectedOrderId.value == null -> openFirstOrder()
+                    selectedOrder.selectedOrderId.value == null -> {
+                        // The first time the user logs in, we need to add some delay
+                        // before opening the first order.
+                        handler.postDelayed({
+                            openFirstOrder()
+                        }, OPEN_FIRST_ORDER_DELAY)
+                    }
 
                     viewModel.viewState.filterCount > 0 -> openFirstOrder()
                 }
@@ -772,7 +780,7 @@ class OrderListFragment :
      * perform a search while the user is typing
      */
     private fun submitSearchDelayed(query: String) {
-        searchHandler.postDelayed(
+        handler.postDelayed(
             {
                 searchView?.let {
                     // submit the search if the searchView's query still matches the passed query
