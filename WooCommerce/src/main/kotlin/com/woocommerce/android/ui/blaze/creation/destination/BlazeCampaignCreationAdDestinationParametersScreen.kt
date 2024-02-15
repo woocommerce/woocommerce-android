@@ -15,7 +15,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -74,8 +73,7 @@ fun AdDestinationParametersScreen(
 ) {
     val modalSheetState = rememberModalBottomSheetState(
         initialValue = Hidden,
-        confirmValueChange = { it != HalfExpanded },
-        skipHalfExpanded = false
+        skipHalfExpanded = true
     )
 
     LaunchedEffect(viewState.bottomSheetState is ViewState.ParameterBottomSheetState.Hidden) {

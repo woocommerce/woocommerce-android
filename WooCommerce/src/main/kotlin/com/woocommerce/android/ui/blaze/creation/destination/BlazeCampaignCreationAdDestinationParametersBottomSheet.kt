@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,16 +19,12 @@ import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Editing
@@ -53,12 +48,7 @@ fun AdDestinationParametersBottomSheet(
     screenContent: @Composable () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val isSheetFullScreen by remember { mutableStateOf(false) }
-    val roundedCornerRadius = if (isSheetFullScreen) 0.dp else dimensionResource(id = R.dimen.minor_100)
-    val then = if (isSheetFullScreen)
-        Modifier.fillMaxSize()
-    else
-        Modifier.fillMaxWidth()
+    val roundedCornerRadius = dimensionResource(id = R.dimen.major_100)
 
     BackHandler(modalSheetState.isVisible) {
         coroutineScope.launch { modalSheetState.hide() }
@@ -81,7 +71,7 @@ fun AdDestinationParametersBottomSheet(
                     paramsState = viewState.bottomSheetState,
                     onParameterChanged = onParameterChanged,
                     onParameterSaved = onParameterSaved,
-                    modifier = modifier.then(then)
+                    modifier = modifier.fillMaxWidth()
                 )
             }
         }
@@ -134,7 +124,7 @@ private fun ParameterBottomSheet(
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 isError = paramsState.error != 0,
-                helperText = if (paramsState.error != 0) stringResource(paramsState.error) else null
+                helperText = if (paramsState.error != 0) stringResource(paramsState.error) else null,
             )
 
             WCOutlinedTextField(
@@ -145,7 +135,7 @@ private fun ParameterBottomSheet(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             )
 
             Text(
