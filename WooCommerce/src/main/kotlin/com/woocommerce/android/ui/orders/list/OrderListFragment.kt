@@ -17,6 +17,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.NavHostFragment
@@ -135,6 +136,8 @@ class OrderListFragment :
 
     private val emptyView
         get() = binding.orderListView.emptyView
+
+    private val selectedOrder: SelectedOrderTrackerViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
@@ -332,6 +335,12 @@ class OrderListFragment :
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
+        selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
+            viewModel.updateOrderSelectedStatus(
+                orderId = selectedOrder.selectedOrderId.value ?: -1,
+            )
+        }
+
         viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
@@ -350,9 +359,12 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            if (isTablet()) {
+            if (selectedOrder.selectedOrderId.value == null && isTablet()) {
                 binding.orderListView.openFirstOrder()
             }
+            viewModel.updateOrderSelectedStatus(
+                orderId = selectedOrder.selectedOrderId.value ?: -1,
+            )
             updatePagedListData(it)
         }
 
@@ -373,6 +385,9 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
+                }
+                OrderListViewModel.OrderListEvent.NotifyOrderSelectionChanged -> {
+                    binding.orderListView.ordersList.adapter?.notifyDataSetChanged()
                 }
                 is MultiLiveEvent.Event.ShowUndoSnackbar -> {
                     snackBar = uiMessageResolver.getUndoSnack(
@@ -529,7 +544,12 @@ class OrderListFragment :
         binding.orderListView.submitPagedList(pagedListData)
     }
 
-    override fun openOrderDetail(orderId: Long, allOrderIds: List<Long>, orderStatus: String, sharedView: View?) {
+    override fun openOrderDetail(
+        orderId: Long,
+        allOrderIds: List<Long>,
+        orderStatus: String,
+        sharedView: View?,
+    ) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
         _binding?.createOrderButton?.hide()
@@ -550,6 +570,8 @@ class OrderListFragment :
                 null
             }
             navHostFragment?.let {
+                selectedOrder.selectOrder(orderId)
+                viewModel.updateOrderSelectedStatus(orderId)
                 showOrderDetail(orderId, it)
             } ?: run {
                 // Phone layout

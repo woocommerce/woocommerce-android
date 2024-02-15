@@ -580,6 +580,16 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
     }
 
+    fun updateOrderSelectedStatus(orderId: Long) {
+        val pagedList = _pagedListData.value ?: return
+        pagedList.map { orderItem ->
+            if (orderItem is OrderListItemUIType.OrderListItemUI) {
+                orderItem.isSelected = orderItem.orderId == orderId
+            }
+        }
+        triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
+    }
+
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         dismissListErrors = true
 
@@ -754,6 +764,8 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+
+        object NotifyOrderSelectionChanged : OrderListEvent()
 
         object OpenBarcodeScanningFragment : OrderListEvent()
 

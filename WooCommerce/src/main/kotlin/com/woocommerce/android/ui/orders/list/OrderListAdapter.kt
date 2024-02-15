@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -154,6 +155,17 @@ class OrderListAdapter(
             )
             viewBinding.divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
 
+            when {
+                orderItemUI.isSelected -> {
+                    viewBinding.orderItemLayout.setBackgroundColor(
+                        viewBinding.root.context.getColor(R.color.color_item_selected)
+                    )
+                }
+                else -> {
+                    viewBinding.orderItemLayout.setBackgroundColor(Color.TRANSPARENT)
+                }
+            }
+
             // clear existing tags and add new ones
             viewBinding.orderTags.removeAllViews()
             processTagView(orderItemUI.status, this)
@@ -177,7 +189,7 @@ class OrderListAdapter(
                     orderId = orderItemUI.orderId,
                     allOrderIds = allOrderIds,
                     orderStatus = orderItemUI.status,
-                    sharedView = viewBinding.root
+                    sharedView = viewBinding.root,
                 )
             }
         }
