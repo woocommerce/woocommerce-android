@@ -932,9 +932,7 @@ class MainActivity :
     private fun navigateToWebView(event: ViewUrlInWebView) {
         navController.navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = event.url,
-                urlsToTriggerExit = event.urlsToTriggerExit,
-                title = event.title
+                urlToLoad = event.url
             )
         )
     }
