@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -21,10 +24,15 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -37,13 +45,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
+import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
@@ -53,8 +64,11 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onBackPressed = viewModel::onBackPressed,
             onEditDurationTapped = viewModel::onEditDurationTapped,
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
-            onBudgetUpdated = viewModel::onTotalBudgetUpdated,
+            onBudgetUpdated = viewModel::onBudgetUpdated,
             onCampaignDurationUpdated = viewModel::onCampaignDurationUpdated,
+            onStartDateChanged = viewModel::onStartDateChanged,
+            onBudgetChangeFinished = viewModel::onBudgetChangeFinished,
+            onUpdateTapped = viewModel::onUpdateTapped
         )
     }
 }
@@ -68,6 +82,9 @@ private fun CampaignBudgetScreen(
     onImpressionsInfoTapped: () -> Unit,
     onBudgetUpdated: (Float) -> Unit,
     onCampaignDurationUpdated: (Int) -> Unit,
+    onStartDateChanged: (Long) -> Unit,
+    onBudgetChangeFinished: () -> Unit,
+    onUpdateTapped: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -97,10 +114,9 @@ private fun CampaignBudgetScreen(
                         )
 
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
-                            duration = state.durationInDays,
-                            startDate = state.startDateMmmDdYyyy,
-                            onDurationChanged = { onCampaignDurationUpdated(it.toInt()) },
-                            durationRange = state.durationRangeDays,
+                            budgetUiState = state,
+                            onDurationChanged = { onCampaignDurationUpdated(it) },
+                            onStartDateChanged = { onStartDateChanged(it) },
                             onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
                         )
                     }
@@ -119,13 +135,16 @@ private fun CampaignBudgetScreen(
                         coroutineScope.launch { modalSheetState.show() }
                     },
                     onBudgetUpdated = onBudgetUpdated,
+                    onBudgetChangeFinished = onBudgetChangeFinished,
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
+                    campaignDurationDates = state.campaignDurationDates,
                     onEditDurationTapped = {
                         onEditDurationTapped()
                         coroutineScope.launch { modalSheetState.show() }
-                    }
+                    },
+                    onUpdateTapped = onUpdateTapped
                 )
             }
         }
@@ -137,6 +156,7 @@ private fun EditBudgetSection(
     state: BlazeCampaignBudgetViewModel.BudgetUiState,
     onBudgetUpdated: (Float) -> Unit,
     onImpressionsInfoTapped: () -> Unit,
+    onBudgetChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -182,8 +202,9 @@ private fun EditBudgetSection(
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
             value = state.totalBudget,
-            valueRange = state.budgetRange,
+            valueRange = state.budgetRangeMin..state.budgetRangeMax,
             onValueChange = { onBudgetUpdated(it) },
+            onValueChangeFinished = { onBudgetChangeFinished() },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
@@ -198,18 +219,37 @@ private fun EditBudgetSection(
                 contentDescription = null
             )
         }
-        Text(
-            text = "2400  --  3000",
-            fontWeight = FontWeight.SemiBold,
-            lineHeight = 24.sp,
-        )
+        Spacer(modifier = Modifier.height(6.dp))
+        if (state.forecast.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(20.dp),
+            )
+        } else {
+            if (state.forecast.isError) {
+                Text(
+                    modifier = Modifier.clickable { onBudgetChangeFinished() },
+                    text = stringResource(id = R.string.blaze_campaign_budget_error_fetching_forecast),
+                    color = colorResource(id = color.color_on_surface_medium)
+                )
+            } else {
+                Text(
+                    text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 24.sp,
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
 private fun EditDurationSection(
-    onEditDurationTapped: () -> Unit
+    campaignDurationDates: String,
+    onEditDurationTapped: () -> Unit,
+    onUpdateTapped: () -> Unit,
 ) {
     Column {
         Divider()
@@ -230,7 +270,7 @@ private fun EditDurationSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Dec 13 – Dec 19, 2023",
+                    text = campaignDurationDates,
                     style = MaterialTheme.typography.subtitle2,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -242,7 +282,7 @@ private fun EditDurationSection(
             }
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /* TODO */ },
+                onClick = onUpdateTapped,
                 text = stringResource(id = R.string.blaze_campaign_budget_update_button)
             )
         }
@@ -285,13 +325,25 @@ private fun ImpressionsInfoBottomSheet(
 
 @Composable
 private fun EditDurationBottomSheet(
-    duration: Int,
-    startDate: String,
-    durationRange: ClosedFloatingPointRange<Float>,
-    onDurationChanged: (Float) -> Unit,
+    budgetUiState: BlazeCampaignBudgetViewModel.BudgetUiState,
+    onDurationChanged: (Int) -> Unit,
+    onStartDateChanged: (Long) -> Unit,
     onApplyTapped: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    if (showDatePicker) {
+        DatePickerDialog(
+            currentDate = Date(budgetUiState.campaignStartDateMillis),
+            onDateSelected = {
+                onStartDateChanged(it.time)
+                showDatePicker = false
+            },
+            onDismissRequest = { showDatePicker = false }
+        )
+    }
+
+    var sliderPosition by remember { mutableStateOf(budgetUiState.durationInDays.toFloat()) }
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
@@ -302,7 +354,10 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 40.dp)
                 .fillMaxWidth(),
-            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration, duration),
+            text = stringResource(
+                id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
+                sliderPosition.toInt()
+            ),
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
@@ -311,15 +366,17 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
-            value = duration.toFloat(),
-            valueRange = durationRange,
-            onValueChange = onDurationChanged,
+            value = sliderPosition,
+            valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
+            onValueChange = { sliderPosition = it },
+            onValueChangeFinished = { onDurationChanged(sliderPosition.toInt()) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
         )
         Row(
             modifier = Modifier.padding(top = 40.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 modifier = Modifier.weight(1f),
@@ -327,13 +384,21 @@ private fun EditDurationBottomSheet(
                 style = MaterialTheme.typography.body1,
             )
             Text(
-                text = startDate,
+                modifier = Modifier
+                    .clickable { showDatePicker = !showDatePicker }
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(colorResource(id = color.divider_color))
+                    .padding(8.dp),
+                text = Date(budgetUiState.campaignStartDateMillis).formatToMMMddYYYY(),
                 style = MaterialTheme.typography.body1,
             )
         }
         WCColoredButton(
             modifier = Modifier
-                .padding(top = 40.dp)
+                .padding(
+                    top = 30.dp,
+                    bottom = 16.dp
+                )
                 .fillMaxWidth(),
             onClick = onApplyTapped,
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
@@ -346,25 +411,33 @@ private fun EditDurationBottomSheet(
 private fun CampaignBudgetScreenPreview() {
     CampaignBudgetScreen(
         state = BlazeCampaignBudgetViewModel.BudgetUiState(
-            totalBudget = 35f,
-            spentBudget = 0f,
-            budgetRange = 35f..350f,
             currencyCode = "USD",
-            durationInDays = 7,
+            totalBudget = 35f,
+            budgetRangeMin = 5f,
+            budgetRangeMax = 35f,
             dailySpending = "$5",
-            startDateMmmDdYyyy = "Dec 13, 2023",
-            durationRangeDays = 1f..28f,
+            durationInDays = 7,
+            durationRangeMin = 1f,
+            durationRangeMax = 28f,
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
-                isLoaded = false,
+                isLoading = false,
                 impressionsMin = 0,
-                impressionsMax = 0
-            )
+                impressionsMax = 0,
+                isError = false
+            ),
+            campaignStartDateMillis = Date().time,
+            campaignDurationDates = "Dec 13 - Dec 20, 2023",
+            showImpressionsBottomSheet = false,
+            showCampaignDurationBottomSheet = false
         ),
         onBackPressed = {},
         onEditDurationTapped = {},
         onImpressionsInfoTapped = {},
         onBudgetUpdated = {},
         onCampaignDurationUpdated = {},
+        onStartDateChanged = {},
+        onUpdateTapped = {},
+        onBudgetChangeFinished = {}
     )
 }
 
@@ -372,16 +445,4 @@ private fun CampaignBudgetScreenPreview() {
 @Composable
 private fun CampaignImpressionsBottomSheetPreview() {
     ImpressionsInfoBottomSheet(onDoneTapped = {})
-}
-
-@LightDarkThemePreviews
-@Composable
-private fun EditDurationBottomSheetPreview() {
-    EditDurationBottomSheet(
-        duration = 7,
-        startDate = "Dec 13, 2023",
-        durationRange = 1f..28f,
-        onDurationChanged = {},
-        onApplyTapped = {},
-    )
 }

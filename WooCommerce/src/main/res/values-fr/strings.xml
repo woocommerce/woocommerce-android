@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 15:54:03+0000
+Translation-Revision-Date: 2024-02-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">Impossible d’enregistrer le reçu</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">Impossible de télécharger le reçu</string>
+    <string name="card_reader_payment_email_client_not_found">Impossible de détecter une application compatible avec le partage du reçu</string>
+    <string name="receipt_fetching_error">Nous n’avons malheureusement pas été en mesure de charger un reçu pour cette commande</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggéré par l’IA</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d caractères restants</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
@@ -1957,7 +1961,6 @@ Language: fr
     <string name="variable_product_attributes">Attributs des variantes</string>
     <string name="card_reader_detail_not_connected_third_hint_label">Activer le Bluetooth de l’appareil mobile</string>
     <string name="card_reader_refetching_order_failed">Erreur lors de l’extraction de la commande. L’état de la commande dans l’application est peut-être obsolète.</string>
-    <string name="card_reader_payment_email_client_not_found">Aucune application de messagerie détectée</string>
     <string name="card_reader_payment_receipt_email_subject">Votre reçu de %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualisation de la commande</string>
     <string name="card_reader_payment_fetch_order_loading_header">Mise à jour de l’état de l’application</string>

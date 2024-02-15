@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.products.Product
 
 @OptIn(FlowPreview::class)
-abstract class DomainSuggestionsViewModel constructor(
+abstract class DomainSuggestionsViewModel(
     savedStateHandle: SavedStateHandle,
     private val domainSuggestionsRepository: DomainSuggestionsRepository,
     private val currencyFormatter: CurrencyFormatter,
@@ -51,7 +51,7 @@ abstract class DomainSuggestionsViewModel constructor(
     var domainQuery by mutableStateOf(initialQuery)
         private set
 
-    private val loadingState = MutableStateFlow(Idle)
+    private val loadingState = MutableStateFlow(Loading)
     private val domainSuggestions = domainSuggestionsRepository.domainSuggestions
     private val selectedDomain = MutableStateFlow<DomainSuggestion?>(null)
     private val products = domainSuggestionsRepository.products
@@ -87,6 +87,7 @@ abstract class DomainSuggestionsViewModel constructor(
                     if (it.isBlank()) {
                         domainSuggestions.value = emptyList()
                         selectedDomain.value = null
+                        loadingState.value = Idle
                     } else {
                         loadingState.value = Loading
                     }
@@ -94,14 +95,12 @@ abstract class DomainSuggestionsViewModel constructor(
                 .filter { it.isNotBlank() }
                 .debounce { AppConstants.SEARCH_TYPING_DELAY_MS }
                 .collectLatest { query ->
-                    if (query.isNotBlank()) {
-                        // Make sure the loading state is correctly set after debounce too
-                        loadingState.value = Loading
-                        domainSuggestionsRepository.fetchDomainSuggestions(query, searchOnlyFreeDomains)
-                            .onFailure {
-                                triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
-                            }
-                    }
+                    // Make sure the loading state is correctly set after debounce too
+                    loadingState.value = Loading
+                    domainSuggestionsRepository.fetchDomainSuggestions(query, searchOnlyFreeDomains)
+                        .onFailure {
+                            triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
+                        }
                     loadingState.value = Idle
                 }
         }

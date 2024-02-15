@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-01-30 11:54:03+0000
+Translation-Revision-Date: 2024-02-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_payment_receipt_can_not_be_stored">無法儲存收據</string>
+    <string name="card_reader_payment_receipt_can_not_be_downloaded">無法下載收據</string>
+    <string name="card_reader_payment_email_client_not_found">無法偵測任何可分享收據的應用程式</string>
+    <string name="receipt_fetching_error">很抱歉，我們無法載入此訂單的收據</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">由 AI 建議</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">剩餘 %d 個字元</string>
     <string name="blaze_campaign_edit_ad_change_description_title">描述</string>
@@ -1957,7 +1961,6 @@ Language: zh_TW
     <string name="variable_product_attributes">款式屬性</string>
     <string name="card_reader_detail_not_connected_third_hint_label">開啟行動裝置的藍牙</string>
     <string name="card_reader_refetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
-    <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
