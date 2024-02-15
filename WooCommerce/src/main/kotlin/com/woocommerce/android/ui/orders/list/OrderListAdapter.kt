@@ -158,7 +158,7 @@ class OrderListAdapter(
             when {
                 orderItemUI.isSelected -> {
                     viewBinding.orderItemLayout.setBackgroundColor(
-                        viewBinding.root.context.getColor(R.color.woo_item_selected)
+                        viewBinding.root.context.getColor(R.color.color_item_selected)
                     )
                 }
                 else -> {
