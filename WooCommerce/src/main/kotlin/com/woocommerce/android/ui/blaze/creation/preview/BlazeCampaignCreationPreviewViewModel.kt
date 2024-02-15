@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.support.help.HelpOrigin
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
+import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -20,6 +22,7 @@ import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -43,8 +46,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     private val adDetailsState = savedStateHandle.getStateFlow(viewModelScope, AdDetailsUiState.LOADING)
+    private val dialogState = MutableStateFlow<DialogState?>(null)
 
-    val viewState = combine(campaignDetails.filterNotNull(), adDetailsState) { campaignDetails, adDetailsState ->
+    val viewState = combine(
+        campaignDetails.filterNotNull(),
+        adDetailsState,
+        dialogState
+    ) { campaignDetails, adDetailsState, dialogState ->
         CampaignPreviewUiState(
             adDetails = when (adDetailsState) {
                 AdDetailsUiState.LOADING -> AdDetailsUi.Loading
@@ -55,7 +63,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     campaignImageUrl = campaignDetails.campaignImage.uri
                 )
             },
-            campaignDetails = campaignDetails.toCampaignDetailsUi()
+            campaignDetails = campaignDetails.toCampaignDetailsUi(),
+            dialogState = dialogState
         )
     }.asLiveData()
 
@@ -107,18 +116,21 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         it?.copy(targetingParameters = it.targetingParameters.copy(languages = selectedLanguages))
                     }
                 }
+
                 DEVICE -> blazeRepository.observeDevices().first().let { devices ->
                     val selectedDevices = devices.filter { selectedIds.contains(it.id) }
                     campaignDetails.update {
                         it?.copy(targetingParameters = it.targetingParameters.copy(devices = selectedDevices))
                     }
                 }
+
                 INTEREST -> blazeRepository.observeInterests().first().let { interests ->
                     val selectedInterests = interests.filter { selectedIds.contains(it.id) }
                     campaignDetails.update {
                         it?.copy(targetingParameters = it.targetingParameters.copy(interests = selectedInterests))
                     }
                 }
+
                 else -> Unit
             }
         }
@@ -132,6 +144,24 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     fun onConfirmClicked() {
         campaignDetails.value?.let {
+            if (it.campaignImage is BlazeRepository.BlazeCampaignImage.None) {
+                dialogState.value = DialogState(
+                    message = R.string.blaze_campaign_preview_missing_image_dialog_text,
+                    positiveButton = DialogState.DialogButton(
+                        text = R.string.blaze_campaign_preview_missing_image_dialog_positive_button,
+                        onClick = {
+                            dialogState.value = null
+                            onEditAdClicked()
+                        }
+                    ),
+                    negativeButton = DialogState.DialogButton(
+                        text = R.string.cancel,
+                        onClick = { dialogState.value = null }
+                    )
+                )
+                return
+            }
+
             triggerEvent(NavigateToPaymentSummary(it))
         }
     }
@@ -231,6 +261,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     data class CampaignPreviewUiState(
         val adDetails: AdDetailsUi,
         val campaignDetails: CampaignDetailsUi,
+        val dialogState: DialogState? = null
     )
 
     enum class AdDetailsUiState {
