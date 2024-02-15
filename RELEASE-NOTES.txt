@@ -4,9 +4,6 @@
 -----
 - [***] The Order Listing and Order Detail screens have been optimized for tablet use, showcasing a two-pane layout on such devices. [https://github.com/woocommerce/woocommerce-android/pull/10591]
 
-17.3
------
-
 
 17.3
 -----
