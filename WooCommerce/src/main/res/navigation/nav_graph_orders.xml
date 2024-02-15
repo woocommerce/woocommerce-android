@@ -547,7 +547,7 @@
             app:argType="long"
             app:nullable="false" />
     </fragment>
-    <fragment
+    <dialog
         android:id="@+id/printingInstructionsFragment"
         android:name="com.woocommerce.android.ui.orders.details.PrintingInstructionsFragment"
         android:label="PrintingInstructionsFragment"
