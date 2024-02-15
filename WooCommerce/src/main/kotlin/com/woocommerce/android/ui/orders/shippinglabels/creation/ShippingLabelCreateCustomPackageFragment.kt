@@ -61,7 +61,6 @@ class ShippingLabelCreateCustomPackageFragment :
             findNavController().navigateUp()
         }
         binding.toolbar.inflateMenu(R.menu.menu_done)
-        binding.toolbar.menu.findItem(R.id.menu_done)
     }
 
     private fun initializeInputFields() {

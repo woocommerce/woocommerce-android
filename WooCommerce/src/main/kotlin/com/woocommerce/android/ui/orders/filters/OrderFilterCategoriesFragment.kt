@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
@@ -71,7 +70,9 @@ class OrderFilterCategoriesFragment :
             R.drawable.ic_gridicons_cross_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
-            (activity as? MainActivity)?.onBackPressed()
+            if (onRequestAllowBackPress()) {
+                dismiss()
+            }
         }
         binding.toolbar.inflateMenu(R.menu.menu_clear)
         onPrepareMenu(binding.toolbar.menu)

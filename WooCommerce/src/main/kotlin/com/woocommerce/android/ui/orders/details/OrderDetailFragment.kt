@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -27,6 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PRODUCT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.handleDialogNotice
@@ -35,6 +38,7 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isTablet
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -70,6 +74,7 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabe
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
+import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
@@ -85,6 +90,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -93,6 +99,7 @@ class OrderDetailFragment :
     OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
+        private const val MARGINS_FOR_TABLET: Float = 0.1F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -118,6 +125,8 @@ class OrderDetailFragment :
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
+
+    private val navArgs: OrderDetailFragmentArgs by navArgs()
 
     private var screenTitle = ""
         set(value) {
@@ -161,8 +170,27 @@ class OrderDetailFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /**
+         * In tablet split view, when the app window is initially narrow,
+         * the order detail occupies the full screen as a single pane.
+         * Below code takes care of transition handling:
+         * if the app window is then expanded in the split view,
+         * the layout should adapt from the single-pane full-screen mode to a two-pane layout,
+         * ensuring a seamless user experience across varying app window sizes.
+         *
+         * This code identifies scenarios where the device is a tablet and the order detail currently
+         * occupies the entire window (typical in a transition from single-pane to two-pane layout).
+         * It then navigates up to the order list screen, which is responsible for managing the two-pane
+         * layout effectively.
+         */
+        if (parentFragment?.parentFragment !is OrderListFragment && isTablet()) {
+            navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
+            return
+        }
+
         _binding = FragmentOrderDetailBinding.bind(view)
 
+        setMarginsIfTablet()
         setupToolbar()
 
         setupObservers(viewModel)
@@ -188,6 +216,15 @@ class OrderDetailFragment :
             binding.scrollView,
             getString(R.string.order_card_detail_transition_name)
         )
+    }
+
+    private fun setMarginsIfTablet() {
+        if (isTablet()) {
+            val layoutParams = binding.scrollView.layoutParams as LinearLayout.LayoutParams
+            val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
+            layoutParams.marginStart = (windowWidth * MARGINS_FOR_TABLET).toInt()
+            layoutParams.marginEnd = (windowWidth * MARGINS_FOR_TABLET).toInt()
+        }
     }
 
     private fun setupToolbar() {
