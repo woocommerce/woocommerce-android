@@ -5,7 +5,6 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYMENT_METHOD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYMENT_METHOD_WEB_VIEW_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
