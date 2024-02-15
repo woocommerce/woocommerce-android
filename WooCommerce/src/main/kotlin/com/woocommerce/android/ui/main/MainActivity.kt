@@ -94,6 +94,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
@@ -1114,6 +1115,7 @@ class MainActivity :
 
     override fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment?,
         remoteNoteId: Long,
         launchedFromNotification: Boolean
     ) {
@@ -1128,8 +1130,13 @@ class MainActivity :
             arrayOf(orderId).toLongArray(),
             remoteNoteId
         )
+        navHostFragment?.navController?.let { navController ->
+            val bundle = OrderDetailFragmentArgs(orderId, longArrayOf(orderId), remoteNoteId).toBundle()
+            navController.navigate(R.id.orderDetailFragment, bundle)
+        } ?: run {
+            navController.navigateSafely(action)
+        }
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
