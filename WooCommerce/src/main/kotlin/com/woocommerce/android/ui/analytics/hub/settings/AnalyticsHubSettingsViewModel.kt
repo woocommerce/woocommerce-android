@@ -2,23 +2,73 @@ package com.woocommerce.android.ui.analytics.hub.settings
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
+import com.woocommerce.android.ui.analytics.hub.SaveAnalyticsCardsConfiguration
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class AnalyticsHubSettingsViewModel @Inject constructor(savedState: SavedStateHandle) : ScopedViewModel(savedState) {
-    val viewStateData = LiveDataDelegate(savedState, AnalyticsHubSettingsViewState())
+class AnalyticsHubSettingsViewModel @Inject constructor(
+
+    private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
+    private val saveAnalyticsCardsConfiguration: SaveAnalyticsCardsConfiguration,
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
+
+    companion object {
+        const val LOADING_DELAY_MS = 500L
+    }
+
+    val viewStateData: LiveDataDelegate<AnalyticsHubSettingsViewState> =
+        LiveDataDelegate(savedState, AnalyticsHubSettingsViewState.Loading)
+
     private var viewState by viewStateData
+    private lateinit var _currentConfiguration: List<AnalyticCardConfiguration>
+    private lateinit var _draftConfiguration: List<AnalyticCardConfiguration>
+
+    private fun hasChanges() = _currentConfiguration != _draftConfiguration
+
+    init {
+        launch {
+            delay(LOADING_DELAY_MS)
+            observeAnalyticsCardsConfiguration().first().let {
+                _currentConfiguration = it
+                _draftConfiguration = _currentConfiguration
+                viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+                    cardsConfiguration = _draftConfiguration,
+                    showDismissDialog = false,
+                    isSaveButtonEnabled = hasChanges()
+                )
+            }
+        }
+    }
+
     fun onBackPressed() {
-        viewState = viewState.copy(showDismissDialog = true)
+        when {
+            viewState is AnalyticsHubSettingsViewState.CardsConfiguration && hasChanges() -> {
+                viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+                    cardsConfiguration = _draftConfiguration,
+                    showDismissDialog = true,
+                    isSaveButtonEnabled = hasChanges()
+                )
+            }
+            else -> triggerEvent(MultiLiveEvent.Event.Exit)
+        }
     }
 
     fun onDismissDiscardChanges() {
-        viewState = viewState.copy(showDismissDialog = false)
+        viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+            cardsConfiguration = _draftConfiguration,
+            showDismissDialog = false,
+            isSaveButtonEnabled = hasChanges()
+        )
     }
 
     fun onDiscardChanges() {
@@ -26,32 +76,41 @@ class AnalyticsHubSettingsViewModel @Inject constructor(savedState: SavedStateHa
     }
 
     fun onSaveChanges() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        launch {
+            viewState = AnalyticsHubSettingsViewState.Loading
+            saveAnalyticsCardsConfiguration(_draftConfiguration)
+            delay(LOADING_DELAY_MS)
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
     }
 
-    fun onSelectionChange(id: Long, isSelected: Boolean) {
-        val updatedList = viewState.cards.map { card ->
+    fun onSelectionChange(id: Int, isSelected: Boolean) {
+        _draftConfiguration = _draftConfiguration.map { card ->
             if (card.id == id) card.copy(isVisible = isSelected)
             else card
         }
-        viewState = viewState.copy(cards = updatedList)
+        viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+            cardsConfiguration = _draftConfiguration,
+            showDismissDialog = false,
+            isSaveButtonEnabled = hasChanges()
+        )
     }
 }
 
-@Suppress("MagicNumber")
 @Parcelize
-data class AnalyticsHubSettingsViewState(
-    val cards: List<AnalyticCardConfiguration> = listOf(
-        AnalyticCardConfiguration(1L, "Revenue", true),
-        AnalyticCardConfiguration(2L, "Orders", true),
-        AnalyticCardConfiguration(3L, "Stats", false)
-    ),
-    val showDismissDialog: Boolean = false
-) : Parcelable
+sealed class AnalyticsHubSettingsViewState : Parcelable {
+    data class CardsConfiguration(
+        val cardsConfiguration: List<AnalyticCardConfiguration>,
+        val isSaveButtonEnabled: Boolean,
+        val showDismissDialog: Boolean = false
+    ) : AnalyticsHubSettingsViewState()
+
+    data object Loading : AnalyticsHubSettingsViewState()
+}
 
 @Parcelize
 data class AnalyticCardConfiguration(
-    val id: Long,
+    val id: Int,
     val title: String,
     val isVisible: Boolean
 ) : Parcelable

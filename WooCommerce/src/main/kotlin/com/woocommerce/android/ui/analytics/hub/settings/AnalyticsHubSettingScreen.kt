@@ -3,12 +3,15 @@ package com.woocommerce.android.ui.analytics.hub.settings
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -37,39 +40,48 @@ import com.woocommerce.android.ui.orders.creation.configuration.SelectionCheck
 @Composable
 fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(text = stringResource(id = R.string.manage_analytics)) },
-            navigationIcon = {
-                IconButton(viewModel::onBackPressed) {
-                    Icon(
-                        Icons.Filled.Close,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            actions = {
-                TextButton(viewModel::onSaveChanges) {
-                    Text(
-                        text = stringResource(id = R.string.save).uppercase()
-                    )
-                }
-            },
-        )
-    }) { padding ->
-        viewModel.viewStateData.liveData.observeAsState().value?.let { state ->
-            AnalyticsHubSettingScreen(
-                cards = state.cards,
-                onSelectionChange = viewModel::onSelectionChange,
-                modifier = Modifier.padding(padding)
+    viewModel.viewStateData.liveData.observeAsState().value?.let { state ->
+        Scaffold(topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.manage_analytics)) },
+                navigationIcon = {
+                    IconButton(viewModel::onBackPressed) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                actions = {
+                    TextButton(
+                        onClick = viewModel::onSaveChanges,
+                        enabled = state is AnalyticsHubSettingsViewState.CardsConfiguration && state.isSaveButtonEnabled
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.save).uppercase()
+                        )
+                    }
+                },
             )
+        }) { padding ->
+            when (state) {
+                is AnalyticsHubSettingsViewState.CardsConfiguration -> {
+                    AnalyticsHubSettingScreen(
+                        cards = state.cardsConfiguration,
+                        onSelectionChange = viewModel::onSelectionChange,
+                        modifier = Modifier.padding(padding)
+                    )
 
-            if (state.showDismissDialog) {
-                DiscardChangesDialog(
-                    dismissButton = viewModel::onDismissDiscardChanges,
-                    discardButton = viewModel::onDiscardChanges
-                )
+                    if (state.showDismissDialog) {
+                        DiscardChangesDialog(
+                            dismissButton = viewModel::onDismissDiscardChanges,
+                            discardButton = viewModel::onDiscardChanges
+                        )
+                    }
+                }
+
+                is AnalyticsHubSettingsViewState.Loading -> LoadingCardsConfiguration()
             }
         }
     }
@@ -78,7 +90,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
 @Composable
 fun AnalyticsHubSettingScreen(
     cards: List<AnalyticCardConfiguration>,
-    onSelectionChange: (Long, Boolean) -> Unit,
+    onSelectionChange: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -86,7 +98,7 @@ fun AnalyticsHubSettingScreen(
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        itemsIndexed(cards) { i, card ->
+        itemsIndexed(items = cards, key = { _, card -> card.id }) { i, card ->
             AnalyticCardItem(
                 showTopDivider = i == 0,
                 id = card.id,
@@ -100,10 +112,10 @@ fun AnalyticsHubSettingScreen(
 
 @Composable
 fun AnalyticCardItem(
-    id: Long,
+    id: Int,
     title: String,
     isSelected: Boolean,
-    onSelectionChange: (Long, Boolean) -> Unit,
+    onSelectionChange: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     showTopDivider: Boolean = false
 ) {
@@ -159,13 +171,28 @@ fun DiscardChangesDialog(
 }
 
 @Composable
+fun LoadingCardsConfiguration(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(48.dp),
+            color = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@Composable
 @Preview(name = "Screen", device = Devices.PIXEL_4)
 fun AnalyticsHubSettingScreenPreview() {
     AnalyticsHubSettingScreen(
         listOf(
-            AnalyticCardConfiguration(1L, "Revenue", true),
-            AnalyticCardConfiguration(2L, "Orders", true),
-            AnalyticCardConfiguration(3L, "Stats", false)
+            AnalyticCardConfiguration(1, "Revenue", true),
+            AnalyticCardConfiguration(2, "Orders", true),
+            AnalyticCardConfiguration(3, "Stats", false)
         ),
         onSelectionChange = { _, _ -> }
     )
@@ -175,6 +202,14 @@ fun AnalyticsHubSettingScreenPreview() {
 @Preview
 fun AnalyticCardItemPreview() {
     WooThemeWithBackground {
-        AnalyticCardItem(id = 1L, title = "Revenue", isSelected = true, onSelectionChange = { _, _ -> })
+        AnalyticCardItem(id = 1, title = "Revenue", isSelected = true, onSelectionChange = { _, _ -> })
+    }
+}
+
+@Composable
+@Preview(name = "Screen", device = Devices.PIXEL_4)
+fun LoadingCardsConfigurationPreview() {
+    WooThemeWithBackground {
+        LoadingCardsConfiguration()
     }
 }
