@@ -777,7 +777,7 @@ class OrderListFragment :
     }
 
     private fun clearSearchResults() {
-        if (isSearching) {
+        if (isSearching && !isTablet()) {
             searchQuery = ""
             isSearching = false
             disableSearchListeners()
