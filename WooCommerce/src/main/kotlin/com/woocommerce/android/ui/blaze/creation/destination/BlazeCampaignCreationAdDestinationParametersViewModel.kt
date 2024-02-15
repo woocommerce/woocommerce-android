@@ -26,7 +26,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private const val MAX_CHARACTERS = 2096
+        private const val MAX_CHARACTERS_FOR_DESTINATION_URL = 2096
     }
 
     private val navArgs: BlazeCampaignCreationAdDestinationParametersFragmentArgs by savedStateHandle.navArgs()
@@ -102,7 +102,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
                 R.string.blaze_campaign_edit_ad_destination_key_exists_error
             }
 
-            parametersLength >= MAX_CHARACTERS -> {
+            parametersLength >= MAX_CHARACTERS_FOR_DESTINATION_URL -> {
                 R.string.blaze_campaign_edit_ad_destination_too_long_error
             }
 
@@ -133,7 +133,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         }
 
         val charactersRemaining: Int
-            get() = MAX_CHARACTERS - parameters.entries.joinToString("&").length
+            get() = MAX_CHARACTERS_FOR_DESTINATION_URL - parameters.entries.joinToString("&").length
 
         sealed interface ParameterBottomSheetState : Parcelable {
             @Parcelize
