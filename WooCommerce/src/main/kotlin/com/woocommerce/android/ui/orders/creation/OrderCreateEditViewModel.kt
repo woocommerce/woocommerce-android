@@ -52,6 +52,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_GIFT_CARD_REMOVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
@@ -74,6 +75,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_E
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Address.Companion.EMPTY
@@ -1143,7 +1145,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
         when (mode) {
             Mode.Creation -> {
-                trackCreateOrderButtonClick()
+                trackCreateOrderButtonClick(isTablet)
                 createOrder(order) {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                     triggerEvent(
@@ -1369,11 +1371,11 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    private fun trackCreateOrderButtonClick() {
+    private fun trackCreateOrderButtonClick(isTablet: Boolean = false) {
         launch {
             tracker.track(
                 ORDER_CREATE_BUTTON_TAPPED,
-                buildPropsForOrderCreation()
+                buildPropsForOrderCreation(isTablet)
             )
         }
     }
@@ -1732,11 +1734,12 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun getCurrencySymbol() = currencySymbolFinder.findCurrencySymbol(currentDraft.currency)
 
-    private suspend fun buildPropsForOrderCreation(): Map<String, Any> {
+    private suspend fun buildPropsForOrderCreation(isTablet: Boolean = false): Map<String, Any> {
         val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
         val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
         val productCount = products.value?.count() ?: 0
         return buildMap {
+            put(KEY_HORIZONTAL_SIZE_CLASS, deviceTypeToAnalyticsString(isTablet))
             put(KEY_STATUS, _orderDraft.value.status)
             putIfNotNull(PRODUCT_TYPES to productTypes)
             put(KEY_PRODUCT_COUNT, productCount)
@@ -1747,6 +1750,13 @@ class OrderCreateEditViewModel @Inject constructor(
                 put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
             }
         }
+    }
+
+    private fun deviceTypeToAnalyticsString(isTablet: Boolean): String {
+        if (isTablet) {
+            return AnalyticsTracker.VALUE_DEVICE_TYPE_REGULAR
+        }
+        return AnalyticsTracker.VALUE_DEVICE_TYPE_COMPACT
     }
 
     private fun trackGiftCardCTAAvailable() {

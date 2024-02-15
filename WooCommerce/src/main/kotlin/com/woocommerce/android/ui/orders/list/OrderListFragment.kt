@@ -682,7 +682,7 @@ class OrderListFragment :
         sharedView: View?,
         startPaymentsFlow: Boolean,
     ) {
-        viewModel.trackOrderClickEvent(orderId, orderStatus)
+        viewModel.trackOrderClickEvent(orderId, orderStatus, isTablet())
 
         if (isTablet()) {
             _binding?.createOrderButton?.show()

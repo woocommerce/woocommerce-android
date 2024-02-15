@@ -531,7 +531,7 @@ class OrderDetailFragment :
                 viewModel.onSeeReceiptClicked()
             },
             onCollectPaymentClickListener = {
-                viewModel.onCollectPaymentClicked()
+                viewModel.onCollectPaymentClicked(isTablet())
             },
             onPrintingInstructionsClickListener = {
                 viewModel.onPrintingInstructionsClicked()
