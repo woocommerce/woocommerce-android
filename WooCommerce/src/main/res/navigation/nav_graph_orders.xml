@@ -7,6 +7,7 @@
 
     <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_refunds" />
+    <include app:graph="@navigation/nav_graph_order_creations" />
 
     <dialog
         android:id="@+id/itemSelectorDialog"

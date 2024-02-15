@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.orders.details
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.livedata.observeAsState
@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -35,6 +34,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.CustomAmountCard
 import com.woocommerce.android.ui.orders.Header
@@ -89,8 +90,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),
-    OrderProductActionListener,
-    MenuProvider {
+    OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
@@ -129,6 +129,9 @@ class OrderDetailFragment :
         get() = feedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
             ?: UNANSWERED
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -160,7 +163,8 @@ class OrderDetailFragment :
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+        setupToolbar()
+
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
@@ -186,18 +190,36 @@ class OrderDetailFragment :
         )
     }
 
+    private fun setupToolbar() {
+        binding.toolbar.title = screenTitle
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_order_detail)
+        setupToolbarMenu(binding.toolbar.menu)
+    }
+
+    private fun setupToolbarMenu(menu: Menu) {
+        onPrepareMenu(menu)
+        if (isTablet()) {
+            binding.toolbar.navigationIcon = null
+        } else {
+            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
+            binding.toolbar.setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
+        }
+        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
+        menuEditOrder.isVisible = true
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_detail, menu)
-        val menuEditOrder = menu.findItem(R.id.menu_edit_order)
-        menuEditOrder.isVisible = true
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
+    fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_edit_order)?.let {
             it.isEnabled = viewModel.hasOrder()
         }
@@ -219,7 +241,7 @@ class OrderDetailFragment :
         }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
@@ -255,7 +277,10 @@ class OrderDetailFragment :
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.receiptButtonStatus)
-                requireActivity().invalidateOptionsMenu()
+                if (isTablet()) {
+                    orderEditingViewModel.setOrderId(it.order.id)
+                }
+                onPrepareMenu(binding.toolbar.menu)
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -273,7 +298,10 @@ class OrderDetailFragment :
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
             }
-            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
+            new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {
+                screenTitle = it
+                binding.toolbar.title = it
+            }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
                 showAddShipmentTracking(it)
