@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -33,7 +34,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private val _viewState = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState(navArgs.adImageUrl)
+        initialValue = ViewState(navArgs.adImage)
     )
     val viewState = _viewState.asLiveData()
 
@@ -85,7 +86,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                 EditAdResult(
                     tagline = _viewState.value.tagLine,
                     description = _viewState.value.description,
-                    campaignImageUrl = _viewState.value.adImageUrl
+                    campaignImage = _viewState.value.adImage
                 )
             )
         )
@@ -116,9 +117,19 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         updateSuggestion(AiSuggestionForAd(_viewState.value.tagLine, description.take(TAGLINE_MAX_LENGTH)))
     }
 
-    fun onImageChanged(url: String) {
+    fun onLocalImageSelected(uri: String) {
         _viewState.update {
-            _viewState.value.copy(adImageUrl = url)
+            _viewState.value.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+        }
+    }
+
+    fun onWPMediaSelected(image: Product.Image) {
+        _viewState.update {
+            _viewState.value.copy(
+                adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
+                    mediaId = image.id, uri = image.source
+                )
+            )
         }
     }
 
@@ -140,7 +151,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val adImageUrl: String?,
+        val adImage: BlazeRepository.BlazeCampaignImage,
         val suggestions: List<AiSuggestionForAd> = emptyList(),
         val suggestionIndex: Int = 0,
         val isMediaPickerDialogVisible: Boolean = false
@@ -163,6 +174,6 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     data class EditAdResult(
         val tagline: String,
         val description: String,
-        val campaignImageUrl: String?
+        val campaignImage: BlazeRepository.BlazeCampaignImage
     ) : Parcelable
 }
