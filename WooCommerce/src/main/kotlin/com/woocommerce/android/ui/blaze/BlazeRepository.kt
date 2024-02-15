@@ -227,11 +227,13 @@ class BlazeRepository @Inject constructor(
         paymentMethodId: String
     ): Result<Unit> {
         val image = prepareCampaignImage(campaignDetails.campaignImage).getOrElse {
-            return Result.failure(when (it) {
-                is MediaFilesRepository.MediaUploadException -> CampaignCreationError.MediaUploadError(it.message)
-                is OnChangedException -> CampaignCreationError.MediaFetchError(it.message)
-                else -> it
-            })
+            return Result.failure(
+                when (it) {
+                    is MediaFilesRepository.MediaUploadException -> CampaignCreationError.MediaUploadError(it.message)
+                    is OnChangedException -> CampaignCreationError.MediaFetchError(it.message)
+                    else -> it
+                }
+            )
         }
 
         val result = blazeCampaignsStore.createCampaign(
@@ -282,13 +284,15 @@ class BlazeRepository @Inject constructor(
                         when (it) {
                             is MediaFilesRepository.UploadResult.UploadSuccess -> emit(Result.success(it.media))
                             is MediaFilesRepository.UploadResult.UploadFailure -> throw it.error
-                            else -> { /* Do nothing */ }
+                            else -> { /* Do nothing */
+                            }
                         }
                     }
                     .retry(1)
                     .catch { emit(Result.failure(it)) }
                     .first()
             }
+
             is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
             is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
         }
@@ -313,6 +317,7 @@ class BlazeRepository @Inject constructor(
 
     sealed interface BlazeCampaignImage : Parcelable {
         val uri: String
+
         @Parcelize
         data object None : BlazeCampaignImage {
             override val uri: String
@@ -383,10 +388,10 @@ class BlazeRepository @Inject constructor(
         val idUrlParameter: String
     ) : Parcelable
 
-    sealed class CampaignCreationError(message: String?): Exception(message) {
-        class MediaUploadError(message: String?): CampaignCreationError(message)
-        class MediaFetchError(message: String?): CampaignCreationError(message)
-        class CampaignApiError(message: String?): CampaignCreationError(message)
+    sealed class CampaignCreationError(message: String?) : Exception(message) {
+        class MediaUploadError(message: String?) : CampaignCreationError(message)
+        class MediaFetchError(message: String?) : CampaignCreationError(message)
+        class CampaignApiError(message: String?) : CampaignCreationError(message)
     }
 }
 
