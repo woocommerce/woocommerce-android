@@ -350,6 +350,9 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
+            if (isTablet()) {
+                binding.orderListView.openFirstOrder()
+            }
             updatePagedListData(it)
         }
 
