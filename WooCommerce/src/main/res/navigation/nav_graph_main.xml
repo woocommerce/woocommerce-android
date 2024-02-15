@@ -93,6 +93,10 @@
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
         android:label="fragment_order_list"
         tools:layout="@layout/fragment_order_list">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            android:defaultValue="-1L"/>
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">
