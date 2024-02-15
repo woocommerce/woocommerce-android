@@ -163,7 +163,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
             onItemSelected = {
-                triggerEvent(NavigateToBudgetScreen(budget))
+                triggerEvent(NavigateToBudgetScreen(budget, targetingParameters))
             },
         ),
         targetDetails = listOf(
@@ -263,7 +263,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     data class NavigateToBudgetScreen(
-        val budget: BlazeRepository.Budget
+        val budget: BlazeRepository.Budget,
+        val targetingParameters: BlazeRepository.TargetingParameters
     ) : MultiLiveEvent.Event()
 
     data class NavigateToAdDestinationScreen(
