@@ -241,7 +241,7 @@ class OrderDetailFragment :
         }
     }
 
-    fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
