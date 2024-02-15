@@ -1,112 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/productsRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.products.ProductListFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+        android:id="@+id/productsRefreshLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Product search type view -->
-        <com.woocommerce.android.ui.products.WCProductSearchTabView
-            android:id="@+id/productsSearchTabView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            android:layout_height="match_parent">
 
-        <!-- Products work in progress notice card -->
-        <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
-            android:id="@+id/products_wip_card"
-            style="@style/Woo.Card.Expandable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/minor_100"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/productsSearchTabView"
-            tools:visibility="visible" />
+            <!-- Product search type view -->
+            <com.woocommerce.android.ui.products.WCProductSearchTabView
+                android:id="@+id/productsSearchTabView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
 
-        <!-- Products filter and sort view -->
-        <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
-            android:id="@+id/products_sort_filter_card"
-            style="@style/Woo.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/minor_00"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
-            tools:visibility="visible" />
+            <!-- Products work in progress notice card -->
+            <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
+                android:id="@+id/products_wip_card"
+                style="@style/Woo.Card.Expandable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/minor_100"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/productsSearchTabView"
+                tools:visibility="visible" />
 
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/blaze_banner_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/empty_state_bg_color"
-            android:paddingBottom="@dimen/minor_100"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/products_sort_filter_card" />
+            <!-- Products filter and sort view -->
+            <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
+                android:id="@+id/products_sort_filter_card"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/minor_00"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
+                tools:visibility="visible" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/productsRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="?attr/colorSurface"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/blaze_banner_view"
-            tools:itemCount="5"
-            tools:listitem="@layout/product_list_item" />
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/blaze_banner_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/empty_state_bg_color"
+                android:paddingBottom="@dimen/minor_100"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/products_sort_filter_card" />
 
-        <com.woocommerce.android.widgets.WCEmptyView
-            android:id="@+id/empty_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/productsSearchTabView" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/productsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="?attr/colorSurface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/blaze_banner_view"
+                tools:itemCount="5"
+                tools:listitem="@layout/product_list_item" />
 
-        <ProgressBar
-            android:id="@+id/loadMoreProgress"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/major_75"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone" />
+            <com.woocommerce.android.widgets.WCEmptyView
+                android:id="@+id/empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/productsSearchTabView" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addProductButton"
-            style="@style/Woo.AddButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/major_100"
-            android:contentDescription="@string/add_products_button"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:visibility="visible" />
+            <ProgressBar
+                android:id="@+id/loadMoreProgress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/major_75"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:visibility="gone" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/addProductButton"
+                style="@style/Woo.AddButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/major_100"
+                android:contentDescription="@string/add_products_button"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/two_pane_layout_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="1.0"
+        tools:layout_constraintGuide_percent=".33" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/detail_nav_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

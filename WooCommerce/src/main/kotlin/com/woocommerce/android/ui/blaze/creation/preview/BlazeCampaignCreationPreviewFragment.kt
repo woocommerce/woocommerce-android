@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSele
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.TargetSelectionResult
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,18 +53,24 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
+
+                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
+
                 is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(event.budget)
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(
+                            budget = event.budget,
+                            targetingParameters = event.targetingParameters
+                        )
                 )
 
                 is NavigateToEditAdScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
-                            event.productId,
-                            event.tagLine,
-                            event.description,
-                            event.campaignImageUrl
+                            productId = event.productId,
+                            tagline = event.tagLine,
+                            description = event.description,
+                            adImage = event.campaignImage
                         )
                 )
 
@@ -91,7 +99,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToPaymentSummary -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignPaymentSummaryFragment(
-                            event.budget
+                            event.campaignDetails
                         )
                 )
             }
@@ -100,7 +108,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
-            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImageUrl)
+            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImage)
         }
         handleResult<Budget>(BlazeCampaignBudgetFragment.EDIT_BUDGET_AND_DURATION_RESULT) {
             viewModel.onBudgetAndDurationUpdated(it)

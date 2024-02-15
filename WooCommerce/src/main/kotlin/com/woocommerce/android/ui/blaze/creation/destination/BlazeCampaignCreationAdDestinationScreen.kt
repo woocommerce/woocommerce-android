@@ -78,7 +78,7 @@ fun AdDestinationScreen(
         ) {
             AdDestinationProperty(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_url_property_title),
-                value = viewState.targetUrl,
+                value = viewState.destinationUrl,
                 onPropertyTapped = onUrlPropertyTapped
             )
             Divider()
@@ -92,7 +92,7 @@ fun AdDestinationScreen(
         if (viewState.isUrlDialogVisible) {
             AdDestinationUrlDialog(
                 viewState,
-                onDismissed = { onDestinationUrlChanged(viewState.targetUrl) },
+                onDismissed = { onDestinationUrlChanged(viewState.destinationUrl) },
                 onSaveTapped = onDestinationUrlChanged
             )
         }
@@ -142,30 +142,30 @@ fun AdDestinationUrlDialog(
                 style = MaterialTheme.typography.h6
             )
 
-            var targetUrl by rememberSaveable {
-                mutableStateOf(viewState.targetUrl)
+            var destinationUrl by rememberSaveable {
+                mutableStateOf(viewState.destinationUrl)
             }
 
             UrlOption(
                 url = viewState.productUrl,
-                targetUrl = targetUrl,
+                targetUrl = destinationUrl,
                 title = R.string.blaze_campaign_edit_ad_destination_product_url_option
             ) {
-                targetUrl = viewState.productUrl
+                destinationUrl = viewState.productUrl
             }
 
             UrlOption(
                 url = viewState.siteUrl,
-                targetUrl = targetUrl,
+                targetUrl = destinationUrl,
                 title = R.string.blaze_campaign_edit_ad_destination_site_url_option
             ) {
-                targetUrl = viewState.siteUrl
+                destinationUrl = viewState.siteUrl
             }
 
             DialogButtonsRowLayout(
                 confirmButton = {
                     WCTextButton(onClick = {
-                        onSaveTapped(targetUrl)
+                        onSaveTapped(destinationUrl)
                     }) {
                         Text(text = stringResource(id = R.string.save))
                     }
@@ -221,10 +221,10 @@ fun PreviewAdDestinationScreen() {
     WooThemeWithBackground {
         AdDestinationScreen(
             viewState = ViewState(
-                parameters = "utm_source=woocommerce\nutm_medium=android\nutm_campaign=blaze",
                 productUrl = "https://woocommerce.com/products/1",
                 siteUrl = "https://woocommerce.com",
-                targetUrl = "https://woocommerce.com/products/12",
+                destinationUrl = "https://woocommerce.com/products/12",
+                parameters = "utm_source=woocommerce_android\nutm_medium=ad\nutm_campaign=blaze",
                 isUrlDialogVisible = true
             ),
             onBackPressed = {},

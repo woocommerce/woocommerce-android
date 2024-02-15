@@ -138,6 +138,9 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="manage_analytics">Manage Analytics</string>
+    <string name="analytic_cards">Analytic Cards</string>
+    <string name="drag_handle">Drag handle</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>
@@ -3807,6 +3810,7 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
+
     <!--
     Blaze campaign creation intro
     -->
@@ -3822,7 +3826,7 @@
     Blaze campaign creation celebration
     -->
     <string name="blaze_campaign_creation_celebration_header">All set!</string>
-    <string name="blaze_campaign_ceation_celebration_message">The ad has been submistted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
+    <string name="blaze_campaign_ceation_celebration_message">The ad has been submitted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
     <string name="blaze_campaign_ceation_celebration_button">Got it</string>
 
     <!--
@@ -3842,6 +3846,7 @@
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
+
     <!--
     Blaze campaign budget screen
     -->
@@ -3873,6 +3878,7 @@
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
+
     <!--
     Blaze campaign payment
     -->
@@ -3885,7 +3891,13 @@
     <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Loading payment methods failed, please retry by clicking here!</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Submit campaign</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">By clicking \"Submit campaign\" you agree to the &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Advertising Policy&lt;/u&gt;&lt;/a&gt;, and authorize your payment method to be charged for the budget and duration you chose. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about how budgets and payments for Promoted Posts work.</string>
-
+    <string name="blaze_campaign_payment_list_screen_title">Payment method</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Please add a new payment method</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Add credit card</string>
+    <string name="blaze_campaign_payment_list_header_text">All transactions are secure and encrypted</string>
+    <string name="blaze_campaign_payment_list_hint">Credits cards are retrieved from the following WordPress.com account: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Add new card</string>
+    <string name="blaze_campaign_payment_added_successfully">Credit card added successfully</string>
     <!--
     Blaze other
     -->
@@ -3896,6 +3908,7 @@
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
     <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
+
     <!--
     Blaze edit ad destination
     -->
@@ -3904,6 +3917,16 @@
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL parameters</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">The product URL</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">The site home</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Add parameter</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destination: %s</string>
+
+    <!--
+    Blaze campaign created success
+    -->
+    <string name="blaze_campaign_created_success_title">Ready to Go!</string>
+    <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
+    <string name="blaze_campaign_created_success_done_button">Done</string>
+
     <!--
     Highlights tooltip
     -->

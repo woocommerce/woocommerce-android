@@ -36,7 +36,7 @@ import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -47,7 +47,9 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
     viewModel.viewState.observeAsState().value?.let {
         BlazeCampaignPaymentSummaryScreen(
             state = it,
-            onBackClick = viewModel::onBackClicked
+            onBackClick = viewModel::onBackClicked,
+            onSubmitCampaign = viewModel::onSubmitCampaign,
+            onHelpClick = viewModel::onHelpClicked
         )
     }
 }
@@ -55,13 +57,18 @@ fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryView
 @Composable
 fun BlazeCampaignPaymentSummaryScreen(
     state: BlazeCampaignPaymentSummaryViewModel.ViewState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSubmitCampaign: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val context = LocalContext.current
 
     Scaffold(
         topBar = {
-            Toolbar(onNavigationButtonClick = onBackClick)
+            ToolbarWithHelpButton(
+                onNavigationButtonClick = onBackClick,
+                onHelpButtonClick = onHelpClick,
+            )
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
@@ -84,7 +91,8 @@ fun BlazeCampaignPaymentSummaryScreen(
             )
 
             PaymentMethod(
-                paymentMethodState = state.paymentMethodState,
+                paymentMethodsState = state.paymentMethodsState,
+                selectedPaymentMethod = state.selectedPaymentMethod,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -92,8 +100,9 @@ fun BlazeCampaignPaymentSummaryScreen(
             Divider()
 
             WCColoredButton(
-                onClick = { /*TODO*/ },
+                onClick = onSubmitCampaign,
                 text = stringResource(id = R.string.blaze_campaign_payment_summary_submit_campaign),
+                enabled = state.isPaymentMethodSelected,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
@@ -180,14 +189,15 @@ private fun PaymentTotals(
 
 @Composable
 private fun PaymentMethod(
-    paymentMethodState: BlazeCampaignPaymentSummaryViewModel.PaymentMethodState,
+    paymentMethodsState: BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState,
+    selectedPaymentMethod: BlazeRepository.PaymentMethod?,
     modifier: Modifier
 ) {
     Column(modifier) {
         Divider()
 
-        when (paymentMethodState) {
-            BlazeCampaignPaymentSummaryViewModel.PaymentMethodState.Loading -> {
+        when (paymentMethodsState) {
+            BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Loading -> {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
@@ -202,21 +212,21 @@ private fun PaymentMethod(
                 }
             }
 
-            is BlazeCampaignPaymentSummaryViewModel.PaymentMethodState.Success -> {
+            is BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Success -> {
                 PaymentMethodInfo(
-                    paymentMethod = paymentMethodState.selectedPaymentMethod,
-                    onClick = paymentMethodState.onClick,
+                    paymentMethod = selectedPaymentMethod,
+                    onClick = paymentMethodsState.onClick,
                     modifier = Modifier
                 )
             }
 
-            is BlazeCampaignPaymentSummaryViewModel.PaymentMethodState.Error -> {
+            is BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Error -> {
                 Text(
                     text = stringResource(id = R.string.blaze_campaign_payment_summary_error_loading_payment_methods),
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier
                         .padding(dimensionResource(id = R.dimen.major_100))
-                        .clickable(onClick = paymentMethodState.onRetry)
+                        .clickable(onClick = paymentMethodsState.onRetry)
                 )
             }
         }
@@ -281,7 +291,7 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
                     startDate = Date(),
                     currencyCode = "$"
                 ),
-                paymentMethodState = BlazeCampaignPaymentSummaryViewModel.PaymentMethodState.Success(
+                paymentMethodsState = BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Success(
                     BlazeRepository.PaymentMethodsData(
                         listOf(
                             BlazeRepository.PaymentMethod(
@@ -300,9 +310,12 @@ fun BlazeCampaignPaymentSummaryScreenPreview() {
                         )
                     ),
                     onClick = {}
-                )
+                ),
+                selectedPaymentMethodId = "1"
             ),
-            onBackClick = {}
+            onBackClick = {},
+            onSubmitCampaign = {},
+            onHelpClick = {}
         )
     }
 }

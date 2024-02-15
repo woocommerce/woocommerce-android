@@ -69,6 +69,7 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -176,7 +177,7 @@ class MyStoreFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        blazeCampaignCreationDispatcher.attachFragment(this)
+        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MY_STORE_SECTION)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -279,7 +280,10 @@ class MyStoreFragment :
 
     private fun openBlazeCreationFlow(productId: Long?) {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(productId)
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                source = BlazeFlowSource.MY_STORE_SECTION,
+                productId = productId
+            )
         }
     }
 
@@ -442,7 +446,7 @@ class MyStoreFragment :
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        remoteProductId = event.productId,
+                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
                         isTrashEnabled = false
                     )
                 )

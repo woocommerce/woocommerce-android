@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.intro
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -16,15 +18,20 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
     private val productListRepository: ProductListRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: BlazeCampaignCreationIntroViewModel
 
     suspend fun setup(productId: Long, setupMocks: suspend () -> Unit = {}) {
         setupMocks()
         viewModel = BlazeCampaignCreationIntroViewModel(
-            savedStateHandle = BlazeCampaignCreationIntroFragmentArgs(productId).toSavedStateHandle(),
+            savedStateHandle = BlazeCampaignCreationIntroFragmentArgs(
+                productId = productId,
+                source = BlazeFlowSource.MY_STORE_SECTION
+            ).toSavedStateHandle(),
             productListRepository = productListRepository,
-            coroutineDispatchers = coroutinesTestRule.testDispatchers
+            coroutineDispatchers = coroutinesTestRule.testDispatchers,
+            analyticsTracker = analyticsTracker,
         )
     }
 
@@ -35,7 +42,12 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
         viewModel.onContinueClick()
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(1L))
+        assertThat(event).isEqualTo(
+            BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(
+                productId = 1L,
+                source = BlazeFlowSource.INTRO_VIEW
+            )
+        )
     }
 
     @Test
@@ -53,7 +65,12 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
             viewModel.onContinueClick()
 
             val event = viewModel.event.value
-            assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(1L))
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(
+                    productId = 1L,
+                    source = BlazeFlowSource.INTRO_VIEW
+                )
+            )
         }
 
     @Test
@@ -81,7 +98,12 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
         viewModel.onProductSelected(1L)
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(1L))
+        assertThat(event).isEqualTo(
+            BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(
+                productId = 1L,
+                source = BlazeFlowSource.INTRO_VIEW
+            )
+        )
     }
 
     @Test
