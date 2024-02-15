@@ -4,12 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardItemViewBinding
-import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 
@@ -36,7 +36,7 @@ class AnalyticsHubListCardItemView @JvmOverloads constructor(
             value = viewState.value
         )
 
-        GlideApp
+        Glide
             .with(binding.root.context)
             .load(PhotonUtils.getPhotonImageUrl(viewState.imageUri, imageSize, imageSize))
             .transform(CenterCrop(), RoundedCorners(imageCornerRadius))

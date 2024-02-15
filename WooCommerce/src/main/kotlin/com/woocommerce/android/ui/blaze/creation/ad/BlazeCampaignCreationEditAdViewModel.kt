@@ -43,7 +43,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private fun loadSuggestions() {
         viewModelScope.launch {
-            blazeRepository.getAdSuggestions(navArgs.productId)?.let { list ->
+            blazeRepository.fetchAdSuggestions(navArgs.productId).getOrNull()?.let { list ->
                 val index = list.indexOfFirst { it.tagLine == navArgs.tagline && it.description == navArgs.description }
                 val suggestions = list.map { AiSuggestionForAd(it.tagLine, it.description) }
                 if (index != -1) {

@@ -252,6 +252,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_SUPPORT = "support"
         const val VALUE_WP_COM = "wp_com"
         const val VALUE_NO_WP_COM = "no_wp_com"
+        const val VALUE_PREVIOUS_PERIOD = "previous_period"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
@@ -293,6 +294,10 @@ class AnalyticsTracker private constructor(
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
+
+        const val KEY_PERIOD = "period"
+        const val KEY_REPORT = "report"
+        const val KEY_COMPARE = "compare"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),

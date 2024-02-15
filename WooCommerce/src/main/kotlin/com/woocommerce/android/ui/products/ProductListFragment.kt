@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -70,7 +71,8 @@ class ProductListFragment :
     OnActionExpandListener,
     WCProductSearchTabView.ProductSearchTypeChangedListener,
     ActionMode.Callback,
-    MenuProvider {
+    MenuProvider,
+    TabletLayoutSetupHelper.Screen {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
@@ -87,6 +89,9 @@ class ProductListFragment :
 
     @Inject
     lateinit var addProductNavigator: AddProductNavigator
+
+    @Inject
+    lateinit var tabletLayoutSetupHelper: TabletLayoutSetupHelper
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -115,8 +120,32 @@ class ProductListFragment :
             feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
+    override val twoPaneLayoutGuideline by lazy { binding.twoPaneLayoutGuideline }
+
+    override val lifecycleKeeper: Lifecycle by lazy { viewLifecycleOwner.lifecycle }
+
+    override val secondPaneNavigation by lazy {
+        TabletLayoutSetupHelper.Screen.Navigation(
+            childFragmentManager,
+            R.navigation.nav_graph_products,
+            null,
+        )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        tabletLayoutSetupHelper.onViewCreated(this)
+
         postponeEnterTransition()
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -236,15 +265,6 @@ class ProductListFragment :
         }
 
         super.onViewStateRestored(savedInstanceState)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
-        enterTransition = fadeThroughTransition
-        exitTransition = fadeThroughTransition
-        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {

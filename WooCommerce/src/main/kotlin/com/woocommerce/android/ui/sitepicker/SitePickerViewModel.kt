@@ -187,9 +187,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun onSitesLoaded(sites: List<SiteModel>) {
-        val filteredSites = sites.filter { !it.isJetpackCPConnected }
-
-        if (filteredSites.isEmpty()) {
+        if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
                 navArgs.openedFromLogin -> onEmptyStoresList()
@@ -198,8 +196,8 @@ class SitePickerViewModel @Inject constructor(
             return
         }
 
-        val wooSites = filteredSites.filter { it.hasWooCommerce }
-        val nonWooSites = filteredSites.filter { !it.hasWooCommerce }
+        val wooSites = sites.filter { it.hasWooCommerce }
+        val nonWooSites = sites.filter { !it.hasWooCommerce }
 
         if (_sites.value == null) {
             // Track events only on the first call
@@ -231,7 +229,7 @@ class SitePickerViewModel @Inject constructor(
             }
         }
         sitePickerViewState = sitePickerViewState.copy(
-            hasConnectedStores = filteredSites.isNotEmpty(),
+            hasConnectedStores = sites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
             isNoStoresViewVisible = false,
             currentSitePickerState = SitePickerState.StoreListState
@@ -263,7 +261,7 @@ class SitePickerViewModel @Inject constructor(
      * - Has WooCommerce installed
      */
     private fun processLoginSiteAddress(url: String) {
-        val site = repository.getSiteBySiteUrl(url)?.takeIf { !it.isJetpackCPConnected }
+        val site = repository.getSiteBySiteUrl(url)
         when {
             site == null -> {
                 // The url doesn't match any sites for this account.
