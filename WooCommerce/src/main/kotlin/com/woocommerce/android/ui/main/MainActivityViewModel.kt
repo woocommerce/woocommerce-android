@@ -400,8 +400,6 @@ class MainActivityViewModel @Inject constructor(
     object RequestNotificationsPermission : Event()
     data class ViewUrlInWebView(
         val url: String,
-        val urlsToTriggerExit: Array<String>? = null,
-        val title: String? = null,
     ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()

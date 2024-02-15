@@ -929,7 +929,7 @@ class MainActivity :
         }
     }
 
-    fun navigateToWebView(event: ViewUrlInWebView) {
+    private fun navigateToWebView(event: ViewUrlInWebView) {
         navController.navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = event.url,
