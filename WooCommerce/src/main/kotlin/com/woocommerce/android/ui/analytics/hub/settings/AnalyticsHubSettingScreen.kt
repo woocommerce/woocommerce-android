@@ -43,7 +43,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
     viewModel.viewStateData.liveData.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.manage_analytics)) },
+                title = { Text(text = stringResource(id = R.string.customize_analytics)) },
                 navigationIcon = {
                     IconButton(viewModel::onBackPressed) {
                         Icon(
