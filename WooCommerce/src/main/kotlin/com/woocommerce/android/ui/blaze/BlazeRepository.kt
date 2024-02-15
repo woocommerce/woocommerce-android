@@ -160,13 +160,22 @@ class BlazeRepository @Inject constructor(
     suspend fun fetchAdForecast(
         startDate: Date,
         campaignDurationDays: Int,
-        totalBudget: Float
+        totalBudget: Float,
+        targetingParameters: TargetingParameters
     ): Result<BlazeAdForecast> {
         val result = blazeCampaignsStore.fetchBlazeAdForecast(
-            selectedSite.get(),
-            startDate,
-            Date(startDate.time + campaignDurationDays.days.inWholeMilliseconds),
-            totalBudget.roundToInt().toDouble(),
+            siteModel = selectedSite.get(),
+            startDate = startDate,
+            endDate = Date(startDate.time + campaignDurationDays.days.inWholeMilliseconds),
+            totalBudget = totalBudget.roundToInt().toDouble(),
+            targetingParameters = targetingParameters.let {
+                BlazeTargetingParameters(
+                    locations = it.locations.map { location -> location.id },
+                    languages = it.languages.map { language -> language.code },
+                    devices = it.devices.map { device -> device.id },
+                    topics = it.interests.map { interest -> interest.id }
+                )
+            }
         )
         return when {
             result.isError -> {

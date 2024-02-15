@@ -95,6 +95,9 @@
         <argument
             android:name="budget"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$Budget" />
+        <argument
+            android:name="targetingParameters"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$TargetingParameters" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignTargetSelectionFragment"

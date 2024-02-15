@@ -158,7 +158,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             repository.fetchAdForecast(
                 startDate = Date(budgetUiState.value.campaignStartDateMillis),
                 campaignDurationDays = budgetUiState.value.durationInDays,
-                totalBudget = budgetUiState.value.totalBudget
+                totalBudget = budgetUiState.value.totalBudget,
+                targetingParameters = navArgs.targetingParameters
             ).onSuccess { fetchAdForecastResult ->
                 campaignForecastState = campaignForecastState.copy(
                     isLoading = false,
