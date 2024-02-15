@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -266,6 +267,10 @@ class OrderDetailViewModel @Inject constructor(
      */
     fun onCustomFieldClicked(context: Context, value: String) {
         CustomOrderFieldsHelper.handleMetadataValue(context, value)
+    }
+
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {

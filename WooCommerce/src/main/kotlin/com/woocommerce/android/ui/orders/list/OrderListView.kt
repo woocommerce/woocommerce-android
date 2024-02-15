@@ -64,6 +64,10 @@ class OrderListView @JvmOverloads constructor(
         ordersAdapter.openFirstOrder()
     }
 
+    fun openOrder(orderId: Long) {
+        ordersAdapter.openOrder(orderId)
+    }
+
     /**
      * Opens the given order id
      */
