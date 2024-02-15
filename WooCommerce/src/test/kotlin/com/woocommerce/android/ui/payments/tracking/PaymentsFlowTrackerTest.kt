@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
@@ -1216,9 +1217,12 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
     @Test
     fun `when user taps collect payment button, then CARD_PRESENT_COLLECT_PAYMENT_TAPPED tracked`() =
         testBlocking {
-            paymentsFlowTracker.trackCollectPaymentTapped(any())
+            paymentsFlowTracker.trackCollectPaymentTapped(VALUE_DEVICE_TYPE_COMPACT)
 
-            verify(trackerWrapper).track(eq(PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED), any())
+            verify(trackerWrapper).track(
+                PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
+                mapOf(AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_COMPACT)
+            )
         }
 
     @Test
