@@ -42,7 +42,12 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
         viewModel.onContinueClick()
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(1L))
+        assertThat(event).isEqualTo(
+            BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(
+                productId = 1L,
+                source = BlazeFlowSource.INTRO_VIEW
+            )
+        )
     }
 
     @Test
@@ -60,7 +65,12 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
             viewModel.onContinueClick()
 
             val event = viewModel.event.value
-            assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(1L))
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(
+                    productId = 1L,
+                    source = BlazeFlowSource.INTRO_VIEW
+                )
+            )
         }
 
     @Test
@@ -88,7 +98,12 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
         viewModel.onProductSelected(1L)
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(1L))
+        assertThat(event).isEqualTo(
+            BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm(
+                productId = 1L,
+                source = BlazeFlowSource.INTRO_VIEW
+            )
+        )
     }
 
     @Test
