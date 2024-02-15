@@ -31,7 +31,9 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     companion object {
         const val KEY_LABEL_PURCHASED = "key-label-purchased"
     }
+
     @Inject lateinit var navigator: OrderNavigator
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: PrintShippingLabelViewModel by viewModels()
@@ -58,13 +60,19 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.purchaseGroup.isVisible = !navArgs.isReprint
 
         binding.labelPurchased.setText(
-            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_purchase_success
-            else R.string.shipping_label_print_purchase_success
+            if (navArgs.shippingLabelIds.size > 1) {
+                R.string.shipping_label_print_multiple_purchase_success
+            } else {
+                R.string.shipping_label_print_purchase_success
+            }
         )
 
         binding.shippingLabelPrintBtn.setText(
-            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_button
-            else R.string.shipping_label_print_button
+            if (navArgs.shippingLabelIds.size > 1) {
+                R.string.shipping_label_print_multiple_button
+            } else {
+                R.string.shipping_label_print_button
+            }
         )
 
         binding.shippingLabelPrintPaperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }

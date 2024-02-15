@@ -49,11 +49,16 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         )
 
     private val discount = savedStateHandle.getNullableStateFlow(
-        scope = this, initialValue = getInitialDiscountAmount(), key = "key_discount", clazz = BigDecimal::class.java
+        scope = this,
+        initialValue = getInitialDiscountAmount(),
+        key = "key_discount",
+        clazz = BigDecimal::class.java
     )
 
     private val discountType: MutableStateFlow<DiscountType> = savedStateHandle.getStateFlow(
-        scope = this, initialValue = DiscountType.Amount(currency), key = "key_discount_type"
+        scope = this,
+        initialValue = DiscountType.Amount(currency),
+        key = "key_discount_type"
     )
 
     private val currencyFormattingParameters =
@@ -205,12 +210,18 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun getPriceAfterDiscount(): BigDecimal {
-        return if (discount.value == null) BigDecimal.ZERO else productItem.value.item.subtotal - getDiscountAmount()
-            .setScale(2, RoundingMode.HALF_UP)
+        return if (discount.value == null) {
+            BigDecimal.ZERO
+        } else {
+            productItem.value.item.subtotal - getDiscountAmount()
+                .setScale(2, RoundingMode.HALF_UP)
+        }
     }
 
     private fun getCalculatedPriceAfterDiscount(): BigDecimal {
-        return if (discount.value == null) BigDecimal.ZERO else if (discountType.value == DiscountType.Percentage) {
+        return if (discount.value == null) {
+            BigDecimal.ZERO
+        } else if (discountType.value == DiscountType.Percentage) {
             discount.value?.let {
                 calculateDiscountAmount(it)
                     .setScale(2, RoundingMode.HALF_UP)

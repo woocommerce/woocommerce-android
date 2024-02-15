@@ -513,7 +513,9 @@ class AppPrefsTest {
     fun givenSetApplicationStoreSnapshotTrackedForSiteNotCalledThenGetterReturnsFalse() {
         assertThat(
             AppPrefs.isApplicationStoreSnapshotTrackedForSite(
-                0, 0L, 0L
+                0,
+                0L,
+                0L
             )
         ).isFalse
     }
@@ -521,12 +523,16 @@ class AppPrefsTest {
     @Test
     fun givenSetApplicationStoreSnapshotTrackedForSiteCalledThenGetterReturnsTrue() {
         AppPrefs.setApplicationStoreSnapshotTrackedForSite(
-            0, 0L, 0L
+            0,
+            0L,
+            0L
         )
 
         assertThat(
             AppPrefs.isApplicationStoreSnapshotTrackedForSite(
-                0, 0L, 0L
+                0,
+                0L,
+                0L
             )
         ).isTrue
     }

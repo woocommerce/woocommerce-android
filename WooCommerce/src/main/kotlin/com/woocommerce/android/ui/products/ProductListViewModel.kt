@@ -309,10 +309,11 @@ class ProductListViewModel @Inject constructor(
                     )
                     fetchProductList(
                         viewState.query,
-                        skuSearchOptions = if (viewState.isSkuSearch)
+                        skuSearchOptions = if (viewState.isSkuSearch) {
                             SkuSearchOptions.PartialMatch
-                        else
-                            SkuSearchOptions.Disabled,
+                        } else {
+                            SkuSearchOptions.Disabled
+                        },
                         loadMore = loadMore
                     )
                 }

@@ -43,7 +43,8 @@ class OrderNavigator @Inject constructor() {
             is ViewOrderStatusSelector -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
-                        currentStatus = target.currentStatus, orderStatusList = target.orderStatusList
+                        currentStatus = target.currentStatus,
+                        orderStatusList = target.orderStatusList
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -73,7 +74,8 @@ class OrderNavigator @Inject constructor() {
             is RefundShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
-                        orderId = target.remoteOrderId, shippingLabelId = target.shippingLabelId
+                        orderId = target.remoteOrderId,
+                        shippingLabelId = target.shippingLabelId
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -89,7 +91,8 @@ class OrderNavigator @Inject constructor() {
             is ViewShipmentTrackingProviders -> {
                 val action = AddOrderShipmentTrackingFragmentDirections
                     .actionAddOrderShipmentTrackingFragmentToAddOrderTrackingProviderListFragment(
-                        orderId = target.orderId, selectedProvider = target.selectedProvider
+                        orderId = target.orderId,
+                        selectedProvider = target.selectedProvider
                     )
                 fragment.findNavController().navigateSafely(action)
             }

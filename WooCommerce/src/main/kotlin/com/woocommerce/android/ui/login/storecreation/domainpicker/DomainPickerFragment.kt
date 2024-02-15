@@ -25,6 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DomainPickerFragment : BaseFragment() {
     private val viewModel: DomainPickerViewModel by viewModels()
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus

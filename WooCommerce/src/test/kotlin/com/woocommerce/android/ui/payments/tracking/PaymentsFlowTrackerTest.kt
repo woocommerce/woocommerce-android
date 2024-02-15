@@ -435,7 +435,8 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             paymentsFlowTracker.trackOnboardingState(CardReaderOnboardingState.GenericError)
 
             verify(trackerWrapper).track(
-                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED), check { assertThat(it["reason"]).isEqualTo("generic_error") }
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("generic_error") }
             )
         }
 
@@ -829,7 +830,11 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             paymentsFlowTracker.trackReaderDiscoveryFailed(dummyErrorMgs)
 
             verify(trackerWrapper).track(
-                eq(CARD_READER_DISCOVERY_FAILED), any(), any(), anyOrNull(), eq(dummyErrorMgs)
+                eq(CARD_READER_DISCOVERY_FAILED),
+                any(),
+                any(),
+                anyOrNull(),
+                eq(dummyErrorMgs)
             )
         }
 
@@ -966,7 +971,11 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             paymentsFlowTracker.trackPaymentFailed(dummyMessage)
 
             verify(trackerWrapper).track(
-                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), anyOrNull(), eq(dummyMessage)
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED),
+                any(),
+                any(),
+                anyOrNull(),
+                eq(dummyMessage)
             )
         }
 

@@ -31,7 +31,9 @@ class GetProductVariationQuantityRules @Inject constructor(
 
             if (isActive && isAllowCombinationDisabled) {
                 variationDetailRepository.getQuantityRules(remoteProductId, remoteVariationId)
-            } else null
+            } else {
+                null
+            }
         }
     }
 }

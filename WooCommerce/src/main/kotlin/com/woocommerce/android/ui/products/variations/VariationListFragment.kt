@@ -138,7 +138,10 @@ class VariationListFragment :
         binding.variationList.itemAnimator = null
         binding.variationList.addItemDecoration(
             AlignedDividerDecoration(
-                requireContext(), DividerItemDecoration.VERTICAL, R.id.variationOptionName, clipToMargin = false
+                requireContext(),
+                DividerItemDecoration.VERTICAL,
+                R.id.variationOptionName,
+                clipToMargin = false
             )
         )
 
@@ -274,7 +277,8 @@ class VariationListFragment :
             .setMessage(
                 getString(
                     R.string.variations_bulk_creation_warning_message,
-                    GenerateVariationCandidates.VARIATION_CREATION_LIMIT, variationCandidatesSize
+                    GenerateVariationCandidates.VARIATION_CREATION_LIMIT,
+                    variationCandidatesSize
                 )
             )
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->

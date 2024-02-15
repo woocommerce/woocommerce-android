@@ -98,7 +98,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         val note = "note"
         whenever(
             orderUpdateStore.createSimplePayment(
-                eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(note)
+                eq(defaultSiteModel),
+                eq("1"),
+                eq(true),
+                eq(null),
+                eq(note)
             )
         )
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
@@ -108,7 +112,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(orderUpdateStore).createSimplePayment(
-            eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(note)
+            eq(defaultSiteModel),
+            eq("1"),
+            eq(true),
+            eq(null),
+            eq(note)
         )
     }
 

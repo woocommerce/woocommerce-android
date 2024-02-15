@@ -11,6 +11,5 @@ import dagger.hilt.android.scopes.FragmentScoped
 abstract class MainSettingsModule {
     @FragmentScoped
     @Binds
-    abstract fun provideMainSettingsPresenter(mainSettingsPresenter: MainSettingsPresenter):
-        MainSettingsContract.Presenter
+    abstract fun provideMainSettingsPresenter(mainSettingsPresenter: MainSettingsPresenter): MainSettingsContract.Presenter
 }

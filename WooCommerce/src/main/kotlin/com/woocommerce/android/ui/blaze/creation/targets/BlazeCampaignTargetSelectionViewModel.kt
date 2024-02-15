@@ -108,10 +108,11 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
 
     override fun onSaveTapped() {
         // Empty selection set means all items are selected
-        val result = if (selectedIds.value.size == viewState.value?.items?.size)
+        val result = if (selectedIds.value.size == viewState.value?.items?.size) {
             emptyList()
-        else
+        } else {
             selectedIds.value.toList()
+        }
 
         triggerEvent(ExitWithResult(TargetSelectionResult(navArgs.targetType, result)))
     }

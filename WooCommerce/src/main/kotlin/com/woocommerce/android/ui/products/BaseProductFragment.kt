@@ -22,6 +22,7 @@ import javax.inject.Inject
  */
 abstract class BaseProductFragment : BaseFragment, BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     constructor() : super()

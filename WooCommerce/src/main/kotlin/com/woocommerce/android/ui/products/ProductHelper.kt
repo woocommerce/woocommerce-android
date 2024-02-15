@@ -94,8 +94,11 @@ object ProductHelper {
             downloads = listOf(),
             isPurchasable = false,
             subscription =
-            if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) getDefaultSubscriptionDetails()
-            else null,
+            if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) {
+                getDefaultSubscriptionDetails()
+            } else {
+                null
+            },
             isSampleProduct = false,
             parentId = 0,
         )

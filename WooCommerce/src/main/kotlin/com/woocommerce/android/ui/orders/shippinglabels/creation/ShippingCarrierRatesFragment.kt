@@ -42,7 +42,9 @@ class ShippingCarrierRatesFragment :
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var resourceProvider: ResourceProvider
+
     @Inject lateinit var dateUtils: DateUtils
 
     private var doneMenuItem: MenuItem? = null

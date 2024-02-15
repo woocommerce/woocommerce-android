@@ -36,6 +36,7 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
         get() = AppBarStatus.Hidden
 
     private val viewModel: AddProductWithAIViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 

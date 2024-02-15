@@ -14,7 +14,8 @@ class WooDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        @Suppress("DEPRECATION") val params = requireArguments().getParcelable<DialogParams>(ARG_DIALOG_PARAMS)!!
+        @Suppress("DEPRECATION")
+        val params = requireArguments().getParcelable<DialogParams>(ARG_DIALOG_PARAMS)!!
 
         val builder = MaterialAlertDialogBuilder(requireContext())
             .setCancelable(params.cancelable)

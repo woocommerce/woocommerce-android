@@ -20,7 +20,8 @@ class CashOnDeliverySettingsRepositoryTest {
     }
     private val gatewayStore: WCGatewayStore = mock()
     private val cashOnDeliverySettingsRepository = CashOnDeliverySettingsRepository(
-        gatewayStore, selectedSite
+        gatewayStore,
+        selectedSite
     )
 
     @Test

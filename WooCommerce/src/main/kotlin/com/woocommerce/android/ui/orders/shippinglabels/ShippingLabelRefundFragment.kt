@@ -31,6 +31,7 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
     val viewModel: ShippingLabelRefundViewModel by viewModels()
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     override fun onResume() {

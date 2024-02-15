@@ -110,7 +110,9 @@ private fun TargetSelectionScreen(
         },
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
-            .clickable(indication = null, interactionSource = interactionSource) { focusManager.clearFocus() } // Clear focus when clicked outside
+            .clickable(indication = null, interactionSource = interactionSource) {
+                focusManager.clearFocus()
+            } // Clear focus when clicked outside
     ) { paddingValues ->
         Column(
             modifier = Modifier

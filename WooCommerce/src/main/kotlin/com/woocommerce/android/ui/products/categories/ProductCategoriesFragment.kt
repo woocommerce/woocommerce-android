@@ -71,7 +71,10 @@ class ProductCategoriesFragment :
             adapter = productCategoriesAdapter
             addItemDecoration(
                 AlignedDividerDecoration(
-                    activity, DividerItemDecoration.VERTICAL, R.id.categoryName, clipToMargin = false
+                    activity,
+                    DividerItemDecoration.VERTICAL,
+                    R.id.categoryName,
+                    clipToMargin = false
                 )
             )
         }

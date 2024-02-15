@@ -49,6 +49,7 @@ class AztecEditorFragment :
     }
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
+
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var aztec: Aztec

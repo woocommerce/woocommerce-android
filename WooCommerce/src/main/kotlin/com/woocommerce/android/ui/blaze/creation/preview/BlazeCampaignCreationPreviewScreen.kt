@@ -92,7 +92,6 @@ private fun BlazeCampaignCreationPreviewScreen(
                 .padding(paddingValues)
                 .background(color = MaterialTheme.colors.surface)
         ) {
-
             when (previewState.adDetails) {
                 is Loading -> AdDetailsLoading()
                 else -> AdDetailsHeader(
@@ -213,8 +212,11 @@ fun CampaignHeader(
                 .fillMaxWidth(),
             backgroundColor = colorResource(id = R.color.woo_white),
             contentColor =
-            if (isSystemInDarkTheme()) colorResource(id = R.color.color_surface)
-            else colorResource(id = R.color.color_on_surface),
+            if (isSystemInDarkTheme()) {
+                colorResource(id = R.color.color_surface)
+            } else {
+                colorResource(id = R.color.color_on_surface)
+            },
             shape = RoundedCornerShape(8.dp)
         ) {
             Column(

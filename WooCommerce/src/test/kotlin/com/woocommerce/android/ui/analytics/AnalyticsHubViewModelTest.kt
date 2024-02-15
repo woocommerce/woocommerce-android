@@ -571,6 +571,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         assertFalse { sut.viewState.value.showFeedBackBanner }
     }
+
     @Test
     fun `when send feedback is pressed then feedback status is saved as GIVEN`() = testBlocking {
         sut = givenAViewModel()

@@ -323,7 +323,6 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     }
 
     private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
-
         binding.originStep.continueButtonClickListener = {
             viewModel.onContinueButtonTapped(
                 ORIGIN_ADDRESS

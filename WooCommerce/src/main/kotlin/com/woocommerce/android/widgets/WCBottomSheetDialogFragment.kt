@@ -32,7 +32,9 @@ open class WCBottomSheetDialogFragment : BottomSheetDialogFragment {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return if (contentLayoutId != null) {
             inflater.inflate(contentLayoutId, container, false)
-        } else null
+        } else {
+            null
+        }
     }
 
     @CallSuper

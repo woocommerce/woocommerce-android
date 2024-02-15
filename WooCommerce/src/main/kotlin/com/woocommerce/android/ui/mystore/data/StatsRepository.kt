@@ -73,7 +73,10 @@ class StatsRepository @Inject constructor(
 
             if (!result.isError) {
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                    selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
+                    selectedSite.get(),
+                    result.granularity,
+                    result.startDate!!,
+                    result.endDate!!
                 )
                 Result.success(revenueStatsModel)
                 emit(Result.success(revenueStatsModel))
@@ -92,7 +95,8 @@ class StatsRepository @Inject constructor(
         revenueRangeId: String
     ): Flow<Result<WCRevenueStatsModel?>> = flow {
         wcStatsStore.getRawRevenueStatsFromRangeId(
-            selectedSite.get(), revenueRangeId
+            selectedSite.get(),
+            revenueRangeId
         ).let { emit(Result.success(it)) }
     }
 
@@ -107,7 +111,11 @@ class StatsRepository @Inject constructor(
             val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
             if (!result.isError) {
                 val visitorStats = wcStatsStore.getNewVisitorStats(
-                    selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+                    selectedSite.get(),
+                    result.granularity,
+                    result.quantity,
+                    result.date,
+                    result.isCustomField
                 )
                 emit(Result.success(visitorStats))
             } else {
@@ -279,7 +287,11 @@ class StatsRepository @Inject constructor(
             WooResult(error)
         } else {
             val visitorStats = wcStatsStore.getNewVisitorStats(
-                selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+                selectedSite.get(),
+                result.granularity,
+                result.quantity,
+                result.date,
+                result.isCustomField
             )
             WooResult(visitorStats)
         }

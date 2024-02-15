@@ -139,10 +139,12 @@ class MoreMenuViewModel @Inject constructor(
     )
 
     private suspend fun trackBlazeDisplayed() {
-        if (isBlazeEnabled()) AnalyticsTracker.track(
-            stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
-        )
+        if (isBlazeEnabled()) {
+            AnalyticsTracker.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
+            )
+        }
     }
 
     private fun generateSettingsMenuButtons() = listOf(
@@ -162,21 +164,29 @@ class MoreMenuViewModel @Inject constructor(
     )
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
-        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) BadgeState(
-            badgeSize = R.dimen.major_110,
-            backgroundColor = R.color.color_secondary,
-            textColor = R.color.color_on_surface,
-            textState = TextState("", R.dimen.text_minor_80),
-            animateAppearance = true,
-        ) else null
+        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) {
+            BadgeState(
+                badgeSize = R.dimen.major_110,
+                backgroundColor = R.color.color_secondary,
+                textColor = R.color.color_on_surface,
+                textState = TextState("", R.dimen.text_minor_80),
+                animateAppearance = true,
+            )
+        } else {
+            null
+        }
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
-        if (unseenReviewsCount > 0) BadgeState(
-            badgeSize = R.dimen.major_150,
-            backgroundColor = R.color.color_primary,
-            textColor = R.color.color_on_primary,
-            textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
-        ) else null
+        if (unseenReviewsCount > 0) {
+            BadgeState(
+                badgeSize = R.dimen.major_150,
+                backgroundColor = R.color.color_primary,
+                textColor = R.color.color_on_primary,
+                textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
+            )
+        } else {
+            null
+        }
 
     private fun SiteModel.getSelectedSiteName(): String =
         if (!displayName.isNullOrBlank()) {

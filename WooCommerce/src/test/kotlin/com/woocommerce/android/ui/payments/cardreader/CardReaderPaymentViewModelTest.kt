@@ -159,7 +159,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentFailedWithCardReadTimeOut = PaymentFailed(Generic, mock(), "dummy msg")
     private val paymentFailedWithServerError = PaymentFailed(Server(""), mock(), "dummy msg")
     private val paymentFailedWithAmountTooSmall = PaymentFailed(
-        DeclinedByBackendError.AmountTooSmall, mock(), "dummy msg"
+        DeclinedByBackendError.AmountTooSmall,
+        mock(),
+        "dummy msg"
     )
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
@@ -1463,7 +1465,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow {
                     emit(
                         PaymentFailed(
-                            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled, null, "message"
+                            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled,
+                            null,
+                            "message"
                         )
                     )
                 }
@@ -1494,7 +1498,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 flow {
                     emit(
                         PaymentFailed(
-                            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled, null, "message"
+                            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled,
+                            null,
+                            "message"
                         )
                     )
                 }

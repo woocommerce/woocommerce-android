@@ -69,8 +69,9 @@ class CloseAccountDialogFragment : DialogFragment() {
                         Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {
                             if (state.isLoading) {
                                 LoadingDialog()
-                            } else
+                            } else {
                                 AccountClosingDialog(state, focusRequester)
+                            }
                         }
                         LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     }
@@ -175,8 +176,11 @@ class CloseAccountDialogFragment : DialogFragment() {
                 )
             }
             WCTextButton(
-                onClick = if (state.isAccountDeletionError) viewModel::onContactSupportClicked
-                else viewModel::onConfirmCloseAccount,
+                onClick = if (state.isAccountDeletionError) {
+                    viewModel::onContactSupportClicked
+                } else {
+                    viewModel::onConfirmCloseAccount
+                },
                 enabled = state.enteredUserName == state.currentUserName
             ) {
                 Box(

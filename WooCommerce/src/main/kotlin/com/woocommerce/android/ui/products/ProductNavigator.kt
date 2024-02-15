@@ -272,11 +272,13 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(
                     directions = directions,
                     navOptions =
-                    if (target.source == STORE_ONBOARDING)
+                    if (target.source == STORE_ONBOARDING) {
                         NavOptions.Builder()
                             .setPopUpTo(id.dashboard, false)
                             .build()
-                    else null
+                    } else {
+                        null
+                    }
                 )
             }
 

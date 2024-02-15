@@ -8,7 +8,9 @@ object PreferenceUtils {
             getString(preferences, key)?.let { value ->
                 if (value.isEmpty()) {
                     default
-                } else Integer.parseInt(value)
+                } else {
+                    Integer.parseInt(value)
+                }
             } ?: default
         } catch (e: NumberFormatException) {
             default

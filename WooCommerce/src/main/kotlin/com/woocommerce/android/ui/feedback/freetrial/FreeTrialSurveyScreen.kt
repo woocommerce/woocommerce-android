@@ -173,9 +173,11 @@ private fun SurveyItem(
             .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 color = colorResource(
-                    id = if (surveyOptionUi.isSelected)
+                    id = if (surveyOptionUi.isSelected) {
                         if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
-                    else R.color.color_surface
+                    } else {
+                        R.color.color_surface
+                    }
                 )
             )
             .clickable {
@@ -186,8 +188,11 @@ private fun SurveyItem(
         Text(
             text = stringResource(id = surveyOptionUi.textId),
             color = colorResource(
-                id = if (isSystemInDarkTheme() && surveyOptionUi.isSelected) R.color.color_primary
-                else R.color.color_on_surface
+                id = if (isSystemInDarkTheme() && surveyOptionUi.isSelected) {
+                    R.color.color_primary
+                } else {
+                    R.color.color_on_surface
+                }
             ),
             modifier = Modifier.padding(
                 start = dimensionResource(id = R.dimen.major_100),

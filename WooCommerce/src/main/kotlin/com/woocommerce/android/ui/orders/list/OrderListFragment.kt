@@ -512,7 +512,6 @@ class OrderListFragment :
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-
             if (sharedView != null) {
                 showOrderDetailWithSharedTransition(
                     orderId = orderId,

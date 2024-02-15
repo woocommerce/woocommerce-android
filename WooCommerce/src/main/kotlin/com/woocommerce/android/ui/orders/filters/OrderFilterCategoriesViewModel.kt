@@ -104,7 +104,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 filterOptions.map {
                     if (it.categoryKey == updatedCategory.categoryKey) {
                         updateFilterOptionsForCategory(it, updatedCategory)
-                    } else it
+                    } else {
+                        it
+                    }
                 }
             )
         }

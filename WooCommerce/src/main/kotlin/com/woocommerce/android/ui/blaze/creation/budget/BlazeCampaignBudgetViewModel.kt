@@ -50,7 +50,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
             campaignStartDateMillis = navArgs.budget.startDate.time,
             campaignDurationDates = getCampaignDurationDisplayDate(
-                navArgs.budget.startDate.time, navArgs.budget.durationInDays
+                navArgs.budget.startDate.time,
+                navArgs.budget.durationInDays
             ),
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false
@@ -167,7 +168,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                     impressionsMax = fetchAdForecastResult.maxImpressions
                 )
             }.onFailure {
-
                 campaignForecastState = campaignForecastState.copy(
                     isLoading = false,
                     isError = true

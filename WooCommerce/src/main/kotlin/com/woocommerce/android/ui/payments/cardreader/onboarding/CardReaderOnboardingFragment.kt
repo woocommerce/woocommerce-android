@@ -99,7 +99,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding: FragmentCardReaderOnboardingBinding,
         state: CardReaderOnboardingViewState
     ) {
-
         val layout = if (binding.container.tag != state.layoutRes) {
             binding.container.removeAllViews()
             val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)

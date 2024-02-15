@@ -76,7 +76,10 @@ class ProductTagsFragment :
             adapter = productTagsAdapter
             addItemDecoration(
                 AlignedDividerDecoration(
-                    activity, DividerItemDecoration.VERTICAL, R.id.tagName, clipToMargin = false
+                    activity,
+                    DividerItemDecoration.VERTICAL,
+                    R.id.tagName,
+                    clipToMargin = false
                 )
             )
         }

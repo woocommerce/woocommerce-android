@@ -157,8 +157,11 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 (adapter as PaymentsHubAdapter).setItems(state.rows)
                 updatePadding(
                     bottom = resources.getDimensionPixelSize(
-                        if (state.onboardingErrorAction?.text != null) R.dimen.major_400
-                        else R.dimen.major_100
+                        if (state.onboardingErrorAction?.text != null) {
+                            R.dimen.major_400
+                        } else {
+                            R.dimen.major_100
+                        }
                     )
                 )
             }

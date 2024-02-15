@@ -26,32 +26,34 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
         val lastPaidDepositsCurrencies = lastPaidDeposits.map { it.currency }
         val currencies = (pendingAndAvailableBalancesCurrencies + lastPaidDepositsCurrencies).filterNotNull().toSet()
 
-        return if (currencies.isEmpty())
+        return if (currencies.isEmpty()) {
             Result.InvalidInputData
-        else Result.Success(
-            PaymentsHubDepositSummaryState.Overview(
-                defaultCurrency = defaultCurrency,
-                infoPerCurrency = currencies.associateWith { currency ->
-                    PaymentsHubDepositSummaryState.Info(
-                        availableFundsFormatted = formatMoney(
-                            amount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                            currency = currency
-                        ),
-                        pendingFundsFormatted = formatMoney(
-                            amount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                            currency = currency
-                        ),
-                        availableFundsAmount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                        pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
-                        fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
-                        fundsDepositInterval = overview.account.fundsAvailableIn(),
-                        lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
+        } else {
+            Result.Success(
+                PaymentsHubDepositSummaryState.Overview(
+                    defaultCurrency = defaultCurrency,
+                    infoPerCurrency = currencies.associateWith { currency ->
+                        PaymentsHubDepositSummaryState.Info(
+                            availableFundsFormatted = formatMoney(
+                                amount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                                currency = currency
+                            ),
+                            pendingFundsFormatted = formatMoney(
+                                amount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                                currency = currency
+                            ),
+                            availableFundsAmount = availableBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                            pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
+                            fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
+                            fundsDepositInterval = overview.account.fundsAvailableIn(),
+                            lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
+                        )
+                    }.toSortedMap(
+                        compareBy<String> { it != defaultCurrency }.thenBy { it }
                     )
-                }.toSortedMap(
-                    compareBy<String> { it != defaultCurrency }.thenBy { it }
                 )
             )
-        )
+        }
     }
 
     private fun mapDeposit(info: WooPaymentsDepositsOverview.Deposit.Info) =

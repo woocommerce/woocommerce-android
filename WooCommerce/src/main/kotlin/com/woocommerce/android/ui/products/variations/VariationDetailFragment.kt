@@ -73,6 +73,7 @@ class VariationDetailFragment :
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var navigator: VariationNavigator
 

@@ -311,7 +311,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     @Test
     fun `when order notifications for a second store is clicked then switch to the this store and restart activity`() {
         val orderNotification2 = testOrderNotification.copy(
-            remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_ORDER_ID_2
+            remoteSiteId = TEST_REMOTE_SITE_ID_2,
+            uniqueId = TEST_NEW_ORDER_ID_2
         )
         val groupOrderPushId = orderNotification2.getGroupPushId()
 
@@ -325,7 +326,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     @Test
     fun `when review notifications for second store is clicked then switch to the this store and restart activity`() {
         val reviewNotification2 = testReviewNotification.copy(
-            remoteSiteId = TEST_REMOTE_SITE_ID_2, uniqueId = TEST_NEW_REVIEW_ID_2
+            remoteSiteId = TEST_REMOTE_SITE_ID_2,
+            uniqueId = TEST_NEW_REVIEW_ID_2
         )
         val reviewPushId = reviewNotification2.getGroupPushId()
 

@@ -28,7 +28,8 @@ class SingleOrderScreen : Screen {
     private fun assertIdAndTextDisplayed(id: Int, text: String?) {
         Espresso.onView(
             Matchers.allOf(
-                withId(id), withText(text)
+                withId(id),
+                withText(text)
             )
         ).check(ViewAssertions.matches(isDisplayed()))
     }

@@ -11,8 +11,11 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductTaxS
 
 sealed class ProductTaxStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
     @Parcelize object Taxable : ProductTaxStatus(R.string.product_tax_status_taxable)
+
     @Parcelize object Shipping : ProductTaxStatus(R.string.product_tax_status_shipping)
+
     @Parcelize object None : ProductTaxStatus(R.string.product_tax_status_none)
+
     @Parcelize object NotAvailable : ProductTaxStatus()
     class Custom(value: String) : ProductTaxStatus(value = value)
 

@@ -96,8 +96,11 @@ private fun PaymentsPreSetupContent(
         )
         Text(
             text = stringResource(
-                id = if (isWooPaymentsTask) R.string.store_onboarding_payments_pre_setup_title_wcpay
-                else R.string.store_onboarding_payments_pre_setup_title_generic
+                id = if (isWooPaymentsTask) {
+                    R.string.store_onboarding_payments_pre_setup_title_wcpay
+                } else {
+                    R.string.store_onboarding_payments_pre_setup_title_generic
+                }
             ),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
@@ -105,8 +108,11 @@ private fun PaymentsPreSetupContent(
         )
 
         val bodyText = annotatedStringRes(
-            stringResId = if (isWooPaymentsTask) R.string.store_onboarding_wcpay_setup_description
-            else R.string.store_onboarding_payments_setup_description
+            stringResId = if (isWooPaymentsTask) {
+                R.string.store_onboarding_wcpay_setup_description
+            } else {
+                R.string.store_onboarding_payments_setup_description
+            }
         )
         ClickableText(
             text = bodyText,

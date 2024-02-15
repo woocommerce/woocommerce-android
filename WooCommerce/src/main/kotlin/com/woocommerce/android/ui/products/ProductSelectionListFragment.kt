@@ -42,6 +42,7 @@ class ProductSelectionListFragment :
     OnActionExpandListener,
     MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: ProductSelectionListViewModel by viewModels()
@@ -141,7 +142,8 @@ class ProductSelectionListFragment :
                         }
                     }
                 }
-            })
+            }
+        )
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {

@@ -197,7 +197,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         val barLabelCount = context.resources.getInteger(resId)
         return if (chartRevenueStatsSize < barLabelCount) {
             chartRevenueStatsSize
-        } else barLabelCount
+        } else {
+            barLabelCount
+        }
     }
 
     /**
@@ -556,9 +558,13 @@ class MyStoreStatsView @JvmOverloads constructor(
      * [StatsGranularity.DAYS] format is the same for both
      */
     private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
-        return if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
-            dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
-        } else visitorStats
+        return if (activeGranularity == StatsGranularity.YEARS) {
+            visitorStats.mapKeys {
+                dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
+            }
+        } else {
+            visitorStats
+        }
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
@@ -637,7 +643,9 @@ class MyStoreStatsView @JvmOverloads constructor(
                 } else {
                     getLabelValue(dateString)
                 }
-            } else ""
+            } else {
+                ""
+            }
         }
 
         /**

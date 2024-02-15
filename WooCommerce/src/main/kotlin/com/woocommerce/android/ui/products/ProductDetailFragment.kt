@@ -463,7 +463,9 @@ class ProductDetailFragment :
     private fun updateProductNameFromDetails(product: Product): String {
         return if (viewModel.isProductUnderCreation && product.name.isEmpty()) {
             getString(R.string.product_add_tool_bar_title)
-        } else product.name.fastStripHtml()
+        } else {
+            product.name.fastStripHtml()
+        }
     }
 
     private fun displayProductImageUploadErrorSnackBar(

@@ -205,8 +205,8 @@ class ProductListViewModelTest : BaseUnitTest() {
             assertThat(isAddProductButtonVisible).containsExactly(false)
         }
 
-    @Test
     /* We show the Add Product FAB after searching is completed. */
+    @Test
     fun `Shows add product button after opening and closing search`() =
         testBlocking {
             // when
@@ -229,8 +229,8 @@ class ProductListViewModelTest : BaseUnitTest() {
             assertThat(isAddProductButtonVisible).containsExactly(false, true, false)
         }
 
-    @Test
     /* We hide the filters when searching. */
+    @Test
     fun `Hides filters buttons when searching`() =
         testBlocking {
             // when

@@ -120,7 +120,9 @@ fun ExpandableGroupedProductCard(
                     colorResource(id = R.color.color_on_surface),
                     shape = shape
                 )
-            } else Modifier
+            } else {
+                Modifier
+            }
 
             if (isChildrenExpanded.not() && index != 0) {
                 Divider(
@@ -240,7 +242,8 @@ fun ExpandableChildrenProductCard(
     }
     val transition = updateTransition(transitionState, "expandableChildProductCard")
     val chevronRotation by transition.animateFloat(
-        transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) }, label = "childChevronRotation"
+        transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) },
+        label = "childChevronRotation"
     ) {
         if (isExpanded) 180f else 0f
     }
