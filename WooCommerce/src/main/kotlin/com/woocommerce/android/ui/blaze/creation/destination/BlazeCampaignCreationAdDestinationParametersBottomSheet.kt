@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.destination
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -89,7 +88,6 @@ private fun ParameterBottomSheet(
 ) {
     Column(
         modifier = modifier
-            .background(MaterialTheme.colors.surface)
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {

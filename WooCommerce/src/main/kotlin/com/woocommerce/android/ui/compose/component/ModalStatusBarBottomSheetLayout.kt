@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.util.TypedValue
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -34,8 +35,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.core.view.WindowCompat
+import com.woocommerce.android.R
 
 /*
  * This is a custom implementation of the ModalBottomSheetLayout that fixes the scrim color of the status bar
@@ -53,9 +56,8 @@ fun ModalStatusBarBottomSheetLayout(
         rememberModalBottomSheetState(Hidden),
     sheetShape: Shape = MaterialTheme.shapes.large,
     sheetElevation: Dp = ModalBottomSheetDefaults.Elevation,
-    sheetBackgroundColor: Color = MaterialTheme.colors.surface,
+    sheetBackgroundColor: Color = colorResource(id = R.color.bottom_sheet_background),
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
-    scrimColor: Color = ModalBottomSheetDefaults.scrimColor,
     content: @Composable () -> Unit
 ): Unit = ModalBottomSheetLayout(
     sheetContent = {
@@ -75,7 +77,7 @@ fun ModalStatusBarBottomSheetLayout(
     sheetElevation = sheetElevation,
     sheetBackgroundColor = sheetBackgroundColor,
     sheetContentColor = sheetContentColor,
-    scrimColor = scrimColor
+    scrimColor = scrimColor(),
 ) {
     val context = LocalContext.current
     var statusBarColor by remember { mutableStateOf(Color.Transparent) }
@@ -107,7 +109,7 @@ fun ModalStatusBarBottomSheetLayout(
     val window = remember { context.findActivity().window }
     val originalNavigationBarColor = remember { window.navigationBarColor }
     if (sheetState.currentValue != Hidden) {
-        window.navigationBarColor = MaterialTheme.colors.surface.toArgb()
+        window.navigationBarColor = sheetBackgroundColor.toArgb()
     } else {
         window.navigationBarColor = originalNavigationBarColor
     }
@@ -126,6 +128,10 @@ fun ModalStatusBarBottomSheetLayout(
         }
     }
 }
+
+@Composable
+private fun scrimColor() =
+    if (isSystemInDarkTheme()) colorResource(id = R.color.color_scrim_background) else ModalBottomSheetDefaults.scrimColor
 
 fun Context.findActivity(): Activity {
     var context = this
