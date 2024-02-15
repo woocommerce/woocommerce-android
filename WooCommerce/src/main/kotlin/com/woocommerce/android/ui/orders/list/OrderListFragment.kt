@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -99,6 +100,9 @@ class OrderListFragment :
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onStop() {
         snackBar?.dismiss()
