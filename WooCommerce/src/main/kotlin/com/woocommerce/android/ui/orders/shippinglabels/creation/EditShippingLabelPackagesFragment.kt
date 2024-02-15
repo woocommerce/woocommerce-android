@@ -64,9 +64,6 @@ class EditShippingLabelPackagesFragment :
         )
     }
 
-    override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Hidden
-
     private val skeletonView: SkeletonView = SkeletonView()
 
     override val activityAppBarStatus: AppBarStatus
