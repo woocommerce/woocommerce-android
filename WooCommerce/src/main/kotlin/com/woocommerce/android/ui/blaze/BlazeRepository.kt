@@ -1,17 +1,25 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignType
 import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodInfo
+import org.wordpress.android.fluxc.model.blaze.BlazeTargetingParameters
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
@@ -22,13 +30,15 @@ class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val productDetailRepository: ProductDetailRepository,
+    private val mediaFilesRepository: MediaFilesRepository,
     private val timezoneProvider: TimezoneProvider,
 ) {
     companion object {
+        private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
         const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
-        const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5F // USD
-        const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50F // USD
+        const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
+        const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
     }
 
@@ -119,29 +129,53 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    suspend fun getCampaignPreviewDetails(productId: Long): CampaignPreview {
+    suspend fun generateDefaultCampaignDetails(productId: Long): CampaignDetails {
+        fun getDefaultBudget() = Budget(
+            totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND,
+            spentBudget = 0f,
+            currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
+            durationInDays = DEFAULT_CAMPAIGN_DURATION,
+            startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
+        )
+
         val product = productDetailRepository.getProduct(productId)
             ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
 
-        return CampaignPreview(
+        return CampaignDetails(
             productId = productId,
             userTimeZone = timezoneProvider.deviceTimezone.displayName,
+            tagLine = "",
+            description = "",
             targetUrl = product.permalink,
-            urlParams = null,
-            campaignImageUrl = product.firstImageUrl
+            urlParams = emptyMap(),
+            campaignImage = product.images.firstOrNull().let {
+                if (it != null) BlazeCampaignImage.RemoteImage(it.id, it.source)
+                else BlazeCampaignImage.None
+            },
+            budget = getDefaultBudget(),
+            targetingParameters = TargetingParameters()
         )
     }
 
     suspend fun fetchAdForecast(
         startDate: Date,
         campaignDurationDays: Int,
-        totalBudget: Float
+        totalBudget: Float,
+        targetingParameters: TargetingParameters
     ): Result<BlazeAdForecast> {
         val result = blazeCampaignsStore.fetchBlazeAdForecast(
-            selectedSite.get(),
-            startDate,
-            Date(startDate.time + campaignDurationDays.days.inWholeMilliseconds),
-            totalBudget.roundToInt().toDouble(),
+            siteModel = selectedSite.get(),
+            startDate = startDate,
+            endDate = Date(startDate.time + campaignDurationDays.days.inWholeMilliseconds),
+            totalBudget = totalBudget.roundToInt().toDouble(),
+            targetingParameters = targetingParameters.let {
+                BlazeTargetingParameters(
+                    locations = it.locations.map { location -> location.id },
+                    languages = it.languages.map { language -> language.code },
+                    devices = it.devices.map { device -> device.id },
+                    topics = it.interests.map { interest -> interest.id }
+                )
+            }
         )
         return when {
             result.isError -> {
@@ -195,13 +229,111 @@ class BlazeRepository @Inject constructor(
         }
     }
 
+    suspend fun createCampaign(
+        campaignDetails: CampaignDetails,
+        paymentMethodId: String
+    ): Result<Unit> {
+        val image = prepareCampaignImage(campaignDetails.campaignImage).getOrElse {
+            return Result.failure(it)
+        }
+
+        val result = blazeCampaignsStore.createCampaign(
+            selectedSite.get(),
+            request = BlazeCampaignCreationRequest(
+                origin = BLAZE_CAMPAIGN_CREATION_ORIGIN,
+                originVersion = BuildConfig.VERSION_NAME,
+                type = BlazeCampaignType.PRODUCT,
+                paymentMethodId = paymentMethodId,
+                targetResourceId = campaignDetails.productId,
+                tagLine = campaignDetails.tagLine,
+                description = campaignDetails.description,
+                startDate = campaignDetails.budget.startDate,
+                endDate = campaignDetails.budget.endDate,
+                budget = campaignDetails.budget.totalBudget.toDouble(),
+                targetUrl = campaignDetails.targetUrl,
+                urlParams = campaignDetails.urlParams,
+                mainImage = image,
+                targetingParameters = campaignDetails.targetingParameters.let {
+                    BlazeTargetingParameters(
+                        locations = it.locations.map { location -> location.id },
+                        languages = it.languages.map { language -> language.code },
+                        devices = it.devices.map { device -> device.id },
+                        topics = it.interests.map { interest -> interest.id }
+                    )
+                }
+            )
+        )
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to create campaign: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> {
+                WooLog.d(WooLog.T.BLAZE, "Campaign created successfully")
+                Result.success(Unit)
+            }
+        }
+    }
+
+    private suspend fun prepareCampaignImage(image: BlazeCampaignImage): Result<MediaModel> {
+        val result = when (image) {
+            is BlazeCampaignImage.LocalImage -> {
+                mediaFilesRepository.uploadFile(image.uri)
+                    .filterNot { it is MediaFilesRepository.UploadResult.UploadProgress }
+                    .first()
+                    .let {
+                        when (it) {
+                            is MediaFilesRepository.UploadResult.UploadFailure -> Result.failure(it.error)
+                            is MediaFilesRepository.UploadResult.UploadSuccess -> Result.success(it.media)
+                            else -> error("Unexpected upload result: $it")
+                        }
+                    }
+            }
+            is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
+            is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
+        }
+
+        return result.onFailure {
+            WooLog.w(WooLog.T.BLAZE, "Failed to prepare campaign image: ${it.message}")
+        }
+    }
+
     @Parcelize
-    data class CampaignPreview(
+    data class CampaignDetails(
         val productId: Long,
+        val tagLine: String,
+        val description: String,
         val userTimeZone: String,
         val targetUrl: String,
-        val urlParams: Pair<String, String>?,
-        val campaignImageUrl: String?,
+        val urlParams: Map<String, String>,
+        val campaignImage: BlazeCampaignImage,
+        val budget: Budget,
+        val targetingParameters: TargetingParameters
+    ) : Parcelable
+
+    sealed interface BlazeCampaignImage : Parcelable {
+        val uri: String
+        @Parcelize
+        data object None : BlazeCampaignImage {
+            override val uri: String
+                get() = ""
+        }
+
+        @Parcelize
+        data class LocalImage(override val uri: String) : BlazeCampaignImage
+
+        @Parcelize
+        data class RemoteImage(val mediaId: Long, override val uri: String) : BlazeCampaignImage
+    }
+
+    @Parcelize
+    data class TargetingParameters(
+        val locations: List<Location> = emptyList(),
+        val languages: List<Language> = emptyList(),
+        val devices: List<Device> = emptyList(),
+        val interests: List<Interest> = emptyList()
     ) : Parcelable
 
     @Parcelize
@@ -217,7 +349,10 @@ class BlazeRepository @Inject constructor(
         val currencyCode: String,
         val durationInDays: Int,
         val startDate: Date,
-    ) : Parcelable
+    ) : Parcelable {
+        val endDate: Date
+            get() = Date(startDate.time + durationInDays.days.inWholeMilliseconds)
+    }
 
     @Parcelize
     data class PaymentMethodsData(

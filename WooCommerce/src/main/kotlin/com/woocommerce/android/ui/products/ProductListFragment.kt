@@ -128,7 +128,9 @@ class ProductListFragment :
         TabletLayoutSetupHelper.Screen.Navigation(
             childFragmentManager,
             R.navigation.nav_graph_products,
-            null,
+            ProductDetailFragmentArgs(
+                mode = ProductDetailFragment.Mode.Loading,
+            ).toBundle()
         )
     }
 
@@ -160,8 +162,18 @@ class ProductListFragment :
             loadMoreListener = this,
             currencyFormatter = currencyFormatter,
             clickListener = { id, sharedView ->
-                binding.addProductButton.hide()
-                onProductClick(id, sharedView)
+                tabletLayoutSetupHelper.onItemClicked(
+                    tabletNavigateTo = {
+                        R.id.nav_graph_products to ProductDetailFragmentArgs(
+                            mode = ProductDetailFragment.Mode.ShowProduct(id),
+                            isTrashEnabled = true,
+                        ).toBundle()
+                    },
+                    navigateWithPhoneNavigation = {
+                        binding.addProductButton.hide()
+                        onProductClick(id, sharedView)
+                    }
+                )
             }
         )
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
@@ -326,6 +338,7 @@ class ProductListFragment :
                 enableSearchListeners()
                 true
             }
+
             R.id.menu_scan_barcode -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
                 ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
