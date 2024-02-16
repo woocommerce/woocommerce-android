@@ -90,7 +90,7 @@ class OrderListFragment :
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
-        private const val OPEN_FIRST_ORDER_DELAY = 200L
+        private const val HANDLER_DELAY = 200L
     }
 
     @Inject
@@ -155,17 +155,21 @@ class OrderListFragment :
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
             savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (isTablet()) {
+        if (isTablet()) {
+            requireActivity().onBackPressedDispatcher.addCallback(
+                this,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
                         selectedOrder.selectOrder(-1L)
-                        findNavController().popBackStack()
+                        if (isTablet()) {
+                            findNavController().popBackStack()
+                        } else {
+                            findNavController().navigateUp()
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
 
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
@@ -351,9 +355,12 @@ class OrderListFragment :
         if (!isChildFragmentShowing() && isSearching) {
             val savedSearchQuery = searchQuery
             enableSearchListeners()
-            searchQuery = savedSearchQuery
-            searchView?.setQuery(searchQuery, false)
-            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
+            handler.postDelayed({
+                searchMenuItem?.expandActionView()
+                searchQuery = savedSearchQuery
+                searchView?.setQuery(searchQuery, false)
+                if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
+            }, HANDLER_DELAY)
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -452,7 +459,7 @@ class OrderListFragment :
                         // before opening the first order.
                         handler.postDelayed({
                             openFirstOrder()
-                        }, OPEN_FIRST_ORDER_DELAY)
+                        }, HANDLER_DELAY)
                     }
 
                     viewModel.viewState.filterCount > 0 -> openFirstOrder()
@@ -777,13 +784,16 @@ class OrderListFragment :
     }
 
     private fun clearSearchResults() {
-        if (isSearching && !isTablet()) {
-            searchQuery = ""
+        if (isSearching) {
+            if (!isTablet()) {
+                searchQuery = ""
+                isSearching = false
+                disableSearchListeners()
+                updateActivityTitle()
+                searchMenuItem?.collapseActionView()
+                (activity as? MainActivity)?.showBottomNav()
+            }
             isSearching = false
-            disableSearchListeners()
-            updateActivityTitle()
-            searchMenuItem?.collapseActionView()
-            (activity as? MainActivity)?.showBottomNav()
         }
     }
 
@@ -848,8 +858,11 @@ class OrderListFragment :
 
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-
-        (activity as? MainActivity)?.hideBottomNav()
+        if (!isTablet()) {
+            handler.postDelayed({
+                (activity as? MainActivity)?.hideBottomNav()
+            }, HANDLER_DELAY)
+        }
     }
 
     private fun checkOrientation() {
