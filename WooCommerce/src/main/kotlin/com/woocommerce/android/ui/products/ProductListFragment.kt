@@ -43,6 +43,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
@@ -134,6 +135,9 @@ class ProductListFragment :
             ).toBundle()
         )
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
