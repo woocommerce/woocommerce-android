@@ -41,7 +41,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
                 draftConfiguration = currentConfiguration
                 viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
                     cardsConfiguration = draftConfiguration,
-                    showDismissDialog = false,
+                    showDiscardDialog = false,
                     isSaveButtonEnabled = hasChanges()
                 )
             }
@@ -53,7 +53,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             viewState is AnalyticsHubSettingsViewState.CardsConfiguration && hasChanges() -> {
                 viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
                     cardsConfiguration = draftConfiguration,
-                    showDismissDialog = true,
+                    showDiscardDialog = true,
                     isSaveButtonEnabled = hasChanges()
                 )
             }
@@ -64,7 +64,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
     fun onDismissDiscardChanges() {
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
             cardsConfiguration = draftConfiguration,
-            showDismissDialog = false,
+            showDiscardDialog = false,
             isSaveButtonEnabled = hasChanges()
         )
     }
@@ -89,7 +89,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         }
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
             cardsConfiguration = draftConfiguration,
-            showDismissDialog = false,
+            showDiscardDialog = false,
             isSaveButtonEnabled = hasChanges()
         )
     }
@@ -100,7 +100,7 @@ sealed class AnalyticsHubSettingsViewState : Parcelable {
     data class CardsConfiguration(
         val cardsConfiguration: List<AnalyticCardConfiguration>,
         val isSaveButtonEnabled: Boolean,
-        val showDismissDialog: Boolean = false
+        val showDiscardDialog: Boolean = false
     ) : AnalyticsHubSettingsViewState()
 
     data object Loading : AnalyticsHubSettingsViewState()

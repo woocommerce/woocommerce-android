@@ -73,7 +73,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
                         modifier = Modifier.padding(padding)
                     )
 
-                    if (state.showDismissDialog) {
+                    if (state.showDiscardDialog) {
                         DiscardChangesDialog(
                             dismissButton = viewModel::onDismissDiscardChanges,
                             discardButton = viewModel::onDiscardChanges
