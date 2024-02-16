@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
-import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
@@ -134,15 +133,14 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     fun onApplyDurationTapped() {
         val newDuration = budgetUiState.value.sliderDurationValue.toInt()
-        val currentDailySpend = budgetUiState.value.totalBudget / newDuration
-        val newTotalBudget = newDuration * currentDailySpend
+        val currentDailySpend = calculateDailySpending(newDuration)
         budgetUiState.update {
             it.copy(
                 durationInDays = newDuration,
                 budgetRangeMin = newDuration * CAMPAIGN_MINIMUM_DAILY_SPEND,
                 budgetRangeMax = newDuration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
                 dailySpending = formatDailySpend(currentDailySpend),
-                totalBudget = newTotalBudget,
+                totalBudget = newDuration * currentDailySpend,
                 confirmedCampaignStartDateMillis = it.bottomSheetCampaignStartDateMillis,
                 campaignDurationDates = getCampaignDurationDisplayDate(
                     it.bottomSheetCampaignStartDateMillis,
@@ -174,10 +172,20 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     fun onBudgetChangeFinished() {
         fetchAdForecast()
         val roundedBudgetToDurationMultiple =
-            (budgetUiState.value.totalBudget / budgetUiState.value.durationInDays).roundToInt() *
-                budgetUiState.value.durationInDays
+            calculateDailySpending(budgetUiState.value.durationInDays) * budgetUiState.value.durationInDays
         budgetUiState.update {
-            it.copy(totalBudget = roundedBudgetToDurationMultiple.toFloat())
+            it.copy(totalBudget = roundedBudgetToDurationMultiple)
+        }
+    }
+
+    private fun calculateDailySpending(duration: Int): Float {
+        val dailySpend = budgetUiState.value.totalBudget / duration
+        return if (dailySpend < CAMPAIGN_MINIMUM_DAILY_SPEND) {
+            CAMPAIGN_MINIMUM_DAILY_SPEND
+        } else if (dailySpend > CAMPAIGN_MAXIMUM_DAILY_SPEND) {
+            CAMPAIGN_MAXIMUM_DAILY_SPEND
+        } else {
+            dailySpend
         }
     }
 
