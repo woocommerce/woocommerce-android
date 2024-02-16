@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.coupons.selector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +17,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -28,14 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListSkeleton
+import com.woocommerce.android.ui.coupons.selector.LoadingState.Appending
 
 @Composable
 fun CouponSelectorScreen(
@@ -112,6 +115,7 @@ fun EmptyCouponSelectorList(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CouponSelectorList(
     coupons: List<CouponListItem>,
@@ -120,17 +124,9 @@ fun CouponSelectorList(
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing = loadingState == LoadingState.Refreshing),
-        onRefresh = onRefresh,
-        indicator = { state, refreshTrigger ->
-            SwipeRefreshIndicator(
-                state = state,
-                refreshTriggerDistance = refreshTrigger,
-                contentColor = MaterialTheme.colors.primary,
-            )
-        }
-    ) {
+    val isRefreshing = loadingState == LoadingState.Refreshing
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, { onRefresh() })
+    Box(Modifier.pullRefresh(pullRefreshState)) {
         val listState = rememberLazyListState()
         LazyColumn(
             state = listState,
@@ -145,7 +141,7 @@ fun CouponSelectorList(
                     thickness = dimensionResource(id = R.dimen.minor_10)
                 )
             }
-            if (loadingState == LoadingState.Appending) {
+            if (loadingState == Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -160,6 +156,13 @@ fun CouponSelectorList(
         InfiniteListHandler(listState = listState) {
             onLoadMore()
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colors.primary,
+        )
     }
 }
 
