@@ -30,6 +30,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
     private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId))
         .permalink
+    private lateinit var initialDestinationValues: ViewState
 
     private val _viewState = MutableStateFlow(
         ViewState(
@@ -43,7 +44,14 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
 
     val viewState = _viewState.asLiveData()
 
+    init {
+        initialDestinationValues = _viewState.value
+    }
+
     fun onBackPressed() {
+        if (initialDestinationValues != _viewState.value) {
+            analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED)
+        }
         triggerEvent(Exit)
     }
 
@@ -67,7 +75,6 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     }
 
     fun onDestinationUrlChanged(destinationUrl: String) {
-        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED)
         _viewState.value = _viewState.value.copy(
             destinationUrl = destinationUrl,
             isUrlDialogVisible = false
