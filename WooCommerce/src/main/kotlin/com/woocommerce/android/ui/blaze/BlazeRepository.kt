@@ -23,9 +23,11 @@ import org.wordpress.android.fluxc.model.blaze.BlazeTargetingParameters
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
 
+@Singleton
 class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore,
@@ -41,6 +43,8 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
     }
+
+    private var cachedAiSuggestionsForAd: List<AiSuggestionForAd> = emptyList()
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
         .map { it.map { language -> Language(language.id, language.name) } }
@@ -112,11 +116,17 @@ class BlazeRepository @Inject constructor(
 
     suspend fun getMostRecentCampaign() = blazeCampaignsStore.getMostRecentBlazeCampaign(selectedSite.get())
 
-    suspend fun fetchAdSuggestions(productId: Long): Result<List<AiSuggestionForAd>> {
+    suspend fun fetchAdSuggestions(
+        productId: Long,
+        forceRefresh: Boolean = false
+    ): Result<List<AiSuggestionForAd>> {
         fun List<BlazeAdSuggestion>.mapToUiModel(): List<AiSuggestionForAd> {
             return map { AiSuggestionForAd(it.tagLine, it.description) }
         }
 
+        if (!forceRefresh && cachedAiSuggestionsForAd.isNotEmpty()) {
+            return Result.success(cachedAiSuggestionsForAd)
+        }
         val result = blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId)
 
         return when {
@@ -125,9 +135,14 @@ class BlazeRepository @Inject constructor(
                 Result.failure(OnChangedException(result.error))
             }
 
-            else -> Result.success(result.model?.mapToUiModel() ?: emptyList())
+            else -> {
+                cachedAiSuggestionsForAd = result.model?.mapToUiModel() ?: emptyList()
+                Result.success(cachedAiSuggestionsForAd)
+            }
         }
     }
+
+    fun getCachedAiSuggestionsForAd() = cachedAiSuggestionsForAd
 
     suspend fun generateDefaultCampaignDetails(productId: Long): CampaignDetails {
         fun getDefaultBudget() = Budget(
@@ -291,6 +306,7 @@ class BlazeRepository @Inject constructor(
                         }
                     }
             }
+
             is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
             is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
         }
@@ -315,6 +331,7 @@ class BlazeRepository @Inject constructor(
 
     sealed interface BlazeCampaignImage : Parcelable {
         val uri: String
+
         @Parcelize
         data object None : BlazeCampaignImage {
             override val uri: String

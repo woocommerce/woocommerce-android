@@ -119,18 +119,21 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         it?.copy(targetingParameters = it.targetingParameters.copy(languages = selectedLanguages))
                     }
                 }
+
                 DEVICE -> blazeRepository.observeDevices().first().let { devices ->
                     val selectedDevices = devices.filter { selectedIds.contains(it.id) }
                     campaignDetails.update {
                         it?.copy(targetingParameters = it.targetingParameters.copy(devices = selectedDevices))
                     }
                 }
+
                 INTEREST -> blazeRepository.observeInterests().first().let { interests ->
                     val selectedInterests = interests.filter { selectedIds.contains(it.id) }
                     campaignDetails.update {
                         it?.copy(targetingParameters = it.targetingParameters.copy(interests = selectedInterests))
                     }
                 }
+
                 else -> Unit
             }
         }
@@ -143,11 +146,20 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     fun onConfirmClicked() {
-        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_CONFIRM_DETAILS_TAPPED)
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_CREATION_CONFIRM_DETAILS_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_IS_AI_CONTENT to isAiContentUsedForAd())
+        )
         campaignDetails.value?.let {
             triggerEvent(NavigateToPaymentSummary(it))
         }
     }
+
+    private fun isAiContentUsedForAd(): Boolean =
+        blazeRepository.getCachedAiSuggestionsForAd().any {
+            it.tagLine == campaignDetails.value?.tagLine &&
+                it.description == campaignDetails.value?.description
+        }
 
     private fun loadData() {
         launch {
@@ -159,7 +171,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             blazeRepository.fetchDevices()
             blazeRepository.fetchInterests()
 
-            blazeRepository.fetchAdSuggestions(navArgs.productId).getOrNull().let { suggestions ->
+            blazeRepository.fetchAdSuggestions(
+                productId = navArgs.productId,
+                forceRefresh = true
+            ).getOrNull().let { suggestions ->
                 adDetailsState.value = AdDetailsUiState.LOADED
                 campaignDetails.update {
                     it?.copy(
