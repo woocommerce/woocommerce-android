@@ -12,7 +12,6 @@ import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
 import com.woocommerce.android.e2e.screens.orders.SingleOrderScreen
-import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -20,7 +19,6 @@ import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -70,15 +68,11 @@ class OrdersRealAPI : TestBase() {
         OrderListScreen()
             .leaveSearchMode()
 
-        FilterScreen()
-            .leaveFilterScreenToOrders()
-
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
     }
 
     @Test
-    @Ignore
     fun e2eRealApiOrdersFilter() {
         OrderListScreen()
             // Filter by "Order Status" = "Completed"
