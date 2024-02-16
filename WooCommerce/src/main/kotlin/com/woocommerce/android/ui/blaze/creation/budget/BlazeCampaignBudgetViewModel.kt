@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
@@ -150,6 +151,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             )
         }
         fetchAdForecast()
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_DURATION to budgetUiState.value.durationInDays,
+            )
+        )
     }
 
     fun onStartDateChanged(newStartDateMillis: Long) {
