@@ -105,7 +105,7 @@ class ProductListFragment :
     private var pendingTrashProductId: Long? = null
 
     private var _binding: FragmentProductListBinding? = null
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
 
     private val feedbackState: FeatureFeedbackSettings.FeedbackState
         get() =
@@ -179,6 +179,8 @@ class ProductListFragment :
         if (!productListViewModel.isSelecting()) {
             productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
+
+        productListToolbar.onViewCreated(this, productListViewModel, binding)
     }
 
     private fun addSelectionTracker() {

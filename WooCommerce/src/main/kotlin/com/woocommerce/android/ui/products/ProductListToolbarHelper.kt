@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
@@ -24,6 +25,7 @@ class ProductListToolbarHelper @Inject constructor(
     WCProductSearchTabView.ProductSearchTypeChangedListener {
     private var fragment: ProductListFragment? = null
     private var productListViewModel: ProductListViewModel? = null
+    private var binding: FragmentProductListBinding? = null
 
     private var searchMenuItem: MenuItem? = null
     private var scanBarcodeMenuItem: MenuItem? = null
@@ -31,17 +33,19 @@ class ProductListToolbarHelper @Inject constructor(
 
     fun onViewCreated(
         fragment: ProductListFragment,
-        productListViewModel: ProductListViewModel
+        productListViewModel: ProductListViewModel,
+        binding: FragmentProductListBinding
     ) {
         this.fragment = fragment
         this.productListViewModel = productListViewModel
+        this.binding = binding
 
         if (productListViewModel.isSearching()) {
-            fragment.binding.productsSearchTabView.isVisible = true
-            fragment.binding.productsSearchTabView.show(this, productListViewModel.isSkuSearch())
+            binding.productsSearchTabView.isVisible = true
+            binding.productsSearchTabView.show(this, productListViewModel.isSkuSearch())
         }
 
-        setupToolbar(fragment.binding.toolbar)
+        setupToolbar(binding.toolbar)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
@@ -50,6 +54,7 @@ class ProductListToolbarHelper @Inject constructor(
         scanBarcodeMenuItem = null
         searchView = null
         productListViewModel = null
+        binding = null
         disableSearchListeners()
     }
 
@@ -76,14 +81,14 @@ class ProductListToolbarHelper @Inject constructor(
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         productListViewModel?.onSearchOpened()
         fragment?.onSearchViewActiveChanged(isActive = true)
-        fragment?.binding?.productsSearchTabView?.show(this)
+        binding?.productsSearchTabView?.show(this)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         productListViewModel?.onSearchClosed()
         fragment?.onSearchViewActiveChanged(isActive = false)
-        fragment?.binding?.productsSearchTabView?.hide()
+        binding?.productsSearchTabView?.hide()
         return true
     }
 
