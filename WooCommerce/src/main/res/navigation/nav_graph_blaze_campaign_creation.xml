@@ -95,6 +95,9 @@
         <argument
             android:name="adImage"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$BlazeCampaignImage" />
+        <argument
+            android:name="aiSuggestionsForAd"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$AiSuggestionForAd[]" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignBudgetFragment"

@@ -26,7 +26,6 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val blazeRepository: BlazeRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -48,23 +47,22 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private fun loadSuggestions() {
         viewModelScope.launch {
-            blazeRepository.fetchAdSuggestions(navArgs.productId).getOrNull()?.let { list ->
-                val index = list.indexOfFirst { it.tagLine == navArgs.tagline && it.description == navArgs.description }
-                val suggestions = list.map { AiSuggestionForAd(it.tagLine, it.description) }
-                if (index != -1) {
-                    _viewState.update {
-                        _viewState.value.copy(
-                            suggestions = suggestions,
-                            suggestionIndex = index
-                        )
-                    }
-                } else {
-                    _viewState.update {
-                        _viewState.value.copy(
-                            suggestions = listOf(AiSuggestionForAd(navArgs.tagline, navArgs.description)) + suggestions,
-                            suggestionIndex = 0
-                        )
-                    }
+            val suggestions: List<AiSuggestionForAd> = navArgs.aiSuggestionsForAd.toList()
+            val index =
+                suggestions.indexOfFirst { it.tagLine == navArgs.tagline && it.description == navArgs.description }
+            if (index != -1) {
+                _viewState.update {
+                    _viewState.value.copy(
+                        suggestions = suggestions,
+                        suggestionIndex = index
+                    )
+                }
+            } else {
+                _viewState.update {
+                    _viewState.value.copy(
+                        suggestions = listOf(AiSuggestionForAd(navArgs.tagline, navArgs.description)) + suggestions,
+                        suggestionIndex = 0
+                    )
                 }
             }
         }

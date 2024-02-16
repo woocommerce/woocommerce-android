@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_T
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -59,7 +58,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     productId = navArgs.productId,
                     description = campaignDetails.description,
                     tagLine = campaignDetails.tagLine,
-                    campaignImageUrl = campaignDetails.campaignImage.uri
+                    campaignImageUrl = campaignDetails.campaignImage.uri,
                 )
             },
             campaignDetails = campaignDetails.toCampaignDetailsUi()
@@ -90,7 +89,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     productId = navArgs.productId,
                     tagLine = it.tagLine,
                     description = it.description,
-                    campaignImage = it.campaignImage
+                    campaignImage = it.campaignImage,
+                    aiSuggestions = it.aiSuggestionsForAd
                 )
             )
         }
@@ -156,10 +156,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     private fun isAiContentUsedForAd(): Boolean =
-        blazeRepository.getCachedAiSuggestionsForAd().any {
+        campaignDetails.value?.aiSuggestionsForAd?.any {
             it.tagLine == campaignDetails.value?.tagLine &&
                 it.description == campaignDetails.value?.description
-        }
+        } ?: false
 
     private fun loadData() {
         launch {
@@ -171,15 +171,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             blazeRepository.fetchDevices()
             blazeRepository.fetchInterests()
 
-            blazeRepository.fetchAdSuggestions(
-                productId = navArgs.productId,
-                forceRefresh = true
-            ).getOrNull().let { suggestions ->
+            blazeRepository.fetchAdSuggestions(productId = navArgs.productId).getOrNull().let { suggestions ->
                 adDetailsState.value = AdDetailsUiState.LOADED
                 campaignDetails.update {
                     it?.copy(
                         tagLine = suggestions?.firstOrNull()?.tagLine.orEmpty(),
-                        description = suggestions?.firstOrNull()?.description.orEmpty()
+                        description = suggestions?.firstOrNull()?.description.orEmpty(),
+                        aiSuggestionsForAd = suggestions.orEmpty()
                     )
                 }
             }
@@ -313,7 +311,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val productId: Long,
         val tagLine: String,
         val description: String,
-        val campaignImage: BlazeRepository.BlazeCampaignImage
+        val campaignImage: BlazeRepository.BlazeCampaignImage,
+        val aiSuggestions: List<BlazeRepository.AiSuggestionForAd>
     ) : MultiLiveEvent.Event()
 
     data class NavigateToPaymentSummary(
