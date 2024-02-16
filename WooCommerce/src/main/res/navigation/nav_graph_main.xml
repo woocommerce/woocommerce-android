@@ -221,7 +221,14 @@
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />
+        <action
+            android:id="@+id/action_analytics_to_analyticsSettings"
+            app:destination="@id/analyticsSettings" />
     </fragment>
+    <fragment
+        android:id="@+id/analyticsSettings"
+        android:name="com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingFragment"
+        android:label="fragment_analytics_settings" />
     <dialog
         android:id="@+id/analyticsDateRangeSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -320,13 +327,8 @@
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="isAddProduct"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"

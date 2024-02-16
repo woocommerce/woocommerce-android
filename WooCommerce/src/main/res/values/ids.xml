@@ -4,4 +4,5 @@
     <item type="id" name="more_menu_compose_view" />
     <item type="id" name="product_selector_compose_view" />
     <item type="id" name="product_configuration_view" />
+    <item type="id" name="analytics_hub_settings_view" />
 </resources>

@@ -138,6 +138,9 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
+    <string name="manage_analytics">Manage Analytics</string>
+    <string name="analytic_cards">Analytic Cards</string>
+    <string name="drag_handle">Drag handle</string>
     <string name="card">Card</string>
     <string name="cash">Cash</string>
     <string name="create">Create</string>

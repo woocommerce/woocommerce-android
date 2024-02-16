@@ -59,16 +59,19 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
 
                 is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(event.budget)
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(
+                            budget = event.budget,
+                            targetingParameters = event.targetingParameters
+                        )
                 )
 
                 is NavigateToEditAdScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
-                            event.productId,
-                            event.tagLine,
-                            event.description,
-                            event.campaignImageUrl
+                            productId = event.productId,
+                            tagline = event.tagLine,
+                            description = event.description,
+                            adImage = event.campaignImage
                         )
                 )
 
@@ -97,7 +100,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToPaymentSummary -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignPaymentSummaryFragment(
-                            event.budget
+                            event.campaignDetails
                         )
                 )
             }
@@ -106,7 +109,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
-            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImageUrl)
+            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImage)
         }
         handleResult<Budget>(BlazeCampaignBudgetFragment.EDIT_BUDGET_AND_DURATION_RESULT) {
             viewModel.onBudgetAndDurationUpdated(it)

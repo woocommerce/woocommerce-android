@@ -17,11 +17,30 @@ class TabletLayoutSetupHelper @Inject constructor(
 ) : DefaultLifecycleObserver {
     private var screen: Screen? = null
 
+    private lateinit var navHostFragment: NavHostFragment
+
     fun onViewCreated(screen: Screen) {
         if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
 
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
+    }
+
+    fun onItemClicked(
+        tabletNavigateTo: () -> Pair<Int, Bundle>,
+        navigateWithPhoneNavigation: () -> Unit
+    ) {
+        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled() &&
+            (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context))
+        ) {
+            val navigationData = tabletNavigateTo()
+            navHostFragment.navController.navigate(
+                navigationData.first,
+                navigationData.second,
+            )
+        } else {
+            navigateWithPhoneNavigation()
+        }
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -41,9 +60,9 @@ class TabletLayoutSetupHelper @Inject constructor(
     private fun initNavFragment(navigation: Screen.Navigation) {
         val fragmentManager = navigation.fragmentManager
         val navGraphId = navigation.navGraphId
-        val bundle = navigation.bundle
+        val bundle = navigation.initialBundle
 
-        val navHostFragment = NavHostFragment.create(navGraphId, bundle)
+        navHostFragment = NavHostFragment.create(navGraphId, bundle)
 
         fragmentManager.beginTransaction()
             .replace(R.id.detail_nav_container, navHostFragment)
@@ -55,9 +74,11 @@ class TabletLayoutSetupHelper @Inject constructor(
             DisplayUtils.isTablet(context) -> {
                 twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
             }
+
             DisplayUtils.isXLargeTablet(context) -> {
                 twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
             }
+
             else -> twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
         }
     }
@@ -75,7 +96,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         data class Navigation(
             val fragmentManager: FragmentManager,
             val navGraphId: Int,
-            val bundle: Bundle?
+            val initialBundle: Bundle?
         )
     }
 }

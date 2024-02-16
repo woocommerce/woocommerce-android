@@ -9,13 +9,8 @@
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
         tools:layout="@layout/fragment_product_detail">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="isAddProduct"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
