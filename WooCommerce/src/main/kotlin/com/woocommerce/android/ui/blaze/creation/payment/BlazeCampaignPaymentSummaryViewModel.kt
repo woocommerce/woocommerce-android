@@ -114,13 +114,16 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
                 onSuccess = {
                     campaignCreationState.value = null
                     analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
-        triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)},
+                    triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
+                },
                 onFailure = {
                     val errorMessage = when (it) {
                         is BlazeRepository.CampaignCreationError.MediaUploadError ->
                             R.string.blaze_campaign_creation_error_media_upload
+
                         is BlazeRepository.CampaignCreationError.MediaFetchError ->
                             R.string.blaze_campaign_creation_error_media_fetch
+
                         else -> R.string.blaze_campaign_creation_error
                     }
                     campaignCreationState.value = CampaignCreationState.Failed(errorMessage)
