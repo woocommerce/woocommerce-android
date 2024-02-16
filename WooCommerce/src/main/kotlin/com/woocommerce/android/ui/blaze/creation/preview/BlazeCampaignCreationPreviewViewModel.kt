@@ -207,7 +207,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         ),
         destinationUrl = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = targetUrl,
+            displayValue = targetUrl.ifBlank { targetUrl },
             maxLinesValue = 1,
             onItemSelected = {
                 triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))

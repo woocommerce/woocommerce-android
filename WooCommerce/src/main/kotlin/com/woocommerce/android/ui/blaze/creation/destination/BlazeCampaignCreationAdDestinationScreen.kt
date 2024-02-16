@@ -84,7 +84,9 @@ fun AdDestinationScreen(
             Divider()
             AdDestinationProperty(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
-                value = viewState.parameters,
+                value = viewState.parameters.ifBlank {
+                    stringResource(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
+                },
                 onPropertyTapped = onParametersPropertyTapped
             )
         }
