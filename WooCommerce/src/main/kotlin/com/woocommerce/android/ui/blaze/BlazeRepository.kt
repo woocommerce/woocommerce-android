@@ -291,6 +291,7 @@ class BlazeRepository @Inject constructor(
                         }
                     }
             }
+
             is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
             is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
         }
@@ -315,6 +316,7 @@ class BlazeRepository @Inject constructor(
 
     sealed interface BlazeCampaignImage : Parcelable {
         val uri: String
+
         @Parcelize
         data object None : BlazeCampaignImage {
             override val uri: String
@@ -334,6 +336,12 @@ class BlazeRepository @Inject constructor(
         val languages: List<Language> = emptyList(),
         val devices: List<Device> = emptyList(),
         val interests: List<Interest> = emptyList()
+    ) : Parcelable
+
+    @Parcelize
+    data class DestinationParameters(
+        val targetUrl: String,
+        val parameters: Map<String, String>
     ) : Parcelable
 
     @Parcelize
