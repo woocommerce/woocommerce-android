@@ -3846,6 +3846,10 @@
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Please add an image for the Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Add Image</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Please add a tagline and a description for your Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
 
     <!--
     Blaze campaign budget screen
