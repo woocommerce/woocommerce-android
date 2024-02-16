@@ -130,10 +130,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    fun onDestinationUpdated(url: String, parameters: Map<String, String>) {
-        campaignDetails.update { it?.copy(targetUrl = url, urlParams = parameters) }
-    }
-
     fun onConfirmClicked() {
         campaignDetails.value?.let {
             triggerEvent(NavigateToPaymentSummary(it))

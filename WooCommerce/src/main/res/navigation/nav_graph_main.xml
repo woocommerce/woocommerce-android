@@ -228,7 +228,8 @@
     <fragment
         android:id="@+id/analyticsSettings"
         android:name="com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingFragment"
-        android:label="fragment_analytics_settings" />
+        android:label="fragment_analytics_settings"
+        />
     <dialog
         android:id="@+id/analyticsDateRangeSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
