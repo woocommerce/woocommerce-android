@@ -146,8 +146,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         )
 
     private fun onAddNewCampaignClicked() {
-        val url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.CAMPAIGN_LIST)
-        triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
+        triggerEvent(LaunchBlazeCampaignCreation(BlazeFlowSource.CAMPAIGN_LIST))
     }
 
     private fun showCampaignCelebrationIfNeeded() {
@@ -169,7 +168,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         val onCampaignClicked: () -> Unit,
     )
 
-    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : Event()
+    data class LaunchBlazeCampaignCreation(val source: BlazeFlowSource) : Event()
     data class ShowCampaignDetails(
         val url: String,
         val urlToTriggerExit: String

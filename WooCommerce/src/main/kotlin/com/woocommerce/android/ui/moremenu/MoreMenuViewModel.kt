@@ -221,10 +221,7 @@ class MoreMenuViewModel @Inject constructor(
                 triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
             } else {
                 triggerEvent(
-                    MoreMenuEvent.OpenBlazeCampaignCreationEvent(
-                        url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),
-                        source = BlazeFlowSource.MORE_MENU_ITEM
-                    )
+                    MoreMenuEvent.OpenBlazeCampaignCreationEvent(source = BlazeFlowSource.MORE_MENU_ITEM)
                 )
             }
         }
@@ -305,7 +302,7 @@ class MoreMenuViewModel @Inject constructor(
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
         object OpenBlazeCampaignListEvent : MoreMenuEvent()
-        data class OpenBlazeCampaignCreationEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
+        data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
