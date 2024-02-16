@@ -44,25 +44,24 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private fun loadSuggestions() {
         viewModelScope.launch {
-            blazeRepository.fetchAdSuggestions(navArgs.productId).getOrNull()?.let { list ->
-                val index = list.indexOfFirst { it.tagLine == navArgs.tagline && it.description == navArgs.description }
-                val suggestions = list.map { AiSuggestionForAd(it.tagLine, it.description) }
-                if (index != -1) {
+            val passedDetails = AiSuggestionForAd(navArgs.tagline, navArgs.description)
+            blazeRepository.fetchAdSuggestions(navArgs.productId).fold(
+                onSuccess = { suggestions ->
                     _viewState.update {
-                        _viewState.value.copy(
-                            suggestions = suggestions,
-                            suggestionIndex = index
+                        it.copy(
+                            // add the passed details to the list of suggestions, and remove any duplicates
+                            suggestions = listOf(passedDetails) + (suggestions - passedDetails)
                         )
                     }
-                } else {
+                },
+                onFailure = {
                     _viewState.update {
                         _viewState.value.copy(
-                            suggestions = listOf(AiSuggestionForAd(navArgs.tagline, navArgs.description)) + suggestions,
-                            suggestionIndex = 0
+                            suggestions = listOf(passedDetails)
                         )
                     }
                 }
-            }
+            )
         }
     }
 
