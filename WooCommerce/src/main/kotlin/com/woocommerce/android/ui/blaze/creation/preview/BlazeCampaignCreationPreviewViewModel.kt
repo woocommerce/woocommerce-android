@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.joinToUrl
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -132,6 +133,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onDestinationUpdated(url: String, parameters: Map<String, String>) {
+        campaignDetails.update { it?.copy(targetUrl = url, urlParams = parameters) }
+    }
+
     fun onConfirmClicked() {
         campaignDetails.value?.let {
             triggerEvent(NavigateToPaymentSummary(it))
@@ -209,10 +214,15 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         ),
         destinationUrl = CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = targetUrl.ifBlank { targetUrl },
+            displayValue = urlParams.joinToUrl(targetUrl),
             maxLinesValue = 1,
             onItemSelected = {
-                triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
+                triggerEvent(
+                    NavigateToAdDestinationScreen(
+                        productId = navArgs.productId,
+                        destinationParameters = BlazeRepository.DestinationParameters(targetUrl, urlParams)
+                    )
+                )
             }
         )
     )
@@ -270,8 +280,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class NavigateToAdDestinationScreen(
-        val targetUrl: String,
-        val productId: Long
+        val productId: Long,
+        val destinationParameters: BlazeRepository.DestinationParameters
     ) : MultiLiveEvent.Event()
 
     data class NavigateToTargetSelectionScreen(

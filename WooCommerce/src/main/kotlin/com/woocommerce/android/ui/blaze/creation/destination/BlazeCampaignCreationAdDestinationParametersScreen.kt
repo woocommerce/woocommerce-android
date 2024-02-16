@@ -233,7 +233,7 @@ fun PreviewAdDestinationParametersScreen() {
     WooThemeWithBackground {
         AdDestinationParametersScreen(
             viewState = ViewState(
-                baseUrl = "https://woocommerce.com",
+                targetUrl = "https://woocommerce.com",
                 parameters = mapOf(
                     "utm_source" to "woocommerce",
                     "utm_medium" to "android",
@@ -258,7 +258,7 @@ fun PreviewEmptyAdDestinationParametersScreen() {
     WooThemeWithBackground {
         AdDestinationParametersScreen(
             viewState = ViewState(
-                baseUrl = "https://woocommerce.com?utm_source=woocommerce&utm_medium=android&utm_campaign=blaze",
+                targetUrl = "https://woocommerce.com?utm_source=woocommerce&utm_medium=android&utm_campaign=blaze",
                 parameters = emptyMap(),
                 bottomSheetState = ViewState.ParameterBottomSheetState.Hidden
             ),
