@@ -65,7 +65,6 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onEditDurationTapped = viewModel::onEditDurationTapped,
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
             onBudgetUpdated = viewModel::onBudgetUpdated,
-            onDurationSliderUpdated = viewModel::onDurationUpdated,
             onStartDateChanged = viewModel::onStartDateChanged,
             onBudgetChangeFinished = viewModel::onBudgetChangeFinished,
             onUpdateTapped = viewModel::onUpdateTapped,
@@ -82,11 +81,10 @@ private fun CampaignBudgetScreen(
     onEditDurationTapped: () -> Unit,
     onImpressionsInfoTapped: () -> Unit,
     onBudgetUpdated: (Float) -> Unit,
-    onDurationSliderUpdated: (Float) -> Unit,
     onStartDateChanged: (Long) -> Unit,
     onBudgetChangeFinished: () -> Unit,
     onUpdateTapped: () -> Unit,
-    onApplyDurationTapped: () -> Unit
+    onApplyDurationTapped: (Int) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -117,10 +115,9 @@ private fun CampaignBudgetScreen(
 
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
                             budgetUiState = state,
-                            onDurationSliderUpdated = { onDurationSliderUpdated(it) },
                             onStartDateChanged = { onStartDateChanged(it) },
                             onApplyTapped = {
-                                onApplyDurationTapped()
+                                onApplyDurationTapped(it)
                                 coroutineScope.launch { modalSheetState.hide() }
                             }
                         )
@@ -331,9 +328,8 @@ private fun ImpressionsInfoBottomSheet(
 @Composable
 private fun EditDurationBottomSheet(
     budgetUiState: BlazeCampaignBudgetViewModel.BudgetUiState,
-    onDurationSliderUpdated: (Float) -> Unit,
     onStartDateChanged: (Long) -> Unit,
-    onApplyTapped: () -> Unit,
+    onApplyTapped: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
@@ -348,6 +344,7 @@ private fun EditDurationBottomSheet(
         )
     }
 
+    var sliderPosition by remember { mutableStateOf(budgetUiState.durationInDays.toFloat()) }
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
@@ -360,7 +357,7 @@ private fun EditDurationBottomSheet(
                 .fillMaxWidth(),
             text = stringResource(
                 id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
-                budgetUiState.sliderDurationValue.toInt()
+                sliderPosition.toInt()
             ),
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.SemiBold,
@@ -370,9 +367,9 @@ private fun EditDurationBottomSheet(
             modifier = Modifier
                 .padding(top = 8.dp, bottom = 8.dp)
                 .fillMaxWidth(),
-            value = budgetUiState.sliderDurationValue,
+            value = sliderPosition,
             valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
-            onValueChange = { onDurationSliderUpdated(it) },
+            onValueChange = { sliderPosition = it },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
@@ -403,7 +400,7 @@ private fun EditDurationBottomSheet(
                     bottom = 16.dp
                 )
                 .fillMaxWidth(),
-            onClick = onApplyTapped,
+            onClick = { onApplyTapped(sliderPosition.toInt()) },
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
         )
     }
@@ -420,7 +417,6 @@ private fun CampaignBudgetScreenPreview() {
             budgetRangeMax = 35f,
             dailySpending = "$5",
             durationInDays = 7,
-            sliderDurationValue = 7f,
             durationRangeMin = 1f,
             durationRangeMax = 28f,
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
@@ -439,7 +435,6 @@ private fun CampaignBudgetScreenPreview() {
         onEditDurationTapped = {},
         onImpressionsInfoTapped = {},
         onBudgetUpdated = {},
-        onDurationSliderUpdated = {},
         onStartDateChanged = {},
         onUpdateTapped = {},
         onBudgetChangeFinished = {},

@@ -50,7 +50,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             ),
             forecast = getLoadingForecastUi(),
             durationInDays = navArgs.budget.durationInDays,
-            sliderDurationValue = navArgs.budget.durationInDays.toFloat(),
             durationRangeMin = 1f,
             durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
             confirmedCampaignStartDateMillis = navArgs.budget.startDate.time,
@@ -127,12 +126,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         }
     }
 
-    fun onDurationUpdated(duration: Float) {
-        budgetUiState.update { it.copy(sliderDurationValue = duration) }
-    }
-
-    fun onApplyDurationTapped() {
-        val newDuration = budgetUiState.value.sliderDurationValue.toInt()
+    fun onApplyDurationTapped(newDuration: Int) {
         val currentDailySpend = calculateDailySpending(newDuration)
         budgetUiState.update {
             it.copy(
@@ -238,7 +232,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val dailySpending: String,
         val forecast: ForecastUi,
         val durationInDays: Int,
-        val sliderDurationValue: Float,
         val durationRangeMin: Float,
         val durationRangeMax: Float,
         val showImpressionsBottomSheet: Boolean,
