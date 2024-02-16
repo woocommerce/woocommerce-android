@@ -109,9 +109,7 @@ class ProductListToolbarHelper @Inject constructor(
         productListViewModel?.onSearchTypeChanged(isSkuSearch)
     }
 
-    private fun setupToolbar(
-        toolbar: Toolbar
-    ) {
+    private fun setupToolbar(toolbar: Toolbar) {
         toolbar.title = activity.getString(R.string.products)
         toolbar.setOnMenuItemClickListener(this)
         toolbar.inflateMenu(R.menu.menu_product_list_fragment)
