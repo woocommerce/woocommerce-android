@@ -41,6 +41,6 @@ fun Map<String, String>.joinToUrl(baseUrl: String): String = buildString {
     append(baseUrl)
     appendWithIfNotEmpty(
         line = entries.joinToString("&") { (key, value) -> "${encode(key)}=${encode(value)}" },
-        separator = "?"
+        separator = if (baseUrl.contains("?")) "&" else "?"
     )
 }
