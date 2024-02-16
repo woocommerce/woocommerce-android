@@ -7,6 +7,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
@@ -40,7 +42,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         scope = viewModelScope,
         key = "campaignDetails",
         initialValue = null,
-        clazz = BlazeRepository.CampaignDetails::class.java
+        clazz = CampaignDetails::class.java
     )
 
     private val adDetailsState = savedStateHandle.getStateFlow(viewModelScope, AdDetailsUiState.LOADING)
@@ -133,8 +135,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    fun onDestinationUpdated(url: String, parameters: Map<String, String>) {
-        campaignDetails.update { it?.copy(targetUrl = url, urlParams = parameters) }
+    fun onDestinationUpdated(destinationParameters: DestinationParameters) {
+        campaignDetails.update { it?.copy(destinationParameters = destinationParameters) }
     }
 
     fun onConfirmClicked() {
@@ -165,67 +167,85 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    private fun BlazeRepository.CampaignDetails.toCampaignDetailsUi() = CampaignDetailsUi(
-        budget = CampaignDetailItemUi(
+    private fun CampaignDetails.toCampaignDetailsUi() = CampaignDetailsUi(
+        budget = getBudgetDetails(),
+        targetDetails = listOf(
+            getTargetLanguagesDetails(),
+            getTargetDevicesDetails(),
+            getTargetLocationsDetails(),
+            getTargetInterestsDetails(),
+        ),
+        destinationUrl = getTargetDestinationDetails()
+    )
+
+    private fun CampaignDetails.getBudgetDetails() =
+        CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
             onItemSelected = {
                 triggerEvent(NavigateToBudgetScreen(budget, targetingParameters))
             },
-        ),
-        targetDetails = listOf(
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
-                displayValue = targetingParameters.languages.joinToString { it.name }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(
-                        NavigateToTargetSelectionScreen(
-                            targetType = LANGUAGE,
-                            selectedIds = targetingParameters.languages.map { it.code }
-                        )
-                    )
-                },
-            ),
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
-                displayValue = targetingParameters.devices.joinToString { it.name }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(DEVICE, targetingParameters.devices.map { it.id }))
-                },
-            ),
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
-                displayValue = targetingParameters.locations.joinToString { it.name }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetLocationSelectionScreen(targetingParameters.locations))
-                },
-            ),
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
-                displayValue = targetingParameters.interests.joinToString { it.description }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(INTEREST, targetingParameters.interests.map { it.id }))
-                },
-            ),
-        ),
-        destinationUrl = CampaignDetailItemUi(
+        )
+
+    private fun CampaignDetails.getTargetDestinationDetails() =
+        CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = urlParams.joinToUrl(targetUrl),
+            displayValue = destinationParameters.parameters.joinToUrl(destinationParameters.targetUrl),
             maxLinesValue = 1,
             onItemSelected = {
                 triggerEvent(
                     NavigateToAdDestinationScreen(
                         productId = navArgs.productId,
-                        destinationParameters = BlazeRepository.DestinationParameters(targetUrl, urlParams)
+                        destinationParameters = destinationParameters
                     )
                 )
             }
         )
-    )
+
+    private fun CampaignDetails.getTargetInterestsDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
+            displayValue = targetingParameters.interests.joinToString { it.description }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(NavigateToTargetSelectionScreen(INTEREST, targetingParameters.interests.map { it.id }))
+            },
+        )
+
+    private fun CampaignDetails.getTargetLocationsDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
+            displayValue = targetingParameters.locations.joinToString { it.name }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(NavigateToTargetLocationSelectionScreen(targetingParameters.locations))
+            },
+        )
+
+    private fun CampaignDetails.getTargetDevicesDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
+            displayValue = targetingParameters.devices.joinToString { it.name }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(NavigateToTargetSelectionScreen(DEVICE, targetingParameters.devices.map { it.id }))
+            },
+        )
+
+    private fun CampaignDetails.getTargetLanguagesDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
+            displayValue = targetingParameters.languages.joinToString { it.name }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(
+                    NavigateToTargetSelectionScreen(
+                        targetType = LANGUAGE,
+                        selectedIds = targetingParameters.languages.map { it.code }
+                    )
+                )
+            },
+        )
 
     private fun BlazeRepository.Budget.toDisplayValue(): String {
         val totalBudgetWithCurrency = currencyFormatter.formatCurrency(
@@ -301,6 +321,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class NavigateToPaymentSummary(
-        val campaignDetails: BlazeRepository.CampaignDetails
+        val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
 }

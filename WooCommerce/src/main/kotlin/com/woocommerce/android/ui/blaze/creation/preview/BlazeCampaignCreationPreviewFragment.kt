@@ -122,7 +122,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
             viewModel.onTargetLocationsUpdated(it.locations)
         }
         handleResult<DestinationParameters>(BlazeCampaignCreationAdDestinationFragment.BLAZE_DESTINATION_RESULT) {
-            viewModel.onDestinationUpdated(it.targetUrl, it.parameters)
+            viewModel.onDestinationUpdated(it)
         }
     }
 }
