@@ -114,12 +114,16 @@ class ProductListToolbarHelper @Inject constructor(
         toolbar.setOnMenuItemClickListener(this)
         toolbar.inflateMenu(R.menu.menu_product_list_fragment)
         toolbar.navigationIcon = null
-        val searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
+
+        searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
+        searchMenuItem?.setOnActionExpandListener(this)
+
         searchView = searchMenuItem?.actionView as SearchView
         searchView?.queryHint = activity.getString(R.string.product_search_hint)
-        scanBarcodeMenuItem = toolbar.menu.findItem(R.id.menu_scan_barcode)
         searchView?.queryHint = getSearchQueryHint()
-        searchMenuItem.setOnActionExpandListener(this)
+
+        scanBarcodeMenuItem = toolbar.menu.findItem(R.id.menu_scan_barcode)
+
         refreshOptionsMenu()
     }
 

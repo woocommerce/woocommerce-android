@@ -22,7 +22,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            BETTER_TABLETS_SUPPORT_PRODUCTS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
@@ -30,6 +29,7 @@ enum class FeatureFlag {
             BLAZE_I3,
             EXPANDED_ANALYTIC_HUB_M2 -> PackageUtils.isDebugBuild()
 
+            BETTER_TABLETS_SUPPORT_PRODUCTS,
             IAP_FOR_STORE_CREATION -> false
         }
     }
