@@ -155,21 +155,21 @@ class OrderListFragment :
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
             savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
-        if (isTablet()) {
-            requireActivity().onBackPressedDispatcher.addCallback(
-                this,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        selectedOrder.selectOrder(-1L)
-                        if (isTablet()) {
-                            findNavController().popBackStack()
-                        } else {
-                            findNavController().navigateUp()
-                        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    selectedOrder.selectOrder(-1L)
+                    if (isTablet()) {
+                        findNavController().popBackStack()
+                    } else if (isSearching) {
+                        handleSearchViewCollapse()
+                    } else {
+                        findNavController().navigateUp()
                     }
                 }
-            )
-        }
+            }
+        )
 
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
@@ -177,6 +177,7 @@ class OrderListFragment :
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
     }
+
     private fun getSearchQueryHint(): String {
         return if (viewModel.viewState.isFilteringActive) {
             getString(R.string.orderlist_search_hint_active_filters)
