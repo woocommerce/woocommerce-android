@@ -289,7 +289,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             durationInDays,
             startDate.formatToMMMdd()
         )
-        return "$totalBudgetWithCurrency,  $duration"
+        return "$totalBudgetWithCurrency, $duration"
     }
 
     data class CampaignPreviewUiState(
