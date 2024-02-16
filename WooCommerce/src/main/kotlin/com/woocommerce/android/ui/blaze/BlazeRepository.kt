@@ -9,9 +9,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.transform
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
@@ -234,7 +236,13 @@ class BlazeRepository @Inject constructor(
         paymentMethodId: String
     ): Result<Unit> {
         val image = prepareCampaignImage(campaignDetails.campaignImage).getOrElse {
-            return Result.failure(it)
+            return Result.failure(
+                when (it) {
+                    is MediaFilesRepository.MediaUploadException -> CampaignCreationError.MediaUploadError(it.message)
+                    is OnChangedException -> CampaignCreationError.MediaFetchError(it.message)
+                    else -> it
+                }
+            )
         }
 
         val result = blazeCampaignsStore.createCampaign(
@@ -267,7 +275,7 @@ class BlazeRepository @Inject constructor(
         return when {
             result.isError -> {
                 WooLog.w(WooLog.T.BLAZE, "Failed to create campaign: ${result.error}")
-                Result.failure(OnChangedException(result.error))
+                Result.failure(CampaignCreationError.CampaignApiError(result.error.message))
             }
 
             else -> {
@@ -281,16 +289,19 @@ class BlazeRepository @Inject constructor(
         val result = when (image) {
             is BlazeCampaignImage.LocalImage -> {
                 mediaFilesRepository.uploadFile(image.uri)
-                    .filterNot { it is MediaFilesRepository.UploadResult.UploadProgress }
-                    .first()
-                    .let {
+                    .transform {
                         when (it) {
-                            is MediaFilesRepository.UploadResult.UploadFailure -> Result.failure(it.error)
-                            is MediaFilesRepository.UploadResult.UploadSuccess -> Result.success(it.media)
-                            else -> error("Unexpected upload result: $it")
+                            is MediaFilesRepository.UploadResult.UploadSuccess -> emit(Result.success(it.media))
+                            is MediaFilesRepository.UploadResult.UploadFailure -> throw it.error
+                            else -> { /* Do nothing */
+                            }
                         }
                     }
+                    .retry(1)
+                    .catch { emit(Result.failure(it)) }
+                    .first()
             }
+
             is BlazeCampaignImage.RemoteImage -> mediaFilesRepository.fetchWordPressMedia(image.mediaId)
             is BlazeCampaignImage.None -> error("No image provided for Blaze Campaign Creation")
         }
@@ -315,6 +326,7 @@ class BlazeRepository @Inject constructor(
 
     sealed interface BlazeCampaignImage : Parcelable {
         val uri: String
+
         @Parcelize
         data object None : BlazeCampaignImage {
             override val uri: String
@@ -384,6 +396,12 @@ class BlazeRepository @Inject constructor(
         val successUrl: String,
         val idUrlParameter: String
     ) : Parcelable
+
+    sealed class CampaignCreationError(message: String?) : Exception(message) {
+        class MediaUploadError(message: String?) : CampaignCreationError(message)
+        class MediaFetchError(message: String?) : CampaignCreationError(message)
+        class CampaignApiError(message: String?) : CampaignCreationError(message)
+    }
 }
 
 @Parcelize
