@@ -107,12 +107,14 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         it?.copy(targetingParameters = it.targetingParameters.copy(languages = selectedLanguages))
                     }
                 }
+
                 DEVICE -> blazeRepository.observeDevices().first().let { devices ->
                     val selectedDevices = devices.filter { selectedIds.contains(it.id) }
                     campaignDetails.update {
                         it?.copy(targetingParameters = it.targetingParameters.copy(devices = selectedDevices))
                     }
                 }
+
                 INTEREST -> blazeRepository.observeInterests().first().let { interests ->
                     val selectedInterests = interests.filter { selectedIds.contains(it.id) }
                     campaignDetails.update {
