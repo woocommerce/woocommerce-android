@@ -40,6 +40,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_payment_method), BackPressListener {
+
+    companion object {
+        const val SELECT_PAYMENT_REFRESH_ORDER_LIST = "select_payment_refresh_order_list"
+    }
+
     private val viewModel: SelectPaymentMethodViewModel by viewModels()
     private val sharePaymentUrlLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -223,6 +228,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToOrderList -> {
+                    findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                        SELECT_PAYMENT_REFRESH_ORDER_LIST,
+                        true
+                    )
+
                     val action = if (isTablet()) {
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
                             orderId = event.order.id
