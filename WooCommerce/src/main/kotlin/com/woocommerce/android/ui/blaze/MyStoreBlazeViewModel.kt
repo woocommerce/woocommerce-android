@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -160,19 +159,7 @@ class MyStoreBlazeViewModel @Inject constructor(
     }
 
     private fun launchCampaignCreation(productId: Long?) {
-        if (FeatureFlag.BLAZE_I3.isEnabled()) {
-            triggerEvent(LaunchBlazeCampaignCreation(productId))
-        } else {
-            val source = BlazeFlowSource.MY_STORE_SECTION
-            val url = if (productId != null) {
-                blazeUrlsHelper.buildUrlForProduct(productId, source)
-            } else {
-                blazeUrlsHelper.buildUrlForSite(source)
-            }
-            triggerEvent(
-                LaunchBlazeCampaignCreationUsingWebView(url = url, source = source)
-            )
-        }
+        triggerEvent(LaunchBlazeCampaignCreation(productId))
     }
 
     fun onBlazeViewDismissed() {
@@ -200,11 +187,6 @@ class MyStoreBlazeViewModel @Inject constructor(
             val onCreateCampaignClicked: () -> Unit,
         ) : MyStoreBlazeCampaignState
     }
-
-    data class LaunchBlazeCampaignCreationUsingWebView(
-        val url: String,
-        val source: BlazeFlowSource
-    ) : MultiLiveEvent.Event()
 
     data class LaunchBlazeCampaignCreation(val productId: Long?) : MultiLiveEvent.Event()
 
