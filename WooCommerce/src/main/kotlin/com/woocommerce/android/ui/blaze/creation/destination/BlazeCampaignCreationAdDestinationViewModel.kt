@@ -30,7 +30,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
     private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId))
         .permalink
-    private lateinit var initialDestinationValues: ViewState
+    private val initialDestinationValues: ViewState
 
     private val _viewState = MutableStateFlow(
         ViewState(
