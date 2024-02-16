@@ -174,13 +174,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     private fun calculateDailySpending(duration: Int): Float {
         val dailySpend = budgetUiState.value.totalBudget / duration
-        return if (dailySpend < CAMPAIGN_MINIMUM_DAILY_SPEND) {
-            CAMPAIGN_MINIMUM_DAILY_SPEND
-        } else if (dailySpend > CAMPAIGN_MAXIMUM_DAILY_SPEND) {
-            CAMPAIGN_MAXIMUM_DAILY_SPEND
-        } else {
-            dailySpend
-        }
+        return dailySpend.coerceIn(CAMPAIGN_MINIMUM_DAILY_SPEND, CAMPAIGN_MAXIMUM_DAILY_SPEND)
     }
 
     private fun fetchAdForecast() {
