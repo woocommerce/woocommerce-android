@@ -51,8 +51,10 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
                 startDate = Date()
             ),
             campaignImage = BlazeCampaignImage.None,
-            targetUrl = "http://test_url",
-            urlParams = emptyMap(),
+            destinationParameters = BlazeRepository.DestinationParameters(
+                targetUrl = "http://test_url",
+                parameters = emptyMap()
+            ),
             targetingParameters = BlazeRepository.TargetingParameters()
         )
         private val locations = listOf(Location(1, "Location 1"), Location(2, "Location 2"))
@@ -154,7 +156,8 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         assertThat(state.campaignDetails.targetDetails).allMatch {
             it.displayValue == resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value)
         }
-        assertThat(state.campaignDetails.destinationUrl.displayValue).isEqualTo(defaultCampaignDetails.targetUrl)
+        assertThat(state.campaignDetails.destinationUrl.displayValue)
+            .isEqualTo(defaultCampaignDetails.destinationParameters.targetUrl)
     }
 
     @Test
@@ -363,6 +366,21 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         }.last()
 
         assertThat(event).isInstanceOf(BlazeCampaignCreationPreviewViewModel.NavigateToAdDestinationScreen::class.java)
+    }
+
+    @Test
+    fun `when destination changes, then update campaign details`() = testBlocking {
+        setup()
+
+        val newDestination = BlazeRepository.DestinationParameters(
+            targetUrl = "http://new_url",
+            parameters = mapOf("key" to "value")
+        )
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onDestinationUpdated(newDestination)
+        }.last()
+
+        assertThat(state.campaignDetails.destinationUrl.displayValue).isEqualTo(newDestination.fullUrl)
     }
 
     @Test

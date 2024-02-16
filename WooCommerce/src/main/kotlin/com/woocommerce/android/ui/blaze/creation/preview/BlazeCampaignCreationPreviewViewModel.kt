@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTERES
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.joinToUrl
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -222,7 +221,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private fun CampaignDetails.getTargetDestinationDetails() =
         CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = destinationParameters.parameters.joinToUrl(destinationParameters.targetUrl),
+            displayValue = destinationParameters.fullUrl,
             maxLinesValue = 1,
             onItemSelected = {
                 triggerEvent(

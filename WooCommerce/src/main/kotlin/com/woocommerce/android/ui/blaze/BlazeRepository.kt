@@ -8,6 +8,7 @@ import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -349,7 +350,10 @@ class BlazeRepository @Inject constructor(
     data class DestinationParameters(
         val targetUrl: String,
         val parameters: Map<String, String>
-    ) : Parcelable
+    ) : Parcelable {
+        val fullUrl: String
+            get() = parameters.joinToUrl(targetUrl)
+    }
 
     @Parcelize
     data class AiSuggestionForAd(
