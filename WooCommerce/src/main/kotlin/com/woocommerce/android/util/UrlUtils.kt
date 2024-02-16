@@ -7,7 +7,6 @@ import dagger.Reusable
 import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils
 import org.wordpress.android.util.LanguageUtils
 import org.wordpress.android.util.UrlUtils
-import java.net.URLDecoder
 import java.net.URLEncoder
 import javax.inject.Inject
 
@@ -37,24 +36,11 @@ class UrlUtils @Inject constructor(
     }
 }
 
-fun String.getBaseUrl(): String {
-    return (split("?").getOrNull(0) ?: this).trimEnd('/')
-}
-
-fun String.parseParameters(): Map<String, String> {
-    fun decode(value: String) = URLDecoder.decode(value, "UTF-8")
-    val parameters = split("?").getOrNull(1) ?: return emptyMap()
-    return parameters.split("&").filter { it.contains("=") }.associate {
-        val (key, value) = it.split("=")
-        decode(key) to decode(value)
-    }
-}
-
 fun Map<String, String>.joinToUrl(baseUrl: String): String = buildString {
     fun encode(value: String) = URLEncoder.encode(value, "UTF-8").replace("+", "%20")
     append(baseUrl)
     appendWithIfNotEmpty(
         line = entries.joinToString("&") { (key, value) -> "${encode(key)}=${encode(value)}" },
-        separator = "?"
+        separator = if (baseUrl.contains("?")) "&" else "?"
     )
 }

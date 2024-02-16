@@ -10,6 +10,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersFragment.Companion.BLAZE_DESTINATION_PARAMETERS_RESULT
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationViewModel.NavigateToParametersScreen
 import com.woocommerce.android.ui.compose.composeView
@@ -44,7 +45,7 @@ class BlazeCampaignCreationAdDestinationFragment : BaseFragment() {
                 is ExitWithResult<*> -> navigateBackWithResult(BLAZE_DESTINATION_RESULT, event.data)
                 is NavigateToParametersScreen -> {
                     val action = BlazeCampaignCreationAdDestinationFragmentDirections
-                        .actionAdDestinationFragmentToAdDestinationParametersFragment(event.url)
+                        .actionAdDestinationFragmentToAdDestinationParametersFragment(event.destinationParameters)
                     findNavController().navigateSafely(action)
                 }
             }
@@ -52,8 +53,8 @@ class BlazeCampaignCreationAdDestinationFragment : BaseFragment() {
     }
 
     private fun handleResults() {
-        handleResult<String>(BLAZE_DESTINATION_PARAMETERS_RESULT) { url ->
-            viewModel.onTargetUrlUpdated(url)
+        handleResult<DestinationParameters>(BLAZE_DESTINATION_PARAMETERS_RESULT) {
+            viewModel.onDestinationParametersUpdated(it.targetUrl, it.parameters)
         }
     }
 }

@@ -163,7 +163,7 @@ fun PreviewParameterBottomSheet() {
     WooThemeWithBackground {
         ParameterBottomSheet(
             paramsState = Editing(
-                baseUrl = "https://example.com",
+                targetUrl = "https://example.com",
                 parameters = emptyMap(),
                 key = "key",
                 value = "value"

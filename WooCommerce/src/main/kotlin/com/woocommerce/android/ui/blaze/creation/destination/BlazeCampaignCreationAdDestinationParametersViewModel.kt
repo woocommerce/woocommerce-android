@@ -6,11 +6,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Editing
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Hidden
-import com.woocommerce.android.util.getBaseUrl
 import com.woocommerce.android.util.joinToUrl
-import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -34,8 +33,8 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     private val _viewState = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = ViewState(
-            baseUrl = navArgs.url.getBaseUrl(),
-            parameters = navArgs.url.parseParameters(),
+            targetUrl = navArgs.destinationParameters.targetUrl,
+            parameters = navArgs.destinationParameters.parameters,
             bottomSheetState = Hidden
         )
     )
@@ -43,14 +42,14 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onBackPressed() {
-        triggerEvent(ExitWithResult(_viewState.value.url))
+        triggerEvent(ExitWithResult(DestinationParameters(_viewState.value.targetUrl, _viewState.value.parameters)))
     }
 
     fun onAddParameterTapped() {
         _viewState.update {
             it.copy(
                 bottomSheetState = Editing(
-                    baseUrl = it.baseUrl,
+                    targetUrl = it.targetUrl,
                     parameters = it.parameters
                 )
             )
@@ -61,7 +60,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
         _viewState.update {
             it.copy(
                 bottomSheetState = Editing(
-                    baseUrl = it.baseUrl,
+                    targetUrl = it.targetUrl,
                     parameters = it.parameters - key,
                     key = key,
                     value = it.parameters[key] ?: ""
@@ -123,13 +122,13 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val baseUrl: String,
+        val targetUrl: String,
         val parameters: Map<String, String>,
         val bottomSheetState: ParameterBottomSheetState
     ) : Parcelable {
         @IgnoredOnParcel
         val url by lazy {
-            parameters.joinToUrl(baseUrl)
+            parameters.joinToUrl(targetUrl)
         }
 
         val charactersRemaining: Int
@@ -141,7 +140,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
 
             @Parcelize
             data class Editing(
-                val baseUrl: String,
+                val targetUrl: String,
                 val parameters: Map<String, String>,
                 val key: String = "",
                 val value: String = "",
@@ -153,7 +152,7 @@ class BlazeCampaignCreationAdDestinationParametersViewModel @Inject constructor(
                         parameters + (key to value)
                     } else {
                         parameters
-                    }.joinToUrl(baseUrl)
+                    }.joinToUrl(targetUrl)
                 }
 
                 val isSaveButtonEnabled: Boolean

@@ -148,14 +148,16 @@ class BlazeRepository @Inject constructor(
             userTimeZone = timezoneProvider.deviceTimezone.displayName,
             tagLine = "",
             description = "",
-            targetUrl = product.permalink,
-            urlParams = emptyMap(),
             campaignImage = product.images.firstOrNull().let {
                 if (it != null) BlazeCampaignImage.RemoteImage(it.id, it.source)
                 else BlazeCampaignImage.None
             },
             budget = getDefaultBudget(),
-            targetingParameters = TargetingParameters()
+            targetingParameters = TargetingParameters(),
+            destinationParameters = DestinationParameters(
+                targetUrl = product.permalink,
+                parameters = emptyMap()
+            )
         )
     }
 
@@ -258,8 +260,8 @@ class BlazeRepository @Inject constructor(
                 startDate = campaignDetails.budget.startDate,
                 endDate = campaignDetails.budget.endDate,
                 budget = campaignDetails.budget.totalBudget.toDouble(),
-                targetUrl = campaignDetails.targetUrl,
-                urlParams = campaignDetails.urlParams,
+                targetUrl = campaignDetails.destinationParameters.targetUrl,
+                urlParams = campaignDetails.destinationParameters.parameters,
                 mainImage = image,
                 targetingParameters = campaignDetails.targetingParameters.let {
                     BlazeTargetingParameters(
@@ -317,11 +319,10 @@ class BlazeRepository @Inject constructor(
         val tagLine: String,
         val description: String,
         val userTimeZone: String,
-        val targetUrl: String,
-        val urlParams: Map<String, String>,
         val campaignImage: BlazeCampaignImage,
         val budget: Budget,
-        val targetingParameters: TargetingParameters
+        val targetingParameters: TargetingParameters,
+        val destinationParameters: DestinationParameters
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {
@@ -346,6 +347,12 @@ class BlazeRepository @Inject constructor(
         val languages: List<Language> = emptyList(),
         val devices: List<Device> = emptyList(),
         val interests: List<Interest> = emptyList()
+    ) : Parcelable
+
+    @Parcelize
+    data class DestinationParameters(
+        val targetUrl: String,
+        val parameters: Map<String, String>
     ) : Parcelable
 
     @Parcelize
