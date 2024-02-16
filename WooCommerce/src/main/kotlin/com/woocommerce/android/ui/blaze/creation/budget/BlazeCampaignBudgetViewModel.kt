@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SAVE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
@@ -51,9 +50,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             ),
             forecast = getLoadingForecastUi(),
             durationInDays = navArgs.budget.durationInDays,
+            sliderDurationValue = navArgs.budget.durationInDays.toFloat(),
             durationRangeMin = 1f,
             durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
-            campaignStartDateMillis = navArgs.budget.startDate.time,
+            confirmedCampaignStartDateMillis = navArgs.budget.startDate.time,
+            bottomSheetCampaignStartDateMillis = navArgs.budget.startDate.time,
             campaignDurationDates = getCampaignDurationDisplayDate(
                 navArgs.budget.startDate.time, navArgs.budget.durationInDays
             ),
@@ -85,7 +86,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                     totalBudget = budgetUiState.value.totalBudget,
                     spentBudget = 0f,
                     durationInDays = budgetUiState.value.durationInDays,
-                    startDate = Date(budgetUiState.value.campaignStartDateMillis),
+                    startDate = Date(budgetUiState.value.confirmedCampaignStartDateMillis),
                     currencyCode = budgetUiState.value.currencyCode,
                 )
             )
@@ -126,32 +127,35 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         }
     }
 
-    fun onCampaignDurationUpdated(duration: Int) {
-        val currentDailyExpend = budgetUiState.value.totalBudget / budgetUiState.value.durationInDays
-        val newTotalBudget = duration * currentDailyExpend
+    fun onDurationUpdated(duration: Float) {
+        budgetUiState.update { it.copy(sliderDurationValue = duration) }
+    }
+
+    fun onApplyDurationTapped() {
+        val newDuration = budgetUiState.value.sliderDurationValue.toInt()
+        val currentDailySpend = budgetUiState.value.totalBudget / newDuration
+        val newTotalBudget = newDuration * currentDailySpend
         budgetUiState.update {
             it.copy(
-                durationInDays = duration,
-                budgetRangeMin = duration * CAMPAIGN_MINIMUM_DAILY_SPEND,
-                budgetRangeMax = duration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
-                dailySpending = formatDailySpend(currentDailyExpend),
+                durationInDays = newDuration,
+                budgetRangeMin = newDuration * CAMPAIGN_MINIMUM_DAILY_SPEND,
+                budgetRangeMax = newDuration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
+                dailySpending = formatDailySpend(currentDailySpend),
                 totalBudget = newTotalBudget,
-                campaignDurationDates = getCampaignDurationDisplayDate(it.campaignStartDateMillis, duration)
+                confirmedCampaignStartDateMillis = it.bottomSheetCampaignStartDateMillis,
+                campaignDurationDates = getCampaignDurationDisplayDate(
+                    it.bottomSheetCampaignStartDateMillis,
+                    newDuration
+                )
             )
         }
         fetchAdForecast()
-        analyticsTrackerWrapper.track(
-            stat = BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_BLAZE_DURATION to budgetUiState.value.durationInDays,
-            )
-        )
     }
 
     fun onStartDateChanged(newStartDateMillis: Long) {
         budgetUiState.update {
             it.copy(
-                campaignStartDateMillis = newStartDateMillis,
+                bottomSheetCampaignStartDateMillis = newStartDateMillis,
                 campaignDurationDates = getCampaignDurationDisplayDate(
                     newStartDateMillis,
                     it.durationInDays
@@ -174,7 +178,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         campaignForecastState = campaignForecastState.copy(isLoading = true)
         launch {
             repository.fetchAdForecast(
-                startDate = Date(budgetUiState.value.campaignStartDateMillis),
+                startDate = Date(budgetUiState.value.confirmedCampaignStartDateMillis),
                 campaignDurationDays = budgetUiState.value.durationInDays,
                 totalBudget = budgetUiState.value.totalBudget,
                 targetingParameters = navArgs.targetingParameters
@@ -219,11 +223,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val dailySpending: String,
         val forecast: ForecastUi,
         val durationInDays: Int,
+        val sliderDurationValue: Float,
         val durationRangeMin: Float,
         val durationRangeMax: Float,
         val showImpressionsBottomSheet: Boolean,
         val showCampaignDurationBottomSheet: Boolean,
-        val campaignStartDateMillis: Long,
+        val confirmedCampaignStartDateMillis: Long,
+        val bottomSheetCampaignStartDateMillis: Long,
         val campaignDurationDates: String,
     ) : Parcelable
 
