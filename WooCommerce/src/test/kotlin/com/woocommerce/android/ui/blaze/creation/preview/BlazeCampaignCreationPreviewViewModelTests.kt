@@ -138,16 +138,16 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
 
         assertThat(state.campaignDetails.budget.displayValue).isEqualTo(
             "${
-                currencyFormatter.formatCurrency(
-                    amount = defaultCampaignDetails.budget.totalBudget.toBigDecimal(),
-                    currencyCode = defaultCampaignDetails.budget.currencyCode
-                )
+            currencyFormatter.formatCurrency(
+                amount = defaultCampaignDetails.budget.totalBudget.toBigDecimal(),
+                currencyCode = defaultCampaignDetails.budget.currencyCode
+            )
             }, ${
-                resourceProvider.getString(
-                    R.string.blaze_campaign_preview_days_duration,
-                    defaultCampaignDetails.budget.durationInDays,
-                    defaultCampaignDetails.budget.startDate.formatToMMMdd()
-                )
+            resourceProvider.getString(
+                R.string.blaze_campaign_preview_days_duration,
+                defaultCampaignDetails.budget.durationInDays,
+                defaultCampaignDetails.budget.startDate.formatToMMMdd()
+            )
             }"
         )
         assertThat(state.campaignDetails.targetDetails).hasSize(4)
@@ -339,16 +339,16 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
 
         assertThat(state.campaignDetails.budget.displayValue).isEqualTo(
             "${
-                currencyFormatter.formatCurrency(
-                    amount = newBudget.totalBudget.toBigDecimal(),
-                    currencyCode = newBudget.currencyCode
-                )
+            currencyFormatter.formatCurrency(
+                amount = newBudget.totalBudget.toBigDecimal(),
+                currencyCode = newBudget.currencyCode
+            )
             }, ${
-                resourceProvider.getString(
-                    R.string.blaze_campaign_preview_days_duration,
-                    newBudget.durationInDays,
-                    newBudget.startDate.formatToMMMdd()
-                )
+            resourceProvider.getString(
+                R.string.blaze_campaign_preview_days_duration,
+                newBudget.durationInDays,
+                newBudget.startDate.formatToMMMdd()
+            )
             }"
         )
     }
