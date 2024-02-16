@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
@@ -32,7 +31,6 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewR
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewStoreEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -98,11 +96,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewInboxEvent -> navigateToInbox()
                 is ViewCouponsEvent -> navigateToCoupons()
                 is ViewPayments -> navigateToPayments()
-                is OpenBlazeCampaignCreationEvent -> if (FeatureFlag.BLAZE_I3.isEnabled()) {
-                    openBlazeCreationFlow()
-                } else {
-                    openBlazeWebView(event)
-                }
+                is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
             }
         }
@@ -117,15 +111,6 @@ class MoreMenuFragment : TopLevelFragment() {
         lifecycleScope.launch {
             blazeCampaignCreationDispatcher.startCampaignCreation(source = BlazeFlowSource.MORE_MENU_ITEM)
         }
-    }
-
-    private fun openBlazeWebView(event: OpenBlazeCampaignCreationEvent) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = event.url,
-                source = event.source
-            )
-        )
     }
 
     private fun navigateToPayments() {
