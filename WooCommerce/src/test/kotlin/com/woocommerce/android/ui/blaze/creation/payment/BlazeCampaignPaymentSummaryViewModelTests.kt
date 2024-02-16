@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
-import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
@@ -43,32 +42,10 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
                 parameters = emptyMap()
             )
         )
-        private val userPaymentMethods = listOf(
-            BlazeRepository.PaymentMethod(
-                id = "1",
-                name = "Visa 1234",
-                info = BlazeRepository.PaymentMethod.PaymentMethodInfo.CreditCard(
-                    cardHolderName = "John Doe",
-                    creditCardType = CreditCardType.VISA
-                )
-            ),
-            BlazeRepository.PaymentMethod(
-                id = "2",
-                name = "MasterCard 5678",
-                info = BlazeRepository.PaymentMethod.PaymentMethodInfo.CreditCard(
-                    cardHolderName = "Jane Doe",
-                    creditCardType = CreditCardType.MASTERCARD
-                )
-            )
-        )
-        private val paymentMethodsData = BlazeRepository.PaymentMethodsData(
-            savedPaymentMethods = userPaymentMethods,
-            addPaymentMethodUrls = mock()
-        )
     }
 
     private val blazeRepository: BlazeRepository = mock {
-        onBlocking { fetchPaymentMethods() } doReturn Result.success(paymentMethodsData)
+        onBlocking { fetchPaymentMethods() } doReturn Result.success(BlazePaymentSampleData.paymentMethodsData)
     }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }
@@ -99,7 +76,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
 
         val state = viewModel.viewState.getOrAwaitValue()
 
-        assertThat(state.selectedPaymentMethod).isEqualTo(userPaymentMethods.first())
+        assertThat(state.selectedPaymentMethod).isEqualTo(BlazePaymentSampleData.userPaymentMethods.first())
     }
 
     @Test
@@ -142,7 +119,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
 
         assertThat(event).isEqualTo(
             BlazeCampaignPaymentSummaryViewModel.NavigateToPaymentsListScreen(
-                paymentMethodsData,
+                BlazePaymentSampleData.paymentMethodsData,
                 state.selectedPaymentMethod?.id
             )
         )
@@ -152,7 +129,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
     fun `when payment method is selected, then update the selected payment method`() = testBlocking {
         setup()
 
-        val paymentMethod = userPaymentMethods.last()
+        val paymentMethod = BlazePaymentSampleData.userPaymentMethods.last()
         viewModel.onPaymentMethodSelected(paymentMethod.id)
 
         val state = viewModel.viewState.getOrAwaitValue()
