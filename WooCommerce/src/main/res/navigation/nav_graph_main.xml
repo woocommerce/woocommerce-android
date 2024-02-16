@@ -648,30 +648,9 @@
             app:nullable="false" />
     </fragment>
     <fragment
-        android:id="@+id/blazeCampaignCreationFragment"
-        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
-        android:label="BlazeWebViewFragment">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_blazeCampaignCreationFragment_to_blazeCampaignListFragment"
-            app:destination="@id/blazeCampaignListFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/blazeCampaignCreationFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
         android:id="@+id/freeTrialSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
         android:label="FreeTrialSurveyFragment" />
-    <action
-        android:id="@+id/action_global_blazeCampaignCreationFragment"
-        app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />

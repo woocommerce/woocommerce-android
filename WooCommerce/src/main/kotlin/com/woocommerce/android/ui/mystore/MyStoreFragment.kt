@@ -282,15 +282,6 @@ class MyStoreFragment :
         }
     }
 
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
-    }
-
     @Suppress("LongMethod")
     private fun setupOnboardingView() {
         storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
