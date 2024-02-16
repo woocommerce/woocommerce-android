@@ -9,7 +9,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -138,8 +137,6 @@ class BlazeRepository @Inject constructor(
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
             startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
         )
-
-        delay(2000)
 
         val product = productDetailRepository.getProduct(productId)
             ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
@@ -337,12 +334,6 @@ class BlazeRepository @Inject constructor(
         val languages: List<Language> = emptyList(),
         val devices: List<Device> = emptyList(),
         val interests: List<Interest> = emptyList()
-    ) : Parcelable
-
-    @Parcelize
-    data class DestinationParameters(
-        val targetUrl: String,
-        val parameters: Map<String, String>
     ) : Parcelable
 
     @Parcelize
