@@ -44,7 +44,8 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         directions = BlazeCampaignCreationIntroFragmentDirections
                             .actionBlazeCampaignCreationIntroFragmentToBlazeCampaignCreationPreviewFragment(
-                                productId = event.productId
+                                productId = event.productId,
+                                source = event.source
                             ),
                         navOptions = navOptions {
                             popUpTo(R.id.blazeCampaignCreationIntroFragment) { inclusive = true }
