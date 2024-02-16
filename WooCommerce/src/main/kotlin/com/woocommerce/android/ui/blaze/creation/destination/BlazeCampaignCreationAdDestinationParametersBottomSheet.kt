@@ -17,8 +17,7 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -33,7 +32,6 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -46,18 +44,15 @@ fun AdDestinationParametersBottomSheet(
     modifier: Modifier = Modifier,
     screenContent: @Composable () -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val roundedCornerRadius = dimensionResource(id = R.dimen.major_100)
 
     BackHandler(modalSheetState.isVisible) {
-        coroutineScope.launch { modalSheetState.hide() }
+        onParameterBottomSheetDismissed()
     }
 
-    if (modalSheetState.currentValue != Hidden) {
-        DisposableEffect(Unit) {
-            onDispose {
-                onParameterBottomSheetDismissed()
-            }
+    LaunchedEffect(modalSheetState.currentValue) {
+        if (modalSheetState.currentValue == Hidden) {
+            onParameterBottomSheetDismissed()
         }
     }
 
