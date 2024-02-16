@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.analytics.hub.settings
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
-import com.woocommerce.android.ui.analytics.hub.SaveAnalyticsCardsConfiguration
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
