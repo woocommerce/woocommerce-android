@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -20,9 +21,14 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val blazeRepository: BlazeRepository
+    private val blazeRepository: BlazeRepository,
+    currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val budgetFormatted = currencyFormatter.formatCurrency(
+        amount = navArgs.campaignDetails.budget.totalBudget.toBigDecimal(),
+        currencyCode = navArgs.campaignDetails.budget.currencyCode
+    )
 
     private val selectedPaymentMethodId = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
@@ -39,7 +45,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         campaignCreationState
     ) { selectedPaymentMethodId, paymentMethodState, campaignCreationState ->
         ViewState(
-            budget = navArgs.campaignDetails.budget,
+            budgetFormatted = budgetFormatted,
             paymentMethodsState = paymentMethodState,
             selectedPaymentMethodId = selectedPaymentMethodId,
             campaignCreationState = campaignCreationState
@@ -127,7 +133,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val budget: BlazeRepository.Budget,
+        val budgetFormatted: String,
         val paymentMethodsState: PaymentMethodsState,
         private val selectedPaymentMethodId: String?,
         val campaignCreationState: CampaignCreationState? = null
