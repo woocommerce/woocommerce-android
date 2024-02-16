@@ -48,17 +48,13 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
             blazeRepository.fetchAdSuggestions(navArgs.productId).fold(
                 onSuccess = { suggestions ->
                     _viewState.update {
-                        it.copy(
-                            // add the passed details to the list of suggestions, and remove any duplicates
-                            suggestions = listOf(passedDetails) + (suggestions - passedDetails)
-                        )
+                        // add the passed details to the list of suggestions, and remove any duplicates
+                        it.copy(suggestions = listOf(passedDetails) + (suggestions - passedDetails))
                     }
                 },
                 onFailure = {
                     _viewState.update {
-                        _viewState.value.copy(
-                            suggestions = listOf(passedDetails)
-                        )
+                        it.copy(suggestions = listOf(passedDetails))
                     }
                 }
             )
@@ -67,15 +63,15 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onNextSuggestionTapped() {
         _viewState.update {
-            val index = _viewState.value.suggestionIndex
-            _viewState.value.copy(suggestionIndex = index + 1)
+            val index = it.suggestionIndex
+            it.copy(suggestionIndex = index + 1)
         }
     }
 
     fun onPreviousSuggestionTapped() {
         _viewState.update {
-            val index = _viewState.value.suggestionIndex
-            _viewState.value.copy(suggestionIndex = index - 1)
+            val index = it.suggestionIndex
+            it.copy(suggestionIndex = index - 1)
         }
     }
 
@@ -118,13 +114,13 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onLocalImageSelected(uri: String) {
         _viewState.update {
-            _viewState.value.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+            it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
         }
     }
 
     fun onWPMediaSelected(image: Product.Image) {
         _viewState.update {
-            _viewState.value.copy(
+            it.copy(
                 adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
                     mediaId = image.id, uri = image.source
                 )
@@ -134,15 +130,15 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private fun updateSuggestion(suggestion: AiSuggestionForAd) {
         _viewState.update {
-            val suggestions = _viewState.value.suggestions.toMutableList()
-            suggestions[_viewState.value.suggestionIndex] = suggestion
-            _viewState.value.copy(suggestions = suggestions)
+            val suggestions = it.suggestions.toMutableList()
+            suggestions[it.suggestionIndex] = suggestion
+            it.copy(suggestions = suggestions)
         }
     }
 
     private fun setMediaPickerDialogVisibility(isVisible: Boolean) {
         _viewState.update {
-            _viewState.value.copy(isMediaPickerDialogVisible = isVisible)
+            it.copy(isMediaPickerDialogVisible = isVisible)
         }
     }
 
