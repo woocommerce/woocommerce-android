@@ -11,9 +11,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment
+import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToAdDestinationScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
@@ -93,8 +95,8 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToAdDestinationScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment(
-                            event.targetUrl,
-                            event.productId
+                            event.productId,
+                            event.destinationParameters
                         )
                 )
                 is NavigateToPaymentSummary -> findNavController().navigateSafely(
@@ -119,6 +121,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         }
         handleResult<TargetLocationResult>(BlazeCampaignTargetLocationSelectionFragment.BLAZE_TARGET_LOCATION_RESULT) {
             viewModel.onTargetLocationsUpdated(it.locations)
+        }
+        handleResult<DestinationParameters>(BlazeCampaignCreationAdDestinationFragment.BLAZE_DESTINATION_RESULT) {
+            viewModel.onDestinationUpdated(it)
         }
     }
 }
