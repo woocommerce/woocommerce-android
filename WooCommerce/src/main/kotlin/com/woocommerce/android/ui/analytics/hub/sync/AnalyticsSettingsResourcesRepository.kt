@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfiguration
+import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 

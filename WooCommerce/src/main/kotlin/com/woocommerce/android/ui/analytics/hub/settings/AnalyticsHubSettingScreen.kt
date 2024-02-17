@@ -89,7 +89,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
 
 @Composable
 fun AnalyticsHubSettingScreen(
-    cards: List<AnalyticCardConfiguration>,
+    cards: List<AnalyticCardConfigurationUI>,
     onSelectionChange: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
