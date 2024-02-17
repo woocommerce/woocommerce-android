@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.analytics.settings
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewModel
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.CardsConfiguration

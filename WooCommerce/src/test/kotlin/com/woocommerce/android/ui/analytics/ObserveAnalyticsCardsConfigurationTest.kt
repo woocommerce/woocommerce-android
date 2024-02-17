@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfiguration
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsSettingsDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsSettingsResourcesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
