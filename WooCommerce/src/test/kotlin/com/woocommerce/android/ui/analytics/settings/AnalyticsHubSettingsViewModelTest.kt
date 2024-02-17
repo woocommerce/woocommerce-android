@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics.settings
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
+import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfigurationUI
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewModel
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.CardsConfiguration
@@ -134,4 +135,80 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
             verify(saveAnalyticsCardsConfiguration).invoke(expectedConfiguration)
         }
+
+    @Test
+    fun `when the received configuration only have one selected card, then the selected card is disabled`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(1, "Revenue", true),
+            AnalyticCardConfiguration(2, "Orders", false),
+            AnalyticCardConfiguration(3, "Stats", false)
+        )
+        val expected = listOf(
+            AnalyticCardConfigurationUI(1, "Revenue", true, isEnabled = false),
+            AnalyticCardConfigurationUI(2, "Orders", false, isEnabled = true),
+            AnalyticCardConfigurationUI(3, "Stats", false, isEnabled = true)
+        )
+        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+
+        var viewState: AnalyticsHubSettingsViewState? = null
+        sut.viewStateData.observeForever { _, new -> viewState = new }
+
+        advanceTimeBy(501)
+
+        // The save button is disabled when the configuration doesn't have any change
+        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when configuration only have 1 selected card and other card is selected, then all cards are enabled`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(1, "Revenue", true),
+            AnalyticCardConfiguration(2, "Orders", false),
+            AnalyticCardConfiguration(3, "Stats", false)
+        )
+        val expected = listOf(
+            AnalyticCardConfigurationUI(1, "Revenue", true, isEnabled = true),
+            AnalyticCardConfigurationUI(2, "Orders", true, isEnabled = true),
+            AnalyticCardConfigurationUI(3, "Stats", false, isEnabled = true)
+        )
+        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+
+        var viewState: AnalyticsHubSettingsViewState? = null
+        sut.viewStateData.observeForever { _, new -> viewState = new }
+
+        advanceTimeBy(501)
+
+        sut.onSelectionChange(2, true)
+
+        // The save button is disabled when the configuration doesn't have any change
+        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when configuration have 2 selected card and one of those cards is deselected, then the selected card is disabled`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(1, "Revenue", true),
+            AnalyticCardConfiguration(2, "Orders", true),
+            AnalyticCardConfiguration(3, "Stats", false)
+        )
+        val expected = listOf(
+            AnalyticCardConfigurationUI(1, "Revenue", true, isEnabled = false),
+            AnalyticCardConfigurationUI(2, "Orders", false, isEnabled = true),
+            AnalyticCardConfigurationUI(3, "Stats", false, isEnabled = true)
+        )
+        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+
+        var viewState: AnalyticsHubSettingsViewState? = null
+        sut.viewStateData.observeForever { _, new -> viewState = new }
+
+        advanceTimeBy(501)
+
+        sut.onSelectionChange(2, false)
+
+        // The save button is disabled when the configuration doesn't have any change
+        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+    }
 }
