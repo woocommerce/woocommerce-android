@@ -40,10 +40,11 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             observeAnalyticsCardsConfiguration().first().let { configuration ->
                 currentConfiguration = configuration.map { it.toConfigurationUI() }
                 draftConfiguration = currentConfiguration
+                checkVisibleCards()
                 viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
                     cardsConfiguration = draftConfiguration,
                     showDiscardDialog = false,
-                    isSaveButtonEnabled = hasChanges()
+                    isSaveButtonEnabled = false
                 )
             }
         }
@@ -86,15 +87,28 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
     }
 
     fun onSelectionChange(id: Int, isSelected: Boolean) {
-        draftConfiguration = draftConfiguration.map { card ->
-            if (card.id == id) card.copy(isVisible = isSelected)
-            else card
-        }
+        updateSelection(id, isSelected)
+        checkVisibleCards()
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
             cardsConfiguration = draftConfiguration,
             showDiscardDialog = false,
             isSaveButtonEnabled = hasChanges()
         )
+    }
+
+    private fun updateSelection(id: Int, isSelected: Boolean) {
+        draftConfiguration = draftConfiguration.map { card ->
+            if (card.id == id) card.copy(isVisible = isSelected)
+            else card
+        }
+    }
+
+    private fun checkVisibleCards() {
+        val visibleCards = draftConfiguration.count { card -> card.isVisible }
+        draftConfiguration = draftConfiguration.map { card ->
+            if (visibleCards == 1 && card.isVisible) card.copy(isEnabled = false)
+            else card.copy(isEnabled = true)
+        }
     }
 }
 
