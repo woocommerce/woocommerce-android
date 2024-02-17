@@ -215,7 +215,8 @@ fun AnalyticCardItemPreview() {
             title = "Revenue",
             isSelected = true,
             isEnabled = true,
-            onSelectionChange = { _, _ -> })
+            onSelectionChange = { _, _ -> }
+        )
     }
 }
 
