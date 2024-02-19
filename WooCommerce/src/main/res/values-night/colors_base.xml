@@ -50,6 +50,7 @@
     <color name="color_default_image_background">@color/woo_gray_40</color>
     <color name="color_toolbar">@color/woo_black_900</color>
     <color name="bottom_sheet_background">@color/woo_black_900</color>
+    <color name="color_item_selected">@color/woo_black</color>
 
     <!--
         Elevation colors

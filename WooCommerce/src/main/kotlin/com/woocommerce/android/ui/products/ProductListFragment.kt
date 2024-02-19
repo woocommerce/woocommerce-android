@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
@@ -161,20 +162,8 @@ class ProductListFragment :
         _productAdapter = ProductListAdapter(
             loadMoreListener = this,
             currencyFormatter = currencyFormatter,
-            clickListener = { id, sharedView ->
-                tabletLayoutSetupHelper.onItemClicked(
-                    tabletNavigateTo = {
-                        R.id.nav_graph_products to ProductDetailFragmentArgs(
-                            mode = ProductDetailFragment.Mode.ShowProduct(id),
-                            isTrashEnabled = true,
-                        ).toBundle()
-                    },
-                    navigateWithPhoneNavigation = {
-                        binding.addProductButton.hide()
-                        onProductClick(id, sharedView)
-                    }
-                )
-            }
+            clickListener = { id, sharedView -> productListViewModel.onOpenProduct(id, sharedView) },
+            isProductHighlighted = { productListViewModel.isProductHighlighted(it) }
         )
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
@@ -223,7 +212,6 @@ class ProductListFragment :
                 override fun onSelectionChanged() {
                     val selectionCount = tracker?.selection?.size() ?: 0
                     productListViewModel.onSelectionChanged(selectionCount)
-                    super.onSelectionChanged()
                 }
             })
     }
@@ -475,6 +463,22 @@ class ProductListFragment :
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
+                is OpenProduct -> {
+                    tabletLayoutSetupHelper.onItemClicked(
+                        tabletNavigateTo = {
+                            productAdapter.notifyItemChanged(event.oldPosition)
+                            productAdapter.notifyItemChanged(event.newPosition)
+                            R.id.nav_graph_products to ProductDetailFragmentArgs(
+                                mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
+                                isTrashEnabled = true,
+                            ).toBundle()
+                        },
+                        navigateWithPhoneNavigation = {
+                            binding.addProductButton.hide()
+                            onProductClick(event.productId, event.sharedView)
+                        }
+                    )
+                }
                 else -> event.isHandled = false
             }
         }
