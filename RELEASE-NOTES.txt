@@ -2,6 +2,7 @@
 
 17.5
 -----
+- [*] [Internal] As side effect of adding tablet support, toolbar on the product list screen is not collapsible anymore [https://github.com/woocommerce/woocommerce-android/pull/10844]
 
 
 17.4
