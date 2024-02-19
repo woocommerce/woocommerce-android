@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -41,10 +42,14 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
             when (event) {
                 is BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm -> {
                     findNavController().navigateSafely(
-                        BlazeCampaignCreationIntroFragmentDirections
+                        directions = BlazeCampaignCreationIntroFragmentDirections
                             .actionBlazeCampaignCreationIntroFragmentToBlazeCampaignCreationPreviewFragment(
-                                productId = event.productId
-                            )
+                                productId = event.productId,
+                                source = event.source
+                            ),
+                        navOptions = navOptions {
+                            popUpTo(R.id.blazeCampaignCreationIntroFragment) { inclusive = true }
+                        }
                     )
                 }
 

@@ -1,41 +1,36 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
-import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
-import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignPreview
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
-import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.DEFAULT_CAMPAIGN_DURATION
-import com.woocommerce.android.ui.blaze.Device
-import com.woocommerce.android.ui.blaze.Interest
-import com.woocommerce.android.ui.blaze.Language
+import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.Location
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
+import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-import java.util.Date
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
 class BlazeCampaignCreationPreviewViewModel @Inject constructor(
@@ -45,66 +40,33 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
-    private suspend fun getCampaign() = blazeRepository.getCampaignPreviewDetails(navArgs.productId)
-
-    private val adDetails = savedStateHandle.getStateFlow<AdDetailsUi>(viewModelScope, Loading)
-    private val budget = savedStateHandle.getStateFlow(viewModelScope, getDefaultBudget())
-
-    private val languages = blazeRepository.observeLanguages()
-    private val devices = blazeRepository.observeDevices()
-    private val interests = blazeRepository.observeInterests()
-
-    private val selectedLanguageCodes = savedStateHandle.getStateFlow<List<String>>(
+    private val campaignDetails = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
-        initialValue = emptyList(),
-        key = "selectedLanguages"
+        key = "campaignDetails",
+        initialValue = null,
+        clazz = CampaignDetails::class.java
     )
 
-    private val selectedLanguages = combine(languages, selectedLanguageCodes) { languages, selectedCodes ->
-        languages.filter { it.code in selectedCodes }
-    }
-
-    private val selectedDeviceIds = savedStateHandle.getStateFlow<List<String>>(
-        scope = viewModelScope,
-        initialValue = emptyList(),
-        key = "selectedDevices"
-    )
-
-    private val selectedDevices = combine(devices, selectedDeviceIds) { devices, selectedIds ->
-        devices.filter { it.id in selectedIds }
-    }
-    private val selectedInterestIds = savedStateHandle.getStateFlow<List<String>>(
-        scope = viewModelScope,
-        initialValue = emptyList(),
-        key = "selectedInterests"
-    )
-
-    private val selectedInterests = combine(interests, selectedInterestIds) { interests, selectedIds ->
-        interests.filter { it.id in selectedIds }
-    }
-
-    private val selectedLocations = savedStateHandle.getStateFlow<List<Location>>(
-        scope = viewModelScope,
-        initialValue = emptyList()
-    )
+    private val adDetailsState = savedStateHandle.getStateFlow(viewModelScope, AdDetailsUiState.LOADING)
+    private val dialogState = MutableStateFlow<DialogState?>(null)
 
     val viewState = combine(
-        adDetails,
-        budget,
-        selectedLanguages,
-        selectedDevices,
-        selectedInterests,
-        selectedLocations
-    ) { ad, budget, selectedLanguages, selectedDevices, selectedInterests, selectedLocations ->
+        campaignDetails.filterNotNull(),
+        adDetailsState,
+        dialogState
+    ) { campaignDetails, adDetailsState, dialogState ->
         CampaignPreviewUiState(
-            adDetails = ad,
-            campaignDetails = getCampaign().toCampaignDetailsUi(
-                budget,
-                selectedLanguages,
-                selectedDevices,
-                selectedInterests,
-                selectedLocations
-            )
+            adDetails = when (adDetailsState) {
+                AdDetailsUiState.LOADING -> AdDetailsUi.Loading
+                AdDetailsUiState.LOADED -> AdDetailsUi.AdDetails(
+                    productId = navArgs.productId,
+                    description = campaignDetails.description,
+                    tagLine = campaignDetails.tagLine,
+                    campaignImageUrl = campaignDetails.campaignImage.uri
+                )
+            },
+            campaignDetails = campaignDetails.toCampaignDetailsUi(),
+            dialogState = dialogState
         )
     }.asLiveData()
 
@@ -116,131 +78,207 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onHelpTapped() {
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.BLAZE_CAMPAIGN_CREATION))
+    }
+
     fun onEditAdClicked() {
-        (adDetails.value as? AdDetails)?.let {
+        campaignDetails.value?.let {
             triggerEvent(
                 NavigateToEditAdScreen(
                     productId = navArgs.productId,
                     tagLine = it.tagLine,
                     description = it.description,
-                    campaignImageUrl = it.campaignImageUrl
+                    campaignImage = it.campaignImage
                 )
             )
         }
     }
 
-    fun onAdUpdated(tagline: String, description: String, campaignImageUrl: String?) {
-        adDetails.update {
-            AdDetails(
-                productId = navArgs.productId,
-                description = description,
+    fun onAdUpdated(tagline: String, description: String, campaignImage: BlazeRepository.BlazeCampaignImage) {
+        campaignDetails.update {
+            it?.copy(
                 tagLine = tagline,
-                campaignImageUrl = campaignImageUrl
+                description = description,
+                campaignImage = campaignImage
             )
         }
     }
 
-    fun onBudgetAndDurationUpdated(updatedBudget: Budget) {
-        budget.update { updatedBudget }
+    fun onBudgetAndDurationUpdated(updatedBudget: BlazeRepository.Budget) {
+        campaignDetails.update { it?.copy(budget = updatedBudget) }
     }
 
     fun onTargetSelectionUpdated(targetType: BlazeTargetType, selectedIds: List<String>) {
         launch {
             when (targetType) {
-                LANGUAGE -> selectedLanguageCodes.update { selectedIds }
-                DEVICE -> selectedDeviceIds.update { selectedIds }
-                INTEREST -> selectedInterestIds.update { selectedIds }
+                LANGUAGE -> blazeRepository.observeLanguages().first().let { languages ->
+                    val selectedLanguages = languages.filter { selectedIds.contains(it.code) }
+                    campaignDetails.update {
+                        it?.copy(targetingParameters = it.targetingParameters.copy(languages = selectedLanguages))
+                    }
+                }
+
+                DEVICE -> blazeRepository.observeDevices().first().let { devices ->
+                    val selectedDevices = devices.filter { selectedIds.contains(it.id) }
+                    campaignDetails.update {
+                        it?.copy(targetingParameters = it.targetingParameters.copy(devices = selectedDevices))
+                    }
+                }
+
+                INTEREST -> blazeRepository.observeInterests().first().let { interests ->
+                    val selectedInterests = interests.filter { selectedIds.contains(it.id) }
+                    campaignDetails.update {
+                        it?.copy(targetingParameters = it.targetingParameters.copy(interests = selectedInterests))
+                    }
+                }
+
                 else -> Unit
             }
         }
     }
 
     fun onTargetLocationsUpdated(locations: List<Location>) {
-        selectedLocations.update { locations }
+        campaignDetails.update {
+            it?.copy(targetingParameters = it.targetingParameters.copy(locations = locations))
+        }
+    }
+
+    fun onDestinationUpdated(destinationParameters: DestinationParameters) {
+        campaignDetails.update { it?.copy(destinationParameters = destinationParameters) }
     }
 
     fun onConfirmClicked() {
-        triggerEvent(NavigateToPaymentSummary(budget.value))
+        campaignDetails.value?.let {
+            val isImageMissing = it.campaignImage is BlazeRepository.BlazeCampaignImage.None
+            val isContentMissing = it.tagLine.isEmpty() || it.description.isEmpty()
+            if (isImageMissing || isContentMissing) {
+                dialogState.value = DialogState(
+                    message = if (isImageMissing) R.string.blaze_campaign_preview_missing_image_dialog_text
+                    else R.string.blaze_campaign_preview_missing_content_dialog_text,
+                    positiveButton = DialogState.DialogButton(
+                        text = if (isImageMissing) R.string.blaze_campaign_preview_missing_image_dialog_positive_button
+                        else R.string.blaze_campaign_preview_missing_content_dialog_positive_button,
+                        onClick = {
+                            dialogState.value = null
+                            onEditAdClicked()
+                        }
+                    ),
+                    negativeButton = DialogState.DialogButton(
+                        text = R.string.cancel,
+                        onClick = { dialogState.value = null }
+                    )
+                )
+                return
+            }
+
+            triggerEvent(NavigateToPaymentSummary(it))
+        }
     }
 
     private fun loadData() {
         launch {
+            if (campaignDetails.value == null) {
+                launch { campaignDetails.value = blazeRepository.generateDefaultCampaignDetails(navArgs.productId) }
+            }
+
             blazeRepository.fetchLanguages()
             blazeRepository.fetchDevices()
             blazeRepository.fetchInterests()
 
             blazeRepository.fetchAdSuggestions(navArgs.productId).getOrNull().let { suggestions ->
-                adDetails.update {
-                    AdDetails(
-                        productId = navArgs.productId,
-                        description = suggestions?.firstOrNull()?.description ?: "",
-                        tagLine = suggestions?.firstOrNull()?.tagLine ?: "",
-                        campaignImageUrl = getCampaign().campaignImageUrl
+                adDetailsState.value = AdDetailsUiState.LOADED
+                campaignDetails.update {
+                    it?.copy(
+                        tagLine = suggestions?.firstOrNull()?.tagLine.orEmpty(),
+                        description = suggestions?.firstOrNull()?.description.orEmpty()
                     )
                 }
             }
         }
     }
 
-    private fun CampaignPreview.toCampaignDetailsUi(
-        budget: Budget,
-        languages: List<Language>,
-        devices: List<Device>,
-        interests: List<Interest>,
-        locations: List<Location>
-    ) = CampaignDetailsUi(
-        budget = CampaignDetailItemUi(
+    private fun CampaignDetails.toCampaignDetailsUi() = CampaignDetailsUi(
+        budget = getBudgetDetails(),
+        targetDetails = listOf(
+            getTargetLanguagesDetails(),
+            getTargetDevicesDetails(),
+            getTargetLocationsDetails(),
+            getTargetInterestsDetails(),
+        ),
+        destinationUrl = getTargetDestinationDetails()
+    )
+
+    private fun CampaignDetails.getBudgetDetails() =
+        CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
             onItemSelected = {
-                triggerEvent(NavigateToBudgetScreen(budget))
+                triggerEvent(NavigateToBudgetScreen(budget, targetingParameters))
             },
-        ),
-        targetDetails = listOf(
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
-                displayValue = languages.joinToString { it.name }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(LANGUAGE, languages.map { it.code }))
-                },
-            ),
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
-                displayValue = devices.joinToString { it.name }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(DEVICE, devices.map { it.id }))
-                },
-            ),
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
-                displayValue = locations.joinToString { it.name }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetLocationSelectionScreen(locations))
-                },
-            ),
-            CampaignDetailItemUi(
-                displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
-                displayValue = interests.joinToString { it.description }
-                    .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
-                onItemSelected = {
-                    triggerEvent(NavigateToTargetSelectionScreen(INTEREST, interests.map { it.id }))
-                },
-            ),
-        ),
-        destinationUrl = CampaignDetailItemUi(
+        )
+
+    private fun CampaignDetails.getTargetDestinationDetails() =
+        CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
-            displayValue = targetUrl,
+            displayValue = destinationParameters.fullUrl,
             maxLinesValue = 1,
             onItemSelected = {
-                triggerEvent(NavigateToAdDestinationScreen(targetUrl, navArgs.productId))
+                triggerEvent(
+                    NavigateToAdDestinationScreen(
+                        productId = navArgs.productId,
+                        destinationParameters = destinationParameters
+                    )
+                )
             }
         )
-    )
 
-    private fun Budget.toDisplayValue(): String {
+    private fun CampaignDetails.getTargetInterestsDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
+            displayValue = targetingParameters.interests.joinToString { it.description }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(NavigateToTargetSelectionScreen(INTEREST, targetingParameters.interests.map { it.id }))
+            },
+        )
+
+    private fun CampaignDetails.getTargetLocationsDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
+            displayValue = targetingParameters.locations.joinToString { it.name }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(NavigateToTargetLocationSelectionScreen(targetingParameters.locations))
+            },
+        )
+
+    private fun CampaignDetails.getTargetDevicesDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
+            displayValue = targetingParameters.devices.joinToString { it.name }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(NavigateToTargetSelectionScreen(DEVICE, targetingParameters.devices.map { it.id }))
+            },
+        )
+
+    private fun CampaignDetails.getTargetLanguagesDetails() =
+        CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
+            displayValue = targetingParameters.languages.joinToString { it.name }
+                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+            onItemSelected = {
+                triggerEvent(
+                    NavigateToTargetSelectionScreen(
+                        targetType = LANGUAGE,
+                        selectedIds = targetingParameters.languages.map { it.code }
+                    )
+                )
+            },
+        )
+
+    private fun BlazeRepository.Budget.toDisplayValue(): String {
         val totalBudgetWithCurrency = currencyFormatter.formatCurrency(
             totalBudget.toBigDecimal(),
             currencyCode
@@ -250,27 +288,23 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             durationInDays,
             startDate.formatToMMMdd()
         )
-        return "$totalBudgetWithCurrency,  $duration"
+        return "$totalBudgetWithCurrency, $duration"
     }
-
-    private fun getDefaultBudget() = Budget(
-        totalBudget = DEFAULT_CAMPAIGN_DURATION * CAMPAIGN_MINIMUM_DAILY_SPEND,
-        spentBudget = 0f,
-        currencyCode = BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE,
-        durationInDays = DEFAULT_CAMPAIGN_DURATION,
-        startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
-    )
 
     data class CampaignPreviewUiState(
         val adDetails: AdDetailsUi,
         val campaignDetails: CampaignDetailsUi,
+        val dialogState: DialogState? = null
     )
 
-    sealed interface AdDetailsUi : Parcelable {
-        @Parcelize
-        object Loading : AdDetailsUi
+    enum class AdDetailsUiState {
+        LOADING,
+        LOADED
+    }
 
-        @Parcelize
+    sealed interface AdDetailsUi {
+        data object Loading : AdDetailsUi
+
         data class AdDetails(
             val productId: Long,
             val description: String,
@@ -293,12 +327,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     )
 
     data class NavigateToBudgetScreen(
-        val budget: Budget
+        val budget: BlazeRepository.Budget,
+        val targetingParameters: BlazeRepository.TargetingParameters
     ) : MultiLiveEvent.Event()
 
     data class NavigateToAdDestinationScreen(
-        val targetUrl: String,
-        val productId: Long
+        val productId: Long,
+        val destinationParameters: BlazeRepository.DestinationParameters
     ) : MultiLiveEvent.Event()
 
     data class NavigateToTargetSelectionScreen(
@@ -314,11 +349,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val productId: Long,
         val tagLine: String,
         val description: String,
-        val campaignImageUrl: String?
+        val campaignImage: BlazeRepository.BlazeCampaignImage
     ) : MultiLiveEvent.Event()
 
-    // TODO we need to pass more details to use in the campaign creation
     data class NavigateToPaymentSummary(
-        val budget: BlazeRepository.Budget
+        val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
 }

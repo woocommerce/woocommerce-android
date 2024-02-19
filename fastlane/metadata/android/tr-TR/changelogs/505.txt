@@ -1,2 +1,0 @@
-17.2:
-Bu sürümde hız ve güvenilirlik için optimizasyonlar yapıldı. Uygulamayı sürekli iyileştirmeye ve çevrimiçi mağazanızı daha verimli ve sorunsuz hale getirmeye kararlıyız.

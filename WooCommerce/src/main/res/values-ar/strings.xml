@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 13:54:03+0000
+Translation-Revision-Date: 2024-02-14 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="see_report">الاطلاع على التقرير</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">الصفحة الرئيسية للموقع</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">عنوان URL للمنتج</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">معايير عناوين URL</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">عنوان URL للوجهة</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">الإدخال يدويًا</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">لم يتم العثور على الموقع.\nترجى المحاولة مجددًا.</string>
+    <string name="blaze_campaign_creation_location_search_message">بدء كتابة البلد أو الولاية أو المدينة للاطلاع على الخيارات المتوافرة</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">يعني النقر على \"إرسال الحملة\" أنك توافق على &lt;a href=\'termsOfService\'&gt;&lt;u&gt;شروط الخدمة&lt;/u&gt;&lt;/a&gt; و&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;سياسة الإعلانات&lt;/u&gt;&lt;/a&gt;، والسماح بطريقة الدفع الخاصة بك ليتم تحصيلها من الميزانية والمدة التي اخترتها. &lt;a href=\'learnMore\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt; حول كيفية عمل الميزانيات والمدفوعات الخاصة بالتدوينات التي تم الترويج لها.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">إرسال حملتك</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">فشل تحميل طرق الدفع، يرجى إعادة المحاولة عن طريق النقر هنا!</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">إضافة طريقة الدفع</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">تحميل طرق الدفع</string>
+    <string name="blaze_campaign_payment_summary_total_budget">الإجمالي</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">حملة Blaze</string>
+    <string name="blaze_campaign_payment_summary_totals">إجماليات المدفوعات</string>
+    <string name="blaze_campaign_payment_summary_title">الدفع</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">البحث عن المواقع</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">يتعذر تخزين الإيصال</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">يتعذر تنزيل الإيصال</string>
     <string name="card_reader_payment_email_client_not_found">يتعذر الكشف عن أي تطبيق يمكن مشاركة الإيصال عليه</string>
