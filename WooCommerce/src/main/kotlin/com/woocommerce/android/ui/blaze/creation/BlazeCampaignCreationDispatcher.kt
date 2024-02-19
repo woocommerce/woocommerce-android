@@ -6,10 +6,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragmentArgs
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -31,43 +35,60 @@ import javax.inject.Inject
 class BlazeCampaignCreationDispatcher @Inject constructor(
     private val blazeRepository: BlazeRepository,
     private val productListRepository: ProductListRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) {
     private var fragmentReference: WeakReference<BaseFragment> = WeakReference(null)
 
-    fun attachFragment(fragment: BaseFragment) {
+    fun attachFragment(fragment: BaseFragment, source: BlazeFlowSource) {
         this.fragmentReference = WeakReference(fragment)
         fragment.handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
-            this.fragmentReference.get()?.showCampaignPreview(it.first().id)
+            this.fragmentReference.get()?.showCampaignPreview(
+                productId = it.first().id,
+                source = source
+            )
         }
     }
 
     suspend fun startCampaignCreation(
+        source: BlazeFlowSource,
         productId: Long? = null,
         handler: (BlazeCampaignCreationDispatcherEvent) -> Unit = ::handleEvent
     ) {
         when {
             blazeRepository.getMostRecentCampaign() == null -> handler(
-                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(productId)
+                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(productId, source)
             )
 
-            else -> startCampaignCreationWithoutIntro(productId, handler)
+            else -> {
+                analyticsTracker.track(
+                    stat = BLAZE_ENTRY_POINT_TAPPED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+                )
+                startCampaignCreationWithoutIntro(productId, source, handler)
+            }
         }
     }
 
     private suspend fun startCampaignCreationWithoutIntro(
         productId: Long?,
+        source: BlazeFlowSource,
         handler: (BlazeCampaignCreationDispatcherEvent) -> Unit
     ) {
         val products = getPublishedCachedProducts()
 
         when {
             productId != null -> {
-                handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(productId))
+                handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(productId, source))
             }
 
             products.size == 1 -> {
-                handler(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(products.first().remoteId))
+                handler(
+                    BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(
+                        products.first().remoteId,
+                        source
+                    )
+                )
             }
 
             products.isNotEmpty() -> {
@@ -92,27 +113,33 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     private fun handleEvent(event: BlazeCampaignCreationDispatcherEvent) {
         when (event) {
             is BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro -> fragmentReference.get()
-                ?.showIntro(event.productId)
+                ?.showIntro(event.productId, event.blazeSource)
 
             is BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm -> fragmentReference.get()
-                ?.showCampaignPreview(event.productId)
+                ?.showCampaignPreview(event.productId, event.blazeSource)
 
             is BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen -> fragmentReference.get()
                 ?.showProductSelector()
         }
     }
 
-    private fun BaseFragment.showIntro(productId: Long?) {
+    private fun BaseFragment.showIntro(productId: Long?, blazeSource: BlazeFlowSource) {
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.blazeCampaignCreationIntroFragment,
-            bundle = BlazeCampaignCreationIntroFragmentArgs(productId ?: -1L).toBundle()
+            bundle = BlazeCampaignCreationIntroFragmentArgs(
+                productId = productId ?: -1L,
+                source = blazeSource
+            ).toBundle()
         )
     }
 
-    private fun BaseFragment.showCampaignPreview(productId: Long) {
+    private fun BaseFragment.showCampaignPreview(productId: Long, source: BlazeFlowSource) {
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.blazeCampaignCreationPreviewFragment,
-            bundle = BlazeCampaignCreationPreviewFragmentArgs(productId).toBundle()
+            bundle = BlazeCampaignCreationPreviewFragmentArgs(
+                productId = productId,
+                source = source
+            ).toBundle()
         )
     }
 
@@ -155,13 +182,15 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
 
     sealed interface BlazeCampaignCreationDispatcherEvent {
         data class ShowBlazeCampaignCreationIntro(
-            val productId: Long?
+            val productId: Long?,
+            val blazeSource: BlazeFlowSource
         ) : BlazeCampaignCreationDispatcherEvent
 
         data class ShowBlazeCampaignCreationForm(
-            val productId: Long
+            val productId: Long,
+            val blazeSource: BlazeFlowSource
         ) : BlazeCampaignCreationDispatcherEvent
 
-        object ShowProductSelectorScreen : BlazeCampaignCreationDispatcherEvent
+        data object ShowProductSelectorScreen : BlazeCampaignCreationDispatcherEvent
     }
 }
