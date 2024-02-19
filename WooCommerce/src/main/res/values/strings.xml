@@ -553,6 +553,7 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_custom_amounts">Add custom amount</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
+    <string name="order_creation_scan_products">Scan products</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
