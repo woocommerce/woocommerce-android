@@ -132,11 +132,8 @@
         android:id="@+id/detail_nav_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        app:defaultNavHost="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/two_pane_layout_guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

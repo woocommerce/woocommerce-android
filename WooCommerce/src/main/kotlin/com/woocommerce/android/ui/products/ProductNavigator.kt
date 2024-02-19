@@ -265,7 +265,7 @@ class ProductNavigator @Inject constructor() {
 
             is ProductNavigationTarget.ViewProductAdd -> {
                 val directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
-                    isAddProduct = true,
+                    mode = ProductDetailFragment.Mode.AddNewProduct,
                     source = target.source
                 )
 

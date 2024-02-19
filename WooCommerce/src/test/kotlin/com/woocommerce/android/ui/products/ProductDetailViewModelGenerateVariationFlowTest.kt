@@ -63,7 +63,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     }
 
     private var savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = false).toSavedStateHandle()
+        ProductDetailFragmentArgs(mode = ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID)).toSavedStateHandle()
 
     private val parameterRepository: ParameterRepository = mock()
     private val generateVariationCandidates: GenerateVariationCandidates = mock()

@@ -1,8 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-17.4
+17.5
 -----
 
+
+17.4
+-----
+- [**] Added support to use third-party passkey providers and other devices passkeys as a WordPress.com login option [https://github.com/woocommerce/woocommerce-android/pull/10647]
 
 17.3
 -----
@@ -13,6 +17,11 @@
 - [*] [Internal] Enhanced user experience in shipping label creation with automatic scrolling to the first invalid field upon form submission failure [https://github.com/woocommerce/woocommerce-android/pull/10657]
 - [*] [Internal] Enhanced product variation delete confirmation dialog visibility and functionality across device rotations [https://github.com/woocommerce/woocommerce-android/pull/10664]
 - [*] [Internal] Added a text along with the receipts file when it is shared [https://github.com/woocommerce/woocommerce-android/pull/10681]
+- [**] Fixed navigation issues [https://github.com/woocommerce/woocommerce-android/pull/10775]
+
+17.2.1
+-----
+- [**] Fixed navigation bug causing app to crash in some scenarios [https://github.com/woocommerce/woocommerce-android/pull/10786]
 
 17.2
 -----

@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 13:54:03+0000
+Translation-Revision-Date: 2024-02-14 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="see_report">Rapport inzien</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">De startpagina van de site</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">De product-URL</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL-parameters</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">URL van bestemming</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Enter manually</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Geen locatie gevonden.\nProbeer het opnieuw.</string>
+    <string name="blaze_campaign_creation_location_search_message">Begin met het typen van land, provincie of plaats om de beschikbare opties te bekijken</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">Door op \'Campagne indienen\' te klikken ga je akkoord met de &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Servicevoorwaarden&lt;/u&gt;&lt;/a&gt; en het &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Reclamebeleid&lt;/u&gt;&lt;/a&gt;, en geef er goedkeuring voor dat er via je betaalmethode kosten in rekening worden gebracht voor het bedrag en de periode die je kiest. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Kom meer te weten&lt;/u&gt;&lt;/a&gt; over hoe budgetten en betalingen voor Gepromote berichten werken.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">Campagne indienen</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Loading payment methods failed, please retry by clicking here!</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">Voeg betalingsmethode toe</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">Betaalmethoden laden…</string>
+    <string name="blaze_campaign_payment_summary_total_budget">Totaal</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze-campagne</string>
+    <string name="blaze_campaign_payment_summary_totals">Totale betalingen</string>
+    <string name="blaze_campaign_payment_summary_title">Betaling</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">Zoek locaties</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Kan het betalingsbewijs niet opslaan</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Kan het betalingsbewijs niet downloaden</string>
     <string name="card_reader_payment_email_client_not_found">Kan geen applicatie detecteren waarmee het betalingsbewijs gedeeld kan worden</string>

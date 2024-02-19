@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-08 22:54:03+0000
+Translation-Revision-Date: 2024-02-14 17:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="see_report">Ver relatório</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">Página inicial</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">URL do produto</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parâmetros de URL</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">URL de destino</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Inserir manualmente</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Nenhuma localização encontrada.\nTente novamente.</string>
+    <string name="blaze_campaign_creation_location_search_message">Comece a digitar o país, estado ou cidade para ver as opções disponíveis</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">Ao clicar em \"Enviar campanha\", você concorda com os &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termos de serviço&lt;/u&gt;&lt;/a&gt; e a &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Política de publicidade&lt;/u&gt;&lt;/a&gt; e autoriza a cobrança na sua forma de pagamento de acordo com o orçamento e a duração escolhidos. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Saiba mais&lt;/u&gt;&lt;/a&gt; sobre como funcionam os orçamentos e pagamentos de posts promovidos.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">Enviar campanha</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Falha ao carregar formas de pagamento, tente novamente clicando aqui!</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">Adicionar forma de pagamento</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">Carregando formas de pagamento</string>
+    <string name="blaze_campaign_payment_summary_total_budget">Total</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Campanha no Blaze</string>
+    <string name="blaze_campaign_payment_summary_totals">Totais de pagamentos</string>
+    <string name="blaze_campaign_payment_summary_title">Pagamento</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">Pesquisar localizações</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Não foi possível armazenar o recibo</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Não foi possível fazer download do recibo</string>
     <string name="card_reader_payment_email_client_not_found">Não foi possível detectar nenhuma aplicação com a qual o recibo possa ser compartilhado</string>
