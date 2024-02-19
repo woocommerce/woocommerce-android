@@ -23,7 +23,6 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
@@ -135,6 +134,15 @@ class ProductListFragment :
         )
     }
 
+    override val fab: TabletLayoutSetupHelper.Screen.Fab
+        get() = TabletLayoutSetupHelper.Screen.Fab(
+            view = binding.addProductButton,
+            pinFabAboveBottomNavigationBar = {
+                pinFabAboveBottomNavigationBar(binding.addProductButton)
+            },
+            onClick = productListViewModel::onAddProductButtonClicked
+        )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -147,12 +155,13 @@ class ProductListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         postponeEnterTransition()
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentProductListBinding.bind(view)
+
+        tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -180,7 +189,6 @@ class ProductListFragment :
             }
         }
 
-        initAddProductFab(binding.addProductButton)
         addSelectionTracker()
 
         when {
@@ -218,14 +226,6 @@ class ProductListFragment :
 
     private fun enableProductsRefresh(enable: Boolean) {
         binding.productsRefreshLayout.isEnabled = enable
-    }
-
-    private fun initAddProductFab(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener {
-            productListViewModel.onAddProductButtonClicked()
-        }
-
-        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     override fun onDestroyView() {

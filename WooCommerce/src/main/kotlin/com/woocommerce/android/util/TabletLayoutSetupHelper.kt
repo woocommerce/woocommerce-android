@@ -2,12 +2,14 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.os.Bundle
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -21,10 +23,10 @@ class TabletLayoutSetupHelper @Inject constructor(
     private lateinit var navHostFragment: NavHostFragment
 
     fun onViewCreated(screen: Screen) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
-
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
+
+        placeFab(screen.fab!!)
     }
 
     fun onItemClicked(
@@ -47,6 +49,25 @@ class TabletLayoutSetupHelper @Inject constructor(
 
         initNavFragment(screen!!.secondPaneNavigation)
         adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
+    }
+
+    private fun placeFab(fab: Screen.Fab) {
+        val params = fab.view.layoutParams as ConstraintLayout.LayoutParams
+
+        if (isTabletLogicNeeded()) {
+            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+            params.bottomToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            params.endToEnd = ConstraintLayout.LayoutParams.UNSET
+        } else {
+            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+            params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+            params.topToTop = ConstraintLayout.LayoutParams.UNSET
+
+            fab.pinFabAboveBottomNavigationBar()
+        }
+
+        fab.view.setOnClickListener { fab.onClick() }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
@@ -89,11 +110,18 @@ class TabletLayoutSetupHelper @Inject constructor(
         val twoPaneLayoutGuideline: Guideline
         val secondPaneNavigation: Navigation
         val lifecycleKeeper: Lifecycle
+        val fab: Fab?
 
         data class Navigation(
             val fragmentManager: FragmentManager,
             val navGraphId: Int,
             val initialBundle: Bundle?
+        )
+
+        data class Fab(
+            val view: FloatingActionButton,
+            val pinFabAboveBottomNavigationBar: () -> Unit,
+            val onClick: () -> Unit,
         )
     }
 }
