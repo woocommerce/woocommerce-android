@@ -82,14 +82,12 @@ class ProductListToolbarHelper @Inject constructor(
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         productListViewModel?.onSearchOpened()
-        fragment?.onSearchViewActiveChanged(isActive = true)
         binding?.productsSearchTabView?.show(this)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         productListViewModel?.onSearchClosed()
-        fragment?.onSearchViewActiveChanged(isActive = false)
         binding?.productsSearchTabView?.hide()
         return true
     }
