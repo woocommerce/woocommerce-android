@@ -55,17 +55,13 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
 
     override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
         if (imageUris.isNotEmpty()) {
-            onImageSelected(imageUris.first().toString())
+            viewModel.onLocalImageSelected(imageUris.first().toString())
         }
     }
 
     override fun onWPMediaSelected(images: List<Image>) {
         if (images.isNotEmpty()) {
-            onImageSelected(images.first().source)
+            viewModel.onWPMediaSelected(images.first())
         }
-    }
-
-    private fun onImageSelected(mediaUri: String) {
-        viewModel.onImageChanged(mediaUri)
     }
 }

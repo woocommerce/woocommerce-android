@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 11:54:04+0000
+Translation-Revision-Date: 2024-02-15 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="see_report">Voir le rapport</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">Page d’accueil du site</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">URL du produit</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Paramètres d’URL</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">URL de destination</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Saisir manuellement</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Aucun lieu trouvé.\nVeuillez réessayer.</string>
+    <string name="blaze_campaign_creation_location_search_message">Saisir les premières lettres du pays, de l’État / la région ou de la ville pour voir les options disponibles</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">En cliquant sur « Soumettre la campagne », vous acceptez les &lt;a href=\'termsOfService\'&gt;&lt;u&gt;conditions d’utilisation&lt;/u&gt;&lt;/a&gt; et la &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;politique en matière de publicité&lt;/u&gt;&lt;/a&gt;. Vous autorisez également que le budget et la durée que vous choisissez soient facturés à l’aide de votre mode de paiement. &lt;a href=\'learnMore\'&gt;&lt;u&gt;En savoir plus&lt;/u&gt;&lt;/a&gt; sur le fonctionnement des budgets et des paiements pour les articles promus.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">Envoyer la campagne</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Le chargement des moyens de paiement a échoué, veuillez réessayer en cliquant ici !</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">Ajouter un moyen de paiement</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">Chargement des moyens de paiement</string>
+    <string name="blaze_campaign_payment_summary_total_budget">Total</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Campagne Blaze</string>
+    <string name="blaze_campaign_payment_summary_totals">Totaux des paiements</string>
+    <string name="blaze_campaign_payment_summary_title">Paiement</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">Rechercher des lieux</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Impossible d’enregistrer le reçu</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Impossible de télécharger le reçu</string>
     <string name="card_reader_payment_email_client_not_found">Impossible de détecter une application compatible avec le partage du reçu</string>
