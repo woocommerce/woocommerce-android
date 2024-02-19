@@ -360,6 +360,7 @@ class ProductDetailViewModel @Inject constructor(
                 if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed)
                     triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
             }
+
             is ProductDetailFragment.Mode.Loading -> {
                 viewState = viewState.copy(isSkeletonShown = true)
             }

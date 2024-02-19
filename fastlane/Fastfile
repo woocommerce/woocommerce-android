@@ -412,7 +412,7 @@ platform :android do
 
     hotfix_version = release_version_current
 
-    UI.important("Pushing changes to remote and triggering hotfix build for version: #{version}")
+    UI.important("Pushing changes to remote and triggering hotfix build for version: #{hotfix_version}")
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end

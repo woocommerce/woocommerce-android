@@ -177,7 +177,7 @@ class MyStoreFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        blazeCampaignCreationDispatcher.attachFragment(this)
+        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MY_STORE_SECTION)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -280,7 +280,10 @@ class MyStoreFragment :
 
     private fun openBlazeCreationFlow(productId: Long?) {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(productId)
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                source = BlazeFlowSource.MY_STORE_SECTION,
+                productId = productId
+            )
         }
     }
 
