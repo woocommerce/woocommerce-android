@@ -10,7 +10,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ScreenMode
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -56,7 +55,10 @@ class VariationSelectorFragment : DialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> {
-                    findNavController().previousBackStackEntry?.savedStateHandle?.set(VARIATION_SELECTOR_RESULT, event.data)
+                    findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                        VARIATION_SELECTOR_RESULT,
+                        event.data
+                    )
                     dismiss()
                 }
             }
