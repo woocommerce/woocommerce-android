@@ -86,7 +86,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         onBlocking { invoke() } doReturn false
     }
     private var savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).toSavedStateHandle()
+        ProductDetailFragmentArgs(
+            mode = ProductDetailFragment.Mode.AddNewProduct
+        ).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",
@@ -399,7 +401,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        savedState = ProductDetailFragmentArgs(isAddProduct = true).toSavedStateHandle()
+        savedState = ProductDetailFragmentArgs(
+            mode = ProductDetailFragment.Mode.AddNewProduct
+        ).toSavedStateHandle()
 
         setup()
         viewModel.start()
