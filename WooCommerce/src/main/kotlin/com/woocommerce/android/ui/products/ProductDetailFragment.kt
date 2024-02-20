@@ -142,6 +142,8 @@ class ProductDetailFragment :
 
         _binding = FragmentProductDetailBinding.bind(view)
 
+        toolbarHelper.onViewCreated(this, viewModel, binding)
+
         ViewCompat.setTransitionName(
             binding.root,
             getString(R.string.product_card_detail_transition_name)

@@ -78,6 +78,10 @@ class ProductDetailsToolbarHelper @Inject constructor(
                 }
             }
 
+        toolbar.setNavigationOnClickListener {
+            fragment?.findNavController()?.navigateUp()
+        }
+
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(toolbar.menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with
