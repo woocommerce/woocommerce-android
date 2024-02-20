@@ -15,11 +15,13 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
+import com.woocommerce.android.util.IsTabletLogicNeeded
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductDetailsToolbarHelper @Inject constructor(
     private val activity: Activity,
+    private val isTabletLogicNeeded: IsTabletLogicNeeded,
 ) : DefaultLifecycleObserver,
     Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
@@ -64,11 +66,17 @@ class ProductDetailsToolbarHelper @Inject constructor(
         toolbar.inflateMenu(R.menu.menu_product_detail_fragment)
         this.menu = toolbar.menu
 
-        toolbar.navigationIcon = if (fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true) {
-            AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
-        } else {
-            AppCompatResources.getDrawable(activity, R.drawable.ic_gridicons_cross_24dp)
-        }
+        toolbar.navigationIcon =
+            when {
+                isTabletLogicNeeded() -> null
+                fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true -> {
+                    AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
+                }
+
+                else -> {
+                    AppCompatResources.getDrawable(activity, R.drawable.ic_gridicons_cross_24dp)
+                }
+            }
 
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(toolbar.menu.findItem(R.id.menu_trash_product)) {
