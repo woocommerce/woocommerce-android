@@ -10,14 +10,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -109,13 +107,16 @@ class ProductDetailFragment :
     private var productName = ""
         set(value) {
             field = value
-            updateActivityTitle()
+            toolbarHelper.updateTitle(value)
         }
 
     private var productId: Long = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+
+    @Inject
+    lateinit var toolbarHelper: ProductDetailsToolbarHelper
 
     private val skeletonView = SkeletonView()
 
@@ -128,20 +129,7 @@ class ProductDetailFragment :
     private val binding get() = _binding!!
 
     override val activityAppBarStatus: AppBarStatus
-        get() {
-            val navigationIcon = if (findNavController().hasBackStackEntry(R.id.products)) {
-                R.drawable.ic_back_24dp
-            } else {
-                R.drawable.ic_gridicons_cross_24dp
-            }
-            return AppBarStatus.Visible(
-                navigationIcon = navigationIcon
-            )
-        }
-
-    private fun NavController.hasBackStackEntry(@IdRes destinationId: Int) = runCatching {
-        getBackStackEntry(destinationId)
-    }.isSuccess
+        get() = AppBarStatus.Hidden
 
     @Inject lateinit var crashLogging: CrashLogging
 
