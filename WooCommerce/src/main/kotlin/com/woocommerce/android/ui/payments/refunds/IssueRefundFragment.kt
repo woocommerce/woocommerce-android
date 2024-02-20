@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentIssueRefundBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -30,16 +32,18 @@ import javax.inject.Inject
 class IssueRefundFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    private var _binding: FragmentIssueRefundBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: IssueRefundViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_refunds)
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        return inflater.inflate(R.layout.fragment_issue_refund, container, false)
+        _binding = FragmentIssueRefundBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onResume() {
@@ -55,9 +59,20 @@ class IssueRefundFragment : BaseFragment() {
             .replace(R.id.issueRefund_frame, RefundByItemsFragment())
             .commit()
 
+        setupToolbar()
         // TODO: Temporary; it will be used again in a future release - do not remove
 //        initializeViews(viewModel)
         setupObservers(viewModel)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     // TODO: Temporary; it will be used again in a future release - do not remove
@@ -76,7 +91,9 @@ class IssueRefundFragment : BaseFragment() {
 
     private fun setupObservers(viewModel: IssueRefundViewModel) {
         viewModel.commonStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
+            new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) {
+                binding.toolbar.title = it
+            }
 
             // As the tabs are hidden, this logic is not used for now
 //            if (new.refundType == AMOUNT) {

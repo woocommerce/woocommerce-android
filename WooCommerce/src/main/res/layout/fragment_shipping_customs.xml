@@ -1,34 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_collapseMode="pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
 
-        <com.woocommerce.android.ui.orders.shippinglabels.creation.banner.ShippingNoticeCard
-            android:id="@+id/shipping_notice_banner"
-            style="@style/Woo.Card"
+    <View
+        android:id="@+id/app_bar_divider"
+        style="@style/Woo.Divider"
+        android:layout_gravity="bottom" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.woocommerce.android.ui.orders.shippinglabels.creation.banner.ShippingNoticeCard
+                android:id="@+id/shipping_notice_banner"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/packages_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:itemCount="2"
+                tools:listitem="@layout/shipping_customs_list_item" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <ProgressBar
+            android:id="@+id/progress_view"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:layout_gravity="center" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/packages_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:itemCount="2"
-            tools:listitem="@layout/shipping_customs_list_item" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <ProgressBar
-        android:id="@+id/progress_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-
-</FrameLayout>
+    </FrameLayout>
+</LinearLayout>

@@ -5,12 +5,10 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +26,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InputField
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.CloseKeyboard
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
@@ -57,8 +56,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class EditShippingLabelAddressFragment :
     BaseFragment(R.layout.fragment_edit_shipping_label_address),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val SELECT_COUNTRY_REQUEST = "select_country_request"
         const val SELECT_STATE_REQUEST = "select_state_request"
@@ -73,6 +71,9 @@ class EditShippingLabelAddressFragment :
     private var progressDialog: CustomProgressDialog? = null
 
     val viewModel: EditShippingLabelAddressViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private var _binding: FragmentEditShippingLabelAddressBinding? = null
     private val binding get() = _binding!!
@@ -108,12 +109,25 @@ class EditShippingLabelAddressFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         _binding = FragmentEditShippingLabelAddressBinding.bind(view)
+        setupToolbar(binding)
 
         initializeViewModel(binding)
         initializeViews(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentEditShippingLabelAddressBinding) {
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
     }
 
     private fun initializeViewModel(binding: FragmentEditShippingLabelAddressBinding) {
@@ -139,11 +153,7 @@ class EditShippingLabelAddressFragment :
 
     override fun getFragmentTitle() = screenTitle
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked()
@@ -191,7 +201,7 @@ class EditShippingLabelAddressFragment :
                 binding.countrySpinner.error = field.error?.let { UiHelpers.getTextOfUiString(requireContext(), it) }
             }
             new.title?.takeIfNotEqualTo(old?.title) {
-                screenTitle = getString(it)
+                binding.toolbar.title = getString(it)
             }
             new.bannerMessage?.takeIfNotEqualTo(old?.bannerMessage) {
                 if (it.isBlank()) {
