@@ -112,19 +112,20 @@ class ProductListFragment :
             feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
-    override val twoPaneLayoutGuideline by lazy { binding.twoPaneLayoutGuideline }
+    override val twoPaneLayoutGuideline
+        get() = binding.twoPaneLayoutGuideline
 
-    override val lifecycleKeeper: Lifecycle by lazy { viewLifecycleOwner.lifecycle }
+    override val lifecycleKeeper: Lifecycle
+        get() = viewLifecycleOwner.lifecycle
 
-    override val secondPaneNavigation by lazy {
-        TabletLayoutSetupHelper.Screen.Navigation(
+    override val secondPaneNavigation
+        get() = TabletLayoutSetupHelper.Screen.Navigation(
             childFragmentManager,
             R.navigation.nav_graph_products,
             ProductDetailFragmentArgs(
                 mode = ProductDetailFragment.Mode.Loading,
             ).toBundle()
         )
-    }
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -141,11 +142,12 @@ class ProductListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         postponeEnterTransition()
 
         _binding = FragmentProductListBinding.bind(view)
+
+        tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
