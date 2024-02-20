@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.products
 
 import android.app.Activity
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
@@ -13,23 +15,42 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.util.IsTabletLogicNeeded
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductListToolbarHelper @Inject constructor(
     private val activity: Activity,
+    private val isTabletLogicNeeded: IsTabletLogicNeeded,
 ) : DefaultLifecycleObserver,
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener,
     Toolbar.OnMenuItemClickListener,
     WCProductSearchTabView.ProductSearchTypeChangedListener {
     private var fragment: ProductListFragment? = null
-    private var productListViewModel: ProductListViewModel? = null
+    private var viewModel: ProductListViewModel? = null
     private var binding: FragmentProductListBinding? = null
 
     private var searchMenuItem: MenuItem? = null
     private var scanBarcodeMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+
+    override fun onCreate(owner: LifecycleOwner) {
+        (activity as FragmentActivity).onBackPressedDispatcher.addCallback(
+            owner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isTabletLogicNeeded()) {
+                        fragment?.findNavController()?.navigateUp()
+                    } else if (viewModel?.isSearching() == true) {
+                        onMenuItemActionCollapse(searchMenuItem!!)
+                    } else {
+                        fragment?.findNavController()?.navigateUp()
+                    }
+                }
+            }
+        )
+    }
 
     fun onViewCreated(
         fragment: ProductListFragment,
@@ -37,7 +58,7 @@ class ProductListToolbarHelper @Inject constructor(
         binding: FragmentProductListBinding
     ) {
         this.fragment = fragment
-        this.productListViewModel = productListViewModel
+        this.viewModel = productListViewModel
         this.binding = binding
 
         fragment.lifecycle.addObserver(this)
@@ -55,7 +76,7 @@ class ProductListToolbarHelper @Inject constructor(
         searchMenuItem = null
         scanBarcodeMenuItem = null
         searchView = null
-        productListViewModel = null
+        viewModel = null
         binding = null
         disableSearchListeners()
     }
@@ -81,30 +102,30 @@ class ProductListToolbarHelper @Inject constructor(
         }
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-        productListViewModel?.onSearchOpened()
+        viewModel?.onSearchOpened()
         binding?.productsSearchTabView?.show(this)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-        productListViewModel?.onSearchClosed()
+        viewModel?.onSearchClosed()
         binding?.productsSearchTabView?.hide()
         return true
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        productListViewModel?.onSearchRequested()
+        viewModel?.onSearchRequested()
         ActivityUtils.hideKeyboard(activity)
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        productListViewModel?.onSearchQueryChanged(newText)
+        viewModel?.onSearchQueryChanged(newText)
         return true
     }
 
     override fun onProductSearchTypeChanged(isSkuSearch: Boolean) {
-        productListViewModel?.onSearchTypeChanged(isSkuSearch)
+        viewModel?.onSearchTypeChanged(isSkuSearch)
     }
 
     private fun setupToolbar(toolbar: Toolbar) {
@@ -130,23 +151,23 @@ class ProductListToolbarHelper @Inject constructor(
         searchMenuItem?.let { menuItem ->
             if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
 
-            val isSearchActive = productListViewModel?.viewStateLiveData?.liveData?.value?.isSearchActive == true
+            val isSearchActive = viewModel?.viewStateLiveData?.liveData?.value?.isSearchActive == true
             if (menuItem.isActionViewExpanded != isSearchActive) {
                 if (isSearchActive) {
                     disableSearchListeners()
                     menuItem.expandActionView()
                     val queryHint = getSearchQueryHint()
                     searchView?.queryHint = queryHint
-                    searchView?.setQuery(productListViewModel?.viewStateLiveData?.liveData?.value?.query, false)
+                    searchView?.setQuery(viewModel?.viewStateLiveData?.liveData?.value?.query, false)
                     enableSearchListeners()
                 }
             }
         }
-        scanBarcodeMenuItem?.isVisible = !(productListViewModel?.isSquarePluginActive() ?: false)
+        scanBarcodeMenuItem?.isVisible = !(viewModel?.isSquarePluginActive() ?: false)
     }
 
     private fun getSearchQueryHint(): String {
-        return if (productListViewModel?.viewStateLiveData?.liveData?.value?.isFilteringActive == true) {
+        return if (viewModel?.viewStateLiveData?.liveData?.value?.isFilteringActive == true) {
             activity.getString(R.string.product_search_hint_active_filters)
         } else {
             activity.getString(R.string.product_search_hint)
