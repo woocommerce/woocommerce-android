@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -14,11 +15,13 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductDetailsToolbarHelper @Inject constructor(
     private val activity: Activity,
-) : DefaultLifecycleObserver {
+) : DefaultLifecycleObserver,
+    Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
     private var binding: FragmentProductDetailBinding? = null
     private var viewModel: ProductDetailViewModel? = null
@@ -57,6 +60,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
     fun setupToolbar() {
         val toolbar = binding?.productDetailToolbar ?: return
 
+        toolbar.setOnMenuItemClickListener(this)
         toolbar.inflateMenu(R.menu.menu_product_detail_fragment)
         this.menu = toolbar.menu
 
@@ -86,6 +90,54 @@ class ProductDetailsToolbarHelper @Inject constructor(
 
         viewModel?.menuButtonsState?.value?.let {
             toolbar.menu.updateOptions(it)
+        }
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_publish -> {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel?.onPublishButtonClicked()
+                true
+            }
+
+            R.id.menu_save_as_draft -> {
+                viewModel?.onSaveAsDraftButtonClicked()
+                true
+            }
+
+            R.id.menu_share -> {
+                viewModel?.onShareButtonClicked()
+                true
+            }
+
+            R.id.menu_save -> {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel?.onSaveButtonClicked()
+                true
+            }
+
+            R.id.menu_view_product -> {
+                viewModel?.onViewProductOnStoreLinkClicked()
+                true
+            }
+
+            R.id.menu_product_settings -> {
+                viewModel?.onSettingsButtonClicked()
+                true
+            }
+
+            R.id.menu_duplicate -> {
+                viewModel?.onDuplicateProduct()
+                true
+            }
+
+            R.id.menu_trash_product -> {
+                viewModel?.onTrashButtonClicked()
+                true
+            }
+
+            else -> false
         }
     }
 

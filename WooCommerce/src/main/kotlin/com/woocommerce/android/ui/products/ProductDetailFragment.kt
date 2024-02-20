@@ -3,11 +3,9 @@ package com.woocommerce.android.ui.products
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -82,14 +80,12 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailFragment :
     BaseProductFragment(R.layout.fragment_product_detail),
-    OnGalleryImageInteractionListener,
-    MenuProvider {
+    OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
@@ -469,54 +465,6 @@ class ProductDetailFragment :
         binding.addImageContainer.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
             viewModel.onAddImageButtonClicked()
-        }
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_publish -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onPublishButtonClicked()
-                true
-            }
-
-            R.id.menu_save_as_draft -> {
-                viewModel.onSaveAsDraftButtonClicked()
-                true
-            }
-
-            R.id.menu_share -> {
-                viewModel.onShareButtonClicked()
-                true
-            }
-
-            R.id.menu_save -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onSaveButtonClicked()
-                true
-            }
-
-            R.id.menu_view_product -> {
-                viewModel.onViewProductOnStoreLinkClicked()
-                true
-            }
-
-            R.id.menu_product_settings -> {
-                viewModel.onSettingsButtonClicked()
-                true
-            }
-
-            R.id.menu_duplicate -> {
-                viewModel.onDuplicateProduct()
-                true
-            }
-
-            R.id.menu_trash_product -> {
-                viewModel.onTrashButtonClicked()
-                true
-            }
-
-            else -> false
         }
     }
 
