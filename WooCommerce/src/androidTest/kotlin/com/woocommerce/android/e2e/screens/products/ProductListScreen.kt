@@ -97,7 +97,6 @@ class ProductListScreen : Screen {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
             Espresso.pressBack()
-            Espresso.pressBack()
         }
         return this
     }
