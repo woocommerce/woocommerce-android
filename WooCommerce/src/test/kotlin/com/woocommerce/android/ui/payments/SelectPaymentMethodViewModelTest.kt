@@ -667,7 +667,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateBackToOrderList)
+            assertThat(viewModel.event.value).isInstanceOf(NavigateBackToOrderList::class.java)
         }
 
     @Test
@@ -1093,7 +1093,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateBackToOrderList)
+            assertThat(viewModel.event.value).isInstanceOf(NavigateBackToOrderList::class.java)
         }
 
     @Test
