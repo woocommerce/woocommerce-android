@@ -165,9 +165,10 @@ class OrderListFragment :
                     } else {
                         val result =
                             _binding?.detailNavContainer?.findNavController()?.navigateUp() ?: false
-                        // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
-                        // and now it's a single pane layout (phone), e.g. due to a configuration change.
                         if (!result && _binding?.orderRefreshLayout?.isVisible != true && !isTablet()) {
+                            // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
+                            // and now it's a single pane layout (phone), e.g. due to a configuration change.
+                            // In this case we need to switch panes – show the list pane instead of details pane.
                             adjustUiForDeviceType(savedInstanceState)
                         } else {
                             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -293,20 +294,21 @@ class OrderListFragment :
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
-            adjustLayoutForSinglePane()
+            displayDetailPaneOnly()
         } else {
-            _binding?.detailNavContainer?.visibility = View.GONE
-            _binding?.orderRefreshLayout?.visibility = View.VISIBLE
-            _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
+            displayListPaneOnly()
         }
     }
 
-    private fun adjustLayoutForSinglePane() {
-        // Adjust the detail container to occupy the full width in single-pane mode (e.g., phone)
+    private fun displayListPaneOnly() {
+        _binding?.detailNavContainer?.visibility = View.GONE
+        _binding?.orderRefreshLayout?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
+    }
+
+    private fun displayDetailPaneOnly() {
         _binding?.detailNavContainer?.visibility = View.VISIBLE
         _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
-
-        // Adjust the order list view to be hidden in single-pane mode
         _binding?.orderRefreshLayout?.visibility = View.GONE
     }
 
