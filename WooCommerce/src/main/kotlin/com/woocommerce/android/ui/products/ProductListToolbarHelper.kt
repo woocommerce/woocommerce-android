@@ -42,8 +42,8 @@ class ProductListToolbarHelper @Inject constructor(
                 override fun handleOnBackPressed() {
                     if (isTabletLogicNeeded()) {
                         fragment?.findNavController()?.navigateUp()
-                    } else if (viewModel?.isSearching() == true) {
-                        onMenuItemActionCollapse(searchMenuItem!!)
+                    } else if (searchMenuItem?.isActionViewExpanded == true) {
+                        searchMenuItem?.collapseActionView()
                     } else {
                         fragment?.findNavController()?.navigateUp()
                     }
