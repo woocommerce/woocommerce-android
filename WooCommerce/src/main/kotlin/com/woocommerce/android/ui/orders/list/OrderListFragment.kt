@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,7 +10,6 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -72,7 +72,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -310,15 +309,6 @@ class OrderListFragment :
         _binding?.detailNavContainer?.visibility = View.VISIBLE
         _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
         _binding?.orderRefreshLayout?.visibility = View.GONE
-    }
-
-    private fun hideDetailPane(
-        detailContainer: NavHostFragment,
-        orderListViewLayoutParams: LinearLayout.LayoutParams
-    ) {
-        detailContainer.view?.visibility = View.GONE
-        orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-        orderListViewLayoutParams.weight = 0f
     }
 
     private fun initSwipeBehaviour() {
@@ -568,12 +558,7 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
-                        val detailContainer = childFragmentManager.findFragmentById(
-                            R.id.detail_nav_container
-                        ) as NavHostFragment
-                        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams
-                            as LinearLayout.LayoutParams
-                        hideDetailPane(detailContainer, orderListViewLayoutParams)
+                        if (isTablet()) displayListPaneOnly()
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
