@@ -144,7 +144,7 @@ class ProductImagesFragment :
         }
 
         setupToolbar(
-            title = R.string.product_images_title,
+            title = getString(R.string.product_images_title),
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = ::onCreateMenu
         )

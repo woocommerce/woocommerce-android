@@ -7,12 +7,12 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 
 fun Fragment.setupToolbar(
-    title: Int,
+    title: String,
     onMenuItemSelected: (menuItem: MenuItem) -> Boolean,
     onCreateMenu: (menu: Toolbar) -> Unit
 ) {
     val toolbar = requireView().findViewById<Toolbar>(R.id.toolbar)
-    toolbar.title = getString(title)
+    toolbar.title = title
     toolbar.setOnMenuItemClickListener { menuItem ->
         onMenuItemSelected(menuItem)
     }

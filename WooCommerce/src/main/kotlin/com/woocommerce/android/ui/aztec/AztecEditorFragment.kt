@@ -17,9 +17,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
+import com.woocommerce.android.util.setupToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
@@ -59,7 +61,8 @@ class AztecEditorFragment :
 
     private var titleFromProductAIDescriptionDialog: String? = null
 
-    override fun getFragmentTitle() = navArgs.aztecTitle
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,6 +77,16 @@ class AztecEditorFragment :
             binding.aztecCaption.visibility = View.VISIBLE
             binding.aztecCaption.text = navArgs.aztecCaption
         }
+
+        setupToolbar(
+            title = navArgs.aztecTitle,
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    navigateBackWithResult(editorHasChanges())
+                }
+            }
+        )
 
         with(binding.aiButton) {
             visibility = if (selectedSite.getOrNull()?.isEligibleForAI == true) View.VISIBLE else View.GONE
