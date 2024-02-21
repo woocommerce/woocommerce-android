@@ -15,6 +15,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import org.wordpress.android.util.DisplayUtils
+import javax.inject.Inject
 
 object UiHelpers {
     fun getPxOfUiDimen(context: Context, uiDimen: UiDimen): Int =
@@ -81,4 +82,8 @@ object UiHelpers {
         updateVisibility(imageView, image != null)
         image?.let { imageView.setImageDrawable(image) }
     }
+}
+
+class IsTablet @Inject constructor(val context: Context) {
+    operator fun invoke() = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
 }
