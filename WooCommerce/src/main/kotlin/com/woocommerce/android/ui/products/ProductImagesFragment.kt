@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageCho
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.setHomeIcon
-import com.woocommerce.android.util.setupToolbar
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -143,7 +143,7 @@ class ProductImagesFragment :
             }
         }
 
-        setupToolbar(
+        setupTabletSecondPaneToolbar(
             title = getString(R.string.product_images_title),
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = ::onCreateMenu

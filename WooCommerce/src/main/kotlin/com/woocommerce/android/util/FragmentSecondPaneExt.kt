@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 
-fun Fragment.setupToolbar(
+fun Fragment.setupTabletSecondPaneToolbar(
     title: String,
     onMenuItemSelected: (menuItem: MenuItem) -> Boolean,
     onCreateMenu: (menu: Toolbar) -> Unit

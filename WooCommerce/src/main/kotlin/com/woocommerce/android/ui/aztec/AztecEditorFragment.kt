@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
-import com.woocommerce.android.util.setupToolbar
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
@@ -78,7 +78,7 @@ class AztecEditorFragment :
             binding.aztecCaption.text = navArgs.aztecCaption
         }
 
-        setupToolbar(
+        setupTabletSecondPaneToolbar(
             title = navArgs.aztecTitle,
             onMenuItemSelected = { _ -> false },
             onCreateMenu = { toolbar ->
