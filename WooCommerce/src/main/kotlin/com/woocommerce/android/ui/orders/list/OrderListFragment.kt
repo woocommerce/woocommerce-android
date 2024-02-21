@@ -289,6 +289,8 @@ class OrderListFragment :
 
     private fun adjustLayoutForTablet() {
         binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        binding.orderRefreshLayout.visibility = View.VISIBLE
+        binding.detailNavContainer.visibility = View.VISIBLE
     }
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
@@ -558,7 +560,6 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
-                        if (isTablet()) displayListPaneOnly()
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
