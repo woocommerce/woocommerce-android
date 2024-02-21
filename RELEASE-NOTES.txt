@@ -1,7 +1,16 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+17.5
+-----
+
+
 17.4
 -----
+- [**] Added support to use third-party passkey providers and other devices passkeys as a WordPress.com login option [https://github.com/woocommerce/woocommerce-android/pull/10647]
+
+17.3
+-----
+
 
 
 17.3.1

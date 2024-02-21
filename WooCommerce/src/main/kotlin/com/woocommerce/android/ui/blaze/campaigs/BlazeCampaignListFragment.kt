@@ -49,7 +49,7 @@ class BlazeCampaignListFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        blazeCampaignCreationDispatcher.attachFragment(this)
+        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.CAMPAIGN_LIST)
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -69,7 +69,7 @@ class BlazeCampaignListFragment : BaseFragment() {
 
     private fun openBlazeCreationFlow() {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation()
+            blazeCampaignCreationDispatcher.startCampaignCreation(source = BlazeFlowSource.CAMPAIGN_LIST)
         }
     }
 

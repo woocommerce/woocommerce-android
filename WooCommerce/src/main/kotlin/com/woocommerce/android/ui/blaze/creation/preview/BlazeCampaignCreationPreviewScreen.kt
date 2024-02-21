@@ -47,8 +47,9 @@ import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPr
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -60,7 +61,8 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
             previewState = previewState,
             onBackPressed = viewModel::onBackPressed,
             onEditAdClicked = viewModel::onEditAdClicked,
-            onConfirmDetailsClicked = viewModel::onConfirmClicked
+            onConfirmDetailsClicked = viewModel::onConfirmClicked,
+            onHelpTapped = viewModel::onHelpTapped
         )
     }
 }
@@ -70,13 +72,15 @@ private fun BlazeCampaignCreationPreviewScreen(
     previewState: CampaignPreviewUiState,
     onBackPressed: () -> Unit,
     onEditAdClicked: () -> Unit,
-    onConfirmDetailsClicked: () -> Unit
+    onConfirmDetailsClicked: () -> Unit,
+    onHelpTapped: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
                 onNavigationButtonClick = onBackPressed,
+                onHelpButtonClick = onHelpTapped,
                 navigationIcon = Filled.ArrowBack
             )
         },
@@ -117,6 +121,8 @@ private fun BlazeCampaignCreationPreviewScreen(
             )
         }
     }
+
+    previewState.dialogState?.Render()
 }
 
 @Composable
@@ -413,7 +419,8 @@ fun CampaignScreenPreview() {
         ),
         onBackPressed = { },
         onEditAdClicked = { },
-        onConfirmDetailsClicked = { }
+        onConfirmDetailsClicked = { },
+        onHelpTapped = { }
     )
 }
 

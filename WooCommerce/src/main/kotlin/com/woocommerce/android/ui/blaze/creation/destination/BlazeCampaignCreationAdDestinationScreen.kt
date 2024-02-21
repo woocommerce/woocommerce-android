@@ -47,7 +47,7 @@ fun BlazeCampaignCreationAdDestinationScreen(viewModel: BlazeCampaignCreationAdD
             viewModel::onBackPressed,
             viewModel::onUrlPropertyTapped,
             viewModel::onParameterPropertyTapped,
-            viewModel::onDestinationUrlChanged
+            viewModel::onDestinationParametersUpdated
         )
     }
 }
@@ -58,7 +58,7 @@ fun AdDestinationScreen(
     onBackPressed: () -> Unit,
     onUrlPropertyTapped: () -> Unit,
     onParametersPropertyTapped: () -> Unit,
-    onDestinationUrlChanged: (String) -> Unit
+    onTargetUrlChanged: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -84,16 +84,18 @@ fun AdDestinationScreen(
             Divider()
             AdDestinationProperty(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
-                value = viewState.parameters,
+                value = viewState.joinedParameters.ifBlank {
+                    stringResource(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
+                },
                 onPropertyTapped = onParametersPropertyTapped
             )
         }
 
         if (viewState.isUrlDialogVisible) {
-            AdDestinationUrlDialog(
+            TargetUrlDialog(
                 viewState,
-                onDismissed = { onDestinationUrlChanged(viewState.targetUrl) },
-                onSaveTapped = onDestinationUrlChanged
+                onDismissed = { onTargetUrlChanged(viewState.targetUrl) },
+                onSaveTapped = onTargetUrlChanged
             )
         }
     }
@@ -124,7 +126,7 @@ fun AdDestinationProperty(title: String, value: String, onPropertyTapped: () -> 
 }
 
 @Composable
-fun AdDestinationUrlDialog(
+fun TargetUrlDialog(
     viewState: ViewState,
     onDismissed: () -> Unit,
     onSaveTapped: (String) -> Unit,
@@ -221,16 +223,16 @@ fun PreviewAdDestinationScreen() {
     WooThemeWithBackground {
         AdDestinationScreen(
             viewState = ViewState(
-                parameters = "utm_source=woocommerce\nutm_medium=android\nutm_campaign=blaze",
                 productUrl = "https://woocommerce.com/products/1",
                 siteUrl = "https://woocommerce.com",
                 targetUrl = "https://woocommerce.com/products/12",
+                parameters = emptyMap(),
                 isUrlDialogVisible = true
             ),
             onBackPressed = {},
             onUrlPropertyTapped = {},
             onParametersPropertyTapped = {},
-            onDestinationUrlChanged = {}
+            onTargetUrlChanged = {}
         )
     }
 }
