@@ -23,7 +23,7 @@ class SingleProductScreen : Screen {
         // Navigation bar:
         Espresso.onView(
             Matchers.allOf(
-                ViewMatchers.withId(R.id.toolbar),
+                ViewMatchers.withId(R.id.productDetailToolbar),
                 ViewMatchers.withChild(ViewMatchers.withText(product.name))
             )
         )
