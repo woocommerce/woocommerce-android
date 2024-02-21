@@ -87,18 +87,12 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     event.receiptUrl,
                     event.documentName
                 )
-                InteracRefundSuccessful -> {
-                    navigateBackWithNotice(KEY_INTERAC_SUCCESS)
-                    selectedOrderTrackerViewModel.refreshOrders()
-                }
+                InteracRefundSuccessful -> navigateBackWithNotice(KEY_INTERAC_SUCCESS)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowSnackbarInDialog -> Snackbar.make(
                     requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
                 ).show()
-                is PlayChaChing -> {
-                    playChaChing()
-                    selectedOrderTrackerViewModel.refreshOrders()
-                }
+                is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
                 is EnableNfc -> openEnableNfcScreen()
                 is PurchaseCardReader -> openPurchaseCardReaderScreen(event.url)
