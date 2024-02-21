@@ -20,4 +20,3 @@ fun Fragment.setupToolbar(
 
     onCreateMenu(toolbar)
 }
-
