@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
@@ -101,8 +102,17 @@ class OrderFilterCategoriesFragment :
     }
 
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
-        val action = OrderFilterCategoriesFragmentDirections
-            .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
+        val action = when (category.categoryKey) {
+            CUSTOMER -> {
+                OrderFilterCategoriesFragmentDirections
+                    .actionOrderFilterListFragmentToCustomerListFragment()
+            }
+
+            else -> {
+                OrderFilterCategoriesFragmentDirections
+                    .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
+            }
+        }
         findNavController().navigateSafely(action)
     }
 
@@ -135,5 +145,11 @@ class OrderFilterCategoriesFragment :
     private fun updateClearButtonVisibility(clearMenuItem: MenuItem) {
         clearMenuItem.isVisible =
             viewModel.orderFilterCategoryViewState.value?.displayClearButton ?: false
+    }
+
+    private fun handleResults() {
+//        handleResult<Int>() {
+//            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImage)
+//        }
     }
 }

@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
@@ -46,7 +47,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
     private val dateUtils: DateUtils,
     private val analyticsTraWrapper: AnalyticsTrackerWrapper,
-) : ScopedViewModel(savedState) {
+
+    ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
     }
@@ -158,6 +160,15 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     resourceProvider
                 ),
                 dateRangeFilterOptions
+            ),
+            OrderFilterCategoryUiModel(
+                categoryKey = CUSTOMER,
+                displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
+                displayValue = dateRangeFilterOptions.getDisplayValue(
+                    CUSTOMER,
+                    resourceProvider
+                ),
+                orderFilterOptions = emptyList()
             )
         )
     }
@@ -197,7 +208,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             when (selectedFilterCategoryKey) {
                 ORDER_STATUS -> getNumberOfSelectedFilterOptions()
                     .toString()
+
                 DATE_RANGE -> first { it.isSelected }.displayName
+                CUSTOMER -> TODO()
             }
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
