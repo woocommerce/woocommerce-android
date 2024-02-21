@@ -178,7 +178,7 @@ class ProductListFragment :
         initAddProductFab(binding.addProductButton)
         addSelectionTracker()
 
-        if (!productListViewModel.isSelecting()) {
+        if (!productListViewModel.isSearching()) {
             productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
 
