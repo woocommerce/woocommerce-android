@@ -72,6 +72,7 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
+import androidx.navigation.findNavController
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -107,8 +108,6 @@ class OrderListFragment :
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
-
-    private var savedDestinationId: Int = -1
 
     override fun onStop() {
         snackBar?.dismiss()
@@ -153,7 +152,6 @@ class OrderListFragment :
         savedInstanceState?.let { bundle ->
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-            savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
         requireActivity().onBackPressedDispatcher.addCallback(
             this,
@@ -165,7 +163,15 @@ class OrderListFragment :
                     } else if (isSearching) {
                         handleSearchViewCollapse()
                     } else {
-                        findNavController().navigateUp()
+                        val result =
+                            _binding?.detailNavContainer?.findNavController()?.navigateUp() ?: false
+                        // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
+                        // and now it's a single pane layout (phone), e.g. due to a configuration change.
+                        if (!result && _binding?.orderRefreshLayout?.isVisible != true && !isTablet()) {
+                            adjustUiForDeviceType(savedInstanceState)
+                        } else {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                        }
                     }
                 }
             }
@@ -216,7 +222,7 @@ class OrderListFragment :
 
         initObservers()
         initializeResultHandlers()
-        displayTwoPaneLayoutIfTablet(savedInstanceState)
+        adjustUiForDeviceType(savedInstanceState)
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
@@ -272,11 +278,11 @@ class OrderListFragment :
         return true // Return true to collapse the action view
     }
 
-    private fun displayTwoPaneLayoutIfTablet(savedInstanceState: Bundle?) {
+    private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
         if (isTablet()) {
             adjustLayoutForTablet()
         } else {
-            adjustLayoutForNonTablet()
+            adjustLayoutForNonTablet(savedInstanceState)
             savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
         }
     }
@@ -285,8 +291,8 @@ class OrderListFragment :
         binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
     }
 
-    private fun adjustLayoutForNonTablet() {
-        if (savedDestinationId != -1) {
+    private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
             adjustLayoutForSinglePane()
         } else {
             _binding?.detailNavContainer?.visibility = View.GONE
