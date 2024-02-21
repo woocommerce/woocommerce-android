@@ -754,6 +754,10 @@ class OrderListFragment :
     override fun onQueryTextChange(newText: String): Boolean {
         // only display the order status list if the search query is empty
         if (newText.isEmpty()) {
+            if (searchQuery.isNotEmpty()) {
+                viewModel.loadOrders()
+            }
+
             searchQuery = ""
         }
 
