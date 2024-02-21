@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.view.updateMargins
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
@@ -23,7 +24,6 @@ import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.UiHelpers.getPxOfUiDimen
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.combineWith
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -36,7 +36,7 @@ abstract class BaseAddressEditingFragment :
         const val SELECT_STATE_REQUEST = "select_state_request"
     }
 
-    private val addressViewModel by fixedHiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
+    private val addressViewModel by viewModels<AddressViewModel>()
 
     abstract val storedAddress: Address
     abstract val addressType: AddressViewModel.AddressType

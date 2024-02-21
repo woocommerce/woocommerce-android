@@ -587,6 +587,9 @@
             android:name="orderId"
             app:argType="long"
             app:nullable="false" />
+        <argument
+            android:name="storedAddress"
+            app:argType="com.woocommerce.android.model.Address" />
     </fragment>
     <fragment
         android:id="@+id/billingAddressEditingFragment"
@@ -597,6 +600,9 @@
             android:name="orderId"
             app:argType="long"
             app:nullable="false" />
+        <argument
+            android:name="storedAddress"
+            app:argType="com.woocommerce.android.model.Address" />
     </fragment>
     <fragment
         android:id="@+id/customOrderFieldsFragment"
