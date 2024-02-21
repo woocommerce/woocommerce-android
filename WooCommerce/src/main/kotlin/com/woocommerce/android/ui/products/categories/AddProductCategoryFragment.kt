@@ -107,7 +107,7 @@ class AddProductCategoryFragment :
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
                     if (viewModel.onBackButtonClicked(getCategoryName(), binding.productCategoryParent.getText())) {
-                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                        findNavController().navigateUp()
                     }
                 }
                 onCreateMenu(toolbar)
