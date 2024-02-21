@@ -7,7 +7,6 @@ import dagger.Reusable
 import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils
 import org.wordpress.android.util.LanguageUtils
 import org.wordpress.android.util.UrlUtils
-import java.net.URLEncoder
 import javax.inject.Inject
 
 @Reusable
@@ -36,11 +35,19 @@ class UrlUtils @Inject constructor(
     }
 }
 
-fun Map<String, String>.joinToUrl(baseUrl: String): String = buildString {
-    fun encode(value: String) = URLEncoder.encode(value, "UTF-8").replace("+", "%20")
+fun String.getBaseUrl(): String {
+    return (split("?").getOrNull(0) ?: this).trimEnd('/')
+}
+
+fun String.parseParameters(): Map<String, String> {
+    val parameters = split("?").getOrNull(1) ?: return emptyMap()
+    return parameters.split("&").filter { it.contains("=") }.associate {
+        val (key, value) = it.split("=")
+        key to value
+    }
+}
+
+fun Map<String, String>.joinToUrl(baseUrl: String) = buildString {
     append(baseUrl)
-    appendWithIfNotEmpty(
-        line = entries.joinToString("&") { (key, value) -> "${encode(key)}=${encode(value)}" },
-        separator = if (baseUrl.contains("?")) "&" else "?"
-    )
+    appendWithIfNotEmpty(entries.joinToString("&"), "?")
 }

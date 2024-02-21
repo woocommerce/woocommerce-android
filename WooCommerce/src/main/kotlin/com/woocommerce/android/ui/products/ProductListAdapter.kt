@@ -16,8 +16,7 @@ typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) ->
 class ProductListAdapter(
     private inline val clickListener: OnProductClickListener? = null,
     private val loadMoreListener: OnLoadMoreListener,
-    private val currencyFormatter: CurrencyFormatter,
-    private val isProductHighlighted: (Long) -> Boolean,
+    private val currencyFormatter: CurrencyFormatter
 ) : ListAdapter<Product, ProductItemViewHolder>(ProductItemDiffCallback) {
     // allow the selection library to track the selections of the user
     var tracker: SelectionTracker<Long>? = null
@@ -44,8 +43,7 @@ class ProductListAdapter(
         holder.bind(
             product,
             currencyFormatter,
-            isActivated = tracker?.isSelected(product.remoteId) ?: false,
-            isProductHighlighted = isProductHighlighted(product.remoteId)
+            isActivated = tracker?.isSelected(product.remoteId) ?: false
         )
 
         holder.itemView.setOnClickListener {

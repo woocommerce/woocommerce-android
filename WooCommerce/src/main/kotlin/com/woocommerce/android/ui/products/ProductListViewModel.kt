@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -33,7 +31,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
-import com.woocommerce.android.util.IsTabletLogicNeeded
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -70,19 +67,14 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
-        private const val KEY_PRODUCT_OPENED = "key_product_opened"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
-    val productList: LiveData<List<Product>> = _productList.map {
-        openFirstLoadedProductOnTablet(it)
-        it
-    }
+    val productList: LiveData<List<Product>> = _productList
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -97,9 +89,6 @@ class ProductListViewModel @Inject constructor(
     private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
-    private var openedProduct: Long?
-        get() = savedState[KEY_PRODUCT_OPENED]
-        set(value) = savedState.set(KEY_PRODUCT_OPENED, value)
 
     init {
         EventBus.getDefault().register(this)
@@ -429,31 +418,6 @@ class ProductListViewModel @Inject constructor(
         triggerEvent(SelectProducts(selectedProductsIds))
     }
 
-    private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (products.isNotEmpty() && isTabletLogicNeeded()) {
-            if (openedProduct == null) {
-                openedProduct = products.first().remoteId
-            }
-            onOpenProduct(openedProduct!!, null)
-        }
-    }
-
-    fun onOpenProduct(productId: Long, sharedView: View?) {
-        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProduct } ?: 0
-        openedProduct = productId
-        val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
-        triggerEvent(
-            ProductListEvent.OpenProduct(
-                productId = productId,
-                oldPosition = oldPositionInList,
-                newPosition = newPositionInList,
-                sharedView = sharedView,
-            )
-        )
-    }
-
-    fun isProductHighlighted(productId: Long) = if (isTabletLogicNeeded()) productId == openedProduct else false
-
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
@@ -461,7 +425,7 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun enterSelectionMode(count: Int) {
+    fun enterSelectionMode(count: Int) {
         viewState = viewState.copy(
             productListState = ProductListState.Selecting,
             isAddProductButtonVisible = false,
@@ -469,7 +433,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    private fun exitSelectionMode() {
+    fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
             isAddProductButtonVisible = true,
@@ -477,7 +441,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    private fun refreshProducts(scrollToTop: Boolean = false) {
+    fun refreshProducts(scrollToTop: Boolean = false) {
         if (checkConnection()) {
             loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
         } else {
@@ -733,12 +697,6 @@ class ProductListViewModel @Inject constructor(
             data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
             data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
         }
-        data class OpenProduct(
-            val productId: Long,
-            val oldPosition: Int,
-            val newPosition: Int,
-            val sharedView: View?
-        ) : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }

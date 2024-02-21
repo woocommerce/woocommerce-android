@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 09:54:04+0000
+Translation-Revision-Date: 2024-02-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="see_report">Lihat Laporan</string>
-    <string name="blaze_campaign_edit_ad_destination_site_url_option">Beranda situs</string>
-    <string name="blaze_campaign_edit_ad_destination_product_url_option">URL produk</string>
-    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parameter URL</string>
-    <string name="blaze_campaign_edit_ad_destination_url_property_title">URL Tujuan</string>
-    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Masukkan secara manual</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Lokasi tidak ditemukan.\nCoba lagi.</string>
-    <string name="blaze_campaign_creation_location_search_message">Mulai ketik negara, provinsi, atau kota untuk melihat pilihan yang tersedia</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">Dengan mengeklik \"Kirim kampanye\", Anda menyetujui &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Ketentuan Layanan&lt;/u&gt;&lt;/a&gt; dan &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Kebijakan Iklan&lt;/u&gt;&lt;/a&gt; serta menyepakati metode pembayaran untuk penagihan sesuai anggaran dan durasi yang dipilih. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Baca selengkapnya&lt;/u&gt;&lt;/a&gt; tentang cara kerja anggaran dan pembayaran untuk Pos Dipromosikan.</string>
-    <string name="blaze_campaign_payment_summary_submit_campaign">Kirim kampanye</string>
-    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Pemuatan metode pembayaran gagal, coba lagi dengan klik di sini!</string>
-    <string name="blaze_campaign_payment_summary_add_payment_method">Tambahkan metode pembayaran</string>
-    <string name="blaze_campaign_payment_summary_loading_payment_methods">Memuat metode pembayaran</string>
-    <string name="blaze_campaign_payment_summary_total_budget">Total</string>
-    <string name="blaze_campaign_payment_summary_campaign_budget">Kampanye Blaze</string>
-    <string name="blaze_campaign_payment_summary_totals">Total pembayaran</string>
-    <string name="blaze_campaign_payment_summary_title">Pembayaran</string>
-    <string name="blaze_campaign_preview_target_location_search_hint">Cari lokasi</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Tidak dapat menyimpan tanda terima</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Tidak dapat mengunduh tanda terima</string>
     <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi yang dapat digunakan untuk membagikan tanda terima</string>

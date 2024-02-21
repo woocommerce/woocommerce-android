@@ -19,6 +19,8 @@ end
 
 common_release_checker.check_internal_release_notes_changed(report_type: :message)
 
+android_release_checker.check_modified_strings_on_release
+
 tracks_checker.check_tracks_changes(
   tracks_files: [
     'AnalyticsTracker.kt',
@@ -28,7 +30,7 @@ tracks_checker.check_tracks_changes(
   tracks_usage_matchers: [
     /AnalyticsTracker\.track/
   ],
-  tracks_label: 'category: tracks'
+  tracks_label: 'Tracks'
 )
 
 view_changes_checker.check

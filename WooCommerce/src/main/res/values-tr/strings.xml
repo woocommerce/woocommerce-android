@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 09:54:03+0000
+Translation-Revision-Date: 2024-02-07 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="see_report">Raporu Göster</string>
-    <string name="blaze_campaign_edit_ad_destination_site_url_option">Site ana sayfası</string>
-    <string name="blaze_campaign_edit_ad_destination_product_url_option">Ürün URL\'si</string>
-    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL parametreleri</string>
-    <string name="blaze_campaign_edit_ad_destination_url_property_title">Hedef URL</string>
-    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Manuel olarak girin</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Konum bulunamadı.\nLütfen tekrar deneyin.</string>
-    <string name="blaze_campaign_creation_location_search_message">Kullanılabilir seçenekleri görmek için ülke, eyalet veya şehir yazmaya başlayın</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">\"Kampanyayı gönder\"e tıklayarak &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Hizmet Koşullarını&lt;/u&gt;&lt;/a&gt; ve &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Reklam Politikasını&lt;/u&gt;&lt;/a&gt; kabul etmiş ve seçtiğiniz bütçe ile süre için ödeme yönteminize yetki vermiş olursunuz. Tanıtılan Yazılar için bütçelerin ve ödemelerin nasıl çalıştığı hakkında &lt;a href=\'learnMore\'&gt;&lt;u&gt;daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="blaze_campaign_payment_summary_submit_campaign">Kampanyayı gönderin</string>
-    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Ödeme yöntemlerini yükleme başarısız oldu, lütfen buraya tıklayarak yeniden deneyin!</string>
-    <string name="blaze_campaign_payment_summary_add_payment_method">Ödeme yöntemi ekleyin</string>
-    <string name="blaze_campaign_payment_summary_loading_payment_methods">Ödeme yöntemleri yükleniyor</string>
-    <string name="blaze_campaign_payment_summary_total_budget">Toplam</string>
-    <string name="blaze_campaign_payment_summary_campaign_budget">Kampanyayı öne çıkarın</string>
-    <string name="blaze_campaign_payment_summary_totals">Ödeme toplamı</string>
-    <string name="blaze_campaign_payment_summary_title">Ödeme</string>
-    <string name="blaze_campaign_preview_target_location_search_hint">Konum arayın</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Fatura depolanamıyor</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Fatura indirilemiyor</string>
     <string name="card_reader_payment_email_client_not_found">Faturanın paylaşılabileceği bir uygulama bulunamadı</string>

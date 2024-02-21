@@ -50,8 +50,7 @@ class ProductSelectionListFragment :
     private val productSelectionListAdapter: ProductListAdapter by lazy {
         ProductListAdapter(
             loadMoreListener = this,
-            currencyFormatter = currencyFormatter,
-            isProductHighlighted = { false }
+            currencyFormatter = currencyFormatter
         )
     }
 

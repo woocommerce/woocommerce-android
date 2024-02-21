@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 11:54:03+0000
+Translation-Revision-Date: 2024-02-08 22:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="see_report">Bericht anzeigen</string>
-    <string name="blaze_campaign_edit_ad_destination_site_url_option">Die Startseite der Website</string>
-    <string name="blaze_campaign_edit_ad_destination_product_url_option">Die Produkt-URL</string>
-    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL-Parameter</string>
-    <string name="blaze_campaign_edit_ad_destination_url_property_title">Ziel-URL</string>
-    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Manuell eingeben</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Kein Ort gefunden.\nBitte versuche es erneut.</string>
-    <string name="blaze_campaign_creation_location_search_message">Beginne mit der Eingabe des Landes, Bundeslandes oder der Stadt, um verfügbare Optionen anzuzeigen</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">Indem du auf „Kampagne absenden“ klickst, akzeptierst du die &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Geschäftsbedingungen&lt;/u&gt;&lt;/a&gt; sowie die &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Werberichtlinien&lt;/u&gt;&lt;/a&gt; und erlaubst, dass deine Zahlungsmethode für die von dir gewählte Dauer mit dem von dir gewählten Budget belastet wird. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Hier findest du weitere Informationen&lt;/u&gt;&lt;/a&gt; zu Budgets und Zahlungen für beworbene Beiträge.</string>
-    <string name="blaze_campaign_payment_summary_submit_campaign">Kampagne absenden</string>
-    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Fehler beim Laden der Zahlungsmethoden. Versuche es erneut, indem du hier klickst!</string>
-    <string name="blaze_campaign_payment_summary_add_payment_method">Zahlungsmethode hinzufügen</string>
-    <string name="blaze_campaign_payment_summary_loading_payment_methods">Zahlungsmethoden werden geladen</string>
-    <string name="blaze_campaign_payment_summary_total_budget">Gesamt</string>
-    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze-Kampagne</string>
-    <string name="blaze_campaign_payment_summary_totals">Zahlungsübersicht</string>
-    <string name="blaze_campaign_payment_summary_title">Zahlung</string>
-    <string name="blaze_campaign_preview_target_location_search_hint">Orte suchen</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Beleg konnte nicht gespeichert werden</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Beleg konnte nicht heruntergeladen werden</string>
     <string name="card_reader_payment_email_client_not_found">Es wurde keine Anwendung gefunden, mit der der Beleg geteilt werden kann</string>
@@ -1006,7 +988,7 @@ Language: de
     <string name="card_reader_payment_collect_payment_built_in_state">Der integrierte Kartenleser ist bereit</string>
     <string name="card_reader_type_selection_bluetooth_reader">Kartenlesegerät</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
-    <string name="analytics_conversion_subtitle">Zielabschlussrate</string>
+    <string name="analytics_conversion_subtitle">Umrechnungskurs</string>
     <string name="analytics_session_card_title">Sitzungen</string>
     <string name="analytics_session_no_data">Keine Sitzungen für diesen Zeitraum</string>
     <string name="date_compared_to">Verglichen mit</string>

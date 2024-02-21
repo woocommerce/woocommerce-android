@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 11:54:03+0000
+Translation-Revision-Date: 2024-02-07 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="see_report">Se rapport</string>
-    <string name="blaze_campaign_edit_ad_destination_site_url_option">Webbplatsens hem</string>
-    <string name="blaze_campaign_edit_ad_destination_product_url_option">Produktens URL</string>
-    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL-parametrar</string>
-    <string name="blaze_campaign_edit_ad_destination_url_property_title">Mål-URL</string>
-    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Ange manuellt</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Ingen plats hittades.\nFörsök igen.</string>
-    <string name="blaze_campaign_creation_location_search_message">Börja skriva land, delstat eller stad för att se tillgängliga alternativ</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">Genom att klicka på \"Skicka kampanj\" godkänner du våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och vår &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;annonspolicy&lt;/u&gt;&lt;/a&gt; och samtycker till att din betalningsmetod debiteras för den budget och den varaktighet som du väljer. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Läs mer&lt;/u&gt;&lt;/a&gt; om hur budgetar och betalningar för marknadsförda inlägg fungerar.</string>
-    <string name="blaze_campaign_payment_summary_submit_campaign">Skicka in kampanj</string>
-    <string name="blaze_campaign_payment_summary_add_payment_method">Lägg till betalningsmetod</string>
-    <string name="blaze_campaign_payment_summary_loading_payment_methods">Laddar in betalningsmetoder</string>
-    <string name="blaze_campaign_payment_summary_total_budget">Totalt</string>
-    <string name="blaze_campaign_payment_summary_title">Betalning</string>
-    <string name="blaze_campaign_preview_target_location_search_hint">Sök platser</string>
-    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze-kampanj</string>
-    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Laddning av betalningsmetoder misslyckades. Försök igen genom att klicka här!</string>
-    <string name="blaze_campaign_payment_summary_totals">Betalning totalt</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Det gick inte att lagra kvittot</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Det gick inte att ladda ner kvittot</string>
     <string name="card_reader_payment_email_client_not_found">Det gick inte att hitta någon applikation som kvittot kan delas till</string>

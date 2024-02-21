@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 15:54:03+0000
+Translation-Revision-Date: 2024-02-07 15:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="see_report">להציג את הדוח</string>
-    <string name="blaze_campaign_edit_ad_destination_site_url_option">עמוד הבית של האתר</string>
-    <string name="blaze_campaign_edit_ad_destination_product_url_option">כתובת ה-URL של המוצר</string>
-    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">פרמטרים של כתובת URL</string>
-    <string name="blaze_campaign_edit_ad_destination_url_property_title">כתובת URL ליעד</string>
-    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">יש להזין באופן ידני</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">לא נמצא מיקום.\nיש לנסות שוב.</string>
-    <string name="blaze_campaign_creation_location_search_message">יש להתחיל בהקלדת מדינה או עיר כדי להציג את האפשרויות הזמינות</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">לחיצה על \'לשלוח את הקמפיין\' נחשבת הסכמה מצדך ל&lt;a href=\'termsOfService\'&gt;&lt;u&gt;תנאי השימוש&lt;/u&gt;&lt;/a&gt; &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;ולמדיניות הפרסום&lt;/u&gt;&lt;/a&gt; שלנו ומאשרת לנו לחייב את אמצעי התשלום שלך בהתאם לתקציב ולמשך הזמן שבחרת. ניתן &lt;a href=\'learnMore\'&gt;&lt;u&gt;לקבל מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי האופן שבו תקציבים ותשלומים עובדים בפוסטים מקודמים.</string>
-    <string name="blaze_campaign_payment_summary_submit_campaign">שליחת קמפיין</string>
-    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">טעינת אמצעי התשלום נכשלה, יש ללחוץ כאן כדי לנסות שוב!</string>
-    <string name="blaze_campaign_payment_summary_add_payment_method">להוסיף אמצעי תשלום</string>
-    <string name="blaze_campaign_payment_summary_loading_payment_methods">טוען אמצעי תשלום</string>
-    <string name="blaze_campaign_payment_summary_total_budget">סכום כולל</string>
-    <string name="blaze_campaign_payment_summary_campaign_budget">קמפיין של Blaze</string>
-    <string name="blaze_campaign_payment_summary_totals">סכומים כוללים לתשלום</string>
-    <string name="blaze_campaign_payment_summary_title">תשלום</string>
-    <string name="blaze_campaign_preview_target_location_search_hint">לחפש מיקומים</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">לא ניתן לאחסן את הקבלה</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">לא ניתן להוריד את הקבלה</string>
     <string name="card_reader_payment_email_client_not_found">לא הצלחנו לזהות אפליקציה שאליה אפשר לשתף את הקבלה</string>

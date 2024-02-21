@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 11:54:03+0000
+Translation-Revision-Date: 2024-02-07 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="see_report">レポートを見る</string>
-    <string name="blaze_campaign_edit_ad_destination_site_url_option">サイトホーム</string>
-    <string name="blaze_campaign_edit_ad_destination_product_url_option">商品 URL</string>
-    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL パラメーター</string>
-    <string name="blaze_campaign_edit_ad_destination_url_property_title">リンク先 URL</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">場所が見つかりませんでした。\nもう一度お試しください。</string>
-    <string name="blaze_campaign_creation_location_search_message">国、州、都市を入力すると、選択可能なオプションが表示されます</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">「キャンペーンを送信」をクリックすると、&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;と&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;広告ポリシー&lt;/u&gt;&lt;/a&gt;に同意し、選択した予算と期間での支払いの決済方法を許可したと見なされます。 宣伝された投稿における予算と支払いの仕組みについて詳しくは&lt;a href=\'learnMore\'&gt;&lt;u&gt;こちら&lt;/u&gt;&lt;/a&gt;をご覧ください。</string>
-    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手動で入力</string>
-    <string name="blaze_campaign_payment_summary_submit_campaign">キャンペーンを送信</string>
-    <string name="blaze_campaign_payment_summary_add_payment_method">支払い方法を追加</string>
-    <string name="blaze_campaign_payment_summary_loading_payment_methods">お支払い方法を読み込んでいます…</string>
-    <string name="blaze_campaign_payment_summary_total_budget">合計</string>
-    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze キャンペーン</string>
-    <string name="blaze_campaign_payment_summary_totals">支払総額</string>
-    <string name="blaze_campaign_payment_summary_title">支払い</string>
-    <string name="blaze_campaign_preview_target_location_search_hint">位置情報を検索</string>
-    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">支払い方法の読み込みに失敗しました。こちらをクリックしてもう一度お試しください。</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">領収書を保管できません</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">領収書をダウンロードできません</string>
     <string name="card_reader_payment_email_client_not_found">レシートを共有できるアプリケーションを検出できません</string>

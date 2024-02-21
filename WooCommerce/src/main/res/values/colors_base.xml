@@ -45,8 +45,6 @@
     <color name="color_back_arrow">@color/color_on_surface</color>
     <color name="color_text_link">@color/woo_pink_50</color>
 
-    <color name="color_item_selected">@color/woo_purple_10</color>
-
     <!--
         Color resource used to indicate selected state of an item
     -->
@@ -91,7 +89,6 @@
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
     <color name="splash_background">@color/woo_purple_60</color>
     <color name="color_toolbar">@color/woo_white</color>
-    <color name="bottom_sheet_background">@color/color_surface</color>
 
     <!--
         Elevation colors
