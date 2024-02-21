@@ -1,2 +1,0 @@
-17.2:
-Den här versionen inkluderar optimeringar för snabbhet och tillförlitlighet. Vi arbetar kontinuerligt med förbättringar av appen, så att du ska kunna hantera din onlinebutik på ett effektivt sätt utan krångel.

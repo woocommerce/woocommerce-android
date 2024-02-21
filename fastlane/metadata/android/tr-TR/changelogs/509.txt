@@ -1,0 +1,2 @@
+17.3:
+Daha sorunsuz ve sezgisel bir deneyim sağlamak için gönderim etiketi oluşturma akışını geliştirdik. Bu geliştirme, sipariş tamamlama sürecinizi kolaylaştırmayı hedefleyerek bu süreci daha hızlı ve verimli hale getirir. Lütfen bize geri bildirim göndermeye devam edin, sizi dinliyoruz!

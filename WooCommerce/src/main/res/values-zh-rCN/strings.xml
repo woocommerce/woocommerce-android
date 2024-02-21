@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 09:54:03+0000
+Translation-Revision-Date: 2024-02-15 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="see_report">查看报告</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">站点主页</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">产品 URL</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 参数</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">未找到位置。\n请重试。</string>
+    <string name="blaze_campaign_creation_location_search_message">开始键入国家/地区、州或城市，查看可用选项</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">目标 URL</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手动输入</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">添加付款方式</string>
+    <string name="blaze_campaign_payment_summary_total_budget">总计</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze 广告活动</string>
+    <string name="blaze_campaign_payment_summary_totals">付款总额</string>
+    <string name="blaze_campaign_payment_summary_title">付款</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">搜索位置</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">提交广告活动</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">加载付款方式失败，请点击此处重试！</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">正在加载付款方式</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">无法存储此收据</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">无法下载此收据</string>
     <string name="card_reader_payment_email_client_not_found">无法检测到任何可共享收据的应用程序</string>
