@@ -584,10 +584,6 @@
         android:label="ShippingAddressEditingFragment"
         tools:layout="@layout/fragment_base_edit_address" >
         <argument
-            android:name="orderId"
-            app:argType="long"
-            app:nullable="false" />
-        <argument
             android:name="storedAddress"
             app:argType="com.woocommerce.android.model.Address" />
     </fragment>
@@ -596,10 +592,6 @@
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
         tools:layout="@layout/fragment_base_edit_address" >
-        <argument
-            android:name="orderId"
-            app:argType="long"
-            app:nullable="false" />
         <argument
             android:name="storedAddress"
             app:argType="com.woocommerce.android.model.Address" />
