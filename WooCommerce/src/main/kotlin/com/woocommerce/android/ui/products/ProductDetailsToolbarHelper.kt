@@ -63,6 +63,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
         val toolbar = binding?.productDetailToolbar ?: return
 
         toolbar.setOnMenuItemClickListener(this)
+        toolbar.menu.clear()
         toolbar.inflateMenu(R.menu.menu_product_detail_fragment)
         this.menu = toolbar.menu
 
