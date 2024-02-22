@@ -780,6 +780,8 @@ class OrderListViewModel @Inject constructor(
         ) : Event()
 
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
+
+        object RetryLoadingOrders : OrderListEvent()
     }
 
     @Parcelize
