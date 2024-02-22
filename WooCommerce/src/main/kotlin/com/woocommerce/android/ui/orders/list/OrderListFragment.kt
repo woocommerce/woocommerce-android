@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -290,6 +289,8 @@ class OrderListFragment :
 
     private fun adjustLayoutForTablet() {
         binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        binding.listPaneContainer.visibility = View.VISIBLE
+        binding.detailPaneContainer.visibility = View.VISIBLE
     }
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
@@ -310,15 +311,6 @@ class OrderListFragment :
         _binding?.detailPaneContainer?.visibility = View.VISIBLE
         _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
         _binding?.listPaneContainer?.visibility = View.GONE
-    }
-
-    private fun hideDetailPane(
-        detailContainer: NavHostFragment,
-        orderListViewLayoutParams: LinearLayout.LayoutParams
-    ) {
-        detailContainer.view?.visibility = View.GONE
-        orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-        orderListViewLayoutParams.weight = 0f
     }
 
     private fun initSwipeBehaviour() {
@@ -568,12 +560,6 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
-                        val detailContainer = childFragmentManager.findFragmentById(
-                            R.id.detailPaneContainer
-                        ) as NavHostFragment
-                        val orderListViewLayoutParams = binding.listPaneContainer.layoutParams
-                            as LinearLayout.LayoutParams
-                        hideDetailPane(detailContainer, orderListViewLayoutParams)
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
