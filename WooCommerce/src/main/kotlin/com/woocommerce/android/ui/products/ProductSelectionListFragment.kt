@@ -3,15 +3,15 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -39,8 +40,7 @@ class ProductSelectionListFragment :
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,
-    OnActionExpandListener,
-    MenuProvider {
+    OnActionExpandListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -85,7 +85,6 @@ class ProductSelectionListFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductListBinding.bind(view)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         setupObservers(viewModel)
 
@@ -130,10 +129,10 @@ class ProductSelectionListFragment :
                     when (selectionCount) {
                         0 -> {
                             actionMode?.finish()
-                            activity?.title = getString(R.string.grouped_product_add)
+                            binding.toolbar.title = getString(R.string.grouped_product_add)
                         }
                         else -> {
-                            actionMode?.title = StringUtils.getQuantityString(
+                            binding.toolbar.title = StringUtils.getQuantityString(
                                 context = requireContext(),
                                 quantity = selectionCount,
                                 default = R.string.product_selection_count,
@@ -143,17 +142,28 @@ class ProductSelectionListFragment :
                     }
                 }
             })
+
+        setupTabletSecondPaneToolbar(
+            title = "",
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_product_list_fragment, menu)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_product_list_fragment)
 
-        searchMenuItem = menu.findItem(R.id.menu_search)
+        searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 enableSearchListeners()
