@@ -505,17 +505,6 @@ class OrderListViewModel @Inject constructor(
         super.onCleared()
     }
 
-    @Suppress("unused", "DEPRECATION")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> activePagedListWrapper?.fetchFirstPage()
-            else -> {
-            }
-        }
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
