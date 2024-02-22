@@ -427,10 +427,6 @@ class OrderListFragment :
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
-        selectedOrder.refreshOrders.observe(viewLifecycleOwner) {
-            refreshOrders()
-        }
-
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
             viewModel.updateOrderSelectedStatus(
                 orderId = selectedOrder.selectedOrderId.value ?: -1,
@@ -471,8 +467,6 @@ class OrderListFragment :
                             openFirstOrder()
                         }, HANDLER_DELAY)
                     }
-
-                    viewModel.viewState.filterCount > 0 -> openFirstOrder()
                 }
             }
             updateOrderSelectedStatus()
