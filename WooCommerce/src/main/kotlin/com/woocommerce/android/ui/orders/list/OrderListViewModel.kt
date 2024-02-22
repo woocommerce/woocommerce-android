@@ -408,12 +408,14 @@ class OrderListViewModel @Inject constructor(
                         )
                     }
                     TIMEOUT_ERROR -> {
-                        if (isRetry) {
+                        if (isRetry && isFirstInit) {
                             viewState = viewState.copy(
                                 shouldDisplayTroubleshootingBanner = true
                             )
-                        } else {
+                        } else if (isFirstInit) {
                             triggerEvent(RetryLoadingOrders)
+                        } else {
+                            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                         }
                     }
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
