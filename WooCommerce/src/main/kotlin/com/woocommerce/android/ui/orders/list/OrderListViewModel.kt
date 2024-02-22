@@ -407,17 +407,7 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
-                    TIMEOUT_ERROR -> {
-                        if (isRetry && isFirstInit) {
-                            viewState = viewState.copy(
-                                shouldDisplayTroubleshootingBanner = true
-                            )
-                        } else if (isFirstInit) {
-                            triggerEvent(RetryLoadingOrders)
-                        } else {
-                            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-                        }
-                    }
+                    TIMEOUT_ERROR -> handleTimeoutError(isRetry, isFirstInit)
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
 
                 }
@@ -428,6 +418,16 @@ class OrderListViewModel @Inject constructor(
             fetchOrdersAndOrderDependencies()
         } else {
             pagedListWrapper.invalidateData()
+        }
+    }
+
+    private fun handleTimeoutError(isRetry: Boolean, isFirstInit: Boolean) {
+        when {
+            isRetry && isFirstInit -> viewState = viewState.copy(
+                shouldDisplayTroubleshootingBanner = true
+            )
+            isFirstInit -> triggerEvent(RetryLoadingOrders)
+            else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
         }
     }
 
