@@ -17,7 +17,10 @@ class SingleProductScreen : Screen {
     fun goBackToProductsScreen(): ProductListScreen {
         // pressBack() only needed if device is not a tablet,
         // on a tablet, products list and product information are on the same screen
-        val isTablet = InstrumentationRegistry.getInstrumentation().targetContext.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
+        val isTablet = InstrumentationRegistry.getInstrumentation().targetContext
+            .resources
+            .configuration
+            .screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
         if (!isTablet) {
             pressBack()
             waitForElementToBeDisplayed(R.id.productsRecycler)
