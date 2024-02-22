@@ -604,6 +604,21 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible).isEqualTo(false)
         }
 
+    @Test
+    fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
+
+    }
+
+    @Test
+    fun `when retrying to fetch orders fails with timeout, then display the troubleshooting banner`() = testBlocking {
+
+    }
+
+    @Test
+    fun `when fetching orders for subsequent pages fails with a timeout, then display a generic error`() = testBlocking {
+
+    }
+
     // region barcode scanner
 
     @Test
