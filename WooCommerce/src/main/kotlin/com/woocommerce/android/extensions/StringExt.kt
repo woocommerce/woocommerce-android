@@ -60,10 +60,15 @@ fun String.semverCompareTo(otherVersion: String): Int {
         val thisVersionTokens = substringBefore("-").split(".").map { Integer.parseInt(it) }
         val otherVersionTokens = otherVersion.substringBefore("-").split(".").map { Integer.parseInt(it) }
 
-        thisVersionTokens.forEachIndexed { index, token ->
-            if (token > otherVersionTokens[index]) {
+        val maxLength = maxOf(thisVersionTokens.size, otherVersionTokens.size)
+
+        for (index in 0 until maxLength) {
+            val thisToken = thisVersionTokens.getOrElse(index) { 0 }
+            val otherToken = otherVersionTokens.getOrElse(index) { 0 }
+
+            if (thisToken > otherToken) {
                 return 1
-            } else if (token < otherVersionTokens[index]) {
+            } else if (thisToken < otherToken) {
                 return -1
             }
         }
