@@ -353,7 +353,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
-    testImplementation 'app.cash.turbine:turbine:0.8.0'
+    testImplementation 'app.cash.turbine:turbine:1.0.0'
 
     implementation "org.apache.commons:commons-text:$commonsText"
     implementation "commons-io:commons-io:$commonsIO"
