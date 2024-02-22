@@ -370,7 +370,8 @@ class OrderListViewModel @Inject constructor(
      */
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
-        isFirstInit: Boolean = false
+        isFirstInit: Boolean = false,
+        isRetry: Boolean = false
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
@@ -406,9 +407,11 @@ class OrderListViewModel @Inject constructor(
                         )
                     }
                     TIMEOUT_ERROR -> {
-                        viewState = viewState.copy(
-                            shouldDisplayTroubleshootingBanner = true
-                        )
+                        if (isRetry) {
+                            viewState = viewState.copy(
+                                shouldDisplayTroubleshootingBanner = true
+                            )
+                        }
                     }
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
 
