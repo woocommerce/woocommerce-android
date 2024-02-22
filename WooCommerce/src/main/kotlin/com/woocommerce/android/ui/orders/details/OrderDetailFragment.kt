@@ -277,7 +277,7 @@ class OrderDetailFragment :
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
             binding.toolbar.setNavigationOnClickListener {
-                findNavController().navigateUp()
+                if (!findNavController().popBackStack()) requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
