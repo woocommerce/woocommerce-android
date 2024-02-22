@@ -231,7 +231,7 @@ class OrderDetailFragment :
     private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
 
     private fun setMarginsIfTablet() {
-        val isSmallTablet = resources.getBoolean(R.bool.is_small_tablet)
+        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
         val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (isTablet()) {
