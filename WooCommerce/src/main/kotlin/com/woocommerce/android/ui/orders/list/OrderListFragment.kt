@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -89,6 +90,7 @@ class OrderListFragment :
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
         private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
         private const val HANDLER_DELAY = 200L
     }
@@ -282,7 +284,14 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForTablet() {
-        binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        val isSmallTablet = resources.getBoolean(R.bool.is_small_tablet)
+        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        if (isSmallTablet && isPortrait) {
+            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+        } else {
+            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        }
     }
 
     private fun adjustLayoutForNonTablet() {
