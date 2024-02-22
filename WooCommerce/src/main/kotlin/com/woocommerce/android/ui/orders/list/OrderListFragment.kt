@@ -458,8 +458,6 @@ class OrderListFragment :
                             openFirstOrder()
                         }, HANDLER_DELAY)
                     }
-
-                    viewModel.viewState.filterCount > 0 -> openFirstOrder()
                 }
             }
             updateOrderSelectedStatus()
