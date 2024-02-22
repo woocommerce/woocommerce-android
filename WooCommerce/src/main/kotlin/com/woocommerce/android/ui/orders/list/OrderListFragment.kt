@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -18,6 +17,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
@@ -108,8 +108,6 @@ class OrderListFragment :
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
 
-    private var savedDestinationId: Int = -1
-
     override fun onStop() {
         snackBar?.dismiss()
         super.onStop()
@@ -153,7 +151,6 @@ class OrderListFragment :
         savedInstanceState?.let { bundle ->
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-            savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
         requireActivity().onBackPressedDispatcher.addCallback(
             this,
@@ -165,7 +162,16 @@ class OrderListFragment :
                     } else if (isSearching) {
                         handleSearchViewCollapse()
                     } else {
-                        findNavController().navigateUp()
+                        val result =
+                            _binding?.detailNavContainer?.findNavController()?.navigateUp() ?: false
+                        if (!result && _binding?.orderRefreshLayout?.isVisible != true && !isTablet()) {
+                            // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
+                            // and now it's a single pane layout (phone), e.g. due to a configuration change.
+                            // In this case we need to switch panes – show the list pane instead of details pane.
+                            adjustUiForDeviceType(savedInstanceState)
+                        } else {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                        }
                     }
                 }
             }
@@ -216,7 +222,7 @@ class OrderListFragment :
 
         initObservers()
         initializeResultHandlers()
-        displayTwoPaneLayoutIfTablet(savedInstanceState)
+        adjustUiForDeviceType(savedInstanceState)
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
@@ -272,45 +278,39 @@ class OrderListFragment :
         return true // Return true to collapse the action view
     }
 
-    private fun displayTwoPaneLayoutIfTablet(savedInstanceState: Bundle?) {
+    private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
         if (isTablet()) {
             adjustLayoutForTablet()
         } else {
-            adjustLayoutForNonTablet()
+            adjustLayoutForNonTablet(savedInstanceState)
             savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
         }
     }
 
     private fun adjustLayoutForTablet() {
         binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        binding.orderRefreshLayout.visibility = View.VISIBLE
+        binding.detailNavContainer.visibility = View.VISIBLE
     }
 
-    private fun adjustLayoutForNonTablet() {
-        if (savedDestinationId != -1) {
-            adjustLayoutForSinglePane()
+    private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
+            displayDetailPaneOnly()
         } else {
-            _binding?.detailNavContainer?.visibility = View.GONE
-            _binding?.orderRefreshLayout?.visibility = View.VISIBLE
-            _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
+            displayListPaneOnly()
         }
     }
 
-    private fun adjustLayoutForSinglePane() {
-        // Adjust the detail container to occupy the full width in single-pane mode (e.g., phone)
-        _binding?.detailNavContainer?.visibility = View.VISIBLE
-        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
-
-        // Adjust the order list view to be hidden in single-pane mode
-        _binding?.orderRefreshLayout?.visibility = View.GONE
+    private fun displayListPaneOnly() {
+        _binding?.detailNavContainer?.visibility = View.GONE
+        _binding?.orderRefreshLayout?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
     }
 
-    private fun hideDetailPane(
-        detailContainer: NavHostFragment,
-        orderListViewLayoutParams: LinearLayout.LayoutParams
-    ) {
-        detailContainer.view?.visibility = View.GONE
-        orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-        orderListViewLayoutParams.weight = 0f
+    private fun displayDetailPaneOnly() {
+        _binding?.detailNavContainer?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
+        _binding?.orderRefreshLayout?.visibility = View.GONE
     }
 
     private fun initSwipeBehaviour() {
@@ -554,12 +554,6 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
-                        val detailContainer = childFragmentManager.findFragmentById(
-                            R.id.detail_nav_container
-                        ) as NavHostFragment
-                        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams
-                            as LinearLayout.LayoutParams
-                        hideDetailPane(detailContainer, orderListViewLayoutParams)
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {

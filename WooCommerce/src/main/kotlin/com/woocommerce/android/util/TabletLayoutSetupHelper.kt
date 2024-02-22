@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 class TabletLayoutSetupHelper @Inject constructor(
     private val context: Context,
+    private val isTabletLogicNeeded: IsTabletLogicNeeded,
 ) : DefaultLifecycleObserver {
     private var screen: Screen? = null
 
@@ -30,9 +31,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
-        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled() &&
-            (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context))
-        ) {
+        if (isTabletLogicNeeded()) {
             val navigationData = tabletNavigateTo()
             navHostFragment.navController.navigate(
                 navigationData.first,
@@ -44,12 +43,10 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     override fun onCreate(owner: LifecycleOwner) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
+        if (!isTabletLogicNeeded()) return
 
-        if (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) {
-            initNavFragment(screen!!.secondPaneNavigation)
-            adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
-        }
+        initNavFragment(screen!!.secondPaneNavigation)
+        adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
@@ -99,4 +96,8 @@ class TabletLayoutSetupHelper @Inject constructor(
             val initialBundle: Bundle?
         )
     }
+}
+
+class IsTabletLogicNeeded @Inject constructor(private val isTablet: IsTablet) {
+    operator fun invoke() = isTablet() && FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()
 }

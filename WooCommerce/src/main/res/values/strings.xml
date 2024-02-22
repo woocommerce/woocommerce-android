@@ -3846,6 +3846,10 @@
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Please add an image for the Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Add Image</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Please add a tagline and a description for your Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
 
     <!--
     Blaze campaign budget screen
@@ -3919,13 +3923,26 @@
     <string name="blaze_campaign_edit_ad_destination_site_url_option">The site home</string>
     <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Add parameter</string>
     <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destination: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Key</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Value</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">The final URL is too long</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">The key already exits</string>
 
     <!--
-    Blaze campaign created success
+    Blaze campaign creation
     -->
     <string name="blaze_campaign_created_success_title">Ready to Go!</string>
     <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
     <string name="blaze_campaign_created_success_done_button">Done</string>
+    <string name="blaze_campaign_creation_loading">Creating your campaign</string>
+    <string name="blaze_campaign_creation_error_title">Error creating campaign</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Error creating campaign</string>
+    <string name="blaze_campaign_creation_error_help_hint">Please try again, or contact support for assistance.</string>
+    <string name="blaze_campaign_creation_error_get_support">Get support</string>
+    <string name="blaze_campaign_creation_error_cancel">Cancel campaign</string>
+    <string name="blaze_campaign_creation_error_media_upload">Failed to upload campaign image.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Failed to fetch campaign image details</string>
+    <string name="blaze_campaign_creation_error">Something’s not quite right.\nWe couldn\'t create your campaign.</string>
 
     <!--
     Highlights tooltip
