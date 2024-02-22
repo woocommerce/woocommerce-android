@@ -1,5 +1,6 @@
 package com.woocommerce.android.e2e.screens.products
 
+import android.content.res.Configuration
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -14,8 +15,13 @@ class SingleProductScreen : Screen {
     constructor() : super(R.id.productDetail_root)
 
     fun goBackToProductsScreen(): ProductListScreen {
-        pressBack()
-        waitForElementToBeDisplayed(R.id.productsRecycler)
+        // pressBack() only needed if device is not a tablet,
+        // on a tablet, products list and product information are on the same screen
+        val isTablet = InstrumentationRegistry.getInstrumentation().targetContext.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
+        if (!isTablet) {
+            pressBack()
+            waitForElementToBeDisplayed(R.id.productsRecycler)
+        }
         return ProductListScreen()
     }
 
