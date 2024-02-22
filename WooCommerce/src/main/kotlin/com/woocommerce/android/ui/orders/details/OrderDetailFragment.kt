@@ -277,7 +277,11 @@ class OrderDetailFragment :
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
             binding.toolbar.setNavigationOnClickListener {
-                if (!findNavController().popBackStack()) requireActivity().onBackPressedDispatcher.onBackPressed()
+                if (!findNavController().popBackStack(R.id.orders, false)) {
+                    // in case the back stack is empty, indicating that the OrderDetailsFragment is shown in details pane
+                    // of the OrderListFragment, we need to propagate back press to the parent fragment manually.
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
         }
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
