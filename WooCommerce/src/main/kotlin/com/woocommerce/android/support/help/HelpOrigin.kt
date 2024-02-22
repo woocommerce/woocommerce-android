@@ -29,7 +29,8 @@ enum class HelpOrigin(private val stringValue: String) {
     DOMAIN_CHANGE("origin:domain-change"),
     UPGRADES("origin:upgrades"),
     ACCOUNT_DELETION("origin:account-deletion"),
-    ORDERS_LIST("origin:orders-list");
+    ORDERS_LIST("origin:orders-list"),
+    BLAZE_CAMPAIGN_CREATION("origin:blaze-native-campaign-creation");
 
     override fun toString(): String {
         return stringValue
