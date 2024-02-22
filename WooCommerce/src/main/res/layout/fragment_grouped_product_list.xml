@@ -7,6 +7,17 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.products.GroupedProductListFragment">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
+
     <com.woocommerce.android.ui.products.AddProductElementView
         android:id="@+id/addGroupedProductView"
         style="@style/Woo.Card"
@@ -14,7 +25,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:buttonText="@string/grouped_product_add"
         android:visibility="gone"
         tools:visibility="visible"/>
