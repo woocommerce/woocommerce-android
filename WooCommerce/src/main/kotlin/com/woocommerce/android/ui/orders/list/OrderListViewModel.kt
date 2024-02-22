@@ -75,6 +75,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
@@ -396,13 +397,15 @@ class OrderListViewModel @Inject constructor(
             .filter { !dismissListErrors }
             .filterNotNull()
             .observe(this) { error ->
-                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
-                    viewState = viewState.copy(
-                        isErrorFetchingDataBannerVisible = true,
-                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
-                    )
-                } else {
-                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                when (error.type) {
+                    PARSE_ERROR -> {
+                        viewState = viewState.copy(
+                            isErrorFetchingDataBannerVisible = true,
+                            isSimplePaymentsAndOrderCreationFeedbackVisible = false
+                        )
+                    }
+                    else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+
                 }
             }
         this.activePagedListWrapper = pagedListWrapper
