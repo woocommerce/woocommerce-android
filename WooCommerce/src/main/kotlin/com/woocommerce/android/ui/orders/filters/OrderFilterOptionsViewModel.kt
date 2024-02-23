@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -150,12 +151,9 @@ class OrderFilterOptionsViewModel @Inject constructor(
 
     private fun getOrderFilterOptionsTitle(categoryKey: OrderListFilterCategory) =
         when (categoryKey) {
-            ORDER_STATUS ->
-                resourceProvider.getString(string.orderfilters_filter_order_status_options_title)
-            DATE_RANGE ->
-                resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
+            ORDER_STATUS -> resourceProvider.getString(string.orderfilters_filter_order_status_options_title)
+            DATE_RANGE -> resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
             PRODUCT -> error("Product filter option is not supported")
-                resourceProvider.getString(string.orderfilters_filter_date_range_options_title)
             CUSTOMER -> error("Customer filter not supported in this screen")
         }
 
