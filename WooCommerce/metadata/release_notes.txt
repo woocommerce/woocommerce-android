@@ -1,1 +1,3 @@
-We're excited to offer support for third-party Passkey providers. This update is designed to provide WordPress.com users with more flexibility and convenience in how they manage their account's security. Get ready to say goodbye to password fatigue and hello to a smoother, secure login experience!
+- [*] [Internal] As side effect of adding tablet support, toolbar on the product list screen is not collapsible anymore [https://github.com/woocommerce/woocommerce-android/pull/10844]
+- [*] [Internal] Added the "Shipping Tax" display in the order creation form to enhance tax detail visibility, ensuring comprehensive financial tracking. [https://github.com/woocommerce/woocommerce-android/pull/10794]
+
