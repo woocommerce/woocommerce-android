@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 13:54:04+0000
+Translation-Revision-Date: 2024-02-19 19:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">هناك شيء ليس صحيحًا تمامًا.\nتعذر علينا إنشاء حملتك.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">فشل إحضار تفاصيل صورة الحملة</string>
+    <string name="blaze_campaign_creation_error_media_upload">فشل رفع صورة الحملة.</string>
+    <string name="blaze_campaign_creation_error_cancel">إلغاء الحملة</string>
+    <string name="blaze_campaign_creation_error_get_support">الحصول على الدعم</string>
+    <string name="blaze_campaign_creation_error_help_hint">ترجى المحاولة مجددًا أو الاتصال بالدعم للحصول على المساعدة.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">خطأ في أثناء إنشاء الحملة</string>
+    <string name="blaze_campaign_creation_error_title">خطأ في أثناء إنشاء الحملة</string>
+    <string name="blaze_campaign_creation_loading">إنشاء حملتك</string>
+    <string name="blaze_campaign_created_success_done_button">تم</string>
+    <string name="blaze_campaign_created_success_description">إننا نراجع حملتك. سيصبح فعالاً في غضون 24 ساعة. أوقات مشوقة في انتظار مبيعاتك!</string>
+    <string name="blaze_campaign_created_success_title">كل شيء جاهز الآن!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">المفتاح موجود بالفعل</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">عنوان URL النهائي طويل للغاية</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">القيمة</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">المفتاح</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">الوجهة: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">إضافة معيار</string>
+    <string name="blaze_campaign_payment_added_successfully">تمت إضافة بطاقة الائتمان بنجاح</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">إضافة بطاقة جديدة</string>
+    <string name="blaze_campaign_payment_list_hint">يتم استرداد بطاقات الائتمان من حساب ووردبريس التالي: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">تكون كل المعاملات آمنة ومشفَّرة</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">إضافة بطاقة ائتمان</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">ترجى إضافة طريقة دفع جديدة</string>
+    <string name="blaze_campaign_payment_list_screen_title">طريقة الدفع</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">فشل تقدير مرات الظهور. هل تريد إعادة المحاولة؟</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">إضافة</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">ترجى إضافة شعارووصف لحملة Blaze الخاصة بك</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">إضافة صورة</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">ترجى إضافة صورة لحملة Blaze</string>
+    <string name="drag_handle">سحب المقبض</string>
+    <string name="analytic_cards">بطاقات تحليلية</string>
+    <string name="manage_analytics">إدارة التحليلات</string>
     <string name="see_report">الاطلاع على التقرير</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">الصفحة الرئيسية للموقع</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">عنوان URL للمنتج</string>
