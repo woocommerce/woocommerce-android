@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment.Companion.KEY_CUSTOMER_ID_RESULT
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
@@ -148,8 +149,8 @@ class OrderFilterCategoriesFragment :
     }
 
     private fun handleResults() {
-//        handleResult<Int>() {
-//            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImage)
-//        }
+        handleResult<Int>(KEY_CUSTOMER_ID_RESULT) {
+            viewModel.onCustomerSelected(it)
+        }
     }
 }

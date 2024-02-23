@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -22,6 +23,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CustomerListFragment : BaseFragment() {
+    companion object {
+        const val KEY_CUSTOMER_ID_RESULT = "customer_id"
+    }
+
     private val viewModel by viewModels<CustomerListViewModel>()
     private val addressViewModel by fixedHiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
     private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
@@ -50,8 +55,13 @@ class CustomerListFragment : BaseFragment() {
                     sharedViewModel.onCustomerEdited(event.customer)
                     addressViewModel.onAddressesChanged(event.customer)
 
-                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+//                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+                    navigateBackWithResult(
+                        KEY_CUSTOMER_ID_RESULT,
+                        event.customer
+                    )
                 }
+
                 is AddCustomer -> {
                     addressViewModel.clearSelectedAddress()
                     addressViewModel.onFieldEdited(
@@ -67,6 +77,7 @@ class CustomerListFragment : BaseFragment() {
                             )
                     )
                 }
+
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

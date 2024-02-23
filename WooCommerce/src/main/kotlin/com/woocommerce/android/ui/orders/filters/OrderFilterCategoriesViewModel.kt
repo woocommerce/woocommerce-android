@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
@@ -35,6 +36,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCCustomerStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,14 +49,15 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
     private val dateUtils: DateUtils,
     private val analyticsTraWrapper: AnalyticsTrackerWrapper,
-
-    ) : ScopedViewModel(savedState) {
+    private val customerStore: WCCustomerStore,
+    private val selectedSite: SelectedSite,
+) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
     }
 
     private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
-        savedState.get(OLD_FILTER_SELECTION_KEY) ?: emptyList()
+        savedState[OLD_FILTER_SELECTION_KEY] ?: emptyList()
 
     val categories = LiveDataDelegate(
         savedState,
@@ -164,10 +167,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             OrderFilterCategoryUiModel(
                 categoryKey = CUSTOMER,
                 displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
-                displayValue = dateRangeFilterOptions.getDisplayValue(
-                    CUSTOMER,
-                    resourceProvider
-                ),
+                displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value),
                 orderFilterOptions = emptyList()
             )
         )
@@ -210,7 +210,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     .toString()
 
                 DATE_RANGE -> first { it.isSelected }.displayName
-                CUSTOMER -> TODO()
+                CUSTOMER -> first { it.isSelected }.key
             }
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
@@ -236,6 +236,30 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
     private fun List<OrderFilterCategoryUiModel>.isAnyFilterSelected() =
         any { it.orderFilterOptions.isAnyFilterOptionSelected() }
+
+    fun onCustomerSelected(customerId: Int) {
+        onFilterOptionsUpdated(
+            _categories.list.first { it.categoryKey == CUSTOMER }
+                .copy(
+                    orderFilterOptions = listOf(
+                        OrderFilterOptionUiModel(
+                            key = customerId.toString(),
+                            displayName = getCustomerDisplayValueFrom(customerId),
+                            isSelected = true
+                        )
+                    ),
+                    displayValue = getCustomerDisplayValueFrom(customerId)
+                )
+        )
+    }
+
+    private fun getCustomerDisplayValueFrom(customerId: Int): String =
+        customerStore.getCustomerByRemoteId(selectedSite.get(), customerId.toLong())
+            ?.let { customer ->
+                (customer.firstName + " " + customer.lastName)
+                    .ifBlank { customer.email }
+                    .ifBlank { customer.username }
+            } ?: resourceProvider.getString(R.string.orderfilters_selected_customer_fallback_display_value, customerId)
 
     @Parcelize
     data class OrderFilterCategories(
