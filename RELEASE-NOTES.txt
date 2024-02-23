@@ -8,6 +8,7 @@
 17.4
 -----
 - [*] [Internal] Added the "Shipping Tax" display in the order creation form to enhance tax detail visibility, ensuring comprehensive financial tracking. [https://github.com/woocommerce/woocommerce-android/pull/10794]
+- [***] The Order Listing and Order Detail screens have been optimized for tablet use, showcasing a two-pane layout on such devices. [https://github.com/woocommerce/woocommerce-android/pull/10591]
 - [**] Added support to use third-party passkey providers and other devices passkeys as a WordPress.com login option [https://github.com/woocommerce/woocommerce-android/pull/10647]
 
 17.3

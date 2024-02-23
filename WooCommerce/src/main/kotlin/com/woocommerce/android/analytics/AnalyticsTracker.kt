@@ -216,8 +216,12 @@ class AnalyticsTracker private constructor(
         const val KEY_PRODUCT_ADDED_VIA = "added_via"
         const val KEY_SCANNING_FAILURE_REASON = "reason"
         const val KEY_CATEGORY = "category"
+        const val KEY_START_PAYMENT_FLOW = "start_payment_flow"
+        const val KEY_HORIZONTAL_SIZE_CLASS = "horizontal_size_class"
 
         const val KEY_SORT_ORDER = "order"
+        const val VALUE_DEVICE_TYPE_REGULAR = "regular"
+        const val VALUE_DEVICE_TYPE_COMPACT = "compact"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
         const val VALUE_SORT_NAME_DESC = "name,descending"
         const val VALUE_SORT_DATE_ASC = "date,ascending"

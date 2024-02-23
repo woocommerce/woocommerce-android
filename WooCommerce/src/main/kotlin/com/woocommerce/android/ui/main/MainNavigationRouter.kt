@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import android.view.View
+import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 
 interface MainNavigationRouter {
@@ -17,8 +18,10 @@ interface MainNavigationRouter {
 
     fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment? = null,
         remoteNoteId: Long = 0,
-        launchedFromNotification: Boolean = false
+        launchedFromNotification: Boolean = false,
+        startPaymentsFlow: Boolean = false,
     )
 
     fun showOrderDetailWithSharedTransition(
