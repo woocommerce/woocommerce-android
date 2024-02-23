@@ -79,7 +79,36 @@ class UpdateAnalyticsHubStats @Inject constructor(
         asyncCalls.awaitAll()
 
         if (fetchStrategy == FetchStrategy.ForceNew) {
-            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection)
+            storeLastAnalyticsUpdate(visibleCards, rangeSelection)
+        }
+    }
+
+    private suspend fun storeLastAnalyticsUpdate(
+        visibleCards: Set<AnalyticsCards>,
+        rangeSelection: StatsTimeRangeSelection
+    ) {
+        visibleCards.forEach { card ->
+            when (card) {
+                AnalyticsCards.Revenue -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                )
+
+                AnalyticsCards.Orders -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.ORDERS
+                )
+
+                AnalyticsCards.Products -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+                )
+
+                AnalyticsCards.Session -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            }
         }
     }
 
