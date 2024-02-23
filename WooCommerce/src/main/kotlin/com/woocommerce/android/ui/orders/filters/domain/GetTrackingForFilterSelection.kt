@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import javax.inject.Inject
 
 class GetTrackingForFilterSelection @Inject constructor(
@@ -13,6 +14,7 @@ class GetTrackingForFilterSelection @Inject constructor(
         val orderStatusOptions = orderFiltersRepository
             .getCurrentFilterSelection(ORDER_STATUS)
         val dateRangeOptions = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
+        val productFilterOptions = orderFiltersRepository.getCurrentFilterSelection(PRODUCT)
 
         val trackingData = mutableMapOf<String, String>()
         if (orderStatusOptions.isNotEmpty()) {
@@ -20,6 +22,9 @@ class GetTrackingForFilterSelection @Inject constructor(
         }
         if (dateRangeOptions.isNotEmpty()) {
             trackingData[AnalyticsTracker.KEY_DATE_RANGE] = dateRangeOptions.first()
+        }
+        if (productFilterOptions.isNotEmpty()) {
+            trackingData[AnalyticsTracker.KEY_PRODUCT] = productFilterOptions.first()
         }
         return trackingData
     }
