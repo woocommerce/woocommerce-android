@@ -70,9 +70,7 @@ class ProductImageMap @Inject constructor(
                                 weakReference.get()?.onProductFetched(remoteProductId) ?: toRemove.add(weakReference)
                             }
                             // Remove the collected references
-                            toRemove.forEach { weakReference ->
-                                observers.remove(weakReference)
-                            }
+                            observers.removeAll(toRemove)
                         }
                     }
                 }
