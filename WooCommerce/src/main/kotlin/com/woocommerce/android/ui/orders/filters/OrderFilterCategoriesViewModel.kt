@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
@@ -37,7 +36,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCCustomerStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,8 +48,6 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
     private val dateUtils: DateUtils,
     private val analyticsTraWrapper: AnalyticsTrackerWrapper,
-    private val customerStore: WCCustomerStore,
-    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
@@ -256,17 +252,13 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     private fun getCustomerDisplayValueFrom(customer: Order.Customer): String =
-        customer.customerId?.let { id ->
-            customerStore.getCustomerByRemoteId(selectedSite.get(), id)
-                ?.let { customer ->
-                    (customer.firstName + " " + customer.lastName)
-                        .ifBlank { customer.email }
-                        .ifBlank { customer.username }
-                } ?: resourceProvider.getString(
+        (customer.firstName + " " + customer.lastName)
+            .ifBlank { customer.email }
+            ?.ifBlank { customer.username }
+            ?: resourceProvider.getString(
                 R.string.orderfilters_selected_customer_fallback_display_value,
-                id
+                customer.customerId ?: error("Customer ID can't be null")
             )
-        } ?: resourceProvider.getString(R.string.orderfilters_default_filter_value)
 
     @Parcelize
     data class OrderFilterCategories(
