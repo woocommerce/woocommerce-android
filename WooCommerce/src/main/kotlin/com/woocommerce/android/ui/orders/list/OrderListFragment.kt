@@ -437,7 +437,7 @@ class OrderListFragment :
                 displayErrorParsingOrdersCard(it)
             }
             new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
-                displayTroubleshootingBanner(it)
+                displayTimeoutErrorCard(it)
             }
         }
     }
