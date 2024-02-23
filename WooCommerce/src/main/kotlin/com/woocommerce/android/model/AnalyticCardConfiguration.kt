@@ -3,7 +3,7 @@ package com.woocommerce.android.model
 import com.woocommerce.android.R
 
 data class AnalyticCardConfiguration(
-    val id: Int,
+    val card: AnalyticsCards,
     val title: String,
     val isVisible: Boolean = true,
 )

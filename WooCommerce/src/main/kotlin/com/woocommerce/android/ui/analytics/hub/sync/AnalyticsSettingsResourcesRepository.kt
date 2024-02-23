@@ -8,7 +8,7 @@ import javax.inject.Inject
 class AnalyticsSettingsResourcesRepository @Inject constructor(private val resourceProvider: ResourceProvider) {
     fun getDefaultAnalyticsCardsConfiguration() = AnalyticsCards.entries.map { card ->
         AnalyticCardConfiguration(
-            id = card.ordinal,
+            card = card,
             title = resourceProvider.getString(card.resId),
             isVisible = true
         )
