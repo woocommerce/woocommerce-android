@@ -700,25 +700,32 @@ class OrderListFragment :
     }
 
     private fun displayErrorParsingOrdersCard(show: Boolean) {
-        TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
-        if (!show) {
-            binding.errorTroubleshootingCard.isVisible = false
-            return
-        }
-
-        binding.errorTroubleshootingCard.isVisible = true
-        binding.errorTroubleshootingCard.initView(
-            getString(R.string.orderlist_parsing_error_title),
-            getString(R.string.orderlist_parsing_error_message),
-            getString(R.string.error_troubleshooting),
-            getString(R.string.support_contact),
-            true,
-            { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
-            { openSupportRequestScreen() }
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_parsing_error_title),
+            message = getString(R.string.orderlist_parsing_error_message),
+            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            supportContactClick = { openSupportRequestScreen() }
         )
     }
 
-    private fun displayTroubleshootingBanner(show: Boolean) {
+    private fun displayTimeoutErrorCard(show: Boolean) {
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_timeout_error_title),
+            message = getString(R.string.orderlist_timeout_error_message),
+            troubleshootingClick = { /* Call Connectivity tool */ },
+            supportContactClick = { openSupportRequestScreen() }
+        )
+    }
+
+    private fun displayErrorTroubleshootingCard(
+        show: Boolean,
+        title: String,
+        message: String,
+        troubleshootingClick: () -> Unit,
+        supportContactClick: () -> Unit
+    ) {
         TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
         if (!show) {
             binding.errorTroubleshootingCard.isVisible = false
@@ -727,13 +734,13 @@ class OrderListFragment :
 
         binding.errorTroubleshootingCard.isVisible = true
         binding.errorTroubleshootingCard.initView(
-            getString(R.string.orderlist_timeout_error_title),
-            getString(R.string.orderlist_timeout_error_message),
-            getString(R.string.error_troubleshooting),
-            getString(R.string.support_contact),
-            true,
-            mainActionClick = { /* Call Connectivity tool */ },
-            { openSupportRequestScreen() }
+            title = title,
+            message = message,
+            isExpanded = true,
+            mainActionText = getString(R.string.error_troubleshooting),
+            secondaryActionText = getString(R.string.support_contact),
+            mainActionClick = troubleshootingClick,
+            secondaryActionClick = supportContactClick
         )
     }
 
