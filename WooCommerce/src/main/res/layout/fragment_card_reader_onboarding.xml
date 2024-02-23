@@ -3,10 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingFragment">
 
-    <View style="@style/Woo.Divider" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_collapseMode="pin"
+        style="@style/Widget.Woo.Toolbar"
+        tools:title="@string/app_name"/>
+
+    <View
+        android:id="@+id/app_bar_divider"
+        android:layout_gravity="bottom"
+        style="@style/Woo.Divider" />
 
     <ScrollView
         android:id="@+id/container"
