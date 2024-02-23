@@ -89,10 +89,7 @@ class AnalyticsHubViewModel @Inject constructor(
         AnalyticsViewState(
             refreshIndicator = NotShowIndicator,
             analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
-            revenueState = LoadingViewState,
-            ordersState = LoadingViewState,
-            productsState = LoadingProductsViewState,
-            sessionState = LoadingViewState,
+            cards = AnalyticsHubCardViewState.LoadingCardsConfiguration,
             showFeedBackBanner = false,
             lastUpdateTimestamp = ""
         )
