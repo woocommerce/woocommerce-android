@@ -211,7 +211,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     .toString()
 
                 DATE_RANGE -> first { it.isSelected }.displayName
-                CUSTOMER -> first { it.isSelected }.key
+                CUSTOMER -> first { it.isSelected }.displayName
             }
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
@@ -245,11 +245,11 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
                 displayValue = getCustomerDisplayValueFrom(customer),
                 orderFilterOptions = listOf(
-                        OrderFilterOptionUiModel(
-                            key = customer.customerId?.toString() ?: error("Customer ID is null"),
-                            displayName = getCustomerDisplayValueFrom(customer),
-                            isSelected = true
-                        )
+                    OrderFilterOptionUiModel(
+                        key = customer.customerId?.toString() ?: error("Customer ID is null"),
+                        displayName = getCustomerDisplayValueFrom(customer),
+                        isSelected = true
+                    )
                 )
             )
         )
