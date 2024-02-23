@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +18,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,14 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appending
+import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Refreshing
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
@@ -100,6 +104,7 @@ private fun EmptyCouponList() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CouponList(
     coupons: List<CouponListItem>,
@@ -108,17 +113,9 @@ private fun CouponList(
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing = loadingState == LoadingState.Refreshing),
-        onRefresh = onRefresh,
-        indicator = { state, refreshTrigger ->
-            SwipeRefreshIndicator(
-                state = state,
-                refreshTriggerDistance = refreshTrigger,
-                contentColor = MaterialTheme.colors.primary,
-            )
-        }
-    ) {
+    val isRefreshing = loadingState == Refreshing
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, { onRefresh() })
+    Box(Modifier.pullRefresh(pullRefreshState)) {
         val listState = rememberLazyListState()
         LazyColumn(
             state = listState,
@@ -136,7 +133,7 @@ private fun CouponList(
                     thickness = dimensionResource(id = R.dimen.minor_10)
                 )
             }
-            if (loadingState == LoadingState.Appending) {
+            if (loadingState == Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -151,6 +148,13 @@ private fun CouponList(
         InfiniteListHandler(listState = listState) {
             onLoadMore()
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colors.primary,
+        )
     }
 }
 
