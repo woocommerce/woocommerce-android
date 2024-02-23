@@ -160,7 +160,9 @@ class OrderListFragment :
                 override fun handleOnBackPressed() {
                     selectedOrder.selectOrder(-1L)
                     if (isTablet()) {
-                        findNavController().popBackStack()
+                        if (!binding.detailPaneContainer.findNavController().popBackStack()) {
+                            findNavController().popBackStack()
+                        }
                     } else if (isSearching) {
                         handleSearchViewCollapse()
                     } else {
