@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentBaseEditAddressBinding
@@ -7,6 +8,8 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.main.AppBarStatus
 
 class BillingAddressEditingFragment : BaseAddressEditingFragment() {
+    private val args by navArgs<BillingAddressEditingFragmentArgs>()
+
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_BILLING_ADDRESS
 
     override val activityAppBarStatus: AppBarStatus
@@ -14,8 +17,9 @@ class BillingAddressEditingFragment : BaseAddressEditingFragment() {
             navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
 
-    override val storedAddress: Address
-        get() = sharedViewModel.order.billingAddress
+    override val storedAddress: Address by lazy {
+        args.storedAddress
+    }
 
     override val addressType: AddressViewModel.AddressType = AddressViewModel.AddressType.BILLING
 

@@ -12,6 +12,9 @@
             android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
             app:destination="@id/orderFilterOptionsFragment" />
         <action
+            android:id="@+id/action_orderFilterListFragment_to_customerListFragment"
+            app:destination="@id/customerListFragment" />
+        <action
             android:id="@+id/action_orderFilterCategoriesFragment_to_nav_graph_product_selector"
             app:destination="@id/nav_graph_product_selector">
             <argument
@@ -46,4 +49,8 @@
             app:nullable="false" />
     </fragment>
     <include app:graph="@navigation/nav_graph_product_selector" />
+    <fragment
+        android:id="@+id/customerListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
+        android:label="customerListFragment" />
 </navigation>

@@ -2,12 +2,13 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
@@ -55,6 +56,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
             ORDER_STATUS -> updateOrderStatusSelectedFilters(selectedOrderFilterOption)
             DATE_RANGE -> updateDateRangeFilters(selectedOrderFilterOption)
             PRODUCT -> error("Product filter option is not supported")
+            CUSTOMER -> error("Customer filter not supported in this screen")
         }
     }
 
@@ -149,10 +151,12 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private fun getOrderFilterOptionsTitle(categoryKey: OrderListFilterCategory) =
         when (categoryKey) {
             ORDER_STATUS ->
-                resourceProvider.getString(R.string.orderfilters_filter_order_status_options_title)
+                resourceProvider.getString(string.orderfilters_filter_order_status_options_title)
             DATE_RANGE ->
                 resourceProvider.getString(R.string.orderfilters_filter_date_range_options_title)
             PRODUCT -> error("Product filter option is not supported")
+                resourceProvider.getString(string.orderfilters_filter_date_range_options_title)
+            CUSTOMER -> error("Customer filter not supported in this screen")
         }
 
     fun onCustomDateRangeChanged(startMillis: Long, endMillis: Long) {
