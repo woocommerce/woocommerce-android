@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub
 
+import android.util.Log
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -7,6 +8,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.AnalyticCardConfiguration
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.OrdersStat
@@ -17,8 +20,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsCardViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
@@ -28,6 +33,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
@@ -43,6 +49,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
@@ -56,6 +63,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.HiddenState as ProductsHiddenDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
 
@@ -73,6 +81,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val dateUtils: DateUtils,
     private val selectedSite: SelectedSite,
     private val getReportUrl: GetReportUrl,
+    private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -80,7 +89,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = transactionLauncher
 
-    private val rangeSelectionState = savedState.getStateFlow(
+    private val rangeSelectionState: MutableStateFlow<StatsTimeRangeSelection> = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
     )
@@ -97,24 +106,28 @@ class AnalyticsHubViewModel @Inject constructor(
     val viewState: StateFlow<AnalyticsViewState> = mutableState
 
     val selectableRangeOptions by lazy {
-        SelectionType.values()
+        SelectionType.entries
             .map { resourceProvider.getString(it.localizedResourceId) }
             .toTypedArray()
     }
+
+    private val currentConfiguration: MutableStateFlow<List<AnalyticCardConfiguration>?> = MutableStateFlow(null)
 
     private val ranges
         get() = rangeSelectionState.value
 
     private var lastUpdateObservationJob: Job? = null
+    private var revenueObservationJob: Job? = null
+    private var sessionObservationJob: Job? = null
+    private var productObservationJob: Job? = null
+    private var ordersObservationJob: Job? = null
 
     init {
-        observeOrdersStatChanges()
-        observeSessionChanges()
-        observeProductsChanges()
-        observeRevenueChanges()
+        observeConfigurationChanges()
         observeRangeSelectionChanges()
         observeLastUpdateTimestamp()
         shouldAskForFeedback()
+        combineSelectionAndConfiguration()
     }
 
     private fun shouldAskForFeedback() {
@@ -130,6 +143,59 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onNewRangeSelection(selectionType: SelectionType) {
         rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
+    }
+
+    private fun observeConfigurationChanges() {
+        launch {
+            observeAnalyticsCardsConfiguration().collect { configuration ->
+                val cardsState = mutableMapOf<AnalyticsCards, AnalyticsCardViewState>()
+                cancelCardsObservation()
+                configuration.forEach { cardConfiguration ->
+                    when (cardConfiguration.card) {
+                        AnalyticsCards.Revenue -> {
+                            if (cardConfiguration.isVisible) {
+                                cardsState[AnalyticsCards.Revenue] = LoadingViewState
+                                observeRevenueChanges()
+                            } else {
+                                cardsState[AnalyticsCards.Revenue] = HiddenState
+                            }
+                        }
+
+                        AnalyticsCards.Orders -> {
+                            if (cardConfiguration.isVisible) {
+                                cardsState[AnalyticsCards.Orders] = LoadingViewState
+                                observeOrdersStatChanges()
+                            } else {
+                                cardsState[AnalyticsCards.Orders] = HiddenState
+                            }
+                        }
+
+                        AnalyticsCards.Products -> {
+                            if (cardConfiguration.isVisible) {
+                                cardsState[AnalyticsCards.Products] = LoadingProductsViewState
+                                observeProductsChanges()
+                            } else {
+                                cardsState[AnalyticsCards.Products] = ProductsHiddenDataState
+                            }
+                        }
+
+                        AnalyticsCards.Session -> {
+                            if (cardConfiguration.isVisible) {
+                                cardsState[AnalyticsCards.Session] = LoadingViewState
+                                observeSessionChanges()
+                            } else {
+                                cardsState[AnalyticsCards.Session] = HiddenState
+                            }
+                        }
+                    }
+                }
+                mutableState.update { viewState ->
+                    viewState.copy(cards = AnalyticsHubCardViewState.CardsState(cardsState))
+                }
+
+                currentConfiguration.value = configuration
+            }
+        }
     }
 
     fun onSeeReport(url: String, card: ReportCard) {
@@ -173,11 +239,14 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onRefreshRequested() {
         tracker.track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
+        val visibleCards = currentConfiguration.value?.filter { it.isVisible }?.map { it.card }?.toSet()
+            ?: AnalyticsCards.entries.toSet()
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
                 scope = viewModelScope,
-                forceUpdate = true
+                forceUpdate = true,
+                visibleCards = visibleCards
             ).collect {
                 mutableState.update { viewState ->
                     viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
@@ -202,27 +271,34 @@ class AnalyticsHubViewModel @Inject constructor(
             observeLastUpdateTimestamp()
             updateDateSelector()
             trackSelectedDateRange()
+        }.launchIn(viewModelScope)
+    }
+
+    private fun combineSelectionAndConfiguration() {
+        combine(currentConfiguration.filterNotNull(), rangeSelectionState) { configuration, selection ->
+            Log.d("HUB", "data updated")
             updateStats(
-                rangeSelection = it,
-                scope = viewModelScope
+                rangeSelection = selection,
+                scope = viewModelScope,
+                visibleCards = configuration.filter { it.isVisible }.map { it.card }.toSet()
             )
         }.launchIn(viewModelScope)
     }
 
     private fun observeOrdersStatChanges() {
-        updateStats.ordersState.onEach { state ->
+        ordersObservationJob = updateStats.ordersState.onEach { state ->
             when (state) {
-                is OrdersState.Available -> mutableState.update { viewState ->
-                    viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
+                is OrdersState.Available -> {
+                    updateCardStatus(AnalyticsCards.Orders, buildOrdersDataViewState(state.orders))
                 }
 
-                is OrdersState.Error -> mutableState.update { viewState ->
+                is OrdersState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_orders_no_data)
-                    viewState.copy(ordersState = NoDataState(message))
+                    updateCardStatus(AnalyticsCards.Orders, NoDataState(message))
                 }
 
-                is OrdersState.Loading -> mutableState.update { viewState ->
-                    viewState.copy(ordersState = LoadingViewState)
+                is OrdersState.Loading -> {
+                    updateCardStatus(AnalyticsCards.Orders, LoadingViewState)
                 }
             }
         }
@@ -233,19 +309,19 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeSessionChanges() {
-        updateStats.sessionState.onEach { state ->
+        sessionObservationJob = updateStats.sessionState.onEach { state ->
             when (state) {
-                is SessionState.Available -> mutableState.update { viewState ->
-                    viewState.copy(sessionState = buildSessionViewState(state.session))
+                is SessionState.Available -> {
+                    updateCardStatus(AnalyticsCards.Session, buildSessionViewState(state.session))
                 }
 
-                is SessionState.Error -> mutableState.update { viewState ->
+                is SessionState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_session_no_data)
-                    viewState.copy(sessionState = NoDataState(message))
+                    updateCardStatus(AnalyticsCards.Session, NoDataState(message))
                 }
 
-                is SessionState.Loading -> mutableState.update { viewState ->
-                    viewState.copy(sessionState = LoadingViewState)
+                is SessionState.Loading -> {
+                    updateCardStatus(AnalyticsCards.Session, LoadingViewState)
                 }
             }
         }
@@ -256,19 +332,19 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeProductsChanges() {
-        updateStats.productsState.onEach { state ->
+        productObservationJob = updateStats.productsState.onEach { state ->
             when (state) {
-                is ProductsState.Available -> mutableState.update { viewState ->
-                    viewState.copy(productsState = buildProductsDataState(state.products))
+                is ProductsState.Available -> {
+                    updateCardStatus(AnalyticsCards.Products, buildProductsDataState(state.products))
                 }
 
-                is ProductsState.Error -> mutableState.update { viewState ->
+                is ProductsState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_products_no_data)
-                    viewState.copy(productsState = ProductsNoDataState(message))
+                    updateCardStatus(AnalyticsCards.Products, ProductsNoDataState(message))
                 }
 
-                is ProductsState.Loading -> mutableState.update { viewState ->
-                    viewState.copy(productsState = ProductsViewState.LoadingViewState)
+                is ProductsState.Loading -> {
+                    updateCardStatus(AnalyticsCards.Products, LoadingProductsViewState)
                 }
             }
         }
@@ -279,19 +355,19 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeRevenueChanges() {
-        updateStats.revenueState.onEach { state ->
+        revenueObservationJob = updateStats.revenueState.onEach { state ->
             when (state) {
-                is RevenueState.Available -> mutableState.update { viewState ->
-                    viewState.copy(revenueState = buildRevenueDataViewState(state.revenue))
+                is RevenueState.Available -> {
+                    updateCardStatus(AnalyticsCards.Revenue, buildRevenueDataViewState(state.revenue))
                 }
 
-                is RevenueState.Error -> mutableState.update { viewState ->
+                is RevenueState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
-                    viewState.copy(revenueState = NoDataState(message))
+                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(message))
                 }
 
-                is RevenueState.Loading -> mutableState.update { viewState ->
-                    viewState.copy(revenueState = LoadingViewState)
+                is RevenueState.Loading -> {
+                    updateCardStatus(AnalyticsCards.Revenue, LoadingViewState)
                 }
             }
         }
@@ -299,6 +375,21 @@ class AnalyticsHubViewModel @Inject constructor(
             .filter { state -> state is RevenueState.Available }
             .onEach { transactionLauncher.onRevenueFetched() }
             .launchIn(viewModelScope)
+    }
+
+    private fun updateCardStatus(card: AnalyticsCards, state: AnalyticsCardViewState) {
+        val cardsInformation = mutableState.value.cards
+        if (
+            cardsInformation is AnalyticsHubCardViewState.CardsState &&
+            cardsInformation.cardsState.containsKey(card)
+        ) {
+            val updatedCardState = cardsInformation.cardsState.toMutableMap()
+            updatedCardState[card] = state
+            val updatedInfo = cardsInformation.copy(cardsState = updatedCardState)
+            mutableState.update { viewState ->
+                viewState.copy(cards = updatedInfo)
+            }
+        }
     }
 
     private fun observeLastUpdateTimestamp() {
@@ -469,6 +560,13 @@ class AnalyticsHubViewModel @Inject constructor(
             FeatureFeedbackSettings.FeedbackState.DISMISSED
         )
         shouldAskForFeedback()
+    }
+
+    private fun cancelCardsObservation() {
+        revenueObservationJob?.cancel()
+        ordersObservationJob?.cancel()
+        productObservationJob?.cancel()
+        sessionObservationJob?.cancel()
     }
 }
 
