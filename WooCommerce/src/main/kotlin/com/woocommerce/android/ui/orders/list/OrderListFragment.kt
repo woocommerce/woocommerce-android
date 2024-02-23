@@ -719,7 +719,22 @@ class OrderListFragment :
     }
 
     private fun displayTroubleshootingBanner(show: Boolean) {
+        TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
+        if (!show) {
+            binding.errorParsingOrdersCard.isVisible = false
+            return
+        }
 
+        binding.errorParsingOrdersCard.isVisible = true
+        binding.errorParsingOrdersCard.initView(
+            getString(R.string.orderlist_timeout_error_title),
+            getString(R.string.orderlist_timeout_error_message),
+            getString(R.string.error_troubleshooting),
+            getString(R.string.support_contact),
+            true,
+            mainActionClick = { /* Call Connectivity tool */ },
+            { openSupportRequestScreen() }
+        )
     }
 
     private fun openSupportRequestScreen() {
