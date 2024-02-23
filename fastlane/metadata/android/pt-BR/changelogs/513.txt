@@ -1,0 +1,2 @@
+17.4:
+Temos o prazer de anunciar a compatibilidade com provedores terceiros de chave de acesso. Esta atualização visa dar mais flexibilidade e praticidade aos usuários do WordPress.com no gerenciamento da segurança de suas contas. Aposente o uso de senhas e desfrute de uma experiência de login segura e mais tranquila.

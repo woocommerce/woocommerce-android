@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 19:54:03+0000
+Translation-Revision-Date: 2024-02-20 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">Algo no va bien.\nNo hemos podido crear tu campaña.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Error al recuperar los detalles de las imágenes de la campaña</string>
+    <string name="blaze_campaign_creation_error_media_upload">Error al cargar la imagen de la campaña.</string>
+    <string name="blaze_campaign_creation_error_cancel">Cancelar campaña</string>
+    <string name="blaze_campaign_creation_error_get_support">Obtener soporte</string>
+    <string name="blaze_campaign_creation_error_help_hint">Inténtalo de nuevo o ponte en contacto con el equipo de soporte si necesitas ayuda.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Error al crear campaña</string>
+    <string name="blaze_campaign_creation_error_title">Error al crear campaña</string>
+    <string name="blaze_campaign_creation_loading">Creando tu campaña</string>
+    <string name="blaze_campaign_created_success_done_button">Hecho</string>
+    <string name="blaze_campaign_created_success_description">Estamos revisando tu campaña. Se lanzará en un plazo de 24 horas. ¡Se avecinan momentos emocionantes para tus ventas!</string>
+    <string name="blaze_campaign_created_success_title">¡Todo listo!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">La clave ya existe</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">La URL final es demasiado larga</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Valor</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Clave</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destino: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Añadir parámetro</string>
+    <string name="blaze_campaign_payment_added_successfully">Tarjeta de crédito añadida correctamente</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Añadir tarjeta nueva</string>
+    <string name="blaze_campaign_payment_list_hint">Las tarjetas de crédito se han recuperado de esta cuenta de WordPress.com: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Todas las transacciones son seguras y están cifradas</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Añadir tarjeta de crédito</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Añade un método de pago nuevo</string>
+    <string name="blaze_campaign_payment_list_screen_title">Método de pago</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Error al estimar las impresiones. ¿Reintentar?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Añadir</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Añade una descripción corta y una descripción para tu campaña de Blaze</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Añadir imagen</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Añade una imagen para la campaña de Blaze</string>
+    <string name="drag_handle">Control de arrastre</string>
+    <string name="analytic_cards">Tarjetas de análisis</string>
+    <string name="manage_analytics">Gestionar análisis</string>
     <string name="see_report">Ver informe</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">La página de inicio del sitio</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">La URL del producto</string>
@@ -246,7 +279,7 @@ Language: es
     <string name="custom_amounts">Cantidades personalizadas</string>
     <string name="product_details_blaze_card">Promocionar con Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">De acuerdo</string>
-    <string name="blaze_campaign_ceation_celebration_message">Se ha enviado el anuncio para su aprobación. Te enviaremos un correo electrónico de confirmación en cuanto esté listo.</string>
+    <string name="blaze_campaign_ceation_celebration_message">El anuncio se ha enviado para su aprobación. Te enviaremos un correo electrónico de confirmación en cuanto esté listo.</string>
     <string name="blaze_campaign_creation_celebration_header">¡Todo listo!</string>
     <string name="blaze_campaign_creation_intro_button">Iniciar campaña de Blaze ahora</string>
     <string name="blaze_campaign_creation_intro_benefit_4">Inicia y detén la campaña de Blaze y haz un seguimiento del rendimiento siempre que quieras.</string>
