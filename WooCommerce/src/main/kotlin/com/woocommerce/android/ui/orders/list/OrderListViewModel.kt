@@ -372,7 +372,7 @@ class OrderListViewModel @Inject constructor(
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
         isFirstInit: Boolean = false,
-        isRetry: Boolean = false
+        isRetry: Boolean = true
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.

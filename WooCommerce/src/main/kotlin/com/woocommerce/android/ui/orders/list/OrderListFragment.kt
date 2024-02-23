@@ -436,6 +436,9 @@ class OrderListFragment :
             new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
             }
+            new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
+                displayTroubleshootingBanner(it)
+            }
         }
     }
 
@@ -713,6 +716,10 @@ class OrderListFragment :
             { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
             { openSupportRequestScreen() }
         )
+    }
+
+    private fun displayTroubleshootingBanner(show: Boolean) {
+
     }
 
     private fun openSupportRequestScreen() {
