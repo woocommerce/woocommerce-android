@@ -8,8 +8,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfiguration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

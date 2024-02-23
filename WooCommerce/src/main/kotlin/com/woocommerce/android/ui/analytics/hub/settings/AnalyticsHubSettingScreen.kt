@@ -89,7 +89,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
 
 @Composable
 fun AnalyticsHubSettingScreen(
-    cards: List<AnalyticCardConfiguration>,
+    cards: List<AnalyticCardConfigurationUI>,
     onSelectionChange: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -104,6 +104,7 @@ fun AnalyticsHubSettingScreen(
                 id = card.id,
                 title = card.title,
                 isSelected = card.isVisible,
+                isEnabled = card.isEnabled,
                 onSelectionChange = onSelectionChange
             )
         }
@@ -115,20 +116,27 @@ fun AnalyticCardItem(
     id: Int,
     title: String,
     isSelected: Boolean,
+    isEnabled: Boolean,
     onSelectionChange: (Int, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     showTopDivider: Boolean = false
 ) {
     Column {
         if (showTopDivider) Divider()
-        Row(
-            modifier = modifier
+        val rowModifier = if (isEnabled) {
+            modifier
                 .clickable { onSelectionChange(id, !isSelected) }
-                .padding(16.dp),
+                .padding(16.dp)
+        } else {
+            modifier.padding(16.dp)
+        }
+        Row(
+            modifier = rowModifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
             SelectionCheck(
                 isSelected = isSelected,
+                isEnabled = isEnabled,
                 onSelectionChange = { onSelectionChange(id, !isSelected) }
             )
             Text(
@@ -190,9 +198,9 @@ fun LoadingCardsConfiguration(modifier: Modifier = Modifier) {
 fun AnalyticsHubSettingScreenPreview() {
     AnalyticsHubSettingScreen(
         listOf(
-            AnalyticCardConfiguration(1, "Revenue", true),
-            AnalyticCardConfiguration(2, "Orders", true),
-            AnalyticCardConfiguration(3, "Stats", false)
+            AnalyticCardConfigurationUI(1, "Revenue", true),
+            AnalyticCardConfigurationUI(2, "Orders", true),
+            AnalyticCardConfigurationUI(3, "Stats", false)
         ),
         onSelectionChange = { _, _ -> }
     )
@@ -202,7 +210,13 @@ fun AnalyticsHubSettingScreenPreview() {
 @Preview
 fun AnalyticCardItemPreview() {
     WooThemeWithBackground {
-        AnalyticCardItem(id = 1, title = "Revenue", isSelected = true, onSelectionChange = { _, _ -> })
+        AnalyticCardItem(
+            id = 1,
+            title = "Revenue",
+            isSelected = true,
+            isEnabled = true,
+            onSelectionChange = { _, _ -> }
+        )
     }
 }
 
