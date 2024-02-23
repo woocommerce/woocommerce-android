@@ -15,10 +15,11 @@ import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment.Companion.KEY_CUSTOMER_ID_RESULT
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment.Companion.KEY_CUSTOMER_RESULT
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
@@ -60,9 +61,7 @@ class OrderFilterCategoriesFragment :
         binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
         }
-        handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
-            viewModel.onFilterOptionsUpdated(it)
-        }
+        handleResults()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
@@ -80,6 +79,7 @@ class OrderFilterCategoriesFragment :
                 updateClearButtonVisibility(item)
                 true
             }
+
             else -> false
         }
     }
@@ -128,6 +128,7 @@ class OrderFilterCategoriesFragment :
                 is OnShowOrders -> navigateBackWithNotice(
                     OrderListFragment.FILTER_CHANGE_NOTICE_KEY
                 )
+
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
@@ -149,7 +150,10 @@ class OrderFilterCategoriesFragment :
     }
 
     private fun handleResults() {
-        handleResult<Int>(KEY_CUSTOMER_ID_RESULT) {
+        handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
+            viewModel.onFilterOptionsUpdated(it)
+        }
+        handleResult<Order.Customer>(KEY_CUSTOMER_RESULT) {
             viewModel.onCustomerSelected(it)
         }
     }

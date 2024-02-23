@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -237,29 +238,35 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private fun List<OrderFilterCategoryUiModel>.isAnyFilterSelected() =
         any { it.orderFilterOptions.isAnyFilterOptionSelected() }
 
-    fun onCustomerSelected(customerId: Int) {
+    fun onCustomerSelected(customer: Order.Customer) {
         onFilterOptionsUpdated(
-            _categories.list.first { it.categoryKey == CUSTOMER }
-                .copy(
-                    orderFilterOptions = listOf(
+            OrderFilterCategoryUiModel(
+                categoryKey = CUSTOMER,
+                displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
+                displayValue = getCustomerDisplayValueFrom(customer),
+                orderFilterOptions = listOf(
                         OrderFilterOptionUiModel(
-                            key = customerId.toString(),
-                            displayName = getCustomerDisplayValueFrom(customerId),
+                            key = customer.customerId?.toString() ?: error("Customer ID is null"),
+                            displayName = getCustomerDisplayValueFrom(customer),
                             isSelected = true
                         )
-                    ),
-                    displayValue = getCustomerDisplayValueFrom(customerId)
                 )
+            )
         )
     }
 
-    private fun getCustomerDisplayValueFrom(customerId: Int): String =
-        customerStore.getCustomerByRemoteId(selectedSite.get(), customerId.toLong())
-            ?.let { customer ->
-                (customer.firstName + " " + customer.lastName)
-                    .ifBlank { customer.email }
-                    .ifBlank { customer.username }
-            } ?: resourceProvider.getString(R.string.orderfilters_selected_customer_fallback_display_value, customerId)
+    private fun getCustomerDisplayValueFrom(customer: Order.Customer): String =
+        customer.customerId?.let { id ->
+            customerStore.getCustomerByRemoteId(selectedSite.get(), id)
+                ?.let { customer ->
+                    (customer.firstName + " " + customer.lastName)
+                        .ifBlank { customer.email }
+                        .ifBlank { customer.username }
+                } ?: resourceProvider.getString(
+                R.string.orderfilters_selected_customer_fallback_display_value,
+                id
+            )
+        } ?: resourceProvider.getString(R.string.orderfilters_default_filter_value)
 
     @Parcelize
     data class OrderFilterCategories(
