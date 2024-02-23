@@ -14,6 +14,7 @@ import com.woocommerce.android.R.style
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.mystore.AIProductDescriptionDialogViewModel.TryAIProductDescriptionGeneration
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -59,7 +60,9 @@ class AIProductDescriptionDialogFragment : DialogFragment() {
 
     private fun openBlankProduct() {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+            NavGraphMainDirections.actionGlobalProductDetailFragment(
+                mode = ProductDetailFragment.Mode.AddNewProduct,
+            )
         )
     }
 

@@ -108,7 +108,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     private var savedState: SavedStateHandle =
-        ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID).toSavedStateHandle()
+        ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID)).toSavedStateHandle()
 
     private val siteParams = SiteParameters(
         currencyCode = "USD",
@@ -947,8 +947,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given image uris when app opened, then a product creation is triggered using the images`() = testBlocking {
         val uris = arrayOf("uri1", "uri2")
-        savedState = ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, images = uris)
-            .toSavedStateHandle()
+        savedState = ProductDetailFragmentArgs(
+            ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID),
+            images = uris
+        ).toSavedStateHandle()
 
         doReturn(product).whenever(productRepository).getProductAsync(any())
 

@@ -1,2 +1,0 @@
-17.2:
-This version includes optimizations for speed and reliability. Temos o compromisso de melhorar cada vez mais o aplicativo para deixar o gerenciamento da sua loja online mais eficiente e simples.

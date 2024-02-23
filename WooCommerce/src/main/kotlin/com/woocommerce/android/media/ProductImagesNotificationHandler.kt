@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.SystemServiceFactory
@@ -190,7 +191,11 @@ class ProductImagesNotificationHandler @Inject constructor(
         NavDeepLinkBuilder(context)
             .setGraph(R.navigation.nav_graph_main)
             .setDestination(R.id.productDetailFragment)
-            .setArguments(ProductDetailFragmentArgs(remoteProductId = productId).toBundle())
+            .setArguments(
+                ProductDetailFragmentArgs(
+                    mode = ProductDetailFragment.Mode.ShowProduct(productId)
+                ).toBundle()
+            )
             .createPendingIntent()
 
     /**
