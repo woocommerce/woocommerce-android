@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.filters.data
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,10 +13,8 @@ class OrderFiltersRepository @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     var productFilter: Long? = null
-        get() = field
-        set(value) {
-            field = value
-        }
+
+    var customerFilter: Long? = null
 
     fun setSelectedFilters(
         filterCategory: OrderListFilterCategory,
@@ -24,6 +23,9 @@ class OrderFiltersRepository @Inject constructor(
         when (filterCategory) {
             PRODUCT -> {
                 productFilter = selectedFilters.firstOrNull()?.toLongOrNull()
+            }
+            CUSTOMER -> {
+                customerFilter = selectedFilters.firstOrNull()?.toLongOrNull()
             }
             else -> {
                 selectedSite.getIfExists()?.let {
@@ -42,10 +44,13 @@ class OrderFiltersRepository @Inject constructor(
             appSharedPrefs.getOrderFilters(site.id, filterCategory.name)
                 .split(",")
                 .filter { it.isNotBlank() }
-        } ?: emptyList()) + getProductFilter(filterCategory)
+        } ?: emptyList()) + getProductFilter(filterCategory) + getCustomerFilter(filterCategory)
 
     private fun getProductFilter(filterCategory: OrderListFilterCategory) =
         if (filterCategory == PRODUCT) listOfNotNull(productFilter?.toString()) else emptyList()
+
+    private fun getCustomerFilter(filterCategory: OrderListFilterCategory) =
+        if (filterCategory == CUSTOMER) listOfNotNull(customerFilter?.toString()) else emptyList()
 
     fun getCustomDateRangeFilter(): Pair<Long, Long> =
         selectedSite.getIfExists()?.let {

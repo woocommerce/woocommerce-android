@@ -724,7 +724,7 @@
     <string name="orderfilters_date_range_filter">Date Range</string>
     <string name="orderfilters_product_filter">Product</string>
     <string name="orderfilters_customer_filter">Customer</string>
-    <string name="orderfilters_selected_customer_fallback_display_value">Id: %s</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">Id: %s</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
