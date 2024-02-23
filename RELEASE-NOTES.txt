@@ -3,7 +3,7 @@
 17.5
 -----
 - [*] [Internal] As side effect of adding tablet support, toolbar on the product list screen is not collapsible anymore [https://github.com/woocommerce/woocommerce-android/pull/10844]
-
+- [*] [Internal] Added the "Shipping Tax" display in the order creation form to enhance tax detail visibility, ensuring comprehensive financial tracking. [https://github.com/woocommerce/woocommerce-android/pull/10794]
 
 17.4
 -----
