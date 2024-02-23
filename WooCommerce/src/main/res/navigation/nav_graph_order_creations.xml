@@ -210,6 +210,11 @@
         <argument
             android:name="editingOfAddedCustomer"
             app:argType="boolean" />
+        <argument
+            android:name="initialEmail"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <action
             android:id="@+id/action_search_filter_fragment"
             app:destination="@id/searchFilterFragment" />

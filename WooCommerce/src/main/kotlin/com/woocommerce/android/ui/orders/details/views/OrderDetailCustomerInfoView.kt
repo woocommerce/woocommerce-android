@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
@@ -111,7 +112,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
         if (!isReadOnly) {
             binding.customerInfoBillingAddressSection.setOnClickListener {
-                navigateToBillingAddressEditingView(order.id)
+                navigateToBillingAddressEditingView(order.billingAddress)
             }
             binding.customerInfoBillingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoBillingAddressSection
@@ -273,7 +274,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         if (!isReadOnly) {
             binding.customerInfoShippingAddressSection.setOnClickListener {
-                navigateToShippingAddressEditingView(order.id)
+                navigateToShippingAddressEditingView(order.shippingAddress)
             }
             binding.customerInfoShippingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoShippingAddressSection
@@ -281,15 +282,15 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun navigateToShippingAddressEditingView(orderId: Long) {
+    private fun navigateToShippingAddressEditingView(address: Address) {
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToShippingAddressEditingFragment(orderId)
+            .actionOrderDetailFragmentToShippingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun navigateToBillingAddressEditingView(orderId: Long) {
+    private fun navigateToBillingAddressEditingView(address: Address) {
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToBillingAddressEditingFragment(orderId)
+            .actionOrderDetailFragmentToBillingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }
     }
 
