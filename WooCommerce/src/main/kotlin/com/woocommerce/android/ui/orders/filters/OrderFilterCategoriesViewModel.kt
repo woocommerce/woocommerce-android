@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.ORDER_STATUS
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.orders.filters.model.getNumberOfSelectedFilter
 import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -46,6 +48,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
     private val dateUtils: DateUtils,
     private val analyticsTraWrapper: AnalyticsTrackerWrapper,
+    private val productRepository: ProductListRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
@@ -110,6 +113,36 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         }
     }
 
+    fun onProductSelected(productId: Long) {
+        val product = productRepository.getProduct(productId)
+        orderFilterRepository.productFilter = productId
+
+        _categories.list.let { filterOptions ->
+            _categories = OrderFilterCategories(
+                filterOptions.map {
+                    if (it.categoryKey == PRODUCT) {
+                        updateFilterOptionsForCategory(
+                            it,
+                            OrderFilterCategoryUiModel(
+                                categoryKey = PRODUCT,
+                                displayName = resourceProvider.getString(R.string.orderfilters_product_filter),
+                                displayValue = resourceProvider.getString(R.string.orderfilters_product_filter),
+                                listOf(
+                                    OrderFilterOptionUiModel(
+                                        key = productId.toString(),
+                                        displayName = product?.name ?: "Product: $productId",
+                                        displayValue = product?.name,
+                                        isSelected = true
+                                    )
+                                )
+                            )
+                        )
+                    } else it
+                }
+            )
+        }
+    }
+
     fun onBackPressed(): Boolean {
         return if (oldFilterSelection != _categories.list) {
             triggerEvent(
@@ -139,6 +172,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private suspend fun buildFilterListUiModel(): List<OrderFilterCategoryUiModel> {
         val orderStatusFilterUiOptions = loadOrderStatusFilterOptions()
         val dateRangeFilterOptions = loadDateRangeFilterOptions()
+        val productFilterOptions = getProductFilterOptions()
 
         return listOf(
             OrderFilterCategoryUiModel(
@@ -158,7 +192,31 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     resourceProvider
                 ),
                 dateRangeFilterOptions
+            ),
+            OrderFilterCategoryUiModel(
+                categoryKey = PRODUCT,
+                displayName = resourceProvider.getString(R.string.orderfilters_product_filter),
+                displayValue = productFilterOptions.getDisplayValue(
+                    PRODUCT,
+                    resourceProvider
+                ),
+                productFilterOptions
             )
+        )
+    }
+
+    private fun getProductFilterOptions(): List<OrderFilterOptionUiModel> {
+        return listOfNotNull(
+            orderFilterRepository.productFilter
+                ?.let { productRepository.getProduct(it) }
+                ?.let {
+                    OrderFilterOptionUiModel(
+                        key = it.id.toString(),
+                        displayName = it.name,
+                        displayValue = it.name,
+                        isSelected = true
+                    )
+                }
         )
     }
 
@@ -197,7 +255,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             when (selectedFilterCategoryKey) {
                 ORDER_STATUS -> getNumberOfSelectedFilterOptions()
                     .toString()
-                DATE_RANGE -> first { it.isSelected }.displayName
+                DATE_RANGE, PRODUCT -> first { it.isSelected }.displayName
             }
         } else {
             resourceProvider.getString(R.string.orderfilters_default_filter_value)
