@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.filters.data
 enum class OrderListFilterCategory {
     ORDER_STATUS,
     DATE_RANGE,
+    PRODUCT,
     CUSTOMER
 }
 
