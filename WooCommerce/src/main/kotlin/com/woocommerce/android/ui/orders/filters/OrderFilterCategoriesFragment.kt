@@ -134,7 +134,7 @@ class OrderFilterCategoriesFragment :
                     .actionOrderFilterCategoriesFragmentToNavGraphProductSelector(
                         selectionMode = SINGLE,
                         selectionHandling = SIMPLE,
-                        screenTitleOverride = getString(R.string.orderfilters_filter_option_item_selected),
+                        screenTitleOverride = getString(R.string.product),
                         ctaButtonTextOverride = getString(R.string.done),
                         selectedItems = category.orderFilterOptions.firstOrNull {  it.isSelected }
                             ?.let { arrayOf(SelectedItem.Product(it.key.toLong())) },
