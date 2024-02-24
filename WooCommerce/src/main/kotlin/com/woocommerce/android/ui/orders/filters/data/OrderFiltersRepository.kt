@@ -39,12 +39,14 @@ class OrderFiltersRepository @Inject constructor(
         }
     }
 
-    fun getCurrentFilterSelection(filterCategory: OrderListFilterCategory): List<String> =
-        (selectedSite.getIfExists()?.let { site ->
+    fun getCurrentFilterSelection(filterCategory: OrderListFilterCategory): List<String> {
+        val preferenceFilters = selectedSite.getIfExists()?.let { site ->
             appSharedPrefs.getOrderFilters(site.id, filterCategory.name)
                 .split(",")
                 .filter { it.isNotBlank() }
-        } ?: emptyList()) + getProductFilter(filterCategory) + getCustomerFilter(filterCategory)
+        } ?: emptyList()
+        return preferenceFilters + getProductFilter(filterCategory) + getCustomerFilter(filterCategory)
+    }
 
     private fun getProductFilter(filterCategory: OrderListFilterCategory) =
         if (filterCategory == PRODUCT) listOfNotNull(productFilter?.toString()) else emptyList()

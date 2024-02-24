@@ -62,6 +62,8 @@ class CustomerListFragment : BaseFragment() {
                     )
                 }
 
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

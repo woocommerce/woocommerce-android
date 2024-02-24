@@ -13,7 +13,9 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSu
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_USERNAME
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -35,6 +37,8 @@ class CustomerListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val stringUtils: StringUtils,
 ) : ScopedViewModel(savedState) {
+    private val args by savedState.navArgs<CustomerListFragmentArgs>()
+
     @Volatile
     private var paginationState = PaginationState(1, true)
 
@@ -73,11 +77,22 @@ class CustomerListViewModel @Inject constructor(
 
     fun onCustomerSelected(customerModel: WCCustomerModel) {
         analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
-        if (customerModel.remoteCustomerId > 0L) {
-            // this customer is registered, so we may have more info on them
-            tryLoadMoreInfo(customerModel)
-        } else {
-            openCustomerDetails(customerModel)
+        when {
+            customerModel.remoteCustomerId > 0L -> {
+                // this customer is registered, so we may have more info on them
+                tryLoadMoreInfo(customerModel)
+            }
+            args.allowGuests -> {
+                exitWithCustomer(customerModel)
+            }
+            else -> {
+                triggerEvent(
+                    ShowDialog(
+                        messageId = R.string.customer_picker_guest_customer_not_allowed_message,
+                        positiveButtonId = R.string.dialog_ok
+                    )
+                )
+            }
         }
     }
 
@@ -134,9 +149,9 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(partialLoading = false)
             if (result.isError || result.model == null) {
                 // just use what we have
-                openCustomerDetails(customerModel)
+                exitWithCustomer(customerModel)
             } else {
-                openCustomerDetails(result.model!!)
+                exitWithCustomer(result.model!!)
             }
         }
     }
@@ -182,7 +197,7 @@ class CustomerListViewModel @Inject constructor(
             paginationState = PaginationState(1, false)
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
-                showFab = true,
+                showFab = args.allowCustomerCreation,
             )
         } else {
             val customers = result.getOrNull() ?: emptyList()
@@ -252,8 +267,9 @@ class CustomerListViewModel @Inject constructor(
                         mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
                     shouldResetScrollPosition = true,
+                    showGuestChip = !args.allowGuests
                 ),
-                showFab = true,
+                showFab = args.allowCustomerCreation,
             )
         }
     }
@@ -277,7 +293,7 @@ class CustomerListViewModel @Inject constructor(
         )
     }
 
-    private fun openCustomerDetails(wcCustomer: WCCustomerModel) {
+    private fun exitWithCustomer(wcCustomer: WCCustomerModel) {
         val billingAddress = mapper.mapFromCustomerModelToBillingAddress(wcCustomer)
         val shippingAddress = mapper.mapFromCustomerModelToShippingAddress(wcCustomer)
 
@@ -345,7 +361,7 @@ class CustomerListViewModel @Inject constructor(
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
         searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
-        showFab = true,
+        showFab = args.allowCustomerCreation,
         searchFocused = false,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
