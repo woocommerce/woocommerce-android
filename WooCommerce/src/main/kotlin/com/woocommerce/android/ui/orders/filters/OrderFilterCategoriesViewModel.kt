@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSel
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag.CUSTOMER_AND_PRODUCT_FILTER
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -169,27 +170,35 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                     resourceProvider
                 ),
                 dateRangeFilterOptions
-            ),
-            OrderFilterCategoryUiModel(
-                categoryKey = CUSTOMER,
-                displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
-                displayValue = customerFilterOptions.getDisplayValue(
-                    PRODUCT,
-                    resourceProvider
-                ),
-                orderFilterOptions = customerFilterOptions
-            ),
-            OrderFilterCategoryUiModel(
-                categoryKey = PRODUCT,
-                displayName = resourceProvider.getString(R.string.orderfilters_product_filter),
-                displayValue = productFilterOptions.getDisplayValue(
-                    PRODUCT,
-                    resourceProvider
-                ),
-                productFilterOptions
             )
-        )
+        ) + customerAndProductFilter(customerFilterOptions, productFilterOptions)
     }
+
+    private fun customerAndProductFilter(customerFilterOptions: List<OrderFilterOptionUiModel>, productFilterOptions: List<OrderFilterOptionUiModel>) =
+        if (CUSTOMER_AND_PRODUCT_FILTER.isEnabled()) {
+            listOf(
+                OrderFilterCategoryUiModel(
+                    categoryKey = CUSTOMER,
+                    displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
+                    displayValue = customerFilterOptions.getDisplayValue(
+                        PRODUCT,
+                        resourceProvider
+                    ),
+                    orderFilterOptions = customerFilterOptions
+                ),
+                OrderFilterCategoryUiModel(
+                    categoryKey = PRODUCT,
+                    displayName = resourceProvider.getString(R.string.orderfilters_product_filter),
+                    displayValue = productFilterOptions.getDisplayValue(
+                        PRODUCT,
+                        resourceProvider
+                    ),
+                    productFilterOptions
+                )
+            )
+        } else {
+            emptyList()
+        }
 
     private fun getProductFilterOptions(): List<OrderFilterOptionUiModel> {
         return listOfNotNull(
