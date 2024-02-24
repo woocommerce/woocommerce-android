@@ -43,7 +43,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         scope: CoroutineScope,
         forceUpdate: Boolean = false,
-        visibleCards: Set<AnalyticsCards> = AnalyticsCards.entries.toSet(),
+        visibleCards: List<AnalyticsCards> = AnalyticsCards.entries,
     ): Flow<AnalyticsHubUpdateState> {
         visibleCards.forEach { card ->
             when (card) {
@@ -65,7 +65,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         scope: CoroutineScope,
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy,
-        visibleCards: Set<AnalyticsCards>
+        visibleCards: List<AnalyticsCards>
     ) {
         val asyncCalls = visibleCards.map { card ->
             when (card) {
@@ -84,7 +84,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private suspend fun storeLastAnalyticsUpdate(
-        visibleCards: Set<AnalyticsCards>,
+        visibleCards: List<AnalyticsCards>,
         rangeSelection: StatsTimeRangeSelection
     ) {
         visibleCards.forEach { card ->

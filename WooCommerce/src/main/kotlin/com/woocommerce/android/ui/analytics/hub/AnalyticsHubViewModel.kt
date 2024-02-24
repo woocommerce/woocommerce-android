@@ -238,8 +238,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onRefreshRequested() {
         tracker.track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
-        val visibleCards = currentConfiguration.value?.filter { it.isVisible }?.map { it.card }?.toSet()
-            ?: AnalyticsCards.entries.toSet()
+        val visibleCards =
+            currentConfiguration.value?.filter { it.isVisible }?.map { it.card } ?: AnalyticsCards.entries
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
@@ -278,7 +278,7 @@ class AnalyticsHubViewModel @Inject constructor(
             updateStats(
                 rangeSelection = selection,
                 scope = viewModelScope,
-                visibleCards = configuration.filter { it.isVisible }.map { it.card }.toSet()
+                visibleCards = configuration.filter { it.isVisible }.map { it.card }
             )
         }.launchIn(viewModelScope)
     }
