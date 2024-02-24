@@ -253,6 +253,7 @@ data class Order(
         val email: String? = null,
         val billingAddress: Address,
         val shippingAddress: Address,
+        val username: String? = null,
     ) : Parcelable {
         companion object {
             val EMPTY = Customer(

@@ -304,6 +304,7 @@ class CustomerListViewModel @Inject constructor(
                         shippingCountry,
                         shippingState
                     ),
+                    username = wcCustomer.username
                 )
             )
         )

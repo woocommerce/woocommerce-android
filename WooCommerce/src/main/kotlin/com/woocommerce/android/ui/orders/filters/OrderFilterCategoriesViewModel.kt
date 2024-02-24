@@ -54,7 +54,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val analyticsTraWrapper: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
     private val customerStore: WCCustomerStore,
-    private val selectedSite: SelectedSite,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
