@@ -83,7 +83,7 @@ class CustomerListViewModel @Inject constructor(
                 tryLoadMoreInfo(customerModel)
             }
             args.allowGuests -> {
-                openCustomerDetails(customerModel)
+                exitWithCustomer(customerModel)
             }
             else -> {
                 triggerEvent(
@@ -149,9 +149,9 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(partialLoading = false)
             if (result.isError || result.model == null) {
                 // just use what we have
-                openCustomerDetails(customerModel)
+                exitWithCustomer(customerModel)
             } else {
-                openCustomerDetails(result.model!!)
+                exitWithCustomer(result.model!!)
             }
         }
     }
@@ -293,7 +293,7 @@ class CustomerListViewModel @Inject constructor(
         )
     }
 
-    private fun openCustomerDetails(wcCustomer: WCCustomerModel) {
+    private fun exitWithCustomer(wcCustomer: WCCustomerModel) {
         val billingAddress = mapper.mapFromCustomerModelToBillingAddress(wcCustomer)
         val shippingAddress = mapper.mapFromCustomerModelToShippingAddress(wcCustomer)
 
