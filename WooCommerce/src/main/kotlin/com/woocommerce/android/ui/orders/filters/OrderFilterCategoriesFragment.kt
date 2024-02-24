@@ -21,8 +21,8 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment.Companion.KEY_CUSTOMER_RESULT
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
-import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
@@ -126,8 +126,10 @@ class OrderFilterCategoriesFragment :
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
         val action = when (category.categoryKey) {
             CUSTOMER -> {
-                OrderFilterCategoriesFragmentDirections
-                    .actionOrderFilterListFragmentToCustomerListFragment()
+                OrderFilterCategoriesFragmentDirections.actionOrderFilterListFragmentToCustomerListFragment(
+                    allowCustomerCreation = false,
+                    allowGuests = false
+                )
             }
             PRODUCT -> {
                 OrderFilterCategoriesFragmentDirections

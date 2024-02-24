@@ -26,7 +26,10 @@ object OrderCreateEditNavigator {
                 )
 
             is AddCustomer ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment(
+                    allowCustomerCreation = true,
+                    allowGuests = true
+                )
 
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()

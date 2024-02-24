@@ -327,6 +327,12 @@
         android:id="@+id/customerListFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
         android:label="customerListFragment" >
+        <argument
+            android:name="allowCustomerCreation"
+            app:argType="boolean" />
+        <argument
+            android:name="allowGuests"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_customerListFragment_to_orderCreationCustomerFragment"
             app:destination="@id/orderCreationCustomerFragment" />

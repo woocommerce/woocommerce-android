@@ -643,6 +643,7 @@
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
 
     <!--
          Barcode Scanning
