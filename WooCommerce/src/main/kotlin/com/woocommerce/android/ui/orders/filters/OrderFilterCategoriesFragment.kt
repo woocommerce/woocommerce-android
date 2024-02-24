@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -100,9 +99,9 @@ class OrderFilterCategoriesFragment :
         }
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_clear, menu)
-    }
+//    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_clear, menu)
+//    }
 
     fun onPrepareMenu(menu: Menu) {
         updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
@@ -140,6 +139,7 @@ class OrderFilterCategoriesFragment :
             )
         }
     }
+
     private fun setUpFiltersRecyclerView(binding: FragmentOrderFilterListBinding) {
         orderFilterCategoryAdapter = OrderFilterCategoryAdapter(
             onFilterCategoryClicked = { selectedFilterCategory ->
@@ -161,7 +161,7 @@ class OrderFilterCategoriesFragment :
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
         val action = when (category.categoryKey) {
             CUSTOMER -> {
-                OrderFilterCategoriesFragmentDirections.actionOrderFilterListFragmentToCustomerListFragment(
+                OrderFilterCategoriesFragmentDirections.actionOrderFilterListFragmentToCustomerListDialogFragment(
                     allowCustomerCreation = false,
                     allowGuests = false
                 )

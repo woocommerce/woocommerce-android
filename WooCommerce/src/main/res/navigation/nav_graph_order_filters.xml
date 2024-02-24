@@ -12,8 +12,8 @@
             android:id="@+id/action_orderFilterListFragment_to_orderFilterOptionListFragment"
             app:destination="@id/orderFilterOptionsFragment" />
         <action
-            android:id="@+id/action_orderFilterListFragment_to_customerListFragment"
-            app:destination="@id/customerListFragment" />
+            android:id="@+id/action_orderFilterListFragment_to_customerListDialogFragment"
+            app:destination="@id/customerListDialogFragment" />
         <action
             android:id="@+id/action_orderFilterCategoriesFragment_to_nav_graph_product_selector"
             app:destination="@id/nav_graph_product_selector">
@@ -48,15 +48,16 @@
             app:argType="com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel"
             app:nullable="false" />
     </dialog>
-    <fragment
-        android:id="@+id/customerListFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
-        android:label="customerListFragment" >
+    <dialog
+        android:id="@+id/customerListDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListDialogFragment"
+        android:label="customerListDialogFragment" >
+        <!-- Make sure this and CustomerListFragment have the same list of arguments -->
         <argument
             android:name="allowCustomerCreation"
             app:argType="boolean" />
         <argument
             android:name="allowGuests"
             app:argType="boolean" />
-    </fragment>
+    </dialog>
 </navigation>

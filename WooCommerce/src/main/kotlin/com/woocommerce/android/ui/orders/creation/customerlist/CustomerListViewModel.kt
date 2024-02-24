@@ -15,7 +15,6 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -37,7 +36,8 @@ class CustomerListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val stringUtils: StringUtils,
 ) : ScopedViewModel(savedState) {
-    private val args by savedState.navArgs<CustomerListFragmentArgs>()
+    private val allowGuests = savedState.get<Boolean>("allowGuests") ?: false
+    private val allowCustomerCreation = savedState.get<Boolean>("allowCustomerCreation") ?: false
 
     @Volatile
     private var paginationState = PaginationState(1, true)
@@ -82,7 +82,7 @@ class CustomerListViewModel @Inject constructor(
                 // this customer is registered, so we may have more info on them
                 tryLoadMoreInfo(customerModel)
             }
-            args.allowGuests -> {
+            allowGuests -> {
                 exitWithCustomer(customerModel)
             }
             else -> {
@@ -197,7 +197,7 @@ class CustomerListViewModel @Inject constructor(
             paginationState = PaginationState(1, false)
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
-                showFab = args.allowCustomerCreation,
+                showFab = allowCustomerCreation,
             )
         } else {
             val customers = result.getOrNull() ?: emptyList()
@@ -267,9 +267,9 @@ class CustomerListViewModel @Inject constructor(
                         mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
                     shouldResetScrollPosition = true,
-                    showGuestChip = !args.allowGuests
+                    showGuestChip = !allowGuests
                 ),
-                showFab = args.allowCustomerCreation,
+                showFab = allowCustomerCreation,
             )
         }
     }
@@ -361,7 +361,7 @@ class CustomerListViewModel @Inject constructor(
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
         searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
-        showFab = args.allowCustomerCreation,
+        showFab = allowCustomerCreation,
         searchFocused = false,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
