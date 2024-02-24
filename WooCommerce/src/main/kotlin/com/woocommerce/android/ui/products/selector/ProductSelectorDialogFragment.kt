@@ -9,24 +9,14 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
-import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_EDITED_RESULT
-import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_RESULT
-import com.woocommerce.android.ui.orders.creation.configuration.SelectProductConfigurationResult
-import com.woocommerce.android.ui.products.ProductFilterResult
-import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
-import com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment
-import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationPickerResult
-import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
-import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +35,8 @@ class ProductSelectorDialogFragment : DialogFragment() {
 
     private val viewModel: ProductSelectorViewModel by viewModels()
 
+    private val args by navArgs<ProductSelectorDialogFragmentArgs>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,6 +45,11 @@ class ProductSelectorDialogFragment : DialogFragment() {
         } else {
             /* This draws the dialog as full screen */
             setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
+        }
+
+        if (args.selectionHandling != ProductSelectorViewModel.SelectionHandling.SIMPLE) {
+            // If we want to support the other handling, we need to make all of the destinations as dialogs
+            error("The dialog version of the product selector supports only simple selection handling")
         }
     }
 
@@ -74,7 +71,6 @@ class ProductSelectorDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
-        handleResults()
     }
 
     override fun onStart() {
@@ -100,38 +96,6 @@ class ProductSelectorDialogFragment : DialogFragment() {
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
             }
-        }
-    }
-
-    private fun handleResults() {
-        handleResult<VariationSelectionResult>(VariationSelectorFragment.VARIATION_SELECTOR_RESULT) {
-            viewModel.onSelectedVariationsUpdated(it)
-        }
-
-        handleResult<VariationPickerResult>(VariationPickerFragment.VARIATION_PICKER_RESULT) {
-            // This means we are in the single-selection mode, return result immediately
-            navigateBackWithResult(
-                PRODUCT_SELECTOR_RESULT,
-                listOf(SelectedItem.ProductVariation(it.productId, it.variationId))
-            )
-        }
-
-        handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
-            viewModel.onFiltersChanged(
-                stockStatus = result.stockStatus,
-                productStatus = result.productStatus,
-                productType = result.productType,
-                productCategory = result.productCategory,
-                productCategoryName = result.productCategoryName
-            )
-        }
-
-        handleResult<SelectProductConfigurationResult>(PRODUCT_CONFIGURATION_RESULT) { result ->
-            viewModel.onConfigurationSaved(result.productId, result.productConfiguration)
-        }
-
-        handleResult<EditProductConfigurationResult>(PRODUCT_CONFIGURATION_EDITED_RESULT) { result ->
-            viewModel.onConfigurationEdited(result.productId, result.productConfiguration)
         }
     }
 }
