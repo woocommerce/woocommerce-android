@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-15 14:54:03+0000
+Translation-Revision-Date: 2024-02-20 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">有点不太对劲。\n我们无法创建您的广告活动。</string>
+    <string name="blaze_campaign_creation_error_media_fetch">获取广告活动图片详细信息失败</string>
+    <string name="blaze_campaign_creation_error_media_upload">上传广告活动图片失败。</string>
+    <string name="blaze_campaign_creation_error_cancel">取消广告活动</string>
+    <string name="blaze_campaign_creation_error_get_support">获取支持</string>
+    <string name="blaze_campaign_creation_error_help_hint">请重试或联系支持人员寻求帮助。</string>
+    <string name="blaze_campaign_creation_error_payment_hint">创建广告活动时出错</string>
+    <string name="blaze_campaign_creation_error_title">创建广告活动时出错</string>
+    <string name="blaze_campaign_creation_loading">创建您的广告活动</string>
+    <string name="blaze_campaign_created_success_done_button">完成</string>
+    <string name="blaze_campaign_created_success_description">我们正在审查您的广告活动。 它将在 24 小时内上线。 您的销售工作将迎来激动人心的时刻！</string>
+    <string name="blaze_campaign_created_success_title">准备就绪！</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">密钥已退出</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">最终的 URL 过长</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">字段值</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">密钥 </string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">目的地：%s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">添加参数</string>
+    <string name="blaze_campaign_payment_added_successfully">信用卡添加成功</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">添加新卡</string>
+    <string name="blaze_campaign_payment_list_header_text">所有交易均经过安全加密</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">添加信用卡</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">请添加新的付款方式</string>
+    <string name="blaze_campaign_payment_list_screen_title">付款方式</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">添加</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">请为您的 Blaze 广告活动添加标语和描述</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">添加图片</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">请为 Blaze 广告活动添加图片</string>
+    <string name="blaze_campaign_payment_list_hint">从以下 WordPress.com 账户检索信用卡：%1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">预估展示次数失败。 重试？</string>
+    <string name="drag_handle">拖动手柄</string>
+    <string name="analytic_cards">分析卡</string>
+    <string name="manage_analytics">管理分析</string>
     <string name="see_report">查看报告</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">站点主页</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">产品 URL</string>
@@ -246,7 +279,7 @@ Language: zh_CN
     <string name="custom_amounts">自定义金额</string>
     <string name="product_details_blaze_card">通过 Blaze 推广</string>
     <string name="blaze_campaign_ceation_celebration_button">知道了</string>
-    <string name="blaze_campaign_ceation_celebration_message">广告已提交审批。 广告审批通过并发布后，我们会向您发送一封确认电子邮件。</string>
+    <string name="blaze_campaign_ceation_celebration_message">广告已提交审批。 广告通过审批并发布后，我们会向您发送一封确认电子邮件。</string>
     <string name="blaze_campaign_creation_celebration_header">一切就绪！</string>
     <string name="blaze_campaign_creation_intro_button">立即开启 Blaze 广告活动</string>
     <string name="blaze_campaign_creation_intro_benefit_4">随时跟踪表现、开始和停止您的 Blaze 广告活动。</string>

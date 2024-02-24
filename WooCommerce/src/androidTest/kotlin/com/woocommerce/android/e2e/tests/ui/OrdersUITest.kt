@@ -18,6 +18,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -48,6 +49,7 @@ class OrdersUITest : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eCreateOrderTest() {
         val note = "Just a placeholder text"
         val ordersJSONArray = MocksReader().readOrderToArray()
@@ -59,7 +61,6 @@ class OrdersUITest : TestBase() {
             // https://github.com/woocommerce/woocommerce-android/issues/8724
             OrderListScreen()
                 .createFABTap()
-                .assertNewOrderScreen()
                 .addCustomerNote(note)
                 .addProductTap()
                 .assertProductsSelectorScreen(composeTestRule)

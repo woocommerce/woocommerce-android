@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
+import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -14,9 +15,7 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
     private val args by navArgs<ShippingAddressEditingFragmentArgs>()
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override val storedAddress: Address by lazy {
         args.storedAddress
@@ -32,5 +31,10 @@ class ShippingAddressEditingFragment : BaseAddressEditingFragment() {
         binding.form.email.visibility = View.GONE
         binding.form.addressSectionHeader.text = getString(R.string.order_detail_shipping_address_section)
         replicateAddressSwitch.text = getString(R.string.order_detail_use_as_billing_address)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.title = getString(R.string.order_detail_shipping_address_section)
     }
 }

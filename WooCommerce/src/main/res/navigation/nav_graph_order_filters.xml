@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_order_filters"
     app:startDestination="@id/orderFilterCategoriesFragment">
-    <fragment
+    <dialog
         android:id="@+id/orderFilterCategoriesFragment"
         android:name="com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment"
         tools:layout="@layout/fragment_order_filter_list">
@@ -14,8 +14,8 @@
         <action
             android:id="@+id/action_orderFilterListFragment_to_customerListFragment"
             app:destination="@id/customerListFragment" />
-    </fragment>
-    <fragment
+    </dialog>
+    <dialog
         android:id="@+id/orderFilterOptionsFragment"
         android:name="com.woocommerce.android.ui.orders.filters.OrderFilterOptionsFragment"
         tools:layout="@layout/fragment_order_filter_list">
@@ -23,7 +23,7 @@
             android:name="filterCategory"
             app:argType="com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel"
             app:nullable="false" />
-    </fragment>
+    </dialog>
     <fragment
         android:id="@+id/customerListFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"

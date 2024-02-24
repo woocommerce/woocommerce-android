@@ -138,7 +138,7 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="manage_analytics">Manage Analytics</string>
+    <string name="customize_analytics">Customize Analytics</string>
     <string name="analytic_cards">Analytic Cards</string>
     <string name="drag_handle">Drag handle</string>
     <string name="card">Card</string>
@@ -643,6 +643,7 @@
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
+    <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
 
     <!--
          Barcode Scanning
