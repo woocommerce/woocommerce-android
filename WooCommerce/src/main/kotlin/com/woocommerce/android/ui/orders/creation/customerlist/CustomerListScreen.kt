@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -207,6 +208,7 @@ private fun CustomerListLoaded(
                 is Customer -> {
                     CustomerListItem(
                         customer = customer,
+                        showGuestChip = body.showGuestChip,
                         onCustomerSelected = onCustomerSelected
                     )
                     if (customer != body.customers.last()) {
@@ -246,9 +248,11 @@ private fun CustomerListLoaded(
 @Composable
 private fun CustomerListItem(
     customer: Customer,
+    showGuestChip: Boolean,
     onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
-    Column(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
@@ -259,28 +263,48 @@ private fun CustomerListItem(
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
                 vertical = dimensionResource(id = R.dimen.minor_100)
-            )
-    ) {
-        Row {
+            )) {
+        Column(modifier = Modifier.weight(1f)) {
+            Row {
+                Text(
+                    text = customer.name.render(),
+                    color = colorResource(id = R.color.color_on_surface),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.W500,
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = customer.username.render(),
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+            }
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = customer.name.render(),
+                text = customer.email.render(),
                 color = colorResource(id = R.color.color_on_surface),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.W500,
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = customer.username.render(),
-                color = colorResource(id = R.color.color_on_surface_medium),
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.body2,
             )
         }
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = customer.email.render(),
-            color = colorResource(id = R.color.color_on_surface),
-            style = MaterialTheme.typography.body2,
-        )
+
+        if (showGuestChip && customer.isGuest) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = colorResource(id = R.color.color_on_surface_disabled),
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                    )
+                    .padding(
+                        vertical = dimensionResource(id = R.dimen.minor_50),
+                        horizontal = dimensionResource(id = R.dimen.minor_100)
+                    )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.customer_picker_guest),
+                    color = colorResource(id = R.color.woo_white)
+                )
+            }
+        }
     }
 }
 
@@ -484,7 +508,7 @@ fun CustomerListScreenPreview() {
                         payload = WCCustomerModel(),
                     ),
                     Customer(
-                        remoteId = 3,
+                        remoteId = 0L,
                         name = Customer.Text.Placeholder("No name"),
                         email = Customer.Text.Placeholder("No email"),
                         username = Customer.Text.Placeholder(""),
@@ -494,6 +518,7 @@ fun CustomerListScreenPreview() {
                     CustomerListViewState.CustomerList.Item.Loading,
                 ),
                 shouldResetScrollPosition = true,
+                showGuestChip = true,
             ),
         ),
         {},

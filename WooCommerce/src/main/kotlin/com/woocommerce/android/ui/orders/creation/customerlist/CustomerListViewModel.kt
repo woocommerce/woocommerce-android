@@ -62,7 +62,7 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
-            if (!args.allowGuests && isAdvancedSearchSupported()) {
+            if (isAdvancedSearchSupported()) {
                 _viewState.value = advancedSearchSupportedInitState()
                 awaitAll(
                     async { loadCustomers(1) },
@@ -267,6 +267,7 @@ class CustomerListViewModel @Inject constructor(
                         mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
                     shouldResetScrollPosition = true,
+                    showGuestChip = !args.allowGuests
                 ),
                 showFab = args.allowCustomerCreation,
             )
