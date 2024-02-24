@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.hub
 
-import android.util.Log
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -276,7 +275,6 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun combineSelectionAndConfiguration() {
         combine(currentConfiguration.filterNotNull(), rangeSelectionState) { configuration, selection ->
-            Log.d("HUB", "data updated")
             updateStats(
                 rangeSelection = selection,
                 scope = viewModelScope,

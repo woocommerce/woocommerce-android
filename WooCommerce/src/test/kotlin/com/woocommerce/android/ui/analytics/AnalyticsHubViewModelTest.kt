@@ -224,7 +224,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             val resourceProvider = givenAResourceProvider()
             val state = sut.viewState.value.cards
             assertTrue(state is AnalyticsHubCardViewState.CardsState)
-            val revenueCardState =  state.cardsState.getValue(AnalyticsCards.Revenue)
+            val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
             with(revenueCardState) {
                 assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
@@ -252,7 +252,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             val state = sut.viewState.value.cards
             assertTrue(state is AnalyticsHubCardViewState.CardsState)
-            val revenueCardState =  state.cardsState.getValue(AnalyticsCards.Revenue)
+            val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
 
             with(revenueCardState) {
                 assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
@@ -298,7 +298,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value.cards
         assertTrue(state is AnalyticsHubCardViewState.CardsState)
-        val revenueCardState =  state.cardsState.getValue(AnalyticsCards.Revenue)
+        val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
 
         with(revenueCardState) {
             assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
@@ -324,7 +324,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             val state = sut.viewState.value.cards
             assertTrue(state is AnalyticsHubCardViewState.CardsState)
-            val ordersCardState =  state.cardsState.getValue(AnalyticsCards.Orders)
+            val ordersCardState = state.cardsState.getValue(AnalyticsCards.Orders)
 
             with(ordersCardState) {
                 assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
@@ -350,7 +350,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             val state = sut.viewState.value.cards
             assertTrue(state is AnalyticsHubCardViewState.CardsState)
-            val productsCardState =  state.cardsState.getValue(AnalyticsCards.Products)
+            val productsCardState = state.cardsState.getValue(AnalyticsCards.Products)
 
             with(productsCardState) {
                 assertTrue(this is AnalyticsHubListViewState.DataViewState)
@@ -390,7 +390,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value.cards
         assertTrue(state is AnalyticsHubCardViewState.CardsState)
-        val ordersCardState =  state.cardsState.getValue(AnalyticsCards.Orders)
+        val ordersCardState = state.cardsState.getValue(AnalyticsCards.Orders)
 
         with(ordersCardState) {
             assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
@@ -425,7 +425,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value.cards
         assertTrue(state is AnalyticsHubCardViewState.CardsState)
-        val revenueCardState =  state.cardsState.getValue(AnalyticsCards.Revenue)
+        val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
 
         with(revenueCardState) {
             assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
@@ -457,7 +457,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value.cards
         assertTrue(state is AnalyticsHubCardViewState.CardsState)
-        val productsCardState =  state.cardsState.getValue(AnalyticsCards.Products)
+        val productsCardState = state.cardsState.getValue(AnalyticsCards.Products)
 
         with(productsCardState) {
             assertTrue(this is AnalyticsHubListViewState.DataViewState)
@@ -595,7 +595,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value.cards
         assertTrue(state is AnalyticsHubCardViewState.CardsState)
-        val sessionCardState =  state.cardsState.getValue(AnalyticsCards.Session)
+        val sessionCardState = state.cardsState.getValue(AnalyticsCards.Session)
         assertTrue(sessionCardState is AnalyticsHubInformationViewState)
         assert(sessionCardState)
     }
