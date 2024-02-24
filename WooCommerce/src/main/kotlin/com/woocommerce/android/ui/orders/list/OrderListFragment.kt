@@ -174,7 +174,7 @@ class OrderListFragment :
                             // In this case we need to switch panes – show the list pane instead of details pane.
                             adjustUiForDeviceType(savedInstanceState)
                         } else {
-                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                            findNavController().popBackStack()
                         }
                     }
                 }
