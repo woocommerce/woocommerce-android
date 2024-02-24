@@ -138,7 +138,7 @@ class OrderFilterCategoriesFragment :
                         selectionHandling = SIMPLE,
                         screenTitleOverride = getString(R.string.orderfilters_filter_option_item_selected),
                         ctaButtonTextOverride = getString(R.string.done),
-                        selectedItems = category.orderFilterOptions.firstOrNull {  it.isSelected }
+                        selectedItems = category.orderFilterOptions.firstOrNull { it.isSelected }
                             ?.let { arrayOf(SelectedItem.Product(it.key.toLong())) },
                         productSelectorFlow = Undefined
                     )

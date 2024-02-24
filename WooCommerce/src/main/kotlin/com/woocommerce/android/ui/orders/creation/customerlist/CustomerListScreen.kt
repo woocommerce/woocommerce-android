@@ -263,7 +263,8 @@ private fun CustomerListItem(
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
                 vertical = dimensionResource(id = R.dimen.minor_100)
-            )) {
+            )
+    ) {
         Column(modifier = Modifier.weight(1f)) {
             Row {
                 Text(
