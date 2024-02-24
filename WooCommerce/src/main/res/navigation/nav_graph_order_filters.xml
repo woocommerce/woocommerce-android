@@ -15,28 +15,8 @@
             android:id="@+id/action_orderFilterListFragment_to_customerListDialogFragment"
             app:destination="@id/customerListDialogFragment" />
         <action
-            android:id="@+id/action_orderFilterCategoriesFragment_to_nav_graph_product_selector"
-            app:destination="@id/nav_graph_product_selector">
-            <argument
-                android:name="selectionMode"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionMode" />
-            <argument
-                android:name="selectionHandling"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionHandling" />
-            <argument
-                android:name="screenTitleOverride"
-                app:argType="string" />
-            <argument
-                android:name="ctaButtonTextOverride"
-                app:argType="string" />
-            <argument
-                android:name="selectedItems"
-                android:defaultValue="@null"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]"
-                app:nullable="true" />
-            <argument
-                android:name="productSelectorFlow"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
+            android:id="@+id/action_orderFilterCategoriesFragment_to_productSelectorDialogFragment"
+            app:destination="@id/productSelectorDialogFragment">
         </action>
     </dialog>
     <dialog
@@ -51,7 +31,7 @@
     <dialog
         android:id="@+id/customerListDialogFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListDialogFragment"
-        android:label="customerListDialogFragment" >
+        android:label="customerListDialogFragment">
         <!-- Make sure this and CustomerListFragment have the same list of arguments -->
         <argument
             android:name="allowCustomerCreation"
@@ -59,5 +39,31 @@
         <argument
             android:name="allowGuests"
             app:argType="boolean" />
+    </dialog>
+    <dialog
+        android:id="@+id/productSelectorDialogFragment"
+        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorDialogFragment"
+        android:label="ProductSelectorDialogFragment">
+        <!-- Make sure this and ProductSelectorFragment have the same list of arguments -->
+        <argument
+            android:name="selectionMode"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionMode" />
+        <argument
+            android:name="selectionHandling"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectionHandling" />
+        <argument
+            android:name="screenTitleOverride"
+            app:argType="string" />
+        <argument
+            android:name="ctaButtonTextOverride"
+            app:argType="string" />
+        <argument
+            android:name="selectedItems"
+            android:defaultValue="@null"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]"
+            app:nullable="true" />
+        <argument
+            android:name="productSelectorFlow"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
     </dialog>
 </navigation>

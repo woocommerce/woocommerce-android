@@ -168,7 +168,7 @@ class OrderFilterCategoriesFragment :
             }
             PRODUCT -> {
                 OrderFilterCategoriesFragmentDirections
-                    .actionOrderFilterCategoriesFragmentToNavGraphProductSelector(
+                    .actionOrderFilterCategoriesFragmentToProductSelectorDialogFragment(
                         selectionMode = SINGLE,
                         selectionHandling = SIMPLE,
                         screenTitleOverride = getString(R.string.product),
