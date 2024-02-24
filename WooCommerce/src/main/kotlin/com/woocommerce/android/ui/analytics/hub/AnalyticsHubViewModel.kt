@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -116,10 +117,18 @@ class AnalyticsHubViewModel @Inject constructor(
         get() = rangeSelectionState.value
 
     private var lastUpdateObservationJob: Job? = null
-    private var revenueObservationJob: Job? = null
-    private var sessionObservationJob: Job? = null
-    private var productObservationJob: Job? = null
-    private var ordersObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var revenueObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var sessionObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var productObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var ordersObservationJob: Job? = null
 
     init {
         observeConfigurationChanges()

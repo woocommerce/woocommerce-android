@@ -60,6 +60,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -809,6 +810,174 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut.onSeeReport("https://report-url", ReportCard.Revenue)
         verify(trackerEventEmitter).interacted(any())
     }
+
+    @Test
+    fun `when a card configuration is received, then visible cards follows the configuration `() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Revenue,
+                title = AnalyticsCards.Revenue.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Orders,
+                title = AnalyticsCards.Orders.name,
+                isVisible = true
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Products,
+                title = AnalyticsCards.Products.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Session,
+                title = AnalyticsCards.Session.name,
+                isVisible = true
+            )
+        )
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        configureVisibleCards(configuration)
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(LAST_YEAR)
+
+        with(sut.viewState.value.cards) {
+            assertTrue(this is AnalyticsHubCardViewState.CardsState)
+            val revenueState = this.cardsState.getValue(AnalyticsCards.Revenue)
+            val ordersState = this.cardsState.getValue(AnalyticsCards.Orders)
+            val productsState = this.cardsState.getValue(AnalyticsCards.Products)
+            val sessionState = this.cardsState.getValue(AnalyticsCards.Session)
+
+            assertTrue(revenueState is AnalyticsHubInformationViewState.HiddenState)
+            assertTrue(ordersState is AnalyticsHubInformationViewState.DataViewState)
+            assertTrue(productsState is AnalyticsHubListViewState.HiddenState)
+            assertTrue(sessionState is AnalyticsHubInformationViewState.DataViewState)
+        }
+    }
+
+    @Test
+    fun `when some cards are hidden, then observation job for those cards is null`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Revenue,
+                title = AnalyticsCards.Revenue.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Orders,
+                title = AnalyticsCards.Orders.name,
+                isVisible = true
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Products,
+                title = AnalyticsCards.Products.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Session,
+                title = AnalyticsCards.Session.name,
+                isVisible = true
+            )
+        )
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        configureVisibleCards(configuration)
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(LAST_YEAR)
+
+        assertThat(sut.sessionObservationJob).isNotNull
+        assertThat(sut.ordersObservationJob).isNotNull
+        assertThat(sut.revenueObservationJob).isNull()
+        assertThat(sut.productObservationJob).isNull()
+    }
+
+    @Test
+    fun `when a new range is selected, the update stats its call with the right visible cards`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Revenue,
+                title = AnalyticsCards.Revenue.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Orders,
+                title = AnalyticsCards.Orders.name,
+                isVisible = true
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Products,
+                title = AnalyticsCards.Products.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Session,
+                title = AnalyticsCards.Session.name,
+                isVisible = true
+            )
+        )
+
+        val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
+
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        configureVisibleCards(configuration)
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+
+        verify(updateStats).invoke(
+            rangeSelection = any(),
+            scope = any(),
+            forceUpdate = any(),
+            visibleCards = eq(expectedVisibleCards)
+        )
+    }
+
+    @Test
+    fun `when a a refresh event is triggered, then the update stats its call with the right visible cards`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Revenue,
+                    title = AnalyticsCards.Revenue.name,
+                    isVisible = false
+                ),
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Orders,
+                    title = AnalyticsCards.Orders.name,
+                    isVisible = true
+                ),
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Products,
+                    title = AnalyticsCards.Products.name,
+                    isVisible = false
+                ),
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Session,
+                    title = AnalyticsCards.Session.name,
+                    isVisible = true
+                )
+            )
+
+            val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
+
+            whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+            configureVisibleCards(configuration)
+            configureSuccessfulStatsResponse()
+
+            sut = givenAViewModel()
+            clearInvocations(updateStats)
+
+            sut.onRefreshRequested()
+
+            verify(updateStats).invoke(
+                rangeSelection = any(),
+                scope = any(),
+                forceUpdate = any(),
+                visibleCards = eq(expectedVisibleCards)
+            )
+        }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
