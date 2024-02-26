@@ -360,7 +360,10 @@ class ProductListFragment :
     }
 
     private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
-        TODO("Not yet implemented")
+        val action = ProductListFragmentDirections.actionProductListFragmentToUpdateStockStatusFragment(
+            productRemoteIdsToUpdate.toLongArray()
+        )
+        findNavController().navigateSafely(action)
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
