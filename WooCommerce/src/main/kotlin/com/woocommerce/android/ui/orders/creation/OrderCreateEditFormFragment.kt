@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -90,7 +91,10 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
@@ -131,6 +135,8 @@ class OrderCreateEditFormFragment :
             ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
 
     private var sharedViewModelUpdateJob: Job? = null
+
+    @OptIn(FlowPreview::class)
     override fun onStart() {
         super.onStart()
         val navController =
@@ -143,13 +149,19 @@ class OrderCreateEditFormFragment :
         )
         navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
         sharedViewModel.updateSelectedItems(viewModel.selectedItems.value ?: emptyList())
-        viewModel.selectedItems.observe(viewLifecycleOwner) {
-            sharedViewModel.updateSelectedItems(it)
+        lifecycleScope.launch {
+            viewModel.selectedItems.asFlow()
+                .collect {
+                    sharedViewModel.updateSelectedItems(it)
+                }
         }
         sharedViewModelUpdateJob = lifecycleScope.launch {
-            sharedViewModel.selectedItems.collect {
-                viewModel.onProductsSelected(it)
-            }
+            sharedViewModel.selectedItems
+                .debounce(500)
+                .distinctUntilChanged()
+                .collect {
+                    viewModel.onProductsSelected(it)
+                }
         }
     }
 
