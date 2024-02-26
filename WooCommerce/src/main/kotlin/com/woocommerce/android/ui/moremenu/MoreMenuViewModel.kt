@@ -21,7 +21,6 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -58,7 +57,6 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(

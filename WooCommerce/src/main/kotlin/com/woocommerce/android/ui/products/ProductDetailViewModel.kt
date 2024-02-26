@@ -42,7 +42,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -135,7 +134,6 @@ class ProductDetailViewModel @Inject constructor(
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
 ) : ScopedViewModel(savedState) {
     companion object {
