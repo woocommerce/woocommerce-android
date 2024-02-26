@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.intro
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -76,6 +77,10 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
 
     fun onProductSelected(productId: Long) {
         triggerEvent(ShowCampaignCreationForm(productId, BlazeFlowSource.INTRO_VIEW))
+    }
+
+    fun onLearnMoreClick() {
+        analyticsTracker.track(stat = BLAZE_INTRO_LEARN_MORE_TAPPED)
     }
 
     object ShowProductSelector : MultiLiveEvent.Event()

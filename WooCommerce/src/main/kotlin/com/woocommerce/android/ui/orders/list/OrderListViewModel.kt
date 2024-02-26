@@ -23,6 +23,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.filter
@@ -65,13 +66,11 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -152,6 +151,8 @@ class OrderListViewModel @Inject constructor(
 
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
+
+    val orderId: LiveData<Long> = savedState.getLiveData<Long>("orderId")
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData(
@@ -336,7 +337,7 @@ class OrderListViewModel @Inject constructor(
      * Track user clicked to open an order and the status of that order, along with some
      * data about the order custom fields
      */
-    fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String, isTablet: Boolean = false) = launch {
         val (customFieldsCount, customFieldsSize) =
             orderDetailRepository.getOrderMetadata(orderId)
                 .map { it.value.utf8Size() }
@@ -355,7 +356,8 @@ class OrderListViewModel @Inject constructor(
                 AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus,
                 AnalyticsTracker.KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
-                AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
+                AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize,
+                KEY_HORIZONTAL_SIZE_CLASS to isTablet
             )
         )
     }
@@ -501,17 +503,6 @@ class OrderListViewModel @Inject constructor(
         super.onCleared()
     }
 
-    @Suppress("unused", "DEPRECATION")
-    @Subscribe(threadMode = MAIN)
-    fun onOrderChanged(event: OnOrderChanged) {
-        when (event.causeOfChange) {
-            // A child fragment made a change that requires a data refresh.
-            UPDATE_ORDER_STATUS -> activePagedListWrapper?.fetchFirstPage()
-            else -> {
-            }
-        }
-    }
-
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -578,6 +569,28 @@ class OrderListViewModel @Inject constructor(
         val pagedList = _pagedListData.value ?: return
         (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
+    }
+
+    fun updateOrderSelectedStatus(orderId: Long, isTablet: Boolean = true) {
+        val pagedList = _pagedListData.value ?: return
+        if (isTablet) {
+            pagedList.map { orderItem ->
+                if (orderItem is OrderListItemUIType.OrderListItemUI) {
+                    orderItem.isSelected = orderItem.orderId == orderId
+                }
+            }
+        } else {
+            pagedList.map { orderItem ->
+                if (orderItem is OrderListItemUIType.OrderListItemUI) {
+                    orderItem.isSelected = false
+                }
+            }
+        }
+        triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
+    }
+
+    fun clearOrderId() {
+        savedState["orderId"] = -1L
     }
 
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
@@ -754,6 +767,8 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+
+        object NotifyOrderSelectionChanged : OrderListEvent()
 
         object OpenBarcodeScanningFragment : OrderListEvent()
 

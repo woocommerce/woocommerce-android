@@ -95,6 +95,9 @@
         <argument
             android:name="adImage"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$BlazeCampaignImage" />
+        <argument
+            android:name="aiSuggestionsForAd"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$AiSuggestionForAd[]" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignBudgetFragment"
@@ -131,22 +134,22 @@
         android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment"
         android:label="BlazeCampaignCreationAdDestinationFragment">
         <argument
-            android:name="targetUrl"
-            app:argType="string" />
-        <argument
             android:name="productId"
             app:argType="long" />
         <action
             android:id="@+id/action_adDestinationFragment_to_adDestinationParametersFragment"
             app:destination="@id/blazeCampaignCreationAdDestinationParametersFragment" />
+        <argument
+            android:name="destinationParameters"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$DestinationParameters" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignCreationAdDestinationParametersFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersFragment"
         android:label="BlazeCampaignCreationAdDestinationParametersFragment">
         <argument
-            android:name="url"
-            app:argType="string" />
+            android:name="destinationParameters"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$DestinationParameters" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignPaymentSummaryFragment"
