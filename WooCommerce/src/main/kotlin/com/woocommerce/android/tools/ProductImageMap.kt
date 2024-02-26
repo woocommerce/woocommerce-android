@@ -8,7 +8,6 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import java.lang.ref.WeakReference
-import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,7 +27,7 @@ class ProductImageMap @Inject constructor(
         fun onProductFetched(remoteProductId: Long)
     }
 
-    private val observers: MutableList<WeakReference<OnProductFetchedListener>> = CopyOnWriteArrayList()
+    private val observers: MutableList<WeakReference<OnProductFetchedListener>> = mutableListOf()
 
     private val map by lazy {
         HashMap<Long, String>()
@@ -64,12 +63,14 @@ class ProductImageMap @Inject constructor(
                     val result = productStore.fetchSingleProduct(FetchSingleProductPayload(site, remoteProductId))
                     if (!result.isError) {
                         withContext(dispatchers.main) {
+                            // Collect references to remove
+                            val toRemove = mutableListOf<WeakReference<OnProductFetchedListener>>()
                             observers.forEach { weakReference ->
-                                // notify the observer
-                                weakReference.get()?.onProductFetched(remoteProductId)
-                                    // remove the weak reference if the observer was garbage collected
-                                    ?: observers.remove(weakReference)
+                                // notify the observer or collect it for removal if it's been garbage collected
+                                weakReference.get()?.onProductFetched(remoteProductId) ?: toRemove.add(weakReference)
                             }
+                            // Remove the collected references
+                            observers.removeAll(toRemove)
                         }
                     }
                 }
