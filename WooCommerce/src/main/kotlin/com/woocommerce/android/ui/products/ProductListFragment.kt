@@ -353,7 +353,10 @@ class ProductListFragment :
                     )
                 }
 
-                is ShowProductUpdateStockStatusScreen -> showProductUpdateStockStatusScreen(event.productsIds)
+                is ShowProductUpdateStockStatusScreen -> {
+                    actionMode?.finish()
+                    showProductUpdateStockStatusScreen(event.productsIds)
+                }
                 else -> event.isHandled = false
             }
         }
