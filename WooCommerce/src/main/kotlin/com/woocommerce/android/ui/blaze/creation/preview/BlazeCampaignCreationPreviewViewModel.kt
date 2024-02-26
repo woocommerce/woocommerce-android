@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_CONFIRM_DETAILS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISPLAYED
@@ -15,7 +14,6 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
-import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
@@ -158,7 +156,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    fun onDestinationUpdated(destinationParameters: DestinationParameters) {
+    fun onDestinationUpdated(destinationParameters: BlazeRepository.DestinationParameters) {
         campaignDetails.update { it?.copy(destinationParameters = destinationParameters) }
     }
 
@@ -236,7 +234,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun CampaignDetails.getBudgetDetails() =
         CampaignDetailItemUi(
-            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_budget),
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_budget),
             displayValue = budget.toDisplayValue(),
             onItemSelected = {
                 triggerEvent(NavigateToBudgetScreen(budget, targetingParameters))
@@ -245,7 +243,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun CampaignDetails.getTargetDestinationDetails() =
         CampaignDetailItemUi(
-            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_destination_url),
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_destination_url),
             displayValue = destinationParameters.fullUrl,
             maxLinesValue = 1,
             onItemSelected = {
@@ -260,9 +258,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun CampaignDetails.getTargetInterestsDetails() =
         CampaignDetailItemUi(
-            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_interests),
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_interests),
             displayValue = targetingParameters.interests.joinToString { it.description }
-                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
             onItemSelected = {
                 triggerEvent(NavigateToTargetSelectionScreen(INTEREST, targetingParameters.interests.map { it.id }))
             },
@@ -270,9 +268,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun CampaignDetails.getTargetLocationsDetails() =
         CampaignDetailItemUi(
-            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_location),
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_location),
             displayValue = targetingParameters.locations.joinToString { it.name }
-                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
             onItemSelected = {
                 triggerEvent(NavigateToTargetLocationSelectionScreen(targetingParameters.locations))
             },
@@ -280,9 +278,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun CampaignDetails.getTargetDevicesDetails() =
         CampaignDetailItemUi(
-            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_devices),
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_devices),
             displayValue = targetingParameters.devices.joinToString { it.name }
-                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
             onItemSelected = {
                 triggerEvent(NavigateToTargetSelectionScreen(DEVICE, targetingParameters.devices.map { it.id }))
             },
@@ -290,9 +288,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun CampaignDetails.getTargetLanguagesDetails() =
         CampaignDetailItemUi(
-            displayTitle = resourceProvider.getString(string.blaze_campaign_preview_details_language),
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_language),
             displayValue = targetingParameters.languages.joinToString { it.name }
-                .ifEmpty { resourceProvider.getString(string.blaze_campaign_preview_target_default_value) },
+                .ifEmpty { resourceProvider.getString(R.string.blaze_campaign_preview_target_default_value) },
             onItemSelected = {
                 triggerEvent(
                     NavigateToTargetSelectionScreen(
@@ -309,7 +307,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             currencyCode
         )
         val duration = resourceProvider.getString(
-            string.blaze_campaign_preview_days_duration,
+            R.string.blaze_campaign_preview_days_duration,
             durationInDays,
             startDate.formatToMMMdd()
         )
