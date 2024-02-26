@@ -551,3 +551,4 @@ if (project.hasProperty("debugStoreFile")) {
     }
 }
 
+apply from: '../config/gradle/build_optimization.gradle'
