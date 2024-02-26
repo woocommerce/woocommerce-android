@@ -5,7 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -101,6 +104,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     }
 
     fun onSubmitCampaign() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
         if (campaignCreationState.value == CampaignCreationState.Loading) {
             return
         }
@@ -113,7 +117,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
-                    analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
+                    analyticsTrackerWrapper.track(stat = BLAZE_CAMPAIGN_CREATION_SUCCESS)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
                 onFailure = {
@@ -126,6 +130,12 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
                         else -> R.string.blaze_campaign_creation_error
                     }
+                    analyticsTrackerWrapper.track(
+                        stat = BLAZE_CAMPAIGN_CREATION_FAILED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_BLAZE_ERROR to it.message
+                        )
+                    )
                     campaignCreationState.value = CampaignCreationState.Failed(errorMessage)
                 }
             )
