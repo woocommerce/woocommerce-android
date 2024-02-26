@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 
 @Composable
 fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel) {
@@ -30,9 +32,6 @@ fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel)
         onStockStatusChanged = { newStatus, productIds ->
             viewModel.updateStockStatusForProducts(newStatus, productIds)
         },
-        onStockStatusesLoaded = { productIds ->
-            viewModel.loadProductStockStatuses(productIds)
-        },
         onNavigationUpClicked = { },
         onUpdateClicked = { }
     )
@@ -46,7 +45,6 @@ private fun UpdateProductStockStatusScreen(
     ignoredProductsCount: Int,
     updateResult: RequestResult?,
     onStockStatusChanged: (ProductStockStatus, List<Long>) -> Unit,
-    onStockStatusesLoaded: (List<Long>) -> Unit,
     onNavigationUpClicked: () -> Unit,
     onUpdateClicked: () -> Unit
 ) {
@@ -90,6 +88,8 @@ private fun UpdateProductStockStatusScreen(
                     .padding(top = 8.dp)
             )
 
+            Divider()
+
             Text(
                 text = buildString {
                     append(
@@ -118,6 +118,12 @@ private fun UpdateProductStockStatusScreen(
 
 @Composable
 fun StockStatusDropdown(stockStatusOptions: List<String>, onSelectionChanged: (String) -> Unit) {
+    val initialStatus = stockStatusOptions.firstOrNull() ?: ""
 
-    Text("Dropdown Placeholder")
+    WcExposedDropDown(
+        items = stockStatusOptions.toTypedArray(),
+        onSelected = onSelectionChanged,
+        currentValue = initialStatus,
+        mapper = { it }
+    )
 }
