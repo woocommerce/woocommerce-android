@@ -11,7 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.ui.compose.component.Toolbar
 
@@ -51,11 +53,14 @@ private fun UpdateProductStockStatusScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = "Update Stock Status",
+                title = stringResource(id = R.string.product_update_stock_status_title),
                 onNavigationButtonClick = onNavigationUpClicked,
                 actions = {
                     TextButton(onClick = onUpdateClicked) {
-                        Text("DONE", color = MaterialTheme.colors.onPrimary)
+                        Text(
+                            text = stringResource(id = R.string.product_update_stock_status_done),
+                            color = MaterialTheme.colors.onPrimary
+                        )
                     }
                 }
             )
@@ -73,9 +78,12 @@ private fun UpdateProductStockStatusScreen(
 
             Text(
                 text = if (isMixedStatus) {
-                    "Current stock statuses are mixed"
+                    stringResource(id = R.string.product_update_stock_status_current_status_mixed)
                 } else {
-                    "Current stock status is ${stockStatusInfos.firstOrNull()?.stockStatus?.value ?: "unknown"}"
+                    stringResource(
+                        id = R.string.product_update_stock_status_current_status_single,
+                        stockStatusInfos.firstOrNull()?.stockStatus?.value ?: "unknown"
+                    )
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -84,9 +92,20 @@ private fun UpdateProductStockStatusScreen(
 
             Text(
                 text = buildString {
-                    append("Stock status will be updated for $productsToUpdateCount products.")
+                    append(
+                        stringResource(
+                            id = R.string.product_update_stock_status_update_count,
+                            productsToUpdateCount
+                        )
+                    )
                     if (ignoredProductsCount > 0) {
-                        append(" $ignoredProductsCount products with managed stock quantity will be ignored.")
+                        append(" ")
+                        append(
+                            stringResource(
+                                id = R.string.product_update_stock_status_ignored_count,
+                                ignoredProductsCount
+                            )
+                        )
                     }
                 },
                 modifier = Modifier

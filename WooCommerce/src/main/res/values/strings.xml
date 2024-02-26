@@ -4063,4 +4063,11 @@
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See Report</string>
+
+    <string name="product_update_stock_status_title">Update Stock Status</string>
+    <string name="product_update_stock_status_done">DONE</string>
+    <string name="product_update_stock_status_current_status_mixed">Current stock statuses are mixed</string>
+    <string name="product_update_stock_status_current_status_single">Current stock status is %1$s</string>
+    <string name="product_update_stock_status_update_count">Stock status will be updated for %1$d products.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d products with managed stock quantity will be ignored.</string>
 </resources>
