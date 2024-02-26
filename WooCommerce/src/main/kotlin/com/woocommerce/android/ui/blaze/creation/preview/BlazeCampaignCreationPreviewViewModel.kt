@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
 import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.Location
@@ -52,6 +53,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         initialValue = null,
         clazz = CampaignDetails::class.java
     )
+    private var aiSuggestions: List<AiSuggestionForAd> = emptyList()
 
     private val adDetailsState = savedStateHandle.getStateFlow(viewModelScope, AdDetailsUiState.LOADING)
     private val dialogState = MutableStateFlow<DialogState?>(null)
@@ -101,7 +103,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     tagLine = it.tagLine,
                     description = it.description,
                     campaignImage = it.campaignImage,
-                    aiSuggestions = it.aiSuggestionsForAd
+                    aiSuggestions = aiSuggestions
                 )
             )
         }
@@ -193,10 +195,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     private fun isAiContentUsedForAd(): Boolean =
-        campaignDetails.value?.aiSuggestionsForAd?.any {
+        aiSuggestions.any {
             it.tagLine == campaignDetails.value?.tagLine &&
                 it.description == campaignDetails.value?.description
-        } ?: false
+        }
 
     private fun loadData() {
         launch {
@@ -214,9 +216,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     it?.copy(
                         tagLine = suggestions?.firstOrNull()?.tagLine.orEmpty(),
                         description = suggestions?.firstOrNull()?.description.orEmpty(),
-                        aiSuggestionsForAd = suggestions.orEmpty()
                     )
                 }
+                aiSuggestions = suggestions.orEmpty()
             }
         }
     }

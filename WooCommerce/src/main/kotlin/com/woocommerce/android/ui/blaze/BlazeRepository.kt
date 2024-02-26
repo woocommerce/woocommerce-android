@@ -155,8 +155,7 @@ class BlazeRepository @Inject constructor(
             destinationParameters = DestinationParameters(
                 targetUrl = product.permalink,
                 parameters = emptyMap()
-            ),
-            aiSuggestionsForAd = emptyList()
+            )
         )
     }
 
@@ -321,7 +320,6 @@ class BlazeRepository @Inject constructor(
         val budget: Budget,
         val targetingParameters: TargetingParameters,
         val destinationParameters: DestinationParameters,
-        val aiSuggestionsForAd: List<AiSuggestionForAd>
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {
