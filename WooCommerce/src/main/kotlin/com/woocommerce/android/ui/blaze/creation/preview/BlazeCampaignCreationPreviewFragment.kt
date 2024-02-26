@@ -72,7 +72,8 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                             productId = event.productId,
                             tagline = event.tagLine,
                             description = event.description,
-                            adImage = event.campaignImage
+                            adImage = event.campaignImage,
+                            aiSuggestionsForAd = event.aiSuggestions.toTypedArray()
                         )
                 )
 

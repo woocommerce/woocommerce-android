@@ -614,6 +614,9 @@ class AnalyticsTracker private constructor(
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
+        const val KEY_BLAZE_DURATION = "duration"
+        const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
+        const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
