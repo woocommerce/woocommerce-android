@@ -48,12 +48,17 @@ class UpdateProductStockStatusViewModel @Inject constructor(
             val productsToUpdateCount = stockStatusInfos.count { !it.manageStock }
             val ignoredProductsCount = stockStatusInfos.size - productsToUpdateCount
 
+            val statusFrequency = stockStatusInfos.groupingBy { it.stockStatus }.eachCount()
+            val mostFrequentStatus = statusFrequency.maxByOrNull { it.value }?.key ?: ProductStockStatus.InStock
+
+
             stockStatusUiState.update {
                 it.copy(
                     stockStatusInfos = stockStatusInfos,
                     isMixedStatus = isMixedStatus,
                     productsToUpdateCount = productsToUpdateCount,
-                    ignoredProductsCount = ignoredProductsCount
+                    ignoredProductsCount = ignoredProductsCount,
+                    initialProductStockStatus = mostFrequentStatus
                 )
             }
         }
@@ -64,7 +69,8 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         val isMixedStatus: Boolean = false,
         val productsToUpdateCount: Int = 0,
         val ignoredProductsCount: Int = 0,
-        val updateResult: RequestResult? = null
+        val updateResult: RequestResult? = null,
+        val initialProductStockStatus: ProductStockStatus = ProductStockStatus.InStock
     )
 
     data class ProductStockStatusInfo(
