@@ -125,34 +125,26 @@ fun StockStatusDropdown(
     initialProductStockStatus: ProductStockStatus,
     onSelectionChanged: (ProductStockStatus) -> Unit
 ) {
-    // Define the list of all possible stock status options
     val stockStatusOptions = listOf(
         ProductStockStatus.InStock,
         ProductStockStatus.OutOfStock,
         ProductStockStatus.OnBackorder,
         ProductStockStatus.InsufficientStock
-        // Do not include custom statuses
     )
 
-    // Map each ProductStockStatus to its display string
-    val displayableOptions = stockStatusOptions.map { status ->
-        stringResource(id = status.stringResource)
+    val displayStringToStatusMap = stockStatusOptions.associateBy {
+        stringResource(id = it.stringResource)
     }
 
-    // Find the display string for the initialProductStockStatus
     val initialStatusDisplayString = stringResource(id = initialProductStockStatus.stringResource)
 
-    // Use the WcExposedDropDown composable with the mapped display strings
     WcExposedDropDown(
-        items = displayableOptions.toTypedArray(),
+        items = displayStringToStatusMap.keys.toTypedArray(),
         onSelected = { selectedString ->
-            val selectedStatus = stockStatusOptions.first {
-                stringResource(id = it.stringResource) == selectedString
-            }
-            onSelectionChanged(selectedStatus)
+            displayStringToStatusMap[selectedString]?.let { onSelectionChanged(it) }
         },
         currentValue = initialStatusDisplayString,
-        mapper = { it } // The display string is already prepared for display
+        mapper = { it }
     )
 }
 
@@ -169,6 +161,7 @@ private fun UpdateProductStockStatusSingleStatusPreview() {
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
             updateResult = null,
+            initialProductStockStatus = ProductStockStatus.InStock,
             onStockStatusChanged = { _, _ -> },
             onNavigationUpClicked = { },
             onUpdateClicked = { }
@@ -190,6 +183,7 @@ private fun UpdateProductStockStatusMixedStatusPreview() {
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
             updateResult = null,
+            initialProductStockStatus = ProductStockStatus.InStock,
             onStockStatusChanged = { _, _ -> },
             onNavigationUpClicked = { },
             onUpdateClicked = { }
@@ -211,6 +205,7 @@ private fun UpdateProductStockStatusIgnoredProductsPreview() {
             productsToUpdateCount = 1,
             ignoredProductsCount = 1,
             updateResult = null,
+            initialProductStockStatus = ProductStockStatus.InStock,
             onStockStatusChanged = { _, _ -> },
             onNavigationUpClicked = { },
             onUpdateClicked = { }
