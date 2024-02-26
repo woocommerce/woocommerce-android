@@ -50,7 +50,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
 
             stockStatusUiState.update {
                 it.copy(
-                    stockStatuses = stockStatusInfos.map { it.stockStatus },
+                    stockStatusInfos = stockStatusInfos,
                     isMixedStatus = isMixedStatus,
                     productsToUpdateCount = productsToUpdateCount,
                     ignoredProductsCount = ignoredProductsCount
@@ -60,7 +60,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     }
 
     data class UpdateStockStatusUiState(
-        val stockStatuses: List<ProductStockStatus> = emptyList(),
+        val stockStatusInfos: List<ProductStockStatusInfo> = emptyList(),
         val isMixedStatus: Boolean = false,
         val productsToUpdateCount: Int = 0,
         val ignoredProductsCount: Int = 0,
