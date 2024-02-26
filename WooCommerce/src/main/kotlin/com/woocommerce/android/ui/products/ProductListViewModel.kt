@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STOCK_STATUS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
@@ -680,6 +681,17 @@ class ProductListViewModel @Inject constructor(
         triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
     }
 
+    fun onBulkUpdateStockStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STOCK_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        triggerEvent(ProductListEvent.ShowProductUpdateStockStatusScreen(selectedProductsRemoteIds))
+    }
+
     fun isSquarePluginActive(): Boolean {
         val plugin = wooCommerceStore.getSitePlugin(
             site = selectedSite.get(),
@@ -726,7 +738,7 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
-        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+        data class ShowProductUpdateStockStatusScreen(val productsIds: List<Long>) : ProductListEvent()
         sealed class ShowUpdateDialog : ProductListEvent() {
             abstract val productsIds: List<Long>
 
@@ -739,6 +751,8 @@ class ProductListViewModel @Inject constructor(
             val newPosition: Int,
             val sharedView: View?
         ) : ProductListEvent()
+
+        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }

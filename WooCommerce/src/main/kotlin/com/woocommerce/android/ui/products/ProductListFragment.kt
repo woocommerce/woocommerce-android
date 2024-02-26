@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
@@ -351,9 +352,15 @@ class ProductListFragment :
                         }
                     )
                 }
+
+                is ShowProductUpdateStockStatusScreen -> showProductUpdateStockStatusScreen(event.productsIds)
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
+        TODO("Not yet implemented")
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
@@ -695,6 +702,11 @@ class ProductListFragment :
 
             R.id.menu_select_all -> {
                 productListViewModel.onSelectAllProductsClicked()
+                true
+            }
+
+            R.id.menu_update_stock_status -> {
+                productListViewModel.onBulkUpdateStockStatusClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
 
