@@ -230,6 +230,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoCustomerNote.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {
+            binding.customerInfoCustomerNote.binding.notEmptyLabel.setClickableParent(
+                binding.customerInfoCustomerNoteSection
+            )
+
             binding.customerInfoCustomerNoteSection.setOnClickListener {
                 val action =
                     OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
