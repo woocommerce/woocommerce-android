@@ -21,10 +21,13 @@ class TabletLayoutSetupHelper @Inject constructor(
     private lateinit var navHostFragment: NavHostFragment
 
     fun onViewCreated(screen: Screen) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
-
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
+
+        if (isTabletLogicNeeded()) {
+            initNavFragment(screen.secondPaneNavigation)
+            adjustUIForScreenSize(screen.twoPaneLayoutGuideline)
+        }
     }
 
     fun onItemClicked(
@@ -40,13 +43,6 @@ class TabletLayoutSetupHelper @Inject constructor(
         } else {
             navigateWithPhoneNavigation()
         }
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
-        if (!isTabletLogicNeeded()) return
-
-        initNavFragment(screen!!.secondPaneNavigation)
-        adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
