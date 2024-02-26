@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.ProductStockStatusInfo
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -282,4 +283,26 @@ class ProductListRepository @Inject constructor(
                 RequestResult.SUCCESS
             }
         }
+    suspend fun fetchStockStatuses(productIds: List<Long>): List<ProductStockStatusInfo> =
+        withContext(dispatchers.io) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), productIds).map { wcProductModel ->
+                ProductStockStatusInfo(
+                    productId = wcProductModel.remoteProductId,
+                    stockStatus = ProductStockStatus.fromString(wcProductModel.stockStatus),
+                    manageStock = wcProductModel.manageStock
+                )
+            }
+        }
+
+    suspend fun bulkUpdateStockStatus(productIds: List<Long>, newStatus: ProductStockStatus): RequestResult =
+        withContext(dispatchers.io) {
+            val productsToUpdate = productStore.getProductsByRemoteIds(selectedSite.get(), productIds).filterNot {
+                it.manageStock
+            }.map {
+                it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+            }
+
+            return@withContext bulkUpdateProducts(productsToUpdate)
+        }
+
 }
