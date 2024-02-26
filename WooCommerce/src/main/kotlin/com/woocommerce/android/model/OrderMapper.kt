@@ -64,7 +64,8 @@ class OrderMapper @Inject constructor(
             isEditable = databaseEntity.isEditable,
             selectedGiftCard = databaseEntity.giftCardCode,
             giftCardDiscountedAmount = databaseEntity.giftCardAmount
-                .toBigDecimalOrNull() ?: BigDecimal.ZERO
+                .toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            shippingTax = databaseEntity.shippingTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
         )
     }
 

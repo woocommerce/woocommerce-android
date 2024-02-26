@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 09:54:04+0000
+Translation-Revision-Date: 2024-02-20 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">Terjadi kesalahan.\nKami tidak bisa membuat kampanye Anda.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Gagal mengambil detail gambar kampanye</string>
+    <string name="blaze_campaign_creation_error_media_upload">Gagal mengunggah gambar kampanye.</string>
+    <string name="blaze_campaign_creation_error_cancel">Batalkan kampanye</string>
+    <string name="blaze_campaign_creation_error_get_support">Dapatkan dukungan</string>
+    <string name="blaze_campaign_creation_error_help_hint">Silakan coba lagi atau hubungi dukungan untuk mendapatkan bantuan.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Error saat membuat kampanye</string>
+    <string name="blaze_campaign_creation_error_title">Error saat membuat kampanye</string>
+    <string name="blaze_campaign_creation_loading">Membuat kampanye</string>
+    <string name="blaze_campaign_created_success_done_button">Selesai</string>
+    <string name="blaze_campaign_created_success_description">Kami sedang meninjau kampanye Anda. Kampanye Anda akan aktif dalam waktu 24 jam. Masa menyenangkan untuk penjualan Anda sudah di depan mata!</string>
+    <string name="blaze_campaign_created_success_title">Semua Siap!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">Kunci sudah keluar</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">URL akhir terlalu panjang</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Nilai</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Kunci</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Tujuan: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Tambahkan parameter</string>
+    <string name="blaze_campaign_payment_added_successfully">Kartu kredit berhasil ditambahkan</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Tambahkan kartu baru</string>
+    <string name="blaze_campaign_payment_list_hint">Kartu kredit diambil dari akun WordPress.com berikut: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Semua transaksi aman dan terenkripsi</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Tambah kartu kredit</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Harap tambahkan metode pembayaran baru</string>
+    <string name="blaze_campaign_payment_list_screen_title">Metode pembayaran</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Gagal mengestimasi tayangan. Ulang?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Tambah</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Tambahkan slogan dan deskripsi untuk kampanye Blaze Anda</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Tambahkan Gambar</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Tambahkan gambar untuk kampanye Blaze</string>
+    <string name="drag_handle">Handle seret</string>
+    <string name="analytic_cards">Kartu Analitik</string>
+    <string name="manage_analytics">Kelola Analitik</string>
     <string name="see_report">Lihat Laporan</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Beranda situs</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">URL produk</string>
@@ -246,7 +279,7 @@ Language: id
     <string name="custom_amounts">Jumlah Kustom</string>
     <string name="product_details_blaze_card">Promosikan dengan Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">Saya mengerti</string>
-    <string name="blaze_campaign_ceation_celebration_message">Iklan telah dikirimkan untuk disetujui. Kami akan mengirimkan email konfirmasi umtuk Anda setelah iklan disetujui dan ditayangkan.</string>
+    <string name="blaze_campaign_ceation_celebration_message">Iklan telah dikirimkan untuk disetujui. Kami akan mengirimkan email konfirmasi untuk Anda setelah iklan disetujui dan ditayangkan.</string>
     <string name="blaze_campaign_creation_celebration_header">Semua sudah siap!</string>
     <string name="blaze_campaign_creation_intro_button">Mulai kampanye Blaze sekarang</string>
     <string name="blaze_campaign_creation_intro_benefit_4">Lacak performa, mulai, dan hentikan kampanye Blaze Anda kapan saja.</string>

@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 15:54:03+0000
+Translation-Revision-Date: 2024-02-20 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">יש בעיה כלשהי.\nלא הצלחנו ליצור את הקמפיין שלך.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">לא הייתה אפשרות להביא את פרטי התמונה של הקמפיין</string>
+    <string name="blaze_campaign_creation_error_media_upload">העלאת התמונה של הקמפיין נכשלה.</string>
+    <string name="blaze_campaign_creation_error_cancel">לבטל את הקמפיין</string>
+    <string name="blaze_campaign_creation_error_get_support">לקבל תמיכה</string>
+    <string name="blaze_campaign_creation_error_help_hint">יש לנסות שוב או לפנות לתמיכה לעזרה.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">שגיאת ביצירת הקמפיין</string>
+    <string name="blaze_campaign_creation_error_title">שגיאת ביצירת הקמפיין</string>
+    <string name="blaze_campaign_creation_loading">יוצר את הקמפיין</string>
+    <string name="blaze_campaign_created_success_done_button">סיימנו</string>
+    <string name="blaze_campaign_created_success_description">אנחנו בודקים את הקמפיין שלך. הוא יפורסם תוך 24 שעות. העתיד של המכירות שלך ורוד!</string>
+    <string name="blaze_campaign_created_success_title">מוכן לפעולה!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">המפתח כבר קיים</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">כתובת ה-URL הסופית ארוכה מדי</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">ערך</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">מפתח</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">יעד: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">להוסיף פרמטר</string>
+    <string name="blaze_campaign_payment_added_successfully">כרטיס האשראי נוסף בהצלחה</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">להוסיף כרטיס חדש</string>
+    <string name="blaze_campaign_payment_list_hint">כרטיסי אשראי מתקבלים מהחשבון הבא של WordPress.com: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">כל העסקאות מאובטחות ומוצפנות</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">להוסיף כרטיס אשראי</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">יש להוסיף אמצעי תשלום חדש</string>
+    <string name="blaze_campaign_payment_list_screen_title">אמצעי תשלום</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">לא הצלחנו לשער את הצפיות. לנסות שנית?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">להוסיף</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">יש להוסיף את תיאור קצר ותיאור מפורט לקמפיין של Blaze</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">להוסיף תמונה</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">יש להוסיף תמונה לקמפיין של Blaze</string>
+    <string name="drag_handle">לגרור את vידית</string>
+    <string name="analytic_cards">כרטיסי נתונים אנליטיים</string>
+    <string name="manage_analytics">לנהל נתונים אנליטיים</string>
     <string name="see_report">להציג את הדוח</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">עמוד הבית של האתר</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">כתובת ה-URL של המוצר</string>

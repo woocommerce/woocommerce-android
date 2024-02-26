@@ -1,17 +1,15 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.NavGraphOrdersDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
 import com.woocommerce.android.extensions.handleNotice
@@ -22,6 +20,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.DataLoadState.Error
@@ -43,8 +42,7 @@ class EditShippingLabelPaymentFragment :
     BaseFragment(
         R.layout.fragment_edit_shipping_label_payment
     ),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
@@ -61,20 +59,16 @@ class EditShippingLabelPaymentFragment :
     private lateinit var doneMenuItem: MenuItem
     private var progressDialog: CustomProgressDialog? = null
 
-    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
-        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
-    }
+    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentEditShippingLabelPaymentBinding.bind(view)
+        setupToolbar(binding)
         binding.paymentMethodsList.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = paymentMethodsAdapter
@@ -92,7 +86,24 @@ class EditShippingLabelPaymentFragment :
         setupResultHandlers()
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun setupToolbar(binding: FragmentEditShippingLabelPaymentBinding) {
+        binding.toolbar.title = getString(R.string.orderdetail_shipping_label_item_payment)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding.toolbar.menu.findItem(R.id.menu_done)
+        doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
+    }
+
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked()
@@ -189,7 +200,7 @@ class EditShippingLabelPaymentFragment :
             when (event) {
                 is AddPaymentMethod -> {
                     findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                        NavGraphOrdersDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
                             urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
                             title = getFragmentTitle()

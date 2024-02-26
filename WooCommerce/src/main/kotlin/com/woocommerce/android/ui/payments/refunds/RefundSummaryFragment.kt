@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.refunds
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -16,6 +17,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -38,6 +40,9 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
     private var _binding: FragmentRefundSummaryBinding? = null
     private val binding get() = _binding!!
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -47,9 +52,19 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentRefundSummaryBinding.bind(view)
-
+        setupToolbar()
         initializeViews()
         setupObservers()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            onRequestAllowBackPress()
+        }
     }
 
     override fun onDestroyView() {
@@ -87,6 +102,9 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             }
             new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) {
                 binding.refundSummaryRefundAmount.text = it
+                binding.toolbar.title = resources.getString(
+                    R.string.order_refunds_title_with_amount, it
+                )
             }
             new.previouslyRefunded?.takeIfNotEqualTo(old?.previouslyRefunded) {
                 binding.refundSummaryPreviouslyRefunded.text = it

@@ -179,6 +179,15 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     label = "${it.label} · ${it.ratePercent}%",
                     value = bigDecimalFormatter(BigDecimal(it.taxTotal))
                 )
+            } + if (shippingTax > BigDecimal.ZERO) {
+                listOf(
+                    TotalsSectionsState.Line.SimpleSmall(
+                        label = resourceProvider.getString(R.string.order_creation_payment_shipping_tax_label),
+                        value = bigDecimalFormatter(shippingTax)
+                    )
+                )
+            } else {
+                emptyList()
             } + TotalsSectionsState.Line.LearnMore(
                 text = taxBasedOnSettingLabel,
                 buttonText = resourceProvider.getString(R.string.learn_more),

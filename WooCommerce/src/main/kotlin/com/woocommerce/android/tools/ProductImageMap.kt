@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import java.lang.ref.WeakReference
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +28,7 @@ class ProductImageMap @Inject constructor(
         fun onProductFetched(remoteProductId: Long)
     }
 
-    private val observers: MutableList<WeakReference<OnProductFetchedListener>> = mutableListOf()
+    private val observers: MutableList<WeakReference<OnProductFetchedListener>> = CopyOnWriteArrayList()
 
     private val map by lazy {
         HashMap<Long, String>()
