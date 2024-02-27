@@ -407,7 +407,10 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
-                    TIMEOUT_ERROR -> handleTimeoutError(isRetry, isFirstInit)
+                    TIMEOUT_ERROR -> {
+                        val isFetchingFirstPage = pagedListWrapper.isFetchingFirstPage.value ?: false
+                        handleTimeoutError(isRetry, isFetchingFirstPage)
+                    }
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
