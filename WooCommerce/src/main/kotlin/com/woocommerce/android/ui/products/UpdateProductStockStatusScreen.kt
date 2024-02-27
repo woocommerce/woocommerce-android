@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -13,11 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -34,12 +35,12 @@ fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel)
         currentStockStatusState = uiState.currentStockStatusState,
         productsToUpdateCount = uiState.productsToUpdateCount,
         ignoredProductsCount = uiState.ignoredProductsCount,
-        updateResult = uiState.updateResult,
+//        updateResult = uiState.updateResult,
         initialProductStockStatus = uiState.initialProductStockStatus,
         onStockStatusChanged = { newStatus ->
             viewModel.updateStockStatusForProducts(newStatus)
         },
-        onNavigationUpClicked = { },
+        onNavigationUpClicked = { viewModel.onBackPressed() },
         onUpdateClicked = { }
     )
 }
@@ -49,7 +50,7 @@ private fun UpdateProductStockStatusScreen(
     currentStockStatusState: StockStatusState,
     productsToUpdateCount: Int,
     ignoredProductsCount: Int,
-    @Suppress("UNUSED_PARAMETER") updateResult: RequestResult?,
+//    @Suppress("UNUSED_PARAMETER") updateResult: RequestResult?,
     initialProductStockStatus: ProductStockStatus,
     onStockStatusChanged: (ProductStockStatus) -> Unit,
     onNavigationUpClicked: () -> Unit,
@@ -64,7 +65,7 @@ private fun UpdateProductStockStatusScreen(
                     TextButton(onClick = onUpdateClicked) {
                         Text(
                             text = stringResource(id = R.string.product_update_stock_status_done),
-                            color = MaterialTheme.colors.onPrimary
+                            color = MaterialTheme.colors.primary
                         )
                     }
                 }
@@ -72,29 +73,40 @@ private fun UpdateProductStockStatusScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { innerPadding ->
+        Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
         Column(modifier = Modifier.padding(innerPadding)) {
-            StockStatusDropdown(
-                initialProductStockStatus = initialProductStockStatus,
-                onSelectionChanged = { newStatus ->
-                    onStockStatusChanged(newStatus)
-                }
-            )
-
-            val statusMessage = when (currentStockStatusState) {
-                is Mixed ->
-                    stringResource(id = R.string.product_update_stock_status_current_status_mixed)
-
-                is Common -> stringResource(
-                    id = R.string.product_update_stock_status_current_status_single,
-                    currentStockStatusState.status.value
-                )
-            }
-            Text(
-                text = statusMessage,
+            Column(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 8.dp)
-            )
+            ) {
+                StockStatusDropdown(
+                    initialProductStockStatus = initialProductStockStatus,
+                    onSelectionChanged = { newStatus ->
+                        onStockStatusChanged(newStatus)
+                    }
+                )
+
+                val statusMessage = when (currentStockStatusState) {
+                    is Mixed ->
+                        stringResource(id = R.string.product_update_stock_status_current_status_mixed)
+
+                    is Common -> stringResource(
+                        id = R.string.product_update_stock_status_current_status_single,
+                        currentStockStatusState.status.value
+                    )
+                }
+                Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_25)))
+
+                Text(
+                    text = statusMessage,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(start = 12.dp),
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
             Divider()
 
@@ -118,8 +130,11 @@ private fun UpdateProductStockStatusScreen(
                 },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp)
+                    .padding(vertical = 12.dp)
             )
+
+            Divider()
+
         }
     }
 }
@@ -127,7 +142,8 @@ private fun UpdateProductStockStatusScreen(
 @Composable
 fun StockStatusDropdown(
     initialProductStockStatus: ProductStockStatus,
-    onSelectionChanged: (ProductStockStatus) -> Unit
+    onSelectionChanged: (ProductStockStatus) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val stockStatusOptions = listOf(
         ProductStockStatus.InStock,
@@ -151,7 +167,8 @@ fun StockStatusDropdown(
             displayStringToStatusMap[selectedString]?.let { onSelectionChanged(it) }
         },
         currentValue = initialStatusDisplayString,
-        mapper = { it }
+        mapper = { it },
+        modifier = modifier,
     )
 }
 
@@ -164,7 +181,7 @@ private fun UpdateProductStockStatusSingleStatusPreview() {
             currentStockStatusState = Common(ProductStockStatus.InStock),
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
-            updateResult = null,
+//            updateResult = null,
             initialProductStockStatus = ProductStockStatus.InStock,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
@@ -182,7 +199,7 @@ private fun UpdateProductStockStatusMixedStatusPreview() {
             currentStockStatusState = Mixed,
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
-            updateResult = null,
+//            updateResult = null,
             initialProductStockStatus = ProductStockStatus.InStock,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
@@ -200,7 +217,7 @@ private fun UpdateProductStockStatusIgnoredProductsPreview() {
             currentStockStatusState = Common(ProductStockStatus.OutOfStock),
             productsToUpdateCount = 1,
             ignoredProductsCount = 1,
-            updateResult = null,
+//            updateResult = null,
             initialProductStockStatus = ProductStockStatus.OutOfStock,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },

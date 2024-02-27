@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -33,12 +33,12 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         loadProductStockStatuses(navArgs.selectedProductIds.toList())
     }
 
-    fun updateStockStatusForProducts(newStatus: ProductStockStatus) {
+    fun updateStockStatusForProducts(@Suppress("UNUSED_PARAMETER") newStatus: ProductStockStatus) {
         viewModelScope.launch {
-            val result = productListRepository.bulkUpdateStockStatus(navArgs.selectedProductIds.toList(), newStatus)
-            stockStatusUiState.update { currentState ->
-                currentState.copy(updateResult = result)
-            }
+//            val result = productListRepository.bulkUpdateStockStatus(navArgs.selectedProductIds.toList(), newStatus)
+//            stockStatusUiState.update { currentState ->
+//              //  currentState.copy(updateResult = result)
+//            }
         }
     }
 
@@ -69,11 +69,14 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         }
     }
 
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     @Parcelize
     data class UpdateStockStatusUiState(
         val productsToUpdateCount: Int = 0,
         val ignoredProductsCount: Int = 0,
-        val updateResult: RequestResult? = null,
         val initialProductStockStatus: ProductStockStatus = ProductStockStatus.InStock,
         val currentStockStatusState: StockStatusState = StockStatusState.Mixed
     ) : Parcelable
