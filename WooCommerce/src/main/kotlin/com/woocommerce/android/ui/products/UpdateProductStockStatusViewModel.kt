@@ -31,46 +31,48 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         loadProductStockStatuses(navArgs.selectedProductIds.toList())
     }
 
-    fun updateStockStatusForProducts(newStatus: ProductStockStatus, productIds: List<Long>) {
+    fun updateStockStatusForProducts(newStatus: ProductStockStatus) {
         viewModelScope.launch {
-            val result = productListRepository.bulkUpdateStockStatus(productIds, newStatus)
+            val result = productListRepository.bulkUpdateStockStatus(navArgs.selectedProductIds.toList(), newStatus)
             stockStatusUiState.update { currentState ->
                 currentState.copy(updateResult = result)
             }
         }
     }
 
-    fun loadProductStockStatuses(productIds: List<Long>) {
+    private fun loadProductStockStatuses(productIds: List<Long>) {
         viewModelScope.launch {
             val stockStatusInfos = productListRepository.fetchStockStatuses(productIds)
             val distinctStatuses = stockStatusInfos.map { it.stockStatus }.distinct()
-            val isMixedStatus = distinctStatuses.size > 1
             val productsToUpdateCount = stockStatusInfos.count { !it.manageStock }
             val ignoredProductsCount = stockStatusInfos.size - productsToUpdateCount
 
             val statusFrequency = stockStatusInfos.groupingBy { it.stockStatus }.eachCount()
             val mostFrequentStatus = statusFrequency.maxByOrNull { it.value }?.key ?: ProductStockStatus.InStock
 
+            val stockStatusState = if (distinctStatuses.size > 1) {
+                StockStatusState.Mixed
+            } else {
+                StockStatusState.Common(distinctStatuses.firstOrNull() ?: ProductStockStatus.InStock)
+            }
 
             stockStatusUiState.update {
                 it.copy(
-                    stockStatusInfos = stockStatusInfos,
-                    isMixedStatus = isMixedStatus,
                     productsToUpdateCount = productsToUpdateCount,
                     ignoredProductsCount = ignoredProductsCount,
-                    initialProductStockStatus = mostFrequentStatus
+                    initialProductStockStatus = mostFrequentStatus,
+                    currentStockStatusState = stockStatusState
                 )
             }
         }
     }
 
     data class UpdateStockStatusUiState(
-        val stockStatusInfos: List<ProductStockStatusInfo> = emptyList(),
-        val isMixedStatus: Boolean = false,
         val productsToUpdateCount: Int = 0,
         val ignoredProductsCount: Int = 0,
         val updateResult: RequestResult? = null,
-        val initialProductStockStatus: ProductStockStatus = ProductStockStatus.InStock
+        val initialProductStockStatus: ProductStockStatus = ProductStockStatus.InStock,
+        val currentStockStatusState: StockStatusState = StockStatusState.Mixed
     )
 
     data class ProductStockStatusInfo(
@@ -78,4 +80,9 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         val stockStatus: ProductStockStatus,
         val manageStock: Boolean
     )
+
+    sealed class StockStatusState {
+        data object Mixed : StockStatusState()
+        data class Common(val status: ProductStockStatus) : StockStatusState()
+    }
 }
