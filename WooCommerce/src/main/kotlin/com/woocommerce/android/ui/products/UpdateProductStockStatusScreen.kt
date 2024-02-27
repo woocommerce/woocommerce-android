@@ -75,36 +75,34 @@ private fun UpdateProductStockStatusScreen(
     ) { innerPadding ->
         Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
         Column(modifier = Modifier.padding(innerPadding)) {
-            Column(
+
+            StockStatusDropdown(
+                initialProductStockStatus = initialProductStockStatus,
+                onSelectionChanged = { newStatus ->
+                    onStockStatusChanged(newStatus)
+                },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-            ) {
-                StockStatusDropdown(
-                    initialProductStockStatus = initialProductStockStatus,
-                    onSelectionChanged = { newStatus ->
-                        onStockStatusChanged(newStatus)
-                    }
-                )
+            )
 
-                val statusMessage = when (currentStockStatusState) {
-                    is Mixed ->
-                        stringResource(id = R.string.product_update_stock_status_current_status_mixed)
+            val statusMessage = when (currentStockStatusState) {
+                is Mixed ->
+                    stringResource(id = R.string.product_update_stock_status_current_status_mixed)
 
-                    is Common -> stringResource(
-                        id = R.string.product_update_stock_status_current_status_single,
-                        currentStockStatusState.status.value
-                    )
-                }
-                Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_25)))
-
-                Text(
-                    text = statusMessage,
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .padding(start = 12.dp),
-                    style = MaterialTheme.typography.subtitle2
+                is Common -> stringResource(
+                    id = R.string.product_update_stock_status_current_status_single,
+                    currentStockStatusState.status.value
                 )
             }
+            Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
+
+            Text(
+                text = statusMessage,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(start = 12.dp),
+                style = MaterialTheme.typography.subtitle2
+            )
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
