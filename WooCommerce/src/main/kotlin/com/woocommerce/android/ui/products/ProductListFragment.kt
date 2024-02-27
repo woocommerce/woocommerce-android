@@ -363,7 +363,7 @@ class ProductListFragment :
     }
 
     private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
-        val action = ProductListFragmentDirections.actionProductListFragmentToUpdateStockStatusFragment(
+        val action = ProductListFragmentDirections.actionProductListFragmentToUpdateProductStockStatusFragment(
             productRemoteIdsToUpdate.toLongArray()
         )
         findNavController().navigateSafely(action)

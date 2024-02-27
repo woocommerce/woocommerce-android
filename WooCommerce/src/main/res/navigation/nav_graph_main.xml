@@ -202,7 +202,7 @@
             android:id="@+id/action_productListFragment_to_scanToUpdateInventory"
             app:destination="@id/scanToUpdateInventory" />
         <action
-            android:id="@+id/action_productListFragmentToUpdateStockStatusFragment"
+            android:id="@+id/action_productListFragment_to_UpdateProductStockStatusFragment"
             app:destination="@id/updateStockStatusFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
