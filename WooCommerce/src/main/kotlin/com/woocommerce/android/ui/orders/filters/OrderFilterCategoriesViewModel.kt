@@ -194,12 +194,10 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private fun getProductFilterOptions(): List<OrderFilterOptionUiModel> {
         return listOfNotNull(
             orderFilterRepository.productFilter
-                ?.let { productRepository.getProduct(it) }
                 ?.let {
                     OrderFilterOptionUiModel(
-                        key = it.id.toString(),
-                        displayName = it.name,
-                        displayValue = it.name,
+                        key = it.toString(),
+                        displayName = getProductDisplayValueFrom(it),
                         isSelected = true
                     )
                 }
