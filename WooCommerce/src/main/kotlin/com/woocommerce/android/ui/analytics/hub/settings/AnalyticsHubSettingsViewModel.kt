@@ -111,6 +111,15 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             else card.copy(isEnabled = true)
         }
     }
+
+    fun onOrderChange(fromIndex: Int, toIndex: Int) {
+        draftConfiguration = draftConfiguration.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+            cardsConfiguration = draftConfiguration,
+            showDiscardDialog = false,
+            isSaveButtonEnabled = hasChanges()
+        )
+    }
 }
 
 @Parcelize
