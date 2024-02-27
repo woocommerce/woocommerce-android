@@ -1,13 +1,27 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+17.6
+-----
+
+
+17.5
+-----
+- [*] [Internal] As side effect of adding tablet support, toolbar on the product list screen is not collapsible anymore [https://github.com/woocommerce/woocommerce-android/pull/10844]
+- [*] [Internal] Added the "Shipping Tax" display in the order creation form to enhance tax detail visibility, ensuring comprehensive financial tracking. [https://github.com/woocommerce/woocommerce-android/pull/10794]
+
 17.4
 -----
+- [***] The Order Listing and Order Detail screens have been optimized for tablet use, showcasing a two-pane layout on such devices. [https://github.com/woocommerce/woocommerce-android/pull/10591]
 - [**] Added support to use third-party passkey providers and other devices passkeys as a WordPress.com login option [https://github.com/woocommerce/woocommerce-android/pull/10647]
 
 17.3
 -----
 
 
+
+17.3.1
+-----
+- [***] Fixed a critical bug causing a crash on Order Detail screen with WooCommerce v8.7.0.10. [https://github.com/woocommerce/woocommerce-android/pull/10871]
 17.3
 -----
 - [*] [Internal] Enhanced user experience in shipping label creation with automatic scrolling to the first invalid field upon form submission failure [https://github.com/woocommerce/woocommerce-android/pull/10657]

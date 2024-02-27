@@ -46,6 +46,12 @@
     <color name="color_text_link">@color/woo_pink_50</color>
 
     <!--
+        Color resource used to indicate selected state of an item
+    -->
+    <color name="woo_item_selected">@color/woo_purple_10</color>
+    <color name="color_item_selected">@color/woo_item_selected</color>
+
+    <!--
         Icon-related resources that use the surface color should be assigned
         this resource.
     -->

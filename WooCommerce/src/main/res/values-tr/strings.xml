@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 09:54:03+0000
+Translation-Revision-Date: 2024-02-20 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">Bir sorun var.\nKampanyanız oluşturulamadı.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Kampanya görseli detayları alınamadı</string>
+    <string name="blaze_campaign_creation_error_media_upload">Kampanya görseli yüklenemedi.</string>
+    <string name="blaze_campaign_creation_error_cancel">Kampanyayı iptal et</string>
+    <string name="blaze_campaign_creation_error_get_support">Destek al</string>
+    <string name="blaze_campaign_creation_error_help_hint">Lütfen tekrar deneyin veya yardım için destek ekibine başvurun.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Kampanya oluşturulurken hata oluştu</string>
+    <string name="blaze_campaign_creation_error_title">Kampanya oluşturulurken hata oluştu</string>
+    <string name="blaze_campaign_creation_loading">Kampanyanız oluşturuluyor</string>
+    <string name="blaze_campaign_created_success_done_button">Tamam</string>
+    <string name="blaze_campaign_created_success_description">Kampanyanızı inceliyoruz. 24 saat içinde kullanıma sunulacak. Önümüzdeki günlerde satışlarınızla ilgili harika gelişmeler olacak!</string>
+    <string name="blaze_campaign_created_success_title">Her şey hazır!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">Anahtar zaten mevcut</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">Son URL çok uzun</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Değer</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Anahtar</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Hedef: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Parametre ekle</string>
+    <string name="blaze_campaign_payment_added_successfully">Kredi kartı başarıyla eklendi</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Yeni kart ekle</string>
+    <string name="blaze_campaign_payment_list_hint">Kredi kartları şu WordPress.com hesabından alınır: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Tüm işlemler güvenli ve şifreli</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Kredi kartı ekle</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Lütfen yeni bir ödeme yöntemi ekleyin</string>
+    <string name="blaze_campaign_payment_list_screen_title">Ödeme yöntemi</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">İzlenimler tahmin edilemedi. Tekrar denensin mi?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Ekle</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Lütfen Blaze kampanyanıza bir slogan ve açıklama ekleyin</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Görsel Ekle</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Lütfen Blaze kampanyası için bir görsel ekleyin</string>
+    <string name="drag_handle">Tutamağı sürükleyin</string>
+    <string name="analytic_cards">Analiz Kartları</string>
+    <string name="manage_analytics">Analizleri Yönet</string>
     <string name="see_report">Raporu Göster</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Site ana sayfası</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">Ürün URL\'si</string>

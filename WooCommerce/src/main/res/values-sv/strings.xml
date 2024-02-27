@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 11:54:03+0000
+Translation-Revision-Date: 2024-02-19 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="blaze_campaign_creation_error_cancel">Avbryt kampanj</string>
+    <string name="blaze_campaign_creation_error_get_support">Skaffa support</string>
+    <string name="blaze_campaign_creation_error">Något är fel.\nVi kunde inte skapa din kampanj.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Det gick inte att hämta information om kampanjbilden</string>
+    <string name="blaze_campaign_creation_error_media_upload">Uppladdning av kampanjbild misslyckades.</string>
+    <string name="blaze_campaign_creation_error_help_hint">Försök igen eller kontakta supporten för hjälp.</string>
+    <string name="blaze_campaign_creation_loading">Skapar din kampanj</string>
+    <string name="blaze_campaign_created_success_done_button">Klar</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">Nyckeln finns redan</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Värde</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Nyckel</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Lägg till</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Lägg till bild</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Lägg till kreditkort</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Lägg till parameter</string>
+    <string name="blaze_campaign_payment_list_screen_title">Betalningsmetod</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Lägg till nytt kort</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Kampanjen kunde inte skapas</string>
+    <string name="blaze_campaign_creation_error_title">Kampanjen kunde inte skapas</string>
+    <string name="blaze_campaign_created_success_description">Vi granskar din kampanj. Den kommer att gå live inom 24 timmar. Spännande tider väntar för din försäljning.</string>
+    <string name="blaze_campaign_created_success_title">Allt är klart att köras.</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">Den sista URL:en är för lång</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destination: %s</string>
+    <string name="blaze_campaign_payment_added_successfully">Kreditkortet är nu tillagt</string>
+    <string name="blaze_campaign_payment_list_hint">Kreditkorten hämtas från följande WordPress.com-konto: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Alla transaktioner är säkra och krypterade</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Lägg till en ny betalningsmetod</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Det gick inte att uppskatta antalet visningar. Försök igen?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Lägg till en slogan och en beskrivning för din Blaze-kampanj</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Lägg till en bild till Blaze-kampanjen</string>
+    <string name="drag_handle">Draghandtag</string>
+    <string name="analytic_cards">Kort för analys</string>
+    <string name="manage_analytics">Hantera analyser</string>
     <string name="see_report">Se rapport</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Webbplatsens hem</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">Produktens URL</string>

@@ -3,12 +3,10 @@ package com.woocommerce.android.ui.orders.tracking
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -44,8 +42,7 @@ import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 @AndroidEntryPoint
 class AddOrderShipmentTrackingFragment :
     BaseFragment(R.layout.fragment_add_shipment_tracking),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
@@ -61,9 +58,7 @@ class AddOrderShipmentTrackingFragment :
     private var progressDialog: CustomProgressDialog? = null
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_shipment_tracking, container, false)
@@ -73,12 +68,27 @@ class AddOrderShipmentTrackingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         val binding = FragmentAddShipmentTrackingBinding.bind(view)
+        setupToolbar(binding)
         initUi(binding)
         setupObservers(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentAddShipmentTrackingBinding) {
+        binding.toolbar.inflateMenu(R.menu.menu_add)
+        binding.toolbar.title = getString(R.string.order_shipment_tracking_toolbar_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_gridicons_cross_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            if (onRequestAllowBackPress()) {
+                findNavController().navigateUp()
+            }
+        }
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
     }
 
     private fun setupObservers(binding: FragmentAddShipmentTrackingBinding) {
@@ -195,14 +205,7 @@ class AddOrderShipmentTrackingFragment :
         }
     }
 
-    /**
-     * Reusing the same menu used for adding order notes
-     */
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_add, menu)
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
                 activity?.let {

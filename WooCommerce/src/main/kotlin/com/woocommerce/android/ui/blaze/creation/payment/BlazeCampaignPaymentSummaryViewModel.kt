@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository,
-    currencyFormatter: CurrencyFormatter
+    currencyFormatter: CurrencyFormatter,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val budgetFormatted = currencyFormatter.formatCurrency(
@@ -116,14 +119,17 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
+                    analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
                 onFailure = {
                     val errorMessage = when (it) {
                         is BlazeRepository.CampaignCreationError.MediaUploadError ->
                             R.string.blaze_campaign_creation_error_media_upload
+
                         is BlazeRepository.CampaignCreationError.MediaFetchError ->
                             R.string.blaze_campaign_creation_error_media_fetch
+
                         else -> R.string.blaze_campaign_creation_error
                     }
                     campaignCreationState.value = CampaignCreationState.Failed(errorMessage)

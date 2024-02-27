@@ -65,7 +65,8 @@ fun BlazeCampaignCreationIntroScreen(
     WooThemeWithBackground {
         BlazeCampaignCreationIntroScreen(
             onContinueClick = viewModel::onContinueClick,
-            onDismissClick = viewModel::onDismissClick
+            onDismissClick = viewModel::onDismissClick,
+            onLearnMoreClick = viewModel::onLearnMoreClick
         )
     }
 }
@@ -74,7 +75,8 @@ fun BlazeCampaignCreationIntroScreen(
 @Composable
 fun BlazeCampaignCreationIntroScreen(
     onContinueClick: () -> Unit,
-    onDismissClick: () -> Unit
+    onDismissClick: () -> Unit,
+    onLearnMoreClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -109,6 +111,7 @@ fun BlazeCampaignCreationIntroScreen(
                 onContinueClick = onContinueClick,
                 onLearnMoreClick = {
                     coroutineScope.launch { modalSheetState.show() }
+                    onLearnMoreClick()
                 }
             )
         }
@@ -336,10 +339,12 @@ fun StepItem(currentStep: Int, steps: Int, text: AnnotatedString) {
             topStart = dimensionResource(id = R.dimen.minor_100),
             topEnd = dimensionResource(id = R.dimen.minor_100)
         )
+
         currentStep + 1 == steps -> RoundedCornerShape(
             bottomStart = dimensionResource(id = R.dimen.minor_100),
             bottomEnd = dimensionResource(id = R.dimen.minor_100)
         )
+
         else -> RoundedCornerShape(0.dp)
     }
 
@@ -369,7 +374,8 @@ private fun BlazeCampaignCreationIntroScreenPreview() {
     WooThemeWithBackground {
         BlazeCampaignCreationIntroScreen(
             onContinueClick = {},
-            onDismissClick = {}
+            onDismissClick = {},
+            onLearnMoreClick = {}
         )
     }
 }

@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -144,6 +146,46 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         verify(tracker, never()).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
+                AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
+                AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
+                AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
+            )
+        )
+    }
+
+    @Test
+    fun `given phone, when done button tapped, then track event with correct properties`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        verify(tracker, never()).track(
+            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_COMPACT,
+                AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
+                AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
+                AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
+            )
+        )
+    }
+
+    @Test
+    fun `given tablet, when done button tapped, then track event with correct properties`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        verify(tracker, never()).track(
+            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_REGULAR,
                 AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
                 AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
