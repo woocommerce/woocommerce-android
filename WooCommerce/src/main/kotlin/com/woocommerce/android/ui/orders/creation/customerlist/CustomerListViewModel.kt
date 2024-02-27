@@ -241,13 +241,14 @@ class CustomerListViewModel @Inject constructor(
         if (customers.isEmpty()) {
             val searchQuery = searchQuery
             val isSearchQueryEmail = stringUtils.isValidEmail(searchQuery)
-            val button = if (isSearchQueryEmail) {
-                Button(
+            val button = when {
+                !allowCustomerCreation -> null
+                isSearchQueryEmail -> Button(
                     R.string.order_creation_customer_search_empty_add_details_manually_with_email,
                     onClick = { onAddCustomerClicked(searchQuery) }
                 )
-            } else {
-                Button(
+
+                else -> Button(
                     R.string.order_creation_customer_search_empty_add_details_manually,
                     onClick = { onAddCustomerClicked(null) }
                 )
@@ -351,10 +352,10 @@ class CustomerListViewModel @Inject constructor(
         body = CustomerListViewState.CustomerList.Empty(
             R.string.order_creation_customer_search_empty_on_old_version_wcpay,
             R.drawable.img_search_suggestion,
-            button = Button(
+            button = if (allowCustomerCreation) Button(
                 R.string.order_creation_customer_search_empty_add_details_manually,
                 onClick = { onAddCustomerClicked(null) }
-            )
+            ) else null
         )
     )
 
