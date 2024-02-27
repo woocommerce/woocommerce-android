@@ -9,12 +9,16 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class UpdateProductStockStatusFragment : BaseFragment() {
     private val viewModel: UpdateProductStockStatusViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     companion object {
         const val UPDATE_STOCK_STATUS_DONE = "update_stock_status_done"
