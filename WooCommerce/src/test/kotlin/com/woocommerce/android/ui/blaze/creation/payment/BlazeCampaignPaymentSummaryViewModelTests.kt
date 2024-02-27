@@ -59,7 +59,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
                 campaignDetails = campaignDetails
             ).toSavedStateHandle(),
             blazeRepository = blazeRepository,
-            currencyFormatter = currencyFormatter
+            currencyFormatter = currencyFormatter,
+            analyticsTrackerWrapper = mock()
         )
     }
 

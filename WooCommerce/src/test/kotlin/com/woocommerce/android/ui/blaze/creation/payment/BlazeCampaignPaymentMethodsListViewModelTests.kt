@@ -32,7 +32,8 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
             ).toSavedStateHandle(),
             accountRepository = accountRepository,
             userAgent = mock(),
-            wpComWebViewAuthenticator = mock()
+            wpComWebViewAuthenticator = mock(),
+            analyticsTrackerWrapper = mock()
         )
     }
 
