@@ -10,10 +10,13 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -143,6 +146,12 @@ fun StockStatusDropdown(
     onSelectionChanged: (ProductStockStatus) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val dropdownFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        dropdownFocusRequester.requestFocus()
+    }
+
     val stockStatusOptions = listOf(
         ProductStockStatus.InStock,
         ProductStockStatus.OutOfStock,
@@ -167,6 +176,7 @@ fun StockStatusDropdown(
         currentValue = initialStatusDisplayString,
         mapper = { it },
         modifier = modifier,
+        focusRequester = dropdownFocusRequester
     )
 }
 
