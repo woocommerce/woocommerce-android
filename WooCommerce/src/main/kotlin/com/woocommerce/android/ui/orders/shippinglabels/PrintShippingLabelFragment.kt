@@ -65,7 +65,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.toolbar.title = getString(viewModel.screenTitle)
         binding.toolbar.setNavigationOnClickListener {
             when {
-                isTablet() -> onRequestAllowBackPress()
+                isTablet() -> navigateBack()
                 else -> (activity as? MainActivity)?.onBackPressed()
             }
         }
@@ -162,6 +162,10 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        return navigateBack()
+    }
+
+    private fun navigateBack(): Boolean {
         return if (navArgs.isReprint) {
             findNavController().popBackStack()
             true
