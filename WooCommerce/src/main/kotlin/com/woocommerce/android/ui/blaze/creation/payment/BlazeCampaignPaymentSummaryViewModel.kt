@@ -104,10 +104,10 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     }
 
     fun onSubmitCampaign() {
-        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
         if (campaignCreationState.value == CampaignCreationState.Loading) {
             return
         }
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
 
         launch {
             campaignCreationState.value = CampaignCreationState.Loading
