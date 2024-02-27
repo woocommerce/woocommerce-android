@@ -142,6 +142,7 @@ object ActivityUtils {
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
 
+    @Suppress("SwallowedException")
     fun isAppInstalled(context: Context, packageName: String): Boolean {
         return try {
             val pm = context.packageManager
