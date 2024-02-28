@@ -379,7 +379,9 @@ class OrderListViewModel @Inject constructor(
         isFirstInit: Boolean = false,
         shouldRetry: Boolean = false
     ) {
-        var loadingRetryHappenedOnce = false
+        // This flag is used to ensure that we only retry the first time a timeout happens
+        var noTimeoutHappened = true
+
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
         clearLiveDataSources(this.activePagedListWrapper)
@@ -415,14 +417,14 @@ class OrderListViewModel @Inject constructor(
                     }
                     TIMEOUT_ERROR -> {
                         when {
-                            shouldRetry && loadingRetryHappenedOnce.not() -> {
-                                loadingRetryHappenedOnce = true
+                            shouldRetry && noTimeoutHappened -> {
                                 triggerEvent(RetryLoadingOrders)
                             }
                             else -> viewState = viewState.copy(
                                 shouldDisplayTroubleshootingBanner = true
                             )
                         }
+                        noTimeoutHappened = false
                     }
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
