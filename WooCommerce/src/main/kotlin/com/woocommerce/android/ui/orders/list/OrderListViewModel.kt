@@ -381,6 +381,7 @@ class OrderListViewModel @Inject constructor(
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
+        var didLoadMore = false
         clearLiveDataSources(this.activePagedListWrapper)
 
         listenToEmptyViewStateLiveData(pagedListWrapper)
@@ -398,6 +399,7 @@ class OrderListViewModel @Inject constructor(
             _isEmpty.value = it
         }
         _isLoadingMore.addSource(pagedListWrapper.isLoadingMore) {
+            didLoadMore = true
             _isLoadingMore.value = it
         }
 
@@ -412,7 +414,7 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
-                    TIMEOUT_ERROR -> handleTimeoutError(shouldRetry)
+                    TIMEOUT_ERROR -> handleTimeoutError(shouldRetry && didLoadMore.not())
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
