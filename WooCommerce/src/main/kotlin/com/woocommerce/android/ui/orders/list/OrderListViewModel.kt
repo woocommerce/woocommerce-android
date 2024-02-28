@@ -254,7 +254,8 @@ class OrderListViewModel @Inject constructor(
      * options and payment gateways if the network is available.
      */
     fun fetchOrdersAndOrderDependencies() {
-        if (networkStatus.isConnected()) {
+        if (true) {
+        // if (networkStatus.isConnected()) {
             viewState = viewState.copy(isErrorFetchingDataBannerVisible = false)
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
@@ -374,7 +375,7 @@ class OrderListViewModel @Inject constructor(
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
         isFirstInit: Boolean = false,
-        isRetry: Boolean = true
+        shouldRetry: Boolean = false
     ) {
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
@@ -409,10 +410,7 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
-                    TIMEOUT_ERROR -> {
-                        val isFetchingFirstPage = pagedListWrapper.isFetchingFirstPage.value ?: false
-                        handleTimeoutError(isRetry, isFetchingFirstPage)
-                    }
+                    TIMEOUT_ERROR -> handleTimeoutError(shouldRetry)
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
@@ -425,13 +423,12 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private fun handleTimeoutError(isRetry: Boolean, isFirstInit: Boolean) {
+    private fun handleTimeoutError(shouldRetry: Boolean) {
         when {
-            isRetry && isFirstInit -> viewState = viewState.copy(
+            shouldRetry -> triggerEvent(RetryLoadingOrders)
+            else -> viewState = viewState.copy(
                 shouldDisplayTroubleshootingBanner = true
             )
-            isFirstInit -> triggerEvent(RetryLoadingOrders)
-            else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
         }
     }
 
