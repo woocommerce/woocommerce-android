@@ -257,8 +257,7 @@ class OrderListViewModel @Inject constructor(
      * options and payment gateways if the network is available.
      */
     fun fetchOrdersAndOrderDependencies() {
-        if (true) {
-        // if (networkStatus.isConnected()) {
+        if (networkStatus.isConnected()) {
             viewState = viewState.copy(isErrorFetchingDataBannerVisible = false)
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
