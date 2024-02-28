@@ -357,7 +357,6 @@ class ProductListFragment :
                 }
 
                 is ShowProductUpdateStockStatusScreen -> {
-                    actionMode?.finish()
                     showProductUpdateStockStatusScreen(event.productsIds)
                 }
                 else -> event.isHandled = false
@@ -467,6 +466,7 @@ class ProductListFragment :
 
         handleNotice(UpdateProductStockStatusFragment.UPDATE_STOCK_STATUS_DONE) {
             productListViewModel.onRefreshRequested()
+            productListViewModel.exitSelectionMode()
         }
     }
 

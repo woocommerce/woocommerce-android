@@ -470,7 +470,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    private fun exitSelectionMode() {
+    fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
             isAddProductButtonVisible = true,

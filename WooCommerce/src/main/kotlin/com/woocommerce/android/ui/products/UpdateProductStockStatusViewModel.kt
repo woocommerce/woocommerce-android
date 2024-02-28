@@ -69,7 +69,11 @@ class UpdateProductStockStatusViewModel @Inject constructor(
 
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
 
-            if (result == RequestResult.SUCCESS) triggerEvent(MultiLiveEvent.Event.Exit)
+            if (result == RequestResult.SUCCESS) {
+                triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
+            } else {
+                triggerEvent(MultiLiveEvent.Event.Exit)
+            }
         }
     }
 
