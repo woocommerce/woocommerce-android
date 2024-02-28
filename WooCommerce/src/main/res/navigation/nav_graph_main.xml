@@ -213,14 +213,14 @@
                 app:argType="long[]"/>
         </action>
     </fragment>
-    <fragment
+    <dialog
         android:id="@+id/updateStockStatusFragment"
         android:name="com.woocommerce.android.ui.products.UpdateProductStockStatusFragment"
         android:label="Update Stock Status">
         <argument
             android:name="selectedProductIds"
             app:argType="long[]"/>
-    </fragment>
+    </dialog>
     <fragment
         android:id="@+id/scanToUpdateInventory"
         android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
