@@ -1116,12 +1116,12 @@ platform :android do
   end
 
   #####################################################################################
-  # build_apk
+  # build_and_upload_prototype_build
   # -----------------------------------------------------------------------------------
-  # This lane builds an apk
+  # This lane builds a prototype build and uploads it to S3
   # -----------------------------------------------------------------------------------
   # Usage:
-  # bundle exec fastlane build_apk
+  # bundle exec fastlane build_and_upload_prototype_build
   #####################################################################################
   desc 'Builds an APK'
   lane :build_and_upload_prototype_build do |_options|
@@ -1188,7 +1188,7 @@ platform :android do
 
   # Creates a new GitHub Release for the given version
   #
-  # @param [Hash<String>] version The version to create. Expects keys "name" and "code"
+  # @param [String] version The version to create.
   # @param [Bool] prerelease If true, the GitHub Release will have the prerelease flag
   #
   private_lane :create_gh_release do |options|
