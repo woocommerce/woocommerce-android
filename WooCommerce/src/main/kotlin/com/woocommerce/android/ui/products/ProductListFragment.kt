@@ -251,7 +251,7 @@ class ProductListFragment :
         tracker?.onSaveInstanceState(outState)
         outState.putBoolean(
             TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
-            binding.detailNavContainer.isVisible && binding.productsRefreshLayout.isVisible
+            _binding?.detailNavContainer?.isVisible == true && _binding?.productsRefreshLayout?.isVisible == true
         )
         super.onSaveInstanceState(outState)
     }
