@@ -64,17 +64,17 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                 is UpdateStockStatusResult.Updated -> {
                     val snackText = R.string.product_update_stock_status_completed
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
-                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Success))
                 }
                 is UpdateStockStatusResult.Error -> {
                     val snackText = R.string.product_update_stock_status_error
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
-                    triggerEvent(MultiLiveEvent.Event.Exit)
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Error))
                 }
                 is UpdateStockStatusResult.IsManagedProducts -> {
                     val snackText = R.string.product_update_stock_status_managed_products
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
-                    triggerEvent(MultiLiveEvent.Event.Exit)
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Error))
                 }
             }
         }
@@ -136,5 +136,11 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         data object Updated : UpdateStockStatusResult()
         data object Error : UpdateStockStatusResult()
         data object IsManagedProducts : UpdateStockStatusResult()
+    }
+
+    @Parcelize
+    enum class UpdateStockStatusExitState : Parcelable {
+        Success,
+        Error
     }
 }

@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTablet
-import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -21,9 +21,8 @@ class UpdateProductStockStatusFragment : DialogFragment() {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: UpdateProductStockStatusViewModel by viewModels()
-
     companion object {
-        const val UPDATE_STOCK_STATUS_DONE = "update_stock_status_done"
+        const val UPDATE_STOCK_STATUS_EXIT_STATE_KEY = "update_stock_status_exit_state_key"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,13 +50,16 @@ class UpdateProductStockStatusFragment : DialogFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
-                    navigateBackWithNotice(
-                        UPDATE_STOCK_STATUS_DONE
+                    navigateBackWithResult(
+                        UPDATE_STOCK_STATUS_EXIT_STATE_KEY,
+                        event.data
                     )
                 }
+
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
+
                 else -> event.isHandled = false
             }
         }

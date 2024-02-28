@@ -28,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -51,6 +50,8 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment.Companion.UPDATE_STOCK_STATUS_EXIT_STATE_KEY
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
@@ -464,9 +465,17 @@ class ProductListFragment :
             )
         }
 
-        handleNotice(UpdateProductStockStatusFragment.UPDATE_STOCK_STATUS_DONE) {
-            productListViewModel.onRefreshRequested()
-            productListViewModel.exitSelectionMode()
+        handleResult<UpdateStockStatusExitState>(UPDATE_STOCK_STATUS_EXIT_STATE_KEY) { result ->
+            when (result) {
+                UpdateStockStatusExitState.Success -> {
+                    productListViewModel.onRefreshRequested()
+                    productListViewModel.exitSelectionMode()
+                }
+
+                UpdateStockStatusExitState.Error -> {
+                    productListViewModel.exitSelectionMode()
+                }
+            }
         }
     }
 
