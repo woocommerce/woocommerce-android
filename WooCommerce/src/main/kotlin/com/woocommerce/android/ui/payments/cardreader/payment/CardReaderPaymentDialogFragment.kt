@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -26,7 +25,6 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.orders.list.SelectedOrderTrackerViewModel
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
@@ -44,7 +42,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
-    private val selectedOrderTrackerViewModel: SelectedOrderTrackerViewModel by activityViewModels()
 
     @Inject
     lateinit var printHtmlHelper: PrintHtmlHelper
@@ -87,18 +84,12 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     event.receiptUrl,
                     event.documentName
                 )
-                InteracRefundSuccessful -> {
-                    navigateBackWithNotice(KEY_INTERAC_SUCCESS)
-                    selectedOrderTrackerViewModel.refreshOrders()
-                }
+                InteracRefundSuccessful -> navigateBackWithNotice(KEY_INTERAC_SUCCESS)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowSnackbarInDialog -> Snackbar.make(
                     requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
                 ).show()
-                is PlayChaChing -> {
-                    playChaChing()
-                    selectedOrderTrackerViewModel.refreshOrders()
-                }
+                is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
                 is EnableNfc -> openEnableNfcScreen()
                 is PurchaseCardReader -> openPurchaseCardReaderScreen(event.url)

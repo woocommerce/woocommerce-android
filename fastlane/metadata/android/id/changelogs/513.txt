@@ -1,0 +1,2 @@
+17.4:
+Kami senang dapat menyediakan dukungan untuk penyedia Passkey pihak ketiga. Dengan pembaruan ini, pengguna WordPress.com dapat mengelola keamanan akun secara lebih fleksibel dan mudah. Tak perlu menghafal kata sandi. Login lebih lancar dan aman.

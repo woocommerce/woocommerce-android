@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -76,6 +77,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         on { observeInterests() } doReturn flowOf(interests)
         on { observeLanguages() } doReturn flowOf(languages)
     }
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: BlazeCampaignCreationPreviewViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -87,7 +89,8 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
             ).toSavedStateHandle(),
             blazeRepository = blazeRepository,
             resourceProvider = resourceProvider,
-            currencyFormatter = currencyFormatter
+            currencyFormatter = currencyFormatter,
+            analyticsTrackerWrapper = analyticsTracker
         )
     }
 

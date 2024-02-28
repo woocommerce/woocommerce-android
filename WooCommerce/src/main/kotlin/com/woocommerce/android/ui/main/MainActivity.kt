@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.automattic.android.tracks.crashlogging.CrashLogging
@@ -1206,7 +1207,11 @@ class MainActivity :
                 remoteNoteId,
                 startPaymentsFlow
             ).toBundle()
-            navController.navigate(R.id.orderDetailFragment, bundle)
+            navController.navigate(
+                R.id.orderDetailFragment,
+                bundle,
+                navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+            )
         } ?: run {
             navController.navigateSafely(action)
         }

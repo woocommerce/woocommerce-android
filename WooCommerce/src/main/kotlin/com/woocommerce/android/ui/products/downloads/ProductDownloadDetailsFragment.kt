@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -18,11 +16,13 @@ import com.woocommerce.android.databinding.FragmentProductDownloadDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.AddFileAndExitEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.DeleteFileEvent
 import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModel.ProductDownloadDetailsEvent.UpdateFileAndExitEvent
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -33,8 +33,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDownloadDetailsFragment :
-    BaseFragment(R.layout.fragment_product_download_details), BackPressListener, MenuProvider {
+    BaseFragment(R.layout.fragment_product_download_details), BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private val viewModel: ProductDownloadDetailsViewModel by viewModels()
     private val parentViewModel: ProductDetailViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_products)
@@ -49,8 +52,20 @@ class ProductDownloadDetailsFragment :
 
         _binding = FragmentProductDownloadDetailsBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
+
+        setupTabletSecondPaneToolbar(
+            title = viewModel.screenTitle,
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    if (viewModel.onBackButtonClicked()) {
+                        findNavController().navigateUp()
+                    }
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -58,19 +73,19 @@ class ProductDownloadDetailsFragment :
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.menu.clear()
         if (navArgs.isEditing) {
-            inflater.inflate(R.menu.menu_product_download_details, menu)
+            toolbar.inflateMenu(R.menu.menu_product_download_details)
         } else {
-            inflater.inflate(R.menu.menu_done, menu)
+            toolbar.inflateMenu(R.menu.menu_done)
         }
 
-        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+        doneOrUpdateMenuItem = toolbar.menu.findItem(R.id.menu_done)
         doneOrUpdateMenuItem.isVisible = viewModel.showDoneButton
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneOrUpdateClicked()
@@ -166,10 +181,6 @@ class ProductDownloadDetailsFragment :
         if (::doneOrUpdateMenuItem.isInitialized) {
             doneOrUpdateMenuItem.isVisible = show
         }
-    }
-
-    override fun getFragmentTitle(): String {
-        return viewModel.screenTitle
     }
 
     override fun onRequestAllowBackPress(): Boolean {

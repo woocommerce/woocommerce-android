@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductQuantityRulesBinding
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
 import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,6 +29,16 @@ class ProductQuantityRulesFragment : BaseProductFragment(R.layout.fragment_produ
         _binding = FragmentProductQuantityRulesBinding.bind(view)
         viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
         initializeViews(navArgs.quantityRules)
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_quantity_rules_title),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductQuantityRules)
+                }
+            }
+        )
     }
 
     private fun onEventReceived(event: MultiLiveEvent.Event) {
@@ -42,8 +53,6 @@ class ProductQuantityRulesFragment : BaseProductFragment(R.layout.fragment_produ
         binding.maxQuantityValue.text = quantityRules.max?.toString() ?: getString(R.string.empty_max_quantity)
         binding.groupOfValue.text = quantityRules.groupOf?.toString() ?: getString(R.string.empty_group_of)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_quantity_rules_title)
 
     override fun onRequestAllowBackPress(): Boolean {
         viewModel.onBackButtonClicked(ExitProductQuantityRules)

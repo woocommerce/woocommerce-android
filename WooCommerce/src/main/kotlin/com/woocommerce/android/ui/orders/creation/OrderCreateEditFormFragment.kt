@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment.Companion.GIFT_CARD_RESULT
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -260,6 +261,7 @@ class OrderCreateEditFormFragment :
             Creation -> {
                 orderStatusView.visibility = View.GONE
             }
+
             is Edit -> {
                 orderStatusView.initView(
                     mode = OrderDetailOrderStatusView.Mode.OrderEdit,
@@ -1012,6 +1014,9 @@ class OrderCreateEditFormFragment :
         }
         handleResult<GiftCardResult>(GIFT_CARD_RESULT) { result ->
             viewModel.onGiftCardSelected(result.selectedGiftCard)
+        }
+        handleResult<Order.Customer>(CustomerListFragment.KEY_CUSTOMER_RESULT) {
+            viewModel.onCustomerEdited(it)
         }
     }
 

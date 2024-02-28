@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.blaze.creation.payment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYMENT_METHOD_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYMENT_METHOD_WEB_VIEW_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
@@ -21,7 +24,8 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
     private val userAgent: UserAgent,
-    private val wpComWebViewAuthenticator: WPComWebViewAuthenticator
+    private val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<BlazeCampaignPaymentMethodsListFragmentArgs>()
 
@@ -46,6 +50,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         },
         onAddPaymentMethodClicked = {
             _viewState.value = addPaymentMethodWebView()
+            analyticsTrackerWrapper.track(stat = BLAZE_CREATION_ADD_PAYMENT_METHOD_WEB_VIEW_DISPLAYED)
         },
         onDismiss = { triggerEvent(MultiLiveEvent.Event.Exit) }
     )
@@ -55,14 +60,16 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         userAgent = userAgent,
         wpComWebViewAuthenticator = wpComWebViewAuthenticator,
         onUrlLoaded = { url ->
-            if (url.startsWith(navArgs.paymentMethodsData.addPaymentMethodUrls.successUrl)) {
+            val urls = navArgs.paymentMethodsData.addPaymentMethodUrls
+            if (url.startsWith(urls.successUrl)) {
                 runCatching {
                     URL(url).query?.split("&")
-                        ?.firstOrNull { it.startsWith("payment_method_id=") }
+                        ?.firstOrNull { it.startsWith("${urls.idUrlParameter}=") }
                         ?.substringAfter("=")
                         .let { requireNotNull(it) }
                 }.fold(
                     onSuccess = { paymentMethodId ->
+                        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_ADD_PAYMENT_METHOD_SUCCESS)
                         triggerEvent(
                             MultiLiveEvent.Event.ShowSnackbar(
                                 R.string.blaze_campaign_payment_added_successfully

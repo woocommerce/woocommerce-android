@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -101,6 +102,7 @@ class OrderDetailFragment :
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
         private const val MARGINS_FOR_TABLET: Float = 0.1F
+        private const val MARGINS_FOR_SMALL_TABLET_PORTRAIT: Float = 0.025F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -229,11 +231,32 @@ class OrderDetailFragment :
     private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
 
     private fun setMarginsIfTablet() {
+        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
+        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
         if (isTablet()) {
-            val layoutParams = binding.skeletonView.layoutParams as FrameLayout.LayoutParams
             val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
-            layoutParams.marginStart = (windowWidth * MARGINS_FOR_TABLET).toInt()
-            layoutParams.marginEnd = (windowWidth * MARGINS_FOR_TABLET).toInt()
+            val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
+
+            if (isSmallTablet && isPortrait) {
+                val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
+                layoutParams.setMargins(
+                    marginHorizontal,
+                    layoutParams.topMargin,
+                    marginHorizontal,
+                    layoutParams.bottomMargin
+                )
+            } else {
+                val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
+                layoutParams.setMargins(
+                    marginHorizontal,
+                    layoutParams.topMargin,
+                    marginHorizontal,
+                    layoutParams.bottomMargin
+                )
+            }
+
+            binding.orderDetailContainer.layoutParams = layoutParams
         }
     }
 
@@ -254,7 +277,11 @@ class OrderDetailFragment :
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
             binding.toolbar.setNavigationOnClickListener {
-                findNavController().navigateUp()
+                if (!findNavController().popBackStack(R.id.orders, false)) {
+                    // in case the back stack is empty, indicating that the OrderDetailsFragment is shown in details pane
+                    // of the OrderListFragment, we need to propagate back press to the parent fragment manually.
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
         }
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)

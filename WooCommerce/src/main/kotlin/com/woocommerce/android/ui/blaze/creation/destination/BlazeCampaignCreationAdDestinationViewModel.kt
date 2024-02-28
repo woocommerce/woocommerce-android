@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.blaze.creation.destination
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -18,10 +20,12 @@ import javax.inject.Inject
 class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
-    productDetailRepository: ProductDetailRepository
+    productDetailRepository: ProductDetailRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
     private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId)).permalink
+    private val initialDestinationValues: ViewState
 
     private val _viewState = MutableStateFlow(
         ViewState(
@@ -35,7 +39,14 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
 
     val viewState = _viewState.asLiveData()
 
+    init {
+        initialDestinationValues = _viewState.value
+    }
+
     fun onBackPressed() {
+        if (initialDestinationValues != _viewState.value) {
+            analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED)
+        }
         triggerEvent(ExitWithResult(DestinationParameters(_viewState.value.targetUrl, _viewState.value.parameters)))
     }
 

@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
-        android:id="@+id/orderRefreshLayout"
+        android:id="@+id/listPaneContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -105,7 +105,7 @@
         android:orientation="vertical" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/detail_nav_container"
+        android:id="@+id/detailPaneContainer"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"

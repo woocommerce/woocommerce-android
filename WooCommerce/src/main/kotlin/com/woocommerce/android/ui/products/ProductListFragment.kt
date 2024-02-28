@@ -2,17 +2,12 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.MenuCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -43,6 +38,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
@@ -68,11 +64,7 @@ class ProductListFragment :
     TopLevelFragment(R.layout.fragment_product_list),
     ProductSortAndFilterListener,
     OnLoadMoreListener,
-    OnQueryTextListener,
-    OnActionExpandListener,
-    WCProductSearchTabView.ProductSearchTypeChangedListener,
     ActionMode.Callback,
-    MenuProvider,
     TabletLayoutSetupHelper.Screen {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
@@ -94,6 +86,9 @@ class ProductListFragment :
     @Inject
     lateinit var tabletLayoutSetupHelper: TabletLayoutSetupHelper
 
+    @Inject
+    lateinit var productListToolbar: ProductListToolbarHelper
+
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
         get() = _productAdapter!!
@@ -106,10 +101,6 @@ class ProductListFragment :
 
     private val skeletonView = SkeletonView()
 
-    private var searchMenuItem: MenuItem? = null
-    private var scanBarcodeMenuItem: MenuItem? = null
-    private var searchView: SearchView? = null
-
     private var trashProductUndoSnack: Snackbar? = null
     private var pendingTrashProductId: Long? = null
 
@@ -121,19 +112,23 @@ class ProductListFragment :
             feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
-    override val twoPaneLayoutGuideline by lazy { binding.twoPaneLayoutGuideline }
+    override val twoPaneLayoutGuideline
+        get() = binding.twoPaneLayoutGuideline
 
-    override val lifecycleKeeper: Lifecycle by lazy { viewLifecycleOwner.lifecycle }
+    override val lifecycleKeeper: Lifecycle
+        get() = viewLifecycleOwner.lifecycle
 
-    override val secondPaneNavigation by lazy {
-        TabletLayoutSetupHelper.Screen.Navigation(
+    override val secondPaneNavigation
+        get() = TabletLayoutSetupHelper.Screen.Navigation(
             childFragmentManager,
             R.navigation.nav_graph_products,
             ProductDetailFragmentArgs(
                 mode = ProductDetailFragment.Mode.Loading,
             ).toBundle()
         )
-    }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,12 +142,12 @@ class ProductListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         postponeEnterTransition()
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentProductListBinding.bind(view)
+
+        tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -183,16 +178,11 @@ class ProductListFragment :
         initAddProductFab(binding.addProductButton)
         addSelectionTracker()
 
-        when {
-            productListViewModel.isSearching() -> {
-                binding.productsSearchTabView.isVisible = true
-                binding.productsSearchTabView.show(this, productListViewModel.isSkuSearch())
-            }
-
-            else -> {
-                productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
-            }
+        if (!productListViewModel.isSearching()) {
+            productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
+
+        productListToolbar.onViewCreated(this, productListViewModel, binding)
     }
 
     private fun addSelectionTracker() {
@@ -230,12 +220,9 @@ class ProductListFragment :
 
     override fun onDestroyView() {
         skeletonView.hide()
-        disableSearchListeners()
-        searchView = null
         _productAdapter = null
         actionMode = null
         tracker = null
-        searchMenuItem = null
         binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
@@ -265,119 +252,6 @@ class ProductListFragment :
         }
 
         super.onViewStateRestored(savedInstanceState)
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_product_list_fragment, menu)
-
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getString(R.string.product_search_hint)
-        scanBarcodeMenuItem = menu.findItem(R.id.menu_scan_barcode)
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
-        refreshOptionsMenu()
-    }
-
-    /**
-     * Use this rather than invalidateOptionsMenu() since that collapses the search menu item
-     */
-    private fun refreshOptionsMenu() {
-        val showSearch = shouldShowSearchMenuItem()
-        searchMenuItem?.let { menuItem ->
-            if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
-
-            val isSearchActive = productListViewModel.viewStateLiveData.liveData.value?.isSearchActive == true
-            if (menuItem.isActionViewExpanded != isSearchActive) {
-                if (isSearchActive) {
-                    disableSearchListeners()
-                    menuItem.expandActionView()
-                    val queryHint = getSearchQueryHint()
-                    searchView?.queryHint = queryHint
-                    searchView?.setQuery(productListViewModel.viewStateLiveData.liveData.value?.query, false)
-                    enableSearchListeners()
-                }
-            }
-        }
-        scanBarcodeMenuItem?.isVisible = !productListViewModel.isSquarePluginActive()
-    }
-
-    private fun getSearchQueryHint(): String {
-        return if (productListViewModel.viewStateLiveData.liveData.value?.isFilteringActive == true) {
-            getString(R.string.product_search_hint_active_filters)
-        } else {
-            getString(R.string.product_search_hint)
-        }
-    }
-
-    /**
-     * Prevent search from appearing when a child fragment is active
-     */
-    private fun shouldShowSearchMenuItem(): Boolean {
-        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
-        return !isChildShowing
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_search -> {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
-                enableSearchListeners()
-                true
-            }
-
-            R.id.menu_scan_barcode -> {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
-                ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
-                    findNavController().navigate(it)
-                }
-                searchMenuItem?.collapseActionView()
-                true
-            }
-
-            else -> false
-        }
-    }
-
-    private fun disableSearchListeners() {
-        searchMenuItem?.setOnActionExpandListener(null)
-        searchView?.setOnQueryTextListener(null)
-    }
-
-    private fun enableSearchListeners() {
-        searchMenuItem?.setOnActionExpandListener(this)
-        searchView?.setOnQueryTextListener(this)
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        productListViewModel.onSearchRequested()
-        org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
-        return true
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        productListViewModel.onSearchQueryChanged(newText)
-        return true
-    }
-
-    override fun onProductSearchTypeChanged(isSkuSearch: Boolean) {
-        productListViewModel.onSearchTypeChanged(isSkuSearch)
-    }
-
-    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-        productListViewModel.onSearchOpened()
-        onSearchViewActiveChanged(isActive = true)
-        binding.productsSearchTabView.show(this)
-        return true
-    }
-
-    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-        productListViewModel.onSearchClosed()
-        updateActivityTitle()
-        onSearchViewActiveChanged(isActive = false)
-        binding.productsSearchTabView.hide()
-        return true
     }
 
     private fun setIsRefreshing(isRefreshing: Boolean) {
@@ -539,14 +413,12 @@ class ProductListFragment :
                 actionMode = (requireActivity() as AppCompatActivity)
                     .startSupportActionMode(this@ProductListFragment)
                 delayMultiSelection()
-                onListSelectionActiveChanged(isActive = true, expandToolbar = false)
                 enableProductsRefresh(false)
                 enableProductSortAndFiltersCard(false)
             }
 
             ProductListViewModel.ProductListState.Browsing -> {
                 actionMode?.finish()
-                onListSelectionActiveChanged(isActive = false, expandToolbar = !productListViewModel.isSearching())
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
             }
@@ -612,8 +484,6 @@ class ProductListFragment :
                 it.show()
             }
     }
-
-    override fun getFragmentTitle() = getString(R.string.products)
 
     override fun scrollToTop() {
         binding.productsRecycler.smoothScrollToPosition(0)
@@ -711,7 +581,7 @@ class ProductListFragment :
 
     private fun onProductClick(remoteProductId: Long, sharedView: View?) {
         if (shouldPreventDetailNavigation(remoteProductId)) return
-        disableSearchListeners()
+        productListToolbar.disableSearchListeners()
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)
