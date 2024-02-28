@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.reviews.ReviewListAdapter
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.reviews.ReviewModerationUi
 import com.woocommerce.android.ui.reviews.observeModerationStatus
 import com.woocommerce.android.ui.reviews.reviewList
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -60,7 +62,8 @@ class ProductReviewsFragment :
     private var _binding: FragmentReviewsListBinding? = null
     private val binding get() = _binding!!
 
-    override fun getFragmentTitle() = getString(R.string.product_reviews)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -107,6 +110,16 @@ class ProductReviewsFragment :
             }
         }
         setUnreadFilterChangedListener()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_reviews),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked()
+                }
+            }
+        )
     }
 
     private fun setupObservers() {

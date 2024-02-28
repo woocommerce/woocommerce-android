@@ -765,6 +765,8 @@
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contact using WhatsApp</string>
+    <string name="orderdetail_message_customer_using_telegram">Contact using Telegram</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>

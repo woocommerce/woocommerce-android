@@ -229,37 +229,39 @@ private fun AdDataSection(
                 .fillMaxWidth()
         )
 
-        Row(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.major_100))
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = drawable.ic_ai),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+        if (viewState.suggestions.size > 1) {
+            Row(
                 modifier = Modifier
-                    .size(dimensionResource(id = dimen.image_minor_80))
-                    .padding(end = dimensionResource(id = dimen.minor_100))
-            )
-            Text(
-                text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
-                style = MaterialTheme.typography.subtitle2,
-            )
-            Spacer(modifier = Modifier.weight(1f))
+                    .padding(top = dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = drawable.ic_ai),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+                    modifier = Modifier
+                        .size(dimensionResource(id = dimen.image_minor_80))
+                        .padding(end = dimensionResource(id = dimen.minor_100))
+                )
+                Text(
+                    text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Spacer(modifier = Modifier.weight(1f))
 
-            SuggestionButton(
-                onClick = onPreviousSuggestionTapped,
-                isEnabled = viewState.isPreviousSuggestionButtonEnabled,
-                icon = Filled.ArrowBackIosNew
-            )
-            SuggestionButton(
-                onClick = onNextSuggestionTapped,
-                isEnabled = viewState.isNextSuggestionButtonEnabled,
-                icon = Filled.ArrowForwardIos,
-                modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
-            )
+                SuggestionButton(
+                    onClick = onPreviousSuggestionTapped,
+                    isEnabled = viewState.isPreviousSuggestionButtonEnabled,
+                    icon = Filled.ArrowBackIosNew
+                )
+                SuggestionButton(
+                    onClick = onNextSuggestionTapped,
+                    isEnabled = viewState.isNextSuggestionButtonEnabled,
+                    icon = Filled.ArrowForwardIos,
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
+                )
+            }
         }
     }
 }

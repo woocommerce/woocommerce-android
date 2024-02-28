@@ -60,10 +60,11 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         userAgent = userAgent,
         wpComWebViewAuthenticator = wpComWebViewAuthenticator,
         onUrlLoaded = { url ->
-            if (url.startsWith(navArgs.paymentMethodsData.addPaymentMethodUrls.successUrl)) {
+            val urls = navArgs.paymentMethodsData.addPaymentMethodUrls
+            if (url.startsWith(urls.successUrl)) {
                 runCatching {
                     URL(url).query?.split("&")
-                        ?.firstOrNull { it.startsWith("payment_method_id=") }
+                        ?.firstOrNull { it.startsWith("${urls.idUrlParameter}=") }
                         ?.substringAfter("=")
                         .let { requireNotNull(it) }
                 }.fold(
