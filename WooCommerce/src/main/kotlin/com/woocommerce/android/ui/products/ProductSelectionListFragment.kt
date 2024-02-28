@@ -160,7 +160,7 @@ class ProductSelectionListFragment :
     }
 
     private fun onCreateMenu(toolbar: Toolbar) {
-        toolbar.inflateMenu(R.menu.menu_product_list_fragment)
+        toolbar.inflateMenu(R.menu.menu_product_selection_fragment)
 
         searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
