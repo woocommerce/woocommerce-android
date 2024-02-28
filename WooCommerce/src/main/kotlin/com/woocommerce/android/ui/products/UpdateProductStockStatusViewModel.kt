@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -61,18 +60,22 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                 currentState.copy(isProgressDialogVisible = false)
             }
 
-            val snackText = if (result == RequestResult.SUCCESS) {
-                R.string.product_update_stock_status_completed
-            } else {
-                R.string.product_update_stock_status_error
-            }
-
-            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
-
-            if (result == RequestResult.SUCCESS) {
-                triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
-            } else {
-                triggerEvent(MultiLiveEvent.Event.Exit)
+            when (result) {
+                is UpdateStockStatusResult.Updated -> {
+                    val snackText = R.string.product_update_stock_status_completed
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
+                }
+                is UpdateStockStatusResult.Error -> {
+                    val snackText = R.string.product_update_stock_status_error
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
+                    triggerEvent(MultiLiveEvent.Event.Exit)
+                }
+                is UpdateStockStatusResult.IsManagedProducts -> {
+                    val snackText = R.string.product_update_stock_status_managed_products
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
+                    triggerEvent(MultiLiveEvent.Event.Exit)
+                }
             }
         }
     }
@@ -127,5 +130,11 @@ class UpdateProductStockStatusViewModel @Inject constructor(
 
         @Parcelize
         data class Common(val status: ProductStockStatus) : StockStatusState()
+    }
+
+    sealed class UpdateStockStatusResult {
+        data object Updated : UpdateStockStatusResult()
+        data object Error : UpdateStockStatusResult()
+        data object IsManagedProducts : UpdateStockStatusResult()
     }
 }

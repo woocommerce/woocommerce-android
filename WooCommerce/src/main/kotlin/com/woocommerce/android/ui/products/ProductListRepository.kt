@@ -11,7 +11,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.ProductStockStatusInfo
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.*
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -294,15 +294,20 @@ class ProductListRepository @Inject constructor(
             }
         }
 
-    suspend fun bulkUpdateStockStatus(productIds: List<Long>, newStatus: ProductStockStatus): RequestResult =
+    suspend fun bulkUpdateStockStatus(productIds: List<Long>, newStatus: ProductStockStatus): UpdateStockStatusResult =
         withContext(dispatchers.io) {
-            val productsToUpdate = productStore.getProductsByRemoteIds(selectedSite.get(), productIds).filterNot {
-                it.manageStock
-            }.map {
+            val allProducts = productStore.getProductsByRemoteIds(selectedSite.get(), productIds)
+            val productsToUpdate = allProducts.filterNot { it.manageStock }.map {
                 it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
             }
 
-            return@withContext bulkUpdateProducts(productsToUpdate)
-        }
+            if (productsToUpdate.isEmpty() && allProducts.isNotEmpty()) {
+                return@withContext UpdateStockStatusResult.IsManagedProducts
+            }
 
+            return@withContext when (bulkUpdateProducts(productsToUpdate)) {
+                RequestResult.SUCCESS -> UpdateStockStatusResult.Updated
+                else -> UpdateStockStatusResult.Error
+            }
+        }
 }
