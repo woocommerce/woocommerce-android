@@ -5,6 +5,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PENDING
 import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 
 /**
  * Settings screen which enables choosing a product status
@@ -55,6 +57,16 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
             binding.btnPublishedPrivately.visibility = View.GONE
             binding.btnPublished.visibility = View.VISIBLE
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_status),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -87,8 +99,6 @@ class ProductStatusFragment : BaseProductSettingsFragment(R.layout.fragment_prod
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_status)
 
     private fun getButtonForStatus(status: String): CheckedTextView? {
         return when (ProductStatus.fromString(status)) {
