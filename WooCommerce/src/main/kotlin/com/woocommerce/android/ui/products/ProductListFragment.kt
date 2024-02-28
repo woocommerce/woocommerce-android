@@ -69,6 +69,7 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        private const val TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY = "non_root_navigation_in_detail_pane"
     }
 
     @Inject
@@ -114,7 +115,11 @@ class ProductListFragment :
 
     override val twoPaneLayoutGuideline
         get() = binding.twoPaneLayoutGuideline
-
+    override val listPaneContainer: View
+        get() = binding.productsRefreshLayout
+    override val detailPaneContainer: View
+        get() = binding.detailNavContainer
+    override var twoPanesWereShownBeforeConfigChange: Boolean = false
     override val lifecycleKeeper: Lifecycle
         get() = viewLifecycleOwner.lifecycle
 
@@ -147,6 +152,10 @@ class ProductListFragment :
 
         _binding = FragmentProductListBinding.bind(view)
 
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
         tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
@@ -240,6 +249,10 @@ class ProductListFragment :
 
     override fun onSaveInstanceState(outState: Bundle) {
         tracker?.onSaveInstanceState(outState)
+        outState.putBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            binding.detailNavContainer.isVisible && binding.productsRefreshLayout.isVisible
+        )
         super.onSaveInstanceState(outState)
     }
 

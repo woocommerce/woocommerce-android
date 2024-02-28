@@ -1,7 +1,9 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.constraintlayout.widget.Guideline
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -10,7 +12,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class TabletLayoutSetupHelper @Inject constructor(
@@ -25,9 +26,9 @@ class TabletLayoutSetupHelper @Inject constructor(
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
 
-        if (isTabletLogicNeeded()) {
+        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
             initNavFragment(screen.secondPaneNavigation)
-            adjustUIForScreenSize(screen.twoPaneLayoutGuideline)
+            adjustUIForScreenSize(screen)
         }
     }
 
@@ -67,29 +68,60 @@ class TabletLayoutSetupHelper @Inject constructor(
             .commit()
     }
 
-    private fun adjustUIForScreenSize(twoPaneLayoutGuideline: Guideline) {
-        when {
-            DisplayUtils.isTablet(context) -> {
-                twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
-            }
-
-            DisplayUtils.isXLargeTablet(context) -> {
-                twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
-            }
-
-            else -> twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
+    private fun adjustUIForScreenSize(screen: Screen) {
+        if (isTabletLogicNeeded()) {
+            adjustLayoutForTablet(screen)
+        } else {
+            adjustLayoutForNonTablet(screen)
         }
     }
 
+    private fun adjustLayoutForTablet(screen: Screen) {
+        val isSmallTablet = !context.resources.getBoolean(R.bool.is_at_least_720sw)
+        val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        if (isSmallTablet && isPortrait) {
+            screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+        } else {
+            screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        }
+        screen.listPaneContainer.visibility = View.VISIBLE
+        screen.detailPaneContainer.visibility = View.VISIBLE
+    }
+
+    private fun adjustLayoutForNonTablet(screen: Screen) {
+        if (screen.twoPanesWereShownBeforeConfigChange) {
+            displayDetailPaneOnly(screen)
+        } else {
+            displayListPaneOnly(screen)
+        }
+    }
+
+    private fun displayDetailPaneOnly(screen: Screen) {
+        screen.detailPaneContainer.visibility = View.VISIBLE
+        screen.twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
+        screen.listPaneContainer.visibility = View.GONE
+    }
+
+    private fun displayListPaneOnly(screen: Screen) {
+        screen.detailPaneContainer.visibility = View.GONE
+        screen.listPaneContainer.visibility = View.VISIBLE
+        screen.twoPaneLayoutGuideline.setGuidelinePercent(1f)
+    }
+
     private companion object {
-        const val TABLET_PANES_WIDTH_RATIO = 0.5F
-        const val XL_TABLET_PANES_WIDTH_RATIO = 0.33F
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
     }
 
     interface Screen {
         val twoPaneLayoutGuideline: Guideline
+        val listPaneContainer: View
+        val detailPaneContainer: View
         val secondPaneNavigation: Navigation
         val lifecycleKeeper: Lifecycle
+
+        val twoPanesWereShownBeforeConfigChange: Boolean
 
         data class Navigation(
             val fragmentManager: FragmentManager,
