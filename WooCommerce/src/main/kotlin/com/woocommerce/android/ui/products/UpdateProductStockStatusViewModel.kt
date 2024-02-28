@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UpdateProductStockStatusViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val productListRepository: ProductListRepository
+    private val productListRepository: ProductListRepository,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -49,6 +52,8 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     }
 
     fun updateStockStatusForProducts() {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_STOCK_STATUSES_UPDATE_DONE_TAPPED)
+
         viewModelScope.launch {
             val currentStatus = stockStatusUiState.value.currentProductStockStatus
             stockStatusUiState.update { currentState ->
