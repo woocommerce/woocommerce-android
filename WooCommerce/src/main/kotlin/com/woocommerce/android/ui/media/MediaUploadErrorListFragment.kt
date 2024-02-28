@@ -3,16 +3,22 @@ package com.woocommerce.android.ui.media
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMediaUploadErrorListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MediaUploadErrorListFragment : BaseFragment(R.layout.fragment_media_upload_error_list) {
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private val mediaUploadErrorListAdapter: MediaUploadErrorListAdapter by lazy {
         MediaUploadErrorListAdapter()
     }
@@ -29,6 +35,16 @@ class MediaUploadErrorListFragment : BaseFragment(R.layout.fragment_media_upload
         }
 
         setupObservers(viewModel)
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_downloadable_files_upload_failed),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     private fun setupObservers(viewModel: MediaUploadErrorListViewModel) {

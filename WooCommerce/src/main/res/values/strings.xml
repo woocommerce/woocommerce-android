@@ -138,7 +138,7 @@
     <string name="generic_string" translatable="false">%s</string>
     <string name="error_required_field">Required field</string>
     <string name="analytics">Analytics</string>
-    <string name="manage_analytics">Manage Analytics</string>
+    <string name="customize_analytics">Customize Analytics</string>
     <string name="analytic_cards">Analytic Cards</string>
     <string name="drag_handle">Drag handle</string>
     <string name="card">Card</string>
@@ -643,6 +643,9 @@
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
+    <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
+    <string name="customer_picker_guest">Guest</string>
 
     <!--
          Barcode Scanning
@@ -722,6 +725,9 @@
     <string name="orderfilters_default_filter_value">All</string>
     <string name="orderfilters_order_status_filter">Order Status</string>
     <string name="orderfilters_date_range_filter">Date Range</string>
+    <string name="orderfilters_product_filter">Product</string>
+    <string name="orderfilters_customer_filter">Customer</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
@@ -3846,6 +3852,10 @@
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Please add an image for the Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Add Image</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Please add a tagline and a description for your Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
 
     <!--
     Blaze campaign budget screen

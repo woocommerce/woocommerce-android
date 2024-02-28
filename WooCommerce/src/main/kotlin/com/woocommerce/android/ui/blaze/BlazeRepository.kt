@@ -7,8 +7,8 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -32,8 +32,7 @@ class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val productDetailRepository: ProductDetailRepository,
-    private val mediaFilesRepository: MediaFilesRepository,
-    private val timezoneProvider: TimezoneProvider,
+    private val mediaFilesRepository: MediaFilesRepository
 ) {
     companion object {
         private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
@@ -145,7 +144,6 @@ class BlazeRepository @Inject constructor(
 
         return CampaignDetails(
             productId = productId,
-            userTimeZone = timezoneProvider.deviceTimezone.displayName,
             tagLine = "",
             description = "",
             campaignImage = product.images.firstOrNull().let {
@@ -318,11 +316,10 @@ class BlazeRepository @Inject constructor(
         val productId: Long,
         val tagLine: String,
         val description: String,
-        val userTimeZone: String,
         val campaignImage: BlazeCampaignImage,
         val budget: Budget,
         val targetingParameters: TargetingParameters,
-        val destinationParameters: DestinationParameters
+        val destinationParameters: DestinationParameters,
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {
@@ -353,7 +350,10 @@ class BlazeRepository @Inject constructor(
     data class DestinationParameters(
         val targetUrl: String,
         val parameters: Map<String, String>
-    ) : Parcelable
+    ) : Parcelable {
+        val fullUrl: String
+            get() = parameters.joinToUrl(targetUrl)
+    }
 
     @Parcelize
     data class AiSuggestionForAd(

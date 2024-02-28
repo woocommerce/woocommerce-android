@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_collapseMode="pin"
+        tools:title="@string/app_name" />
+
+    <View
+        android:id="@+id/app_bar_divider"
+        style="@style/Woo.Divider"
+        android:layout_gravity="bottom" />
     <!--
         This container is necessary for displaying the loading skeleton
     -->

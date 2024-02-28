@@ -1,23 +1,14 @@
 package com.woocommerce.android.ui.products
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -54,7 +45,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
@@ -90,14 +80,12 @@ import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailFragment :
     BaseProductFragment(R.layout.fragment_product_detail),
-    OnGalleryImageInteractionListener,
-    MenuProvider {
+    OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
@@ -109,7 +97,7 @@ class ProductDetailFragment :
     private var productName = ""
         set(value) {
             field = value
-            updateActivityTitle()
+            toolbarHelper.updateTitle(value)
         }
 
     private var productId: Long = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID
@@ -117,31 +105,20 @@ class ProductDetailFragment :
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
+    @Inject
+    lateinit var toolbarHelper: ProductDetailsToolbarHelper
+
     private val skeletonView = SkeletonView()
 
     private var progressDialog: CustomProgressDialog? = null
     private var layoutManager: LayoutManager? = null
-    private var menu: Menu? = null
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
 
     override val activityAppBarStatus: AppBarStatus
-        get() {
-            val navigationIcon = if (findNavController().hasBackStackEntry(R.id.products)) {
-                R.drawable.ic_back_24dp
-            } else {
-                R.drawable.ic_gridicons_cross_24dp
-            }
-            return AppBarStatus.Visible(
-                navigationIcon = navigationIcon
-            )
-        }
-
-    private fun NavController.hasBackStackEntry(@IdRes destinationId: Int) = runCatching {
-        getBackStackEntry(destinationId)
-    }.isSuccess
+        get() = AppBarStatus.Hidden
 
     @Inject lateinit var crashLogging: CrashLogging
 
@@ -164,7 +141,8 @@ class ProductDetailFragment :
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)
 
         _binding = FragmentProductDetailBinding.bind(view)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
+        toolbarHelper.onViewCreated(this, viewModel, binding)
 
         ViewCompat.setTransitionName(
             binding.root,
@@ -342,10 +320,6 @@ class ProductDetailFragment :
         }
 
         observeEvents(viewModel)
-
-        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
-            menu?.updateOptions(it)
-        }
     }
 
     @Suppress("ComplexMethod")
@@ -353,7 +327,7 @@ class ProductDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                is RefreshMenu -> activity?.invalidateOptionsMenu()
+                is RefreshMenu -> toolbarHelper.setupToolbar()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(
                         KEY_PRODUCT_DETAIL_RESULT,
@@ -462,7 +436,7 @@ class ProductDetailFragment :
             )
         }
 
-        requireActivity().invalidateOptionsMenu()
+        toolbarHelper.setupToolbar()
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
@@ -493,85 +467,6 @@ class ProductDetailFragment :
         binding.addImageContainer.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
             viewModel.onAddImageButtonClicked()
-        }
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_product_detail_fragment, menu)
-    }
-
-    @SuppressLint("ResourceAsColor")
-    override fun onPrepareMenu(menu: Menu) {
-        // change the font color of the trash menu item to red, and only show it if it should be enabled
-        with(menu.findItem(R.id.menu_trash_product)) {
-            if (this == null) return@with
-            val title = SpannableString(this.title)
-            title.setSpan(
-                ForegroundColorSpan(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.woo_red_30
-                    )
-                ),
-                0,
-                title.length,
-                0
-            )
-            this.title = title
-        }
-
-        this.menu = menu
-        viewModel.menuButtonsState.value?.let {
-            menu.updateOptions(it)
-        }
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_publish -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onPublishButtonClicked()
-                true
-            }
-
-            R.id.menu_save_as_draft -> {
-                viewModel.onSaveAsDraftButtonClicked()
-                true
-            }
-
-            R.id.menu_share -> {
-                viewModel.onShareButtonClicked()
-                true
-            }
-
-            R.id.menu_save -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onSaveButtonClicked()
-                true
-            }
-
-            R.id.menu_view_product -> {
-                viewModel.onViewProductOnStoreLinkClicked()
-                true
-            }
-
-            R.id.menu_product_settings -> {
-                viewModel.onSettingsButtonClicked()
-                true
-            }
-
-            R.id.menu_duplicate -> {
-                viewModel.onDuplicateProduct()
-                true
-            }
-
-            R.id.menu_trash_product -> {
-                viewModel.onTrashButtonClicked()
-                true
-            }
-
-            else -> false
         }
     }
 
@@ -652,32 +547,6 @@ class ProductDetailFragment :
     override fun onGalleryAddImageClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewModel.onAddImageButtonClicked()
-    }
-
-    private fun Menu.updateOptions(state: MenuButtonsState) {
-        findItem(R.id.menu_save)?.isVisible = state.saveOption
-        findItem(R.id.menu_save_as_draft)?.isVisible = state.saveAsDraftOption
-        findItem(R.id.menu_view_product)?.isVisible = state.viewProductOption
-        findItem(R.id.menu_publish)?.apply {
-            isVisible = state.publishOption
-            if (state.saveOption) {
-                setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
-            } else {
-                setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            }
-        }
-        findItem(R.id.menu_share)?.apply {
-            isVisible = state.shareOption
-
-            setShowAsActionFlags(
-                if (state.showShareOptionAsActionWithText) {
-                    MenuItem.SHOW_AS_ACTION_IF_ROOM
-                } else {
-                    MenuItem.SHOW_AS_ACTION_NEVER
-                }
-            )
-        }
-        findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
     }
 
     override fun getFragmentTitle(): String = productName

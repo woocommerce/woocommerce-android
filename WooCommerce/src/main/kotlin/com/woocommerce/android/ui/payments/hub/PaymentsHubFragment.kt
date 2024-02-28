@@ -5,6 +5,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isInvisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
@@ -21,6 +22,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
@@ -41,6 +43,9 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun getFragmentTitle() = resources.getString(R.string.payments_hub_title)
     val viewModel: PaymentsHubViewModel by viewModels()
 
@@ -48,10 +53,21 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentPaymentsHubBinding.bind(view)
-
+        setupToolbar(binding)
         initViews(binding)
         observeEvents()
         observeViewState(binding)
+    }
+
+    private fun setupToolbar(binding: FragmentPaymentsHubBinding) {
+        binding.toolbar.title = resources.getString(R.string.payments_hub_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun initViews(binding: FragmentPaymentsHubBinding) {

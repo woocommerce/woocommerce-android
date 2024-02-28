@@ -5,6 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
@@ -20,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val blazeRepository: BlazeRepository
+    private val blazeRepository: BlazeRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
@@ -101,6 +107,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         if (campaignCreationState.value == CampaignCreationState.Loading) {
             return
         }
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
 
         launch {
             campaignCreationState.value = CampaignCreationState.Loading
@@ -110,16 +117,25 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
+                    analyticsTrackerWrapper.track(stat = BLAZE_CAMPAIGN_CREATION_SUCCESS)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
                 onFailure = {
                     val errorMessage = when (it) {
                         is BlazeRepository.CampaignCreationError.MediaUploadError ->
                             R.string.blaze_campaign_creation_error_media_upload
+
                         is BlazeRepository.CampaignCreationError.MediaFetchError ->
                             R.string.blaze_campaign_creation_error_media_fetch
+
                         else -> R.string.blaze_campaign_creation_error
                     }
+                    analyticsTrackerWrapper.track(
+                        stat = BLAZE_CAMPAIGN_CREATION_FAILED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_BLAZE_ERROR to it.message
+                        )
+                    )
                     campaignCreationState.value = CampaignCreationState.Failed(errorMessage)
                 }
             )

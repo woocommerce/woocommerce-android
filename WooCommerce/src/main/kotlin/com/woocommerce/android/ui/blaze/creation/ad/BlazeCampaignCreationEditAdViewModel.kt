@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
@@ -22,8 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
-    private val blazeRepository: BlazeRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val TAGLINE_MAX_LENGTH = 32
@@ -44,24 +47,29 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private fun loadSuggestions() {
         viewModelScope.launch {
-            val passedDetails = AiSuggestionForAd(navArgs.tagline, navArgs.description)
-            blazeRepository.fetchAdSuggestions(navArgs.productId).fold(
-                onSuccess = { suggestions ->
-                    _viewState.update {
-                        // add the passed details to the list of suggestions, and remove any duplicates
-                        it.copy(suggestions = listOf(passedDetails) + (suggestions - passedDetails))
-                    }
-                },
-                onFailure = {
-                    _viewState.update {
-                        it.copy(suggestions = listOf(passedDetails))
-                    }
+            val suggestions: List<AiSuggestionForAd> = navArgs.aiSuggestionsForAd.toList()
+            val index =
+                suggestions.indexOfFirst { it.tagLine == navArgs.tagline && it.description == navArgs.description }
+            if (index != -1) {
+                _viewState.update {
+                    _viewState.value.copy(
+                        suggestions = suggestions,
+                        suggestionIndex = index
+                    )
+                }
+            } else {
+                _viewState.update {
+                    _viewState.value.copy(
+                        suggestions = listOf(AiSuggestionForAd(navArgs.tagline, navArgs.description)) + suggestions,
+                        suggestionIndex = 0
+                    )
                 }
             )
         }
     }
 
     fun onNextSuggestionTapped() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED)
         _viewState.update {
             val index = it.suggestionIndex
             it.copy(suggestionIndex = index + 1)
@@ -69,6 +77,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onPreviousSuggestionTapped() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED)
         _viewState.update {
             val index = it.suggestionIndex
             it.copy(suggestionIndex = index - 1)
@@ -76,6 +85,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onSaveTapped() {
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_AD_SAVE_TAPPED)
         triggerEvent(
             ExitWithResult(
                 EditAdResult(
