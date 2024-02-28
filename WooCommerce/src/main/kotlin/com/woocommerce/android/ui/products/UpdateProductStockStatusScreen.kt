@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -104,12 +105,13 @@ private fun UpdateProductStockStatusScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(start = 12.dp),
-                style = MaterialTheme.typography.subtitle2
+                style = MaterialTheme.typography.subtitle2,
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
-            Divider()
+            Divider(color = colorResource(id = R.color.inverted_surface_overlay))
 
             Text(
                 text = buildString {
@@ -129,13 +131,14 @@ private fun UpdateProductStockStatusScreen(
                         )
                     }
                 },
+                style = MaterialTheme.typography.subtitle2,
+                color = colorResource(id = R.color.color_on_surface_disabled),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 12.dp)
             )
 
-            Divider()
-
+            Divider(color = colorResource(id = R.color.inverted_surface_overlay))
         }
     }
 }
