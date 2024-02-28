@@ -22,10 +22,9 @@ import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsCardViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
@@ -62,10 +61,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.HiddenState as ProductsHiddenDataState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(

@@ -7,10 +7,10 @@ import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 
 typealias SeeReportClickListener = (url: String) -> Unit

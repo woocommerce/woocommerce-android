@@ -27,7 +27,7 @@ import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
