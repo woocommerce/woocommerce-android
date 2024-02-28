@@ -16,6 +16,8 @@ org.gradle.jvmargs=-Xmx8g
 # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
 # org.gradle.parallel=true
 
+ksp.allow.all.target.configuration=false
+
 # Enables Gradle Build Cache - https://docs.gradle.org/current/userguide/build_cache.html
 org.gradle.caching=true
 

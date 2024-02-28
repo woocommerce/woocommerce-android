@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddons
 import com.woocommerce.android.ui.products.addons.AddonListAdapter
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.domain.Addon
@@ -42,6 +43,16 @@ class ProductAddonsFragment : BaseProductFragment(R.layout.fragment_product_addo
             .observe(viewLifecycleOwner) { addons ->
                 setupRecyclerViewWith(addons, viewModel.currencyCode)
             }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_add_ons_title),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductAddons)
+                }
+            }
+        )
     }
 
     private fun onEventReceived(event: MultiLiveEvent.Event) {

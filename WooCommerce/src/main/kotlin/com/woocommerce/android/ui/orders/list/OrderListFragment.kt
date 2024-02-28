@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,7 +10,6 @@ import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -18,6 +18,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
@@ -89,6 +90,7 @@ class OrderListFragment :
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
         private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
         private const val HANDLER_DELAY = 200L
     }
@@ -107,8 +109,6 @@ class OrderListFragment :
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
-
-    private var savedDestinationId: Int = -1
 
     override fun onStop() {
         snackBar?.dismiss()
@@ -153,7 +153,6 @@ class OrderListFragment :
         savedInstanceState?.let { bundle ->
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
-            savedDestinationId = savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1)
         }
         requireActivity().onBackPressedDispatcher.addCallback(
             this,
@@ -161,11 +160,22 @@ class OrderListFragment :
                 override fun handleOnBackPressed() {
                     selectedOrder.selectOrder(-1L)
                     if (isTablet()) {
-                        findNavController().popBackStack()
+                        if (!binding.detailPaneContainer.findNavController().popBackStack()) {
+                            findNavController().popBackStack()
+                        }
                     } else if (isSearching) {
                         handleSearchViewCollapse()
                     } else {
-                        findNavController().navigateUp()
+                        val result =
+                            _binding?.detailPaneContainer?.findNavController()?.navigateUp() ?: false
+                        if (!result && _binding?.listPaneContainer?.isVisible != true && !isTablet()) {
+                            // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
+                            // and now it's a single pane layout (phone), e.g. due to a configuration change.
+                            // In this case we need to switch panes – show the list pane instead of details pane.
+                            adjustUiForDeviceType(savedInstanceState)
+                        } else {
+                            findNavController().popBackStack()
+                        }
                     }
                 }
             }
@@ -204,8 +214,8 @@ class OrderListFragment :
         uiMessageResolver.anchorViewId = binding.createOrderButton.id
 
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
-        binding.orderRefreshLayout.apply {
+        ViewGroupCompat.setTransitionGroup(binding.listPaneContainer, true)
+        binding.listPaneContainer.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
@@ -216,7 +226,7 @@ class OrderListFragment :
 
         initObservers()
         initializeResultHandlers()
-        displayTwoPaneLayoutIfTablet(savedInstanceState)
+        adjustUiForDeviceType(savedInstanceState)
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
@@ -272,45 +282,46 @@ class OrderListFragment :
         return true // Return true to collapse the action view
     }
 
-    private fun displayTwoPaneLayoutIfTablet(savedInstanceState: Bundle?) {
+    private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
         if (isTablet()) {
             adjustLayoutForTablet()
         } else {
-            adjustLayoutForNonTablet()
+            adjustLayoutForNonTablet(savedInstanceState)
             savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
         }
     }
 
     private fun adjustLayoutForTablet() {
-        binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
+        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        if (isSmallTablet && isPortrait) {
+            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+        } else {
+            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        }
+        binding.listPaneContainer.visibility = View.VISIBLE
+        binding.detailPaneContainer.visibility = View.VISIBLE
     }
 
-    private fun adjustLayoutForNonTablet() {
-        if (savedDestinationId != -1) {
-            adjustLayoutForSinglePane()
+    private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
+            displayDetailPaneOnly()
         } else {
-            _binding?.detailNavContainer?.visibility = View.GONE
-            _binding?.orderRefreshLayout?.visibility = View.VISIBLE
-            _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
+            displayListPaneOnly()
         }
     }
 
-    private fun adjustLayoutForSinglePane() {
-        // Adjust the detail container to occupy the full width in single-pane mode (e.g., phone)
-        _binding?.detailNavContainer?.visibility = View.VISIBLE
-        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
-
-        // Adjust the order list view to be hidden in single-pane mode
-        _binding?.orderRefreshLayout?.visibility = View.GONE
+    private fun displayListPaneOnly() {
+        _binding?.detailPaneContainer?.visibility = View.GONE
+        _binding?.listPaneContainer?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
     }
 
-    private fun hideDetailPane(
-        detailContainer: NavHostFragment,
-        orderListViewLayoutParams: LinearLayout.LayoutParams
-    ) {
-        detailContainer.view?.visibility = View.GONE
-        orderListViewLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-        orderListViewLayoutParams.weight = 0f
+    private fun displayDetailPaneOnly() {
+        _binding?.detailPaneContainer?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
+        _binding?.listPaneContainer?.visibility = View.GONE
     }
 
     private fun initSwipeBehaviour() {
@@ -330,10 +341,9 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-        super.onSaveInstanceState(outState)
-        val navHostFragment = childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
-        val currentDestinationId = navHostFragment.navController.currentDestination?.id
         if (isTablet()) {
+            val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
+            val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
             outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
         }
     }
@@ -418,10 +428,6 @@ class OrderListFragment :
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
-        selectedOrder.refreshOrders.observe(viewLifecycleOwner) {
-            refreshOrders()
-        }
-
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
             viewModel.updateOrderSelectedStatus(
                 orderId = selectedOrder.selectedOrderId.value ?: -1,
@@ -437,7 +443,7 @@ class OrderListFragment :
         }
 
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
-            binding.orderRefreshLayout.isRefreshing = it == true
+            binding.listPaneContainer.isRefreshing = it == true
         }
 
         viewModel.isLoadingMore.observe(viewLifecycleOwner) {
@@ -462,8 +468,6 @@ class OrderListFragment :
                             openFirstOrder()
                         }, HANDLER_DELAY)
                     }
-
-                    viewModel.viewState.filterCount > 0 -> openFirstOrder()
                 }
             }
             updateOrderSelectedStatus()
@@ -474,7 +478,7 @@ class OrderListFragment :
             when (event) {
                 is ShowErrorSnack -> {
                     uiMessageResolver.showSnack(event.messageRes)
-                    binding.orderRefreshLayout.isRefreshing = false
+                    binding.listPaneContainer.isRefreshing = false
                 }
 
                 is ShowOrderFilters -> showOrderFilters()
@@ -512,7 +516,7 @@ class OrderListFragment :
                     ).also {
                         it.show()
                     }
-                    binding.orderRefreshLayout.isRefreshing = false
+                    binding.listPaneContainer.isRefreshing = false
                 }
 
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
@@ -560,12 +564,6 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
-                        val detailContainer = childFragmentManager.findFragmentById(
-                            R.id.detail_nav_container
-                        ) as NavHostFragment
-                        val orderListViewLayoutParams = binding.orderRefreshLayout.layoutParams
-                            as LinearLayout.LayoutParams
-                        hideDetailPane(detailContainer, orderListViewLayoutParams)
                     }
 
                     EmptyViewType.ORDER_LIST_FILTERED -> {
@@ -721,7 +719,7 @@ class OrderListFragment :
         }
         (activity as? MainNavigationRouter)?.run {
             val navHostFragment = if (isTablet()) {
-                childFragmentManager.findFragmentById(R.id.detail_nav_container) as NavHostFragment
+                childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
             } else {
                 null
             }
@@ -754,6 +752,10 @@ class OrderListFragment :
     override fun onQueryTextChange(newText: String): Boolean {
         // only display the order status list if the search query is empty
         if (newText.isEmpty()) {
+            if (searchQuery.isNotEmpty()) {
+                viewModel.loadOrders()
+            }
+
             searchQuery = ""
         }
 

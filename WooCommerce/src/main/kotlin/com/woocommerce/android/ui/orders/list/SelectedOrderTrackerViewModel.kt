@@ -25,14 +25,7 @@ class SelectedOrderTrackerViewModel @Inject constructor(
     private val _selectedOrderId = MutableLiveData<Long>()
     val selectedOrderId: LiveData<Long> = _selectedOrderId
 
-    private val _refreshOrders = MutableLiveData<Unit>()
-    val refreshOrders: LiveData<Unit> = _refreshOrders
-
     fun selectOrder(orderId: Long) {
         _selectedOrderId.value = orderId
-    }
-
-    fun refreshOrders() {
-        _refreshOrders.value = Unit
     }
 }

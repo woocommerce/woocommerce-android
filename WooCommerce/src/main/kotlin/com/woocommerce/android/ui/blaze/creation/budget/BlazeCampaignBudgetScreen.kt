@@ -65,10 +65,10 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onEditDurationTapped = viewModel::onEditDurationTapped,
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
             onBudgetUpdated = viewModel::onBudgetUpdated,
-            onCampaignDurationUpdated = viewModel::onCampaignDurationUpdated,
             onStartDateChanged = viewModel::onStartDateChanged,
             onBudgetChangeFinished = viewModel::onBudgetChangeFinished,
-            onUpdateTapped = viewModel::onUpdateTapped
+            onUpdateTapped = viewModel::onUpdateTapped,
+            onApplyDurationTapped = viewModel::onApplyDurationTapped
         )
     }
 }
@@ -81,10 +81,10 @@ private fun CampaignBudgetScreen(
     onEditDurationTapped: () -> Unit,
     onImpressionsInfoTapped: () -> Unit,
     onBudgetUpdated: (Float) -> Unit,
-    onCampaignDurationUpdated: (Int) -> Unit,
     onStartDateChanged: (Long) -> Unit,
     onBudgetChangeFinished: () -> Unit,
-    onUpdateTapped: () -> Unit
+    onUpdateTapped: () -> Unit,
+    onApplyDurationTapped: (Int) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -115,9 +115,11 @@ private fun CampaignBudgetScreen(
 
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
                             budgetUiState = state,
-                            onDurationChanged = { onCampaignDurationUpdated(it) },
                             onStartDateChanged = { onStartDateChanged(it) },
-                            onApplyTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                            onApplyTapped = {
+                                onApplyDurationTapped(it)
+                                coroutineScope.launch { modalSheetState.hide() }
+                            }
                         )
                     }
                 }
@@ -326,15 +328,14 @@ private fun ImpressionsInfoBottomSheet(
 @Composable
 private fun EditDurationBottomSheet(
     budgetUiState: BlazeCampaignBudgetViewModel.BudgetUiState,
-    onDurationChanged: (Int) -> Unit,
     onStartDateChanged: (Long) -> Unit,
-    onApplyTapped: () -> Unit,
+    onApplyTapped: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     if (showDatePicker) {
         DatePickerDialog(
-            currentDate = Date(budgetUiState.campaignStartDateMillis),
+            currentDate = Date(budgetUiState.confirmedCampaignStartDateMillis),
             onDateSelected = {
                 onStartDateChanged(it.time)
                 showDatePicker = false
@@ -369,7 +370,6 @@ private fun EditDurationBottomSheet(
             value = sliderPosition,
             valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
             onValueChange = { sliderPosition = it },
-            onValueChangeFinished = { onDurationChanged(sliderPosition.toInt()) },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
@@ -389,7 +389,7 @@ private fun EditDurationBottomSheet(
                     .clip(RoundedCornerShape(4.dp))
                     .background(colorResource(id = color.divider_color))
                     .padding(8.dp),
-                text = Date(budgetUiState.campaignStartDateMillis).formatToMMMddYYYY(),
+                text = Date(budgetUiState.bottomSheetCampaignStartDateMillis).formatToMMMddYYYY(),
                 style = MaterialTheme.typography.body1,
             )
         }
@@ -400,7 +400,7 @@ private fun EditDurationBottomSheet(
                     bottom = 16.dp
                 )
                 .fillMaxWidth(),
-            onClick = onApplyTapped,
+            onClick = { onApplyTapped(sliderPosition.toInt()) },
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
         )
     }
@@ -425,7 +425,8 @@ private fun CampaignBudgetScreenPreview() {
                 impressionsMax = 0,
                 isError = false
             ),
-            campaignStartDateMillis = Date().time,
+            confirmedCampaignStartDateMillis = Date().time,
+            bottomSheetCampaignStartDateMillis = Date().time,
             campaignDurationDates = "Dec 13 - Dec 20, 2023",
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false
@@ -434,10 +435,10 @@ private fun CampaignBudgetScreenPreview() {
         onEditDurationTapped = {},
         onImpressionsInfoTapped = {},
         onBudgetUpdated = {},
-        onCampaignDurationUpdated = {},
         onStartDateChanged = {},
         onUpdateTapped = {},
-        onBudgetChangeFinished = {}
+        onBudgetChangeFinished = {},
+        onApplyDurationTapped = {}
     )
 }
 

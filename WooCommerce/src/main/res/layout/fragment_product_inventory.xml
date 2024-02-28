@@ -1,135 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Woo.Card"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        tools:title="@string/app_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Product SKU -->
-            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-                android:id="@+id/product_sku"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_75"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:paddingBottom="@dimen/major_75"
-                android:inputType="text"
-                android:hint="@string/product_sku"
-                app:helperText="@string/product_sku_summary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="wrap_content">
 
-            <!-- Managing Product Stock -->
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/manageStock_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/product_manage_stock"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/product_sku" />
-
-            <!-- Product Stock Status -->
-            <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-                android:id="@+id/edit_product_stock_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_75"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                app:layout_goneMarginBottom="@dimen/major_75"
-                android:inputType="text"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/soldIndividually_switch"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
-                android:hint="@string/product_stock_status" />
-
-            <LinearLayout
-                android:id="@+id/manageStock_morePanel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_75"
-                app:layout_goneMarginBottom="@dimen/major_75"
-                android:visibility="gone"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/soldIndividually_switch"
-                app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
-                tools:visibility="gone">
-
+                <!-- Product SKU -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-                    android:id="@+id/product_stock_quantity"
+                    android:id="@+id/product_sku"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:hint="@string/product_sku"
+                    android:inputType="text"
+                    android:paddingBottom="@dimen/major_75"
+                    app:helperText="@string/product_sku_summary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Managing Product Stock -->
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/manageStock_switch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginEnd="@dimen/major_100"
-                    android:inputType="numberSigned"
-                    android:hint="@string/product_inventory_quantity"
-                    app:helperText="@string/product_inventory_quantity_summary" />
+                    android:text="@string/product_manage_stock"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/product_sku" />
 
                 <!-- Product Stock Status -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
-                    android:id="@+id/edit_product_backorders"
+                    android:id="@+id/edit_product_stock_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/minor_100"
                     android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
                     android:layout_marginEnd="@dimen/major_100"
+                    android:hint="@string/product_stock_status"
                     android:inputType="text"
-                    android:hint="@string/product_backorders" />
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@id/soldIndividually_switch"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
+                    app:layout_goneMarginBottom="@dimen/major_75"
+                    tools:visibility="visible" />
 
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/manageStock_morePanel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@id/soldIndividually_switch"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/manageStock_switch"
+                    app:layout_goneMarginBottom="@dimen/major_75"
+                    tools:visibility="gone">
 
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/manageStock_barrier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="manageStock_morePanel,edit_product_stock_status" />
+                    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                        android:id="@+id/product_stock_quantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/major_100"
+                        android:layout_marginEnd="@dimen/major_100"
+                        android:hint="@string/product_inventory_quantity"
+                        android:inputType="numberSigned"
+                        app:helperText="@string/product_inventory_quantity_summary" />
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/stockManagementPanel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="visible"
-                app:constraint_referenced_ids="manageStock_barrier,manageStock_morePanel,manageStock_switch,edit_product_stock_status,manageStock_switch,soldIndividually_switch" />
+                    <!-- Product Stock Status -->
+                    <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+                        android:id="@+id/edit_product_backorders"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/major_100"
+                        android:layout_marginTop="@dimen/minor_100"
+                        android:layout_marginEnd="@dimen/major_100"
+                        android:hint="@string/product_backorders"
+                        android:inputType="text" />
 
-            <!-- Product Sold Individually switch -->
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/soldIndividually_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_75"
-                android:layout_marginBottom="@dimen/major_75"
-                android:text="@string/product_sold_individually"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/manageStock_barrier"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/manageStock_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="manageStock_morePanel,edit_product_stock_status" />
 
-    </com.google.android.material.card.MaterialCardView>
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/stockManagementPanel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="manageStock_barrier,manageStock_morePanel,manageStock_switch,edit_product_stock_status,manageStock_switch,soldIndividually_switch" />
 
-</ScrollView>
+                <!-- Product Sold Individually switch -->
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/soldIndividually_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/major_75"
+                    android:text="@string/product_sold_individually"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/manageStock_barrier" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </ScrollView>
+</LinearLayout>
