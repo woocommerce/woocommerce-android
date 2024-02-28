@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
@@ -35,10 +36,14 @@ class TabletLayoutSetupHelper @Inject constructor(
         navigateWithPhoneNavigation: () -> Unit
     ) {
         if (isTabletLogicNeeded()) {
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(navHostFragment.navController.graph.startDestinationId, true)
+                .build()
             val navigationData = tabletNavigateTo()
             navHostFragment.navController.navigate(
-                navigationData.first,
-                navigationData.second,
+                resId = navigationData.first,
+                args = navigationData.second,
+                navOptions = navOptions
             )
         } else {
             navigateWithPhoneNavigation()

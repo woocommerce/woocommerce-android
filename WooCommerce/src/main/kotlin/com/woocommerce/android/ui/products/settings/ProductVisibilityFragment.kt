@@ -6,6 +6,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -13,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentProductVisibilityBinding
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PASSWORD_PROTECTED
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PRIVATE
 import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ActivityUtils
 
@@ -50,6 +52,16 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
             isApplicationPasswordsLogin = navArgs.isApplicationPasswordsLogin,
             selectedVisibility = selectedVisibility,
             password = password
+        )
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_visibility),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
         )
     }
 
@@ -129,8 +141,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_visibility)
 
     override fun validateChanges(): Boolean {
         if (selectedVisibility == PASSWORD_PROTECTED.toString() && getPassword().isEmpty()) {

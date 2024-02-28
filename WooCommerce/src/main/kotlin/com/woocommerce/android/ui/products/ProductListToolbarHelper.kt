@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -41,7 +42,9 @@ class ProductListToolbarHelper @Inject constructor(
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (isTabletLogicNeeded()) {
-                        fragment?.findNavController()?.navigateUp()
+                        if (binding?.detailNavContainer?.findNavController()?.popBackStack() != true) {
+                            fragment?.findNavController()?.popBackStack()
+                        }
                     } else if (searchMenuItem?.isActionViewExpanded == true) {
                         searchMenuItem?.collapseActionView()
                     } else {

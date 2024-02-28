@@ -14,8 +14,10 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
@@ -38,7 +40,8 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
     private var _binding: FragmentGroupedProductListBinding? = null
     private val binding get() = _binding!!
 
-    override fun getFragmentTitle() = resources.getString(viewModel.groupedProductListType.titleId)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,6 +54,18 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productListAdapter
         binding.productsRecycler.isMotionEventSplittingEnabled = false
+
+        setupTabletSecondPaneToolbar(
+            title = getString(viewModel.groupedProductListType.titleId),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    if (viewModel.onBackButtonClicked()) {
+                        findNavController().navigateUp()
+                    }
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {

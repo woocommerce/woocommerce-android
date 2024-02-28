@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductMenuOrderBinding
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import org.wordpress.android.util.StringUtils
 
 /**
@@ -27,6 +29,16 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
         _binding = FragmentProductMenuOrderBinding.bind(view)
 
         binding.productMenuOrder.text = navArgs.menuOrder.toString()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_menu_order),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -46,6 +58,4 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_menu_order)
 }
