@@ -351,7 +351,7 @@ class ProductListFragment :
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> {
-                    tabletLayoutSetupHelper.onItemClicked(
+                    tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
                             productAdapter.notifyItemChanged(event.oldPosition)
                             productAdapter.notifyItemChanged(event.newPosition)

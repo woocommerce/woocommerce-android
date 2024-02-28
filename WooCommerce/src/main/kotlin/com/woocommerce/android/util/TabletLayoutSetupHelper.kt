@@ -32,7 +32,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         }
     }
 
-    fun onItemClicked(
+    fun openItemDetails(
         tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
@@ -61,11 +61,16 @@ class TabletLayoutSetupHelper @Inject constructor(
         val navGraphId = navigation.navGraphId
         val bundle = navigation.initialBundle
 
-        navHostFragment = NavHostFragment.create(navGraphId, bundle)
+        val existingFragment = fragmentManager.findFragmentById(R.id.detail_nav_container)
 
-        fragmentManager.beginTransaction()
-            .replace(R.id.detail_nav_container, navHostFragment)
-            .commit()
+        if (existingFragment == null) {
+            navHostFragment = NavHostFragment.create(navGraphId, bundle)
+            fragmentManager.beginTransaction()
+                .replace(R.id.detail_nav_container, navHostFragment)
+                .commit()
+        } else {
+            navHostFragment = existingFragment as NavHostFragment
+        }
     }
 
     private fun adjustUIForScreenSize(screen: Screen) {
