@@ -2,7 +2,8 @@
 
 17.6
 -----
-
+- [**] Orders can be filtered now using specific customers or products [https://github.com/woocommerce/woocommerce-android/pull/10927]
+- [*] Orders: Merchants can now contact their customers through WhatsApp and Telegram apps. [https://github.com/woocommerce/woocommerce-android/pull/10936]
 
 17.5
 -----

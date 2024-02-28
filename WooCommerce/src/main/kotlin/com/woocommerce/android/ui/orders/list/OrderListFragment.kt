@@ -341,10 +341,9 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-        super.onSaveInstanceState(outState)
-        val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
-        val currentDestinationId = navHostFragment.navController.currentDestination?.id
         if (isTablet()) {
+            val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
+            val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
             outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
         }
     }

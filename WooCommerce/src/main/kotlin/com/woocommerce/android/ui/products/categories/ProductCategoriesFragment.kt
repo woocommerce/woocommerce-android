@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_ADDED_CATEGORY
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -57,6 +58,16 @@ class ProductCategoriesFragment :
         setupObservers(viewModel)
         setupResultHandlers()
         viewModel.fetchProductCategories()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_price),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductCategories)
+                }
+            }
+        )
     }
 
     @Suppress("DEPRECATION")

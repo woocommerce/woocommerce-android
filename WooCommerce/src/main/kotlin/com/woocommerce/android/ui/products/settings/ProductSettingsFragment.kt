@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPu
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibilityFragment.Companion.ARG_CATALOG_VISIBILITY
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -100,6 +101,16 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         }
 
         setupResultHandlers()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_settings),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitSettings)
+                }
+            }
+        )
     }
 
     private fun setupResultHandlers() {
@@ -147,8 +158,6 @@ class ProductSettingsFragment : BaseProductFragment(R.layout.fragment_product_se
         viewModel.onBackButtonClicked(ExitSettings)
         return false
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_settings)
 
     private fun updateProductView() {
         if (!isAdded) return

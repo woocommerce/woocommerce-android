@@ -170,6 +170,8 @@ class AnalyticsTracker private constructor(
         const val KEY_STATE = "state"
         const val KEY_HAS_CHANGED_DATA = "has_changed_data"
         const val KEY_STATUS = "status"
+        const val KEY_PRODUCT = "product"
+        const val KEY_CUSTOMER = "customer"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_TOTAL_COMPLETED_ORDERS = "total_completed_orders"
         const val KEY_SEARCH = "search"
@@ -618,6 +620,7 @@ class AnalyticsTracker private constructor(
         const val KEY_BLAZE_DURATION = "duration"
         const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
         const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
+        const val KEY_BLAZE_ERROR = "blaze_creation_error"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"

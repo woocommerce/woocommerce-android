@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
@@ -21,10 +22,13 @@ class TabletLayoutSetupHelper @Inject constructor(
     private lateinit var navHostFragment: NavHostFragment
 
     fun onViewCreated(screen: Screen) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
-
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
+
+        if (isTabletLogicNeeded()) {
+            initNavFragment(screen.secondPaneNavigation)
+            adjustUIForScreenSize(screen.twoPaneLayoutGuideline)
+        }
     }
 
     fun onItemClicked(
@@ -32,21 +36,18 @@ class TabletLayoutSetupHelper @Inject constructor(
         navigateWithPhoneNavigation: () -> Unit
     ) {
         if (isTabletLogicNeeded()) {
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(navHostFragment.navController.graph.startDestinationId, true)
+                .build()
             val navigationData = tabletNavigateTo()
             navHostFragment.navController.navigate(
-                navigationData.first,
-                navigationData.second,
+                resId = navigationData.first,
+                args = navigationData.second,
+                navOptions = navOptions
             )
         } else {
             navigateWithPhoneNavigation()
         }
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
-        if (!isTabletLogicNeeded()) return
-
-        initNavFragment(screen!!.secondPaneNavigation)
-        adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
