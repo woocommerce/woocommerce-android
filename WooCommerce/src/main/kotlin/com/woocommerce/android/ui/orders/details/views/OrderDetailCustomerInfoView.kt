@@ -197,7 +197,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             binding.customerInfoDivider3.visibility = VISIBLE
             binding.customerInfoCallOrMessageBtn.visibility = VISIBLE
             binding.customerInfoCallOrMessageBtn.setOnClickListener {
-                showCallOrMessagePopup(order)
+                showContactCustomerOptionsPopup(order)
             }
         } else {
             binding.customerInfoPhone.visibility = GONE
@@ -302,7 +302,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun showCallOrMessagePopup(order: Order) {
+    private fun showContactCustomerOptionsPopup(order: Order) {
         val popup = PopupMenu(context, binding.customerInfoCallOrMessageBtn)
         popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
 
