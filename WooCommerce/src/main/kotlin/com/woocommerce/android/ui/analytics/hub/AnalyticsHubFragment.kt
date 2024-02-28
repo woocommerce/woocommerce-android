@@ -92,6 +92,8 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
             is AnalyticsViewEvent.SendFeedback -> sendFeedback()
+            is AnalyticsViewEvent.OpenSettings -> findNavController()
+                .navigateSafely(AnalyticsHubFragmentDirections.actionAnalyticsToAnalyticsSettings())
             else -> event.isHandled = false
         }
     }
@@ -191,8 +193,7 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
 
                 override fun onMenuItemSelected(item: MenuItem): Boolean {
                     if (item.itemId == R.id.menu_settings) {
-                        findNavController()
-                            .navigateSafely(AnalyticsHubFragmentDirections.actionAnalyticsToAnalyticsSettings())
+                        viewModel.onOpenSettings()
                         return true
                     }
 
