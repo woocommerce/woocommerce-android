@@ -136,12 +136,12 @@
         <argument
             android:name="productId"
             app:argType="long" />
-        <action
-            android:id="@+id/action_adDestinationFragment_to_adDestinationParametersFragment"
-            app:destination="@id/blazeCampaignCreationAdDestinationParametersFragment" />
         <argument
             android:name="destinationParameters"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$DestinationParameters" />
+        <action
+            android:id="@+id/action_adDestinationFragment_to_adDestinationParametersFragment"
+            app:destination="@id/blazeCampaignCreationAdDestinationParametersFragment" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignCreationAdDestinationParametersFragment"
