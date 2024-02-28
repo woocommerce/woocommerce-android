@@ -109,7 +109,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.NoChange))
     }
 
     @Parcelize
@@ -146,6 +146,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     @Parcelize
     enum class UpdateStockStatusExitState : Parcelable {
         Success,
-        Error
+        Error,
+        NoChange
     }
 }

@@ -472,7 +472,7 @@ class ProductListFragment :
                     productListViewModel.exitSelectionMode()
                 }
 
-                UpdateStockStatusExitState.Error -> {
+                UpdateStockStatusExitState.Error, UpdateStockStatusExitState.NoChange -> {
                     productListViewModel.exitSelectionMode()
                 }
             }
