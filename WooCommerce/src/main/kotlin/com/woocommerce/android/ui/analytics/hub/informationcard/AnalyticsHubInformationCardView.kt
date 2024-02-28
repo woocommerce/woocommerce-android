@@ -26,14 +26,10 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
     var onSeeReportClickListener: SeeReportClickListener? = null
 
     internal fun updateInformation(viewState: AnalyticsHubInformationViewState) {
-        visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
         when (viewState) {
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
             is NoDataState -> setNoDataViewState(viewState)
-            is HiddenState -> {
-                visibility = View.GONE
-            }
         }
     }
 
