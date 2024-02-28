@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -20,6 +22,14 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     private val productListRepository: ProductListRepository
 ) : ScopedViewModel(savedStateHandle) {
 
+    companion object {
+        val AVAILABLE_STOCK_STATUSES = listOf(
+            ProductStockStatus.InStock,
+            ProductStockStatus.OutOfStock,
+            ProductStockStatus.OnBackorder
+        )
+    }
+
     private val navArgs: UpdateProductStockStatusFragmentArgs by savedStateHandle.navArgs()
 
     private val stockStatusUiState = savedStateHandle.getStateFlow(
@@ -33,12 +43,33 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         loadProductStockStatuses(navArgs.selectedProductIds.toList())
     }
 
-    fun updateStockStatusForProducts(@Suppress("UNUSED_PARAMETER") newStatus: ProductStockStatus) {
+    fun setCurrentStockStatus(newStatus: ProductStockStatus) {
+        stockStatusUiState.update { currentState ->
+            currentState.copy(currentProductStockStatus = newStatus)
+        }
+    }
+
+    fun updateStockStatusForProducts() {
         viewModelScope.launch {
-//            val result = productListRepository.bulkUpdateStockStatus(navArgs.selectedProductIds.toList(), newStatus)
-//            stockStatusUiState.update { currentState ->
-//              //  currentState.copy(updateResult = result)
-//            }
+            val currentStatus = stockStatusUiState.value.currentProductStockStatus
+            stockStatusUiState.update { currentState ->
+                currentState.copy(isProgressVisible = true)
+            }
+            val result = productListRepository.bulkUpdateStockStatus(navArgs.selectedProductIds.toList(), currentStatus)
+
+            stockStatusUiState.update { currentState ->
+                currentState.copy(isProgressVisible = false)
+            }
+
+            val snackText = if (result == RequestResult.SUCCESS) {
+                R.string.product_update_stock_status_completed
+            } else {
+                R.string.product_update_stock_status_error
+            }
+
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
+
+            if (result == RequestResult.SUCCESS) triggerEvent(MultiLiveEvent.Event.Exit)
         }
     }
 
@@ -52,6 +83,12 @@ class UpdateProductStockStatusViewModel @Inject constructor(
             val statusFrequency = stockStatusInfos.groupingBy { it.stockStatus }.eachCount()
             val mostFrequentStatus = statusFrequency.maxByOrNull { it.value }?.key ?: ProductStockStatus.InStock
 
+            val initialProductStockStatus = if (mostFrequentStatus in AVAILABLE_STOCK_STATUSES) {
+                mostFrequentStatus
+            } else {
+                ProductStockStatus.InStock
+            }
+
             val stockStatusState = if (distinctStatuses.size > 1) {
                 StockStatusState.Mixed
             } else {
@@ -62,7 +99,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                 it.copy(
                     productsToUpdateCount = productsToUpdateCount,
                     ignoredProductsCount = ignoredProductsCount,
-                    initialProductStockStatus = mostFrequentStatus,
+                    currentProductStockStatus = initialProductStockStatus,
                     currentStockStatusState = stockStatusState
                 )
             }
@@ -77,7 +114,9 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     data class UpdateStockStatusUiState(
         val productsToUpdateCount: Int = 0,
         val ignoredProductsCount: Int = 0,
-        val initialProductStockStatus: ProductStockStatus = ProductStockStatus.InStock,
+        val isProgressVisible: Boolean = false,
+        val currentProductStockStatus: ProductStockStatus = ProductStockStatus.InStock,
+        val stockStockStatuses: List<ProductStockStatus> = AVAILABLE_STOCK_STATUSES,
         val currentStockStatusState: StockStatusState = StockStatusState.Mixed
     ) : Parcelable
 

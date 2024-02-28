@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -20,12 +21,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Companion.AVAILABLE_STOCK_STATUSES
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Common
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Mixed
@@ -39,13 +41,15 @@ fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel)
         currentStockStatusState = uiState.currentStockStatusState,
         productsToUpdateCount = uiState.productsToUpdateCount,
         ignoredProductsCount = uiState.ignoredProductsCount,
-//        updateResult = uiState.updateResult,
-        initialProductStockStatus = uiState.initialProductStockStatus,
+        currentProductStockStatus = uiState.currentProductStockStatus,
+        stockStatuses = uiState.stockStockStatuses,
         onStockStatusChanged = { newStatus ->
-            viewModel.updateStockStatusForProducts(newStatus)
+            viewModel.setCurrentStockStatus(newStatus)
         },
         onNavigationUpClicked = { viewModel.onBackPressed() },
-        onUpdateClicked = { }
+        onUpdateClicked = {
+            viewModel.updateStockStatusForProducts()
+        }
     )
 }
 
@@ -54,8 +58,8 @@ private fun UpdateProductStockStatusScreen(
     currentStockStatusState: StockStatusState,
     productsToUpdateCount: Int,
     ignoredProductsCount: Int,
-//    @Suppress("UNUSED_PARAMETER") updateResult: RequestResult?,
-    initialProductStockStatus: ProductStockStatus,
+    currentProductStockStatus: ProductStockStatus,
+    stockStatuses: List<ProductStockStatus>,
     onStockStatusChanged: (ProductStockStatus) -> Unit,
     onNavigationUpClicked: () -> Unit,
     onUpdateClicked: () -> Unit
@@ -79,9 +83,9 @@ private fun UpdateProductStockStatusScreen(
     ) { innerPadding ->
         Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
         Column(modifier = Modifier.padding(innerPadding)) {
-
             StockStatusDropdown(
-                initialProductStockStatus = initialProductStockStatus,
+                currentProductStockStatus = currentProductStockStatus,
+                stockStatuses = stockStatuses,
                 onSelectionChanged = { newStatus ->
                     onStockStatusChanged(newStatus)
                 },
@@ -95,7 +99,7 @@ private fun UpdateProductStockStatusScreen(
 
                 is Common -> stringResource(
                     id = R.string.product_update_stock_status_current_status_single,
-                    currentStockStatusState.status.value
+                    stringResource(currentStockStatusState.status.stringResource)
                 )
             }
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
@@ -104,7 +108,7 @@ private fun UpdateProductStockStatusScreen(
                 text = statusMessage,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(start = 12.dp),
+                    .padding(start = dimensionResource(id = R.dimen.major_75)),
                 style = MaterialTheme.typography.subtitle2,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -134,8 +138,13 @@ private fun UpdateProductStockStatusScreen(
                 style = MaterialTheme.typography.subtitle2,
                 color = colorResource(id = R.color.color_on_surface_disabled),
                 modifier = Modifier
+                    .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 12.dp)
+                    .padding(
+                        vertical = dimensionResource(id = R.dimen.major_75),
+                        horizontal = dimensionResource(id = R.dimen.major_100)
+                    ),
+                textAlign = TextAlign.Center
             )
 
             Divider(color = colorResource(id = R.color.inverted_surface_overlay))
@@ -145,7 +154,8 @@ private fun UpdateProductStockStatusScreen(
 
 @Composable
 fun StockStatusDropdown(
-    initialProductStockStatus: ProductStockStatus,
+    currentProductStockStatus: ProductStockStatus,
+    stockStatuses: List<ProductStockStatus>,
     onSelectionChanged: (ProductStockStatus) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -155,21 +165,11 @@ fun StockStatusDropdown(
         dropdownFocusRequester.requestFocus()
     }
 
-    val stockStatusOptions = listOf(
-        ProductStockStatus.InStock,
-        ProductStockStatus.OutOfStock,
-        ProductStockStatus.OnBackorder,
-    )
-
-    val displayStringToStatusMap = stockStatusOptions.associateBy {
+    val displayStringToStatusMap = stockStatuses.associateBy {
         stringResource(id = it.stringResource)
     }
 
-    val initialStatusDisplayString = if (initialProductStockStatus in stockStatusOptions) {
-        stringResource(id = initialProductStockStatus.stringResource)
-    } else {
-        stringResource(id = ProductStockStatus.InStock.stringResource)
-    }
+    val initialStatusDisplayString = stringResource(id = currentProductStockStatus.stringResource)
 
     WcExposedDropDown(
         items = displayStringToStatusMap.keys.toTypedArray(),
@@ -192,8 +192,8 @@ private fun UpdateProductStockStatusSingleStatusPreview() {
             currentStockStatusState = Common(ProductStockStatus.InStock),
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
-//            updateResult = null,
-            initialProductStockStatus = ProductStockStatus.InStock,
+            currentProductStockStatus = ProductStockStatus.InStock,
+            stockStatuses = AVAILABLE_STOCK_STATUSES,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
             onUpdateClicked = { }
@@ -210,8 +210,8 @@ private fun UpdateProductStockStatusMixedStatusPreview() {
             currentStockStatusState = Mixed,
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
-//            updateResult = null,
-            initialProductStockStatus = ProductStockStatus.InStock,
+            currentProductStockStatus = ProductStockStatus.InStock,
+            stockStatuses = AVAILABLE_STOCK_STATUSES,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
             onUpdateClicked = { }
@@ -228,8 +228,8 @@ private fun UpdateProductStockStatusIgnoredProductsPreview() {
             currentStockStatusState = Common(ProductStockStatus.OutOfStock),
             productsToUpdateCount = 1,
             ignoredProductsCount = 1,
-//            updateResult = null,
-            initialProductStockStatus = ProductStockStatus.OutOfStock,
+            currentProductStockStatus = ProductStockStatus.OutOfStock,
+            stockStatuses = AVAILABLE_STOCK_STATUSES,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
             onUpdateClicked = { }

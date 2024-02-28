@@ -4070,4 +4070,6 @@
     <string name="product_update_stock_status_current_status_single">Current stock status is %1$s</string>
     <string name="product_update_stock_status_update_count">Stock status will be updated for %1$d products.</string>
     <string name="product_update_stock_status_ignored_count">%1$d products with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_completed">Updated Stock Statuses</string>
+    <string name="product_update_stock_status_error">Something went wrong. Please try again.</string>
 </resources>
