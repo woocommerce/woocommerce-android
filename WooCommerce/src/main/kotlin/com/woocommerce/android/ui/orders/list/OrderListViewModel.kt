@@ -218,7 +218,10 @@ class OrderListViewModel @Inject constructor(
             filterCount = getSelectedOrderFiltersCount(),
             isErrorFetchingDataBannerVisible = false
         )
-        activatePagedListWrapper(ordersPagedListWrapper!!)
+        activatePagedListWrapper(
+            pagedListWrapper = ordersPagedListWrapper!!,
+            shouldRetry = true
+        )
         fetchOrdersAndOrderDependencies()
     }
 
