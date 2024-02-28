@@ -2,7 +2,7 @@
 
 17.6
 -----
-
+- [**] Orders can be filtered now using specific customers or products [https://github.com/woocommerce/woocommerce-android/pull/10927]
 
 17.5
 -----

@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
@@ -110,6 +111,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         if (campaignCreationState.value == CampaignCreationState.Loading) {
             return
         }
+        analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
 
         launch {
             campaignCreationState.value = CampaignCreationState.Loading
@@ -132,6 +134,12 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
 
                         else -> R.string.blaze_campaign_creation_error
                     }
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_FAILED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_BLAZE_ERROR to it.message
+                        )
+                    )
                     campaignCreationState.value = CampaignCreationState.Failed(errorMessage)
                 }
             )
