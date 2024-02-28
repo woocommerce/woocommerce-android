@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -43,6 +44,7 @@ fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel)
         ignoredProductsCount = uiState.ignoredProductsCount,
         currentProductStockStatus = uiState.currentProductStockStatus,
         stockStatuses = uiState.stockStockStatuses,
+        isProgressDialogVisible = uiState.isProgressDialogVisible,
         onStockStatusChanged = { newStatus ->
             viewModel.setCurrentStockStatus(newStatus)
         },
@@ -60,6 +62,7 @@ private fun UpdateProductStockStatusScreen(
     ignoredProductsCount: Int,
     currentProductStockStatus: ProductStockStatus,
     stockStatuses: List<ProductStockStatus>,
+    isProgressDialogVisible: Boolean,
     onStockStatusChanged: (ProductStockStatus) -> Unit,
     onNavigationUpClicked: () -> Unit,
     onUpdateClicked: () -> Unit
@@ -149,6 +152,13 @@ private fun UpdateProductStockStatusScreen(
 
             Divider(color = colorResource(id = R.color.inverted_surface_overlay))
         }
+
+        if (isProgressDialogVisible) {
+            ProgressDialog(
+                title = stringResource(id = R.string.product_update_stock_status_dialog_title),
+                subtitle = stringResource(id = R.string.product_update_stock_status_dialog_subtitle)
+            )
+        }
     }
 }
 
@@ -193,6 +203,7 @@ private fun UpdateProductStockStatusSingleStatusPreview() {
             productsToUpdateCount = 10,
             ignoredProductsCount = 0,
             currentProductStockStatus = ProductStockStatus.InStock,
+            isProgressDialogVisible = false,
             stockStatuses = AVAILABLE_STOCK_STATUSES,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
@@ -212,6 +223,7 @@ private fun UpdateProductStockStatusMixedStatusPreview() {
             ignoredProductsCount = 0,
             currentProductStockStatus = ProductStockStatus.InStock,
             stockStatuses = AVAILABLE_STOCK_STATUSES,
+            isProgressDialogVisible = false,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },
             onUpdateClicked = { }
@@ -229,6 +241,7 @@ private fun UpdateProductStockStatusIgnoredProductsPreview() {
             productsToUpdateCount = 1,
             ignoredProductsCount = 1,
             currentProductStockStatus = ProductStockStatus.OutOfStock,
+            isProgressDialogVisible = false,
             stockStatuses = AVAILABLE_STOCK_STATUSES,
             onStockStatusChanged = { },
             onNavigationUpClicked = { },

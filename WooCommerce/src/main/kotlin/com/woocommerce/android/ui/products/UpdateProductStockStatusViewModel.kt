@@ -53,12 +53,12 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         viewModelScope.launch {
             val currentStatus = stockStatusUiState.value.currentProductStockStatus
             stockStatusUiState.update { currentState ->
-                currentState.copy(isProgressVisible = true)
+                currentState.copy(isProgressDialogVisible = true)
             }
             val result = productListRepository.bulkUpdateStockStatus(navArgs.selectedProductIds.toList(), currentStatus)
 
             stockStatusUiState.update { currentState ->
-                currentState.copy(isProgressVisible = false)
+                currentState.copy(isProgressDialogVisible = false)
             }
 
             val snackText = if (result == RequestResult.SUCCESS) {
@@ -114,7 +114,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     data class UpdateStockStatusUiState(
         val productsToUpdateCount: Int = 0,
         val ignoredProductsCount: Int = 0,
-        val isProgressVisible: Boolean = false,
+        val isProgressDialogVisible: Boolean = false,
         val currentProductStockStatus: ProductStockStatus = ProductStockStatus.InStock,
         val stockStockStatuses: List<ProductStockStatus> = AVAILABLE_STOCK_STATUSES,
         val currentStockStatusState: StockStatusState = StockStatusState.Mixed
