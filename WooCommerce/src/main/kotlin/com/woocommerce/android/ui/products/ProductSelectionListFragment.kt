@@ -146,7 +146,7 @@ class ProductSelectionListFragment :
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_product_list_fragment, menu)
+        inflater.inflate(R.menu.menu_product_selection_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
