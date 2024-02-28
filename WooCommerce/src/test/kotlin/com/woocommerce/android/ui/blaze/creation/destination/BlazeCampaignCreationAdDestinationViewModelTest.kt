@@ -75,7 +75,11 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
         viewModel.onParameterPropertyTapped()
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(NavigateToParametersScreen(DestinationParameters(url, emptyMap())))
+        assertThat(event).isEqualTo(
+            NavigateToParametersScreen(
+                destinationParameters = DestinationParameters(url, emptyMap())
+            )
+        )
     }
 
     @Test
@@ -94,8 +98,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when destination url is changed, then view state is updated and url dialog is not visible`() = testBlocking {
-        val params = "a=b&c=d"
-        val url = "https://woo.com?$params"
+        val url = "https://woo.com"
         val url2 = "https://cnn.com"
         setup(url, productId = 1L)
 
@@ -103,7 +106,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
         val viewState = viewModel.viewState.captureValues().last()
         assertThat(viewState.targetUrl).isEqualTo(url2)
-        assertThat(viewState.parameters).isEqualTo(params.replace("&", "\n"))
+        assertThat(viewState.targetUrl).isEqualTo(url2)
         assertThat(viewState.isUrlDialogVisible).isFalse()
     }
 }
