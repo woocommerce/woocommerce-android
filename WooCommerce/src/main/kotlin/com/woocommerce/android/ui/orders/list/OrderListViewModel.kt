@@ -379,9 +379,9 @@ class OrderListViewModel @Inject constructor(
         isFirstInit: Boolean = false,
         shouldRetry: Boolean = false
     ) {
+        var loadingRetryHappenedOnce = false
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
-        var didLoadMore = false
         clearLiveDataSources(this.activePagedListWrapper)
 
         listenToEmptyViewStateLiveData(pagedListWrapper)
@@ -399,7 +399,6 @@ class OrderListViewModel @Inject constructor(
             _isEmpty.value = it
         }
         _isLoadingMore.addSource(pagedListWrapper.isLoadingMore) {
-            didLoadMore = true
             _isLoadingMore.value = it
         }
 
@@ -414,7 +413,17 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
-                    TIMEOUT_ERROR -> handleTimeoutError(shouldRetry && didLoadMore.not())
+                    TIMEOUT_ERROR -> {
+                        when {
+                            shouldRetry && loadingRetryHappenedOnce.not() -> {
+                                loadingRetryHappenedOnce = true
+                                triggerEvent(RetryLoadingOrders)
+                            }
+                            else -> viewState = viewState.copy(
+                                shouldDisplayTroubleshootingBanner = true
+                            )
+                        }
+                    }
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
@@ -424,15 +433,6 @@ class OrderListViewModel @Inject constructor(
             fetchOrdersAndOrderDependencies()
         } else {
             pagedListWrapper.invalidateData()
-        }
-    }
-
-    private fun handleTimeoutError(shouldRetry: Boolean) {
-        when {
-            shouldRetry -> triggerEvent(RetryLoadingOrders)
-            else -> viewState = viewState.copy(
-                shouldDisplayTroubleshootingBanner = true
-            )
         }
     }
 
