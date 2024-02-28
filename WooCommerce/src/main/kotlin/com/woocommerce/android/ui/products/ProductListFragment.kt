@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -460,6 +461,10 @@ class ProductListFragment :
                 productCategory = result.productCategory,
                 productCategoryName = result.productCategoryName
             )
+        }
+
+        handleNotice(UpdateProductStockStatusFragment.UPDATE_STOCK_STATUS_DONE) {
+            productListViewModel.onRefreshRequested()
         }
     }
 
