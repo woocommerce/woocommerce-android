@@ -17,6 +17,8 @@ import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCardViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragmentArgs
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubViewModel
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent
@@ -27,8 +29,6 @@ import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState

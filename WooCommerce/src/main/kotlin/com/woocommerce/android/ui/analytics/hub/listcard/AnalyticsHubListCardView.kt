@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
+import com.woocommerce.android.ui.analytics.hub.toReportCard
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
@@ -80,7 +81,10 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         if (viewState.reportUrl != null) {
             binding.reportGroup.visibility = VISIBLE
             binding.reportText.setOnClickListener {
-                onSeeReportClickListener?.let { it(viewState.reportUrl) }
+                onSeeReportClickListener?.let {
+                    val card = viewState.card.toReportCard()
+                    if (card != null) it(viewState.reportUrl, card)
+                }
             }
         } else {
             binding.reportGroup.visibility = GONE

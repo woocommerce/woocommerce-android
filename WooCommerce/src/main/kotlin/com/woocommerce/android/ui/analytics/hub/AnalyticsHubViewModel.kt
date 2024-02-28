@@ -17,13 +17,13 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
@@ -565,3 +565,12 @@ class AnalyticsHubViewModel @Inject constructor(
 }
 
 enum class ReportCard { Revenue, Orders, Products }
+
+fun AnalyticsCards.toReportCard(): ReportCard? {
+    return when (this) {
+        AnalyticsCards.Revenue -> ReportCard.Revenue
+        AnalyticsCards.Orders -> ReportCard.Orders
+        AnalyticsCards.Products -> ReportCard.Products
+        else -> null
+    }
+}

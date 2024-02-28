@@ -121,9 +121,12 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
+        val cardsAdapter = AnalyticsHubCardsAdapter().apply {
+            onSeeReport = viewModel::onSeeReport
+        }
         binding.cards.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = AnalyticsHubCardsAdapter()
+            adapter = cardsAdapter
             isNestedScrollingEnabled = false
             addItemDecoration(MarginTopItemDecoration(R.dimen.major_100, requireContext()))
         }

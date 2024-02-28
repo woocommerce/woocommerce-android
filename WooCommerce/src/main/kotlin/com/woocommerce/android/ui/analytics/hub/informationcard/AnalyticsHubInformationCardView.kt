@@ -11,9 +11,11 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.ReportCard
+import com.woocommerce.android.ui.analytics.hub.toReportCard
 import com.woocommerce.android.widgets.SkeletonView
 
-typealias SeeReportClickListener = (url: String) -> Unit
+typealias SeeReportClickListener = (url: String, card: ReportCard) -> Unit
 
 class AnalyticsHubInformationCardView @JvmOverloads constructor(
     ctx: Context,
@@ -54,7 +56,10 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
         if (viewState.reportUrl != null) {
             binding.reportGroup.visibility = VISIBLE
             binding.reportText.setOnClickListener {
-                onSeeReportClickListener?.let { it(viewState.reportUrl) }
+                onSeeReportClickListener?.let {
+                    val card = viewState.card.toReportCard()
+                    if (card != null) it(viewState.reportUrl, card)
+                }
             }
         } else {
             binding.reportGroup.visibility = GONE

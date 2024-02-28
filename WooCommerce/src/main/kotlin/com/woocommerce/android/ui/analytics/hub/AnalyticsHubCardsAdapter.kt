@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
+import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
 
 class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolder>() {
@@ -17,6 +18,8 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
     }
 
     private val params = ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+
+    var onSeeReport: SeeReportClickListener? = null
 
     var cardList: List<AnalyticsCardViewState> = ArrayList()
         set(value) {
@@ -58,12 +61,12 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
         when (getItemViewType(position)) {
             VIEW_TYPE_INFORMATION -> {
                 val state = cardList[position] as AnalyticsHubInformationViewState
-                (holder as AnalyticsHubCardsInformationViewHolder).bind(state)
+                (holder as AnalyticsHubCardsInformationViewHolder).bind(state, onSeeReport)
             }
 
             VIEW_TYPE_LIST -> {
                 val state = cardList[position] as AnalyticsHubListViewState
-                (holder as AnalyticsHubCardsListViewHolder).bind(state)
+                (holder as AnalyticsHubCardsListViewHolder).bind(state, onSeeReport)
             }
         }
     }
@@ -96,14 +99,16 @@ abstract class AnalyticsHubCardsViewHolder(cardView: View) : RecyclerView.ViewHo
 
 class AnalyticsHubCardsListViewHolder(private val cardView: AnalyticsHubListCardView) :
     AnalyticsHubCardsViewHolder(cardView) {
-    fun bind(state: AnalyticsHubListViewState) {
+    fun bind(state: AnalyticsHubListViewState, onSeeReport: SeeReportClickListener? = null) {
         cardView.updateInformation(state)
+        cardView.onSeeReportClickListener = onSeeReport
     }
 }
 
 class AnalyticsHubCardsInformationViewHolder(private val cardView: AnalyticsHubInformationCardView) :
     AnalyticsHubCardsViewHolder(cardView) {
-    fun bind(state: AnalyticsHubInformationViewState) {
+    fun bind(state: AnalyticsHubInformationViewState, onSeeReport: SeeReportClickListener? = null) {
         cardView.updateInformation(state)
+        cardView.onSeeReportClickListener = onSeeReport
     }
 }
