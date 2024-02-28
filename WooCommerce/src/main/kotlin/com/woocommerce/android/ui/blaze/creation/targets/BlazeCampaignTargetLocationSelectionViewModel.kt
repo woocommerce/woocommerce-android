@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_LOCATION_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState
@@ -36,9 +38,10 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val blazeRepository: BlazeRepository,
-    savedStateHandle: SavedStateHandle
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : TargetSelectionViewModel, ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignTargetLocationSelectionFragmentArgs by savedStateHandle.navArgs()
 
@@ -153,6 +156,7 @@ class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
             .map { it.location }
             .toList()
         triggerEvent(ExitWithResult(TargetLocationResult(items)))
+        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_LOCATION_SAVE_TAPPED)
     }
 
     override fun onSearchQueryChanged(query: String) {

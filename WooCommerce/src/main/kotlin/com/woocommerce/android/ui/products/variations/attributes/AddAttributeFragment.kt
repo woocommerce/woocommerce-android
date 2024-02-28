@@ -3,10 +3,9 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -23,12 +22,13 @@ import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttribute
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
 @AndroidEntryPoint
-class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute), MenuProvider {
+class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
     companion object {
         const val TAG: String = "AddAttributeFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -49,7 +49,6 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         _binding = FragmentAddAttributeBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         setupObservers()
     }
@@ -76,16 +75,16 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         }
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+    private fun onCreateMenu(toolbar: Toolbar) {
         if (navArgs.isVariationCreation) {
-            moveNextMenuItem = menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
+            moveNextMenuItem = toolbar.menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 isVisible = false
             }
         }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ADD_ATTRIBUTES -> {
                 viewModel.saveAttributeChanges()
@@ -119,6 +118,17 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         }
 
         viewModel.fetchGlobalAttributes()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_add_attribute),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductAddAttribute)
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     private fun setupObservers() {
@@ -141,8 +151,6 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             }
         }
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_add_attribute)
 
     /**
      * Called after fetching global attributes, sets the adapter to show a combined list of the

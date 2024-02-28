@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,6 +32,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCCustomerStore
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -42,6 +45,9 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection = mock()
     private val dateUtils: DateUtils = mock()
     private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
+    private val productListRepository: ProductListRepository = mock()
+    private val customerStore: WCCustomerStore = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
@@ -145,14 +151,17 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     private fun initViewModel() {
         viewModel = OrderFilterCategoriesViewModel(
-            savedStateHandle,
-            resourceProvider,
-            getOrderStatusFilterOptions,
-            getDateRangeFilterOptions,
-            orderFilterRepository,
-            getTrackingForFilterSelection,
-            dateUtils,
-            analyticsTraWrapper
+            savedState = savedStateHandle,
+            resourceProvider = resourceProvider,
+            getOrderStatusFilterOptions = getOrderStatusFilterOptions,
+            getDateRangeFilterOptions = getDateRangeFilterOptions,
+            orderFilterRepository = orderFilterRepository,
+            getTrackingForFilterSelection = getTrackingForFilterSelection,
+            dateUtils = dateUtils,
+            analyticsTraWrapper = analyticsTraWrapper,
+            productRepository = productListRepository,
+            customerStore = customerStore,
+            selectedSite = selectedSite
         )
     }
 

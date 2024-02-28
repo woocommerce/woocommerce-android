@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-14 11:54:03+0000
+Translation-Revision-Date: 2024-02-20 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">Etwas stimmt nicht.\nDeine Kampagne konnte nicht erstellt werden.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Kampagnenbilddetails konnten nicht abgerufen werden</string>
+    <string name="blaze_campaign_creation_error_media_upload">Das Kampagnenbild konnte nicht hochgeladen werden.</string>
+    <string name="blaze_campaign_creation_error_cancel">Kampagne abbrechen</string>
+    <string name="blaze_campaign_creation_error_get_support">Support erhalten</string>
+    <string name="blaze_campaign_creation_error_help_hint">Bitte versuche es erneut oder kontaktiere den Support, um Hilfe zu erhalten.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Fehler beim Erstellen der Kampagne</string>
+    <string name="blaze_campaign_creation_error_title">Fehler beim Erstellen der Kampagne</string>
+    <string name="blaze_campaign_creation_loading">Deine Kampagne wird erstellt</string>
+    <string name="blaze_campaign_created_success_done_button">Fertig</string>
+    <string name="blaze_campaign_created_success_description">Wir überprüfen deine Kampagne. Sie wird innerhalb von 24 Stunden livegeschaltet. Freu dich auf zahlreiche Angebote!</string>
+    <string name="blaze_campaign_created_success_title">Fertig!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">Der Schlüssel existiert bereits</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">Finale URL zu lang</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Wert</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Schlüssel</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Ziel: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Parameter hinzufügen</string>
+    <string name="blaze_campaign_payment_added_successfully">Kreditkarte erfolgreich hinzugefügt</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Neue Karte hinzufügen</string>
+    <string name="blaze_campaign_payment_list_hint">Kreditkartendaten werden vom folgenden WordPress.com-Konto abgerufen: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Alle Transaktionen sind sicher und verschlüsselt</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Kreditkarte hinzufügen</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Bitte füge eine neue Zahlungsmethode hinzu</string>
+    <string name="blaze_campaign_payment_list_screen_title">Zahlungsmethode</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Aufrufe konnten nicht geschätzt werden. Erneut versuchen?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Hinzufügen</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Bitte füge deiner Blaze-Kampagne einen Untertitel und eine Beschreibung hinzu</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Bild hinzufügen</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Bitte füge ein Bild für die Blaze-Kampagne hinzu</string>
+    <string name="drag_handle">Ziehpunkt</string>
+    <string name="analytic_cards">Analysekarten</string>
+    <string name="manage_analytics">Analysen verwalten</string>
     <string name="see_report">Bericht anzeigen</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Die Startseite der Website</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">Die Produkt-URL</string>

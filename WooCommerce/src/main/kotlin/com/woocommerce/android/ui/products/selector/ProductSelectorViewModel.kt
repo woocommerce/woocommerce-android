@@ -24,6 +24,8 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchTyp
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.NORMAL
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
@@ -121,17 +123,14 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow5 = _selectedItems,
+        flow5 = selectedItems,
         flow6 = filterState,
         flow7 = searchState,
     ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState ->
         ViewState(
             loadingState = loadingState,
             products = products.map {
-                when (navArgs.selectionHandling) {
-                    SelectionHandling.NORMAL -> it.toUiModel(selectedIds)
-                    SelectionHandling.SIMPLE -> it.toSimpleUiModel(selectedIds)
-                }
+                mapProductsToUiModel(it, selectedIds)
             },
             popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
             recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
@@ -143,6 +142,14 @@ class ProductSelectorViewModel @Inject constructor(
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
         )
     }.asLiveData()
+
+    private fun mapProductsToUiModel(
+        it: Product,
+        selectedIds: List<SelectedItem>
+    ) = when (navArgs.selectionHandling) {
+        NORMAL -> it.toUiModel(selectedIds)
+        SIMPLE -> it.toSimpleUiModel(selectedIds)
+    }
 
     val selectionMode = navArgs.selectionMode
 
@@ -180,7 +187,7 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchState.value.searchQuery.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
-        return productsList.map { it.toUiModel(selectedIds) }
+        return productsList.map { mapProductsToUiModel(it, selectedIds) }
     }
 
     private suspend fun loadRecentProducts() {
@@ -357,7 +364,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
-        val selectedItem = _selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
+        val selectedItem = selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
         selectedItem?.configuration?.let {
             triggerEvent(
                 ProductNavigationTarget.EditProductConfiguration(
@@ -404,7 +411,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
-        if (_selectedItems.value.containsItemWith(item.id) && navArgs.selectionMode == SelectionMode.MULTIPLE) {
+        if (selectedItems.value.containsItemWith(item.id) && navArgs.selectionMode == SelectionMode.MULTIPLE) {
             tracker.trackItemUnselected(productSelectorFlow)
             selectedItemsSource.remove(item.id)
             _selectedItems.update { items -> items.filter { it.id != item.id } }
@@ -456,11 +463,11 @@ class ProductSelectorViewModel @Inject constructor(
     fun onDoneButtonClick() {
         tracker.trackDoneButtonClicked(
             productSelectorFlow,
-            _selectedItems.value,
+            selectedItems.value,
             selectedItemsSource.values.toList(),
             isFilterActive()
         )
-        triggerEvent(ExitWithResult(_selectedItems.value))
+        triggerEvent(ExitWithResult(selectedItems.value))
     }
 
     fun onNavigateBack() {

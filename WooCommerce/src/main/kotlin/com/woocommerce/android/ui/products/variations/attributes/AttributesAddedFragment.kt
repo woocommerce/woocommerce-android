@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NoCandidates
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -49,9 +50,17 @@ class AttributesAddedFragment :
         }
         setupObservers()
         setupResultHandlers()
-    }
 
-    override fun getFragmentTitle() = getString(R.string.product_variations)
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_variations),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitAttributesAdded)
+                }
+            }
+        )
+    }
 
     private fun setupObservers() {
         viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->

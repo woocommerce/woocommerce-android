@@ -3,13 +3,12 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.annotation.StringRes
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -34,6 +33,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_ADD_NEW_VARIATION
@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDialog
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -69,8 +70,7 @@ import javax.inject.Inject
 class VariationListFragment :
     BaseFragment(R.layout.fragment_variation_list),
     BackPressListener,
-    OnLoadMoreListener,
-    MenuProvider {
+    OnLoadMoreListener {
     companion object {
         const val TAG: String = "VariationListFragment"
         const val KEY_VARIATION_LIST_RESULT = "key_variation_list_result"
@@ -91,12 +91,14 @@ class VariationListFragment :
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationListBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         initializeViewModel()
     }
@@ -156,6 +158,17 @@ class VariationListFragment :
         binding.addVariationButton.setOnClickListener {
             viewModel.onAddVariationsClicked()
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_variations),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onExit()
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     private fun initializeViewModel() {
@@ -328,8 +341,6 @@ class VariationListFragment :
             .run { findNavController().navigateSafely(this) }
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_variations)
-
     override fun onRequestLoadMore() {
         viewModel.onLoadMoreRequested(navArgs.remoteProductId)
     }
@@ -388,17 +399,17 @@ class VariationListFragment :
         return false
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_variation_list_fragment, menu)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_variation_list_fragment)
+        onPrepareMenu(toolbar.menu)
     }
 
-    override fun onPrepareMenu(menu: Menu) {
+    private fun onPrepareMenu(menu: Menu) {
         val isBatchUpdateEnabled = viewModel.viewStateLiveData.liveData.value?.isVariationsOptionsMenuEnabled ?: false
         menu.findItem(R.id.menu_bulk_update)?.isVisible = isBatchUpdateEnabled
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_bulk_update -> {
                 viewModel.onBulkUpdateClicked()

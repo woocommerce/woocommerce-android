@@ -319,7 +319,7 @@ class BlazeRepository @Inject constructor(
         val campaignImage: BlazeCampaignImage,
         val budget: Budget,
         val targetingParameters: TargetingParameters,
-        val destinationParameters: DestinationParameters
+        val destinationParameters: DestinationParameters,
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {

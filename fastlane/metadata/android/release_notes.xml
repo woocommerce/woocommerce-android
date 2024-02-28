@@ -1,68 +1,68 @@
 <ar>
-17.3:
-قمنا بتحسين تدفق إنشاء ملصق الشحن لضمان تجربة أكثر سلاسة وسهولة. يهدف ذلك التحسين إلى تبسيط عملية تنفيذ طلبك، ما يجعلها أسرع وأكثر كفاءة. ترجى مواصلة إرسال الملاحظات إلينا – فكلنا آذان مصغية!
+17.4:
+إننا متحمسون لتقديم الدعم إلى مزوّدي خدمة مفاتيح المرور التابعة لأطراف ثالثة. صمِّم هذا التحديث لتزويد مستخدمي ووردبريس.كوم بمزيد من المرونة والراحة في ما يتعلق بكيفية إدارة الأمان في حسابهم. استعد للتخلص من التعب الناتج عن إدخال كلمات المرور والترحيب بتجربة أكثر سلاسة وأمان عند تسجيل الدخول!
 </ar>
 <de-DE>
-17.3:
-Wir haben den Prozess zum Erstellen von Versandetiketten verbessert, um dir ein reibungsloseres und intuitiveres Erlebnis zu ermöglichen. Mit dieser Verbesserung soll deine Auftragsausführung optimiert sowie schneller und effizienter gestaltet werden. Sende uns bitte weiter Feedback – wir freuen uns darauf!
+17.4:
+Wir freuen uns, Anbieter von Drittanbieter-Passkeys zu unterstützen. Dieses Update wurde entwickelt, um WordPress.com-Benutzern mehr Flexibilität und Komfort beim Verwalten ihrer Kontosicherheit zu bieten. Mach dich bereit – verabschiede dich von ermüdenden Passwörtern und entdecke ein reibungsloseres, sichereres Anmeldeerlebnis!
 </de-DE>
 <es-ES>
-17.3:
-Hemos mejorado el proceso de creación de etiquetas de envío para que la experiencia resulte más sencilla y fluida. Con esta mejora también se pretende optimizar tu proceso de tramitación de pedidos, de modo que todo sea más rápido y eficiente. Sigue enviándonos tus comentarios: ¡te escuchamos!
+17.4:
+Nos alegra contarte que ya ofrecemos compatibilidad para otros proveedores de Passkey. Esta actualización está diseñada para que los usuarios de WordPress.com gestionen la seguridad de sus cuentas de forma más versátil y fácil. Despídete del tedio de las contraseñas y prepárate para una experiencia de acceso segura más amena.
 </es-ES>
 <fr-FR>
-17.3 :
-Nous avons amélioré le flux de création d’étiquettes d’expédition pour assurer une expérience plus fluide et plus intuitive. Cette amélioration vise à rationaliser le processus de traitement des commandes, afin de le rendre plus rapide et plus efficace. Continuez à nous envoyer vos commentaires. Votre avis nous intéresse !
+17.4 :
+Nous sommes ravis de proposer la prise en charge des fournisseurs tiers de clés d’accès. Grâce à cette mise à jour, les utilisateurs de WordPress.com peuvent gérer la sécurité de leur compte plus commodément et avec une plus grande fluidité. Préparez-vous à dire adieu aux fastidieux mots de passe et à découvrir une connexion fluide et sécurisée !
 </fr-FR>
 <iw-IL>
-17.3:
-שיפרנו את תהליך היצירה של תוויות משלוח כדי לוודא חוויית שימוש יעילה ואינטואיטיבית יותר. השיפור נועד ליצור תהליך חלק יותר למילוי הזמנות על ידי שיפור הזריזות והיעילות שלו. נשמח לקבל עוד משוב – אנחנו תמיד כאן כדי להקשיב!
+17.4:
+אנחנו שמחים להציע תמיכה לספקי מפתחות גישה של צד שלישי. העדכון הזה נועד לספק למשתמשי WordPress.com גמישות ונוחות רבות יותר בניהול האבטחה של חשבונם. תכף אפשר יהיה לנטוש את התהליך המייגע של הזנת סיסמה ולעבור לחוויית התחברות חלקה ומאובטחת יותר!
 </iw-IL>
 <id>
-17.3:
-Kami menyempurnakan alur pembuatan label pengiriman agar pengalaman Anda lebih mulus dan intuitif. Peningkatan ini bertujuan untuk menyederhanakan proses pemenuhan pesanan sehingga menjadi lebih cepat dan efisien. Mohon terus berikan feedback – kami siap mendengarkan!
+17.4:
+Kami senang dapat menyediakan dukungan untuk penyedia Passkey pihak ketiga. Dengan pembaruan ini, pengguna WordPress.com dapat mengelola keamanan akun secara lebih fleksibel dan mudah. Tak perlu menghafal kata sandi. Login lebih lancar dan aman.
 </id>
 <it-IT>
-17.3:
-Abbiamo migliorato il flusso di creazione delle etichette di spedizione per garantire un'esperienza più fluida e intuitiva. Questo miglioramento mira a snellire il processo di evasione degli ordini, rendendolo più veloce ed efficiente. Continua a inviarci feedback: siamo lieti di ascoltarli.
+17.4:
+Siamo lieti di offrire il supporto ai fornitori di Passkey di terze parti. Questo aggiornamento è stato progettato per offrire agli utenti di WordPress.com maggiori flessibilità e comodità nella gestione della sicurezza del proprio account. Preparati a dire addio allo stress delle password e a dare il benvenuto a un'esperienza di login più fluida e sicura!
 </it-IT>
 <ja-JP>
-17.3:
-配送ラベルの作成フローが強化され、よりスムーズで直感的に操作できるようになりました。 この改善は、注文のフルフィルメント処理を合理化し、より迅速で効率的にすることを目的としています。 引き続き、フィードバックをお寄せください。ぜひ参考にさせていただきます。
+17.4:
+サードパーティのパスキープロバイダーのサポートをご提供します。 このアップデートは、WordPress.com ユーザーがアカウントのセキュリティをより柔軟かつ便利に管理できるようにするものです。 パスワードに関するストレスに別れを告げ、よりスムーズかつ安全にログインしましょう !
 </ja-JP>
 <ko-KR>
-17.3:
-더 원활하고 더 직관적인 경험이 확보되도록 배송 레이블 생성 절차를 개선했습니다. 더 빠르고 더 효율적으로 진행되도록 주문 처리 프로세스를 간소화하는 것이 이 개선의 목표입니다. 계속 피드백을 보내주세요. 경청하겠습니다!
+17.4:
+서드파티 패스키 제공업체 지원을 제공하게 되어 기쁩니다. 이번 업데이트는 워드프레스닷컴 사용자의 계정 보안 관리 방식에 있어 유연성과 편의성을 더할 수 있도록 설계되었습니다. 외우기 힘든 비밀번호에서 벗어나 더욱 원활하고 안전한 로그인 환경을 이용하세요!
 </ko-KR>
 <nl-NL>
-17.3:
-We've enhanced the shipping label creation flow to ensure a smoother and more intuitive experience. This improvement aims to streamline your order fulfillment process, making it faster and more efficient. Blijf ons feedback sturen – wij luisteren!
+17.4:
+We zijn heel enthousiast over onze ondersteuning voor externe passkeyproviders. Deze update biedt gebruikers van WordPress.com meer flexibiliteit en gemak bij het beheren van de beveiliging van hun accounts. Zeg vaarwel tegen wachtwoordmoeheid en bereid je voor op een soepelere, veilige inlogervaring!
 </nl-NL>
 <pt-BR>
-17.3:
-Melhoramos o fluxo de criação de etiquetas de envio para garantir uma experiência mais intuitiva e tranquila. Esta melhoria visa agilizar o processo de atendimento de pedidos, tornando-o mais rápido e eficiente. Continue compartilhando seu feedback conosco. Estamos atentos.
+17.4:
+Temos o prazer de anunciar a compatibilidade com provedores terceiros de chave de acesso. Esta atualização visa dar mais flexibilidade e praticidade aos usuários do WordPress.com no gerenciamento da segurança de suas contas. Aposente o uso de senhas e desfrute de uma experiência de login segura e mais tranquila.
 </pt-BR>
 <ru-RU>
-17.3:
-Мы усовершенствовали процесс создания транспортных этикеток, чтобы сделать его понятнее и эффективнее. Цель этого улучшения — оптимизировать и ускорить процесс выполнения заказа. Мы по-прежнему ждём ваших отзывов и прислушиваемся к ним!
+17.4:
+Мы рады предоставить поддержку сторонних ключей доступа. Это обновление призвано сделать управление безопасностью учётной записи более гибким и удобным для пользователей WordPress.com. Вскоре вы сможете забыть об утомительных паролях и входить в систему без лишних проблем в условиях полной безопасности!
 </ru-RU>
 <sv-SE>
-17.3:
-Vi har förbättrat flödet vid skapande av fraktsedlar för att säkerställa en smidigare och mer intuitiv upplevelse. Förbättringen är tänkt att effektivisera din orderhanteringsprocess och göra den snabbare och mer effektiv. Fortsätt att skicka feedback till oss – vi lyssnar.
+17.4:
+Vi är glada över att kunna erbjuda stöd för tredjepartsleverantörer av säkerhetsnycklar. Den här uppdateringen är utformad för att ge WordPress.com-användare mer flexibilitet och bekvämlighet när de hanterar säkerheten för sina konton. Säg adjö till lösenordströttheten och hej till en smidigare och säkrare inloggningsupplevelse!
 </sv-SE>
 <tr-TR>
-17.3:
-Daha sorunsuz ve sezgisel bir deneyim sağlamak için gönderim etiketi oluşturma akışını geliştirdik. Bu geliştirme, sipariş tamamlama sürecinizi kolaylaştırmayı hedefleyerek bu süreci daha hızlı ve verimli hale getirir. Lütfen bize geri bildirim göndermeye devam edin, sizi dinliyoruz!
+17.4:
+Üçüncü taraf Güvenlik Anahtarı sağlayıcıları için destek sunmaktan heyecan duyuyoruz. Bu güncelleme, WordPress.com kullanıcılarının hesaplarının güvenliğini yönetme şekline daha fazla esneklik ve rahatlık sağlamak için tasarlanmıştır. Parolalardan kaynaklanan yorgunluğa elveda demeye ve daha sorunsuz, güvenli bir oturum açma deneyimine merhaba demeye hazırlanın!
 </tr-TR>
 <zh-CN>
-17.3：
-我们增强了货运标签创建流程，以确保更流畅、更直观的体验。 这项改进旨在简化订单履行流程，使之更快速、更高效。 请继续向我们发送反馈，我们时刻倾听您的意见！
+17.4：
+我们很高兴能为第三方通行密钥提供商提供支持。 此更新旨在让 WordPress.com 用户能够更灵活、便捷地管理其账户的安全。 准备好告别繁琐的密码输入操作，享受更流畅、安全的登录体验吧！
 </zh-CN>
 <zh-TW>
-17.3：
-提升了運送標籤的製作流程，以確保更順暢直觀的使用體驗。 這項改善旨在簡化訂單履行流程，使其更快速有效率。 歡迎繼續給予我們意見回饋，我們很樂意虛心傾聽！
+17.4:
+我們熱切期待提供第三方密碼金鑰供應商支援。 此更新可讓 WordPress.com 使用者在管理帳號安全性時更加靈活便利。 準備好揮別密碼疲勞，迎接更順暢、安全的登入體驗！
 </zh-TW>
 <en-US>
-17.3:
-We've enhanced the shipping label creation flow to ensure a smoother and more intuitive experience. This improvement aims to streamline your order fulfillment process, making it faster and more efficient. Please continue sending us feedback – we are listening!
+17.4:
+We're excited to offer support for third-party Passkey providers. This update is designed to provide WordPress.com users with more flexibility and convenience in how they manage their account's security. Get ready to say goodbye to password fatigue and hello to a smoother, secure login experience!
 </en-US>
