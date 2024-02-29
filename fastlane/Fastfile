@@ -641,9 +641,10 @@ platform :android do
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
       track: 'production',
-      release_status: 'draft',
+      release_status: 'inProgress',
+      rollout: '0.1', # Start the production rollout at 10%
       skip_upload_metadata: false,
-      skip_upload_changelogs: true,
+      skip_upload_changelogs: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
@@ -694,7 +695,8 @@ platform :android do
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
       track: 'beta',
-      release_status: 'draft',
+      release_status: 'completed',
+      rollout: '1.0', # Rollout to 100% of testers on the beta track
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
       skip_upload_images: true,
