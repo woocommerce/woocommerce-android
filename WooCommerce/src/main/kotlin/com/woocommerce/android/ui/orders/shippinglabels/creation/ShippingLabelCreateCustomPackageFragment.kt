@@ -1,19 +1,19 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.PackageSuccessfullyMadeEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingLabelCreateCustomPackageFragment :
-    BaseFragment(R.layout.fragment_shipping_label_create_custom_package), MenuProvider {
+    BaseFragment(R.layout.fragment_shipping_label_create_custom_package) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
@@ -36,18 +36,31 @@ class ShippingLabelCreateCustomPackageFragment :
 
     private val viewModel: ShippingLabelCreateCustomPackageViewModel by viewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentShippingLabelCreateCustomPackageBinding.bind(view)
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+        setupToolbar()
 
         initializeInputFields()
         setupObservers()
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_done, menu)
+    private fun setupToolbar() {
+        binding.toolbar.title = getString(R.string.shipping_label_package_selector_title)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
     }
 
     private fun initializeInputFields() {
@@ -157,7 +170,7 @@ class ShippingLabelCreateCustomPackageFragment :
         progressDialog = null
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)

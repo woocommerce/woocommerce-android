@@ -1,0 +1,2 @@
+17.4:
+Siamo lieti di offrire il supporto ai fornitori di Passkey di terze parti. Questo aggiornamento è stato progettato per offrire agli utenti di WordPress.com maggiori flessibilità e comodità nella gestione della sicurezza del proprio account. Preparati a dire addio allo stress delle password e a dare il benvenuto a un'esperienza di login più fluida e sicura!

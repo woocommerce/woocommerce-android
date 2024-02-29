@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.compose.component
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
@@ -12,9 +11,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.autoMirror
@@ -138,7 +139,7 @@ fun Toolbar(
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
+        backgroundColor = colorResource(id = R.color.color_toolbar),
         title = title,
         navigationIcon = {
             if (navigationIcon != null) {

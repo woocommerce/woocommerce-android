@@ -26,7 +26,10 @@ object OrderCreateEditNavigator {
                 )
 
             is AddCustomer ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment(
+                    allowCustomerCreation = true,
+                    allowGuests = true
+                )
 
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
@@ -48,9 +51,10 @@ object OrderCreateEditNavigator {
                     currentFeeValue = target.currentFeeValue
                 )
 
-            is ShowCreatedOrder ->
+            is ShowCreatedOrder -> {
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId, target.startPaymentFlow)
+            }
 
             is EditShipping ->
                 OrderCreateEditFormFragmentDirections

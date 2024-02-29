@@ -4,13 +4,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.text.HtmlCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -36,6 +34,7 @@ import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageCho
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.setHomeIcon
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -55,7 +54,6 @@ import javax.inject.Inject
 class ProductImagesFragment :
     BaseProductEditorFragment(R.layout.fragment_product_images),
     OnGalleryImageInteractionListener,
-    MenuProvider,
     MediaPickerResultHandler {
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_image_gallery)
@@ -83,8 +81,6 @@ class ProductImagesFragment :
 
         _binding = FragmentProductImagesBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         setupObservers(viewModel)
         setupViews()
     }
@@ -100,10 +96,10 @@ class ProductImagesFragment :
         imageSourceDialog?.dismiss()
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+    private fun onCreateMenu(toolbar: Toolbar) {
         when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is ProductImagesState.Dragging -> {
-                inflater.inflate(R.menu.menu_dragging, menu)
+                toolbar.inflateMenu(R.menu.menu_dragging)
                 setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
             }
 
@@ -115,7 +111,7 @@ class ProductImagesFragment :
         }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is ProductImagesState.Dragging -> {
                 when (item.itemId) {
@@ -146,6 +142,12 @@ class ProductImagesFragment :
                 ChromeCustomTabUtils.launchUrl(it.context, AppUrls.PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING)
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_images_title),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = ::onCreateMenu
+        )
     }
 
     override fun onGalleryImageDeleteIconClicked(image: Image) {
@@ -237,8 +239,6 @@ class ProductImagesFragment :
         binding.imageGallery.showProductImages(images, this)
         binding.imageGallery.setPlaceholderImageUris(uris)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_images_title)
 
     override fun onGalleryImageClicked(image: Image) {
         viewModel.onGalleryImageClicked(image)

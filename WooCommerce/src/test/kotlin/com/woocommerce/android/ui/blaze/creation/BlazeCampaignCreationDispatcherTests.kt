@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.blaze.creation
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher.BlazeCampaignCreationDispatcherEvent
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -18,6 +20,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
     private val productListRepository: ProductListRepository = mock()
     private val blazeRepository: BlazeRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var dispatcher: BlazeCampaignCreationDispatcher
 
@@ -28,7 +31,8 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
         dispatcher = BlazeCampaignCreationDispatcher(
             blazeRepository = blazeRepository,
             productListRepository = productListRepository,
-            coroutineDispatchers = coroutinesTestRule.testDispatchers
+            coroutineDispatchers = coroutinesTestRule.testDispatchers,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -39,9 +43,14 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
         }
 
         var event: BlazeCampaignCreationDispatcherEvent? = null
-        dispatcher.startCampaignCreation { event = it }
+        dispatcher.startCampaignCreation(source = BlazeFlowSource.MY_STORE_SECTION) { event = it }
 
-        assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(null))
+        assertThat(event).isEqualTo(
+            BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(
+                productId = null,
+                blazeSource = BlazeFlowSource.MY_STORE_SECTION
+            )
+        )
     }
 
     @Test
@@ -58,7 +67,7 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
             }
 
             var event: BlazeCampaignCreationDispatcherEvent? = null
-            dispatcher.startCampaignCreation { event = it }
+            dispatcher.startCampaignCreation(source = BlazeFlowSource.MY_STORE_SECTION) { event = it }
 
             assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowProductSelectorScreen)
         }
@@ -77,9 +86,17 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
             }
 
             var event: BlazeCampaignCreationDispatcherEvent? = null
-            dispatcher.startCampaignCreation(productId = 1L) { event = it }
+            dispatcher.startCampaignCreation(
+                source = BlazeFlowSource.MY_STORE_SECTION,
+                productId = 1L
+            ) { event = it }
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(1L))
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(
+                    productId = 1L,
+                    blazeSource = BlazeFlowSource.MY_STORE_SECTION
+                )
+            )
         }
 
     @Test
@@ -96,8 +113,13 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
             }
 
             var event: BlazeCampaignCreationDispatcherEvent? = null
-            dispatcher.startCampaignCreation { event = it }
+            dispatcher.startCampaignCreation(source = BlazeFlowSource.MY_STORE_SECTION) { event = it }
 
-            assertThat(event).isEqualTo(BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(1L))
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(
+                    productId = 1L,
+                    blazeSource = BlazeFlowSource.MY_STORE_SECTION,
+                )
+            )
         }
 }
