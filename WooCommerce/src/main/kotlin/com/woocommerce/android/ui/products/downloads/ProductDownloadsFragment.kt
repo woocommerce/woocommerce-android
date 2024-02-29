@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.products.downloads
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
@@ -17,14 +15,14 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloads
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductDownloadsFragment :
-    BaseProductFragment(R.layout.fragment_product_downloads_list),
-    MenuProvider {
+    BaseProductFragment(R.layout.fragment_product_downloads_list) {
     private val itemTouchHelper by lazy {
         DraggableItemTouchHelper(
             dragDirs = UP or DOWN,
@@ -57,7 +55,6 @@ class ProductDownloadsFragment :
 
         _binding = FragmentProductDownloadsListBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         with(binding.productDownloadsRecycler) {
@@ -65,6 +62,17 @@ class ProductDownloadsFragment :
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             itemTouchHelper.attachToRecyclerView(this)
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_downloadable_files),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductDownloads)
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -72,12 +80,12 @@ class ProductDownloadsFragment :
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_product_downloads_list, menu)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.menu_product_downloads_list)
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_product_downloads_settings -> {
                 viewModel.onDownloadsSettingsClicked()

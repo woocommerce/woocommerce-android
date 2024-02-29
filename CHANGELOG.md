@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.5
+We're thrilled to roll out a shiny new update that marks our first leap towards jazzing up order management on tablets! This update brings a slicker interface, turning the task of managing orders into a breeze on your tablet. Keep your eyes peeled for more enhancements as we keep working to make your experience even cooler!
+
+## 17.4
+We're excited to offer support for third-party Passkey providers. This update is designed to provide WordPress.com users with more flexibility and convenience in how they manage their account's security. Get ready to say goodbye to password fatigue and hello to a smoother, secure login experience!
+
 ## 17.3
 We've enhanced the shipping label creation flow to ensure a smoother and more intuitive experience. This improvement aims to streamline your order fulfillment process, making it faster and more efficient. Please continue sending us feedback – we are listening!
 

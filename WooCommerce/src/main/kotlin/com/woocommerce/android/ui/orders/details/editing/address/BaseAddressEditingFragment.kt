@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.view.updateMargins
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
@@ -23,7 +24,6 @@ import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import com.woocommerce.android.util.UiHelpers.getPxOfUiDimen
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.combineWith
-import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -36,14 +36,14 @@ abstract class BaseAddressEditingFragment :
         const val SELECT_STATE_REQUEST = "select_state_request"
     }
 
-    private val addressViewModel by fixedHiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_orders)
+    private val addressViewModel by viewModels<AddressViewModel>()
 
     abstract val storedAddress: Address
     abstract val addressType: AddressViewModel.AddressType
     abstract fun onViewBound(binding: FragmentBaseEditAddressBinding)
 
     private var _binding: FragmentBaseEditAddressBinding? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
     protected lateinit var replicateAddressSwitch: SwitchMaterial
 
@@ -60,6 +60,7 @@ abstract class BaseAddressEditingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBaseEditAddressBinding.bind(view)
+        setupToolbar()
         replicateAddressSwitch = SwitchMaterial(requireContext())
         _binding?.form?.root?.addView(replicateAddressSwitch)
         replicateAddressSwitch.apply {
@@ -73,6 +74,7 @@ abstract class BaseAddressEditingFragment :
         replicateAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.onReplicateAddressSwitchChanged(isChecked)
         }
+        onPrepareMenu()
         bindTextWatchers()
 
         binding.form.countrySpinner.setClickListener {
@@ -90,6 +92,22 @@ abstract class BaseAddressEditingFragment :
         setupObservers()
         setupResultHandlers()
         onViewBound(binding)
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        // Set up the toolbar menu
+        binding.toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding.toolbar.menu.findItem(R.id.menu_done)
+        setupToolbarMenu()
+    }
+
+    private fun setupToolbarMenu() {
+        binding.toolbar.setNavigationOnClickListener {
+            navigateUp()
+        }
     }
 
     override fun hasChanges() =

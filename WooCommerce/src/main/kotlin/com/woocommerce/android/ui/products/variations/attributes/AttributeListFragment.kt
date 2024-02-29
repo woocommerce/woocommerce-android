@@ -3,10 +3,9 @@ package com.woocommerce.android.ui.products.variations.attributes
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,10 +19,11 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list), MenuProvider {
+class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
     companion object {
         const val TAG: String = "AttributeListFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -46,7 +46,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         _binding = FragmentAttributeListBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         setupObservers()
     }
@@ -64,16 +63,16 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         }
     }
 
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+    private fun onCreateMenu(toolbar: Toolbar) {
         if (navArgs.isVariationCreation) {
-            nextMenuItem = menu.add(Menu.FIRST, ID_ATTRIBUTE_LIST, Menu.FIRST, R.string.next).apply {
+            nextMenuItem = toolbar.menu.add(Menu.FIRST, ID_ATTRIBUTE_LIST, Menu.FIRST, R.string.next).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 isVisible = isGeneratingVariation
             }
         }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
                 AttributeListFragmentDirections.actionAttributeListFragmentToAttributesAddedFragment()
@@ -102,6 +101,17 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
                 viewModel.onAddAttributeButtonClick()
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_variation_attributes),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductAttributeList)
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     private fun setupObservers() {
@@ -118,8 +128,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         viewModel.loadProductDraftAttributes()
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_variation_attributes)
 
     override fun onDestroyView() {
         super.onDestroyView()

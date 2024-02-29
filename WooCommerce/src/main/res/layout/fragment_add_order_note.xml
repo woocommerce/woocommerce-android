@@ -8,6 +8,18 @@
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_collapseMode="pin"
+        style="@style/Widget.Woo.Toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name"/>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/addNote_editContainer"
         style="@style/Woo.Card"

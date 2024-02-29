@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 09:54:03+0000
+Translation-Revision-Date: 2024-02-20 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="blaze_campaign_creation_error">문제가 발생했습니다.\n캠페인을 생성할 수 없습니다.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">캠페인 이미지 세부 정보 가져오기 실패</string>
+    <string name="blaze_campaign_creation_error_media_upload">캠페인 이미지 업로드에 실패했습니다.</string>
+    <string name="blaze_campaign_creation_error_cancel">캠페인 취소</string>
+    <string name="blaze_campaign_creation_error_get_support">지원 받기</string>
+    <string name="blaze_campaign_creation_error_help_hint">다시 시도하거나 지원팀에 도움을 문의하세요.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">캠페인 생성 오류</string>
+    <string name="blaze_campaign_creation_error_title">캠페인 생성 오류</string>
+    <string name="blaze_campaign_creation_loading">캠페인 생성하기</string>
+    <string name="blaze_campaign_created_success_done_button">완료</string>
+    <string name="blaze_campaign_created_success_description">캠페인을 검토하는 중입니다. 24시간 이내에 공개됩니다. 판매 시간이 다가오고 있습니다!</string>
+    <string name="blaze_campaign_created_success_title">모든 준비를 마쳤습니다!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">키가 이미 있음</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">최종 URL이 너무 김</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">값</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">키</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">대상: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">파라미터 추가</string>
+    <string name="blaze_campaign_payment_added_successfully">신용카드 추가 완료</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">새 카드 추가</string>
+    <string name="blaze_campaign_payment_list_hint">워드프레스닷컴 계정 %1$s &lt;%2$s&gt;에서 신용카드가 검색되었습니다.</string>
+    <string name="blaze_campaign_payment_list_header_text">모든 거래가 안전하게 암호화되었습니다.</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">신용카드 추가</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">새 결제 수단을 추가하세요.</string>
+    <string name="blaze_campaign_payment_list_screen_title">결제 수단</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">노출 수 추정에 실패했습니다. 재실행하시겠습니까?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">추가</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Blaze 캠페인의 태그라인과 설명을 추가하세요.</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">이미지 추가</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Blaze 캠페인의 이미지를 추가하세요.</string>
+    <string name="drag_handle">핸들 끌기</string>
+    <string name="analytic_cards">분석 카드</string>
+    <string name="manage_analytics">분석 관리</string>
+    <string name="see_report">보고서 보기</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">사이트 홈</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">상품 URL</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 파라미터</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">대상 URL</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">수동으로 입력</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">위치를 찾을 수 없습니다.\n다시 시도해 주세요.</string>
+    <string name="blaze_campaign_creation_location_search_message">국가, 광역시/도 또는 시/군/구 입력을 시작하여 사용 가능한 옵션을 참조하세요.</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">\"캠페인 제출\"을 클릭하면 &lt;a href=\'termsOfService\'&gt;&lt;u&gt;서비스 약관&lt;/u&gt;&lt;/a&gt;과 &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;광고 정책&lt;/u&gt;&lt;/a&gt;에 동의하고 선택한 예산과 기간에 대해 결제 수단으로 요금이 청구되도록 승인하는 것입니다. 홍보한 글의 예산 및 결제 방식에 대해 &lt;a href=\'learnMore\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">캠페인 제출</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">결제 수단을 로드하지 못했습니다. 여기를 클릭하여 다시 시도해 주세요.</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">결제 수단 추가</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">결제 수단 로드 중</string>
+    <string name="blaze_campaign_payment_summary_total_budget">합계</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Blaze 캠페인</string>
+    <string name="blaze_campaign_payment_summary_totals">결제 합계</string>
+    <string name="blaze_campaign_payment_summary_title">결제</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">위치 검색</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">영수증을 저장할 수 없습니다.</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">영수증을 다운로드할 수 없습니다.</string>
     <string name="card_reader_payment_email_client_not_found">영수증을 공유할 앱을 찾을 수 없습니다.</string>
@@ -228,7 +279,7 @@ Language: ko_KR
     <string name="custom_amounts">사용자 정의 금액</string>
     <string name="product_details_blaze_card">Blaze로 홍보</string>
     <string name="blaze_campaign_ceation_celebration_button">알겠습니다.</string>
-    <string name="blaze_campaign_ceation_celebration_message">승인용 광고가 제출되었습니다. 승인되고 실행되면 확인 이메일을 보내드리겠습니다.</string>
+    <string name="blaze_campaign_ceation_celebration_message">광고가 승인을 위해 제출되었습니다. 승인되고 실행되면 확인 이메일을 보내드리겠습니다.</string>
     <string name="blaze_campaign_creation_celebration_header">모두 준비되었습니다!</string>
     <string name="blaze_campaign_creation_intro_button">지금 Blaze 캠페인 시작</string>
     <string name="blaze_campaign_creation_intro_benefit_4">성과를 추적하며 언제든지 Blaze를 시작하고 중지하세요.</string>

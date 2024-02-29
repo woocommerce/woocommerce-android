@@ -19,6 +19,7 @@
     <color name="color_on_surface_high">@color/woo_white_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_white_alpha_038</color>
+    <color name="woo_item_selected">@color/woo_black</color>
 
     <color name="color_on_primary">@color/woo_black</color>
     <color name="color_on_primary_high">@color/woo_black</color>
@@ -49,6 +50,8 @@
     <color name="color_scrim_background">@color/woo_black_90_alpha_038</color>
     <color name="color_default_image_background">@color/woo_gray_40</color>
     <color name="color_toolbar">@color/woo_black_900</color>
+    <color name="bottom_sheet_background">@color/woo_black_900</color>
+    <color name="color_item_selected">@color/woo_black</color>
 
     <!--
         Elevation colors

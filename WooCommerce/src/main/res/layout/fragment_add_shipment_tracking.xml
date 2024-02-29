@@ -1,129 +1,150 @@
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment">
+    android:orientation="vertical"
+    tools:context="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingFragment">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/snack_root"
-        style="@style/Woo.Card"
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_collapseMode="pin"
+        tools:title="@string/app_name" />
 
-        <LinearLayout
-            android:id="@+id/container"
+    <View
+        android:id="@+id/app_bar_divider"
+        style="@style/Woo.Divider"
+        android:layout_gravity="bottom" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/snack_root"
+            style="@style/Woo.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginBottom="@dimen/minor_100">
+            android:layout_height="wrap_content">
 
-            <!-- Select provider view -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/carrier_layout"
-                style="@style/Woo.TextInputLayout"
+            <LinearLayout
+                android:id="@+id/container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:hint="@string/order_shipment_tracking_carrier_label"
-                app:errorEnabled="true">
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginBottom="@dimen/minor_100"
+                android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/carrier"
-                    style="@style/Woo.TextInputEditText"
+                <!-- Select provider view -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/carrier_layout"
+                    style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false" />
+                    android:background="?attr/selectableItemBackground"
+                    android:hint="@string/order_shipment_tracking_carrier_label"
+                    app:errorEnabled="true">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/carrier"
+                        style="@style/Woo.TextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false" />
 
-            <!-- Add custom provider name view -only visible if custom provider is selected -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/custom_provider_name_layout"
-                style="@style/Woo.TextInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/order_shipment_tracking_custom_provider_name_label"
-                tools:visibility="visible"
-                app:errorEnabled="true"
-                app:counterEnabled="true"
-                app:counterMaxLength="@integer/max_length_tracking_number">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/custom_provider_name"
-                    style="@style/Woo.TextInputEditText"
+                <!-- Add custom provider name view -only visible if custom provider is selected -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/custom_provider_name_layout"
+                    style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:nextFocusForward="@+id/addTracking_number"
-                    android:maxLength="@integer/max_length_tracking_number" />
+                    android:hint="@string/order_shipment_tracking_custom_provider_name_label"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="@integer/max_length_tracking_number"
+                    app:errorEnabled="true"
+                    tools:visibility="visible">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/custom_provider_name"
+                        style="@style/Woo.TextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLength="@integer/max_length_tracking_number"
+                        android:nextFocusForward="@+id/addTracking_number" />
 
-            <!-- Add tracking number view -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tracking_number_layout"
-                style="@style/Woo.TextInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/order_shipment_tracking_number_label"
-                app:errorEnabled="true"
-                app:counterEnabled="true"
-                app:counterMaxLength="@integer/max_length_tracking_number">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tracking_number"
-                    style="@style/Woo.TextInputEditText"
+                <!-- Add tracking number view -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tracking_number_layout"
+                    style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLength="@integer/max_length_tracking_number" />
+                    android:hint="@string/order_shipment_tracking_number_label"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="@integer/max_length_tracking_number"
+                    app:errorEnabled="true">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tracking_number"
+                        style="@style/Woo.TextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLength="@integer/max_length_tracking_number" />
 
-            <!-- Add custom provider tracking url view -only visible if custom provider is selected -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/custom_provider_url_layout"
-                style="@style/Woo.TextInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/order_shipment_tracking_custom_provider_url_label"
-                app:errorEnabled="true"
-                app:counterEnabled="true"
-                app:counterMaxLength="@integer/max_length_tracking_number">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/custom_provider_url"
-                    style="@style/Woo.TextInputEditText"
+                <!-- Add custom provider tracking url view -only visible if custom provider is selected -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/custom_provider_url_layout"
+                    style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textUri"
-                    android:maxLength="@integer/max_length_tracking_number"/>
+                    android:hint="@string/order_shipment_tracking_custom_provider_url_label"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="@integer/max_length_tracking_number"
+                    app:errorEnabled="true">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/custom_provider_url"
+                        style="@style/Woo.TextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:maxLength="@integer/max_length_tracking_number" />
 
-            <!-- Select date shipped view -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Woo.TextInputLayout"
-                android:layout_marginTop="@dimen/minor_00"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:hint="@string/order_shipment_tracking_date_label"
-                app:errorEnabled="true">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/date"
-                    style="@style/Woo.TextInputEditText"
+                <!-- Select date shipped view -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Woo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:focusable="false"/>
+                    android:layout_marginTop="@dimen/minor_00"
+                    android:background="?attr/selectableItemBackground"
+                    android:hint="@string/order_shipment_tracking_date_label"
+                    app:errorEnabled="true">
 
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-</androidx.core.widget.NestedScrollView>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/date"
+                        style="@style/Woo.TextInputEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="date" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

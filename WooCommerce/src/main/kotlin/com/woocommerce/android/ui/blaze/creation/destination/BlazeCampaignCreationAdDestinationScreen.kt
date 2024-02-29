@@ -47,7 +47,7 @@ fun BlazeCampaignCreationAdDestinationScreen(viewModel: BlazeCampaignCreationAdD
             viewModel::onBackPressed,
             viewModel::onUrlPropertyTapped,
             viewModel::onParameterPropertyTapped,
-            viewModel::onDestinationUrlChanged
+            viewModel::onDestinationParametersUpdated
         )
     }
 }
@@ -58,7 +58,7 @@ fun AdDestinationScreen(
     onBackPressed: () -> Unit,
     onUrlPropertyTapped: () -> Unit,
     onParametersPropertyTapped: () -> Unit,
-    onDestinationUrlChanged: (String) -> Unit
+    onTargetUrlChanged: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -78,22 +78,24 @@ fun AdDestinationScreen(
         ) {
             AdDestinationProperty(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_url_property_title),
-                value = viewState.destinationUrl,
+                value = viewState.targetUrl,
                 onPropertyTapped = onUrlPropertyTapped
             )
             Divider()
             AdDestinationProperty(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
-                value = viewState.parameters,
+                value = viewState.joinedParameters.ifBlank {
+                    stringResource(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
+                },
                 onPropertyTapped = onParametersPropertyTapped
             )
         }
 
         if (viewState.isUrlDialogVisible) {
-            AdDestinationUrlDialog(
+            TargetUrlDialog(
                 viewState,
-                onDismissed = { onDestinationUrlChanged(viewState.destinationUrl) },
-                onSaveTapped = onDestinationUrlChanged
+                onDismissed = { onTargetUrlChanged(viewState.targetUrl) },
+                onSaveTapped = onTargetUrlChanged
             )
         }
     }
@@ -124,7 +126,7 @@ fun AdDestinationProperty(title: String, value: String, onPropertyTapped: () -> 
 }
 
 @Composable
-fun AdDestinationUrlDialog(
+fun TargetUrlDialog(
     viewState: ViewState,
     onDismissed: () -> Unit,
     onSaveTapped: (String) -> Unit,
@@ -142,30 +144,30 @@ fun AdDestinationUrlDialog(
                 style = MaterialTheme.typography.h6
             )
 
-            var destinationUrl by rememberSaveable {
-                mutableStateOf(viewState.destinationUrl)
+            var targetUrl by rememberSaveable {
+                mutableStateOf(viewState.targetUrl)
             }
 
             UrlOption(
                 url = viewState.productUrl,
-                targetUrl = destinationUrl,
+                targetUrl = targetUrl,
                 title = R.string.blaze_campaign_edit_ad_destination_product_url_option
             ) {
-                destinationUrl = viewState.productUrl
+                targetUrl = viewState.productUrl
             }
 
             UrlOption(
                 url = viewState.siteUrl,
-                targetUrl = destinationUrl,
+                targetUrl = targetUrl,
                 title = R.string.blaze_campaign_edit_ad_destination_site_url_option
             ) {
-                destinationUrl = viewState.siteUrl
+                targetUrl = viewState.siteUrl
             }
 
             DialogButtonsRowLayout(
                 confirmButton = {
                     WCTextButton(onClick = {
-                        onSaveTapped(destinationUrl)
+                        onSaveTapped(targetUrl)
                     }) {
                         Text(text = stringResource(id = R.string.save))
                     }
@@ -223,14 +225,14 @@ fun PreviewAdDestinationScreen() {
             viewState = ViewState(
                 productUrl = "https://woocommerce.com/products/1",
                 siteUrl = "https://woocommerce.com",
-                destinationUrl = "https://woocommerce.com/products/12",
-                parameters = "utm_source=woocommerce_android\nutm_medium=ad\nutm_campaign=blaze",
+                targetUrl = "https://woocommerce.com/products/12",
+                parameters = emptyMap(),
                 isUrlDialogVisible = true
             ),
             onBackPressed = {},
             onUrlPropertyTapped = {},
             onParametersPropertyTapped = {},
-            onDestinationUrlChanged = {}
+            onTargetUrlChanged = {}
         )
     }
 }

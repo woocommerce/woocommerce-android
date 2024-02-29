@@ -5,6 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_DEVICE_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_INTEREST_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_LANGUAGE_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
@@ -27,9 +31,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignTargetSelectionViewModel @Inject constructor(
-    private val resourceProvider: ResourceProvider,
     blazeRepository: BlazeRepository,
     savedStateHandle: SavedStateHandle,
+    private val resourceProvider: ResourceProvider,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : TargetSelectionViewModel, ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignTargetSelectionFragmentArgs by savedStateHandle.navArgs()
 
@@ -114,6 +119,13 @@ class BlazeCampaignTargetSelectionViewModel @Inject constructor(
             selectedIds.value.toList()
 
         triggerEvent(ExitWithResult(TargetSelectionResult(navArgs.targetType, result)))
+        val stat = when (navArgs.targetType) {
+            LANGUAGE -> BLAZE_CREATION_EDIT_LANGUAGE_SAVE_TAPPED
+            DEVICE -> BLAZE_CREATION_EDIT_DEVICE_SAVE_TAPPED
+            INTEREST -> BLAZE_CREATION_EDIT_INTEREST_SAVE_TAPPED
+            LOCATION -> throw IllegalStateException("Location selection should not use this view model")
+        }
+        analyticsTrackerWrapper.track(stat = stat)
     }
 
     @Parcelize
