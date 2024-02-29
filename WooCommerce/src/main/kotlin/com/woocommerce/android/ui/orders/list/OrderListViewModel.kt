@@ -420,9 +420,9 @@ class OrderListViewModel @Inject constructor(
                             shouldRetry && noTimeoutHappened -> {
                                 triggerEvent(RetryLoadingOrders)
                             }
-                            else -> viewState = viewState.copy(
-                                shouldDisplayTroubleshootingBanner = true
-                            )
+                            else -> {
+                                // Trigger the troubleshooting banner
+                            }
                         }
                         noTimeoutHappened = false
                     }
@@ -816,8 +816,7 @@ class OrderListViewModel @Inject constructor(
         val filterCount: Int = 0,
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
-        val isErrorFetchingDataBannerVisible: Boolean = false,
-        val shouldDisplayTroubleshootingBanner: Boolean = false
+        val isErrorFetchingDataBannerVisible: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
