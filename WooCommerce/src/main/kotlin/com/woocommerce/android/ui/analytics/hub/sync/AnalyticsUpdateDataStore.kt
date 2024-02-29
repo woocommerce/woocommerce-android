@@ -21,7 +21,7 @@ import javax.inject.Inject
  * through stored timestamp.
  */
 class AnalyticsUpdateDataStore @Inject constructor(
-    @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
+    @DataStoreQualifier(DataStoreType.ANALYTICS_UI_CACHE) private val dataStore: DataStore<Preferences>,
     private val currentTimeProvider: CurrentTimeProvider,
     private val selectedSite: SelectedSite
 ) {

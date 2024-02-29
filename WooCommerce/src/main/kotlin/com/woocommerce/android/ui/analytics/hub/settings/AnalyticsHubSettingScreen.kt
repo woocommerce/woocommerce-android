@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.compose.component.AlertDialog
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.configuration.SelectionCheck
@@ -90,7 +91,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
 @Composable
 fun AnalyticsHubSettingScreen(
     cards: List<AnalyticCardConfigurationUI>,
-    onSelectionChange: (Int, Boolean) -> Unit,
+    onSelectionChange: (AnalyticsCards, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -98,10 +99,10 @@ fun AnalyticsHubSettingScreen(
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        itemsIndexed(items = cards, key = { _, card -> card.id }) { i, card ->
+        itemsIndexed(items = cards, key = { _, card -> card.card }) { i, card ->
             AnalyticCardItem(
                 showTopDivider = i == 0,
-                id = card.id,
+                card = card.card,
                 title = card.title,
                 isSelected = card.isVisible,
                 isEnabled = card.isEnabled,
@@ -113,11 +114,11 @@ fun AnalyticsHubSettingScreen(
 
 @Composable
 fun AnalyticCardItem(
-    id: Int,
+    card: AnalyticsCards,
     title: String,
     isSelected: Boolean,
     isEnabled: Boolean,
-    onSelectionChange: (Int, Boolean) -> Unit,
+    onSelectionChange: (AnalyticsCards, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     showTopDivider: Boolean = false
 ) {
@@ -125,7 +126,7 @@ fun AnalyticCardItem(
         if (showTopDivider) Divider()
         val rowModifier = if (isEnabled) {
             modifier
-                .clickable { onSelectionChange(id, !isSelected) }
+                .clickable { onSelectionChange(card, !isSelected) }
                 .padding(16.dp)
         } else {
             modifier.padding(16.dp)
@@ -137,7 +138,7 @@ fun AnalyticCardItem(
             SelectionCheck(
                 isSelected = isSelected,
                 isEnabled = isEnabled,
-                onSelectionChange = { onSelectionChange(id, !isSelected) }
+                onSelectionChange = { onSelectionChange(card, !isSelected) }
             )
             Text(
                 text = title,
@@ -198,9 +199,9 @@ fun LoadingCardsConfiguration(modifier: Modifier = Modifier) {
 fun AnalyticsHubSettingScreenPreview() {
     AnalyticsHubSettingScreen(
         listOf(
-            AnalyticCardConfigurationUI(1, "Revenue", true),
-            AnalyticCardConfigurationUI(2, "Orders", true),
-            AnalyticCardConfigurationUI(3, "Stats", false)
+            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
+            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Session", false)
         ),
         onSelectionChange = { _, _ -> }
     )
@@ -211,7 +212,7 @@ fun AnalyticsHubSettingScreenPreview() {
 fun AnalyticCardItemPreview() {
     WooThemeWithBackground {
         AnalyticCardItem(
-            id = 1,
+            card = AnalyticsCards.Revenue,
             title = "Revenue",
             isSelected = true,
             isEnabled = true,

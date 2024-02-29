@@ -4,6 +4,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.AnalyticCardConfiguration
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.DeltaPercentage.NotExist
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -13,18 +15,19 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCardViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragmentArgs
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubViewModel
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewState
 import com.woocommerce.android.ui.analytics.hub.GetReportUrl
+import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
@@ -57,6 +60,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -93,6 +97,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
+    private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -100,6 +105,14 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val getReportUrl: GetReportUrl = GetReportUrl(selectedSite)
+
+    private val defaultCardsConfiguration = AnalyticsCards.entries.map { card ->
+        AnalyticCardConfiguration(
+            card = card,
+            title = card.name,
+            isVisible = true
+        )
+    }
 
     private lateinit var sut: AnalyticsHubViewModel
 
@@ -133,16 +146,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
 
-            with(sut.viewState.value.revenueState) {
-                assertTrue(this is LoadingViewState)
-            }
-
-            with(sut.viewState.value.ordersState) {
-                assertTrue(this is LoadingViewState)
-            }
-
-            with(sut.viewState.value.productsState) {
-                assertTrue(this is AnalyticsHubListViewState.LoadingViewState)
+            with(sut.viewState.value.cards) {
+                assertTrue(this is AnalyticsHubCardViewState.LoadingCardsConfiguration)
             }
 
             with(sut.viewState.value.refreshIndicator) {
@@ -157,6 +162,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when ViewModel is with savedState is created, then has the expected values`() =
         testBlocking {
+            configureVisibleCards()
             configureSuccessfulStatsResponse()
 
             val resourceProvider: ResourceProvider = mock {
@@ -182,6 +188,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has the expected date range selector values`() =
         testBlocking {
+            configureVisibleCards()
             configureSuccessfulStatsResponse()
 
             val resourceProvider: ResourceProvider = mock {
@@ -210,12 +217,16 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
             configureSuccessfulStatsResponse()
+            configureVisibleCards()
 
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
-            with(sut.viewState.value.revenueState) {
+            val state = sut.viewState.value.cards
+            assertTrue(state is AnalyticsHubCardViewState.CardsState)
+            val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
+            with(revenueCardState) {
                 assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
@@ -230,6 +241,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model with on existent delta then delta is not shown`() =
         testBlocking {
+            configureVisibleCards()
             updateStats.stub {
                 onBlocking { revenueState } doReturn flow {
                     emit(RevenueState.Available(getRevenueStats(netDelta = NotExist, totalDelta = NotExist)))
@@ -239,7 +251,11 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
 
-            with(sut.viewState.value.revenueState) {
+            val state = sut.viewState.value.cards
+            assertTrue(state is AnalyticsHubCardViewState.CardsState)
+            val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
+
+            with(revenueCardState) {
                 assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertTrue(leftSection.delta == null)
                 assertTrue(rightSection.delta == null)
@@ -274,12 +290,18 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
         }
 
+        configureVisibleCards()
         sut = givenAViewModel()
         sut.onNewRangeSelection(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
-        with(sut.viewState.value.revenueState) {
+
+        val state = sut.viewState.value.cards
+        assertTrue(state is AnalyticsHubCardViewState.CardsState)
+        val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
+
+        with(revenueCardState) {
             assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
             assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
@@ -295,12 +317,17 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then has expected orders values`() =
         testBlocking {
             configureSuccessfulStatsResponse()
-
+            configureVisibleCards()
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
-            with(sut.viewState.value.ordersState) {
+
+            val state = sut.viewState.value.cards
+            assertTrue(state is AnalyticsHubCardViewState.CardsState)
+            val ordersCardState = state.cardsState.getValue(AnalyticsCards.Orders)
+
+            with(ordersCardState) {
                 assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
@@ -316,12 +343,17 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view model, when selected date range changes, then product has values`() =
         testBlocking {
             configureSuccessfulStatsResponse()
-
+            configureVisibleCards()
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
-            with(sut.viewState.value.productsState) {
+
+            val state = sut.viewState.value.cards
+            assertTrue(state is AnalyticsHubCardViewState.CardsState)
+            val productsCardState = state.cardsState.getValue(AnalyticsCards.Products)
+
+            with(productsCardState) {
                 assertTrue(this is AnalyticsHubListViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
                 assertEquals(PRODUCT_ITEMS_SOLD_DELTA, delta)
@@ -338,6 +370,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected orders values`() = testBlocking {
+        configureVisibleCards()
         val weekOrdersData = getOrdersStats(
             OTHER_ORDERS_COUNT,
             OTHER_ORDERS_COUNT_DELTA,
@@ -355,7 +388,12 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
-        with(sut.viewState.value.ordersState) {
+
+        val state = sut.viewState.value.cards
+        assertTrue(state is AnalyticsHubCardViewState.CardsState)
+        val ordersCardState = state.cardsState.getValue(AnalyticsCards.Orders)
+
+        with(ordersCardState) {
             assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
             assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
@@ -369,6 +407,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then revenue is the expected`() = testBlocking {
+        configureVisibleCards()
         val weekRevenueStats = getRevenueStats(
             OTHER_TOTAL_VALUE,
             OTHER_NET_VALUE,
@@ -385,7 +424,11 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut.onNewRangeSelection(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
-        with(sut.viewState.value.revenueState) {
+        val state = sut.viewState.value.cards
+        assertTrue(state is AnalyticsHubCardViewState.CardsState)
+        val revenueCardState = state.cardsState.getValue(AnalyticsCards.Revenue)
+
+        with(revenueCardState) {
             assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
             assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
             assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
@@ -396,6 +439,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a week to date selected, when refresh is requested, then has expected product values`() = testBlocking {
+        configureVisibleCards()
         val weekOrdersData = getProductsStats(
             OTHER_PRODUCT_ITEMS_SOLD,
             OTHER_PRODUCT_ITEMS_SOLD_DELTA,
@@ -411,7 +455,12 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
-        with(sut.viewState.value.productsState) {
+
+        val state = sut.viewState.value.cards
+        assertTrue(state is AnalyticsHubCardViewState.CardsState)
+        val productsCardState = state.cardsState.getValue(AnalyticsCards.Products)
+
+        with(productsCardState) {
             assertTrue(this is AnalyticsHubListViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
             assertEquals(OTHER_PRODUCT_ITEMS_SOLD_DELTA, delta)
@@ -430,7 +479,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { invoke(any(), any(), any()) } doReturn flow {
+            onBlocking { invoke(any(), any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
                 emit(AnalyticsHubUpdateState.Loading)
             }
@@ -459,6 +508,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when all data is fetched successfully then all transaction conditions are satisfied`() = testBlocking {
+        configureVisibleCards()
         configureSuccessfulStatsResponse()
 
         sut = givenAViewModel()
@@ -471,6 +521,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch revenue fails then performance transaction revenue condition is not satisfied`() = testBlocking {
+        configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
             onBlocking { revenueState } doReturn flow { RevenueState.Error }
@@ -486,6 +537,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch orders fails then performance transaction order condition is not satisfied`() = testBlocking {
+        configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
             onBlocking { ordersState } doReturn flow { OrdersState.Error }
@@ -501,6 +553,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch products fails then performance transaction products condition is not satisfied`() = testBlocking {
+        configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
             onBlocking { productsState } doReturn flow { ProductsState.Error }
@@ -516,6 +569,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch visitors fails then performance transaction visitors condition is not satisfied`() = testBlocking {
+        configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
             onBlocking { sessionState } doReturn flow { SessionState.Error }
@@ -531,6 +585,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a date range selected, then has expected visitors values`() = testBlocking {
+        configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
             onBlocking { sessionState } doReturn flow { emit(SessionState.Available(defaultSessionStat)) }
@@ -539,7 +594,11 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onNewRangeSelection(WEEK_TO_DATE)
 
-        assert(sut.viewState.value.sessionState)
+        val state = sut.viewState.value.cards
+        assertTrue(state is AnalyticsHubCardViewState.CardsState)
+        val sessionCardState = state.cardsState.getValue(AnalyticsCards.Session)
+        assertTrue(sessionCardState is AnalyticsHubInformationViewState)
+        assert(sessionCardState)
     }
 
     @Test
@@ -571,6 +630,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         assertFalse { sut.viewState.value.showFeedBackBanner }
     }
+
     @Test
     fun `when send feedback is pressed then feedback status is saved as GIVEN`() = testBlocking {
         sut = givenAViewModel()
@@ -751,6 +811,174 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         verify(trackerEventEmitter).interacted(any())
     }
 
+    @Test
+    fun `when a card configuration is received, then visible cards follows the configuration `() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Revenue,
+                title = AnalyticsCards.Revenue.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Orders,
+                title = AnalyticsCards.Orders.name,
+                isVisible = true
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Products,
+                title = AnalyticsCards.Products.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Session,
+                title = AnalyticsCards.Session.name,
+                isVisible = true
+            )
+        )
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        configureVisibleCards(configuration)
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(LAST_YEAR)
+
+        with(sut.viewState.value.cards) {
+            assertTrue(this is AnalyticsHubCardViewState.CardsState)
+            val revenueState = this.cardsState.getValue(AnalyticsCards.Revenue)
+            val ordersState = this.cardsState.getValue(AnalyticsCards.Orders)
+            val productsState = this.cardsState.getValue(AnalyticsCards.Products)
+            val sessionState = this.cardsState.getValue(AnalyticsCards.Session)
+
+            assertTrue(revenueState is AnalyticsHubInformationViewState.HiddenState)
+            assertTrue(ordersState is AnalyticsHubInformationViewState.DataViewState)
+            assertTrue(productsState is AnalyticsHubListViewState.HiddenState)
+            assertTrue(sessionState is AnalyticsHubInformationViewState.DataViewState)
+        }
+    }
+
+    @Test
+    fun `when some cards are hidden, then observation job for those cards is null`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Revenue,
+                title = AnalyticsCards.Revenue.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Orders,
+                title = AnalyticsCards.Orders.name,
+                isVisible = true
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Products,
+                title = AnalyticsCards.Products.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Session,
+                title = AnalyticsCards.Session.name,
+                isVisible = true
+            )
+        )
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        configureVisibleCards(configuration)
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(LAST_YEAR)
+
+        assertThat(sut.sessionObservationJob).isNotNull
+        assertThat(sut.ordersObservationJob).isNotNull
+        assertThat(sut.revenueObservationJob).isNull()
+        assertThat(sut.productObservationJob).isNull()
+    }
+
+    @Test
+    fun `when a new range is selected, the update stats its call with the right visible cards`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Revenue,
+                title = AnalyticsCards.Revenue.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Orders,
+                title = AnalyticsCards.Orders.name,
+                isVisible = true
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Products,
+                title = AnalyticsCards.Products.name,
+                isVisible = false
+            ),
+            AnalyticCardConfiguration(
+                card = AnalyticsCards.Session,
+                title = AnalyticsCards.Session.name,
+                isVisible = true
+            )
+        )
+
+        val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
+
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        configureVisibleCards(configuration)
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+
+        verify(updateStats).invoke(
+            rangeSelection = any(),
+            scope = any(),
+            forceUpdate = any(),
+            visibleCards = eq(expectedVisibleCards)
+        )
+    }
+
+    @Test
+    fun `when a a refresh event is triggered, then the update stats its call with the right visible cards`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Revenue,
+                    title = AnalyticsCards.Revenue.name,
+                    isVisible = false
+                ),
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Orders,
+                    title = AnalyticsCards.Orders.name,
+                    isVisible = true
+                ),
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Products,
+                    title = AnalyticsCards.Products.name,
+                    isVisible = false
+                ),
+                AnalyticCardConfiguration(
+                    card = AnalyticsCards.Session,
+                    title = AnalyticsCards.Session.name,
+                    isVisible = true
+                )
+            )
+
+            val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
+
+            whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+            configureVisibleCards(configuration)
+            configureSuccessfulStatsResponse()
+
+            sut = givenAViewModel()
+            clearInvocations(updateStats)
+
+            sut.onRefreshRequested()
+
+            verify(updateStats).invoke(
+                rangeSelection = any(),
+                scope = any(),
+                forceUpdate = any(),
+                visibleCards = eq(expectedVisibleCards)
+            )
+        }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -770,6 +998,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             dateUtils,
             selectedSite,
             getReportUrl,
+            observeAnalyticsCardsConfiguration,
             savedState
         )
     }
@@ -856,10 +1085,14 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 emit(SessionState.Loading)
                 emit(SessionState.Available(testSessionStat))
             }
-            onBlocking { invoke(any(), any(), any()) } doReturn flow {
+            onBlocking { invoke(any(), any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
             }
         }
+    }
+
+    private fun configureVisibleCards(configuration: List<AnalyticCardConfiguration> = defaultCardsConfiguration) {
+        whenever(observeAnalyticsCardsConfiguration.invoke()).doReturn(flowOf(configuration))
     }
 
     companion object {
