@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -174,6 +173,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -209,6 +209,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
         const val MAX_PRODUCT_QUANTITY = 100_000
+        private const val DEBOUNCE_MS = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -1307,7 +1308,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     .map {
                         sanitizeUnsyncedOrderItemsData(it)
                     }
-                    .debounce(500)
+                    .debounce(DEBOUNCE_MS)
                     .buffer(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)

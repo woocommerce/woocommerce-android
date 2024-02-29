@@ -96,7 +96,6 @@ import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.dropWhile
@@ -159,7 +158,7 @@ class OrderCreateEditFormFragment :
                 .drop(1)
                 .dropWhile {
                     sharedViewModel.selectedItems.value.containsAll(it) &&
-                            it.size == sharedViewModel.selectedItems.value.size
+                        it.size == sharedViewModel.selectedItems.value.size
                 }
                 .distinctUntilChanged()
                 .collect {
@@ -169,7 +168,6 @@ class OrderCreateEditFormFragment :
         sharedViewModelUpdateJob = lifecycleScope.launch {
             sharedViewModel.selectedItems
                 .drop(1)
-                .debounce(500)
                 .distinctUntilChanged()
                 .collect {
                     viewModel.onItemsSelectionChanged()
@@ -1067,6 +1065,7 @@ class OrderCreateEditFormFragment :
         }
     }
 
+    @Suppress("ComplexMethod")
     private fun handleViewModelEvents(event: Event, binding: FragmentOrderCreateEditFormBinding) {
         when (event) {
             is OrderCreateEditNavigationTarget -> OrderCreateEditNavigator.navigate(this, event)
