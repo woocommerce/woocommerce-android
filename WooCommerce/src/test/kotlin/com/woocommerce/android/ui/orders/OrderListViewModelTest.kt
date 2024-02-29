@@ -652,10 +652,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(shouldDisplayTroubleshootingBanner).isTrue
     }
 
-    @Test
-    fun `when fetching orders for subsequent pages fails with a timeout, then display a generic error`() = testBlocking {
-    }
-
     // region barcode scanner
 
     @Test
