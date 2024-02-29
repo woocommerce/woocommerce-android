@@ -5,7 +5,7 @@ pluginManagement {
     gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.9.22'
     gradle.ext.kspVersion = '1.9.22-1.0.17'
-    gradle.ext.measureBuildsVersion = '2.0.3'
+    gradle.ext.measureBuildsVersion = '2.1.1'
     gradle.ext.navigationVersion = '2.7.7'
     gradle.ext.sentryVersion = '3.5.0'
     gradle.ext.violationCommentsVersion = '1.69.0'
