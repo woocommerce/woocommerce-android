@@ -902,6 +902,7 @@
     <string name="order_detail_attribution_source_type">Source type</string>
     <string name="order_detail_attribution_source">Source</string>
     <string name="order_detail_attribution_medium">Medium</string>
+    <string name="order_detail_attribution_campaign">Medium</string>
     <string name="order_detail_attribution_device_type">Device type</string>
     <string name="order_detail_attribution_session_page_views">Session page views</string>
 

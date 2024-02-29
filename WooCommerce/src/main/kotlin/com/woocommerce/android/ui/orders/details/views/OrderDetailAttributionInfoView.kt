@@ -52,6 +52,48 @@ private fun OrderAttributionContent(
             title = stringResource(id = R.string.order_detail_attribution_origin),
             value = attributionInfo.origin.label
         )
+
+        attributionInfo.sourceType?.let { sourceType ->
+            OrderAttributionInfoRow(
+                title = stringResource(id = R.string.order_detail_attribution_source_type),
+                value = sourceType
+            )
+        }
+
+        attributionInfo.campaign?.let { campaign ->
+            OrderAttributionInfoRow(
+                title = stringResource(id = R.string.order_detail_attribution_campaign),
+                value = campaign
+            )
+        }
+
+        attributionInfo.source?.let { source ->
+            OrderAttributionInfoRow(
+                title = stringResource(id = R.string.order_detail_attribution_source),
+                value = source
+            )
+        }
+
+        attributionInfo.medium?.let { medium ->
+            OrderAttributionInfoRow(
+                title = stringResource(id = R.string.order_detail_attribution_medium),
+                value = medium
+            )
+        }
+
+        attributionInfo.deviceType?.let { deviceType ->
+            OrderAttributionInfoRow(
+                title = stringResource(id = R.string.order_detail_attribution_device_type),
+                value = deviceType
+            )
+        }
+
+        attributionInfo.sessionPageViews?.let { sessionPageViews ->
+            OrderAttributionInfoRow(
+                title = stringResource(id = R.string.order_detail_attribution_session_page_views),
+                value = sessionPageViews
+            )
+        }
     }
 }
 
