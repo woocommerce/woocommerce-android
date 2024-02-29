@@ -136,35 +136,31 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
-        when (viewState.cards) {
-            is AnalyticsHubCardViewState.CardsState -> {
-                viewState.cards.cardsState.keys.forEach { card ->
-                    when (card) {
-                        AnalyticsCards.Revenue -> {
-                            val state = viewState.cards.cardsState.getValue(card) as AnalyticsHubInformationViewState
-                            binding.analyticsRevenueCard.updateInformation(state)
-                        }
+        viewState.cards
+            .run { this as? AnalyticsHubCardViewState.CardsState }
+            ?.cardsState?.map {
+                when (it.key) {
+                    AnalyticsCards.Revenue -> {
+                        val state = it.value as AnalyticsHubInformationViewState
+                        binding.analyticsRevenueCard.updateInformation(state)
+                    }
 
-                        AnalyticsCards.Orders -> {
-                            val state = viewState.cards.cardsState.getValue(card) as AnalyticsHubInformationViewState
-                            binding.analyticsOrdersCard.updateInformation(state)
-                        }
+                    AnalyticsCards.Orders -> {
+                        val state = it.value as AnalyticsHubInformationViewState
+                        binding.analyticsOrdersCard.updateInformation(state)
+                    }
 
-                        AnalyticsCards.Products -> {
-                            val state = viewState.cards.cardsState.getValue(card) as AnalyticsHubListViewState
-                            binding.analyticsProductsCard.updateInformation(state)
-                        }
+                    AnalyticsCards.Products -> {
+                        val state = it.value as AnalyticsHubListViewState
+                        binding.analyticsProductsCard.updateInformation(state)
+                    }
 
-                        AnalyticsCards.Session -> {
-                            val state = viewState.cards.cardsState.getValue(card) as AnalyticsHubInformationViewState
-                            binding.analyticsVisitorsCard.updateInformation(state)
-                        }
+                    AnalyticsCards.Session -> {
+                        val state = it.value as AnalyticsHubInformationViewState
+                        binding.analyticsVisitorsCard.updateInformation(state)
                     }
                 }
             }
-
-            else -> {}
-        }
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
     }
