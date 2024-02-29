@@ -987,7 +987,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-
         sut.onOpenSettings()
         verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_SETTINGS_OPENED)
     }
